@@ -14,6 +14,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 
+from pathlib import Path
 from typing import TypedDict
 
 import matplotlib.patches as mpatches
@@ -31,7 +32,6 @@ from figures._common import (
     COLOR_PANEL_GOOD,
     COLOR_PANEL_NOTE,
     COLOR_ROBUST,
-    PROJECT_ROOT,
     apply_style,
     figures_dir,
 )
@@ -310,7 +310,7 @@ def _draw_weight_dots(
 # Main figure
 # ---------------------------------------------------------------------------
 
-def generate_system_overview() -> None:
+def generate_system_overview(*, project_root: Path | None = None) -> None:
     """Generate the three-panel system-overview figure (beliefs, weights, recovery).
 
     Panel 1: honest vs adversarial belief vectors.
@@ -486,7 +486,7 @@ def generate_system_overview() -> None:
     # ------------------------------------------------------------------
     # Save
     # ------------------------------------------------------------------
-    out_dir = figures_dir(PROJECT_ROOT)
+    out_dir = figures_dir(project_root)
     png_path = out_dir / "system_overview.png"
     pdf_path = out_dir / "system_overview.pdf"
 

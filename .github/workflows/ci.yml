@@ -58,11 +58,15 @@ jobs:
       - name: Metadata surfaces are emitter-consistent
         run: uv run --locked python scripts/emit_metadata.py --check
 
+      - name: Clean-checkout tracking and import probe
+        # Run this probe before the invariant writer and release builders,
+        # which intentionally emit generated reviewer artifacts.  The probe
+        # validates the checkout delivered by GitHub and the package imports,
+        # rather than treating those later producer outputs as test pollution.
+        run: uv run --locked python scripts/validate_clean_checkout.py
+
       - name: Numerical invariants
         run: uv run --locked python scripts/01_run_invariants.py
-
-      - name: Clean-checkout tracking and import probe
-        run: uv run --locked python scripts/validate_clean_checkout.py
 
       - name: Publication package validation
         run: uv run --locked python scripts/validate_all.py package

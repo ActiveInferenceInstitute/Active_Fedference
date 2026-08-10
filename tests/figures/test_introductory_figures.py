@@ -1,20 +1,20 @@
 from __future__ import annotations
 
 import hashlib
+from pathlib import Path
 
 import numpy as np
 
 from figures import graphical_abstract, system_overview
-from figures._common import PROJECT_ROOT
 
 
-def test_graphical_abstract_generator_writes_png_and_pdf() -> None:
-    graphical_abstract.main()
+def test_graphical_abstract_generator_writes_png_and_pdf(tmp_path: Path) -> None:
+    graphical_abstract.generate_graphical_abstract(project_root=tmp_path)
 
-    figures_root = PROJECT_ROOT / "output" / "figures"
+    figures_root = tmp_path / "output" / "figures"
     png = figures_root / "graphical_abstract.png"
     pdf = figures_root / "graphical_abstract.pdf"
-    cover = PROJECT_ROOT / "manuscript" / "cover_image.png"
+    cover = tmp_path / "manuscript" / "cover_image.png"
     assert png.exists()
     assert pdf.exists()
     assert cover.exists()
@@ -29,10 +29,10 @@ def test_graphical_abstract_generator_writes_png_and_pdf() -> None:
     )
 
 
-def test_system_overview_generator_writes_png_and_pdf() -> None:
-    system_overview.generate_system_overview()
+def test_system_overview_generator_writes_png_and_pdf(tmp_path: Path) -> None:
+    system_overview.generate_system_overview(project_root=tmp_path)
 
-    figures_root = PROJECT_ROOT / "output" / "figures"
+    figures_root = tmp_path / "output" / "figures"
     png = figures_root / "system_overview.png"
     pdf = figures_root / "system_overview.pdf"
     assert png.exists()
@@ -57,18 +57,18 @@ def test_system_overview_metadata_is_derived_from_drawn_data() -> None:
     assert np.isclose(data["weights"].sum(), 1.0)
 
 
-def test_introductory_pdf_generation_is_byte_reproducible() -> None:
+def test_introductory_pdf_generation_is_byte_reproducible(tmp_path: Path) -> None:
     """PDF metadata must not inject wall-clock timestamps into release artifacts."""
-    figures_root = PROJECT_ROOT / "output" / "figures"
-    system_overview.generate_system_overview()
-    graphical_abstract.main()
+    figures_root = tmp_path / "output" / "figures"
+    system_overview.generate_system_overview(project_root=tmp_path)
+    graphical_abstract.generate_graphical_abstract(project_root=tmp_path)
     first = {
         name: hashlib.sha256((figures_root / name).read_bytes()).hexdigest()
         for name in ("system_overview.pdf", "graphical_abstract.pdf")
     }
 
-    system_overview.generate_system_overview()
-    graphical_abstract.main()
+    system_overview.generate_system_overview(project_root=tmp_path)
+    graphical_abstract.generate_graphical_abstract(project_root=tmp_path)
     second = {
         name: hashlib.sha256((figures_root / name).read_bytes()).hexdigest()
         for name in first
