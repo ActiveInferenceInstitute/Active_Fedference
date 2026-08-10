@@ -11,7 +11,9 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Literal, NoReturn, NotRequired, Required, TypedDict
+from typing import Literal, NoReturn, TypedDict
+
+from typing_extensions import NotRequired, Required
 
 TypeTag = Literal["bool", "dict", "int", "list", "number", "str"]
 

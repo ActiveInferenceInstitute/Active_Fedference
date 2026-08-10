@@ -261,11 +261,14 @@ publication as adapters around the same core operation.
 From the project root:
 
 ```bash
-# Install (pure NumPy/SciPy core; dev extra adds pytest + coverage + torch + hypothesis)
-uv sync
+# Install the pure NumPy/SciPy core with the committed lockfile.
+uv sync --locked
+
+# Add the reproducibility, test, lint, type-check, and CPU/Torch tooling.
+uv sync --locked --extra dev
 
 # Optional mean-field BNN and CPU/MPS support
-uv sync --extra bnn
+uv sync --locked --extra bnn
 
 # Run the full project test suite with the 90% coverage gate on src/
 uv run --locked --extra dev pytest tests/ \

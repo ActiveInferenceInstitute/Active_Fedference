@@ -93,7 +93,7 @@ def _honest_colony(
     n_agents: int, n_states: int, true_state: int, confidence: float, rng: np.random.Generator
 ) -> ArrayF:
     """A colony of soft honest beliefs peaked (weakly) on the true state."""
-    local_posteriors = np.full(
+    local_posteriors: ArrayF = np.full(
         (n_agents, n_states),
         (1.0 - confidence) / (n_states - 1),
         dtype=np.float64,

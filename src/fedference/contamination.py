@@ -64,7 +64,7 @@ _BYZANTINE_TILT: float = 8.0
 
 def _as_pmf(belief: ArrayF) -> ArrayF:
     """Coerce ``belief`` to a clipped, renormalized 1-D probability vector."""
-    arr = np.asarray(belief, dtype=np.float64).ravel()
+    arr: ArrayF = np.asarray(belief, dtype=np.float64).ravel()
     if arr.size == 0:
         raise ValueError("belief is empty")
     if np.any(arr < -1e-9):

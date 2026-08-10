@@ -9,7 +9,7 @@ PDF. Steps 4-6 depend on their predecessors; do not reorder them.
 From this repository root:
 
 ```bash
-uv sync --extra dev
+uv sync --locked --extra dev
 ```
 
 ## 1. Run tests with coverage gate

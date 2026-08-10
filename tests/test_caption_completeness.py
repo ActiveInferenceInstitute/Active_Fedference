@@ -255,10 +255,11 @@ def test_robustness_caption_matches_uncertainty_aware_artifact() -> None:
     worst_key = f"{float(report['worst_rate']):g}"
     methods = report["per_rate_summary"][worst_key]["methods"]
     expected_naive = f"{float(methods['KLD']['mean']):.4f}"
-    expected_best = f"{max(
+    expected_best_cell = max(
         (cell for method, cell in methods.items() if method != 'KLD'),
         key=lambda cell: cell['mean'],
-    )['mean']:.4f}"
+    )
+    expected_best = f"{float(expected_best_cell['mean']):.4f}"
     deterministic_naive = f"{float(report['accuracy_by_method_and_rate']['KLD'][worst_key]):.4f}"
     assert expected_naive in resolved_caption
     assert expected_best in resolved_caption

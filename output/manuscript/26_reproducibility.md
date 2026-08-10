@@ -47,7 +47,7 @@ rendered.
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
 | Config hash (SHA-256, first 16) | a1505dcd39500d4f |
-| Reproducible build epoch (UTC) | 2026-08-09T04:56:18Z |
+| Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 

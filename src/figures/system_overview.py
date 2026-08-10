@@ -14,11 +14,12 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-from typing import NotRequired, TypedDict
+from typing import TypedDict
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+from typing_extensions import NotRequired
 
 from fedference.aggregation import log_linear_pool, robust_aggregate
 from figures._common import (

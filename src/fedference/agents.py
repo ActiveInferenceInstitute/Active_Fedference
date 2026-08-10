@@ -113,7 +113,7 @@ def _gaze_likelihood(rng: np.random.Generator | None) -> ArrayF:
     """
     base = 0.85
     off = (1.0 - base) / (N_GAZE - 1)
-    a = np.full((N_GAZE, N_GAZE), off, dtype=np.float64)
+    a: ArrayF = np.full((N_GAZE, N_GAZE), off, dtype=np.float64)
     np.fill_diagonal(a, base)
     if rng is not None:
         a = a + rng.uniform(0.0, 0.01, size=a.shape)

@@ -267,18 +267,28 @@ configuration from which this manuscript was rendered.
 
 \begin{frame}[fragile,allowframebreaks]{Environment fingerprint for the
 reported run}
-\begin{longtable}[]{@{}ll@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \caption{Software and configuration fingerprint for the hydrated
 manuscript. The build epoch is derived from
 \protect\breaktt{SOURCE\_DATE\_EPOCH}; an unreleased build records an
 explicit omitted sentinel rather than wall-clock
 time.}\label{tbl:repro_env}\tabularnewline
 \toprule\noalign{}
-Field & Value \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Field
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Value
+\end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Field & Value \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Field
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Value
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 Python & 3.13.11 \\
@@ -287,7 +297,8 @@ SciPy & 1.18.0 \\
 PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
 Config hash (SHA-256, first 16) & a1505dcd39500d4f \\
-Reproducible build epoch (UTC) & 2026-08-09T04:56:18Z \\
+Reproducible build epoch (UTC) & omitted (unreleased reproducible
+build) \\
 \bottomrule\noalign{}
 \end{longtable}
 

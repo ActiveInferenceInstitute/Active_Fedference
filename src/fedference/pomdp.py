@@ -627,6 +627,7 @@ def build_nlevel_world(
     # Build uniform defaults and validate pmfs.
     level_priors: list[np.ndarray] = []
     for depth, spec in enumerate(layers):
+        prior: ArrayF
         if spec.default_prior is None:
             prior = np.full(spec.n_states, 1.0 / spec.n_states, dtype=np.float64)
         else:

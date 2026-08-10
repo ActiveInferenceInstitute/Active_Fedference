@@ -26,7 +26,7 @@ def as_pmf(values: ArrayF, *, name: str = "probability vector") -> ArrayF:
     formulas.  Negative values are not numerical zeros: they violate the
     simplex and raise ``ValueError`` instead of being silently clipped.
     """
-    arr = np.asarray(values, dtype=np.float64).ravel()
+    arr: ArrayF = np.asarray(values, dtype=np.float64).ravel()
     if arr.size == 0:
         raise ValueError(f"{name} must be non-empty")
     if not np.all(np.isfinite(arr)):

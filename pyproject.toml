@@ -20,6 +20,7 @@ dependencies = [
     "scipy>=1.10.0",
     "matplotlib>=3.7.0",
     "pyyaml>=6.0",
+    "typing-extensions>=4.9.0",
 ]
 
 [project.scripts]
@@ -27,8 +28,10 @@ fedference = "fedference_cli:main"
 
 [project.optional-dependencies]
 dev = [
+    "mypy>=1.17.1",
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
+    "ruff>=0.15.21",
     "torch>=2.0.0",
     "hypothesis>=6.0",
 ]

@@ -341,7 +341,7 @@ def run_benchmark(
 def run_tabular_benchmark(path: str | Path | None = None, *, seed: int = 0, **kwargs: Any) -> dict[str, Any]:
     """Load the bundled synthetic tabular CSV (or a user CSV) and stress it."""
     if path is None:
-        resource = resources.files("fedference").joinpath("data", "synthetic_tabular.csv")
+        resource = resources.files("fedference").joinpath("data").joinpath("synthetic_tabular.csv")
         with resources.as_file(resource) as bundled_path:
             features, labels = load_tabular_csv(bundled_path)
         dataset_name = resource.name

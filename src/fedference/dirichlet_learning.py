@@ -215,7 +215,7 @@ def learn_likelihood(
             "so a positive decayed total exists"
         )
 
-    concentration = np.full((n_o, n_s), float(prior_concentration), dtype=np.float64)
+    concentration: ArrayF = np.full((n_o, n_s), float(prior_concentration), dtype=np.float64)
 
     kls: list[float] = []
     totals: list[float] = []

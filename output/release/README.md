@@ -1,11 +1,11 @@
 # Active Fedference — release bundle provenance
 
-Generated at: 2026-08-09T04:56:18Z by `src/publication/release_manifest.py`
+Generated at: omitted for a byte-reproducible unreleased build.
 (invoked via `uv run python scripts/build_release.py`).
 
 Pipeline profile: `publication`; generator version: `4`.
 
-Artifacts: 475 files, 44350310 bytes, over:
+Artifacts: 475 files, 43238721 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)

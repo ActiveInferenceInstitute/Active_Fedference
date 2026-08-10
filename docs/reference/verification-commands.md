@@ -120,7 +120,7 @@ uv pip install --python "$DIST_SMOKE/sdist/bin/python" "$DIST_SMOKE"/dist/*.tar.
 ```
 
 The default install must import the NumPy/SciPy core without Torch. The optional
-BNN/MPS lane is installed separately with `uv sync --extra bnn`. The PEP 517
+BNN/MPS lane is installed separately with `uv sync --locked --extra bnn`. The PEP 517
 backend is exactly pinned and normalizes wheel/sdist archive metadata when
 `SOURCE_DATE_EPOCH` is set. The two directories above must therefore contain
 byte-identical wheel and sdist pairs; a differing digest is a release blocker,
