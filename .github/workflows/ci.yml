@@ -87,7 +87,11 @@ jobs:
   compatibility:
     name: Python ${{ matrix.python-version }} compatibility smoke
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # The complete non-slow suite is intentionally retained for compatibility
+    # coverage; hosted runners need more wall-clock headroom than the local
+    # CPU reference, so the timeout must not turn a passing lane into a false
+    # release failure.
+    timeout-minutes: 60
     permissions:
       contents: read
     strategy:

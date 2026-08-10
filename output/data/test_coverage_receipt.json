@@ -10,8 +10,8 @@
     "tests/",
     "--cov=src",
     "--cov-fail-under=90",
-    "--junitxml=<home>/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-ngry6xo_/pytest-junit.xml",
-    "--cov-report=json:<home>/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-ngry6xo_/coverage.json"
+    "--junitxml=<home>/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-_0gperze/pytest-junit.xml",
+    "--cov-report=json:<home>/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-_0gperze/coverage.json"
   ],
   "coverage": {
     "percent": 90.08820798514392,
@@ -25,9 +25,9 @@
     "python_version": "3.13.11",
     "scipy_version": "1.18.0"
   },
-  "input_digest": "d9bef13bdcd56924f59f9d221af5e62b3ab6727e26cd4247b153bd84893ce357",
+  "input_digest": "e6b0acb8f29da90959aa4a4aba37d42aef3de0edb5ac87b713d1550d21ce2d4c",
   "input_hashes": {
-    ".github/workflows/ci.yml": "468e54853e6642ceebdcb0046b9520bff4f1d0854eec175ff8ec8c9126415ea2",
+    ".github/workflows/ci.yml": "9600b258e8357ba7431be6b036e7697bd964936bafcb2e9ed15c4e6a58ae19c3",
     ".gitignore": "89737f33643cb2fef8242382f01b804d59cfe0ec4feaf319857c16e24c4a05b0",
     ".zenodo.json": "73080b122375340b14207708ccad15c1436e0a255c305113824c9e538440b258",
     "AGENTS.md": "60fc42abab7907414b88dc3ee2ba130ff2cfa05c81b9d95666e3fee316373a0b",
@@ -456,9 +456,9 @@
         "input_digest": "d96ba137ca154cd5a5218dc40d0edc26240fa311025d129a08bf645386ed48fb",
         "output_digest": "fca84776dbf6959dd57000faa7d889eacc641136cc495c153cf2280991e204f4"
       },
-      "input_digest": "d9bef13bdcd56924f59f9d221af5e62b3ab6727e26cd4247b153bd84893ce357",
+      "input_digest": "e6b0acb8f29da90959aa4a4aba37d42aef3de0edb5ac87b713d1550d21ce2d4c",
       "input_hashes": {
-        ".github/workflows/ci.yml": "468e54853e6642ceebdcb0046b9520bff4f1d0854eec175ff8ec8c9126415ea2",
+        ".github/workflows/ci.yml": "9600b258e8357ba7431be6b036e7697bd964936bafcb2e9ed15c4e6a58ae19c3",
         ".gitignore": "89737f33643cb2fef8242382f01b804d59cfe0ec4feaf319857c16e24c4a05b0",
         ".zenodo.json": "73080b122375340b14207708ccad15c1436e0a255c305113824c9e538440b258",
         "AGENTS.md": "60fc42abab7907414b88dc3ee2ba130ff2cfa05c81b9d95666e3fee316373a0b",
@@ -854,9 +854,9 @@
         "input_digest": "d96ba137ca154cd5a5218dc40d0edc26240fa311025d129a08bf645386ed48fb",
         "output_digest": "fca84776dbf6959dd57000faa7d889eacc641136cc495c153cf2280991e204f4"
       },
-      "input_digest": "d9bef13bdcd56924f59f9d221af5e62b3ab6727e26cd4247b153bd84893ce357",
+      "input_digest": "e6b0acb8f29da90959aa4a4aba37d42aef3de0edb5ac87b713d1550d21ce2d4c",
       "input_hashes": {
-        ".github/workflows/ci.yml": "468e54853e6642ceebdcb0046b9520bff4f1d0854eec175ff8ec8c9126415ea2",
+        ".github/workflows/ci.yml": "9600b258e8357ba7431be6b036e7697bd964936bafcb2e9ed15c4e6a58ae19c3",
         ".gitignore": "89737f33643cb2fef8242382f01b804d59cfe0ec4feaf319857c16e24c4a05b0",
         ".zenodo.json": "73080b122375340b14207708ccad15c1436e0a255c305113824c9e538440b258",
         "AGENTS.md": "60fc42abab7907414b88dc3ee2ba130ff2cfa05c81b9d95666e3fee316373a0b",
