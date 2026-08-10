@@ -36,7 +36,7 @@ Symptom: `mmdc failed ... Could not find Chrome`. See
 **Script:** `scripts/02_run_analysis.py`
 
 ```bash
-uv run python scripts/02_run_analysis.py
+uv run --locked python scripts/02_run_analysis.py
 ```
 
 **Logic:** `src/analysis/workflow.py::run_analysis_pipeline()`
@@ -51,7 +51,7 @@ uv run python scripts/02_run_analysis.py
 
 ```bash
 # Provisional output is only for the renderer pass that precedes the full suite.
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 ```
 
 **Logic:** `generate_variables()` (entry point `src/manuscript_variables.py`,
@@ -91,45 +91,45 @@ TEMPLATE_REPO=/path/to/template
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 # First template pass: its hydrated inputs are deliberately provisional.
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 
 # The full suite attests the source/manuscript/analysis tree used for final hydration.
 cd "$AF_REPO"
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 
 # Second template pass: this is the final hydrated manuscript surface.
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 
 # Prepare and validate the final web tree before declaring the render complete.
 cd "$AF_REPO"
-uv run python scripts/prepare_web_package.py
-uv run python scripts/validate_web_package.py
-uv run python scripts/validate_rendered_surfaces.py
+uv run --locked python scripts/prepare_web_package.py
+uv run --locked python scripts/validate_web_package.py
+uv run --locked python scripts/validate_rendered_surfaces.py
 
 TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
 TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
-uv run python scripts/record_pipeline_stage.py render \
+uv run --locked python scripts/record_pipeline_stage.py render \
   --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
-uv run --extra dev python scripts/validate_test_coverage.py --verify
-uv run python scripts/validate_pipeline_freshness.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
+uv run --locked python scripts/validate_pipeline_freshness.py
 
 # An unreleased reviewer bundle has no release timestamp.
 unset SOURCE_DATE_EPOCH
-uv run python scripts/build_release.py
-uv run python scripts/build_release.py --verify
+uv run --locked python scripts/build_release.py
+uv run --locked python scripts/build_release.py --verify
 ~~~
 
 The bundle CLI rejects a smoke or manually promoted analysis receipt and
@@ -160,7 +160,7 @@ AF_REPO=/path/to/active_fedference
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
 ```
 
@@ -210,7 +210,7 @@ Pre-flight markdown check:
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python -m infrastructure.validation.cli markdown \
+uv run --locked python -m infrastructure.validation.cli markdown \
   projects/working/active_fedference/manuscript --repo-root .
 ```
 
@@ -221,8 +221,8 @@ AF_REPO=/path/to/active_fedference
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 ```
 
 Keep the same `SOURCE_DATE_EPOCH` across stages 03–05 and both clean-clone
@@ -244,7 +244,7 @@ the template commit/diff label only after the final surface exists.
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python scripts/runner/execute_pipeline.py --project working/active_fedference --core-only
+uv run --locked python scripts/runner/execute_pipeline.py --project working/active_fedference --core-only
 ```
 
 The combined command is useful for exploratory template work, but it does not

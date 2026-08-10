@@ -11,12 +11,14 @@ documented categorical posterior-log-potential bridge assumptions, the project
 log-linear pool specializes Friston Eq. 7; it is not a reconstruction of the
 complete source message-passing protocol.
 
-The intended public release target is ActiveInferenceInstitute/Active_Fedference.
-Until that release is opened, this checkout remains the private standalone
-development and review mirror; the publication-facing metadata already names
-the public location. The current Zenodo draft has reserved DOI
-`10.5281/zenodo.21864004`, but it is not a public DataCite record until the
-deposition is explicitly published.
+The public release target is
+[ActiveInferenceInstitute/Active_Fedference](https://github.com/ActiveInferenceInstitute/Active_Fedference).
+The v0.1.0 release is now published there and has the permanent Zenodo DOI
+[`10.5281/zenodo.21864004`](https://doi.org/10.5281/zenodo.21864004), with the
+public record at <https://zenodo.org/records/21864004>. This checkout remains a
+standalone development/review source with the interim `docxology` remote; it
+is not the public repository and future changes remain unreleased until an
+explicit review and publication action.
 
 ## The standalone core
 
@@ -25,7 +27,7 @@ deterministic, with **no `infrastructure.*` imports** (the layer contract,
 ISC-21). It can be exercised in isolation:
 
 ```bash
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src --cov-fail-under=90
 ```
 
@@ -42,23 +44,27 @@ assert np.allclose(robust_aggregate(local_posteriors, robustness=0.0).consensus,
 This check does not reconstruct Friston et al.'s complete protocol; it checks
 only the project-local server recovery identity used by the categorical bridge.
 
-## Confidentiality invariant
+## Repository boundary
 
-This checkout is a **standalone private repository**, separate from the public
-template repository and from the intended public GitHub target. Keep the
-research package private until the reviewed public release boundary is opened.
-Verify the repository root before running render or release commands:
+This checkout is a standalone repository, separate from both the sibling
+template repository and the public GitHub target. Do not merge it into the
+unrelated template remote. Credentials, uncached external data, and local
+review scratch remain private and are excluded from the release; the reviewed
+v0.1.0 source snapshot itself is public. Verify the repository root before
+running render or release commands:
 
 ```bash
 git rev-parse --show-toplevel
 git remote -v
 ```
 
-Zenodo preparation is a composable release boundary: `src/publication/zenodo.py`
+Zenodo publication is a composable release boundary: `src/publication/zenodo.py`
 contains the typed REST client, while `scripts/zenodo_release.py` is the thin
-reserve/update/upload/verify/publish adapter. Credentials are read from the
-process environment or a local ignored dotenv file and are never written to
-the repository, generated manifest, or PDF.
+reserve/update/upload/verify/publish adapter. The v0.1.0 deposition is already
+published; future metadata or PDF changes require a separately reviewed
+Zenodo version/deposition. Credentials are read from the process environment
+or a local ignored dotenv file and are never written to the repository,
+generated manifest, or PDF.
 
 ## What is and is not infrastructure-free
 

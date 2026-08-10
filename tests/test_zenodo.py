@@ -13,6 +13,8 @@ import pytest
 from publication.zenodo import (
     ZenodoClient,
     ZenodoError,
+    _deposition,
+    _multipart_body,
     token_from_env_file,
     token_from_environment,
 )
@@ -113,6 +115,91 @@ def test_token_sources_and_missing_token(tmp_path: Path) -> None:
         token_from_environment({})
 
 
+def test_client_rejects_unsafe_endpoint_and_timeout() -> None:
+    with pytest.raises(ZenodoError, match="HTTPS"):
+        ZenodoClient("test-token", api_base="http://example.test/api")
+    for endpoint in (
+        "not-a-url",
+        "ftp://zenodo.org/api",
+        "https://user:password@zenodo.org/api",
+        "https://zenodo.org/api?token=leak",
+        "https://zenodo.org/api#fragment",
+    ):
+        with pytest.raises(ZenodoError):
+            ZenodoClient("test-token", api_base=endpoint)
+    with pytest.raises(ZenodoError, match="non-empty"):
+        ZenodoClient("   ")
+    with pytest.raises(ZenodoError, match="finite positive"):
+        ZenodoClient("test-token", timeout=0)
+    with pytest.raises(ZenodoError, match="finite positive"):
+        ZenodoClient("test-token", timeout=float("inf"))
+    with pytest.raises(ZenodoError, match="finite positive"):
+        ZenodoClient("test-token", timeout=True)
+    with pytest.raises(ZenodoError, match="finite positive"):
+        ZenodoClient("test-token", timeout=float("nan"))
+
+
+def test_file_and_env_boundaries_reject_unsafe_inputs(tmp_path: Path) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text("ZENODO_PROD_TOKEN=\nZENODO_TOKEN=\"fallback\"\n", encoding="utf-8")
+    assert token_from_env_file(env_file) == ("fallback", "ZENODO_TOKEN")
+    pdf = tmp_path / "not-a-pdf.txt"
+    pdf.write_text("not a PDF", encoding="utf-8")
+    client = ZenodoClient("test-token", api_base="http://127.0.0.1:1/api")
+    with pytest.raises(ZenodoError, match="does not exist"):
+        client.upload_pdf(7, pdf)
+    with pytest.raises(ZenodoError, match="does not exist"):
+        client.verify_pdf(7, tmp_path / "missing.pdf")
+    for filename in ("../paper.pdf", "paper\n.pdf", "a" * 256 + ".pdf"):
+        with pytest.raises(ZenodoError, match="safe"):
+            _multipart_body("file", filename, b"%PDF")
+
+
+def test_response_and_multipart_boundaries_fail_closed() -> None:
+    with pytest.raises(ZenodoError, match="malformed deposition"):
+        _deposition(None)
+    malformed_files = {
+        "id": 7,
+        "state": "unsubmitted",
+        "metadata": {},
+        "links": {},
+        "files": {},
+    }
+    with pytest.raises(ZenodoError, match="malformed deposition files"):
+        _deposition(malformed_files)
+    with pytest.raises(ZenodoError, match="invalid file record"):
+        _deposition(
+            {
+                "id": 7,
+                "state": "unsubmitted",
+                "metadata": {},
+                "links": {},
+                "files": [{"id": 1, "filename": "paper.pdf", "filesize": 1, "checksum": "bad"}],
+            }
+        )
+    for payload in (
+        {"id": True, "state": "unsubmitted"},
+        {"id": 7, "state": ""},
+        {"id": 7, "state": "unsubmitted", "metadata": []},
+        {"id": 7, "state": "unsubmitted", "links": []},
+        {
+            "id": 7,
+            "state": "unsubmitted",
+            "metadata": {"prereserve_doi": "not-a-mapping"},
+        },
+        {
+            "id": 7,
+            "state": "unsubmitted",
+            "metadata": {"prereserve_doi": {"doi": 3}},
+        },
+        {"id": 7, "state": "unsubmitted", "doi": 3},
+    ):
+        with pytest.raises(ZenodoError):
+            _deposition(payload)
+    with pytest.raises(ZenodoError, match="safe"):
+        _multipart_body("file", 'unsafe\"name.pdf', b"%PDF")
+
+
 def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
     pdf = tmp_path / "paper.pdf"
     pdf.write_bytes(b"%PDF-1.7\nActive Fedference\n")
@@ -138,6 +225,7 @@ def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
         assert uploaded.filename == "paper.pdf"
         assert uploaded.checksum == hashlib.md5(pdf.read_bytes()).hexdigest()  # noqa: S324
         assert client.verify_pdf(7, pdf) == uploaded
+        assert client.verify_pdf(7, pdf, remote_filename="paper.pdf") == uploaded
 
         published = client.publish(7)
         assert published.state == "done"

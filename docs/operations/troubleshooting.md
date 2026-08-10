@@ -9,9 +9,9 @@ Symptom-driven fixes for Active Fedference.
 **Fix:**
 
 ```bash
-uv run python scripts/02_run_analysis.py
+uv run --locked python scripts/02_run_analysis.py
 # This proves token resolution only; it is not the final manuscript pass.
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 cat output/data/manuscript_variables.json | head
 ```
 
@@ -32,8 +32,8 @@ re-export shim.
 **Fix:**
 
 ```bash
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 ```
 
 Note: `HIER_*` and `NLEVEL3_*` tokens are strict loads from
@@ -84,7 +84,7 @@ allowed to be dirty, but it cannot be described as fresh-checkout evidence.
 **Fix:** Inspect the listed paths in a separate clean clone and rerun:
 
 ```bash
-uv run python scripts/validate_clean_checkout.py
+uv run --locked python scripts/validate_clean_checkout.py
 ```
 
 ## Unresolved figure or cross-reference marker
@@ -122,8 +122,8 @@ receipt chain is stale. The diagnostic names changed inputs when available.
 **Fix:** Regenerate outputs through the pipeline, then rebuild the bundle:
 
 ```bash
-uv run python scripts/build_release.py
-uv run python scripts/build_release.py --verify
+uv run --locked python scripts/build_release.py
+uv run --locked python scripts/build_release.py --verify
 ```
 
 If a no-op rebuild changes only release time metadata, the producer is stale:
@@ -150,7 +150,7 @@ combined PDF's printed numbers. See
 
 ```bash
 npx --yes puppeteer browsers install chrome-headless-shell
-uv run python scripts/00_preflight.py
+uv run --locked python scripts/00_preflight.py
 ```
 
 ## LaTeX / citation errors
@@ -175,7 +175,7 @@ Validate `manuscript/references.bib` and pandoc cite keys in manuscript sections
 **Fix:**
 
 ```bash
-uv run pytest tests/ \
+uv run --locked pytest tests/ \
   --cov=src \
   --cov-report=term-missing
 ```
@@ -189,7 +189,7 @@ Add tests in `tests/fedference/` for uncovered branches.
 **Fix:** Run from project directory or use pytest/conftest path setup:
 
 ```bash
-uv run pytest tests/ -q
+uv run --locked pytest tests/ -q
 ```
 
 ## Analysis script Python error
@@ -197,8 +197,8 @@ uv run pytest tests/ -q
 **Fix:**
 
 ```bash
-uv run python scripts/02_run_analysis.py 2>&1 | tee /tmp/analysis.log
-uv run python -c "import yaml; yaml.safe_load(open('manuscript/config.yaml'))"
+uv run --locked python scripts/02_run_analysis.py 2>&1 | tee /tmp/analysis.log
+uv run --locked python -c "import yaml; yaml.safe_load(open('manuscript/config.yaml'))"
 ```
 
 ## Tests pass locally but the template pipeline fails

@@ -194,14 +194,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.89
-(log-linear), 0.94 (iterative robust),
-0.71 (variational), 1.59
-(naive self-excluding sharing), and 1.93
+performance guarantees: agent-axis slopes are 0.91
+(log-linear), 0.95 (iterative robust),
+0.71 (variational), 1.62
+(naive self-excluding sharing), and 1.91
 (robust self-excluding sharing); state-axis slopes
-are 0.42, 0.40, and
-0.41; the modality-axis inference slope is
-0.67. The slope fit is a timing diagnostic on this
+are 0.41, 0.40, and
+0.43; the modality-axis inference slope is
+0.71. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,

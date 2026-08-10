@@ -1,5 +1,8 @@
 # Active Fedference — Robust Federated Active Inference
 
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21864004.svg)](https://doi.org/10.5281/zenodo.21864004)
+[![Public GitHub repository](https://img.shields.io/badge/GitHub-ActiveInferenceInstitute%2FActive_Fedference-181717?logo=github)](https://github.com/ActiveInferenceInstitute/Active_Fedference)
+
 Active Fedference is a research project that reimplements **FedGVI** (Federated
 Generalized Variational Inference; Mildner, Hamelijnck, Giampouras & Damoulas,
 2025, PMLR 267; arXiv:2502.00846) in the discrete-categorical setting and connects it to
@@ -7,18 +10,23 @@ the federated **belief-sharing** scenario of Friston et al.
 (2024), *Federated inference and belief sharing* (Neurosci. Biobehav. Rev.
 156:105500).
 
-The open-source release repository is
-[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
-The configured interim review remote is
-[`docxology/active_fedference`](https://github.com/docxology/active_fedference).
-This checkout remains the standalone development/review source while the
-public release is maintained at the target repository.
+## Published release
 
-The production Zenodo release is identified by DOI
-[`10.5281/zenodo.21864004`](https://doi.org/10.5281/zenodo.21864004). The
-deposited PDF and this repository cross-reference the same identifier, and the
-release manuscript is also available at
-[`Active_Fedference_Research_Manuscript_Zenodo_10.5281-zenodo.21864004.pdf`](Active_Fedference_Research_Manuscript_Zenodo_10.5281-zenodo.21864004.pdf).
+The v0.1.0 research release is published and cross-referenced across both
+surfaces:
+
+- **Permanent DOI:** [`10.5281/zenodo.21864004`](https://doi.org/10.5281/zenodo.21864004)
+  · [Zenodo record](https://zenodo.org/records/21864004)
+- **Public source and reviewer snapshot:**
+  [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
+- **Top-level manuscript PDF:**
+  [`Active_Fedference_Research_Manuscript_Zenodo_10.5281-zenodo.21864004.pdf`](Active_Fedference_Research_Manuscript_Zenodo_10.5281-zenodo.21864004.pdf)
+
+The deposited PDF embeds the DOI and public repository URL, and the Zenodo
+record lists the public repository as its related identifier. This checkout is
+the standalone development/review source; its configured `origin` is the
+interim [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
+remote.
 
 The headline result is a **project-local** identity. On the same categorical
 inputs, the zero-robustness server path is bit-identical to the project's
@@ -136,8 +144,8 @@ validator remains the single JSON write boundary. All README/docs Mermaid
 blocks use GitHub-compatible fenced syntax. Check them without a browser with:
 
 ```bash
-uv run python scripts/validate_mermaid.py
-uv run python scripts/validate_mermaid.py --render --renderer npx \
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
   --output-dir .tmp/mermaid-render
 ```
 
@@ -260,11 +268,11 @@ uv sync
 uv sync --extra bnn
 
 # Run the full project test suite with the 90% coverage gate on src/
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src --cov-fail-under=90
 
 # Spot-check four of the nine tracked studies (deterministic under the config seed)
-uv run python -c "
+uv run --locked python -c "
 from fedference import experiments as e
 seed = 20240601
 print('belief sharing :', e.run_belief_sharing(seed))
@@ -274,7 +282,7 @@ print('robustness     :', e.run_robustness_sweep(seed)['any_robust_wins'])
 "
 
 # Inspect the source-bound complexity catalog and measured scaling report after analysis
-uv run python -c '
+uv run --locked python -c '
 import json
 from pathlib import Path
 r = json.loads(Path("output/reports/complexity_scaling.json").read_text())
@@ -293,23 +301,23 @@ The package installs `fedference` with five commands:
 
 ```bash
 # Inspect source-bound experiments, profiles, datasets, and source revisions
-uv run fedference list --json
+uv run --locked fedference list --json
 
 # Correctness-only registered run; output must be explicit and outside output/
-uv run fedference run server-theory \
+uv run --locked fedference run server-theory \
   --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
 
 # Hash-checked UCI benchmark smoke
-uv run fedference benchmark \
+uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
   --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
 
 # Verify config/report bytes, configuration hash, and completion status
-uv run fedference verify .tmp/banknote-smoke/receipt.json
+uv run --locked fedference verify .tmp/banknote-smoke/receipt.json
 
 # Publication mode also matches the live commit, tree, and uv.lock.
 # It passes only when the receipt was created from this same clean checkout.
-uv run fedference verify .tmp/banknote-smoke/receipt.json --require-clean-git
+uv run --locked fedference verify .tmp/banknote-smoke/receipt.json --require-clean-git
 ```
 
 `ExperimentSpec`, `DatasetSpec`, and `RunReceipt` are versioned public
@@ -361,7 +369,7 @@ is written, not when a figure later consumes it. The release bundle carries a
 provenance fingerprint (a SHA-256 over the declared source, manuscript,
 documentation, producer-script, dependency-lock, and claim-audit inputs).
 The manifest also records the pipeline profile and generator version;
-`uv run python scripts/build_release.py --verify` recomputes the fingerprint
+`uv run --locked python scripts/build_release.py --verify` recomputes the fingerprint
 and names changed inputs when a bundle is stale. The guarded CLI also requires
 fresh publication-profile analysis, validation, hydration, and render receipts;
 it establishes a local reviewer bundle, not clean-clone reproduction or

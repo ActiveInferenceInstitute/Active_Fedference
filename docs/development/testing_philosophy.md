@@ -17,23 +17,23 @@ and subprocess smoke for auxiliary scripts.
 Configured in [`pyproject.toml`](../../pyproject.toml). Authoritative command:
 
 ```bash
-uv run pytest tests/ \
+uv run --locked pytest tests/ \
   --cov=src \
   --cov-fail-under=90
 ```
 
 The raw pytest command above is authoritative for the line-coverage threshold.
 For a release-facing hydration, run
-`uv run --extra dev python scripts/validate_test_coverage.py`: it executes that
+`uv run --locked --extra dev python scripts/validate_test_coverage.py`: it executes that
 same full coverage gate and writes the source-bound
 `output/data/test_coverage_receipt.json` required by final non-draft hydration.
 
 Pytest profiles are explicit and complementary:
 
 ```bash
-uv run pytest tests/ -m "not slow" -q       # fast seeded feedback
-uv run pytest tests/ -m integration -q       # transport and cross-module paths
-uv run pytest tests/ -m publication -q       # reports, scripts, and release surfaces
+uv run --locked pytest tests/ -m "not slow" -q       # fast seeded feedback
+uv run --locked pytest tests/ -m integration -q       # transport and cross-module paths
+uv run --locked pytest tests/ -m publication -q       # reports, scripts, and release surfaces
 ```
 
 The full coverage command remains authoritative. `slow` marks expensive real

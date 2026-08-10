@@ -14,10 +14,11 @@
 explicit controls, selection-free payloads, and disjoint component seed ranges.
 The current source increases that budget and requires a fresh run before it can
 support a source-current claim. Neither record completes or reclassifies any
-MAJ phase; sharp server-heuristic
-characterization, calibration, portable/external BNN, external data,
-source-protocol reconstruction, continuous/hybrid, richer hierarchy,
-authenticated federation, and clean-clone release gates remain open.
+MAJ phase. The v0.1.0 GitHub/Zenodo publication completed on 2026-08-10, while
+sharp server-heuristic characterization, calibration, portable/external BNN,
+external data, source-protocol reconstruction, continuous/hybrid, richer
+hierarchy, authenticated federation, and independent reproducibility gates
+remain open.
 
 ## Rationale
 
@@ -97,6 +98,11 @@ guarantee, a universal attack taxonomy, or a general hierarchy advantage.
 | Physical hosts / external v1.x (MAJ-4B) | Do physically distinct hosts reproduce the emulator contract? | MAJ-4A and external hosts | One distinct-host deployment run | Local containers cannot satisfy this unit |
 
 ### Release evidence contract
+
+The v0.1.0 public artifact is published, but this roadmap retains the stricter
+release-wave criteria for the next independently reviewed version. Publication
+does not close a scientific phase or substitute for clean-clone, cross-vendor,
+licence, attribution, or author-authority evidence.
 
 - **v0.1:** two isolated fresh-clone passes, wheel and source-distribution
   installation, installed CLI smoke, confidentiality/attribution/license review,
@@ -193,9 +199,9 @@ render-surface result.
 
 ## Verification Probes
 
-- `uv run pytest tests/test_docs_contract.py tests/test_caption_completeness.py tests/test_xref_integrity.py -q`
-- `uv run ruff check src tests`
-- `uv run python scripts/validate_all.py full`
+- `uv run --locked pytest tests/test_docs_contract.py tests/test_caption_completeness.py tests/test_xref_integrity.py -q`
+- `uv run --locked ruff check src tests`
+- `uv run --locked python scripts/validate_all.py full`
 - Inspect `output/reports/validation_report.json`, `output/reports/artifact_manifest.json`, and `output/data/stage_timings.json`.
 - For each phase, run the documented negative control before accepting a positive result.
 

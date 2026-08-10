@@ -5,7 +5,8 @@
 ## Status
 
 - Priority class: Minor
-- State: Open — fresh-clone, cross-vendor, and author-authority gates remain
+- State: Open — independent fresh-clone, cross-vendor, and author-authority
+  gates remain for the next fully reviewed release wave
 - Owner surface: git tracking set, release workflow, cross-vendor verification,
   publication accessibility decision
 
@@ -17,7 +18,8 @@ overlay, even when the later source suite is green. Analysis, hydration,
 rendering, and release receipts are likewise trusted only when their declared
 input and output hashes match the reviewed tree in producer order.
 
-The complete ladder still requires two genuinely isolated clones of the exact
+The v0.1.0 GitHub/Zenodo publication is complete, but the complete ladder still
+requires two genuinely isolated clones of the exact
 reviewed commit. Those clone runs establish regeneration and
 independent-environment behavior; they do not substitute for the separate
 cross-vendor or release-authority gates.
@@ -92,10 +94,10 @@ one independent verification lane remains unexercised.
   Free space is volatile and must be rechecked immediately before each
   isolated clone/render run; the 40 GiB threshold is a planning floor, not
   deletion authority.
-- Pre-release metadata omits `date_released`, CFF `date-released`, Zenodo
-  `publication_date`, and CodeMeta `dateModified`. Set and regenerate those
-  fields only after external release approval; a projected date is not a
-  completed release.
+- For a new unreleased draft, metadata omits `date_released`, CFF
+  `date-released`, Zenodo `publication_date`, and CodeMeta `dateModified`.
+  The published v0.1.0 surfaces intentionally contain those release fields;
+  a future draft must not copy them forward before approval.
 
 ## Acceptance Criteria
 
@@ -112,8 +114,9 @@ one independent verification lane remains unexercised.
 - Wheel and source-distribution installs expose `fedference list`, `run`,
   `benchmark`, `verify`, and `replay` without importing Torch in the default
   NumPy/SciPy path.
-- Publication metadata carries no release date until confidentiality, license,
-  attribution, and author approval are complete.
+- A future draft carries no release date until confidentiality, license,
+  attribution, and author approval are complete. The published v0.1.0 metadata
+  is not a draft.
 - The eventual committed `output/` snapshot matches a post-commit regeneration at
   publication scale (value-identical reports, declared volatile fields aside).
 - One structured cross-vendor verdict exists, or the gate is explicitly
@@ -131,8 +134,8 @@ one independent verification lane remains unexercised.
   passes `validate_pipeline_freshness.py` without the dependent receipt being
   regenerated falsifies the stage-order guard.
 - `git ls-files` audit against the recorded load-bearing set.
-- `uv run python scripts/validate_clean_checkout.py` from the clean clone and
-  `uv run python scripts/validate_pipeline_freshness.py` after stages 03–05.
+- `uv run --locked python scripts/validate_clean_checkout.py` from the clean clone and
+  `uv run --locked python scripts/validate_pipeline_freshness.py` after stages 03–05.
 - The ordered ladder commands in `TODO.md` "Gates For Any Item" plus the
   fresh-clone additions above, each with captured output.
 - Raster page reads and count-based rendered-surface checks as listed in Scope.
@@ -155,5 +158,7 @@ None blocking; interacts with the implemented release fingerprint and receipt
 capability in `src/publication/release_manifest.py` and
 `src/publication/pipeline_freshness.py`, and the phase ordering owned by
 [`scholarship-and-phase-plan.md`](scholarship-and-phase-plan.md).
-Public release additionally requires confidentiality, third-party attribution,
-license, and author approval outside local validation.
+Future public release waves additionally require confidentiality, third-party
+attribution, license, and author approval outside local validation. Those
+governance checks are not retroactively claimed as scientific evidence for the
+published v0.1.0 artifact.

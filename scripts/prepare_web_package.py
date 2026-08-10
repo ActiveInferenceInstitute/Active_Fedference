@@ -14,12 +14,15 @@ def main() -> int:
     from publication.web_package import (
         mirror_web_figures,
         normalize_web_xrefs,
+        sanitize_machine_paths,
         validate_web_package,
     )
 
+    sanitized = sanitize_machine_paths(_PROJECT_ROOT)
     copied = mirror_web_figures(_PROJECT_ROOT)
     replacements = normalize_web_xrefs(_PROJECT_ROOT)
     result = validate_web_package(_PROJECT_ROOT)
+    print(f"machine_paths_sanitized: {len(sanitized)}")
     print(f"web_figures_copied: {len(copied)}")
     print(f"web_xrefs_normalized: {replacements}")
     print(f"web_html_files: {result.html_files}")

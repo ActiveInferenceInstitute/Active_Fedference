@@ -1896,14 +1896,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.89
-(log-linear), 0.94 (iterative robust),
-0.71 (variational), 1.59
-(naive self-excluding sharing), and 1.93
+performance guarantees: agent-axis slopes are 0.91
+(log-linear), 0.95 (iterative robust),
+0.71 (variational), 1.62
+(naive self-excluding sharing), and 1.91
 (robust self-excluding sharing); state-axis slopes
-are 0.42, 0.40, and
-0.41; the modality-axis inference slope is
-0.67. The slope fit is a timing diagnostic on this
+are 0.41, 0.40, and
+0.43; the modality-axis inference slope is
+0.71. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -2301,7 +2301,7 @@ without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-90.04% (gate $\ge 90\%$), with every stochastic step threaded
+90.09% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -3703,7 +3703,7 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | cf4bfe1fbcb7d6ed |
+| Config hash (SHA-256, first 16) | a1505dcd39500d4f |
 | Reproducible build epoch (UTC) | 2026-08-09T04:56:18Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
@@ -3731,10 +3731,10 @@ alone are insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1559 collected cases; the bound successful
+- Project test suite: 1563 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 90.04% (achieved by the bound full
+- Line coverage on `src/`: 90.09% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 

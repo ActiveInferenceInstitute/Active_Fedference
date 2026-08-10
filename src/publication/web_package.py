@@ -37,6 +37,53 @@ _SRC_RE = re.compile(r"\bsrc=\"(?P<url>[^\"]+)\"")
 _HREF_RE = re.compile(r"\bhref=\"(?P<url>[^\"]+)\"")
 _LEAKED_FIGURE_RE = re.compile(r"\]\([^)]*figures/[^)]*\)\{#fig:")
 _UNRESOLVED_TOKEN_RE = re.compile(r"\{\{[A-Z][A-Z0-9_]*\}\}")
+_PUBLICATION_TEXT_SUFFIXES = frozenset(
+    {".csv", ".html", ".json", ".jsonl", ".log", ".md", ".svg", ".tex", ".txt", ".yaml", ".yml"}
+)
+_MACHINE_PATH_RE = re.compile(
+    r"(?P<prefix>/private/tmp|/tmp|/Users|/home|/Volumes)/[^/\s\"'<>]+"
+)
+
+
+def sanitize_machine_paths(project_root: str | Path | None = None) -> tuple[Path, ...]:
+    """Replace local home, temporary, and volume prefixes in text artifacts.
+
+    TeX and renderer logs can contain absolute paths even though the published
+    PDF/HTML does not depend on them.  Sanitising the committed text surfaces
+    keeps reviewer snapshots clone-independent and prevents local workspace
+    names from leaking into a release.  Binary figures and PDFs are untouched.
+    """
+    root = _root(project_root)
+    output_dir = root / "output"
+    if not output_dir.is_dir() or output_dir.is_symlink():
+        return ()
+    replacements = {
+        "/private/tmp": "<tmp>",
+        "/tmp": "<tmp>",
+        "/Users": "<home>",
+        "/home": "<home>",
+        "/Volumes": "<volume>",
+    }
+    changed: list[Path] = []
+    for path in sorted(output_dir.rglob("*")):
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.suffix.casefold() not in _PUBLICATION_TEXT_SUFFIXES
+        ):
+            continue
+        try:
+            original = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        sanitized = _MACHINE_PATH_RE.sub(lambda match: replacements[match.group("prefix")], original)
+        if path.suffix.casefold() == ".log":
+            sanitized = sanitized.rstrip("\n") + "\n"
+        if sanitized == original:
+            continue
+        path.write_text(sanitized, encoding="utf-8")
+        changed.append(path)
+    return tuple(changed)
 
 
 @dataclass(frozen=True)

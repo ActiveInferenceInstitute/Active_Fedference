@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "createdAt": "2026-07-07T12:07:03.519Z",
+  "updatedAt": "2026-07-07T22:06:20.825Z",
+  "briefPath": ".omo/ulw-loop/active-fedference-readiness-20260707/brief.md",
+  "goalsPath": ".omo/ulw-loop/active-fedference-readiness-20260707/goals.json",
+  "ledgerPath": ".omo/ulw-loop/active-fedference-readiness-20260707/ledger.jsonl",
+  "codexGoalMode": "aggregate",
+  "goals": [
+    {
+      "id": "G001-implement-active-fedference-publicat",
+      "title": "Implement Active Fedference publication-readiness pass: exhaustive ma...",
+      "objective": "Implement Active Fedference publication-readiness pass: exhaustive manuscript and output review; Perplexity-backed scholarship lead generation with primary-source verification; integrate only claim-relevant citations and prose; update top-level TODO and scoped TODO pages to reflect readiness status while leaving Major research projects open; regenerate manuscript variables, PDF, web package, release/package artifacts through documented scripts; run full source, manuscript, package, lint, stale-scan, and rendered-surface verification; produce final publication-readiness verdict with evidence. Scope excludes multi-week Major TODO implementation unless a blocker is found.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "CLI/data surface: source review and scholarship integration are complete when git diff shows manuscript/bibliography/TODO/publication-facing changes, every added citation appears in live prose, and the ULW research synthesis lists accepted/rejected leads with primary-source URLs",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-research/<session>/SYNTHESIS.md plus git diff -- manuscript README.md TODO.md docs/todo manuscript/references.bib showing claim-relevant changes only",
+          "essential": true,
+          "capturedEvidence": "Scholarship and manuscript claim integration complete: SYNTHESIS.md records accepted/rejected leads with primary-source URLs; references.bib adds only pillutla2022robust and updates FedGVI metadata; manuscript, README, TODO, and docs diff bound claims and remove completed polish backlog.",
+          "status": "pass",
+          "capturedAt": "2026-07-07T22:02:21.743Z",
+          "notes": "Accepted sources: PMLR FedGVI, JMLR GVI, DOI-verified Friston belief sharing, arXiv/IEEE robust aggregation. Rejected extra leads as bibliography padding."
+        },
+        {
+          "id": "C002",
+          "scenario": "CLI/render surface: regenerated publication outputs are complete when scripts/z_generate_manuscript_variables.py, scripts/02_run_analysis.py as needed, template PDF render/validate/copy, web package preparation/validation, and release/package validation all run or are explicitly proven unnecessary after source edits",
+          "userModel": "edge",
+          "expectedEvidence": "Command transcripts under .omo/evidence/active-fedference-readiness-20260707/ showing successful generation, no unresolved {{TOKEN}} in output/manuscript, valid output/pdf/active_fedference_combined.pdf, valid output/web/index.html, and updated output/release manifest/checksums when outputs change",
+          "essential": true,
+          "capturedEvidence": "Regeneration completed through documented scripts: manuscript variables/output, template PDF render/validate/copy, package preparation/validation, output validation, and release build/verify all passed. PDF is 81 pages; figure registries list 23 figures with no unresolved tokens; release contains 390 artifacts.",
+          "status": "pass",
+          "capturedAt": "2026-07-07T22:02:32.386Z",
+          "notes": "Template copy wrote 472 files; validate_all package reported 43 HTML files and 46 assets; build_release --verify passed."
+        },
+        {
+          "id": "C003",
+          "scenario": "Regression/manual QA surface: publication readiness is complete when full tests/coverage, manuscript profile, package profile, ruff, git diff checks, stale scans, PDF text spot checks, and web-browser smoke all pass after regeneration",
+          "userModel": "regression",
+          "expectedEvidence": "Transcripts under .omo/evidence/active-fedference-readiness-20260707/ for uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90, uv run python scripts/validate_all.py manuscript, uv run python scripts/validate_all.py package, ruff, git diff --check, stale scans, pdftotext checks, and browser smoke screenshot/action log",
+          "essential": false,
+          "capturedEvidence": "Regression and manual QA complete: full source gate passed 773 tests with coverage gate, manuscript profile passed 38 tests, package profile passed, ruff passed, git diff --check passed, metadata/layer checks passed, stale/PDF/token scans passed, Chrome web smoke passed.",
+          "status": "pass",
+          "capturedAt": "2026-07-07T22:02:42.639Z",
+          "notes": "Only residual test-suite note was one PyTorch scalar conversion warning in an existing test; it did not affect publication readiness or coverage."
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-07-07T12:07:03.519Z",
+      "updatedAt": "2026-07-07T22:06:20.825Z",
+      "startedAt": "2026-07-07T12:08:15.397Z",
+      "completedAt": "2026-07-07T22:06:20.825Z",
+      "evidence": "Publication-readiness pass complete for G001-implement-active-fedference-publicat and .omo/ulw-loop/active-fedference-readiness-20260707/goals.json: scholarship integration, TODO cleanup, regenerated PDF/web/release artifacts, full source/manuscript/package/lint/hygiene validation, PDF spot checks, Chrome web smoke, and ULW ledger quality gate all passed. Remaining TODO pages are six intentionally open Major research upgrades."
+    }
+  ],
+  "codexObjective": "Complete the durable ulw-loop plan in .omo/ulw-loop/active-fedference-readiness-20260707/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/active-fedference-readiness-20260707/ledger.jsonl as the audit trail.",
+  "aggregateCompletion": {
+    "status": "complete",
+    "completedAt": "2026-07-07T22:06:20.825Z",
+    "evidence": "Publication-readiness pass complete for G001-implement-active-fedference-publicat and .omo/ulw-loop/active-fedference-readiness-20260707/goals.json: scholarship integration, TODO cleanup, regenerated PDF/web/release artifacts, full source/manuscript/package/lint/hygiene validation, PDF spot checks, Chrome web smoke, and ULW ledger quality gate all passed. Remaining TODO pages are six intentionally open Major research upgrades.",
+    "codexGoal": {
+      "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/active-fedference-readiness-20260707/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/active-fedference-readiness-20260707/ledger.jsonl as the audit trail.",
+      "status": "complete",
+      "readiness_verdict": "publication_ready_for_preprint_or_submission_packaging",
+      "blockers": 0,
+      "remaining_major_todos": 6
+    }
+  }
+}

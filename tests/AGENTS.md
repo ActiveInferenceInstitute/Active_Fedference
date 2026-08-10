@@ -65,7 +65,7 @@ confirmatory scientific evidence.
 ## Authoritative command
 
 ```bash
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src \
   --cov-fail-under=90
 ```

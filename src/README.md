@@ -71,10 +71,10 @@ and has a corresponding test in `tests/figures/`.
 From project root:
 
 ```bash
-uv run --extra dev pytest tests/
-uv run fedference list --json
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked --extra dev pytest tests/
+uv run --locked fedference list --json
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 ## Further reading

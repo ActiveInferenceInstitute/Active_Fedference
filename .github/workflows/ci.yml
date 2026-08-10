@@ -10,6 +10,8 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -22,16 +24,16 @@ jobs:
         run: uv sync --locked --extra dev
 
       - name: Ruff lint
-        run: uv run ruff check src/ tests/ scripts/ _fedference_build_backend.py
+        run: uv run --locked ruff check src/ tests/ scripts/ _fedference_build_backend.py
 
       - name: GitHub-compatible Mermaid contract
-        run: uv run python scripts/validate_mermaid.py
+        run: uv run --locked python scripts/validate_mermaid.py
 
       - name: Mypy
-        run: uv run mypy src/
+        run: uv run --locked mypy src/
 
       - name: Full test suite + coverage gate (>=90% on src/)
-        run: uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90 -q
+        run: uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90 -q
 
       - name: Build and smoke-test wheel and source distribution
         run: |
@@ -50,28 +52,28 @@ jobs:
           .tmp/sdist-smoke/bin/python -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
 
       - name: Metadata surfaces are emitter-consistent
-        run: uv run python scripts/emit_metadata.py --check
+        run: uv run --locked python scripts/emit_metadata.py --check
 
       - name: Numerical invariants
-        run: uv run python scripts/01_run_invariants.py
+        run: uv run --locked python scripts/01_run_invariants.py
 
       - name: Clean-checkout tracking and import probe
-        run: uv run python scripts/validate_clean_checkout.py
+        run: uv run --locked python scripts/validate_clean_checkout.py
 
       - name: Publication package validation
-        run: uv run python scripts/validate_all.py package
+        run: uv run --locked python scripts/validate_all.py package
 
       - name: Rendered publication surface validation
-        run: uv run python scripts/validate_all.py rendered
+        run: uv run --locked python scripts/validate_all.py rendered
 
       - name: Publication pipeline freshness
-        run: uv run python scripts/validate_pipeline_freshness.py
+        run: uv run --locked python scripts/validate_pipeline_freshness.py
 
       - name: Release bundle build
-        run: uv run python scripts/build_release.py
+        run: uv run --locked python scripts/build_release.py
 
       - name: Release bundle verify
-        run: uv run python scripts/build_release.py --verify
+        run: uv run --locked python scripts/build_release.py --verify
 
       - name: Upload release provenance
         uses: actions/upload-artifact@v4
@@ -86,6 +88,8 @@ jobs:
     name: Python ${{ matrix.python-version }} compatibility smoke
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:

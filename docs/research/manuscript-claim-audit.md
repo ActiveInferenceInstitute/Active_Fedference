@@ -1,9 +1,11 @@
 # Manuscript-wide claim audit
 
-Updated 2026-08-02. This ledger records the evidence status of the manuscript's
+Updated 2026-08-10. This ledger records the evidence status of the manuscript's
 load-bearing claims after the Research and RedTeam passes. It is intentionally
 claim-level rather than sentence-level: local wording should remain consistent
-with the row that governs it.
+with the row that governs it. The v0.1.0 GitHub/Zenodo publication completed on
+2026-08-10 is a release-state fact only; it does not promote any scientific
+claim or close the open research lanes below.
 
 ## Evidence statuses
 
@@ -34,7 +36,7 @@ major research phase.
 | Server heuristic | Repository contract and `src/fedference/aggregation.py` | `robust_aggregate` recovery identity, finite influence diagnostics, and scoped raw-log-pool/normalized-weight no-go witnesses | This is a server-side heuristic with conditional behavior. A formal proposition excludes the declared separable objective class; no client-side FedGVI theorem, universal robustness, unique winner, or universal no-objective claim is made. |
 | Objective-backed server rule | `27_supplement_aggregation_objective.md` | `variational_aggregate`, raw/normalized effective weights, and descent/bound tests | The raw bound and objective descent are executable properties of the declared finite implementation; they do not establish normalized-estimator B-robustness or truth recovery. |
 | Conditional simulation evidence | Declared configuration, seed schedule, and typed report schemas | Sweep, gallery/onset, conditional-world, and `robustness_review_grid` reports | Results are conditional on finite mechanisms and estimands. Seeds are the inferential unit where declared; trials remain nested. Controls and null/reversed cells are retained. |
-| Unresolved research claim | Open phase pages in `docs/todo/` | Leakage-free calibration, portable/external BNN, external data, Friston reconstruction, continuous/hybrid, richer hierarchy, authenticated federation, and clean-clone release | A bounded review grid or green source test does not close a major research phase, external authority gate, DOI/publication gate, or author signoff. |
+| Unresolved research claim | Open phase pages in `docs/todo/` | Leakage-free calibration, portable/external BNN, external data, Friston reconstruction, continuous/hybrid, richer hierarchy, authenticated federation, independent reproducibility, and future release authority | A bounded review grid or green source test does not close a major research phase, an independent-verification gate, or author signoff; the published v0.1.0 DOI is not scientific evidence. |
 
 ## Current source contract — iteration 45
 
@@ -79,8 +81,9 @@ matrices from being reported as exact source-protocol replication. The external
 benchmark producer now exposes dataset-level nested-seed summaries and archive,
 split, and recovery controls, but no pinned three-dataset confirmatory result or
 manuscript token is promoted. Source-scale CUDA execution, physical multi-host
-federation, clean-clone release verification, and external release authority
-remain outside this local candidate.
+federation, cross-vendor verification, and external scientific release authority
+remain outside this local evidence package. The v0.1.0 GitHub/Zenodo publication
+is complete, but it does not close those scientific or governance boundaries.
 
 ## Load-bearing claims
 
@@ -186,13 +189,13 @@ figure assets. `qpdf --check` passed for all 43 publication PDFs. These are
 reproducibility and presentation facts only; they do not enlarge any empirical
 or theorem-backed claim in this ledger.
 
-## Current development candidate — 2026-07-30
+## Historical development candidate — 2026-07-30
 
 The public API/registry/receipt, packaged-data, transport, BNN-protocol, and
-roadmap additions remain an uncommitted development candidate, not release
-evidence. The candidate's analysis, hydration, three-surface render, and release
+roadmap additions remained an uncommitted development candidate, not release
+evidence at that date. Its analysis, hydration, three-surface render, and release
 bundle were regenerated in producer order and their content-bound receipts
-verify against the current source inputs. The obsolete retained XeLaTeX stdout
+verified against the then-current source inputs. The obsolete retained XeLaTeX stdout
 log was removed because the current renderer no longer produces it.
 
 The combined manuscript and slide PDFs pass structural and raster inspection;
@@ -200,6 +203,6 @@ the HTML manuscript additionally passes the strengthened accessibility,
 responsive-layout, keyboard-navigation, deep-link, image, and asset checks in
 a real browser. The PDFs remain untagged convenience surfaces and are not
 PDF/UA artifacts. Package, source, rendering, or accessibility validation does
-not change any theorem or empirical claim above, and the candidate cannot be
-called release-ready until exact-commit clean-clone and external-authority
-gates are independently dispositioned.
+not change any theorem or empirical claim above. This dated candidate record
+predates the published v0.1.0 snapshot and is not a current release-status
+statement.

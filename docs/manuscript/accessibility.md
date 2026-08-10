@@ -79,8 +79,8 @@ Run source validation first, then generate analysis, hydrate the manuscript,
 render through the sibling producer, prepare the web package, and execute:
 
 ```bash
-uv run python scripts/validate_web_package.py
-uv run python scripts/validate_rendered_surfaces.py
+uv run --locked python scripts/validate_web_package.py
+uv run --locked python scripts/validate_rendered_surfaces.py
 pdfinfo output/pdf/active_fedference_combined.pdf | grep '^Tagged:'
 ```
 

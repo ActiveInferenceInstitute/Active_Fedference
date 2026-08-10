@@ -1,12 +1,14 @@
 # Extended statistical and numerical audit
 
-Updated 2026-08-02. This document preserves dated artifact-level audit records
+Updated 2026-08-10. This document preserves dated artifact-level audit records
 and states the source contract for the pending enlarged rerun. It is not an
 audit of the current generated reports, manuscript tokens, or rendered
 publication surfaces: the checked-out configuration and review-grid producer
 now differ from the 2026-08-01 snapshot. The historical simulations remain
 conditional on their declared data-generating mechanisms and do not generalize
-beyond them.
+beyond them. The v0.1.0 GitHub/Zenodo publication on 2026-08-10 is documented
+separately and does not convert this dated audit into a source-current
+scientific evidence report.
 
 ## Status and source of truth
 
@@ -312,18 +314,18 @@ For a fresh audit, use the receipt-aware producer order rather than treating a
 historical hydrate or test total as reusable:
 
 ```bash
-uv run ruff check src tests
-uv run python scripts/01_run_invariants.py
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked ruff check src tests
+uv run --locked python scripts/01_run_invariants.py
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 cd /path/to/template
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py \
+uv run --locked python scripts/pipeline/stage_04_validate.py \
   --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py \
+uv run --locked python scripts/pipeline/stage_05_copy.py \
   --project working/active_fedference
 ```
 

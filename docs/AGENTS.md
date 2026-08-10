@@ -30,7 +30,7 @@ Technical index for `docs/`. Navigation hub:
 | **reference/** | |
 | `reference/verification-commands.md` | ISA probes; copy-paste commands |
 | `reference/api-stability.md` | Public API/schema compatibility and deprecation policy |
-| `reference/zenodo-release.md` | Zenodo draft DOI and explicit reserve/update/upload/verify/publish boundary |
+| `reference/zenodo-release.md` | Published v0.1.0 DOI record and safe reserve/update/upload/verify/publish boundary for future versions |
 | **security/** | |
 | `security/README.md` | Security navigation and current no-deployment boundary |
 | `security/active_fedference-threat-model.md` | Repository-grounded assets, trust boundaries, attacker capabilities, threats, controls, and MAJ-4A review paths |

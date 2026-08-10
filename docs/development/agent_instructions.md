@@ -23,7 +23,7 @@ Before modifying `src/fedference/`, locate existing tests for the symbol you tou
 After editing, run:
 
 ```bash
-uv run pytest tests/ \
+uv run --locked pytest tests/ \
   --cov=src \
   --cov-fail-under=90 \
   --cov-report=term-missing \
@@ -94,11 +94,13 @@ dimension, not a fourth robustness guarantee. See
 
 ## Rule 7: Standalone repository and public target boundary (ISC-37)
 
-This project is its own standalone repository. The private review mirror is
-`https://github.com/docxology/active_fedference`; the intended public target is
-`https://github.com/ActiveInferenceInstitute/Active_Fedference`. Never copy or
-commit this project into the unrelated public template remote. A public GitHub
-push and Zenodo publication remain explicit external release actions.
+This project is its own standalone repository. The configured interim review
+mirror is `https://github.com/docxology/active_fedference`; the public target is
+`https://github.com/ActiveInferenceInstitute/Active_Fedference`, which contains
+the published v0.1.0 snapshot. Never copy or commit this project into the
+unrelated public template remote. Future source changes remain unreleased
+until the explicit public GitHub review/push and, when the manuscript changes,
+the corresponding Zenodo versioning action.
 
 ## Rule 8: N-level hierarchical inference — use LayerSpec
 
@@ -133,8 +135,8 @@ edges over renderer-specific HTML or embedded external images. Run both passes
 before release review:
 
 ```bash
-uv run python scripts/validate_mermaid.py
-uv run python scripts/validate_mermaid.py --render --renderer npx \
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
   --output-dir .tmp/mermaid-render
 ```
 
@@ -152,18 +154,18 @@ establish PDF/UA conformance for an untagged PDF.
 
 ```bash
 # Coverage + tests
-uv run pytest tests/ \
+uv run --locked pytest tests/ \
   --cov=src --cov-fail-under=90 -q
 
 # No mocks
-uv run pytest tests/test_runtime_surface.py -q
+uv run --locked pytest tests/test_runtime_surface.py -q
 
 # Domain layer free of infrastructure
 rg -n "import infrastructure" src/fedference/ \
   && exit 1 || echo "Clean"
 
 # Central identity (spine) — server axes
-uv run python -c "
+uv run --locked python -c "
 from fedference.aggregation import robust_aggregate, variational_aggregate, log_linear_pool
 import numpy as np
 b = [[.7,.3],[.6,.4]]
@@ -174,7 +176,7 @@ assert np.allclose(variational_aggregate(b, robustness=0, entropy_weight=1.0).co
 "
 
 # N-level hierarchical spine check
-uv run python -c "
+uv run --locked python -c "
 from fedference.pomdp import build_3level_world, nlevel_infer
 import numpy as np
 w = build_3level_world()

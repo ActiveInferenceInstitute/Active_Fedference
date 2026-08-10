@@ -64,7 +64,7 @@ or a positive single attack result into a theorem about `robust_aggregate`.
 
 ## Gates For Any Item
 
-The authoritative bounded wrapper is `uv run python scripts/validate_all.py
+The authoritative bounded wrapper is `uv run --locked python scripts/validate_all.py
 full`; its embedded `source` profile runs Ruff, mypy, invariants, the domain
 layer check, and exact-set release build/verification before the full coverage
 suite. The test suite no longer touches the committed `output/` snapshot: the
@@ -80,10 +80,10 @@ scoped in
 
 ```
 # Full source gate
-uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
+uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
 
 # Central identity gate
-uv run python -c "
+uv run --locked python -c "
 from fedference.aggregation import robust_aggregate, variational_aggregate, log_linear_pool
 import numpy as np
 b = [[.7,.3],[.6,.4]]
@@ -92,20 +92,20 @@ assert np.allclose(variational_aggregate(b, robustness=0).consensus, log_linear_
 "
 
 # Manuscript provenance gate
-uv run pytest tests/test_xref_integrity.py tests/test_caption_completeness.py \
+uv run --locked pytest tests/test_xref_integrity.py tests/test_caption_completeness.py \
   tests/test_token_provenance.py tests/test_manuscript_variables.py -q
 
 # Layer-boundary gate
 ! grep -rn "import infrastructure" src/fedference/
 
 # Publication package gate
-uv run python scripts/validate_all.py package
+uv run --locked python scripts/validate_all.py package
 
 # TODO hygiene gate
-uv run pytest tests/test_docs_contract.py -q
+uv run --locked pytest tests/test_docs_contract.py -q
 
 # Ruff lint gate
-uv run ruff check src/ tests/
+uv run --locked ruff check src/ tests/
 # Expected: 0 E501, 0 F401, 0 F811, 0 F841 (CI-clean)
 # line-length 110 in pyproject.toml — E501 spans >=111 trigger
 ```

@@ -64,7 +64,7 @@ unknowns explicitly when the paper or source routine does not determine them.
 ## Verification Probes
 
 - Protocol-parity and deviation-schema tests.
-- `uv run pytest tests/fedference/test_protocol_parity.py -q`
+- `uv run --locked pytest tests/fedference/test_protocol_parity.py -q`
 - Independent-unit and native-unit aggregation tests.
 - Source-protocol negative control and deterministic rerun tests.
 - Full source, manuscript, render, web, slide, and release gates.

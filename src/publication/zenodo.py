@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 DEFAULT_ZENODO_API = "https://zenodo.org/api"
@@ -54,6 +56,58 @@ class ZenodoDeposition:
     bucket_url: str | None
     publish_url: str | None
     files: tuple[ZenodoFile, ...]
+
+
+def _optional_text(value: object, field: str) -> str | None:
+    """Normalize an optional server text field and reject typed corruption."""
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise ZenodoError(f"Zenodo returned an invalid {field}")
+    return value
+
+
+def _api_base(value: str) -> str:
+    """Validate an API endpoint before a bearer token can be sent to it."""
+    if not isinstance(value, str) or not value.strip():
+        raise ZenodoError("Zenodo API base must be a non-empty URL")
+    normalized = value.strip().rstrip("/")
+    try:
+        parsed = urlsplit(normalized)
+        hostname = parsed.hostname
+    except ValueError as exc:
+        raise ZenodoError("Zenodo API base is not a valid URL") from exc
+    if parsed.scheme not in {"https", "http"} or not parsed.netloc or hostname is None:
+        raise ZenodoError("Zenodo API base must be an HTTP(S) URL")
+    if parsed.username is not None or parsed.password is not None:
+        raise ZenodoError("Zenodo API base must not contain URL credentials")
+    if parsed.query or parsed.fragment:
+        raise ZenodoError("Zenodo API base must not contain a query or fragment")
+    # Plain HTTP is only acceptable for a loopback test server.  This prevents
+    # an accidental production token leak when a caller misconfigures the API.
+    if parsed.scheme == "http" and hostname.casefold() not in {"localhost", "127.0.0.1", "::1"}:
+        raise ZenodoError("Zenodo API base must use HTTPS outside loopback test endpoints")
+    return normalized
+
+
+def _pdf_path(value: str | Path) -> Path:
+    """Resolve an existing regular PDF path for upload or checksum work."""
+    path = Path(value)
+    if not path.is_file() or path.suffix.casefold() != ".pdf":
+        raise ZenodoError(f"PDF file does not exist or is not a PDF: {path}")
+    return path
+
+
+def _safe_upload_filename(filename: str) -> str:
+    """Reject multipart names that could break the Content-Disposition header."""
+    if (
+        not filename
+        or Path(filename).name != filename
+        or any(character in filename for character in '\"\r\n')
+        or len(filename) > 255
+    ):
+        raise ZenodoError("PDF filename is not safe for multipart upload")
+    return filename
 
 
 def _parse_env_value(value: str) -> str:
@@ -117,13 +171,23 @@ def _file_record(payload: object) -> ZenodoFile:
     if not isinstance(payload, Mapping):
         raise ZenodoError("Zenodo returned a malformed file record")
     try:
-        file_id = str(payload["id"])
-        filename = str(payload["filename"])
-        filesize = int(payload["filesize"])
-        checksum = str(payload["checksum"])
+        file_id = payload["id"]
+        filename = payload["filename"]
+        filesize = payload["filesize"]
+        checksum = payload["checksum"]
     except (KeyError, TypeError, ValueError) as exc:
         raise ZenodoError("Zenodo returned a malformed file record") from exc
-    if not file_id or not filename or filesize < 0 or not checksum:
+    if (
+        not isinstance(file_id, str)
+        or not file_id.strip()
+        or not isinstance(filename, str)
+        or not filename.strip()
+        or isinstance(filesize, bool)
+        or not isinstance(filesize, int)
+        or filesize < 0
+        or not isinstance(checksum, str)
+        or not checksum.strip()
+    ):
         raise ZenodoError("Zenodo returned an invalid file record")
     return ZenodoFile(file_id, filename, filesize, checksum)
 
@@ -132,40 +196,51 @@ def _deposition(payload: object) -> ZenodoDeposition:
     if not isinstance(payload, Mapping):
         raise ZenodoError("Zenodo returned a malformed deposition")
     try:
-        deposition_id = _integer_id(int(payload["id"]))
-        state = str(payload["state"])
+        deposition_id = _integer_id(payload["id"])
+        state = payload["state"]
         metadata = payload.get("metadata", {})
         links = payload.get("links", {})
         files_payload = payload.get("files", [])
     except (KeyError, TypeError, ValueError) as exc:
         raise ZenodoError("Zenodo returned a malformed deposition") from exc
+    if not isinstance(state, str) or not state.strip():
+        raise ZenodoError("Zenodo returned an invalid deposition state")
     if not isinstance(metadata, Mapping) or not isinstance(links, Mapping):
         raise ZenodoError("Zenodo returned malformed deposition metadata or links")
     reserved = metadata.get("prereserve_doi")
-    reserved_doi = str(reserved.get("doi")) if isinstance(reserved, Mapping) and reserved.get("doi") else None
-    files = tuple(_file_record(item) for item in files_payload) if isinstance(files_payload, list) else ()
+    if reserved is not None and not isinstance(reserved, Mapping):
+        raise ZenodoError("Zenodo returned malformed DOI reservation metadata")
+    reserved_doi = (
+        _optional_text(reserved.get("doi"), "reserved DOI")
+        if isinstance(reserved, Mapping)
+        else None
+    )
+    if not isinstance(files_payload, list):
+        raise ZenodoError("Zenodo returned malformed deposition files")
+    files = tuple(_file_record(item) for item in files_payload)
     return ZenodoDeposition(
         id=deposition_id,
         state=state,
-        doi=str(payload["doi"]) if payload.get("doi") else None,
+        doi=_optional_text(payload.get("doi"), "DOI"),
         reserved_doi=reserved_doi,
-        html_url=str(links["html"]) if links.get("html") else None,
-        self_url=str(links["self"]) if links.get("self") else None,
-        bucket_url=str(links["bucket"]) if links.get("bucket") else None,
-        publish_url=str(links["publish"]) if links.get("publish") else None,
+        html_url=_optional_text(links.get("html"), "HTML link"),
+        self_url=_optional_text(links.get("self"), "self link"),
+        bucket_url=_optional_text(links.get("bucket"), "bucket link"),
+        publish_url=_optional_text(links.get("publish"), "publish link"),
         files=files,
     )
 
 
 def _multipart_body(field_name: str, filename: str, content: bytes) -> tuple[bytes, str]:
+    safe_filename = _safe_upload_filename(filename)
     boundary = f"----active-fedference-{uuid.uuid4().hex}"
     marker = boundary.encode("ascii")
     chunks = [
         b"--" + marker + b"\r\n",
-        f'Content-Disposition: form-data; name="name"\r\n\r\n{filename}\r\n'.encode("utf-8"),
+        f'Content-Disposition: form-data; name="name"\r\n\r\n{safe_filename}\r\n'.encode("utf-8"),
         b"--" + marker + b"\r\n",
         (
-            f'Content-Disposition: form-data; name="{field_name}"; filename="{filename}"\r\n'
+            f'Content-Disposition: form-data; name="{field_name}"; filename="{safe_filename}"\r\n'
             "Content-Type: application/pdf\r\n\r\n"
         ).encode("utf-8"),
         content,
@@ -186,9 +261,23 @@ class ZenodoClient:
     ) -> None:
         if not token or not token.strip():
             raise ZenodoError("Zenodo token must be non-empty")
+        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)):
+            raise ZenodoError("Zenodo timeout must be a finite positive number")
+        if not math.isfinite(timeout) or timeout <= 0:
+            raise ZenodoError("Zenodo timeout must be a finite positive number")
         self._token = token.strip()
-        self._api_base = api_base.rstrip("/")
-        self._timeout = timeout
+        self._api_base = _api_base(api_base)
+        self._timeout = float(timeout)
+
+    def _editable_deposition(self, deposition_id: int) -> ZenodoDeposition:
+        """Return a draft and fail closed for irreversible/published records."""
+        deposition = self.get_deposition(deposition_id)
+        if deposition.state != "unsubmitted":
+            raise ZenodoError(
+                f"Zenodo deposition {deposition.id} is {deposition.state!r}; "
+                "only an unsubmitted draft is editable"
+            )
+        return deposition
 
     def _request(
         self,
@@ -244,19 +333,33 @@ class ZenodoClient:
 
     def update_metadata(self, deposition_id: int, metadata: Mapping[str, Any]) -> ZenodoDeposition:
         """Replace editable deposition metadata without publishing it."""
+        self._editable_deposition(deposition_id)
+        payload_metadata = dict(metadata)
+        payload_metadata.pop("doi", None)
         payload = self._request(
             "PUT",
             f"deposit/depositions/{_integer_id(deposition_id)}",
-            payload={"metadata": dict(metadata)},
+            payload={"metadata": payload_metadata},
         )
         return _deposition(payload)
 
     def upload_pdf(self, deposition_id: int, pdf_path: str | Path) -> ZenodoFile:
         """Upload one PDF, returning the server checksum and file identity."""
-        path = Path(pdf_path)
-        if not path.is_file() or path.suffix.casefold() != ".pdf":
-            raise ZenodoError(f"PDF file does not exist or is not a PDF: {path}")
+        path = _pdf_path(pdf_path)
         content = path.read_bytes()
+        expected_md5 = hashlib.md5(content).hexdigest()  # noqa: S324 - Zenodo's file API uses MD5
+        deposition = self._editable_deposition(deposition_id)
+        existing = [file for file in deposition.files if file.filename == path.name]
+        if existing:
+            if len(existing) == 1 and existing[0].filesize == len(content) and existing[0].checksum in {
+                expected_md5,
+                f"md5:{expected_md5}",
+            }:
+                return existing[0]
+            raise ZenodoError(
+                f"Zenodo deposition already contains a different file named {path.name!r}; "
+                "inspect or replace the draft explicitly"
+            )
         body, content_type = _multipart_body("file", path.name, content)
         payload = self._request(
             "POST",
@@ -266,22 +369,35 @@ class ZenodoClient:
         )
         return _file_record(payload)
 
-    def verify_pdf(self, deposition_id: int, pdf_path: str | Path) -> ZenodoFile:
-        """Verify the uploaded PDF filename, size, and MD5 checksum."""
-        path = Path(pdf_path)
+    def verify_pdf(
+        self,
+        deposition_id: int,
+        pdf_path: str | Path,
+        *,
+        remote_filename: str | None = None,
+    ) -> ZenodoFile:
+        """Verify PDF bytes, optionally against a distinct server-side filename.
+
+        A repository may use an informative copy name while Zenodo retains the
+        canonical manuscript filename.  The alternate name is explicit so a
+        checksum cannot silently match an unrelated deposition file.
+        """
+        path = _pdf_path(pdf_path)
+        expected_filename = _safe_upload_filename(remote_filename or path.name)
         expected_md5 = hashlib.md5(path.read_bytes()).hexdigest()  # noqa: S324 - Zenodo's file API uses MD5
         deposition = self.get_deposition(deposition_id)
-        matches = [file for file in deposition.files if file.filename == path.name]
+        matches = [file for file in deposition.files if file.filename == expected_filename]
         if len(matches) != 1:
-            raise ZenodoError(f"Zenodo deposition has {len(matches)} files named {path.name!r}")
+            raise ZenodoError(f"Zenodo deposition has {len(matches)} files named {expected_filename!r}")
         record = matches[0]
         checksums = {expected_md5, f"md5:{expected_md5}"}
         if record.filesize != path.stat().st_size or record.checksum not in checksums:
-            raise ZenodoError(f"Zenodo PDF checksum or size mismatch for {path.name}")
+            raise ZenodoError(f"Zenodo PDF checksum or size mismatch for {expected_filename}")
         return record
 
     def publish(self, deposition_id: int) -> ZenodoDeposition:
         """Publish a deposition explicitly; callers must gate this action."""
+        self._editable_deposition(deposition_id)
         payload = self._request("POST", f"deposit/depositions/{_integer_id(deposition_id)}/actions/publish")
         return _deposition(payload)
 

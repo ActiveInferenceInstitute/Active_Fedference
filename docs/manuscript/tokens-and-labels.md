@@ -74,10 +74,10 @@ hand-format scientific notation in manuscript prose.
 
 ```bash
 # A pre-test rendered-input pass, only when needed by the full suite.
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
-uv run --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked --extra dev python scripts/validate_test_coverage.py
 # Final non-draft hydration reads the receipt and fails before writing if stale.
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 `output/data/test_coverage_receipt.json` records the successful command,

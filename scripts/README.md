@@ -16,7 +16,7 @@ Thin orchestrators for Active Fedference. Logic lives in `../src/`.
 | `validate_clean_checkout.py` | Clean Git/tracking/import probe | REQUIRED for fresh-checkout release evidence |
 | `build_release.py [--verify] [--timestamp UTC]` | Metadata-, surface-, and receipt-preflighted local reviewer bundle (default) or verifies an existing one | REQUIRED before release |
 | `emit_metadata.py [--check\|--write]` | Checks or regenerates the generated metadata surfaces (`publication.metadata`) | REQUIRED before release |
-| `zenodo_release.py` | Reserve/update/upload/verify a draft DOI deposition; explicit publish requires `--confirm-publish` | Release boundary |
+| `zenodo_release.py` | Reserve/update/upload/verify an unsubmitted DOI draft or explicitly publish a new version; `--confirm-publish` is required | Release boundary |
 | `validate_mermaid.py` | Validate README/docs Mermaid fences; optionally render every block to SVG | Documentation/publication QA |
 | `01_run_invariants.py` | Invariant report (stdout) | Optional |
 | `00_preflight.py` | Environment diagnostics | Optional |
@@ -26,36 +26,36 @@ Thin orchestrators for Active Fedference. Logic lives in `../src/`.
 | `_generate_api_docs.py` | API doc generation orchestrator (calls `src.documentation.run_api_doc_generation`) | Aesthetic |
 
 ```bash
-uv run python scripts/02_run_analysis.py                  # publication profile from config
-uv run python scripts/02_run_analysis.py --profile smoke # bounded real smoke profile
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
-uv run python scripts/validate_pipeline_freshness.py
-uv run python scripts/validate_clean_checkout.py --skip-imports
-uv run python scripts/prepare_web_package.py
-uv run python scripts/validate_web_package.py
+uv run --locked python scripts/02_run_analysis.py                  # publication profile from config
+uv run --locked python scripts/02_run_analysis.py --profile smoke # bounded real smoke profile
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/validate_pipeline_freshness.py
+uv run --locked python scripts/validate_clean_checkout.py --skip-imports
+uv run --locked python scripts/prepare_web_package.py
+uv run --locked python scripts/validate_web_package.py
 ```
 
 Validate the shared GitHub/local Mermaid source before a documentation or
 publication review:
 
 ```bash
-uv run python scripts/validate_mermaid.py
-uv run python scripts/validate_mermaid.py --render --renderer npx \
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
   --output-dir .tmp/mermaid-render
 ```
 
 ## Local validation profiles
 
 ```bash
-uv run python scripts/validate_all.py quick
-uv run python scripts/validate_all.py manuscript
-uv run python scripts/validate_all.py package
-uv run python scripts/validate_all.py torch
-uv run python scripts/validate_all.py source
-uv run python scripts/validate_all.py freshness
-uv run python scripts/validate_all.py full
+uv run --locked python scripts/validate_all.py quick
+uv run --locked python scripts/validate_all.py manuscript
+uv run --locked python scripts/validate_all.py package
+uv run --locked python scripts/validate_all.py torch
+uv run --locked python scripts/validate_all.py source
+uv run --locked python scripts/validate_all.py freshness
+uv run --locked python scripts/validate_all.py full
 ```
 
 The `freshness` profile verifies the standalone successful test/coverage receipt
@@ -116,39 +116,39 @@ TEMPLATE_REPO=/path/to/template
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 
 cd "$AF_REPO"
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 
 cd "$AF_REPO"
-uv run python scripts/prepare_web_package.py
-uv run python scripts/validate_web_package.py
-uv run python scripts/validate_rendered_surfaces.py
+uv run --locked python scripts/prepare_web_package.py
+uv run --locked python scripts/validate_web_package.py
+uv run --locked python scripts/validate_rendered_surfaces.py
 
 TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
 TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
-uv run python scripts/record_pipeline_stage.py render \
+uv run --locked python scripts/record_pipeline_stage.py render \
   --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
-uv run --extra dev python scripts/validate_test_coverage.py --verify
-uv run python scripts/validate_pipeline_freshness.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
+uv run --locked python scripts/validate_pipeline_freshness.py
 unset SOURCE_DATE_EPOCH
-uv run python scripts/build_release.py
-uv run python scripts/build_release.py --verify
+uv run --locked python scripts/build_release.py
+uv run --locked python scripts/build_release.py --verify
 ```
 
 The stage receipts store SHA-256 maps for declared stage inputs and outputs, so

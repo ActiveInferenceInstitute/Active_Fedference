@@ -68,7 +68,7 @@ integration, and manuscript evidence.
 
 ## Verification Probes
 
-- `uv run pytest tests/fedference/test_calibration.py -q`
+- `uv run --locked pytest tests/fedference/test_calibration.py -q`
 - Run a deliberate episode-overlap control and require `ValueError`.
 - Reorder the candidate grid and require the same selected fingerprint.
 - Verify the confirmatory receipt against its artifact root with

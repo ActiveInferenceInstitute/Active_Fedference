@@ -322,22 +322,22 @@ def test_canonical_two_pass_render_sequence_records_prepared_web_tree() -> None:
     end = text.index("## Phase 3", start)
     sequence = text[start:end]
     render = (
-        "uv run python scripts/pipeline/stage_03_render.py \\\n"
+        "uv run --locked python scripts/pipeline/stage_03_render.py \\\n"
         "  --project working/active_fedference --skip-manuscript-hydration"
     )
 
     provisional = sequence.index(
-        "uv run python scripts/z_generate_manuscript_variables.py --provisional-validation"
+        "uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation"
     )
     first_render = sequence.index(render)
-    receipt = sequence.index("uv run --extra dev python scripts/validate_test_coverage.py")
+    receipt = sequence.index("uv run --locked --extra dev python scripts/validate_test_coverage.py")
     final_hydration = sequence.index(
-        "uv run python scripts/z_generate_manuscript_variables.py",
+        "uv run --locked python scripts/z_generate_manuscript_variables.py",
         receipt,
     )
     second_render = sequence.index(render, final_hydration)
-    package = sequence.index("uv run python scripts/prepare_web_package.py")
-    record = sequence.index("uv run python scripts/record_pipeline_stage.py render")
+    package = sequence.index("uv run --locked python scripts/prepare_web_package.py")
+    record = sequence.index("uv run --locked python scripts/record_pipeline_stage.py render")
 
     assert sequence.count(render) == 2
     assert provisional < first_render < receipt < final_hydration < second_render
@@ -347,7 +347,7 @@ def test_canonical_two_pass_render_sequence_records_prepared_web_tree() -> None:
 def test_source_current_render_examples_skip_implicit_hydration() -> None:
     """Do not let a documentation snippet trigger hydration ahead of its receipt."""
     command = re.compile(
-        r"uv run python scripts/pipeline/stage_03_render\.py"
+        r"uv run --locked python scripts/pipeline/stage_03_render\.py"
         r"(?:[ \t]*\\\n\s*)?"
         r"--project working/active_fedference(?P<arguments>[^\n]*)"
     )
@@ -464,9 +464,9 @@ def test_forward_todo_surfaces_do_not_retain_completed_items() -> None:
 def test_ci_workflow_runs_publication_package_and_release_round_trip() -> None:
     workflow = _read(".github/workflows/ci.yml")
     required_commands = (
-        "uv run python scripts/validate_all.py package",
-        "uv run python scripts/build_release.py",
-        "uv run python scripts/build_release.py --verify",
+        "uv run --locked python scripts/validate_all.py package",
+        "uv run --locked python scripts/build_release.py",
+        "uv run --locked python scripts/build_release.py --verify",
         "actions/upload-artifact@v4",
     )
     for command in required_commands:

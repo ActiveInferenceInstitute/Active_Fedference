@@ -7,10 +7,11 @@ Friston et al. (2024) federated **belief-sharing**.
 
 **Acceptance contract:** [`ISA.md`](ISA.md) · **Documentation hub:** [`docs/README.md`](docs/README.md)
 
-This checkout is intentionally a standalone development and review repository.
+This checkout is intentionally a standalone development and review repository;
+the v0.1.0 public snapshot is already published at the target below.
 The configured interim remote is
 [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
-(`origin`); the intended public destination is
+(`origin`); the public destination is
 [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
 Work on a `codex/*` branch. Commit, push, and Zenodo publication are separate
 release actions and require explicit authorization; do not force-push or reset
@@ -84,27 +85,27 @@ Full module map, experiments, and artifacts:
 ## Validation commands
 
 ```bash
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src --cov-fail-under=90
 
 # Fast feedback and explicit integration/publication profiles
-uv run pytest tests/ -m "not slow" -q
-uv run pytest tests/ -m integration -q
-uv run pytest tests/ -m publication -q
+uv run --locked pytest tests/ -m "not slow" -q
+uv run --locked pytest tests/ -m integration -q
+uv run --locked pytest tests/ -m publication -q
 
 rg -n "import infrastructure" src/fedference/ && \
   { echo "Layer leak"; exit 1; } || echo "Clean"
 
 # Check every Mermaid block in README.md and docs/ before rendering
-uv run python scripts/validate_mermaid.py
-uv run python scripts/validate_mermaid.py --render --renderer npx \
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
   --output-dir .tmp/mermaid-render
 
 # Figure/caption and reader-surface contracts
-uv run pytest tests/test_caption_completeness.py tests/figures/ -q
+uv run --locked pytest tests/test_caption_completeness.py tests/figures/ -q
 
 # Verify the release bundle is not stale relative to current sources
-uv run python scripts/build_release.py --verify
+uv run --locked python scripts/build_release.py --verify
 
 # PEP 517 distributions are reproducible only under an explicit source epoch.
 export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"

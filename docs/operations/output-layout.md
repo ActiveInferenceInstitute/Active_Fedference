@@ -120,13 +120,13 @@ output/working/active_fedference/
    `scripts/validate_web_package.py` then enforces the semantic HTML subset defined in
    [`../manuscript/accessibility.md`](../manuscript/accessibility.md).
 5. After regenerating outputs, rebuild the release bundle
-   (`uv run python scripts/build_release.py`) so the manifest and fingerprint
+   (`uv run --locked python scripts/build_release.py`) so the manifest and fingerprint
    track the new state. The default unreleased bundle deliberately records no
    wall-clock timestamp, and a second no-op build must be byte-identical. Use
    `--timestamp` or `SOURCE_DATE_EPOCH` only after release approval.
 6. Record the external template render boundary only after the final stages
    03–05, web preparation, and rendered-surface validation finish; then run
-   `uv run python scripts/validate_pipeline_freshness.py` before the release
+   `uv run --locked python scripts/validate_pipeline_freshness.py` before the release
    build. The receipt hashes `output/web/` as well as the PDF/slide surfaces,
    so an earlier receipt would be stale as soon as web preparation rewrites it.
    The receipt is content-bound and must not be hand-edited.
@@ -135,7 +135,7 @@ output/working/active_fedference/
 
 ```bash
 # Analysis only
-uv run python scripts/02_run_analysis.py
+uv run --locked python scripts/02_run_analysis.py
 
 # Source-current variables + renderer passes
 # Follow the explicit provisional-render -> coverage receipt -> final-render
@@ -145,7 +145,7 @@ uv run python scripts/02_run_analysis.py
 # Full core pipeline
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python scripts/runner/execute_pipeline.py --project working/active_fedference --core-only
+uv run --locked python scripts/runner/execute_pipeline.py --project working/active_fedference --core-only
 ```
 
 The combined core command is for exploratory template work. It is not a

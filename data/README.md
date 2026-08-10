@@ -21,7 +21,7 @@ command downloads only into a caller-supplied cache, verifies the archive, and
 records archive/member/split hashes in its report and receipt:
 
 ```bash
-uv run fedference benchmark \
+uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
   --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
 ```

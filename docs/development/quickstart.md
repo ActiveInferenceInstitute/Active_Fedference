@@ -15,7 +15,7 @@ uv sync --extra dev
 ## 1. Run tests with coverage gate
 
 ```bash
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src \
   --cov-fail-under=90 \
   -q
@@ -28,13 +28,13 @@ authoritative gate and is slow — real seeded experiments, no mocks.
 For fast iteration before the full gate:
 
 ```bash
-uv run pytest tests/ -m "not slow" -q
+uv run --locked pytest tests/ -m "not slow" -q
 ```
 
 ## 2. Verify the central identity
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 from fedference.aggregation import robust_aggregate, log_linear_pool
 import numpy as np
 b = [[0.7, 0.3], [0.6, 0.4]]
@@ -52,10 +52,10 @@ structure, or message schedule.
 ### Inspect the installed research registry
 
 ```bash
-uv run fedference list --json
-uv run fedference run server-theory \
+uv run --locked fedference list --json
+uv run --locked fedference run server-theory \
   --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
-uv run fedference verify .tmp/server-theory-smoke/receipt.json
+uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
 ```
 
 The explicit output directory protects the committed reviewer snapshot.
@@ -64,7 +64,7 @@ Confirmatory profiles remain blocked until their pilot design is frozen.
 ## 3. Run core experiments
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 from fedference import experiments as e
 seed = 20240601
 print('belief sharing :', e.run_belief_sharing(seed)['mean_free_energy'])
@@ -101,7 +101,7 @@ Parameters come from [`manuscript/config.yaml`](../../manuscript/config.yaml).
 From this repository root:
 
 ```bash
-uv run python scripts/02_run_analysis.py
+uv run --locked python scripts/02_run_analysis.py
 ```
 
 Writes JSON reports under `output/reports/` and PNG/PDF figures under
@@ -121,7 +121,7 @@ a diagnostic, not a theorem or a Byzantine guarantee.
 
 ```bash
 # Provisional input only; final hydration needs the fresh full-suite receipt.
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 ```
 
 This step reads the hierarchical reports (`hierarchical_world.json`,
@@ -143,7 +143,7 @@ receipt-backed hydration and a second render.
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
 ```
 
@@ -156,7 +156,7 @@ Or core pipeline in one shot:
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python scripts/runner/execute_pipeline.py --project working/active_fedference --core-only
+uv run --locked python scripts/runner/execute_pipeline.py --project working/active_fedference --core-only
 ```
 
 The combined core pipeline is exploratory template work, not a replacement for

@@ -330,10 +330,10 @@ tasks, and real external benchmark datasets.
 Run these before release:
 
 ```bash
-uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
-uv run --extra dev python scripts/02_run_analysis.py
-uv run --extra dev python scripts/z_generate_manuscript_variables.py
-uv run python scripts/validate_all.py package
+uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
+uv run --locked --extra dev python scripts/02_run_analysis.py
+uv run --locked --extra dev python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/validate_all.py package
 ```
 
 Then render through the template checkout documented in

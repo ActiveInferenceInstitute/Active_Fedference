@@ -3,15 +3,15 @@
 Active Fedference test suite. Full contract: [`AGENTS.md`](AGENTS.md).
 
 ```bash
-uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90
+uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
 ```
 
 Fast feedback and explicit profiles:
 
 ```bash
-uv run pytest tests/ -m "not slow" -q
-uv run pytest tests/ -m integration -q
-uv run pytest tests/ -m publication -q
+uv run --locked pytest tests/ -m "not slow" -q
+uv run --locked pytest tests/ -m integration -q
+uv run --locked pytest tests/ -m publication -q
 ```
 
 The profiles select real seeded tests; they do not replace the full coverage

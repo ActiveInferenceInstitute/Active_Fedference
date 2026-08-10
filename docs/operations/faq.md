@@ -15,12 +15,22 @@ See [`../core/conceptual-foundations.md`](../core/conceptual-foundations.md).
 
 [`../../ISA.md`](../../ISA.md) — see its Criteria section for the current ISC range and checked/open counts (this drifts every iteration, so it is not snapshotted here); probes for verification.
 
+## Where is the published release?
+
+The public source and reviewer snapshot are maintained at
+[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
+The corresponding permanent manuscript release is
+[Zenodo DOI `10.5281/zenodo.21864004`](https://doi.org/10.5281/zenodo.21864004),
+with its [public record](https://zenodo.org/records/21864004). The DOI and
+repository are cross-referenced in the metadata and PDF.
+
 ## Can I commit this project to the public template repo?
 
-**No.** It is a standalone repository; the intended public release target is
-ActiveInferenceInstitute/Active_Fedference, and until that release opens this
-checkout remains the private standalone development repository. Do not push it
-into the public template repository. See
+**No.** It is a standalone repository, not a subdirectory of the public
+template repository. The reviewed v0.1.0 release is already published at
+ActiveInferenceInstitute/Active_Fedference; future changes to this checkout
+still require the explicit target-repository review/push workflow. Do not push
+it into the public template repository. See
 [`../../STANDALONE.md`](../../STANDALONE.md).
 
 ## Where does the math live?
@@ -73,10 +83,10 @@ not establish privacy or Byzantine robustness. See the
 ## How do I inspect or run registered research?
 
 ```bash
-uv run fedference list --json
-uv run fedference run server-theory \
+uv run --locked fedference list --json
+uv run --locked fedference run server-theory \
   --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
-uv run fedference verify .tmp/server-theory-smoke/receipt.json
+uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
 ```
 
 Write-producing commands require an explicit empty directory outside committed
@@ -88,8 +98,8 @@ effect, MCSE target, budget, comparison family, and configuration.
 [`../development/quickstart.md`](../development/quickstart.md) or:
 
 ```bash
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 ## How do I extend the hierarchy to 4 or more levels?

@@ -6,6 +6,8 @@ AESTHETIC table for what is gate-checked versus convention.
 
 **Contract & identity:** [`../ISA.md`](../ISA.md) · [`../README.md`](../README.md) · [`../STANDALONE.md`](../STANDALONE.md)
 
+**Published release:** [Zenodo DOI `10.5281/zenodo.21864004`](https://doi.org/10.5281/zenodo.21864004) · [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference) · [Zenodo record](https://zenodo.org/records/21864004)
+
 ## Subfolders
 
 | Folder | Purpose |
@@ -65,7 +67,7 @@ AESTHETIC table for what is gate-checked versus convention.
 ## Quick verification
 
 ```bash
-uv run pytest tests/ \
+uv run --locked pytest tests/ \
   --cov=src --cov-fail-under=90 -q
 ```
 
@@ -76,8 +78,8 @@ local readers. Every block in `README.md` and `docs/` must pass the static
 contract and, before a release render, an actual Mermaid CLI SVG probe:
 
 ```bash
-uv run python scripts/validate_mermaid.py
-uv run python scripts/validate_mermaid.py --render --renderer npx \
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
   --output-dir .tmp/mermaid-render
 ```
 

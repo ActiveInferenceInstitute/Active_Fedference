@@ -1,0 +1,121 @@
+{
+  "codeReview": {
+    "by": "lazycodex-code-reviewer",
+    "recommendation": "APPROVE",
+    "codeQualityStatus": "CLEAR",
+    "reportPath": ".omo/evidence/active-fedference-readiness-20260707/code-review.md",
+    "evidence": "Final diff review found no publication-blocking code, documentation, provenance, or claim-boundary defects.",
+    "blockers": []
+  },
+  "manualQa": {
+    "by": "lazycodex-qa-executor",
+    "status": "passed",
+    "evidence": "CLI, browser, and data surfaces passed after regeneration.",
+    "surfaceEvidence": [
+      {
+        "id": "surface-cli-final-gates",
+        "criterionRef": "C003",
+        "surface": "cli",
+        "invocation": "uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90; uv run python scripts/validate_all.py manuscript; uv run python scripts/validate_all.py package; uv run ruff check src/ tests/; git diff --check",
+        "verdict": "passed",
+        "artifactRefs": ["artifact-verification-log"]
+      },
+      {
+        "id": "surface-browser-web-package",
+        "criterionRef": "C003",
+        "surface": "browser",
+        "invocation": "chrome-devtools-axi open http://127.0.0.1:8765/index.html; chrome-devtools-axi eval; chrome-devtools-axi screenshot",
+        "verdict": "passed",
+        "artifactRefs": ["artifact-web-smoke"]
+      },
+      {
+        "id": "surface-data-scholarship-todo",
+        "criterionRef": "C001",
+        "surface": "data",
+        "invocation": "Review git diff over manuscript, references.bib, TODO.md, docs/todo, README/STANDALONE, ULW synthesis, and generated manifests",
+        "verdict": "passed",
+        "artifactRefs": ["artifact-data-diff"]
+      }
+    ],
+    "adversarialCases": [
+      {
+        "id": "adv-unresolved-manuscript-tokens",
+        "criterionRef": "C002",
+        "scenario": "Generated manuscript, web package, and figure registries could retain unresolved manuscript tokens after source edits.",
+        "expectedBehavior": "Token scans and figure-registry checks report no unresolved manuscript tokens.",
+        "verdict": "passed",
+        "artifactRefs": ["artifact-verification-log"]
+      },
+      {
+        "id": "adv-bibliography-padding",
+        "criterionRef": "C001",
+        "scenario": "Perplexity lead generation could add uncited or weakly relevant bibliography entries.",
+        "expectedBehavior": "Only claim-relevant sources are added; accepted and rejected leads are documented.",
+        "verdict": "passed",
+        "artifactRefs": ["artifact-data-diff"]
+      },
+      {
+        "id": "adv-major-scope-creep",
+        "criterionRef": "C001",
+        "scenario": "Publication-readiness work could incorrectly close multi-week Major research upgrades.",
+        "expectedBehavior": "Completed polish is removed while Major research pages remain open.",
+        "verdict": "passed",
+        "artifactRefs": ["artifact-data-diff"]
+      }
+    ],
+    "artifactRefs": [
+      {
+        "id": "artifact-verification-log",
+        "kind": "log",
+        "description": "Final command-level validation log.",
+        "path": ".omo/evidence/active-fedference-readiness-20260707/verification-log.md"
+      },
+      {
+        "id": "artifact-web-smoke",
+        "kind": "screenshot",
+        "description": "Chrome screenshot of generated output/web index page.",
+        "path": ".omo/evidence/active-fedference-readiness-20260707/web-smoke.png"
+      },
+      {
+        "id": "artifact-data-diff",
+        "kind": "data-diff",
+        "description": "Summary of manuscript, bibliography, TODO, and generated-output diff evidence.",
+        "path": ".omo/evidence/active-fedference-readiness-20260707/data-diff.md"
+      }
+    ]
+  },
+  "gateReview": {
+    "by": "lazycodex-gate-reviewer",
+    "recommendation": "APPROVE",
+    "reportPath": ".omo/evidence/active-fedference-readiness-20260707/gate-review.md",
+    "evidence": "All three ULW criteria are marked pass with observable evidence; no final blockers remain.",
+    "blockers": []
+  },
+  "iteration": {
+    "fullRerun": true,
+    "status": "passed",
+    "rerunCommands": [
+      "uv run --extra dev pytest tests/ --cov=src --cov-fail-under=90",
+      "uv run python scripts/validate_all.py manuscript",
+      "uv run python scripts/validate_all.py package",
+      "uv run ruff check src/ tests/",
+      "git diff --check",
+      "chrome-devtools-axi open http://127.0.0.1:8765/index.html"
+    ],
+    "evidence": "Full source, manuscript, package, lint, hygiene, PDF/text, token, and browser-smoke checks passed after regeneration."
+  },
+  "criteriaCoverage": {
+    "totalCriteria": 3,
+    "passCount": 3,
+    "originalIntent": "Complete a publication-readiness pass with scholarship verification, TODO cleanup, regenerated outputs, validation, and a readiness verdict.",
+    "desiredOutcome": "Paper is ready for preprint/submission packaging without unresolved publication-readiness blockers, while Major research upgrades remain honestly scoped as future work.",
+    "userOutcomeReview": "The implementation satisfies the requested readiness scope: scholarship is integrated, generated artifacts are refreshed, all gates passed, and the roadmap is narrowed to six Major research upgrades.",
+    "adversarialClassesCovered": [
+      "unresolved_tokens",
+      "bibliography_padding",
+      "major_scope_creep",
+      "render_package_regression",
+      "claim_overstatement"
+    ]
+  }
+}

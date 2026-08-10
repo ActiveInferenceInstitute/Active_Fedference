@@ -7,6 +7,7 @@ import pytest
 from publication.web_package import (
     mirror_web_figures,
     normalize_web_xrefs,
+    sanitize_machine_paths,
     validate_web_package,
 )
 
@@ -63,6 +64,24 @@ def test_prepare_web_package_mirrors_figures_and_normalizes_xrefs(tmp_path: Path
     assert ">Section 3.3</a>" in individual
     assert "Theorem~" not in individual
     assert '<span class="xref">Theorem recovery</span>' in individual
+
+
+def test_sanitize_machine_paths_makes_text_outputs_clone_independent(tmp_path: Path) -> None:
+    output = tmp_path / "output" / "logs"
+    output.mkdir(parents=True)
+    log = output / "render.log"
+    log.write_text(
+        "/private/tmp/render-work/output/file\n"
+        "/Users/mini/Documents/project/output/file\n"
+        "/Volumes/blue/project/output/file\n",
+        encoding="utf-8",
+    )
+    changed = sanitize_machine_paths(tmp_path)
+    assert changed == (log,)
+    assert log.read_text(encoding="utf-8") == (
+        "<tmp>/output/file\n<home>/Documents/project/output/file\n"
+        "<volume>/project/output/file\n"
+    )
 
 
 def test_validate_web_package_reports_missing_assets(tmp_path: Path) -> None:

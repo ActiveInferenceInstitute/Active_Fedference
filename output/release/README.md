@@ -5,7 +5,7 @@ Generated at: 2026-08-09T04:56:18Z by `src/publication/release_manifest.py`
 
 Pipeline profile: `publication`; generator version: `4`.
 
-Artifacts: 475 files, 44323469 bytes, over:
+Artifacts: 475 files, 44350310 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)

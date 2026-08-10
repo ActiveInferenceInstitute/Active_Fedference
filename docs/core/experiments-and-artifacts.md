@@ -110,11 +110,11 @@ outputs, and verification independently recomputes the canonical configuration
 hash:
 
 ```bash
-uv run fedference list --json
-uv run fedference run server-theory \
+uv run --locked fedference list --json
+uv run --locked fedference run server-theory \
   --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
-uv run fedference verify .tmp/server-theory-smoke/receipt.json
-uv run fedference verify \
+uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
+uv run --locked fedference verify \
   .tmp/server-theory-smoke/receipt.json --require-clean-git
 ```
 
@@ -134,7 +134,7 @@ The external-data runner additionally verifies the declared UCI archive before
 parsing. Its smoke output is a mechanics check, not a publication report:
 
 ```bash
-uv run fedference benchmark \
+uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
   --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
 ```
@@ -241,9 +241,9 @@ Record the full-suite receipt, then perform final hydration without the
 provisional flag:
 
 ```bash
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 This writes `output/data/manuscript_variables.json` and resolved copies under
@@ -314,10 +314,10 @@ flowchart TB
 From this repository root:
 
 ```bash
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 If the full suite requires provisional template surfaces, use the explicit
@@ -328,17 +328,17 @@ the sibling template repository:
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 ```
 
 Prepare the self-contained web package from this repository root:
 
 ```bash
-uv run python scripts/prepare_web_package.py
-uv run python scripts/validate_web_package.py
+uv run --locked python scripts/prepare_web_package.py
+uv run --locked python scripts/validate_web_package.py
 ```
 
 The validator includes the source-owned accessibility contract for document

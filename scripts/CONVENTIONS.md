@@ -23,7 +23,7 @@ consensus = np.exp(np.sum(np.log(beliefs), axis=0))
 ## Import patterns
 
 Project scripts run with `src/` on `PYTHONPATH` (via pytest `conftest` or
-`uv run` from project directory):
+`uv run --locked` from project directory):
 
 ```python
 from analysis.workflow import run_analysis_pipeline

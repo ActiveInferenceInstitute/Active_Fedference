@@ -68,7 +68,7 @@ estimator-level B-robustness claim.
 
 ## Verification Probes
 
-- `uv run pytest tests/fedference/test_hybrid.py
+- `uv run --locked pytest tests/fedference/test_hybrid.py
   tests/fedference/test_hybrid_tracking.py -q`
 - Singular-covariance, zero-robustness, discrete-only, and Gaussian-only
   negative controls.

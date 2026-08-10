@@ -56,6 +56,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--upload", type=Path, help="upload this PDF to the selected deposition")
     parser.add_argument("--verify", type=Path, metavar="PDF", help="verify this uploaded PDF")
+    parser.add_argument(
+        "--remote-filename",
+        help="server-side filename to verify when it differs from the local PDF name",
+    )
     parser.add_argument("--publish", action="store_true", help="publish the selected deposition")
     parser.add_argument(
         "--confirm-publish",
@@ -73,6 +77,8 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--update-metadata requires an existing --deposition-id")
         if args.publish and not args.confirm_publish:
             parser.error("--publish requires --confirm-publish")
+        if args.publish and args.verify is None:
+            parser.error("--publish requires --verify PDF so the uploaded bytes are checked first")
         if args.confirm_publish and not args.publish:
             parser.error("--confirm-publish requires --publish")
         if args.env_file is not None:
@@ -102,7 +108,11 @@ def main(argv: list[str] | None = None) -> int:
             client.upload_pdf(deposition.id, args.upload)
             deposition = client.get_deposition(deposition.id)
         if args.verify is not None:
-            client.verify_pdf(deposition.id, args.verify)
+            client.verify_pdf(
+                deposition.id,
+                args.verify,
+                remote_filename=args.remote_filename,
+            )
             deposition = client.get_deposition(deposition.id)
         if args.publish:
             deposition = client.publish(deposition.id)

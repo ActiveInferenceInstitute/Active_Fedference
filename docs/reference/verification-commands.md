@@ -6,7 +6,7 @@ Run local project probes from this repository root.
 ## Test + coverage gate (authoritative)
 
 ```bash
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src \
   --cov-fail-under=90
 ```
@@ -18,21 +18,21 @@ Fast and scoped profiles are available for iteration; they select real tests and
 do not replace the full gate:
 
 ```bash
-uv run pytest tests/ -m "not slow" -q
-uv run pytest tests/ -m integration -q
-uv run pytest tests/ -m publication -q
+uv run --locked pytest tests/ -m "not slow" -q
+uv run --locked pytest tests/ -m integration -q
+uv run --locked pytest tests/ -m publication -q
 ```
 
 ## Local validation profiles
 
 ```bash
-uv run python scripts/validate_all.py quick
-uv run python scripts/validate_all.py manuscript
-uv run python scripts/validate_all.py package
-uv run python scripts/validate_all.py torch
-uv run python scripts/validate_all.py source
-uv run python scripts/validate_all.py freshness
-uv run python scripts/validate_all.py full
+uv run --locked python scripts/validate_all.py quick
+uv run --locked python scripts/validate_all.py manuscript
+uv run --locked python scripts/validate_all.py package
+uv run --locked python scripts/validate_all.py torch
+uv run --locked python scripts/validate_all.py source
+uv run --locked python scripts/validate_all.py freshness
+uv run --locked python scripts/validate_all.py full
 ```
 
 `--dry-run` prints every command without running it. `--keep-going` runs every
@@ -45,7 +45,7 @@ Profile scope:
   manuscript-variable checks.
 - `package`: web-figure mirroring, web cross-reference normalization, and
   package validation.
-- `torch`: explicit required PyTorch lane via `uv run --extra dev`.
+- `torch`: explicit required PyTorch lane via `uv run --locked --extra dev`.
 - `freshness`: the standalone successful test/coverage receipt plus the
   content-hashed analysis → hydration → render stage receipts.
 - `source`: Ruff, mypy, invariants, domain-layer grep, and exact-set release
@@ -56,12 +56,12 @@ Profile scope:
 ## Public API, registry, and receipt verification
 
 ```bash
-uv run fedference list --json
+uv run --locked fedference list --json
 
-uv run fedference run server-theory \
+uv run --locked fedference run server-theory \
   --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
 
-uv run fedference verify .tmp/server-theory-smoke/receipt.json
+uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
 ```
 
 Write-producing commands require an explicit empty directory and reject the
@@ -71,15 +71,15 @@ result. Smoke and pilot runs do not support manuscript claims.
 The bounded single-machine research pilots use the same receipt contract:
 
 ```bash
-uv run fedference run robustness-calibration \
+uv run --locked fedference run robustness-calibration \
   --profile pilot --seed 0 --output-dir .tmp/calibration-pilot
-uv run fedference run fedgvi-bnn \
+uv run --locked fedference run fedgvi-bnn \
   --profile pilot --seed 0 --device cpu --output-dir .tmp/fedgvi-bnn-pilot
-uv run fedference run hybrid-tracking \
+uv run --locked fedference run hybrid-tracking \
   --profile pilot --seed 0 --output-dir .tmp/hybrid-pilot
-uv run fedference run hierarchy-tasks \
+uv run --locked fedference run hierarchy-tasks \
   --profile pilot --seed 0 --seed 1 --output-dir .tmp/hierarchy-pilot
-uv run fedference run friston-protocol \
+uv run --locked fedference run friston-protocol \
   --profile pilot --seed 0 --output-dir .tmp/friston-parity-audit
 ```
 
@@ -91,7 +91,7 @@ corresponding confirmatory budgets and manuscript contracts are frozen.
 Configuration parity across the rich interface and legacy wrapper:
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 import numpy as np
 from fedference import AggregationConfig, aggregate, aggregate_result
 b = np.asarray([[.7, .3], [.6, .4]])
@@ -129,11 +129,11 @@ even when both artifacts install successfully.
 ## Pinned external-data smoke
 
 ```bash
-uv run fedference benchmark \
+uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
   --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
-uv run fedference verify .tmp/banknote-smoke/receipt.json
-uv run fedference verify .tmp/banknote-smoke/receipt.json --require-clean-git
+uv run --locked fedference verify .tmp/banknote-smoke/receipt.json
+uv run --locked fedference verify .tmp/banknote-smoke/receipt.json --require-clean-git
 ```
 
 The first verification checks archive/member hashes, schema, train-only
@@ -146,7 +146,7 @@ is the confirmatory three-dataset evidence pack.
 ## Central identity (spine — both server axes + V1 default bit-identity)
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 from fedference.aggregation import robust_aggregate, variational_aggregate, log_linear_pool
 import numpy as np
 b = [[.7,.3],[.6,.4]]
@@ -157,12 +157,12 @@ print('OK')
 "
 ```
 
-Run from the repository root via `uv run`.
+Run from the repository root via `uv run --locked`.
 
 ## N-level hierarchical spine (V2)
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 from fedference.pomdp import build_3level_world, nlevel_infer
 import numpy as np
 w = build_3level_world()
@@ -188,7 +188,7 @@ grep -rn "import infrastructure" src/fedference/ \
 ## MAJ-1 server-rule characterization
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 import json
 from fedference.experiments import run_heuristic_characterization
 r = run_heuristic_characterization(0)
@@ -210,14 +210,14 @@ git remote -v
 git rev-parse --show-toplevel
 ```
 
-This checkout is a standalone repository (intended public release target:
+This checkout is a standalone repository (public release target:
 ActiveInferenceInstitute/Active_Fedference). The top level should be this
 repository root, not the sibling public template checkout.
 
 ## No mocks
 
 ```bash
-uv run pytest tests/test_runtime_surface.py -q
+uv run --locked pytest tests/test_runtime_surface.py -q
 ```
 
 The dedicated test scans executable Python under `src/`, `scripts/`, and
@@ -228,8 +228,8 @@ in `tests/PATTERNS.md` and the detector's own regex.
 ## Release bundle + provenance fingerprint
 
 ```bash
-uv run python scripts/build_release.py
-uv run python scripts/build_release.py --verify
+uv run --locked python scripts/build_release.py
+uv run --locked python scripts/build_release.py --verify
 ```
 
 Build writes `output/release/` (`manifest.json`, `sha256sums.txt`, a derived
@@ -256,7 +256,7 @@ same tree without either input must leave every bundle byte unchanged.
 ## Report schema write boundary
 
 ```bash
-uv run python -c "
+uv run --locked python -c "
 from analysis.report_schemas import ReportSchemaError, validate_report
 try:
     validate_report('belief_sharing', {})
@@ -280,7 +280,7 @@ The publication analysis writes the symbolic catalog and measured benchmark to
 `output/figures/complexity_scaling.png`. Inspect both evidence layers with:
 
 ```bash
-uv run python -c '
+uv run --locked python -c '
 import json
 from pathlib import Path
 r = json.loads(Path("output/reports/complexity_scaling.json").read_text())
@@ -307,19 +307,19 @@ TEMPLATE_REPO=/path/to/template
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
-uv run python scripts/02_run_analysis.py
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 # Provisional renderer pass: hydrate has already happened above.
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 
 cd "$AF_REPO"
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 if rg -n '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
@@ -329,21 +329,21 @@ fi
 
 # Final renderer pass: receipt-backed hydration has already happened above.
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 
 cd "$AF_REPO"
-uv run python scripts/prepare_web_package.py
-uv run python scripts/validate_web_package.py
-uv run python scripts/validate_rendered_surfaces.py
+uv run --locked python scripts/prepare_web_package.py
+uv run --locked python scripts/validate_web_package.py
+uv run --locked python scripts/validate_rendered_surfaces.py
 TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
 TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
-uv run python scripts/record_pipeline_stage.py render \
+uv run --locked python scripts/record_pipeline_stage.py render \
   --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
-uv run --extra dev python scripts/validate_test_coverage.py --verify
-uv run python scripts/validate_pipeline_freshness.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
+uv run --locked python scripts/validate_pipeline_freshness.py
 ~~~
 
 The full-suite wrapper writes a separate successful receipt to
@@ -364,7 +364,7 @@ still hashes every declared render input and output. A fresh-clone evidence
 probe is separate from the local dirty development workflow:
 
 ```bash
-uv run python scripts/validate_clean_checkout.py
+uv run --locked python scripts/validate_clean_checkout.py
 ```
 
 It must be run from a checkout containing the committed required paths; a dirty
@@ -374,7 +374,7 @@ For repeated subprocess smoke checks, the same pipeline accepts an explicit
 bounded real-computation profile:
 
 ```bash
-uv run python scripts/02_run_analysis.py --profile smoke
+uv run --locked python scripts/02_run_analysis.py --profile smoke
 ```
 
 The smoke profile is not a publication snapshot and must not replace the
@@ -383,8 +383,8 @@ publication-scale regeneration before release.
 ## Web publication package
 
 ```bash
-uv run python scripts/prepare_web_package.py
-uv run python scripts/validate_web_package.py
+uv run --locked python scripts/prepare_web_package.py
+uv run --locked python scripts/validate_web_package.py
 ```
 
 The prepare step mirrors `output/figures/*` into `output/web/figures/` and
@@ -402,7 +402,7 @@ conformance declaration.
 ## Rendered manuscript and slide surfaces
 
 ```bash
-uv run python scripts/validate_rendered_surfaces.py
+uv run --locked python scripts/validate_rendered_surfaces.py
 ```
 
 This gate checks every manuscript and slide PDF with both `qpdf --check` and
@@ -419,7 +419,7 @@ tagged PDF or PDF/UA conformance.
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python -m infrastructure.validation.cli prerender \
+uv run --locked python -m infrastructure.validation.cli prerender \
   projects/working/active_fedference/manuscript --repo-root .
 ```
 
@@ -428,10 +428,10 @@ uv run python -m infrastructure.validation.cli prerender \
 ```bash
 TEMPLATE_REPO=/path/to/template
 cd "$TEMPLATE_REPO"
-uv run python scripts/pipeline/stage_03_render.py \
+uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
-uv run python scripts/pipeline/stage_04_validate.py --project working/active_fedference
-uv run python scripts/pipeline/stage_05_copy.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py --project working/active_fedference
 ```
 
 This targeted form assumes explicit hydration has already completed. For the
@@ -441,7 +441,7 @@ do not let stage 03 invoke a premature non-provisional hydration.
 ## Project invariants script
 
 ```bash
-uv run python scripts/01_run_invariants.py
+uv run --locked python scripts/01_run_invariants.py
 ```
 
 ## See also

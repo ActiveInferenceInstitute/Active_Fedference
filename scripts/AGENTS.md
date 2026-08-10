@@ -31,7 +31,7 @@ Conventions: [`CONVENTIONS.md`](CONVENTIONS.md) · Architecture:
 ## Stage 4 entry
 
 ```bash
-uv run python scripts/02_run_analysis.py
+uv run --locked python scripts/02_run_analysis.py
 ```
 
 Prints artifact paths from `run_analysis_pipeline()`.
@@ -40,10 +40,10 @@ Prints artifact paths from `run_analysis_pipeline()`.
 
 ```bash
 # Pre-test pass, only when a renderer needs hydrated input for the full suite.
-uv run python scripts/z_generate_manuscript_variables.py --provisional-validation
-uv run --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
+uv run --locked --extra dev python scripts/validate_test_coverage.py
 # Final release-facing hydration consumes the fresh receipt.
-uv run python scripts/z_generate_manuscript_variables.py
+uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 ## Rendering context
@@ -54,8 +54,8 @@ Before a documentation or release review, validate the shared GitHub/local
 Mermaid source and run the actual renderer probe:
 
 ```bash
-uv run python scripts/validate_mermaid.py
-uv run python scripts/validate_mermaid.py --render --renderer npx \
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
   --output-dir .tmp/mermaid-render
 ```
 
@@ -91,9 +91,9 @@ package, then record the external render boundary explicitly. Web preparation
 rewrites `output/web/`, so recording it earlier would attest the wrong surface.
 
 ```bash
-uv run python scripts/record_pipeline_stage.py render \
+uv run --locked python scripts/record_pipeline_stage.py render \
   --renderer "template-03-05 commit=<SHA> diff_sha256=<SHA256> source_date_epoch=<EPOCH>"
-uv run python scripts/validate_pipeline_freshness.py
+uv run --locked python scripts/validate_pipeline_freshness.py
 ```
 
 Receipt schema 2 omits wall-clock `recorded_at` values by default. Set

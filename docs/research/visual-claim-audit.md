@@ -1,6 +1,6 @@
 # Visual claim audit
 
-Updated 2026-08-02. The numerical and render records dated 2026-07-17,
+Updated 2026-08-10. The numerical and render records dated 2026-07-17,
 2026-07-28, and 2026-08-01 are historical snapshots. The checked-out source
 declares an enlarged experiment configuration and a revised selection-free
 review-grid producer. A visual is current only when its named report and the
@@ -11,7 +11,9 @@ evidence. The canonical embed path is the PNG named in
 companion for archival use. The registry/embed/generator consistency gate
 checks the filename relationship directly.
 
-This ledger records what each manuscript visual is allowed to communicate. It
+The v0.1.0 source/PDF was published on 2026-08-10; publication does not alter
+the evidence class assigned to any visual. This ledger records what each
+manuscript visual is allowed to communicate. It
 keeps the Friston et al. (2024) generative-model/message-sharing connection
 visible without allowing a schematic, server heuristic, or conditional
 simulation to inherit a guarantee it does not own.
