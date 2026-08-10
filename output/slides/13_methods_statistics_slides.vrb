@@ -1,0 +1,9 @@
+\frametitle{Reporting tables and the honesty boundary}
+The honesty contract binds at exactly this tier. The effect-size, CI,
+and power enrichment above decorates the \emph{server-side}
+\breaktt{robust\_aggregate} divergence-reweighting contrasts only. It
+does not certify the per-client \(\beta\)/rcce generalized-Bayes
+(FedGVI) guarantees, which are pinned by the locked core (Proposition
+4 of sec.~6) rather than
+by these aggregation-level statistics --- the three robustness axes of
+sec.~3.3 kept distinct.

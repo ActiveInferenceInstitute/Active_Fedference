@@ -1,0 +1,103 @@
+{
+  "all_passed": true,
+  "invariants": [
+    {
+      "actual": 1.0,
+      "description": "naive consensus mass == 1 (categorical pmf)",
+      "expected": 1.0,
+      "extra": {},
+      "kind": "equal",
+      "name": "consensus_sums_to_one_naive",
+      "passed": true,
+      "tol": 1e-09
+    },
+    {
+      "actual": 5.233956471291066e-07,
+      "description": "naive consensus has no negative entries",
+      "expected": 0.0,
+      "extra": {},
+      "kind": "nonneg",
+      "name": "consensus_nonnegative_naive",
+      "passed": true,
+      "tol": 0.0
+    },
+    {
+      "actual": 1.0,
+      "description": "robust consensus mass == 1 (categorical pmf)",
+      "expected": 1.0,
+      "extra": {},
+      "kind": "equal",
+      "name": "consensus_sums_to_one_robust",
+      "passed": true,
+      "tol": 1e-09
+    },
+    {
+      "actual": 4.5407907401102025e-05,
+      "description": "robust consensus has no negative entries",
+      "expected": 0.0,
+      "extra": {},
+      "kind": "nonneg",
+      "name": "consensus_nonnegative_robust",
+      "passed": true,
+      "tol": 0.0
+    },
+    {
+      "actual": 0.0,
+      "description": "max |log_linear_pool - robust_aggregate(robustness=0)| == 0 (project-local zero-robustness recovery; the Eq. 7 relation is a documented categorical specialization)",
+      "expected": 0.0,
+      "extra": {},
+      "kind": "equal",
+      "name": "robust_equals_naive_at_robustness_zero",
+      "passed": true,
+      "tol": 1e-12
+    },
+    {
+      "actual": 9.992007221626409e-16,
+      "description": "(risk + ambiguity) + (pragmatic_value + epistemic_value) == 0 (Friston et al. 2024 Eq. 2, closed form)",
+      "expected": 0.0,
+      "extra": {},
+      "kind": "equal",
+      "name": "efe_decomposition_identity",
+      "passed": true,
+      "tol": 1e-09
+    },
+    {
+      "actual": [
+        3.4231389235594554,
+        0.43806853847344723,
+        0.18153021258301638,
+        0.10016291531443097,
+        0.0654394466102003,
+        0.04665802572993499,
+        0.03350839593450024,
+        0.026666649538515778,
+        0.021114972084318007,
+        0.017290798813020026,
+        0.014435871647336524,
+        0.012285156077807315,
+        0.01059707695244794,
+        0.009141239367242145,
+        0.00791238844082172,
+        0.006931688019591884,
+        0.006266435559072104,
+        0.00550991928690219,
+        0.005007770201730061,
+        0.004477343177438619,
+        0.0040426818362656325,
+        0.0036107093861748613,
+        0.003313453643714699,
+        0.0030144481982257772,
+        0.002735974294568024
+      ],
+      "description": "KL(true A || learned A) is monotone non-increasing and strictly declines overall (source-mechanism analogue to Friston Eq. 12 / Fig. 7 language acquisition)",
+      "expected": null,
+      "extra": {},
+      "kind": "monotone_decreasing",
+      "name": "kl_learning_curve_monotone_decreasing",
+      "passed": true,
+      "tol": 1e-09
+    }
+  ],
+  "n_invariants": 7,
+  "seed": 0
+}

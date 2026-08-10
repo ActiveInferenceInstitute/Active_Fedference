@@ -1,0 +1,7 @@
+\frametitle{Bayesian model reduction for structure comparison}
+reduction destroyed something the data support. When the reduced prior
+equals the prior the score is identically zero, the no-reduction fixed
+point. sec.~7.4 reports \(\Delta F = 3.68\) for
+a redundant reduction (accepted) against \(\Delta F = -27.67\) for a
+supported one (rejected). The implementation is
+\breaktt{bayesian\_model\_reduction.reduce}.

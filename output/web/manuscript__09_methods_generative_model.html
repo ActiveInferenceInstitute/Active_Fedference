@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>09_methods_generative_model.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:methods-generative-model">Generative model: categorical
+states, observations, actions, and hierarchy</h2>
+<p>The 9 studies — including the contaminated-sentinel robustness sweep
+(Study 4) — run on one shared sentinel world (Studies 5–7 use its moving
+and hierarchical variants): a discrete sentinel partially-observable
+Markov decision process (POMDP) using the categorical world structure
+illustrated by Friston et al. <span class="citation">(Friston et al. 2024)</span>, Figures 1 and 4.
+We adopt the discrete-state active-inference formulation that the
+community has standardized around — the categorical <span
+class="math inline">\(A/B/C/D_0\)</span> generative model of da Costa et
+al. <span class="citation">(Da Costa et al. 2020)</span>, the same object the <code>pymdp</code>
+<span class="citation">(Heins et al. 2022)</span> and RxInfer <span class="citation">(Bagaev et al. 2023)</span> toolboxes operate on —
+and reimplement it in pure NumPy in <code>pomdp.py</code> so the colony,
+its sensors, and its dynamics are exactly the ones the analysis
+executes. A colony of sentinels watches a single hidden creature whose
+location is the shared latent factor they federate beliefs about.</p>
+<p>The structural map in <a class="xref" href="index.html#fig:generative-model-schema">Figure 4</a>
+follows the same generative-model vocabulary while making the
+implementation boundary visible: Panel A shows what one agent actually
+sees — one noisy categorical report over the 9 possible locations —
+while Panel B identifies the <span
+class="math inline">\(A/B/C/D_0\)</span> factors that turn that report
+into a local posterior. Temporal depth then describes state,
+observation, posterior, and control order; hierarchical depth describes
+conditioned priors. It is a formal schematic, not an assertion that
+every displayed dependency is simultaneously estimated in every
+study.</p>
+<figure id="fig:generative-model-schema">
+<a class="figure-full-size-link" href="../figures/generative_model_schema.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/generative_model_schema.png" style="width:95.0%"
+alt="Formal categorical generative-model schema." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Formal categorical generative-model
+schema. Source relation: source-inspired original schematic related to
+Friston et al. (2024), Figs. 1 and 4; estimand: categorical dependency
+structure; uncertainty: none. The x-axis is the dependency or role order
+within each panel; the y-axis positions hidden states, observations,
+model factors, and optional context levels. Panel A shows a hidden
+9-cell location and the corresponding categorical likelihood row <span
+class="math inline">\(A[o,s]\)</span>, making the private sensory report
+explicit. Panel B shows <span class="math inline">\(A\)</span>, <span
+class="math inline">\(B\)</span>, <span
+class="math inline">\(C\)</span>, and <span
+class="math inline">\(D_0\)</span> feeding the local posterior <span
+class="math inline">\(q(s)\)</span>; Panel C shows temporal state,
+observation, posterior, and action order; Panel D shows optional
+top-down conditioned priors. The equation ribbon records the implemented
+state-inference form and the zero-robustness recovery identity. This
+deterministic formal schematic contains no fitted values, empirical
+sample, error band, or confidence interval.</figcaption>
+</figure>
+<h2 id="sec:methods-state-space">State space: one shared latent
+factor</h2>
+<p>The world holds one hidden factor: the creature’s location on a
+square grid of side <span class="math inline">\(L\)</span>, giving <span
+class="math inline">\(n_s = L^2\)</span> location states. Our sentinel
+world uses the <span class="math inline">\(3\times 3\)</span>
+cardinality illustrated in Friston et al. <span class="citation">(Friston et al. 2024)</span>, Fig.
+1, so <span class="math inline">\(n_s = 9\)</span> — the cardinality
+<code>pomdp.N_LOCATIONS</code> exposes and
+<code>experiment_config</code> carries as <code>n_locations</code>. This
+single location factor is precisely the latent the colony gossips about:
+it is the shared argument of the log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>) and of
+every belief-sharing round (<a class="xref" href="index.html#eq:belief-round">Eq. (9)</a>). Fixing one
+hidden factor keeps the recovery limits of <a class="xref" href="index.html#sec:formalism">Section 6</a> closed-form and
+exactly testable, rather than approximated.</p>
+<h2 id="sec:methods-abcd">Four categorical tensors: likelihood,
+transitions, preferences, priors</h2>
+<p>The generative model is the tuple <span class="math inline">\((A, B,
+C, D_0)\)</span> in the discrete active-inference convention: a
+categorical probability mass function is a non-negative vector summing
+to one, and a likelihood matrix is shape <span
+class="math inline">\((n_o, n_s)\)</span> whose columns (indexed by
+hidden state) are categorical.</p>
+<p><strong>Observation likelihood <span class="math inline">\(A =
+P(o\mid s)\)</span>.</strong> Each sentinel observes the creature’s cell
+through a noisy sensor. With probability <code>acuity</code> the sensor
+reports the true cell; the residual mass <span
+class="math inline">\(1-\text{acuity}\)</span> spreads uniformly over
+the other <span class="math inline">\(n_s-1\)</span> cells. With outcome
+cardinality <span class="math inline">\(n_o = n_s\)</span>, the single
+location modality is one <span class="math inline">\((n_s, n_s)\)</span>
+matrix:</p>
+<p><span class="math display">\[
+A_{o s} \;=\;
+\begin{cases}
+\text{acuity}, &amp; o = s,\\
+\dfrac{1-\text{acuity}}{n_s - 1}, &amp; o \neq s,
+\end{cases}
+\qquad \textstyle\sum_{o} A_{o s} = 1 .
+\]</span> {#eq:observation-likelihood}</p>
+<p>The acuity in <a class="xref" href="index.html#eq:observation-likelihood">Eq. (10)</a>
+tunes how peaked the sensor is: high acuity gives a near-diagonal <span
+class="math inline">\(A\)</span> that pins the creature; the
+belief-sharing study deliberately runs the colony at the low acuity
+<span class="math inline">\(\text{acuity} = 0.55\)</span>, where no
+single sentinel can resolve the location alone and the colony must pool
+evidence to do so. When a seeded generator is supplied, each sentinel’s
+acuity is jittered by a small non-negative perturbation, so a colony
+carries slightly heterogeneous likelihoods while every column remains a
+proper pmf.</p>
+<p><strong>Transition tensor <span class="math inline">\(B =
+P(s&#39;\mid s, u)\)</span>.</strong> The creature moves on the grid
+under three control paths — <code>still</code>, <code>left</code>,
+<code>right</code> — so <span class="math inline">\(B\)</span> has shape
+<span class="math inline">\((n_s, n_s, n_u)\)</span> with <span
+class="math inline">\(n_u = 3\)</span>. <code>still</code> is the
+deterministic self-loop; <code>left</code> and <code>right</code>
+decrement and increment the grid column, saturating at the walls (a
+wall-adjacent move in the wall’s direction is a self-loop). All three
+controls act on the column index alone, so the creature’s row is
+preserved and its motion is confined to the horizontal axis of the grid
+— a deliberate one-dimensional control over the two-dimensional location
+factor. Every slice <span
+class="math inline">\(B_{\cdot\,\cdot\,u}\)</span> is column-normalized
+by construction, so the transition is a valid categorical for each
+action.</p>
+<p><strong>Log-preference <span
+class="math inline">\(C\)</span>.</strong> The sentinel prefers to
+<em>see</em> the creature near the den (the center cell), encoded as a
+log-preference vector of shape <span class="math inline">\((n_o,
+1)\)</span> with a positive bump on the center outcome and zero
+elsewhere. The preferred-outcome distribution that the
+expected-free-energy decomposition of <a class="xref" href="index.html#sec:methods-learning">Section 5.15</a> uses is
+<span class="math inline">\(p_C(o) =
+\mathrm{softmax}(C)[o]\)</span>.</p>
+<p><strong>Initial prior <span
+class="math inline">\(D_0\)</span>.</strong> The creature is believed to
+start at the grid center, so <span class="math inline">\(D_0\)</span> of
+shape <span class="math inline">\((n_s, 1)\)</span> places unit mass on
+the center cell. <span class="math inline">\(D_0\)</span> enters state
+inference as the log-prior of the one-step variational update (<span
+class="citation"
+data-cites="eq:state-inference"><a class="xref" href="index.html#eq:state-inference">Eq. (11)</a></span> below).</p>
+<p>The columns-are-pmfs invariant is not assumed — it is pinned by
+ISC-15, which checks that every column of <span
+class="math inline">\(A\)</span> and of each <span
+class="math inline">\(B_{\cdot\,\cdot\,u}\)</span> sums to one.</p>
+<h2 id="sec:methods-state-inference">One-step variational state
+inference in the grid world</h2>
+<p>Given an observation <span class="math inline">\(o\)</span>, a
+sentinel forms a posterior over the creature’s location by a single
+softmax step (Friston et al. <span class="citation">(Friston et al. 2024)</span>, Eq. 4): the
+log-prior plus the additive log-likelihood message, summed over any
+conditionally independent modalities <span
+class="math inline">\(m\)</span>,</p>
+<p><span class="math display">\[
+q(s) \;=\; \mathrm{softmax}\!\Big(\ln D_0(s) \;+\; \textstyle\sum_m \ln
+A_m[o_m, s]\Big).
+\]</span> {#eq:state-inference}</p>
+<p>The message <span class="math inline">\(\ln A_m[o_m, \cdot]\)</span>
+is the row of <span class="math inline">\(A_m\)</span> that the observed
+outcome selects; summing messages over modalities makes each modality an
+additive evidence term — the categorical product-of-experts. The
+companion variational free energy, the scalar <a class="xref" href="index.html#eq:state-inference">Eq. (11)</a> minimizes,
+is</p>
+<p><span class="math display">\[
+F[q] \;=\; \mathbb{E}_q\!\big[\ln q(s) - \ln D_0(s) - \textstyle\sum_m
+\ln A_m[o_m, s]\big]
+\;=\; \mathrm{KL}\big(q \,\|\, D_0\big) \;-\;
+\mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big],
+\]</span> {#eq:variational-free-energy}</p>
+<p>reported in nats. The one-step posterior of <a class="xref" href="index.html#eq:state-inference">Eq. (11)</a> is its
+unique minimizer, where <span class="math inline">\(F\)</span> equals
+the negative log model evidence. Both live in
+<code>belief_updating.infer_states</code> and
+<code>belief_updating.vfe</code>, and the free energy of <span
+class="citation"
+data-cites="eq:variational-free-energy"><a class="xref" href="index.html#eq:variational-free-energy">Eq. (12)</a></span>
+is the quantity the communicating-versus-incommunicado colony comparison
+of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+scores.</p>
+<p>This inference step is not a separate mechanism bolted onto the
+colony: it is the <span class="math inline">\(L=\mathrm{NLL}\)</span>,
+learning-rate-1 special case of the generalized-Bayes posterior <span
+class="citation" data-cites="eq:gen-bayes"><a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a></span>,
+reusing the same locked softmax. That client identity recovers the
+stated categorical Bayes substrate at its trusting limits. The separate
+server identity in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>
+then yields the project log-linear pool under its qualified Eq. 7
+message-combination bridge; together these do not recover the complete
+Friston protocol (<a class="xref" href="index.html#sec:formalism">Section 6</a>).</p>
+<h2 id="sec:methods-pomdp-loop">Hidden-state to action loop: the POMDP
+substrate</h2>
+<p>The categorical POMDP loop in <a class="xref" href="index.html#fig:pomdp-loop">Figure 5</a> separates the
+common latent-state substrate from the federation transport. In the
+sentinel interpretation, an agent is a location-sensitive observer: the
+hidden state is one of 9 cells, the private outcome is a noisy
+categorical report of that location, and the agent sends its posterior
+over the location rather than the report itself. The flat belief-sharing
+studies use the observation, posterior, and communication subset; the
+moving-world extension also executes transition and EFE-guided action
+paths. The diagram therefore gives readers the active-inference context
+without turning a conceptual loop into a claim that every study
+estimates every latent or policy quantity.</p>
+<figure id="fig:pomdp-loop">
+<a class="figure-full-size-link" href="../figures/pomdp_loop.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/pomdp_loop.png" style="width:95.0%"
+alt="Sentinel-world and active-inference loop." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Sentinel-world and active-inference loop.
+Source relation: source-inspired original schematic related to Friston
+et al. (2024), Figs. 1 and 4; estimand: POMDP message-and-action
+sequence; uncertainty: none. The x-axis is the POMDP cycle in Panel C
+from hidden state through observation, posterior, action, and next
+state; the y-axis separates the shared-world, belief-sharing, and
+temporal-loop panels. Panel A shows three agents viewing the same 9-cell
+hidden world through private, noisy categorical observations; raw
+observations remain local. Panel B shows those local posteriors entering
+a log-linear-pool or robust server and returning as a cavity-excluded
+consensus. Panel C gives the POMDP cycle from hidden state <span
+class="math inline">\(s_t\)</span> through observation <span
+class="math inline">\(o_t\)</span>, posterior <span
+class="math inline">\(q_t(s)\)</span>, action <span
+class="math inline">\(u_t\)</span>, and transition to <span
+class="math inline">\(s_{t+1}\)</span>, with <span
+class="math inline">\(A\)</span>, <span
+class="math inline">\(B\)</span>, and <span
+class="math inline">\(C\)</span> marking the likelihood, transition, and
+preference factors. The flat studies execute the inference-sharing
+branch; the moving-world extension also executes transitions and
+EFE-guided actions. This is a deterministic model schematic, not an
+uncertainty-bearing empirical result.</figcaption>
+</figure>
+</main>
+</body>
+</html>

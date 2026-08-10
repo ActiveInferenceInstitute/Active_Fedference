@@ -1,0 +1,9 @@
+\frametitle{Three robustness axes remain distinct in the results}
+The \textbf{variational server axis} is \breaktt{variational\_aggregate}.
+It is also server-side, but it is not the same claim as the sharp
+heuristic: it descends the stated aggregation free energy
+(eq.~8), carries the derived effective-weight
+bound proved in the supplement, and pays for that property with a
+conservative maximum-entropy bias. The contaminated sweep therefore
+reports behavior for the sharp heuristic and cites the variational rule
+only where the objective-backed guarantee is actually in force.

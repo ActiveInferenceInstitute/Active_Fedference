@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>22_discussion_related_work.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:related-work">Related work: active inference, federated
+Bayes, and the scoped bridge</h2>
+<p>This work sits at the boundary between two research communities with
+different objects of inference. Each cited thread contributes a real
+component; this paper extends the intersection without claiming that
+either literature is exhausted. The positioning is therefore against the
+reviewed sources and their assumptions, not against an absolute claim
+about everything the field has or has not done.</p>
+<h2 id="sec:related-historical">Pre-modern probability, inverse
+probability, and collective judgment</h2>
+<p>The pre-modern sources in this manuscript are not evidence that early
+probability theorists anticipated KL minimization or federated learning.
+They serve a narrower role: they show that the paper’s recurring
+problems — expected uncertain outcomes, inverse inference from effects
+to causes, utility-sensitive action, and collective judgment — are old
+problems now implemented with modern variational machinery.</p>
+<p>The probability-calculus line begins with Pascal and Fermat’s
+correspondence on the problem of points <span class="citation">(Pascal and Fermat 1654)</span>,
+Huygens’ printed treatment of reasoning in games of chance
+<span class="citation">(Huygens 1657)</span>, Montmort’s combinatorial analysis of games
+<span class="citation">(Montmort 1708)</span>, Bernoulli’s <em>Ars conjectandi</em> and its
+law-of-large-numbers logic <span class="citation">(Bernoulli 1713)</span>, and de Moivre’s
+systematic probability textbook <span class="citation">(de Moivre 1718)</span>. For this paper,
+their relevance is not that they contain active inference, but that they
+make expectation and uncertain evidence objects of calculation.</p>
+<p>The inverse-probability line is closer to the manuscript’s formal
+spine. Bayes and Price frame the problem of inferring an unknown chance
+from observed events <span class="citation">(Bayes 1763)</span>, and Laplace generalizes the
+probability of causes given events <span class="citation">(Laplace 1774)</span>. Read beside
+modern active inference, these sources support the vocabulary of
+generative-model inversion: data are effects, latent states or
+parameters are causes, and a posterior belief reconciles prior
+commitments with observed evidence. That is a conceptual bridge only;
+the actual identity with the FedGVI recovery corner is the modern result
+of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> and
+<a class="xref" href="index.html#sec:formalism">Section 6</a>.</p>
+<p>Decision and aggregation enter through Daniel Bernoulli’s
+expected-utility treatment of risk <span class="citation">(Bernoulli 1738)</span> and the
+voting-theoretic work of Borda and Condorcet <span class="citation">(Borda 1784; Condorcet 1785)</span>. They help name the problem this paper revisits in a
+categorical active-inference colony: local judgments must be combined,
+and the chosen aggregation rule encodes assumptions about competence,
+independence, weights, and stakes. Those assumptions are exactly what
+the modern log-pool and robustness literature make explicit.</p>
+<h2 id="sec:related-aif">Active inference: generative agents, EFE, and
+colonies</h2>
+<p>The free-energy principle <span class="citation">(Friston 2010)</span> and its discrete
+state-space process theory <span class="citation">(Friston et al. 2017)</span> gave the field a unified
+account of perception and action: hand-built generative models with
+<span class="math inline">\(A\)</span>/<span
+class="math inline">\(B\)</span>/<span
+class="math inline">\(C\)</span>/<span class="math inline">\(D\)</span>
+matrices, variational free energy for inference, and expected free
+energy for principled action selection. The discrete state-space
+synthesis <span class="citation">(Da Costa et al. 2020)</span> and toolboxes turned that account into
+scalable machinery — the pymdp discrete-state library <span class="citation">(Heins et al. 2022)</span>
+and the RxInfer reactive message-passing engine <span class="citation">(Bagaev et al. 2023)</span>.
+<em>Yes:</em> this substrate is exactly what we reimplement, and our EFE
+decomposition into risk and ambiguity (<a class="xref" href="index.html#eq:efe-decomposition">Eq. (17)</a>, <span
+class="citation" data-cites="eq:efe-identity"><a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a></span>,
+<a class="xref" href="index.html#fig:efe-decomp">Figure 7</a>) is the community’s
+own action-selection objective. <em>And:</em> we add a robustness knob
+to its belief-fusion step without leaving the framework.</p>
+<p>The fusion operator itself is not new as a mathematical object. Under
+the explicit categorical posterior-log-potential and fixed-weight bridge
+of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+the message-combination term of Friston’s belief-sharing equation is
+represented by a logarithmic opinion pool <span class="citation">(Genest and Zidek 1986; Genest et al. 1986)</span> and a product-of-experts consensus
+<span class="citation">(Hinton 2002)</span>. That limited representation is not a statement
+that the complete source protocol is a log pool. Abbas’ KL view of
+linear and log-linear pools makes the same point in scoring-rule
+language: log-pooling can be justified as a KL aggregation rule for
+expert distributions, not as a contamination-robust estimator
+<span class="citation">(Abbas 2009)</span>. The Bayesian Committee Machine adds the
+distributed-learning analogue: independent estimators trained on data
+subsets can be combined by a product-style Bayesian rule, with
+assumptions about conditional independence and prior accounting made
+explicit <span class="citation">(Tresp 2000)</span>. Fully Bayesian aggregation gives the
+social-choice counterpart: geometric pooling of beliefs is singled out
+by dynamic Bayesian rationality conditions, not by robustness to
+contaminated reports <span class="citation">(Dietrich 2021)</span>. That classical literature is
+useful precisely because it names the hidden commitments — shared
+support, weight choice, prior accounting, and external-Bayes coherence —
+that are easy to overlook when the same operation appears as a colony
+update.</p>
+<p>A parallel thread studies how active-inference agents coordinate as
+ensembles — collective behavior and surprise minimization across a
+colony <span class="citation">(Heins et al. 2024)</span>, epistemic communities
+<span class="citation">(Albarracin et al. 2022)</span>, and collective intelligence
+<span class="citation">(Kaufmann et al. 2021)</span>. The belief-sharing thread
+<span class="citation">(Friston et al. 2024)</span> is one member of this family: agents reach
+consensus by exact-Bayes fusion of one another’s beliefs, and the colony
+belief-sharing scenario we implement as a reduced categorical
+standard-Bayes-limit analogue (<a class="xref" href="index.html#eq:belief-round">Eq. (9)</a>, <span
+class="citation"
+data-cites="sec:results-belief_sharing"><a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a></span>)
+is related to its worked example. Structure learning rounds out the
+picture: active inference with Bayesian optimal design selects and
+reduces models within the same frame <span class="citation">(Smith et al. 2022)</span>, and post-hoc
+Bayesian model reduction <span class="citation">(Friston and Penny 2011)</span> is the engine behind our
+emergence study (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a>, <span
+class="citation"
+data-cites="sec:results-emergence"><a class="xref" href="index.html#sec:results-emergence">Section 7.4</a></span>). The
+cited active-inference line has rich generative models, principled
+action, and ensembles that coordinate by sharing beliefs. In the sources
+reviewed here, the belief-fusion rule is not systematically
+characterized under explicit contamination or intentionally wrong
+broadcasts, nor connected to the robustness theory used here. Fusion is
+treated as exact-Bayes and trusting in that scoped comparison.</p>
+<p>Friston et al. <span class="citation">(Friston et al. 2024)</span> crystallized these ideas into
+three worked simulations: (1) communicating-colony free-energy
+convergence, (2) Dirichlet language acquisition, and (3) Bayesian model
+reduction structure emergence. We use reduced categorical
+standard-Bayes-limit analogues of all three mechanisms (<span
+class="citation"
+data-cites="sec:results-recovery"><a class="xref" href="index.html#sec:results-recovery">Section 7.1</a></span>) under
+the declared protocol before building the robust extension. This is a
+mechanism-level comparison, not an exact source-protocol or figure
+reproduction.</p>
+<h2 id="sec:related-fl">Robust and federated Bayes outside active
+inference</h2>
+<p>Federated learning aggregates models trained on decentralized data
+<span class="citation">(McMahan et al. 2017)</span>, and the probabilistic-federation line
+recasts that aggregation as variational inference — partitioned
+variational inference <span class="citation">(Ashman et al. 2022)</span> and its federated
+predecessor <span class="citation">(Bui et al. 2018)</span>. This is a different use of the word
+<em>federated</em> from Friston et al.’s federated inference: Friston
+federates hidden-state beliefs among agents sharing a world model, while
+machine-learning federated learning usually federates parameter or
+predictive-model updates over decentralized datasets. The bridge claimed
+here is therefore algebraic and variational — a shared normalized
+product/log-pool operator at the KL/NLL recovery corner — not a claim
+that either source paper already solved the other’s problem.</p>
+<p>Robustness, meanwhile, has a mature Bayesian theory: general Bayesian
+updating through a loss <span class="citation">(Bissiri et al. 2016)</span>, Gibbs posterior inference
+<span class="citation">(Jiang and Tanner 2008)</span>, safe learning-rate selection under misspecification
+<span class="citation">(Grunwald 2012)</span>, coarsened posteriors for robustness to exact-data
+conditioning <span class="citation">(Miller and Dunson 2018)</span>, divergence-criteria posterior
+updating <span class="citation">(Jewson et al. 2018)</span>, Bayesian misspecification asymptotics
+<span class="citation">(Kleijn and van der Vaart 2012)</span>, the optimization-centric generalized
+variational inference view <span class="citation">(Knoblauch et al. 2022)</span>, recent
+closed-form characterizations of unrestricted generalized variational
+objectives <span class="citation">(Nguyen and Westerhout 2026)</span>, and the bounded-influence losses
+that make updates robust — density-power and gamma-divergence estimation
+<span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span>, robust-divergence
+variational inference <span class="citation">(Futami et al. 2018)</span>, and generalized
+cross-entropy <span class="citation">(Zhang and Sabuncu 2018)</span>. Huber and Ronchetti supply the
+robust-statistics vocabulary of influence and breakdown
+<span class="citation">(Huber and Ronchetti 2009)</span>, which we use as vocabulary for boundedness and
+empirical failure modes rather than as a theorem transfer. FedGVI
+<span class="citation">(Mildner et al. 2025)</span> is the synthesis we use per agent: a robust
+generalized- Bayes objective with client and server divergence choices.
+This community provides decentralized aggregation and theorem-backed
+results in its stated settings. The cited papers do not evaluate
+active-inference POMDP belief consensus — the generative-model-bearing,
+action-selecting setting where beliefs drive behavior.</p>
+<p>The 2025 preprint on convergence rates under prior misspecification
+<span class="citation">(Mildner et al. 2025)</span> sharpens the current GVI context: bounded divergences
+can support concentration and rates under explicit assumptions, but the
+result does not transfer automatically to this repository’s finite
+categorical state space or to its server-side aggregation heuristic.</p>
+<p>The federated-learning robustness literature also supplies important
+negative space for this paper. Byzantine-tolerant gradient aggregation
+<span class="citation">(Blanchard et al. 2017)</span>, geometric-median robust aggregation
+<span class="citation">(Pillutla et al. 2022)</span>, and divergence-weighted gamma-mean aggregation
+<span class="citation">(Li et al. 2022)</span> attack corrupted client updates directly. A recent
+Bayesian robust-aggregation preprint likewise models unknown client
+honesty for federated model updates <span class="citation">(Karakulev et al. 2025)</span>. Those are
+close comparators for adversarial federation, but the object being
+aggregated differs: they aggregate model-update vectors or posterior
+measures, while this paper attacks categorical belief fusion and
+generalized-Bayes client updates. Robust subset-posterior combination is
+another nearby Bayesian route <span class="citation">(Minsker et al. 2017)</span>, but it combines
+posterior measures across data shards rather than active-inference
+belief broadcasts with a shared latent state. We use those sources to
+position the problem, not to import their guarantees into
+<code>robust_aggregate</code>.</p>
+<h2 id="sec:related-gap">The specific bridge added here</h2>
+<p>The gap this manuscript fills is robust, generalized-Bayes belief
+fusion for active-inference ensembles. Concretely:</p>
+<ul>
+<li><strong>Per-agent bounded-influence updates.</strong>
+FedGVI-faithful <span class="math inline">\(\beta\)</span>/rcce updates
+that carry provable bounded influence (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a>).</li>
+<li><strong>Server-side divergence-reweighting heuristic.</strong> A
+complementary aggregation heuristic (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>) with a
+stated recovery limit, positioned alongside robust federated aggregation
+work without borrowing its theorems.</li>
+<li><strong>Provable recovery of the standard-Bayes client
+limit.</strong> The client KL/NLL loss limits recover Bayes, and the
+separate zero-robustness server identity returns the project log-linear
+pool (<span class="xref">Eq. 6</span>, <span
+class="citation" data-cites="eq:renyi-limit"><a class="xref" href="index.html#eq:renyi-limit">Eq. (2)</a></span>,
+<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). Under the
+stated categorical bridge, that pool specializes only the Eq. 7
+message-combination term <span class="citation">(Friston et al. 2024)</span>.</li>
+<li><strong>Additional executed studies beyond the Friston et al. (2024)
+baseline.</strong> The three Friston simulations motivate
+source-mechanism analogues rather than serving as source-protocol
+recovery checks; beyond them we contribute: (4) a contamination sweep in
+which a fraction of colony members are adversarial or misspecified
+(<a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>);
+(5) a moving-world scenario with active expected-free-energy movement
+(<a class="xref" href="index.html#sec:results-moving">Section 13.7</a>);
+(6) a two-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>);
+(7) a three-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-3level">Section 13.11</a>); (8) a
+sensitivity sweep over acuity <span
+class="math inline">\(\times\)</span> colony size (<span
+class="citation"
+data-cites="sec:results-sensitivity"><a class="xref" href="index.html#sec:results-sensitivity">Section 13.13</a></span>);
+and (9) finite-grid parameter recovery for the declared acuity family
+(<a class="xref" href="index.html#sec:results-parameter-recovery">Section 14</a>).</li>
+<li><strong>Rigorous statistics.</strong> Every verdict is produced by
+matched-pairs Wilcoxon signed-rank tests <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span> deflated with Benjamini–Hochberg FDR
+<span class="citation">(Benjamini and Hochberg 1995)</span>, reported with bootstrap confidence intervals
+<span class="citation">(Efron and Tibshirani 1993)</span>, rank/effect-size caveats <span class="citation">(Nakagawa and Cuthill 2007)</span>, and
+an observed-effect design-power approximation — none of which appear in
+Friston et al. (2024).</li>
+<li><strong>An objective-backed server-side aggregator with redescending
+weights.</strong> The <code>variational_aggregate</code> rule descends a
+stated aggregation free energy (<a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>)
+monotonically; any converged fixed point is coordinatewise stationary.
+The rule carries a proven raw effective-weight bound and empirical
+redescending response (<a class="xref" href="index.html#fig:bounded-influence">Figure 15</a>),
+while leaving open whether the sharper reverse-KL server heuristic is
+itself the closed-form minimizer of an equally defensible
+objective.</li>
+</ul>
+<p>The contribution is the bridge: an explicit connection between
+active-inference belief consensus and robust federated generalized
+Bayes, with the standard pool recovered exactly at the corner and the
+additional studies (the contamination sweep plus several structural
+extensions) showing how the bridge behaves beyond the Friston et
+al. baseline.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>S05_results_moving_world.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:results-moving">Moving sentinel world: communication benefit
+depends on field of view</h2>
+<p>The hidden-state/action relation for this extension is summarized in
+the categorical loop schematic <a class="xref" href="index.html#fig:pomdp-loop">Figure 5</a>; the results below
+remain the executed moving-world comparisons, not a claim that the
+schematic’s full loop is present in every flat belief-sharing study.</p>
+<p>The static sentinel world lets every agent observe the same shared
+latent, so belief sharing is a refinement rather than a requirement. To
+stress the <em>necessity</em> of communication we add movement and
+<strong>disjoint</strong> fields of view. The world is a linear grid of
+4 cells holding a single binary threat — left half (state 0) or right
+half (state 1). The 2 sentinels start at evenly tiled positions and each
+observe a half-open window of cells, so in the default setup agent 0
+watches the left half and agent 1 the right half: their views do not
+overlap. Each agent’s likelihood is a confident, signed presence reading
+for the half it can see, and three control paths (stay / left / right)
+let it reposition. The expected-free-energy policy scores each candidate
+move by the expected posterior entropy after one observation and takes
+the most information-seeking step.</p>
+<p>We run 960 trials of 6 steps each under three conditions:
+<em>isolated</em> (random moves, no sharing), <em>communicating</em>
+(random moves plus a log-linear-pool consensus each step), and
+<em>EFE-guided</em> (information-seeking moves plus the same sharing).
+The measured consensus accuracies are 0.999 (isolated), 0.977
+(communicating), and 0.978 (EFE-guided), with a communicating
+free-energy gap of -0.528 nats relative to the isolated baseline
+(negative: no free-energy advantage over isolated in this
+binary-complement regime of logically complete half-views) (<span
+class="citation"
+data-cites="fig:moving-world"><a class="xref" href="index.html#fig:moving-world">Figure 23</a></span>).</p>
+<p>Across 128 independent seeds the EFE-guided accuracy is 0.983 (95 %
+CI 0.982–0.984), the communicating (random-moves + sharing) accuracy is
+0.982 (95 % CI 0.982–0.983), and the isolated accuracy is 0.999 (95 % CI
+0.999–0.999). In this binary-complement regime the isolated condition is
+in fact significantly <em>higher</em> on accuracy than the EFE-guided
+sharing condition — their 95 % intervals do not overlap — and the
+EFE-vs-isolated accuracy contrast yields Wilcoxon signed-rank <span
+class="math inline">\(p = 0.0000\)</span> (significant; isolated
+higher), effect size <span class="math inline">\(r = 1.000\)</span>
+(large). Sharing is therefore not merely unnecessary in this regime; it
+costs a small but reliable amount of accuracy. Nor does sharing lower
+free energy here: the EFE free-energy gap (isolated surprise minus the
+EFE-guided condition’s surprise) is -0.368 nats (95 % CI -0.384–-0.353)
+— negative, so the pooled consensus is slightly <em>more</em> surprised
+by the true state than the isolated baseline, because a single agent’s
+view already suffices. The accuracy case for <em>necessity</em> is
+therefore made only in the larger-state-space disjoint-FOV extension
+below, not by these binary-complement numbers.</p>
+<p>We report these numbers as measured, not assumed. The binary world
+carries a logical complement: ruling out one’s own half implies the
+other, so a single agent’s “not detected” still carries information
+about the global state, and an isolated agent is not strictly blind. By
+design, the intended <em>cannot-decide-alone</em> regime is the
+high-noise, few-step corner where one sensor’s evidence cannot overcome
+the flat prior; there belief sharing is meant to fuse the two
+complementary views into a decisive consensus. That regime is not
+separately measured here — the construction, the three actions, the EFE
+rule, and the exact condition protocol are detailed in the supplement
+(<a class="xref" href="index.html#sec:supp-moving">Section 13.8</a>).</p>
+<figure id="fig:moving-world">
+<a class="figure-full-size-link" href="../figures/moving_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/moving_world.png" style="width:80.0%"
+alt="Source relation: original project schematic for the moving-world protocol; estimand: condition-level consensus accuracy, signed free-energy gap, and steps-to-consensus proxy in the stated native units; uncertainty: deterministic seeded…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Source relation: original project
+schematic for the moving-world protocol; estimand: condition-level
+consensus accuracy, signed free-energy gap, and steps-to-consensus proxy
+in the stated native units; uncertainty: deterministic seeded run, so no
+resampling interval is shown. Moving sentinel world across the three
+conditions (x-axis is condition: isolated, communicating, EFE-guided).
+Left panel: y-axis shows consensus accuracy (fraction of 960 trials
+whose pooled argmax matches the truth). Center panel: y-axis shows the
+signed free-energy gap in nats (isolated surprise minus the condition’s
+surprise on the true state, so a positive value would mean lower free
+energy than isolated; the measured gaps are negative, plotted against a
+zero reference line and annotated per bar). Right panel: y-axis shows a
+coarse steps-to-consensus proxy, with per-bar value annotations showing
+the three conditions are essentially tied. Each colony runs 6 steps over
+a 4-cell linear grid with 2 disjoint-FOV agents. Deterministic seeded
+run, so the bars carry no error band.</figcaption>
+</figure>
+<h3 id="sec:results-disjoint-fov">Disjoint field-of-view extension</h3>
+<p>To test whether communication is necessary (not merely beneficial)
+when observations are non-overlapping, we extend Study 5 to 3 agents
+each observing a 2-position disjoint window of a 6-position state space
+(chance-level accuracy 0.167). Isolated agents achieve mean accuracy
+0.35 — above chance but far from decisive, since no single agent can
+infer the global state from a partial window alone. Communicating agents
+pool complementary beliefs to reach 0.55 (gap 0.19).</p>
+<p>This is now a powered result, not an illustrative point estimate.
+Across 128 independent seeds the isolated accuracy is 0.326 (95% CI
+0.320–0.332) and the communicating accuracy is 0.493 (95% CI
+0.487–0.499), both clearing the 0.167 chance baseline — isolated agents
+are <em>not</em> at chance, since a partial FOV plus majority voting
+still carries some signal. The paired Wilcoxon signed-rank test
+(communicating vs. isolated, matched by seed) gives <span
+class="math inline">\(p = 0.0000\)</span>, effect size <span
+class="math inline">\(r = 1.000\)</span> (large): communicating beats
+isolated on every one of the 128 seeds, which is also why the p-value is
+at the smallest a 128-seed paired sign test can report — it should be
+read as “every seed agreed,” not as a precise magnitude of evidence
+beyond that floor. Given isolated performance is above chance, the
+precise claim is not that communication is <em>logically</em> necessary
+for any signal at all, but that it is necessary to approach the
+communicating-level accuracy under fully disjoint observations: the gap
+between the two conditions is significant, large, and reproducible,
+unlike the binary-complement contrast above.</p>
+<p>We separately quantify EFE-guided navigation rather than asserting an
+unquantified “widens the gap” effect. In a matched but smaller-scale
+disjoint-FOV movement-policy comparison (2 agents, 4-position
+binary-state grid, belief sharing active in both arms), EFE-guided
+accuracy is 0.975 versus 0.977 for random movement (<span
+class="math inline">\(p = 0.1046\)</span>, negligible effect): the two
+movement policies are not significantly different, because both are
+already near ceiling once belief sharing is active. We report this as
+the null result it is rather than claiming an unmeasured EFE benefit.
+<a class="xref" href="index.html#fig:disjoint-fov-world">Figure 24</a>
+summarizes the necessity result.</p>
+<figure id="fig:disjoint-fov-world">
+<a class="figure-full-size-link" href="../figures/disjoint_fov_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/disjoint_fov_world.png" style="width:80.0%"
+alt="Source relation: source-inspired original project extension of the moving-world mechanism; estimand: condition-level consensus accuracy in the two declared disjoint-FOV protocols; uncertainty: across-seed standard-deviation error bars." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Source relation: source-inspired original
+project extension of the moving-world mechanism; estimand:
+condition-level consensus accuracy in the two declared disjoint-FOV
+protocols; uncertainty: across-seed standard-deviation error bars.
+Disjoint-FOV extension of the moving sentinel world, as a two-panel
+figure whose panels come from two separately configured experiments.
+Left panel (communication necessity, 3 agents each observing a
+2-position non-overlapping window of the 6-position world): the x-axis
+is the condition (isolated vs. communicating); the y-axis is consensus
+accuracy — drawn as accuracy, the fraction of trials whose pooled argmax
+matches the true state. The accuracy gap between communicating and
+isolated conditions quantifies the necessity of belief sharing under
+fully disjoint fields of view, now backed by the paired Wilcoxon test in
+the text (<span class="math inline">\(p = 0.0000\)</span>) rather than a
+single point estimate. Right panel (EFE vs random navigation, a smaller
+2-agent, 4-position configuration): the x-axis is the movement policy
+(EFE-guided vs. random); the y-axis is final consensus accuracy — the
+panel is titled as a null result because that is what it shows. Both
+policies sit near ceiling once belief sharing is active, so the
+EFE-guided vs. random contrast is the null result reported in the text
+(<span class="math inline">\(p = 0.1046\)</span>). In both panels, bars
+show accuracy averaged across seeds; error bars show the across-seed
+standard deviation.</figcaption>
+</figure>
+</main>
+</body>
+</html>

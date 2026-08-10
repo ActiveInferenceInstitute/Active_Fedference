@@ -1,0 +1,7 @@
+\frametitle{Bayesian model reduction for structure emergence}
+The emergence study of sec.~5.22 uses
+this operation over \(n = 4\) candidate states. It contrasts a redundant
+reduction (\(\Delta F = 3.68\) nats; adopt) with a supported one
+(\(\Delta F = -27.67\) nats; reject) in fig.~11.
+This fixed-candidate algebraic comparison is deterministic, so it has no
+resampled sample or bootstrap interval.

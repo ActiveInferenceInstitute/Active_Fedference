@@ -1,0 +1,100 @@
+\frametitle{Scope boundaries that the evidence does not cross}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The bridge is a recasting, not an upstream claim.} Friston et
+  al. (Friston et al. 2024) supply a belief-sharing operator for agents
+  with a shared world model; Mildner et al. (Mildner et al. 2025) supply
+  robust federated generalized variational inference. Neither paper
+  claims the other. The contribution here is to recast the former as the
+  tested KL/NLL zero-robustness recovery corner of the latter-inspired
+  construction, then measure what changes when robust losses and server
+  reweighting are introduced.
+\item
+  \textbf{Historical sources are conceptual, not formal support.} The
+  pre-modern sources added in sec.~8.9 support
+  a genealogy of expectation, inverse inference, utility, and collective
+  judgment (Huygens 1657; Bayes 1763; Laplace 1774; Bernoulli 1738;
+  Condorcet 1785). They do not support any claim about KL, NLL,
+  product-of-experts training, FedGVI, or \breaktt{robust\_aggregate}.
+  Those claims rest only on the modern cited formalism and the tests
+  reported in sec.~7.1.
+\item
+  \textbf{Single-machine federation.} Federation is validated with queue
+  transport, a single-machine OS-process helper, and loopback TCP:
+  agents serialize beliefs, the server aggregates, and consensus is
+  broadcast back without changing the mathematics. The socket path now
+  exercises frame integrity and file-backed digest-verified replay
+  validation; an optional SQLite round-ID guard also survives local
+  process restarts. These controls are still not a substitute for
+  cross-host deployment, identity-bound mTLS, a shared multi-host replay
+  domain, discovery, long-running worker orchestration, or fault
+  tolerance; those steps are scoped as future work
+  (sec.~8.17).
+\item
+  \textbf{GPU / PyTorch Bayesian-neural-network experiments at the
+  original FedGVI scale.} The bounded-influence result is anchored here
+  by a small NumPy logistic-regression baseline
+  (fig.~16), not the RTX-class runs of the source
+  paper (Mildner et al. 2025). Even on that anchor the robust client's
+  margin over the standard client is non-monotone rather than uniform:
+  it opens in the moderate-to-high contamination range and then vanishes
+  at the most extreme swept level, where both configurations collapse
+  together with no reliable ordering (sec.~7.6).
+  That terminal convergence is reported, not trimmed; the axis's
+  rigorous standing rests on the recovery identities and the FedGVI
+  theorem under its matching assumptions, not on the size or
+  monotonicity of the empirical gap in this figure.
+\item
+  \textbf{Classification baselines are point estimates, not full
+  posteriors.} The NumPy logistic-regression baseline and the PyTorch
+  MLP complement both use point-estimate weights (no posterior
+  covariance is computed). A genuine mean-field variational family over
+  the weights --- diagonal-Gaussian \(q(w)\) with a closed-form KL and a
+  Monte-Carlo ELBO --- is implemented as a tested primitive
+  (\breaktt{bnn\_variational\_torch.VariationalMLP}, recovering the
+  point-estimate net exactly as its posterior variance vanishes), but
+  the full paper-faithful FedGVI classification lane (that variational
+  family trained under the contamination sweep, at GPU scale) is not:
+  MCMC, non-diagonal structure, and stochastic-weight averaging remain
+  unimplemented, and the full-posterior regime remains unverified.
+\item
+  \textbf{Hierarchical depth does not by itself improve the base task.}
+  The two- and three-level stacks (sec.~13.9,
+  sec.~13.11) run alternating L1/L2(/L3) inference
+  end-to-end and resolve their added context latents above chance, but
+  on the shared location task they do not beat the flat baseline --- the
+  paired location-accuracy gap is a small, statistically reliable
+  negative gap at the reported seed count
+  (fig.~25). Depth is therefore validated as
+  executable and consensus-preserving, not as an accuracy improvement;
+  whether a richer policy-and-horizon task family rewards hierarchy is
+  future work (sec.~8.20).
+\item
+  \textbf{Discrete POMDP only --- continuous or hybrid state spaces are
+  not addressed.} This work is discrete-categorical only, matching the
+  community's worked POMDP example (Da Costa et al. 2020; Friston et al.
+  2024). The limit-as-proof contract is validated off the categorical
+  case only for a one-dimensional Gaussian-mean conjugate slice;
+  continuous-state active inference and Gaussian belief-sharing colonies
+  remain untested.
+\item
+  \textbf{Temperature and divergence calibration are fixed, not
+  learned.} Coarsened posterior and safe-Bayes theory make clear that
+  the learning-rate/temperature is part of the inference rule under
+  misspecification (Miller and Dunson 2018; Grünwald 2012; Kleijn and
+  Vaart 2012). This manuscript validates the configured losses and
+  divergences, but it does not learn an optimal coarsening radius,
+  temperature, or divergence schedule across agents.
+\item
+  \textbf{Real multi-machine federation, networking, and privacy
+  cryptography.} Federation here is \emph{mathematical} (factor
+  aggregation), not infrastructural --- unlike communication-efficient
+  or Byzantine-robust federated learning (McMahan et al. 2017; Blanchard
+  et al. 2017).
+\item
+  \textbf{New linguistic theory.} The language-acquisition study
+  (sec.~7.3) reproduces the Dirichlet count
+  mechanism (eq.~14) mechanically; it does not
+  extend the linguistics.
+\end{itemize}

@@ -1,0 +1,137 @@
+{
+  "by_kind": {
+    "byzantine": {
+      "best_robust_method": "beta",
+      "diff_ci": [
+        0.012369259998638346,
+        0.047219636707465706
+      ],
+      "directional": true,
+      "mean_diff": 0.02925491438832146,
+      "naive_ci": [
+        0.6246372959999301,
+        0.6368671992251768
+      ],
+      "naive_mean": 0.6306283029039688,
+      "reliably_beats": false,
+      "robust_ci": [
+        0.6381966880851957,
+        0.682732708561799
+      ],
+      "robust_mean": 0.6598832172922903,
+      "win_fraction": 0.625
+    },
+    "confident_wrong": {
+      "best_robust_method": "AR",
+      "diff_ci": [
+        0.003958527237208348,
+        0.00455658044777687
+      ],
+      "directional": true,
+      "mean_diff": 0.004255867146355662,
+      "naive_ci": [
+        0.9831285931031407,
+        0.9839840517766428
+      ],
+      "naive_mean": 0.9835548105262804,
+      "reliably_beats": true,
+      "robust_ci": [
+        0.9876658954222985,
+        0.9879520879902938
+      ],
+      "robust_mean": 0.987810677672636,
+      "win_fraction": 1.0
+    },
+    "drift": {
+      "best_robust_method": "AR",
+      "diff_ci": [
+        0.00397435556008628,
+        0.0045603709352878405
+      ],
+      "directional": true,
+      "mean_diff": 0.004255867146355662,
+      "naive_ci": [
+        0.9831363577436549,
+        0.9839834566856787
+      ],
+      "naive_mean": 0.9835548105262804,
+      "reliably_beats": true,
+      "robust_ci": [
+        0.9876677864539629,
+        0.9879568101102238
+      ],
+      "robust_mean": 0.987810677672636,
+      "win_fraction": 1.0
+    },
+    "label_noise": {
+      "best_robust_method": "AR",
+      "diff_ci": [
+        -0.005180437074455112,
+        -0.005060494587385775
+      ],
+      "directional": false,
+      "mean_diff": -0.005120771712267831,
+      "naive_ci": [
+        0.9981815145197682,
+        0.9982883513049141
+      ],
+      "naive_mean": 0.9982360457882773,
+      "reliably_beats": false,
+      "robust_ci": [
+        0.9930056228324436,
+        0.9932248424506477
+      ],
+      "robust_mean": 0.9931152740760094,
+      "win_fraction": 0.0
+    },
+    "uniform": {
+      "best_robust_method": "AR",
+      "diff_ci": [
+        -0.0038434073643902012,
+        -0.0037875030107998916
+      ],
+      "directional": false,
+      "mean_diff": -0.003815483401279268,
+      "naive_ci": [
+        0.9985015196933923,
+        0.9985789709422043
+      ],
+      "naive_mean": 0.9985403133407322,
+      "reliably_beats": false,
+      "robust_ci": [
+        0.9946627085062986,
+        0.9947872257444039
+      ],
+      "robust_mean": 0.9947248299394529,
+      "win_fraction": 0.0
+    }
+  },
+  "directional_kinds": [
+    "confident_wrong",
+    "byzantine",
+    "drift"
+  ],
+  "entropy_kinds": [
+    "label_noise",
+    "uniform"
+  ],
+  "entropy_naive_robust": true,
+  "kinds": [
+    "confident_wrong",
+    "label_noise",
+    "uniform",
+    "byzantine",
+    "drift"
+  ],
+  "n_agents": 7,
+  "n_contaminated": 2,
+  "n_seeds": 64,
+  "n_trials": 24,
+  "rate": 0.6,
+  "reliable_kinds": [
+    "confident_wrong",
+    "drift"
+  ],
+  "reliable_win_fraction": 0.95,
+  "seed": 0
+}

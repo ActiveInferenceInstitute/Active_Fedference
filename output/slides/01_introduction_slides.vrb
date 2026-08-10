@@ -1,0 +1,22 @@
+\frametitle{How to read the visual architecture}
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=0.40\textheight,keepaspectratio,alt={System overview. Source relation: original project schematic; estimand: displayed posterior-mass and influence-weight contrasts; uncertainty: none. 5 agents with heterogeneous beliefs (blue = honest, red = adversarial) feed into naive pooling (Panel B, argmax pulled off-target) versus canonical robust\_aggregate heuristic reweighting (Panel C, true state recovered). x-axis is hidden-state index (1--8) in Panels B and C; y-axis: bar height indexes probability mass per state, and each agent in Panel A carries its own mini posterior bar chart (green column = true state). The true hidden state is 3; under 40\% contamination the equal-weight pool concentrates 39\% of consensus mass on the true state (its argmax lands on the adversaries' state), while the heuristic concentrates 50\% and recovers the correct argmax. This is a single deterministic schematic (no resampling, hence no error bars or CI); all percentages are computed from the pooled beliefs shown, and the panel does not claim the variational server's objective-backed weight-control result for robust\_aggregate.}]{../figures/system_overview.png}
+\caption{System overview. Source relation: original project schematic;
+estimand: displayed posterior-mass and influence-weight contrasts;
+uncertainty: none. 5 agents with heterogeneous beliefs (blue = honest,
+red = adversarial) feed into naive pooling (Panel B, argmax pulled
+off-target) versus canonical \protect\breaktt{robust\_aggregate}
+heuristic reweighting (Panel C, true state recovered). x-axis is
+hidden-state index (1--8) in Panels B and C; y-axis: bar height indexes
+probability mass per state, and each agent in Panel A carries its own
+mini posterior bar chart (green column = true state). The true hidden
+state is 3; under 40\% contamination the equal-weight pool concentrates
+39\% of consensus mass on the true state (its argmax lands on the
+adversaries' state), while the heuristic concentrates 50\% and recovers
+the correct argmax. This is a single deterministic schematic (no
+resampling, hence no error bars or CI); all percentages are computed
+from the pooled beliefs shown, and the panel does not claim the
+variational server's objective-backed weight-control result for
+\protect\breaktt{robust\_aggregate}.}\label{fig:system-overview}
+\end{figure}

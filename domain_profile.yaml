@@ -1,0 +1,99 @@
+domain: federated_active_inference
+display_name: Active Fedference — Robust Federated Active Inference
+required_packages:
+  - numpy
+  - scipy
+  - matplotlib
+preferred_outputs:
+  - pdf
+  - html
+validation_gates:
+  - experiment_method_design
+  - artifact_manifest
+  - evidence_grounding
+  - render_validation
+  - publication_readiness
+figure_types:
+  - belief_sharing_comparison
+  - belief_heatmap
+  - language_kl_decay
+  - emergence_bmr
+  - robustness_sweep
+  - robust_influence_weights
+  - bnn_robustness
+  - efe_decomposition
+  - aggregation_descent
+  - bounded_influence
+  - contamination_gallery
+  - cross_study_summary
+  - descent_comparison
+  - disjoint_fov_world
+  - graphical_abstract
+  - hierarchical_pomdp
+  - moving_world
+  - parameter_recovery
+  - robustness_onset
+  - sensitivity_heatmap
+  - system_overview
+citation_policy: official_or_scholarly
+source_policy: "Prefer primary project outputs (output/reports/*.json), FedGVI and Friston 2024 sources, and manuscript_variables.json."
+review_gates:
+  - experiment_method_design
+  - render_validation
+  - publication_readiness
+artifact_expectations:
+  - output/data/manuscript_variables.json
+  - output/reports/artifact_manifest.json
+  - output/reports/belief_sharing.json
+  - output/reports/bnn_robustness.json
+  - output/reports/contamination_gallery.json
+  - output/reports/efe_decomposition.json
+  - output/reports/emergence.json
+  - output/reports/evidence_registry.json
+  - output/reports/invariants.json
+  - output/reports/language_acquisition.json
+  - output/reports/moving_world.json
+  - output/reports/output_statistics.json
+  - output/reports/parameter_recovery.json
+  - output/reports/robust_influence_weights.json
+  - output/reports/robustness_onset.json
+  - output/reports/robustness_sweep.json
+  - output/reports/variational_aggregation.json
+  - output/figures/aggregation_descent.png
+  - output/figures/belief_heatmap.png
+  - output/figures/bnn_robustness.png
+  - output/figures/bounded_influence.png
+  - output/figures/contamination_gallery.png
+  - output/figures/cross_study_summary.png
+  - output/figures/descent_comparison.png
+  - output/figures/disjoint_fov_world.png
+  - output/figures/efe_decomposition.png
+  - output/figures/emergence_bmr.png
+  - output/figures/free_energy_comparison.png
+  - output/figures/graphical_abstract.png
+  - output/figures/hierarchical_pomdp.png
+  - output/figures/language_kl_decay.png
+  - output/figures/moving_world.png
+  - output/figures/parameter_recovery.png
+  - output/figures/robust_influence_weights.png
+  - output/figures/robustness_onset.png
+  - output/figures/robustness_sweep.png
+  - output/figures/sensitivity_heatmap.png
+  - output/figures/system_overview.png
+  - output/pdf/active_fedference_combined.pdf
+benchmark_rubric:
+  name: fedference-readiness
+  dimensions:
+    - name: output_validity
+      weight: 1.0
+    - name: reproducibility_bundle
+      weight: 1.0
+    - name: artifact_manifest
+      weight: 1.0
+    - name: evidence_grounding
+      weight: 2.0
+    - name: render_success
+      weight: 1.0
+    - name: publication_readiness
+      weight: 1.0
+llm_prompt_guidance: "Use generated JSON reports and manuscript_variables.json as the evidence source; do not invent numeric results. Respect the three-robustness-axes honesty contract (client-side FedGVI rigorous, server-side heuristic reverse-KL, conservative variational objective-backed)."

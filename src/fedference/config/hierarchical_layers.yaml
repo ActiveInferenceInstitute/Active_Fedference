@@ -1,0 +1,49 @@
+# Declarative layer specification for the N-level hierarchical POMDP (V2 extension).
+#
+# Each entry in ``layers`` describes one level from top (highest, slowest) to
+# bottom (L1, the directly observed sentinel world). The ``build_nlevel_world``
+# function in ``fedference.pomdp`` accepts a list of ``LayerSpec`` objects that
+# mirror this YAML structure.
+#
+# This file is a human-readable reference / documentation artefact; the
+# canonical programmatic construction is in ``fedference.pomdp.build_3level_world``
+# which uses the same defaults listed here.
+
+# 3-level canonical stack: L3 (meta-context) -> L2 (context) -> L1 (location)
+layers:
+
+  # Level 3 — meta-context (slowest-changing, top-level)
+  - name: L3_meta_context
+    n_states: 2
+    labels: ["low_threat", "high_threat"]
+    default_prior: [0.5, 0.5]
+    # Conditioned L2 priors: one per L3 state.
+    # low_threat  -> uniform L2 (equal quiet/alert chance)
+    # high_threat -> peaked at alert (P(alert) = 0.8)
+    conditioned_priors:
+      - [0.5, 0.5]     # L3=low_threat  -> L2 prior (quiet, alert)
+      - [0.2, 0.8]     # L3=high_threat -> L2 prior (quiet, alert)
+
+  # Level 2 — context (quiet / alert)
+  - name: L2_context
+    n_states: 2
+    labels: ["quiet", "alert"]
+    default_prior: [0.5, 0.5]
+    # Conditioned L1 priors: one per L2 state.
+    # quiet -> uniform over all 9 location states
+    # alert -> peaked at center cell (flat index 4 on the 3x3 grid), mass 0.6
+    conditioned_priors:
+      - uniform_9          # L2=quiet -> L1 prior is uniform
+      - center_peaked_9    # L2=alert -> L1 prior peaked at cell 4 (mass 0.6)
+
+  # Level 1 — location (9-state sentinel world, the directly observed level)
+  - name: L1_location
+    n_states: 9
+    labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    default_prior: uniform_9
+    conditioned_priors: null   # leaf level — no child
+
+# Sensor parameters for L1
+sensor:
+  acuity: 0.9
+  goal_bonus: 2.0

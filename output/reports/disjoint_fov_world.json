@@ -1,0 +1,94 @@
+{
+  "communicating_accuracy": 0.545,
+  "efe_navigation": {
+    "efe_accuracy": 0.975,
+    "efe_gap": -0.020000000000000018,
+    "n_agents": 2,
+    "n_positions": 4,
+    "n_steps": 3,
+    "n_trials": 200,
+    "random_accuracy": 0.995,
+    "seed": 0
+  },
+  "fov_width": 2,
+  "gap": 0.19000000000000006,
+  "isolated_accuracy": 0.355,
+  "multiseed": {
+    "communicating": {
+      "ci_hi": 0.49875,
+      "ci_lo": 0.48667871093750004,
+      "ci_method": "percentile_bootstrap",
+      "max": 0.57,
+      "mcse": 0.00308475562624044,
+      "mde": 0.00864220576396603,
+      "mean": 0.49281250000000004,
+      "median": 0.495,
+      "min": 0.39,
+      "n": 128,
+      "std": 0.03490002594588752,
+      "uncertainty_available": true
+    },
+    "communicating_vs_isolated": {
+      "effect_label": "large",
+      "paired_test": {
+        "effect_size": -1.0,
+        "pvalue": 9.347445243847876e-23
+      }
+    },
+    "efe_guided": {
+      "ci_hi": 0.9767578124999999,
+      "ci_lo": 0.9728515624999999,
+      "ci_method": "percentile_bootstrap",
+      "max": 1.0,
+      "mcse": 0.0010020660923628429,
+      "mde": 0.002807373551935965,
+      "mean": 0.9748828125,
+      "median": 0.975,
+      "min": 0.935,
+      "n": 128,
+      "std": 0.011337083665709945,
+      "uncertainty_available": true
+    },
+    "efe_vs_random": {
+      "effect_label": "negligible",
+      "paired_test": {
+        "effect_size": 0.1752528445006321,
+        "pvalue": 0.10460302467221208
+      }
+    },
+    "isolated": {
+      "ci_hi": 0.332109375,
+      "ci_lo": 0.3201953125,
+      "ci_method": "percentile_bootstrap",
+      "max": 0.41,
+      "mcse": 0.003069259821093465,
+      "mde": 0.008598792945323506,
+      "mean": 0.3262109375,
+      "median": 0.325,
+      "min": 0.235,
+      "n": 128,
+      "std": 0.03472471092349758,
+      "uncertainty_available": true
+    },
+    "n_seeds": 128,
+    "random": {
+      "ci_hi": 0.9786328125,
+      "ci_lo": 0.9750390625,
+      "ci_method": "percentile_bootstrap",
+      "max": 1.0,
+      "mcse": 0.0009008947695463744,
+      "mde": 0.0025239334694364115,
+      "mean": 0.9768359375,
+      "median": 0.98,
+      "min": 0.95,
+      "n": 128,
+      "std": 0.010192460810907734,
+      "uncertainty_available": true
+    }
+  },
+  "n_agents": 3,
+  "n_positions": 6,
+  "n_steps": 4,
+  "n_trials": 200,
+  "seed": 0
+}

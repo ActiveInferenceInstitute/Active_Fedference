@@ -1,0 +1,8 @@
+\frametitle{Move from process transport to true multi-machine federation}
+message-fault controls. It is not physical multi-host evidence. That
+later claim requires receipts from distinct hosts, deployment-grade key
+management, timeout policy, and long-running orchestration across
+process restarts, but it does not require changing the mathematics.
+Secure aggregation, differential privacy, and Byzantine tolerance are
+separate future threat models; transport integrity alone would not
+establish any of them (Blanchard et al. 2017; Pillutla et al. 2022).

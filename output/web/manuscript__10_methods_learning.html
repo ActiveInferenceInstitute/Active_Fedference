@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>10_methods_learning.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:methods-learning">Learning stack: EFE, Dirichlet updates,
+and BMR</h2>
+<p>Active-inference agents do more than infer states under a fixed
+model: they learn the parameters of the model, score policies by
+expected free energy, and revise model structure. The active-inference
+community has standardized all three operations <span class="citation">(Da Costa et al. 2020; Smith et al. 2022)</span>, and Friston et al. <span class="citation">(Friston et al. 2024)</span> place them
+at the heart of the federated belief-sharing scenario. We reimplement
+each in closed form so the language-acquisition, expected-free-energy,
+and emergence studies of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+rest on machine-checkable quantities rather than fitted curves.</p>
+<h2 id="sec:methods-dirichlet">Conjugate Dirichlet learning from
+co-occurrence counts</h2>
+<p>A sentinel learns its observation model <span
+class="math inline">\(A\)</span> by placing a Dirichlet prior with
+concentration <span class="math inline">\(a\)</span> on each column and
+updating it conjugately from observation-state co-occurrence counts
+(Friston et al. <span class="citation">(Friston et al. 2024)</span>, their equations 9–12). One
+learning step adds the expected sufficient statistics for that step and
+reads off the column-normalized posterior mean,</p>
+<p><span class="math display">\[
+a \;\leftarrow\; a + \text{counts},
+\qquad
+\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o&#39;} a_{o&#39; s}},
+\]</span> {#eq:dirichlet-update}</p>
+<p>implemented in <code>dirichlet_learning.learn_likelihood</code>.
+Intuitively, each concentration vector is a running tally of how often
+each outcome was seen while the creature occupied a given state: the
+prior seeds that tally with pseudo-counts, every step adds the
+co-occurrences it witnessed, and the posterior mean is simply the tally
+renormalized into a categorical. Likelihood learning is therefore
+bookkeeping — accumulate counts, then normalize — with no iterative
+optimization loop. We drive <a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a> with the
+expected sufficient statistics under the true model — a fixed count
+batch <span class="math inline">\(\text{count\_scale}\cdot
+A^{\star}\)</span> per step, optionally jittered by a seeded generator.
+As the concentrations accumulate, the expected likelihood <span
+class="math inline">\(\mathbb{E}[A]\)</span> converges to the
+data-generating <span class="math inline">\(A^{\star}\)</span>;
+convergence is measured by the per-column KL divergence summed over
+hidden states,</p>
+<p><span class="math display">\[
+\mathrm{KL}\big(A^{\star} \,\|\, \mathbb{E}[A]\big)
+\;=\; \sum_{s}\sum_{o} A^{\star}_{o s}\,\ln\frac{A^{\star}_{o
+s}}{\mathbb{E}[A]_{o s}},
+\]</span> {#eq:dirichlet-kl}</p>
+<p>which decreases monotonically toward zero — the standard-Bayes / KL
+fixed point. The learned likelihood always has full support (the
+Dirichlet prior is strictly positive), so <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (14)</a> is finite
+throughout. ISC-17 pins the monotone-decreasing KL trajectory, and the
+language-acquisition study of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+reports the descent of <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (14)</a> across 24
+steps.</p>
+<p>The implementation also carries the <span
+class="math inline">\(\eta\)</span> forgetting hyperprior of Friston et
+al. <span class="citation">(Friston et al. 2024)</span>, their equation 12: before each conjugate
+addition the running concentration is decayed so the <em>total</em>
+concentration mass saturates at <span
+class="math inline">\(\eta\)</span> rather than growing without bound,
+modeling an agent that stays adaptable instead of becoming infinitely
+confident. With <span class="math inline">\(\eta\)</span> unset the
+classical unbounded accumulation of <a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a> is
+recovered.</p>
+<h2 id="sec:methods-efe">Expected free energy as the action-selection
+objective</h2>
+<p>A sentinel scores a candidate policy <span
+class="math inline">\(\boldsymbol{\pi}\)</span> by its expected free
+energy <span class="math inline">\(G(\boldsymbol{\pi})\)</span>, which
+the active-inference formulation decomposes two equivalent ways (Friston
+et al. <span class="citation">(Friston et al. 2024)</span>, their equation 2): a cost view of risk
+plus ambiguity, and a value view of pragmatic plus epistemic value. The
+two views are the same scalar rearranged, stated as <span
+class="citation"
+data-cites="eq:efe-decomposition"><a class="xref" href="index.html#eq:efe-decomposition">Eq. (17)</a></span> and
+pinned to a zero residual by the algebraic identity <span
+class="citation" data-cites="eq:efe-identity"><a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a></span>
+in <a class="xref" href="index.html#sec:formalism">Section 6</a>. We compute every
+term in closed form from the categorical model <span
+class="math inline">\((A, B, C, D_0)\)</span> in
+<code>expected_free_energy.decompose</code>:</p>
+<ul>
+<li><em>Risk</em> is <span
+class="math inline">\(\mathrm{KL}\big(q(o\mid\boldsymbol{\pi})\,\|\,p_C(o)\big)\)</span>,
+the deviation of the policy-predicted outcomes from the
+preferred-outcome pmf <span
+class="math inline">\(p_C(o)=\mathrm{softmax}(C)[o]\)</span>; write
+<span
+class="math inline">\(q_{\boldsymbol{\pi}}(o):=q(o\mid\boldsymbol{\pi})\)</span>
+for this scored-policy outcome predictive, used in the remaining
+terms.</li>
+<li><em>Ambiguity</em> is the expected likelihood entropy <span
+class="math inline">\(\mathbb{E}_{q(s)}\!\big[H[p(o\mid
+s)]\big]\)</span>, the outcome uncertainty given the state.</li>
+<li><em>Pragmatic value</em> is the expected log-preference <span
+class="math inline">\(\mathbb{E}_{q_{\boldsymbol{\pi}}(o)}[\ln
+p_C(o)]\)</span> — the utility, exploitation term.</li>
+<li><em>Epistemic value</em> is the state-outcome mutual information
+<span class="math inline">\(H[q_{\boldsymbol{\pi}}(o)] -
+\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span> — the expected information
+gain that drives exploration.</li>
+</ul>
+<p>Because there is no sampling, the identity of <a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a> holds to
+floating-point tolerance; ISC-19 (<code>expected_free_energy</code>)
+pins the residual of the decomposition to zero and pins each term’s
+semantics independently (deterministic likelihoods give zero ambiguity;
+uninformative likelihoods give zero epistemic value; preference-matched
+predictions lower risk). <a class="xref" href="index.html#fig:efe-decomp">Figure 7</a> visualizes the
+additive cost view and the signed pragmatic/epistemic waterfall
+terminating at <span class="math inline">\(G(\boldsymbol{\pi})\)</span>
+— a deterministic identity (<a class="xref" href="index.html#prop:efe-decomposition">Proposition 7</a>), not a
+fitted result.</p>
+<h2 id="sec:methods-bmr">Bayesian model reduction for structure
+emergence</h2>
+<p>Sentinels also revise model <em>structure</em>. Bayesian model
+reduction (BMR) scores whether a reduced model — for example one that
+prunes a redundant location column by shrinking its concentration toward
+zero — has more evidence than the full model, <em>without re-running
+inference</em> (Friston &amp; Penny via the post-hoc model optimization
+lineage <span class="citation">(Friston and Penny 2011)</span>; the same Beta-function identity is their
+equation 13 (Friston et al. <span class="citation">(Friston et al. 2024)</span>)). Because the
+likelihood is shared, the reduced posterior is available in closed form,
+<span class="math inline">\(\text{reduced\_post} = \text{post} +
+\text{reduced\_prior} - \text{prior}\)</span>, and the change in
+(negative) variational free energy is a difference of log multivariate
+Beta functions,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Delta F
+&amp;\;=\; \ln B(\text{prior}) + \ln B(\text{reduced\_post})
+  - \ln B(\text{post}) - \ln B(\text{reduced\_prior}),\\
+\ln B(a)
+&amp;\;=\; \textstyle\sum_k \ln\Gamma(a_k)
+  - \ln\Gamma\!\big(\sum_k a_k\big),
+\end{aligned}
+\]</span> {#eq:bmr-deltaf}</p>
+<p>computed in <code>bayesian_model_reduction.reduce</code>. A positive
+<span class="math inline">\(\Delta F\)</span> in <a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a> means the reduced
+model carries more evidence — the pruned structure was redundant and
+should be adopted; a negative <span class="math inline">\(\Delta
+F\)</span> means the reduction destroyed support the data require. When
+the reduced prior equals the prior the score is identically zero in
+exact algebra, a zero point the suite pins to machine precision
+(ISC-20).</p>
+<p>The emergence study of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+uses this operation over <span class="math inline">\(n = 4\)</span>
+candidate states. It contrasts a redundant reduction (<span
+class="math inline">\(\Delta F = 3.68\)</span> nats; adopt) with a
+supported one (<span class="math inline">\(\Delta F = -27.67\)</span>
+nats; reject) in <a class="xref" href="index.html#fig:emergence-bmr">Figure 11</a>. This
+fixed-candidate algebraic comparison is deterministic, so it has no
+resampled sample or bootstrap interval.</p>
+</main>
+</body>
+</html>

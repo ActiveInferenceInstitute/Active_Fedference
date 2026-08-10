@@ -1,0 +1,31 @@
+# Generated outputs are regeneratable; and we want to commit them.
+# output/
+
+# Local agent/editor settings (machine-specific; surfaced after this repo was
+# detached from the projects submodule, which had been masking it).
+.claude/
+.playwright-cli/
+
+# Test artifacts
+.coverage
+.coverage.*
+.tmp/
+.tools/
+# Regeneratable coverage export; a committed copy drifts stale (was 14.5% vs the
+# real ~95%). Kept out of git so the enforced --cov-fail-under gate is the sole
+# source of truth for coverage.
+coverage_project.json
+.pytest_cache/
+__pycache__/
+*.pyc
+.benchmarks/
+
+# Egg-info from local installs (any location — guards against renamed-fork drift).
+**/*.egg-info/
+
+# Project-local virtualenvs (root .venv is shared)
+.venv/
+
+# macOS
+.DS_Store
+**/.DS_Store

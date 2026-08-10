@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>15_results_recovery.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="sec:results">Results: recovery checks and study suite</h1>
+<p>Every quantitative assertion in this and the following results
+sections is a generated token, hydrated by the manuscript-variable
+generator from analysis outputs produced by
+<code>src/analysis/workflow.py</code> and
+<code>src/fedference/experiments/</code> — no number is transcribed by
+hand. The studies implement categorical source-mechanism analogues of
+the colony belief-sharing scenario <span class="citation">(Friston et al. 2024)</span> and add the
+contaminated-sentinel robustness sweep and the federated neural-network
+baseline that are this paper’s robust-federated-learning contribution.
+All runs are deterministic under seed 0.</p>
+<p>We lead with the recovery limits, not with a study, because they are
+what makes the studies a single coherent system rather than a collection
+of unrelated experiments. The generalized-Bayes machinery of <span
+class="citation" data-cites="sec:methods"><a class="xref" href="index.html#sec:methods">Section 5</a></span> contains
+the standard-Bayes client corner, while the server has the exact
+project-local zero-robustness log-linear-pool identity. Under the
+explicit bridge in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+that pool is a categorical specialization of Eq. 7’s message-combination
+term rather than the complete source protocol. We verify those limited
+identities to machine precision before reporting anything built on top
+of them.</p>
+<h2 id="sec:results-recovery">Recovery limits: standard-Bayes and
+project-pool corners are exact to machine precision</h2>
+<p>The identities that anchor every result are the client recovery of
+standard Bayes at the KL/NLL/<span
+class="math inline">\(\beta\to0\)</span> and <span
+class="math inline">\(q_{\rm loss}\to0\)</span> limits plus the
+project-local server recovery to the log-linear pool at <span
+class="math inline">\(c=0\)</span> — the scoped claims of <span
+class="citation" data-cites="sec:formalism"><a class="xref" href="index.html#sec:formalism">Section 6</a></span>
+(Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>, <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>). These
+are not figures but exact equalities, pinned by the locked core test
+suite. Under the theorem’s shared-support, posterior-log-potential, and
+fixed-weight assumptions, the server pool specializes Eq. 7’s
+message-combination term; it does not reproduce the source construction
+in full. Robustness is a tested extension that vanishes at the stated
+recovery limits.</p>
+<p>The five residuals below are the maximum absolute deviations between
+each generalized-Bayes object and the standard object it must reproduce
+in the trusting limit. Each is a deterministic constant of the
+mathematics, not a per-run sample: it is reported as the maximum
+absolute deviation over the recovery band, which is exactly <span
+class="math inline">\(0\)</span> where the implementation evaluates the
+closed form at the limit (the Rényi/loss switch) and otherwise a tiny
+floating-point residual:</p>
+<ul>
+<li>The server-side aggregator at zero robustness equals the log-linear
+pool (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>):
+maximum absolute deviation
+0. This is the <em>naive-recovery</em> limit of the server-side
+heuristic — the only property proven for that axis (see <span
+class="citation"
+data-cites="sec:robustness-axes"><a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a></span>).</li>
+<li>The generalized posterior under the KL divergence and the NLL loss
+equals the closed-form prior<span
+class="math inline">\(\times\)</span>likelihood Bayes posterior (<span
+class="citation"
+data-cites="eq:standard-bayes"><span class="xref">Eq. 6</span></span>, Corollary
+<a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>):
+maximum absolute deviation 5.55e-17.</li>
+<li>The Rényi divergence recovers KL as <span
+class="math inline">\(\alpha\to1\)</span> (<a class="xref" href="index.html#eq:renyi-limit">Eq. (2)</a>, <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>): residual
+0.</li>
+<li>The <span class="math inline">\(\beta\)</span>-loss recovers the NLL
+as <span class="math inline">\(\beta\to 0\)</span> (<span
+class="citation" data-cites="eq:beta-loss"><a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a></span>,
+<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>):
+residual 0; and the robust categorical cross-entropy recovers the NLL as
+<span class="math inline">\(q_{\rm loss}\to 0\)</span> (<span
+class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>,
+<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>):
+residual 0.</li>
+</ul>
+<p>Because the Rényi divergence and the two categorical losses switch to
+their exact closed form inside narrow numerical-stability bands around
+the limit point (the Rényi switch band for <span
+class="math inline">\(\alpha\)</span> and the categorical-loss switch
+band for <span class="math inline">\(q_{\rm loss}\)</span> and <span
+class="math inline">\(\beta\)</span>), the three zero residuals above
+confirm that branch equals the standard object — not, by themselves,
+that the <em>general</em> formula converges there. As a genuine
+(non-branch) convergence witness, evaluating each general formula
+strictly <em>outside</em> its switch band — <span
+class="math inline">\(q_{\rm loss} = \beta =
+1.00 \times 10^{-6}\)</span> for the categorical losses and <span
+class="math inline">\(\alpha = 1.00001\)</span> for the Rényi divergence
+— gives residuals 1.12e-05 (rcce), 1.24e-05 (<span
+class="math inline">\(\beta\)</span>-loss), and 1.66e-05 (Rényi):
+nonzero (a small multiple of the input offset itself, as the first-order
+Taylor behavior near the limit predicts) yet still several orders of
+magnitude below the <span class="math inline">\(O(1)\)</span> scale of
+the loss/divergence values being compared, and shrinking monotonically
+as the offset shrinks toward the switch band (verified in
+<code>tests/fedference/test_core_identities.py</code>). This is evidence
+that the general formula itself converges to the standard-Bayes limit,
+not merely that the implementation switches to it exactly at the
+corner.</p>
+<p>The first residual is the naive-aggregate limit of the
+<em>server-side</em> heuristic (<a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>); the
+latter four are the per-agent generalized-Bayes recoveries (Corollary
+<a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> +
+<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>) and the
+divergence-family recovery in the Rényi limit (<a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>, <span
+class="citation" data-cites="eq:renyi-limit"><a class="xref" href="index.html#eq:renyi-limit">Eq. (2)</a></span>)
+that define the theorem-bearing FedGVI axis under matching assumptions.
+Keeping the three axes distinct at the level of the recovery limits is
+what lets the robustness claims of <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a> and
+<a class="xref" href="index.html#sec:results-baseline">Section 7.6</a> rest on
+the per-agent axis without leaning on the heuristic.</p>
+<p>257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy
+core carries project test coverage of 90.04% (gate <span
+class="math inline">\(\ge 90\%\)</span>), with every stochastic step
+threaded through a single seeded <code>np.random.default_rng(0)</code>.
+<a class="xref" href="index.html#sec:reproducibility">Section 10</a> records
+the full environment fingerprint, and the expected-free-energy identity
+that underwrites the active-inference substrate is proven and visualized
+in <a class="xref" href="index.html#sec:formalism-efe">Section 6.2</a> (<span
+class="citation"
+data-cites="fig:efe-decomp"><a class="xref" href="index.html#fig:efe-decomp">Figure 7</a></span>).</p>
+</main>
+</body>
+</html>

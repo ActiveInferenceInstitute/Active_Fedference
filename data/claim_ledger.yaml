@@ -1,0 +1,120 @@
+claims:
+  - claim_id: manuscript-structural-number-minus-one
+    kind: number
+    value: -1
+    source: manuscript methods and supplementary control-direction notation
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/
+  - claim_id: manuscript-renderer-version-marker
+    kind: number
+    value: 2.0
+    source: manuscript/AGENTS.md local renderer-boundary guidance
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/AGENTS.md
+  - claim_id: manuscript-study-index-6
+    kind: number
+    value: 6
+    source: manuscript/SYNTAX.md theorem and study registry
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: manuscript-study-index-7
+    kind: number
+    value: 7
+    source: manuscript/SYNTAX.md theorem and study registry
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: manuscript-study-index-8
+    kind: number
+    value: 8
+    source: manuscript/SYNTAX.md theorem and study registry
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: manuscript-study-index-9
+    kind: number
+    value: 9
+    source: manuscript/SYNTAX.md theorem and study registry
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: federation-proposition-number
+    kind: number
+    value: 11
+    source: manuscript/SYNTAX.md proposition registry
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: learning-study-number
+    kind: number
+    value: 12
+    source: manuscript/10_methods_learning.md and manuscript/SYNTAX.md
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/10_methods_learning.md
+  - claim_id: statistics-study-number
+    kind: number
+    value: 13
+    source: manuscript/13_methods_statistics.md and manuscript/SYNTAX.md
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/13_methods_statistics.md
+  - claim_id: reproducibility-section-count
+    kind: number
+    value: 16
+    source: manuscript/26_reproducibility.md section inventory
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/26_reproducibility.md
+  - claim_id: syntax-registry-section-count
+    kind: number
+    value: 18
+    source: manuscript/SYNTAX.md registry inventory
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: sensitivity-low-reliability-display
+    kind: number
+    value: 0.40
+    source: manuscript/S13_results_sensitivity.md and sensitivity figure caption
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/S13_results_sensitivity.md
+  - claim_id: sensitivity-training-split-display
+    kind: number
+    value: 0.75
+    source: manuscript/S13_results_sensitivity.md and sensitivity figure caption
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/S13_results_sensitivity.md
+  - claim_id: sensitivity-high-reliability-display
+    kind: number
+    value: 0.85
+    source: manuscript/S13_results_sensitivity.md and sensitivity figure caption
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/S13_results_sensitivity.md
+  - claim_id: confidence-interval-display
+    kind: number
+    value: 0.95
+    source: manuscript confidence-interval and uncertainty-display convention
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/
+  - claim_id: graphical-abstract-naive-accuracy-display
+    kind: number
+    value: 0.69
+    source: manuscript/SYNTAX.md graphical abstract display contract
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md
+  - claim_id: graphical-abstract-robust-accuracy-display
+    kind: number
+    value: 0.99
+    source: manuscript/SYNTAX.md graphical abstract display contract
+    source_tier: claim_ledger
+    freshness: active
+    artifact_path: manuscript/SYNTAX.md

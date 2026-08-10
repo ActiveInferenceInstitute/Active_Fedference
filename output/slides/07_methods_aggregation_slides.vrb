@@ -1,0 +1,14 @@
+\frametitle{Variational aggregation with objective-backed weight control}
+with stated weight control (sec.~7.5.2). A
+temperature parameter \(\lambda>0\) (controlled by
+\texttt{entropy\_weight}, default \(\lambda = 1.0\)) generalizes the
+objective to \(F_\lambda\); lower \(\lambda\) sharpens the variational
+\(q\)-block toward a maximizing state for its current weighted log pool.
+The tempered family (sec.~11.5; objective
+eq.~25) recovers the full-entropy variational
+aggregator at \(\lambda = 1.0\) and has a separately implemented
+deterministic tied-argmax endpoint as \(\lambda\downarrow0\); neither
+endpoint is guaranteed accurate and neither is an algebraic recovery of
+\breaktt{robust\_aggregate}. The effective-weight \(a\)-update is
+unchanged for every \(\lambda>0\), so the raw-weight bound holds over
+the objective-defined family.

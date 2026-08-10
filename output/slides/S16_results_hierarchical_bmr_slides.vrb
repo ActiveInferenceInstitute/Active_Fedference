@@ -1,0 +1,7 @@
+\frametitle{Structure learning: does the hierarchy earn its depth?}
+This is the same Beta-function model-reduction machinery that drives the
+emergence study (sec.~7.4,
+eq.~16), lifted from pruning redundant \emph{states}
+within one level to pruning a redundant \emph{level} of the hierarchy
+--- an honest, tested answer to ``how deep should the generative model
+be?'' that the data, not the modeler, decides.

@@ -1,0 +1,12 @@
+\frametitle{Guarantee map: three robustness axes}
+The robustness sweep (sec.~7.5) reports these
+axes, and sec.~8.15 states which claim rests on
+which. No figure, table, or sentence in this paper grants the
+server-side heuristic the guarantee that belongs to the client-side
+update or the variational server objective: the effect-size,
+confidence-interval, and power enrichment that decorate the sweep
+characterize the heuristic's \emph{behavior}, not a per-agent or
+variational guarantee. This honesty is the point: the client-side axis
+is source-theorem-backed, the sharp server heuristic is useful but
+clearly labeled, and the variational server axis is rigorous but
+conservative.

@@ -1,0 +1,10 @@
+\frametitle{Numerical witnesses for descent and influence bounds}
+For the effective-weight diagnostic, one agent is drifted from healthy
+toward a confident-wrong delta and its normalized influence is read at
+each drift. Clean, it carries \(0.143\) of the pool; at the most extreme
+swept drift it carries below \(0.001\) --- a factor of 267.1 (computed
+from the unrounded influences, not the display-rounded values above)
+below the fixed 0.143 the naive pool would still grant it
+(fig.~15). This makes the redescending
+normalized-weight behavior visible on the tested path; it is not an
+estimator-level B-robustness proof.

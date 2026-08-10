@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>02_gap.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="sec:gap">Research gap and claim boundary</h1>
+<p>The two communities of <a class="xref" href="index.html#sec:introduction">Section 2</a> provide
+substantial pieces of the problem, but the cited threads do not answer
+the same question. The gap is not a claim that either field is
+incomplete; it is the untested intersection between active-inference
+belief sharing and robust generalized Bayes. This section describes that
+intersection thread by thread, states the scoped bridge evaluated here,
+and records the evidence boundary that travels with it.</p>
+<h2 id="sec:gap-threads">Five reviewed threads and their open
+intersection</h2>
+<p>Five threads in the reviewed literature run toward the gap but do
+not, in the sources cited here, cross it — three from active inference
+and two from robust Bayes.</p>
+<p><strong>Thread 1 — Generative modeling and action</strong> (active
+inference). Discrete active inference is a mature, synthesized formalism
+with standardized tensors and an expected-free-energy action rule
+<span class="citation">(Friston 2010; Da Costa et al. 2020)</span>, and it is executable at scale
+through pymdp <span class="citation">(Heins et al. 2022)</span> and RxInfer <span class="citation">(Bagaev et al. 2023)</span>.
+<em>Boundary:</em> these sources do not by themselves equip the
+active-inference inference step with the contamination mechanism
+evaluated here.</p>
+<p><strong>Thread 2 — Collective belief coordination</strong> (active
+inference). Colonies coordinate by sharing beliefs and minimizing
+collective surprise, reproducing flocking <span class="citation">(Heins et al. 2024)</span>,
+epistemic-community formation <span class="citation">(Albarracin et al. 2022)</span>, and collective
+intelligence <span class="citation">(Kaufmann et al. 2021)</span>. <em>Boundary:</em> the cited
+collective-belief studies treat the broadcast posteriors as trusted and
+do not evaluate the robustness of fusion to misspecified or
+intentionally wrong members.</p>
+<p><strong>Thread 3 — Belief sharing and structure growth</strong>
+(active inference). Federated belief sharing fuses posteriors into a
+hive-mind consensus <span class="citation">(Friston et al. 2024)</span>, and post-hoc Bayesian model
+reduction <span class="citation">(Friston and Penny 2011)</span> together with optimal-design-flavored model
+selection <span class="citation">(Smith et al. 2022)</span> grow and prune the generative model.
+<em>Boundary:</em> in the cited belief-sharing line, fusion is
+exact-Bayes and trusting; its connection to the robustness theory
+developed for federated learning is not evaluated.</p>
+<p><strong>Thread 4 — Federated and partitioned inference</strong>
+(robust Bayes). Federated learning aggregates decentralized models
+<span class="citation">(McMahan et al. 2017)</span>, and partitioned variational inference gives
+the factor-algebra framework that unifies federated and continual
+learning <span class="citation">(Bui et al. 2018; Ashman et al. 2022)</span>. <em>Boundary:</em>
+the cited examples target parameter or predictive-model factors rather
+than the generative-model-bearing, action-selecting POMDP belief
+consensus used here.</p>
+<p><strong>Thread 5 — Generalized and robust Bayes</strong> (robust
+Bayes). Generalized Bayesian updating replaces the likelihood–KL pair
+with a loss–divergence pair <span class="citation">(Bissiri et al. 2016; Knoblauch et al. 2022)</span>; bounded losses — the density-power <span
+class="math inline">\(\beta\)</span>-divergence <span class="citation">(Basu et al. 1998)</span> and
+generalized cross-entropy <span class="citation">(Zhang and Sabuncu 2018)</span> — deliver bounded
+influence; and FedGVI <span class="citation">(Mildner et al. 2025)</span> federates the robust objective
+with provable guarantees. <em>Boundary:</em> the cited robust-Bayes
+apparatus does not evaluate active-inference POMDP belief consensus. Its
+behavior in the discrete categorical regime of the worked belief-sharing
+example <span class="citation">(Friston et al. 2024)</span> is the scoped setting evaluated here.</p>
+<h2 id="sec:gap-bridge">The belief-fusion bridge evaluated here</h2>
+<p>Across these five reviewed threads, the missing intersection is
+specific: the active-inference sources provide belief fusion but not the
+contamination analysis used here, while the robust-Bayes sources provide
+robust inference but not this acting-agent categorical consensus. We
+evaluate the bridge with robust, generalized-Bayes belief fusion for
+active-inference ensembles, comprising three components and one recovery
+anchor. (i) A per-agent, FedGVI-faithful generalized-Bayes update
+carrying bounded-influence robustness through the <span
+class="math inline">\(\beta\)</span>- and rcce-losses (<span
+class="citation" data-cites="eq:beta-loss"><a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a></span>, <span
+class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>). (ii)
+A complementary server-side divergence-reweighting <em>heuristic</em>
+that discounts each agent by its divergence from the emerging consensus
+(<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). (iii) A
+conservative server-side variational rule with a stated aggregation free
+energy and a redescending raw effective-weight bound (<span
+class="citation"
+data-cites="eq:agg-free-energy"><a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a></span>). The
+shared anchor is recovery of the standard-Bayes client limit and the
+project log-linear-pool server identity in their trusting limits (<span
+class="citation"
+data-cites="sec:formalism-recovery"><a class="xref" href="index.html#sec:formalism-recovery">Section 6.1</a></span>).
+Under the qualified bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+the latter specializes Friston et al.’s Eq. 7 message-combination term
+<span class="citation">(Friston et al. 2024)</span>, not the complete source protocol. The algebraic
+result and machine-precision checks therefore identify a recovery
+boundary rather than a replacement. Headline comparisons use matched
+paired statistics — paired Wilcoxon <span class="citation">(Wilcoxon 1945)</span>,
+Benjamini–Hochberg FDR <span class="citation">(Benjamini and Hochberg 1995)</span>, bootstrap confidence
+intervals <span class="citation">(Efron and Tibshirani 1993)</span>, and observed-effect design-power
+planning — and are certified for reproducibility
+<span class="citation">(Peng 2011)</span>.</p>
+<h2 id="sec:robustness-axes">Guarantee map: three robustness axes</h2>
+<p>A red-team review surfaced a distinction we carry through the paper
+rather than paper over: robustness enters in <strong>three</strong>
+places, and they do not have the same theoretical standing.</p>
+<ol type="1">
+<li><p><strong>Client-side (rigorous).</strong> The per-agent
+generalized-Bayes update, driven by a bounded loss inside
+<code>generalized_posterior</code> (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a>). It is derived from
+the stated objective <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> and provably limits to
+negative-log-likelihood / Bayes — and hence to the standard pool — as
+the loss parameter goes to zero (Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> + <a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>).
+This axis inherits FedGVI’s <span class="citation">(Mildner et al. 2025)</span> bounded-influence result
+only under the source theorem’s stated loss, model, and contamination
+assumptions.</p></li>
+<li><p><strong>Server-side (heuristic).</strong> The
+divergence-reweighting aggregator <code>robust_aggregate</code>, which
+discounts each agent by <span
+class="math inline">\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\)</span>. Only
+its <em>recovery</em> limit is proven — at <span
+class="math inline">\(c=0\)</span> it equals the standard log-linear
+pool (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>);
+it is <strong>not</strong> the closed-form minimizer of a FedGVI
+objective. We present it as a complementary heuristic and never claim it
+inherits the bounded-influence bound.</p></li>
+<li><p><strong>Server-side (objective-backed, conservative).</strong>
+The variational aggregator <code>variational_aggregate</code> applies
+exact block updates that do not increase the stated free energy <span
+class="citation"
+data-cites="eq:agg-free-energy"><a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a></span>, recovers
+the same log-linear pool in the trusting limit, and bounds each raw
+effective weight by its base weight. Its honest cost is conservatism: it
+is not the sharp accuracy-maximizing heuristic.</p></li>
+</ol>
+<p>The robustness sweep (<a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>)
+reports these axes, and <a class="xref" href="index.html#sec:limitations-scope">Section 8.15</a>
+states which claim rests on which. No figure, table, or sentence in this
+paper grants the server-side heuristic the guarantee that belongs to the
+client-side update or the variational server objective: the effect-size,
+confidence-interval, and power enrichment that decorate the sweep
+characterize the heuristic’s <em>behavior</em>, not a per-agent or
+variational guarantee. This honesty is the point: the client-side axis
+is source-theorem-backed, the sharp server heuristic is useful but
+clearly labeled, and the variational server axis is rigorous but
+conservative.</p>
+</main>
+</body>
+</html>

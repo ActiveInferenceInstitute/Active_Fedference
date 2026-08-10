@@ -1,0 +1,6 @@
+# Active Fedference: optional monorepo adapters only.
+# _runtime.py provides fallback logging when infrastructure is absent.
+# src/analysis/_infra.py does not exist in this project — only src/_runtime.py
+# serves as the infrastructure adapter layer.
+allow_infrastructure_imports:
+  - src/_runtime.py

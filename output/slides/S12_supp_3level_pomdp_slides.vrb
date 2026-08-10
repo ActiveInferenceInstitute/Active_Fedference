@@ -1,0 +1,4 @@
+\frametitle{Inference algorithm across hierarchy levels}
+After 4 iterations the agent broadcasts all N level beliefs; the colony
+federates each level independently via a log-linear pool
+(eq.~6).

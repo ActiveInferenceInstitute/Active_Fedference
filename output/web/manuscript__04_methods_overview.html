@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>04_methods_overview.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="sec:methods">Methods: the federated active-inference stack</h1>
+<p><span id="sec:methodology"></span></p>
+<p>This section develops the federated generalized variational inference
+(FedGVI) core in the discrete-categorical setting and defines the
+primitives whose recovery limits <a class="xref" href="index.html#sec:formalism">Section 6</a> then states as
+numbered theorems. Every belief here is a categorical pmf — a
+non-negative vector summing to one — so the
+generalized-variational-inference machinery reduces to closed forms that
+are exactly testable. All mathematics lives in
+<code>src/fedference/</code>; the prose names the module and the
+identity that pins each claim.</p>
+<p>The active-inference community has built a rich apparatus for
+federated belief sharing: discrete-state-space agents that broadcast
+posteriors and fuse them into a consensus <span class="citation">(Da Costa et al. 2020; Friston et al. 2024)</span>, message-passing toolboxes that make exact-Bayes
+inference scalable <span class="citation">(Heins et al. 2022; Bagaev et al. 2023)</span>, and collective
+and multi-agent formulations in which ensembles coordinate by sharing
+observations and beliefs <span class="citation">(Heins et al. 2024; Albarracin et al. 2022; Kaufmann et al. 2021)</span>. We accept that apparatus and extend it: the
+consensus rule the field uses is exact-Bayes and trusting, with no
+account of what happens when an agent in the ensemble is misspecified or
+adversarial. Outside active inference, the federated-learning and
+robust-Bayes literatures address important parts of that question —
+decentralized aggregation <span class="citation">(McMahan et al. 2017)</span>, partitioned and
+federated variational inference <span class="citation">(Ashman et al. 2022; Bui et al. 2018)</span>, and generalized, robustness-bearing Bayesian
+updating <span class="citation">(Bissiri et al. 2016; Knoblauch et al. 2022; Basu et al. 1998; Zhang and Sabuncu 2018)</span> — but none has been carried into the
+generative-model-bearing, action-selecting POMDP setting. The
+methodology below is the bridge: it federates the FedGVI objective
+<span class="citation">(Mildner et al. 2025)</span> per agent inside an active-inference ensemble,
+proves the standard-Bayes client limits, and tests the project-local
+zero-robustness log-linear-pool identity. Under the qualified
+categorical bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+that pool specializes Eq. 7’s message-combination term rather than the
+complete source protocol. <a class="xref" href="index.html#fig:system-overview">Figure 2</a>
+illustrates the three-axis architecture and the recovery hierarchy.</p>
+<h2 id="sec:method-protocol">Federation protocol: local update, server
+fusion, broadcast</h2>
+<p>A colony of <span class="math inline">\(N\)</span> agents shares a
+single latent factor <span class="math inline">\(s \in
+\{1,\dots,n_s\}\)</span> (in the sentinel scenario, the location of a
+creature on a grid of <span class="math inline">\(n_s\)</span> cells).
+Each round proceeds in three steps:</p>
+<ol type="1">
+<li><strong>Local inference.</strong> Agent <span
+class="math inline">\(n\)</span> observes <span
+class="math inline">\(o_n\)</span> and forms a local posterior <span
+class="math inline">\(q_n(s)\)</span> over the shared factor by a
+generalized-Bayes update against its own cavity (the colony belief with
+agent <span class="math inline">\(n\)</span>’s previous contribution
+removed). This is where robustness enters per agent: the update
+minimizes a loss-plus- divergence objective, and the FedGVI choice of a
+bounded loss is what carries the source theorem’s bounded-influence
+result under its matching assumptions.</li>
+<li><strong>Broadcast.</strong> Agent <span
+class="math inline">\(n\)</span> broadcasts <span
+class="math inline">\(q_n(s)\)</span>, optionally with a scalar base
+weight <span class="math inline">\(w_n \ge 0\)</span>.</li>
+<li><strong>Aggregation.</strong> The server (or, equivalently, each
+agent acting as its own server) fuses the broadcast beliefs into a
+consensus. Following sensory attenuation — “agents do not hear
+themselves” — an agent’s heard consensus excludes its own message.</li>
+</ol>
+<p>The protocol has two distinct places where robustness can live, and
+we keep them separate throughout. The <strong>per-agent
+generalized-Bayes update</strong> in step 1 is FedGVI-faithful at the
+stated primitive level: its formal bounded-influence claim is
+conditional on the source theorem’s assumptions. The <strong>server-side
+aggregation rule</strong> in step 3 admits an optional
+divergence-reweighting heuristic that down-weights agents far from the
+emerging consensus; this heuristic is a complementary device whose
+positive formal property is recovery of the naive consensus in its
+trusting limit, while a scoped proposition rejects one declared
+separable objective class. <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> holds
+this boundary; no figure, table, or sentence in this work grants the
+server-side heuristic the per-agent FedGVI guarantee.</p>
+<h2 id="sec:method-notation">Notation for beliefs, losses, and
+divergences</h2>
+<p>The authoritative symbol and API contract is <a class="xref" href="index.html#sec:supp-notation">Section 13</a>. In the main
+text, <span class="math inline">\(q_n(s)\)</span> denotes agent <span
+class="math inline">\(n\)</span>’s local posterior, <span
+class="math inline">\(q(s)\)</span> the global consensus, and <span
+class="math inline">\(q_{-n}(s)\)</span> the cavity after removing the
+site factor <span class="math inline">\(t_n(s)\)</span>. The prior is
+<span class="math inline">\(\pi_0(s)\)</span>, while <span
+class="math inline">\(\boldsymbol{\pi}\)</span> is a policy. The POMDP
+tensors are <span class="math inline">\(A[o,s]\)</span>, <span
+class="math inline">\(B[s&#39;,s,u]\)</span>, <span
+class="math inline">\(C[o]\)</span>, and <span
+class="math inline">\(D_0[s]\)</span>. The aggregation weights are <span
+class="math inline">\(w_n\)</span> (raw/base), <span
+class="math inline">\(a_n\)</span> (raw variational effective), and
+<span class="math inline">\(\widetilde a_n\)</span> (normalized
+influence). The server robustness coefficient is <span
+class="math inline">\(c\)</span>, the variational entropy weight is
+<span class="math inline">\(\lambda\)</span>, the Rényi order is <span
+class="math inline">\(\alpha\)</span>, the density-power parameter is
+<span class="math inline">\(\beta\)</span>, and the robust cross-entropy
+parameter is <span class="math inline">\(q_{\rm loss}\)</span>. The
+notation supplement also defines the seed/trial nesting and all
+statistical quantities used below.</p>
+<p>The study is run over a fixed ensemble of 7 agents sharing a factor
+of 9 locations, with all randomness seeded at 0; the full per-study
+configuration is tabulated in <a class="xref" href="index.html#tbl:study_params">Table 1</a>. As an
+independent generative-model-free baseline, we also implement FedGVI in
+a deterministic MLP complement trained with the density-power <span
+class="math inline">\(\beta\)</span>-loss — generalized variational
+inference with a point-mass variational family (<a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>). The
+remaining methodology subsections develop each primitive in turn: the
+generalized-Bayes update and its recovery to standard Bayes (<span
+class="citation"
+data-cites="sec:method-genbayes"><a class="xref" href="index.html#sec:method-genbayes">Section 5.3</a></span>), the
+divergence family and its KL limit (<a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>)
+and the robust loss family and its NLL limit (<a class="xref" href="index.html#sec:method-losses">Section 5.7</a>), the
+aggregation identity (<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>),
+the lift to a belief-sharing round (<a class="xref" href="index.html#sec:method-belief-sharing">Section 5.9</a>),
+and the paired statistics that earn every “robust beats naive” verdict
+(<a class="xref" href="index.html#sec:methods-statistics">Section 5.27</a>).</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,6 @@
+\frametitle{Code and manuscript naming map}
+The wire-level key \texttt{agent\_weights} is preserved because it is a
+federation transport contract, not a claim about the scale or meaning of
+the new result fields. A future wire migration requires an explicit
+version and a fail-closed reader; it must not silently reinterpret the
+key.

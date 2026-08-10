@@ -1,0 +1,23 @@
+\frametitle{Abstract}
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth,height=0.40\textheight,keepaspectratio,alt={Graphical abstract. Source relation: original project schematic; estimand: component relationships and recovery boundaries; uncertainty: none. Recovery ribbon: the zero-robustness identity anchors the construction at the standard log-linear belief-sharing pool. Network panel: the federated diagram shows 5 agents (3 honest, 2 adversarial) transmitting categorical beliefs to a central server. x-axis is agent position in the ring layout (left to right); y-axis/rows: each per-agent mini-bar glyph indexes posterior probability mass over hidden states. Consensus panel: deterministic outcome cards under 40\% adversarial contamination compare the naive pool with canonical robust\_aggregate heuristic reweighting; the displayed 39\% and 50\% are computed from the schematic beliefs. Axis strip: client-side FedGVI, server-side heuristic, and variational-server claims are shown as separate routes with non-transferable guarantees. This deterministic formal/mechanistic schematic has no CI, error band, or significance marker; it does not assign the variational server's objective-backed property to robust\_aggregate.}]{../figures/graphical_abstract.png}
+\caption{Graphical abstract. Source relation: original project
+schematic; estimand: component relationships and recovery boundaries;
+uncertainty: none. \textbf{Recovery ribbon:} the zero-robustness
+identity anchors the construction at the standard log-linear
+belief-sharing pool. \textbf{Network panel:} the federated diagram shows
+5 agents (3 honest, 2 adversarial) transmitting categorical beliefs to a
+central server. x-axis is agent position in the ring layout (left to
+right); y-axis/rows: each per-agent mini-bar glyph indexes posterior
+probability mass over hidden states. \textbf{Consensus panel:}
+deterministic outcome cards under 40\% adversarial contamination compare
+the naive pool with canonical \protect\breaktt{robust\_aggregate}
+heuristic reweighting; the displayed 39\% and 50\% are computed from the
+schematic beliefs. \textbf{Axis strip:} client-side FedGVI, server-side
+heuristic, and variational-server claims are shown as separate routes
+with non-transferable guarantees. This deterministic formal/mechanistic
+schematic has no CI, error band, or significance marker; it does not
+assign the variational server's objective-backed property to
+\protect\breaktt{robust\_aggregate}.}\label{fig:graphical-abstract}
+\end{figure}

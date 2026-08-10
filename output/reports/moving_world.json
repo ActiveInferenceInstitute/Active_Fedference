@@ -1,0 +1,88 @@
+{
+  "accuracy": {
+    "communicating": 0.9770833333333556,
+    "efe_guided": 0.9781250000000223,
+    "isolated": 0.9989583333333567
+  },
+  "free_energy_gap": {
+    "communicating": -0.5284858499508839,
+    "efe_guided": -0.40991590509456743,
+    "isolated": 0.0
+  },
+  "multiseed": {
+    "communicating": {
+      "ci_hi": 0.9831461588541892,
+      "ci_lo": 0.9816650390625226,
+      "ci_method": "percentile_bootstrap",
+      "max": 0.9916666666666897,
+      "mcse": 0.00038623225555629094,
+      "mde": 0.001082062577924935,
+      "mean": 0.9823893229166891,
+      "median": 0.9822916666666892,
+      "min": 0.9708333333333553,
+      "n": 128,
+      "std": 0.004369719152269263,
+      "uncertainty_available": true
+    },
+    "efe_free_energy_gap": {
+      "ci_hi": -0.35292346900207106,
+      "ci_lo": -0.38373444374498367,
+      "ci_method": "percentile_bootstrap",
+      "max": -0.161329709874945,
+      "mcse": 0.007989574271373522,
+      "mde": 0.022383473177695748,
+      "mean": -0.36790335290454246,
+      "median": -0.3728756830614077,
+      "min": -0.6421620438501147,
+      "n": 128,
+      "std": 0.0903917143373086,
+      "uncertainty_available": true
+    },
+    "efe_guided": {
+      "ci_hi": 0.9835451253255434,
+      "ci_lo": 0.9821777343750226,
+      "ci_method": "percentile_bootstrap",
+      "max": 0.9927083333333564,
+      "mcse": 0.00034523601935059097,
+      "mde": 0.0009672081285727783,
+      "mean": 0.9828694661458559,
+      "median": 0.9822916666666892,
+      "min": 0.9739583333333555,
+      "n": 128,
+      "std": 0.0039058996862824484,
+      "uncertainty_available": true
+    },
+    "efe_vs_isolated": {
+      "effect_label": "large",
+      "paired_test": {
+        "effect_size": 1.0,
+        "pvalue": 9.267302558546732e-23
+      }
+    },
+    "isolated": {
+      "ci_hi": 0.9993245442708566,
+      "ci_lo": 0.9990152994791901,
+      "ci_method": "percentile_bootstrap",
+      "max": 1.0000000000000233,
+      "mcse": 8.034840485052532e-05,
+      "mde": 0.00022510290332818808,
+      "mean": 0.9991699218750234,
+      "median": 0.9989583333333567,
+      "min": 0.9968750000000233,
+      "n": 128,
+      "std": 0.0009090384308372567,
+      "uncertainty_available": true
+    },
+    "n_seeds": 128
+  },
+  "n_agents": 2,
+  "n_positions": 4,
+  "n_steps": 6,
+  "n_steps_to_consensus": {
+    "communicating": 4.9999999999999885,
+    "efe_guided": 5.001041666666655,
+    "isolated": 5.002083333333322
+  },
+  "n_trials": 960,
+  "seed": 0
+}

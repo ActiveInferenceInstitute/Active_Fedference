@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>13_methods_statistics.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:methods-statistics">Statistical protocol: matched
+comparisons, intervals, and bounded claims</h2>
+<p>No “robust beats naive” claim is written before a statistical test
+produces it (Algorithm Gate I). Where the active-inference community has
+typically reported belief-fusion outcomes as single illustrative runs,
+we treat every headline contrast as a paired hypothesis test with
+effect-size estimation, multiple-testing deflation, confidence
+intervals, and an observed-effect design-power calculation — the
+reporting discipline expected by robust statistics and applied inference
+<span class="citation">(Huber and Ronchetti 2009; Efron and Tibshirani 1993; Koehler et al. 2009; Morris et al. 2019; Loy and Korobova 2021; Nakagawa and Cuthill 2007; Benjamini and Hochberg 1995; Wasserstein and Lazar 2016)</span>. The protocol lives in
+<code>statistics.py</code>, sits at the analysis tier above the locked
+FedGVI core, and emits every number the results sections report; nothing
+is hard-coded (ISC-30).</p>
+<h2 id="sec:methods-paired">Paired comparison and standardized effect
+size</h2>
+<p>The headline claim is <em>paired</em>: across matched scenarios —
+same seed, same contamination — does the robust aggregator raise
+consensus accuracy over the naive log-linear pool? For the expanded
+review grid, the inferential unit is the seed: trials are nested within
+a seed/cell and are averaged before seed-level contrasts. The primary
+robustness sweep also retains a trial-level paired diagnostic, but its
+matched trial replicates are nested within one fixed seeded world and
+are not independent worlds. The seed-level review-grid estimand is
+therefore the robust-minus-naive accuracy difference after the declared
+trial reduction, not a contrast of two independently drawn group means.
+Each configured robust method is retained in every review-grid rate
+panel and has its own seed-level contrast, interval, and test; no
+pooled-selected curve or pooled-selected inferential member enters that
+grid. The naive comparator is the project’s log-linear pool <span
+class="citation"
+data-cites="eq:log-linear-pool"><a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a></span>. Under the
+shared-support, posterior-log-potential, and fixed-weight assumptions of
+<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>, it
+specializes the message-combination term of Friston et al.’s Eq. 7
+<span class="citation">(Friston et al. 2024)</span>, rather than reconstructing the complete source
+protocol. We test it with the matched-pairs Wilcoxon signed-rank test
+<span class="citation">(Wilcoxon 1945)</span> (<code>statistics.paired_test</code>, ISC-28),
+interpreted under the usual signed-rank conditions: seed-level paired
+differences are independent across the declared seed schedule, while the
+primary sweep’s trial-level diagnostic remains conditional on its fixed
+world; the differences are ranked after zero differences are removed,
+and the null is a symmetric distribution of paired differences around
+zero rather than an equality-of-means claim <span class="citation">(Fay and Proschan 2010)</span>. This is
+the right comparison for bounded, often non-Gaussian accuracy deltas,
+but it is not assumption-free. The test reports the primary
+matched-pairs rank-biserial effect <span class="math inline">\(r_{\rm
+rb} = (T^{+} - T^{-})/(T^{+} + T^{-})\)</span>. We retain the monotone
+secondary transform <span class="math inline">\(d_{\rm eq}=2r_{\rm
+rb}/\sqrt{1-r_{\rm rb}^2}\)</span>, labeled a <em>rank-biserial-derived
+d-equivalent</em>, never raw Cohen’s <span
+class="math inline">\(d\)</span> and never a replacement for the mean
+contrast. When <span class="math inline">\(r_{\rm rb}\)</span> saturates
+at <span class="math inline">\(\pm1\)</span>, the transform diverges;
+tables print a signed saturation marker rather than a finite
+million-scale value. The primary-sweep headline display method RKL has
+rank-biserial effect 1.0000, d-equivalent saturated (r=+1) (large), with
+the paired mean difference and bootstrap interval reported alongside
+it.</p>
+<h2 id="sec:methods-bootstrap">Bootstrap interval estimates</h2>
+<p>Every inferential mean — colony free energy, learning-curve KL,
+per-method accuracy, and the robust-minus-naive accuracy difference —
+carries a 95% percentile-bootstrap confidence interval
+<span class="citation">(Efron and Tibshirani 1993)</span> from <code>statistics.bootstrap_ci</code>,
+resampled from the declared unit. For the review grid, the unit is the
+seed after the nested trials have been reduced; for the primary
+fixed-world sweep, the interval is explicitly trial-level and
+conditional; for single-seed diagnostics, it is descriptive or
+trial-level. The single-colony mechanistic rate table is <span
+class="math inline">\(n=1\)</span> per cell and is descriptive, not an
+inferential mean; its companion profile uses the declared nested design.
+This separation follows simulation-reporting guidance to declare the
+estimand and the independent Monte Carlo unit <span class="citation">(Morris et al. 2019)</span>.
+The interval quantifies variation over the declared resampling unit
+(seed, recorded step, or matched trial) and is conditional on this
+simulation design, not on unmodeled real-world deployment uncertainty or
+alternative contamination models. The headline mean robust-minus-naive
+accuracy difference is 0.0846 with 95% CI <span
+class="math inline">\([0.0821, 0.0873]\)</span>, and the accuracy at the
+verdict rate is 0.9021 for the naive pool (95% CI <span
+class="math inline">\([0.8993, 0.9049]\)</span>) against 0.9867 for the
+most accurate robust member (95% CI <span class="math inline">\([0.9865,
+0.9869]\)</span>).</p>
+<p>For every multi-seed summary we also report the Monte Carlo standard
+error (<span class="math inline">\(\mathrm{MCSE} = s/\sqrt{n_{\rm
+seed}}\)</span>) and an approximate two-sided minimum detectable effect
+(MDE) at the configured target power. These are precision diagnostics
+over independent seeds, not claims about sampling a real population. The
+MDE uses a normal approximation conditional on the observed seed-level
+standard deviation <span class="citation">(Koehler et al. 2009)</span>; it is reported alongside the
+non-parametric interval rather than used to replace the paired test.</p>
+<h2 id="sec:methods-fdr">Multiple-testing deflation by BH-FDR</h2>
+<p>The sweep compares each robust divergence against the naive pool, so
+an uncorrected <span class="math inline">\(p &lt; 0.05\)</span> across
+the family would manufacture false discoveries. We control the
+false-discovery rate with the Benjamini-Hochberg step-up procedure
+<span class="citation">(Benjamini and Hochberg 1995)</span> (<code>statistics.bh_fdr</code>, ISC-29) at
+<span class="math inline">\(\alpha = 0.05\)</span>. The verdict family
+owns one robust-versus-naive contrast per robust method at the
+predeclared verdict rate; each rate table owns its own within-method
+rate family. Families are not pooled across figures or across the
+review-grid cells. The review-grid families retain all configured method
+contrasts and do not derive a selected member by pooled mean. The
+procedure returns both the rejection mask and the monotone BH q-values.
+BH controls expected false discovery proportion within the stated
+family, not the family-wise probability of any false positive; the
+manuscript therefore states the family each table uses. The
+positive-contrast rule is strict and conjunctive: a method is a
+BH-rejected positive contrast <em>iff</em> BH rejects its null
+<strong>and</strong> its rank-biserial effect is positive. This is a
+statistical decision for the named family, not a unique scientific
+winner. The primary-sweep headline display method has raw <span
+class="math inline">\(p = 1.11 \times 10^{-158}\)</span>, deflating to
+BH <span class="math inline">\(q = 1.11 \times 10^{-158}\)</span>.</p>
+<h2 id="sec:methods-statistics-power">Prospective power analysis for the
+verdict rate</h2>
+<p>We report not only <em>that</em> the verdict rejected the null but
+the observed-effect planning power implied by the run and the number of
+pairs a confirmatory run could budget. The observed-effect design power
+of the headline paired Wilcoxon at the primary sweep’s matched-trial
+unit, <span class="math inline">\(n_{\rm trial} = 960\)</span>, <span
+class="math inline">\(\alpha = 0.05\)</span>, alternative
+<code>greater</code>, is 1.0000; the prospective sample size for the
+target power 0.80 at the observed effect is <span
+class="math inline">\(n_{\rm trial} = 5\)</span>. The estimator is the
+deterministic noncentral-normal approximation to the matched-pairs <span
+class="math inline">\(t\)</span>-test, deflated by the Wilcoxon’s Pitman
+asymptotic relative efficiency <span
+class="math inline">\(3/\pi\)</span>, so the reported power is
+approximately calibrated for the signed-rank test the harness runs (the
+deflation is exact under a normal-shift alternative); note the power
+computation is directional for planning, while the reported p-values are
+two-sided. This is an observed-effect planning approximation conditional
+on the observed effect size, not independent evidence for the result and
+not a confirmatory power guarantee.</p>
+<h2 id="sec:methods-reporting">Reporting tables and the honesty
+boundary</h2>
+<p>The results sections render five statistics tables straight from
+these tokens: the per-rate accuracy sweep (<a class="xref" href="index.html#tbl:robustness_sweep">Table 2</a>), the
+robust-versus-naive verdict (<a class="xref" href="index.html#tbl:robustness_verdict">Table 4</a>),
+the standardized-effect verdict with observed-effect design power and
+prospective <span class="math inline">\(n\)</span> (<span
+class="citation"
+data-cites="tbl:verdict-effects"><a class="xref" href="index.html#tbl:verdict-effects">Table verdict-effects</a></span>), the
+per-method accuracy with bootstrap CIs at the verdict rate (<span
+class="citation"
+data-cites="tbl:accuracy-at-verdict"><a class="xref" href="index.html#tbl:accuracy-at-verdict">Table 6</a></span>),
+and the per-contamination-rate paired tests (<a class="xref" href="index.html#tbl:paired-by-rate">Table paired-by-rate</a>). Every
+cell is a generated token, never hand-typed.</p>
+<p>The honesty contract binds at exactly this tier. The effect-size, CI,
+and power enrichment above decorates the <em>server-side</em>
+<code>robust_aggregate</code> divergence-reweighting contrasts only. It
+does not certify the per-client <span
+class="math inline">\(\beta\)</span>/rcce generalized-Bayes (FedGVI)
+guarantees, which are pinned by the locked core (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a> of <span
+class="citation" data-cites="sec:formalism"><a class="xref" href="index.html#sec:formalism">Section 6</a></span>)
+rather than by these aggregation-level statistics — the three robustness
+axes of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> kept
+distinct.</p>
+<h2 id="sec:methods-complexity">Computational complexity and scaling
+diagnostic</h2>
+<p>The release now reports computational complexity from the
+implementation itself. Let <span class="math inline">\(N\)</span> be the
+number of agents, <span class="math inline">\(S\)</span> the number of
+categorical states, <span class="math inline">\(I\)</span> the
+solver-iteration budget, <span class="math inline">\(B\)</span> the
+number of variational starts, and <span class="math inline">\(M\)</span>
+the number of conditionally independent observation modalities. The
+dominant dense work and the storage actually retained by the current
+NumPy paths are:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>operation</th>
+<th>dominant time order</th>
+<th>retained or peak storage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>log-linear pooling</td>
+<td><span class="math inline">\(\Theta(N S)\)</span></td>
+<td><span class="math inline">\(\Theta(N S)\)</span></td>
+</tr>
+<tr>
+<td>iterative robust pooling</td>
+<td><span class="math inline">\(\Theta(I N S)\)</span></td>
+<td><span class="math inline">\(\Theta(N S + I S)\)</span></td>
+</tr>
+<tr>
+<td>objective-backed variational pooling</td>
+<td><span class="math inline">\(\Theta(B I N S)\)</span></td>
+<td><span class="math inline">\(\Theta(N S + I S + B S)\)</span></td>
+</tr>
+<tr>
+<td>self-excluding naive sharing</td>
+<td><span class="math inline">\(\Theta(N^2 S)\)</span></td>
+<td><span class="math inline">\(\Theta(N S)\)</span></td>
+</tr>
+<tr>
+<td>self-excluding robust sharing</td>
+<td><span class="math inline">\(\Theta(I N^2 S)\)</span></td>
+<td><span class="math inline">\(\Theta(N S + I S)\)</span></td>
+</tr>
+<tr>
+<td>one-step state inference</td>
+<td><span class="math inline">\(\Theta(M S)\)</span></td>
+<td><span class="math inline">\(\Theta(S)\)</span></td>
+</tr>
+<tr>
+<td>server round, excluding queue/network wait</td>
+<td><span class="math inline">\(\Theta(N log N + I N S)\)</span></td>
+<td><span class="math inline">\(\Theta(N S)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>These are dominant interaction counts, not hardware-independent FLOP
+totals. The <span class="math inline">\(N^2\)</span> sharing term is
+material: with sensory attenuation enabled, one round computes one
+global pool and one leave-one-out pool per agent. The iterative server
+rules additionally retain their returned per-iteration histories, which
+is why their storage rows include <span class="math inline">\(I
+S\)</span>. The server row includes worker-ID sorting and dense
+aggregation; incoming serialized belief volume is linear in <span
+class="math inline">\(N S\)</span>, while queue and network latency are
+deliberately outside this local-compute accounting. The local path
+serializes one consensus-plus-weight result; if physical broadcast bytes
+are counted per recipient, that outgoing volume additionally has an
+<span class="math inline">\(N^2\)</span> term because each result
+carries the <span class="math inline">\(N\)</span> agent weights.</p>
+<p>The accompanying seeded benchmark measures the real public call paths
+on the declared grids <span class="math inline">\(N \in \{4, 8, 16, 32,
+64\}\)</span>, <span class="math inline">\(S \in
+\{256, 512, 1024, 2048, 4096\}\)</span>, self-excluding sharing <span
+class="math inline">\(N \in
+\{4, 8, 16, 32\}\)</span>, and <span class="math inline">\(M \in
+\{1, 2, 4, 8\}\)</span>. The fixed dimensions are <span
+class="math inline">\(N=256\)</span>, <span
+class="math inline">\(S=64\)</span> for aggregation, and <span
+class="math inline">\(S=16384\)</span> for state inference; direct
+aggregation and server timings use <span
+class="math inline">\(I=6\)</span>, while the public robust
+self-excluding sharing path uses its solver budget <span
+class="math inline">\(I=32\)</span>; the default variational path uses
+<span class="math inline">\(B=3\)</span>. Each grid point is warmed up
+<span class="math inline">\(1\)</span> time(s) and measured <span
+class="math inline">\(5\)</span> time(s), with median time plotted and
+the observed repeat range shown as a min–max bar. The fixed input seed
+is <span class="math inline">\(20260728\)</span> on the <span
+class="math inline">\(arm64\)</span> machine using Python <span
+class="math inline">\(3.13.11\)</span> and NumPy <span
+class="math inline">\(2.4.2\)</span>.</p>
+<p>The measured log–log slopes are descriptive checks of the expected
+orders, not performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.59 (naive
+self-excluding sharing), and 1.93 (robust self-excluding sharing);
+state-axis slopes are 0.42, 0.40, and 0.41; the modality-axis inference
+slope is 0.67. The slope fit is a timing diagnostic on this machine, not
+an inferential test and not evidence that the same constants hold under
+another BLAS, accelerator, process topology, or distributed network. A
+finite grid can also yield a sublinear fitted slope when validation,
+allocation, cache, and interpreter overheads are material; the
+implementation-derived order is the governing claim, not equality
+between a finite-grid slope and its exponent.</p>
+<p>Figure <a class="xref" href="index.html#fig:complexity-scaling">Figure 6</a>
+visualizes the implementation-derived orders and the corresponding
+finite-grid timing diagnostic.</p>
+<figure id="fig:complexity-scaling">
+<a class="figure-full-size-link" href="../figures/complexity_scaling.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/complexity_scaling.png" style="width:95.0%"
+alt="Implementation-derived complexity and seeded machine-scaling diagnostic." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Implementation-derived complexity and
+seeded machine-scaling diagnostic. Source relation: original project
+computational-complexity diagnostic; estimand: median wall-clock time of
+the real categorical aggregation, naive and robust self-excluding
+sharing, and state-inference call paths as the declared dimension
+changes; uncertainty: min–max span over the repeated timings, not a
+confidence interval; replication unit: fixed seeded input at each grid
+point with the declared timing repeats. The x-axis is the varied agent,
+state, or modality dimension, and the y-axis is median wall-clock time
+in seconds. The panels show agent scaling for the aggregation rules,
+naive and iterative-robust <span class="math inline">\(N^2\)</span>
+leave-one-out sharing, state scaling for the aggregators, and modality
+scaling for one-step inference. Dotted lines are normalized <span
+class="math inline">\(\Theta\)</span>-order guides from the
+implementation-derived accounting; they are not fitted claims. The
+experiment ran on <span class="math inline">\(arm64\)</span> with Python
+<span class="math inline">\(3.13.11\)</span>, NumPy <span
+class="math inline">\(2.4.2\)</span>, seed <span
+class="math inline">\(20260728\)</span>, and <span
+class="math inline">\(5\)</span> measured repeat(s) after <span
+class="math inline">\(1\)</span> warmup(s).</figcaption>
+</figure>
+</main>
+</body>
+</html>

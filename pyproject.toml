@@ -1,0 +1,106 @@
+# Active Fedference Configuration
+# Robust federated active inference (FedGVI x Friston et al. 2024)
+# Inherits workspace settings from root pyproject.toml
+
+[build-system]
+requires = ["setuptools==81.0.0"]
+build-backend = "_fedference_build_backend"
+backend-path = ["."]
+
+[project]
+name = "active_fedference"
+version = "0.1.0"
+description = "Robust federated active inference: FedGVI applied to Friston et al. (2024) belief sharing"
+authors = [
+    {name = "Daniel Ari Friedman / Hum Lab", email = "daniel@activeinference.institute"}
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "matplotlib>=3.7.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+fedference = "fedference_cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "torch>=2.0.0",
+    "hypothesis>=6.0",
+]
+torch = [
+    "torch>=2.0.0",
+]
+bnn = [
+    "torch>=2.0.0",
+]
+
+[tool.pytest.ini_options]
+# RASP Strict Assertion: Tests must be clearly separated and structurally identifiable
+pythonpath = [".", "src"]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+# `--strict-markers` prevents typos in marker definitions
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "requires_torch: tests that require PyTorch installed",
+    "slow: computationally expensive seeded experiments or publication checks",
+    "integration: multi-module or transport integration coverage",
+    "publication: tests that exercise generated manuscript or release artifacts",
+]
+
+[tool.coverage.run]
+# Core Template Rule: We only calculate coverage for primary source code (`src/`),
+# ensuring test code itself does not artificially inflate metric scores.
+source = ["src"]
+branch = true
+omit = [
+    "tests/*",
+    "*/__init__.py",
+    "*/test_*.py",
+]
+
+[tool.coverage.report]
+# ≥90% on src/ is the enforced gate; live coverage % is tracked in
+# coverage_project.json at the repo root (do not hardcode it here — it drifts).
+fail_under = 90
+show_missing = true
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
+
+[tool.mypy]
+mypy_path = "src"
+ignore_missing_imports = true
+namespace_packages = true
+explicit_package_bases = true
+disable_error_code = ["import-untyped"]
+
+[tool.uv]
+# Inherits workspace settings from root pyproject.toml
+
+[tool.setuptools.package-data]
+fedference = [
+    "config/*.yaml",
+    "data/*.csv",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+exclude = [".venv", "output", "**/__pycache__"]
+
+[tool.ruff.lint]
+# E=pycodestyle errors, F=pyflakes, W=pycodestyle warnings, I=import sort
+# N (naming) and D (docstring) excluded: the project uses uppercase A/B/C for
+# likelihood/transition matrices (Active Inference convention) and Google-style
+# docstrings with relaxed markup.
+select = ["E", "F", "W", "I"]

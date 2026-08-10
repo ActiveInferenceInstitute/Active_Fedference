@@ -1,0 +1,7 @@
+\frametitle{Supplement: moving-world methods and condition definitions}
+We compare three conditions --- \emph{isolated} (random moves, no
+sharing), \emph{communicating} (random moves plus a per-step
+log-linear-pool consensus), and \emph{EFE-guided} (information-seeking
+moves plus the same per-step sharing) --- over 960 trials of 6 steps
+each, scoring the pooled consensus against the true state. All numerics
+are deterministic given the run seed.

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>23_discussion_limitations.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:limitations">Limitations and claim boundaries</h2>
+<p>The boundaries here define the contribution. The central goal is to
+show — concretely and testably — that the categorical
+generalized-variational construction inspired by FedGVI
+<span class="citation">(Mildner et al. 2025)</span> has standard-Bayes client limits and a project-local
+log-linear-pool server identity. Under the explicit bridge in <span
+class="citation"
+data-cites="sec:method-aggregation"><a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a></span>,
+the latter specializes Friston et al.’s Eq. 7 message-combination term
+<span class="citation">(Friston et al. 2024)</span>, not the complete source protocol; behavior away
+from those limits is evaluated only under declared simulation
+conditions. The exact identities are formal; performance and deployment
+claims remain conditional. Items beyond that boundary are named as
+future work.</p>
+<h2 id="sec:limitations-axes">Three robustness axes: theorem, heuristic,
+and objective</h2>
+<p>Robustness enters in three places with unequal standing — a
+distinction surfaced by an adversarial review of this work and preserved
+deliberately throughout (<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>).</p>
+<ol type="1">
+<li><p><strong>Client-side, source-theorem-backed.</strong> A robust
+per-agent generalized-Bayes update with a bounded loss — <span
+class="math inline">\(\beta\)</span>-loss <span class="citation">(Basu et al. 1998)</span> or
+generalized cross-entropy <span class="citation">(Zhang and Sabuncu 2018)</span> — inside the
+generalized posterior. Density-power and gamma-divergence Bayes make
+clear that this is a loss/divergence-specific robustness property, not
+an automatic property of every generalized posterior
+<span class="citation">(Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span>. It is derived from the
+generalized-Bayes objective <span class="citation">(Bissiri et al. 2016; Jewson et al. 2018; Knoblauch et al. 2022)</span>, provably limits to NLL/Bayes (hence to the
+standard pool) as the loss parameter goes to zero (<span
+class="citation" data-cites="eq:beta-loss"><a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a></span>, <span
+class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>), and
+is the theorem-bearing axis under the matching loss, divergence, and
+regularity assumptions of FedGVI. The manuscript does not re-prove that
+theorem for every possible categorical data-generating process.
+<strong>This is the client-side mechanism implemented and evaluated
+here.</strong></p></li>
+<li><p><strong>Server-side, heuristic.</strong> The
+divergence-reweighting aggregator <code>robust_aggregate</code>. Its
+positive formal property is the recovery limit — robustness <span
+class="math inline">\(0\)</span> equals the standard log-linear pool
+(<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). A scoped
+no-go rejects one declared separable objective class; it is <em>not</em>
+a closed-form minimizer of a FedGVI objective, and we never claim it
+inherits the bounded-influence bound. An empirical characterization
+(<a class="xref" href="index.html#sec:results-heuristic-characterization">Section 14.2</a>)
+makes this boundary concrete: the heuristic has a <em>finite</em>
+measured breakdown point (a colluding majority captures it), a witness
+against unconditional server resistance rather than a transferred client
+theorem. The robustness sweep reports it as a complementary heuristic,
+and <a class="xref" href="index.html#fig:robust-weights">Figure 13</a> is labeled
+accordingly. Robust federated optimizers such as Krum and gamma-mean
+aggregation motivate the adversarial client problem <span class="citation">(Blanchard et al. 2017; Li et al. 2022)</span>, but they do not certify this belief-pooling heuristic.
+It has BH-rejected positive contrasts in the configured accuracy verdict
+in <a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a>, while
+the declared mechanism gallery and conditional-world study retain
+reversals that prohibit a universal accuracy claim.</p></li>
+<li><p><strong>Server-side, objective-backed (conservative).</strong>
+The variational aggregator <code>variational_aggregate</code> of <span
+class="citation"
+data-cites="sec:method-variational"><a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a></span>,
+derived in <a class="xref" href="index.html#sec:supp-variational">Section 11</a>. It
+runs exact closed-form block updates that descend the stated free energy
+<a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>
+monotonically on each block, shares the recovery corner (<span
+class="citation"
+data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>) with axis
+2, and — unlike axis 2 — carries a proven raw effective-weight bound
+with empirical redescending behavior (<a class="xref" href="index.html#fig:bounded-influence">Figure 15</a>). Its
+cost in the declared comparison is conservatism: the entropy
+regularization yields a more diffuse consensus, and the method does
+<em>not</em> win that configured peak-accuracy verdict. It closes the
+“is there <em>any</em> objective-backed server rule with raw-weight
+control” gap; it does not retroactively endow the sharp axis-2 heuristic
+with an objective.</p></li>
+</ol>
+<p>The honest state is therefore a triangle, not a binary: axis 1 is
+source-theorem-backed under matching assumptions, axis 2 has conditional
+wins and reversals <em>without</em> a server-side objective, and axis 3
+is objective-backed <em>but</em> conservative. No experiment attributes
+axis 2’s accuracy win to a theoretical guarantee, and none attributes
+axis 3’s weight bound to a peak-accuracy claim. The remaining open
+problem — an objective whose minimizer is the <em>sharp</em> reweighting
+itself, which would combine accuracy and guarantee in one server rule —
+is named future work in <a class="xref" href="index.html#sec:future">Section 8.17</a>; the extended methods that
+broaden the toolkit without touching these claims are cataloged in <span
+class="citation"
+data-cites="sec:supp-extended"><a class="xref" href="index.html#sec:supp-extended">Section 12</a></span>.</p>
+<h2 id="sec:limitations-scope">Scope boundaries that the evidence does
+not cross</h2>
+<ul>
+<li><strong>The bridge is a recasting, not an upstream claim.</strong>
+Friston et al. <span class="citation">(Friston et al. 2024)</span> supply a belief-sharing operator
+for agents with a shared world model; Mildner et al. <span class="citation">(Mildner et al. 2025)</span>
+supply robust federated generalized variational inference. Neither paper
+claims the other. The contribution here is to recast the former as the
+tested KL/NLL zero-robustness recovery corner of the latter-inspired
+construction, then measure what changes when robust losses and server
+reweighting are introduced.</li>
+<li><strong>Historical sources are conceptual, not formal
+support.</strong> The pre-modern sources added in <a class="xref" href="index.html#sec:related-historical">Section 8.9</a>
+support a genealogy of expectation, inverse inference, utility, and
+collective judgment <span class="citation">(Huygens 1657; Bayes 1763; Laplace 1774; Bernoulli 1738; Condorcet 1785)</span>. They do
+not support any claim about KL, NLL, product-of-experts training,
+FedGVI, or <code>robust_aggregate</code>. Those claims rest only on the
+modern cited formalism and the tests reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>.</li>
+<li><strong>Single-machine federation.</strong> Federation is validated
+with queue transport, a single-machine OS-process helper, and loopback
+TCP: agents serialize beliefs, the server aggregates, and consensus is
+broadcast back without changing the mathematics. The socket path now
+exercises frame integrity and file-backed digest-verified replay
+validation; an optional SQLite round-ID guard also survives local
+process restarts. These controls are still not a substitute for
+cross-host deployment, identity-bound mTLS, a shared multi-host replay
+domain, discovery, long-running worker orchestration, or fault
+tolerance; those steps are scoped as future work (<a class="xref" href="index.html#sec:future">Section 8.17</a>).</li>
+<li><strong>GPU / PyTorch Bayesian-neural-network experiments at the
+original FedGVI scale.</strong> The bounded-influence result is anchored
+here by a small NumPy logistic-regression baseline (<span
+class="citation"
+data-cites="fig:bnn-robustness"><a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a></span>), not the
+RTX-class runs of the source paper <span class="citation">(Mildner et al. 2025)</span>. Even on that
+anchor the robust client’s margin over the standard client is
+non-monotone rather than uniform: it opens in the moderate-to-high
+contamination range and then vanishes at the most extreme swept level,
+where both configurations collapse together with no reliable ordering
+(<a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>). That
+terminal convergence is reported, not trimmed; the axis’s rigorous
+standing rests on the recovery identities and the FedGVI theorem under
+its matching assumptions, not on the size or monotonicity of the
+empirical gap in this figure.</li>
+<li><strong>Classification baselines are point estimates, not full
+posteriors.</strong> The NumPy logistic-regression baseline and the
+PyTorch MLP complement both use point-estimate weights (no posterior
+covariance is computed). A genuine mean-field variational family over
+the weights — diagonal-Gaussian <span
+class="math inline">\(q(w)\)</span> with a closed-form KL and a
+Monte-Carlo ELBO — is implemented as a tested primitive
+(<code>bnn_variational_torch.VariationalMLP</code>, recovering the
+point-estimate net exactly as its posterior variance vanishes), but the
+full paper-faithful FedGVI classification lane (that variational family
+trained under the contamination sweep, at GPU scale) is not: MCMC,
+non-diagonal structure, and stochastic-weight averaging remain
+unimplemented, and the full-posterior regime remains unverified.</li>
+<li><strong>Hierarchical depth does not by itself improve the base
+task.</strong> The two- and three-level stacks (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>,
+<a class="xref" href="index.html#sec:results-3level">Section 13.11</a>) run
+alternating L1/L2(/L3) inference end-to-end and resolve their added
+context latents above chance, but on the shared location task they do
+not beat the flat baseline — the paired location-accuracy gap is a
+small, statistically reliable negative gap at the reported seed count
+(<a class="xref" href="index.html#fig:hierarchical-pomdp">Figure 25</a>).
+Depth is therefore validated as executable and consensus-preserving, not
+as an accuracy improvement; whether a richer policy-and-horizon task
+family rewards hierarchy is future work (<a class="xref" href="index.html#sec:future-hierarchical">Section 8.20</a>).</li>
+<li><strong>Discrete POMDP only — continuous or hybrid state spaces are
+not addressed.</strong> This work is discrete-categorical only, matching
+the community’s worked POMDP example <span class="citation">(Da Costa et al. 2020; Friston et al. 2024)</span>. The limit-as-proof contract is validated off the
+categorical case only for a one-dimensional Gaussian-mean conjugate
+slice; continuous-state active inference and Gaussian belief-sharing
+colonies remain untested.</li>
+<li><strong>Temperature and divergence calibration are fixed, not
+learned.</strong> Coarsened posterior and safe-Bayes theory make clear
+that the learning-rate/temperature is part of the inference rule under
+misspecification <span class="citation">(Miller and Dunson 2018; Grunwald 2012; Kleijn and van der Vaart 2012)</span>. This manuscript validates the configured
+losses and divergences, but it does not learn an optimal coarsening
+radius, temperature, or divergence schedule across agents.</li>
+<li><strong>Real multi-machine federation, networking, and privacy
+cryptography.</strong> Federation here is <em>mathematical</em> (factor
+aggregation), not infrastructural — unlike communication-efficient or
+Byzantine-robust federated learning <span class="citation">(McMahan et al. 2017; Blanchard et al. 2017)</span>.</li>
+<li><strong>New linguistic theory.</strong> The language-acquisition
+study (<a class="xref" href="index.html#sec:results-language">Section 7.3</a>)
+reproduces the Dirichlet count mechanism (<a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a>)
+mechanically; it does not extend the linguistics.</li>
+</ul>
+<h2 id="sec:limitations-stats">What the statistics can and cannot
+claim</h2>
+<p>The verdict is a paired comparison at a single high contamination
+rate (<a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a>, <span
+class="citation"
+data-cites="tbl:robustness_verdict"><a class="xref" href="index.html#tbl:robustness_verdict">Table 4</a></span>).
+This concentrates power where the effect is largest, which is honest
+about <em>where</em> robustness pays off but does not characterize the
+full contamination curve as a continuous function; the per-rate table
+(<a class="xref" href="index.html#tbl:paired-by-rate">Table paired-by-rate</a>) reports
+the rest of the sweep without claiming family-wide significance beyond
+what BH-FDR <span class="citation">(Benjamini and Hochberg 1995)</span> certifies. BH-FDR controls
+expected false discovery proportion within the declared family, not the
+chance of any false positive. The matched-pairs Wilcoxon tests are rank
+tests under paired-difference assumptions <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span>, not assumption-free proofs about raw means. Confidence
+intervals are percentile bootstrap <span class="citation">(Efron and Tibshirani 1993)</span>, not analytic,
+and inherit that method’s small-sample caveats at the lowest trial
+counts. The power values are observed-effect design approximations
+useful for confirmatory sample-size planning; they are not independent
+evidence for the verdict and do not cover model-specification
+uncertainty outside the seeded simulation harness
+<span class="citation">(Wasserstein and Lazar 2016)</span>.</p>
+</main>
+</body>
+</html>

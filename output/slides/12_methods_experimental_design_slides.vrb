@@ -1,0 +1,12 @@
+\frametitle{Software environment and configuration fingerprint}
+\protect\phantomsection\label{sec:methods-software}
+The FedGVI core, the POMDP studies, and the logistic-regression baseline
+are pure NumPy / SciPy --- no GPU and no network. The deterministic-MLP
+neural complement (sec.~7.6) additionally uses
+PyTorch (CPU); the analysis pipeline executes it and emits its numbers
+as tokens exactly like every other result when the \texttt{torch}
+optional extra is installed, and otherwise records a skipped status with
+unavailable-value sentinels instead of silently fabricating neural
+results. Versions and platform --- including the PyTorch version used
+for the MLP complement --- are recorded automatically in
+sec.~10.

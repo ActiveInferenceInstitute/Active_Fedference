@@ -1,0 +1,158 @@
+\babel@toc {english}{}\relax
+\contentsline {section}{\numberline {1}Abstract}{4}{section.1}%
+\contentsline {section}{\numberline {2}Introduction: from belief sharing to robust generalized Bayes}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Active inference supplies generative agents and shared beliefs}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Robust and federated Bayes supplies bounded-influence updating}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Questions, design, and evidence boundary}{6}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}How to read the visual architecture}{6}{subsubsection.2.3.1}%
+\contentsline {section}{\numberline {3}Research gap and claim boundary}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Five reviewed threads and their open intersection}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}The belief-fusion bridge evaluated here}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Guarantee map: three robustness axes}{8}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Contributions and evidence boundaries}{8}{section.4}%
+\contentsline {section}{\numberline {5}Methods: the federated active-inference stack}{9}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Federation protocol: local update, server fusion, broadcast}{9}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Notation for beliefs, losses, and divergences}{10}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Generalized Bayes: the route back to standard Bayes}{10}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Conjugate likelihood learning for the shared model}{11}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Bayesian model reduction for structure comparison}{11}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Divergences: robust objectives and the KL limit}{11}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Robust losses: bounded influence at the Bayes corner}{11}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}Aggregation and message passing: standard pool, heuristic, and variational server}{12}{subsection.5.8}%
+\contentsline {subsubsection}{\numberline {5.8.1}Protocol map: local updates, broadcast, and server fusion}{12}{subsubsection.5.8.1}%
+\contentsline {paragraph}{\numberline {5.8.1.1}Visual protocol map (schematic)}{13}{figure.caption.11}%
+\contentsline {subsubsection}{\numberline {5.8.2}Variational aggregation with objective-backed weight control}{13}{subsubsection.5.8.2}%
+\contentsline {subsection}{\numberline {5.9}Belief sharing: the standard aggregation corner}{14}{subsection.5.9}%
+\contentsline {subsection}{\numberline {5.10}Generative model: categorical states, observations, actions, and hierarchy}{14}{subsection.5.10}%
+\contentsline {subsection}{\numberline {5.11}State space: one shared latent factor}{15}{subsection.5.11}%
+\contentsline {subsection}{\numberline {5.12}Four categorical tensors: likelihood, transitions, preferences, priors}{15}{subsection.5.12}%
+\contentsline {subsection}{\numberline {5.13}One-step variational state inference in the grid world}{16}{subsection.5.13}%
+\contentsline {subsection}{\numberline {5.14}Hidden-state to action loop: the POMDP substrate}{16}{subsection.5.14}%
+\contentsline {subsection}{\numberline {5.15}Learning stack: EFE, Dirichlet updates, and BMR}{16}{subsection.5.15}%
+\contentsline {subsection}{\numberline {5.16}Conjugate Dirichlet learning from co-occurrence counts}{16}{subsection.5.16}%
+\contentsline {subsection}{\numberline {5.17}Expected free energy as the action-selection objective}{18}{subsection.5.17}%
+\contentsline {subsection}{\numberline {5.18}Bayesian model reduction for structure emergence}{18}{subsection.5.18}%
+\contentsline {subsection}{\numberline {5.19}Contamination models: declared failure modes for belief fusion}{18}{subsection.5.19}%
+\contentsline {subsection}{\numberline {5.20}Corruption process for adversarial belief broadcasts}{18}{subsection.5.20}%
+\contentsline {subsection}{\numberline {5.21}How contamination meets the three robustness axes}{19}{subsection.5.21}%
+\contentsline {subsection}{\numberline {5.22}Experimental design: studies, estimands, determinism, and power}{19}{subsection.5.22}%
+\contentsline {subsection}{\numberline {5.23}Determinism through fixed seeds and generated variables}{19}{subsection.5.23}%
+\contentsline {subsection}{\numberline {5.24}Study suite and contamination sweep}{19}{subsection.5.24}%
+\contentsline {subsection}{\numberline {5.25}Sample size and prospective statistical power}{20}{subsection.5.25}%
+\contentsline {subsection}{\numberline {5.26}Software environment and configuration fingerprint}{21}{subsection.5.26}%
+\contentsline {subsection}{\numberline {5.27}Statistical protocol: matched comparisons, intervals, and bounded claims}{21}{subsection.5.27}%
+\contentsline {subsection}{\numberline {5.28}Paired comparison and standardized effect size}{21}{subsection.5.28}%
+\contentsline {subsection}{\numberline {5.29}Bootstrap interval estimates}{21}{subsection.5.29}%
+\contentsline {subsection}{\numberline {5.30}Multiple-testing deflation by BH-FDR}{22}{subsection.5.30}%
+\contentsline {subsection}{\numberline {5.31}Prospective power analysis for the verdict rate}{22}{subsection.5.31}%
+\contentsline {subsection}{\numberline {5.32}Reporting tables and the honesty boundary}{22}{subsection.5.32}%
+\contentsline {subsection}{\numberline {5.33}Computational complexity and scaling diagnostic}{22}{subsection.5.33}%
+\contentsline {section}{\numberline {6}Formalism: recovery limits, EFE, and tempered aggregation}{24}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Recovery limits as the proof surface}{24}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Expected-free-energy identity as an algebraic check}{24}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Tempered aggregation free energy and the accuracy-guarantee trade}{25}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}What the entropy weight controls}{26}{subsubsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.2}Recovery at the qualified log-linear-pool corner}{26}{subsubsection.6.3.2}%
+\contentsline {subsubsection}{\numberline {6.3.3}What the accuracy--guarantee trade can establish}{26}{subsubsection.6.3.3}%
+\contentsline {subsubsection}{\numberline {6.3.4}Publication-facing interpretation}{26}{subsubsection.6.3.4}%
+\contentsline {section}{\numberline {7}Results: recovery checks and study suite}{26}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Recovery limits: standard-Bayes and project-pool corners are exact to machine precision}{27}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Belief sharing lowers free energy at the project-pool corner}{27}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Three robustness axes remain distinct in the results}{30}{subsubsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.3}Language acquisition follows conjugate Dirichlet updating}{30}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Bayesian model reduction selects supported structure}{30}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Contamination sweep: regime-dependent server behavior under declared attacks}{30}{subsection.7.5}%
+\contentsline {subsubsection}{\numberline {7.5.1}Earned robustness verdict at the decisive rate}{33}{subsubsection.7.5.1}%
+\contentsline {paragraph}{\numberline {7.5.1.1}Server-side heuristic axis: accurate but not guaranteed}{35}{paragraph.7.5.1.1}%
+\contentsline {subsubsection}{\numberline {7.5.2}Variational aggregator: conservative objective-backed weight control}{37}{subsubsection.7.5.2}%
+\contentsline {subsection}{\numberline {7.6}Client-side robustness complement: categorical FedGVI baseline}{37}{subsection.7.6}%
+\contentsline {section}{\numberline {8}Discussion: what the evidence supports}{40}{section.8}%
+\contentsline {subsection}{\numberline {8.1}The recovery limit is the formal anchor}{40}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}What the study suite jointly shows}{40}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}What this simulation identifies---and what it does not}{40}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}The robustness verdict is conditional and statistically qualified}{41}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Three robustness axes remain separate}{41}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Accuracy and effective-weight control can be traded explicitly}{41}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.7}Why the boundary matters downstream}{41}{subsection.8.7}%
+\contentsline {subsection}{\numberline {8.8}Related work: active inference, federated Bayes, and the scoped bridge}{41}{subsection.8.8}%
+\contentsline {subsection}{\numberline {8.9}Pre-modern probability, inverse probability, and collective judgment}{41}{subsection.8.9}%
+\contentsline {subsection}{\numberline {8.10}Active inference: generative agents, EFE, and colonies}{42}{subsection.8.10}%
+\contentsline {subsection}{\numberline {8.11}Robust and federated Bayes outside active inference}{42}{subsection.8.11}%
+\contentsline {subsection}{\numberline {8.12}The specific bridge added here}{42}{subsection.8.12}%
+\contentsline {subsection}{\numberline {8.13}Limitations and claim boundaries}{43}{subsection.8.13}%
+\contentsline {subsection}{\numberline {8.14}Three robustness axes: theorem, heuristic, and objective}{43}{subsection.8.14}%
+\contentsline {subsection}{\numberline {8.15}Scope boundaries that the evidence does not cross}{44}{subsection.8.15}%
+\contentsline {subsection}{\numberline {8.16}What the statistics can and cannot claim}{44}{subsection.8.16}%
+\contentsline {subsection}{\numberline {8.17}Future work: testing the open boundaries}{44}{subsection.8.17}%
+\contentsline {subsection}{\numberline {8.18}Make the sharp server heuristic variational}{45}{subsection.8.18}%
+\contentsline {subsection}{\numberline {8.19}Promote the baseline to original FedGVI scale}{45}{subsection.8.19}%
+\contentsline {subsection}{\numberline {8.20}Extend hierarchical federation beyond the current stack}{45}{subsection.8.20}%
+\contentsline {subsection}{\numberline {8.21}Move from process transport to true multi-machine federation}{45}{subsection.8.21}%
+\contentsline {subsection}{\numberline {8.22}Move beyond categorical state spaces}{46}{subsection.8.22}%
+\contentsline {section}{\numberline {9}Conclusion: a recovery-tested bridge with bounded claims}{46}{section.9}%
+\contentsline {subsection}{\numberline {9.1}The durable result is a recovery contract}{46}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}What the evidence establishes away from the corner}{46}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Why the bridge matters for active inference}{47}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}What remains unproved}{47}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}A falsifiable research program}{47}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Final position}{47}{subsection.9.6}%
+\contentsline {section}{\numberline {10}Reproducibility: execution record and recovery checks}{47}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Determinism contract for seeded scientific results}{47}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Environment fingerprint for the reported run}{48}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Reader-surface accessibility boundary}{48}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Test and coverage evidence for the claim surface}{48}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Artifact inventory for figures, data, and reports}{48}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Recovery-limit certificate for the client and project-pool corners}{49}{subsection.10.6}%
+\contentsline {section}{\numberline {11}Supplement: variational aggregation objective and weight control}{49}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Why the sharp heuristic is not yet variational}{49}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Aggregation free energy and its block minimizers}{50}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Formal properties of the conservative server rule}{50}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}Numerical witnesses for descent and influence bounds}{51}{subsection.11.4}%
+\contentsline {subsection}{\numberline {11.5}Tempered aggregation family for the accuracy-guarantee trade}{51}{subsection.11.5}%
+\contentsline {section}{\numberline {12}Supplement: extended methods for scoped generalization}{52}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Continuous-state divergence bridge for Gaussian beliefs}{52}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}Additional contamination models for the robustness surface}{52}{subsection.12.2}%
+\contentsline {subsubsection}{\numberline {12.2.1}Contamination gallery by corruption mechanism}{52}{subsubsection.12.2.1}%
+\contentsline {subsubsection}{\numberline {12.2.2}Robustness onset by corruption mechanism}{54}{subsubsection.12.2.2}%
+\contentsline {subsubsection}{\numberline {12.2.3}Conditional world and attack-geometry grid}{54}{subsubsection.12.2.3}%
+\contentsline {subsubsection}{\numberline {12.2.4}Source-bound robustness review grid}{54}{subsubsection.12.2.4}%
+\contentsline {subsubsection}{\numberline {12.2.5}Proper scores and calibration controls}{55}{subsubsection.12.2.5}%
+\contentsline {subsection}{\numberline {12.3}Greedy multi-hypothesis model reduction beyond the main BMR study}{55}{subsection.12.3}%
+\contentsline {subsection}{\numberline {12.4}Federation transport protocol and bit-identity witness}{57}{subsection.12.4}%
+\contentsline {section}{\numberline {13}Supplemental notation contract}{57}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Probability objects and generative-model quantities}{58}{subsection.13.1}%
+\contentsline {subsubsection}{\numberline {13.1.1}States, posteriors, and site factors}{58}{subsubsection.13.1.1}%
+\contentsline {subsubsection}{\numberline {13.1.2}Priors, policies, and POMDP quantities}{58}{subsubsection.13.1.2}%
+\contentsline {subsection}{\numberline {13.2}Divergences, losses, and scalar controls}{58}{subsection.13.2}%
+\contentsline {subsubsection}{\numberline {13.2.1}Generalized-Bayes and aggregation terms}{58}{subsubsection.13.2.1}%
+\contentsline {subsubsection}{\numberline {13.2.2}Robustness, divergences, and loss controls}{59}{subsubsection.13.2.2}%
+\contentsline {subsection}{\numberline {13.3}Cavity and factor algebra}{59}{subsection.13.3}%
+\contentsline {subsection}{\numberline {13.4}Statistical notation and nesting}{60}{subsection.13.4}%
+\contentsline {subsection}{\numberline {13.5}Code and manuscript naming map}{60}{subsection.13.5}%
+\contentsline {subsection}{\numberline {13.6}Source and evidence boundaries}{60}{subsection.13.6}%
+\contentsline {subsection}{\numberline {13.7}Moving sentinel world: communication benefit depends on field of view}{61}{subsection.13.7}%
+\contentsline {subsubsection}{\numberline {13.7.1}Disjoint field-of-view extension}{61}{subsubsection.13.7.1}%
+\contentsline {subsection}{\numberline {13.8}Supplement: moving-world methods and condition definitions}{62}{subsection.13.8}%
+\contentsline {subsection}{\numberline {13.9}Hierarchical POMDP: federated belief sharing across levels}{63}{subsection.13.9}%
+\contentsline {subsection}{\numberline {13.10}Supplement: hierarchical POMDP methods and parameters}{64}{subsection.13.10}%
+\contentsline {subsubsection}{\numberline {13.10.1}Generative model for context-gated location inference}{64}{subsubsection.13.10.1}%
+\contentsline {subsubsection}{\numberline {13.10.2}Inference algorithm for top-down empirical priors}{64}{subsubsection.13.10.2}%
+\contentsline {subsubsection}{\numberline {13.10.3}Study parameters for the hierarchical condition}{64}{subsubsection.13.10.3}%
+\contentsline {subsection}{\numberline {13.11}Three-level hierarchical POMDP: an executed test of the N-level template}{64}{subsection.13.11}%
+\contentsline {subsection}{\numberline {13.12}Supplement: N-level hierarchical POMDP methods}{65}{subsection.13.12}%
+\contentsline {subsubsection}{\numberline {13.12.1}Generative model for an N-level hierarchy}{65}{subsubsection.13.12.1}%
+\contentsline {subsubsection}{\numberline {13.12.2}Generic N-level architecture}{65}{subsubsection.13.12.2}%
+\contentsline {subsubsection}{\numberline {13.12.3}Inference algorithm across hierarchy levels}{65}{subsubsection.13.12.3}%
+\contentsline {subsubsection}{\numberline {13.12.4}Study parameters for the three-level run}{65}{subsubsection.13.12.4}%
+\contentsline {subsection}{\numberline {13.13}Parameter sensitivity of federation benefit}{66}{subsection.13.13}%
+\contentsline {subsection}{\numberline {13.14}Supplement: parameter-sensitivity methods}{66}{subsection.13.14}%
+\contentsline {subsubsection}{\numberline {13.14.1}Experimental protocol for grid sensitivity}{68}{subsubsection.13.14.1}%
+\contentsline {subsubsection}{\numberline {13.14.2}Grid parameters for acuity and colony size}{68}{subsubsection.13.14.2}%
+\contentsline {subsubsection}{\numberline {13.14.3}Belief-sharing condition in the sensitivity grid}{68}{subsubsection.13.14.3}%
+\contentsline {subsubsection}{\numberline {13.14.4}Hierarchical POMDP condition in the sensitivity grid}{68}{subsubsection.13.14.4}%
+\contentsline {subsubsection}{\numberline {13.14.5}Figure rendering for sensitivity summaries}{68}{subsubsection.13.14.5}%
+\contentsline {subsubsection}{\numberline {13.14.6}Cross-study summary construction}{68}{subsubsection.13.14.6}%
+\contentsline {section}{\numberline {14}Parameter recovery: acuity selection on the tested grid}{69}{section.14}%
+\contentsline {subsection}{\numberline {14.1}Structure learning: does the hierarchy earn its depth?}{69}{subsection.14.1}%
+\contentsline {subsection}{\numberline {14.2}Sharp server heuristic: influence and finite-breakdown characterization}{70}{subsection.14.2}%
+\contentsline {section}{\numberline {15}References}{71}{section.15}%

@@ -1,0 +1,14 @@
+\frametitle{Robust losses: bounded influence at the Bayes corner}
+Taking the loss-parameter limits (\(\beta\to0\) or \(q_{\rm loss}\to0\))
+reproduces standard Bayes. Combining those local posteriors through the
+qualified categorical specialization in
+sec.~5.8 is a separate server step, not a
+recovery claim for the complete belief-sharing protocol of Friston et
+al. (2024). This is the \textbf{per-agent rigorous robustness axis}: it
+is derived from eq.~1 and provably limits to Bayes
+through Proposition \ref{prop:robust-loss-recovery} and Lemma
+\ref{lem:renyi-kl-limit}, and it is the axis that carries FedGVI's
+bounded-influence guarantee under the cited matching assumptions. The
+complementary server-side divergence-reweighting heuristic of
+sec.~5.8 is a distinct device and is never
+granted this guarantee (sec.~3.3).

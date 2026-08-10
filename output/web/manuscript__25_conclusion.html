@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>25_conclusion.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="sec:conclusion">Conclusion: a recovery-tested bridge with
+bounded claims</h1>
+<p>Active Fedference makes a deliberately narrow bridge between two
+bodies of work that are usually discussed with different objects and
+different standards of evidence. Active inference describes agents that
+infer and act within generative models; federated generalized Bayes
+describes how losses, divergences, and variational objectives can make
+decentralized inference less sensitive to bad information
+<span class="citation">(Friston et al. 2017; Da Costa et al. 2020; Bissiri et al. 2016; Knoblauch et al. 2022)</span>. This paper does not dissolve those
+distinctions. It puts them into one categorical implementation,
+identifies the exact point at which they coincide, and then measures the
+consequences of moving away from that point.</p>
+<h2 id="sec:conclusion-recovery">The durable result is a recovery
+contract</h2>
+<p>The central contribution is the recovery-tested contract. The KL/NLL
+client limits of the declared generalized-Bayes construction recover the
+closed-form Bayes update, while the zero-robustness server branch
+recovers the project log-linear pool, with maximum measured deviations
+of 5.55e-17 and 0 (<span class="xref">Eq. 6</span>; <span
+class="citation"
+data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>). This is
+stronger than a verbal analogy because the limited identities are stated
+in the formalism, implemented in the core, and checked by executable
+invariants. Under the explicit shared-support, posterior-log-potential,
+and fixed-weight bridge, the server pool specializes Eq. 7’s
+message-combination term; it is not an assertion that the
+active-inference and robust-Bayes literatures share all assumptions,
+objectives, deployment meanings, or the complete source protocol.</p>
+<p>That distinction matters historically and methodologically.
+Logarithmic pooling has a substantial literature as an aggregation rule
+for expert distributions, including its connections to external
+Bayesianity, product-of-experts constructions, and KL-based opinion
+pooling <span class="citation">(Genest and Zidek 1986; Genest et al. 1986; Hinton 2002; Abbas 2009; Dietrich 2021)</span>. FedGVI contributes a
+generalized-Bayes perspective in which the loss and divergence determine
+what robustness means <span class="citation">(Mildner et al. 2025)</span>. The contribution here is
+therefore a scoped recasting: the project’s categorical log-linear-pool
+specialization is the non-robust corner of the implemented family under
+its stated bridge assumptions, and the corner becomes a testable
+boundary condition for future robust extensions. This does not identify
+the complete source belief-sharing protocol with FedGVI.</p>
+<h2 id="sec:conclusion-evidence">What the evidence establishes away from
+the corner</h2>
+<p>The standard-Bayes studies provide a necessary baseline rather than
+ornamental background. Communication changes mean free energy by 3.3109
+nats, Dirichlet learning reduces KL from 3.4231 to 0.0027, and Bayesian
+model reduction selects the declared redundant-pruning candidate. These
+results recover the declared mechanisms that make belief sharing
+scientifically interesting while keeping the source relationship bounded
+to the stated categorical protocol <span class="citation">(Friston et al. 2024)</span>. The extension
+studies then show that communication is not automatically beneficial in
+every information geometry: disjoint views can make sharing valuable,
+whereas a complementary moving-world control can make additional pooling
+unnecessary or mildly costly.</p>
+<p>The contamination study adds a second lesson. The server-side
+heuristic is regime-dependent: robust operating points can give up a
+little efficiency when contamination is weak and recover that cost when
+the declared attack is severe. At the most severe swept rate, the
+highest pooled robust mean reaches 0.9880 against the standard pool’s
+0.6928 (<a class="xref" href="index.html#tbl:robustness_sweep">Table 2</a>); at
+the verdict rate, the matched, BH-adjusted comparison of <span
+class="citation"
+data-cites="sec:results-robustness"><a class="xref" href="index.html#sec:results-robustness">Section 7.5</a></span>
+gives 0.9867 against 0.9021. The result is therefore an operating-point
+contrast, not a ranking that holds for every contamination rate, attack
+target, hidden state, or calibration regime. This interpretation follows
+the simulation-study principle that the data-generating mechanism,
+estimand, and Monte Carlo unit should be declared before a numerical
+result is treated as general evidence <span class="citation">(Morris et al. 2019)</span>.</p>
+<p>The three robustness axes give the result its proper meaning. The
+client-side generalized-Bayes update is the FedGVI-faithful,
+theorem-bearing axis under its matching loss and regularity assumptions.
+The server-side <code>robust_aggregate</code> is the sharp empirical
+heuristic; its proven property here is the recovery limit, not a
+transferred client-side bounded-influence theorem. The
+<code>variational_aggregate</code> is the conservative complement: it
+descends a stated aggregation objective and has a proven raw
+effective-weight bound, but its objective-backed control does not make
+it the peak-accuracy display leader. Separating these axes prevents a
+familiar failure in interdisciplinary work: a guarantee proved for one
+operator is silently attached to another operator because both are
+described with the same word, “robust.”</p>
+<h2 id="sec:conclusion-significance">Why the bridge matters for active
+inference</h2>
+<p>Belief sharing is not merely a communication convenience. In an
+active-inference system, a shared posterior can change expected
+free-energy calculations, model comparison, and subsequent action
+selection. A robustification at the fusion step can therefore alter
+behavior even when each local generative model is unchanged. Conversely,
+a server rule that suppresses an anomalous belief may also suppress a
+rare but correct observation. The relevant scientific question is not
+simply whether a robust curve rises; it is which assumptions about
+competence, independence, support, and action-relevant uncertainty the
+fusion rule encodes <span class="citation">(Genest and Zidek 1986; Tresp 2000; Heins et al. 2024)</span>.</p>
+<p>This is why the recovery corner is a useful organizing device. It
+gives a common reference behavior before robustness is introduced, makes
+the cost of a server intervention measurable, and lets later work
+compare new aggregation rules against an interpretable baseline. The
+bridge also keeps the distinction between inference and infrastructure
+visible. The current federation tests show that serialized beliefs can
+travel through the declared local transport and return a bit-identical
+consensus, but they do not turn a mathematical aggregation identity into
+a claim about secure, fault-tolerant, or privacy- preserving deployment
+<span class="citation">(McMahan et al. 2017; Blanchard et al. 2017; Pillutla et al. 2022)</span>.</p>
+<h2 id="sec:conclusion-boundaries">What remains unproved</h2>
+<p>The evidence does not establish universal Byzantine tolerance, truth
+recovery, calibration, or an optimal robustness parameter. The primary
+intervals are conditional on the fixed hidden state and attack target,
+and the nested trial and seed structure is reduced at the declared unit
+rather than treated as a larger independent sample <span class="citation">(Koehler et al. 2009; Loy and Korobova 2021)</span>. The categorical state space is the object of the
+proof and experiment; continuous or hybrid state spaces are a separate
+mathematical extension. The neural classification complement uses
+point-estimate weights, so it does not establish full posterior FedGVI
+behavior at the scale of the source experiments.</p>
+<p>These are not defects to be hidden by a more expansive title. They
+define the proper contribution: an executable categorical bridge, a
+recovery certificate, an explicit map of theorem-bearing and heuristic
+components, and conditional evidence about contamination behavior.
+Robust-statistics language such as influence and breakdown remains
+useful for describing the failure modes, but a finite simulation sweep
+is not by itself a general estimator-level robustness theorem
+<span class="citation">(Huber and Ronchetti 2009)</span>. The same discipline applies to historical and
+conceptual scholarship: early work on probability, inverse inference,
+utility, and collective judgment supplies lineage, not evidence for
+modern KL, FedGVI, or adversarial-federation claims.</p>
+<h2 id="sec:conclusion-program">A falsifiable research program</h2>
+<p>The next stage should be organized around boundary conditions rather
+than a larger collection of demonstrations. First, derive a server
+objective whose minimizer is competitive with
+<code>robust_aggregate</code> while retaining the variational rule’s
+effective-weight control. Recent work on closed-form generalized
+variational objectives, logarithmic-pool weighting, and robust
+divergence-weighted federation provides relevant mathematical
+constraints <span class="citation">(Nguyen and Westerhout 2026; Carvalho et al. 2023; Li et al. 2022)</span>. A useful candidate must recover the standard log-linear
+pool at zero robustness, state which quantity is bounded, and fail
+visibly when those assumptions are violated.</p>
+<p>Second, broaden the primary estimand across attack targets, hidden
+states, adaptive adversaries, calibration conditions, and model classes.
+The decisive falsifier is not a lower average score on one new grid; it
+is failure of the claimed robustness advantage, recovery identity, or
+stated uncertainty calibration under a pre-registered extension of the
+data-generating mechanism. Third, promote the point-estimate neural
+complement to a posterior-parameterized FedGVI study at
+source-comparable scale, and test whether the client-side bounded-loss
+behavior survives capacity, optimization, and posterior-family changes.
+Finally, move from local transport to multi-machine execution with
+explicit threat models, authentication, failure handling, and privacy
+claims; none should be inferred from the current bit-identity
+result.</p>
+<h2 id="sec:conclusion-position">Final position</h2>
+<p>The strongest conclusion is consequently neither that robust belief
+sharing has been solved nor that the bridge is merely metaphorical. In
+the declared categorical setting, the standard-Bayes client limits and
+project log-linear-pool server identity are tested recovery conditions;
+away from them, server behavior is measurable, regime-dependent, and
+partitioned into theorem-bearing, objective-backed, and heuristic
+claims. That is a modest result, but it is a useful one: it supplies a
+reproducible starting point from which stronger theorems, broader state
+spaces, independent implementations, and real federated deployments can
+be judged without losing the baseline they are meant to extend.</p>
+</main>
+</body>
+</html>

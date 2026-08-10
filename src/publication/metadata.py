@@ -1,0 +1,214 @@
+"""Canonical metadata emitter (MED-2): one config source, three file surfaces.
+
+``manuscript/config.yaml`` (the ``paper:``/``authors:``/``publication:``/
+``keywords:``/``metadata:`` blocks) plus the package version in
+``pyproject.toml`` are the single source of truth for publication metadata.
+This module deterministically emits the three generated surfaces —
+``CITATION.cff``, ``.zenodo.json``, and ``codemeta.json`` — so a change made
+once in config propagates everywhere and the surfaces can never silently
+drift (the drift class this replaces was hand-maintenance of five copies).
+
+Contract:
+
+* :func:`build_metadata` — pure: returns the exact text content of each
+  generated file, derived only from config + pyproject.
+* :func:`check_metadata` — read-only: diff each on-disk surface against the
+  emitted content; returns the list of drifted paths (empty == consistent).
+* :func:`write_metadata` — the ONLY writer, and only when explicitly called
+  (``scripts/emit_metadata.py --write``); check mode never mutates anything.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from datetime import date
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+from publication.identifiers import doi_url, normalize_doi
+
+#: The generated surfaces, relative to the project root.
+GENERATED_SURFACES: tuple[str, ...] = ("CITATION.cff", ".zenodo.json", "codemeta.json")
+
+
+def _project_root(project_root: Path | None) -> Path:
+    # metadata.py lives at <root>/src/publication/metadata.py.
+    return project_root or Path(__file__).resolve().parent.parent.parent
+
+
+def _load_config(root: Path) -> dict[str, Any]:
+    config_path = root / "manuscript" / "config.yaml"
+    with config_path.open("r", encoding="utf-8") as handle:
+        data = yaml.safe_load(handle) or {}
+    if not data.get("publication"):
+        raise ValueError("config.yaml has no publication: block")
+    return data
+
+
+def _package_version(root: Path) -> str:
+    """Software version from pyproject.toml (the packaging source of truth)."""
+    text = (root / "pyproject.toml").read_text(encoding="utf-8")
+    match = re.search(r'^version\s*=\s*"([^"]+)"', text, flags=re.MULTILINE)
+    if not match:
+        raise ValueError("pyproject.toml has no version field")
+    return match.group(1)
+
+
+def _one_line(text: str) -> str:
+    """Collapse a folded YAML scalar to a single normalized line."""
+    return " ".join(str(text).split())
+
+
+def _author_email(author: dict[str, Any]) -> str | None:
+    email = str(author.get("email", "")).strip()
+    return email or None
+
+
+def _release_date(value: object) -> str | None:
+    """Return an ISO release date, or ``None`` for an unreleased project."""
+    if value is None:
+        return None
+    normalized = str(value).strip()
+    if not normalized:
+        return None
+    try:
+        date.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError("publication.date_released must be YYYY-MM-DD or null") from exc
+    return normalized
+
+
+def build_metadata(project_root: Path | None = None) -> dict[str, str]:
+    """Return ``{relative_path: exact_file_content}`` for every surface."""
+    root = _project_root(project_root)
+    cfg = _load_config(root)
+    pub = cfg["publication"]
+    authors = cfg["authors"]
+    keywords = [str(k) for k in cfg.get("keywords", [])]
+    license_id = str(cfg.get("metadata", {}).get("license", "MIT"))
+    version = _package_version(root)
+    name = _one_line(pub["software_name"])
+    abstract = _one_line(pub["abstract"])
+    description = _one_line(pub["description"])
+    repo = str(pub["github_repository"])
+    date_created = str(pub["date_created"])
+    date_released = _release_date(pub.get("date_released"))
+    doi = normalize_doi(pub.get("doi"), allow_placeholder=True)
+    doi_resolver = doi_url(doi)
+    related = [
+        {"relation": str(r["relation"]), "identifier": str(r["identifier"])}
+        for r in pub.get("related_identifiers", [])
+    ]
+
+    cff: dict[str, Any] = {
+        "cff-version": "1.2.0",
+        "title": name,
+        "type": "software",
+        "message": ("If you use this software, please cite it using the metadata from this file."),
+        "abstract": abstract,
+        "version": version,
+        "license": license_id,
+        "repository-code": repo,
+        "keywords": keywords,
+        **({"identifiers": [{"type": "doi", "value": doi}]} if doi is not None else {}),
+        **({"date-released": date_released} if date_released is not None else {}),
+        "authors": [
+            {
+                "given-names": a["name"].rsplit(" ", 1)[0],
+                "family-names": a["name"].rsplit(" ", 1)[1],
+                "orcid": a["orcid"],
+                "affiliation": a["affiliation"],
+                **({"email": email} if (email := _author_email(a)) else {}),
+            }
+            for a in authors
+        ],
+    }
+    cff_text = (
+        "# GENERATED by src/publication/metadata.py from manuscript/config.yaml.\n"
+        "# Do not hand-edit: run `uv run python scripts/emit_metadata.py --write`.\n"
+        + yaml.safe_dump(cff, sort_keys=True, allow_unicode=True, default_flow_style=False)
+    )
+
+    zenodo: dict[str, Any] = {
+        "title": name,
+        "upload_type": "software",
+        "description": description,
+        "version": version,
+        "license": license_id,
+        "keywords": keywords,
+        **({"publication_date": date_released} if date_released is not None else {}),
+        "creators": [
+            {
+                "name": "{}, {}".format(a["name"].rsplit(" ", 1)[1], a["name"].rsplit(" ", 1)[0]),
+                "orcid": a["orcid"],
+                "affiliation": a["affiliation"],
+            }
+            for a in authors
+        ],
+        "related_identifiers": related,
+        **({"doi": doi} if doi is not None else {}),
+    }
+    zenodo_text = json.dumps(zenodo, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+
+    codemeta: dict[str, Any] = {
+        "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+        "@type": "SoftwareSourceCode",
+        "name": name,
+        "description": description,
+        "version": version,
+        "dateCreated": date_created,
+        "codeRepository": repo,
+        "license": f"https://spdx.org/licenses/{license_id}",
+        "keywords": keywords,
+        **({"dateModified": date_released} if date_released is not None else {}),
+        "programmingLanguage": [{"@type": "ComputerLanguage", "name": "Python", "version": "3.10+"}],
+        "author": [
+            {
+                "@id": f"https://orcid.org/{a['orcid']}",
+                "@type": "Person",
+                "givenName": a["name"].rsplit(" ", 1)[0],
+                "familyName": a["name"].rsplit(" ", 1)[1],
+                "affiliation": {"@type": "Organization", "name": a["affiliation"]},
+                **({"email": email} if (email := _author_email(a)) else {}),
+            }
+            for a in authors
+        ],
+        **({"identifier": doi_resolver} if doi_resolver is not None else {}),
+    }
+    codemeta_text = json.dumps(codemeta, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+
+    return {
+        "CITATION.cff": cff_text,
+        ".zenodo.json": zenodo_text,
+        "codemeta.json": codemeta_text,
+    }
+
+
+def check_metadata(project_root: Path | None = None) -> list[str]:
+    """Read-only drift check: return the surfaces whose on-disk content differs.
+
+    A missing surface counts as drifted. An empty return means all generated
+    surfaces are byte-identical to what the config would emit.
+    """
+    root = _project_root(project_root)
+    expected = build_metadata(root)
+    drifted: list[str] = []
+    for rel, content in expected.items():
+        path = root / rel
+        if not path.exists() or path.read_text(encoding="utf-8") != content:
+            drifted.append(rel)
+    return drifted
+
+
+def write_metadata(project_root: Path | None = None) -> list[str]:
+    """Write every generated surface; return the paths written (explicit only)."""
+    root = _project_root(project_root)
+    expected = build_metadata(root)
+    written: list[str] = []
+    for rel, content in expected.items():
+        (root / rel).write_text(content, encoding="utf-8")
+        written.append(rel)
+    return written

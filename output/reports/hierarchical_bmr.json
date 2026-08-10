@@ -1,0 +1,53 @@
+{
+  "acuity": 0.85,
+  "degenerate": {
+    "levels": [
+      {
+        "bayesian_surprise": 0.0,
+        "label": "low_threat",
+        "level": 0,
+        "n_pruned": 0,
+        "prunable": true,
+        "redundancy_delta_F": 0.0
+      },
+      {
+        "bayesian_surprise": 0.5795825240348206,
+        "label": "quiet",
+        "level": 1,
+        "n_pruned": 0,
+        "prunable": false,
+        "redundancy_delta_F": 0.0
+      }
+    ],
+    "n_levels": 3,
+    "recommended_prune": 0
+  },
+  "degenerate_recommends_prune_top": true,
+  "degenerate_top_surprise": 0.0,
+  "informative": {
+    "levels": [
+      {
+        "bayesian_surprise": 0.3276713725058497,
+        "label": "low_threat",
+        "level": 0,
+        "n_pruned": 0,
+        "prunable": false,
+        "redundancy_delta_F": 0.0
+      },
+      {
+        "bayesian_surprise": 0.13796407895287188,
+        "label": "quiet",
+        "level": 1,
+        "n_pruned": 0,
+        "prunable": false,
+        "redundancy_delta_F": 0.0
+      }
+    ],
+    "n_levels": 3,
+    "recommended_prune": null
+  },
+  "informative_keeps_top": true,
+  "informative_top_surprise": 0.3276713725058497,
+  "n_levels": 3,
+  "obs": 4
+}

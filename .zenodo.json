@@ -1,0 +1,38 @@
+{
+  "creators": [
+    {
+      "affiliation": "Active Inference Institute",
+      "name": "Friedman, Daniel Ari",
+      "orcid": "0000-0001-6232-9096"
+    }
+  ],
+  "description": "Source code and reproducible artifacts for Active Fedference, a discrete-categorical research package connecting FedGVI to federated active-inference belief sharing.",
+  "doi": "10.5281/zenodo.21864004",
+  "keywords": [
+    "active inference",
+    "federated learning",
+    "generalised variational inference",
+    "belief sharing",
+    "robustness",
+    "FedGVI"
+  ],
+  "license": "MIT",
+  "publication_date": "2026-08-10",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ActiveInferenceInstitute/Active_Fedference",
+      "relation": "isSupplementTo"
+    },
+    {
+      "identifier": "https://arxiv.org/abs/2502.00846",
+      "relation": "cites"
+    },
+    {
+      "identifier": "https://doi.org/10.1016/j.neubiorev.2023.105500",
+      "relation": "cites"
+    }
+  ],
+  "title": "Active Fedference",
+  "upload_type": "software",
+  "version": "0.1.0"
+}

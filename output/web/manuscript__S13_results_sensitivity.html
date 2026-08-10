@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>S13_results_sensitivity.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:results-sensitivity">Parameter sensitivity of federation
+benefit</h2>
+<p>Studies 1–7 fix specific parameter configurations (sensor acuity,
+colony size) to isolate mechanistic claims. A natural question is
+whether the federation benefit is <strong>robust to those
+choices</strong> or is an artifact of a narrow operating point. Study 8
+addresses this with a systematic 2-D sensitivity sweep over sensor
+acuity and colony size.</p>
+<p>We sweep sensor acuity <span class="math inline">\(\kappa \in \{0.40,
+0.55, 0.70, 0.85, 0.95\}\)</span> and colony size <span
+class="math inline">\(n \in \{2, 4, 6, 8, 10\}\)</span>, evaluating two
+systems:</p>
+<ul>
+<li><strong>Belief sharing</strong> (Study 1 architecture) — accuracy
+gap = communicating minus isolated mean accuracy;</li>
+<li><strong>Hierarchical POMDP</strong> (Study 6 architecture) —
+accuracy gap = hierarchical minus flat location accuracy.</li>
+</ul>
+<p>Each cell averages <span class="math inline">\(n_{\text{trials}} =
+20\)</span> independent trials to reduce Monte-Carlo noise at the cell
+level.</p>
+<p>The resulting heatmaps (<a class="xref" href="index.html#fig:sensitivity-heatmap">Figure 26</a>)
+show the accuracy gap for both systems as a function of acuity and
+colony size. Green cells indicate that federation benefits the colony;
+red cells indicate that the chosen configuration yields no benefit or a
+slight deficit. The symmetric RdYlGn colormap is centered on zero so the
+sign of the benefit is immediately legible.</p>
+<p>Across the grid the following patterns hold:</p>
+<ol type="1">
+<li><p><strong>The belief-sharing benefit lives at low-to-moderate
+acuity.</strong> The accuracy gap peaks in the second-lowest acuity row
+— where individual observations carry some signal but no single sentinel
+resolves the location alone, so pooled evidence pays most — and remains
+uniformly positive across the two lowest-acuity rows for colonies of at
+least four agents. Near ceiling acuity the gap shrinks toward zero:
+single agents already solve the task, so federation has nothing left to
+add.</p></li>
+<li><p><strong>Colony size acts through a floor, not a smooth
+slope.</strong> The two-agent column shows an exactly zero
+belief-sharing gap at every acuity: under self-exclusion (“agents do not
+hear themselves”), each member of a two-agent colony hears exactly one
+incoming belief, so the heard consensus adds no pooled evidence.
+Colonies of four or more realize the low-acuity benefit.</p></li>
+<li><p><strong>The hierarchical gap is near zero across most of the
+grid.</strong> The hierarchical-minus-flat location-accuracy gap is
+approximately zero over most cells, with a few strongly negative
+low-acuity cells and small positive cells confined to the two-agent
+column — consistent with the per-study finding that the hierarchical
+architecture matches rather than beats the flat baseline on location
+accuracy.</p></li>
+</ol>
+<p>The full parameter grid and protocol details are in the supplement
+(<a class="xref" href="index.html#sec:supp-sensitivity">Section 13.14</a>). A
+native-unit cross-study overview of the headline metrics across all 9
+studies is shown in <a class="xref" href="index.html#fig:cross-study-summary">Figure 27</a>.</p>
+<figure id="fig:sensitivity-heatmap">
+<a class="figure-full-size-link" href="../figures/sensitivity_heatmap.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/sensitivity_heatmap.png" style="width:90.0%"
+alt="Source relation: original project sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as functions of acuity and colony size; uncertainty: deterministic per-cell means over the declared trials, with no resampling interval." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Source relation: original project
+sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as
+functions of acuity and colony size; uncertainty: deterministic per-cell
+means over the declared trials, with no resampling interval. Two-panel
+heatmap (1×2) of the Study 8 parameter sensitivity sweep. Left panel:
+y-axis indexes sensor acuity (0.40–0.95, 5 levels); x-axis indexes
+colony size (2–10 agents, 5 levels); color encodes the belief-sharing
+accuracy gap (communicating minus isolated mean accuracy). Right panel:
+identical axes; color encodes the hierarchical POMDP location accuracy
+gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero
+— green denotes federation benefit, red denotes deficit. Diagonal
+hatching marks cells with <span class="math inline">\(|\mathrm{gap}| \le
+0.05\)</span> (unreliable, near-zero benefit). Cell values are
+deterministic per-cell means over 20 trials; no resampling error band is
+shown — the sweep protocol is detailed in the sensitivity
+supplement.</figcaption>
+</figure>
+<figure id="fig:cross-study-summary">
+<a class="figure-full-size-link" href="../figures/cross_study_summary.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/cross_study_summary.png" style="width:75.0%"
+alt="Source relation: original project cross-study summary; estimand: grouped study-level means in native units (accuracy fractions, nats, or R^2 ), never a cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Source relation: original project
+cross-study summary; estimand: grouped study-level means in native units
+(accuracy fractions, nats, or <span class="math inline">\(R^2\)</span>),
+never a cross-unit ranking; uncertainty: seed-level bootstrap confidence
+intervals. Horizontal native-unit facet chart summarizing the key
+federation benefit metric for each of the 9 studies (Studies 1–9).
+x-axis indexes benefit value in metric-specific units (accuracy gain for
+Studies 1, 4, 5, 6, 7, 8; KL reduction for Study 2; ΔF for Study 3;
+<span class="math inline">\(R^2\)</span> for Study 9). y-axis lists the
+9 studies (one row each), ordered from Study 1 at the top to Study 9 at
+the bottom within each native-unit facet. Each mark shows the mean over
+128 independent seeds with intervals spanning the 95 % bootstrap
+confidence interval. There is no cross-unit ranking: zero is a
+within-unit reference only, and the facet labels carry the units.
+Consistent with the per-study results, Studies 5 (moving world, EFE) and
+6 (2-level hierarchical) sit at approximately zero within their
+respective units.</figcaption>
+</figure>
+</main>
+</body>
+</html>

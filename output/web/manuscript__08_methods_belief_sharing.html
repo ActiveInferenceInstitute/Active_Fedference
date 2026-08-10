@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>08_methods_belief_sharing.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:method-belief-sharing">Belief sharing: the standard
+aggregation corner</h2>
+<p><code>belief_sharing.share_round</code> lifts the aggregation rule of
+<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> to
+a colony of categorical sentinel agents. Each agent has a private
+sensory outcome and a local posterior over the same shared latent
+location; it broadcasts the posterior, not its raw observation.
+Following the sensory attenuation that the active-inference formulation
+of belief sharing imposes <span class="citation">(Friston et al. 2024)</span> — “agents do not hear
+themselves” — an agent’s heard consensus excludes its own message:</p>
+<p><span class="math display">\[
+q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),
+\]</span> {#eq:belief-round}</p>
+<p>so the round in <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a> implements the
+declared categorical colony-hive-mind mechanism. With the naive fusion
+rule of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>, <span
+class="citation" data-cites="eq:belief-round"><a class="xref" href="index.html#eq:belief-round">Eq. (9)</a></span>
+is the project’s standard log-linear-pool consensus. Under the explicit
+shared-support, posterior-log-potential, and fixed-weight assumptions of
+<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>, it
+specializes Eq. 7’s message-combination term; it does not reconstruct
+the complete source protocol. With the server-side robust rule it yields
+a hive-mind that can down-weight a contaminated sentinel — an effect the
+contamination sweep of <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>
+measures rather than assumes, and one that carries no guarantee beyond
+the recovery limit. The per-round diagnostics — the post-sharing belief
+matrix, the global consensus, and the mean surprise and accuracy against
+a known ground-truth state — are returned by <code>share_round</code>
+and drive Studies 1 and 4.</p>
+<p><a class="xref" href="index.html#fig:message-passing">Figure 3</a> makes
+this concrete: three sentinel cards begin with different private
+categorical views of the nine-cell world, convert those views into local
+posteriors, and send only those posteriors to a fusion route. The return
+path is a cavity message, so the consensus heard by agent <span
+class="math inline">\(n\)</span> excludes the local posterior <span
+class="math inline">\(q_n\)</span>. The figure remains a protocol map
+rather than a new result; the empirical belief matrix and free-energy
+comparison remain the evidence surfaces in <a class="xref" href="index.html#fig:belief-heatmap">Figure 9</a> and <span
+class="citation"
+data-cites="fig:free-energy"><a class="xref" href="index.html#fig:free-energy">Figure 8</a></span>.</p>
+<p>Because <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a> calls the
+aggregation rule of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a> or its
+robust generalization, the recovery identity of <a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a> propagates
+upward: a colony running <code>share_round</code> at zero server
+robustness is bit-identical to a colony running the project’s standard
+log-linear-pool round. Under the qualified categorical bridge, the pool
+realizes only the source message-combination specialization; the robust
+round is a project extension, not a reconstruction of the
+active-inference ensemble literature <span class="citation">(Friston et al. 2024; Heins et al. 2024)</span>. <a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>
+reports that communicating colonies reach a mean variational free energy
+of 13.2190 nats against 16.5298 nats for incommunicado colonies across
+480 seeds, with the per-agent belief matrix before and after a round
+shown in <a class="xref" href="index.html#fig:belief-heatmap">Figure 9</a> and the
+colony comparison in <a class="xref" href="index.html#fig:free-energy">Figure 8</a>.</p>
+<p>The honesty boundary of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> carries
+through the lift unchanged. The robustness that <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a> inherits when the
+colony fuses with the server-side heuristic is the
+divergence-reweighting device of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+whose positive property is the naive-recovery limit and whose declared
+separable objective class has a scoped no-go result; the per-agent
+FedGVI bounded-influence result enters the colony only through the
+rcce/AR client losses of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a>, under the
+source theorem’s matching assumptions, applied inside each agent’s local
+generalized-Bayes update. The robustness sweep in <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a> and
+the variational supplement in <a class="xref" href="index.html#sec:supp-variational">Section 11</a> keep
+the three axes distinct. The federation transport (<span
+class="citation"
+data-cites="sec:supp-federation"><a class="xref" href="index.html#sec:supp-federation">Section 12.4</a></span>) realizes
+this sharing over queue-backed worker channels; by <a class="xref" href="index.html#prop:federation-bit-identity">Proposition 12</a>, the
+federation bit-identity result, the consensus is bit-identical to the
+in-process call, so the channel adds no precision loss while leaving
+multi-machine network transport as future work.</p>
+</main>
+</body>
+</html>

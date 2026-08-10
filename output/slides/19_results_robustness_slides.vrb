@@ -1,0 +1,10 @@
+\frametitle{Variational aggregator: conservative objective-backed weight control}
+The honest trade is conservatism: because \(F\) carries the \(-H(q)\)
+entropy term, its consensus is the maximum-entropy distribution
+consistent with the weighted cross-entropies, deliberately flatter than
+the product-of-experts. The variational aggregator therefore does
+\emph{not} win the peak-accuracy verdict of
+sec.~\breaktt{sec:results-verdict} --- that remains the sharp heuristic's
+role --- and the two are reported as complements, never conflated:
+rigor-with-conservatism on one side, accuracy-without-an-objective on
+the other.

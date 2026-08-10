@@ -1,0 +1,11 @@
+\frametitle{Recovery at the qualified log-linear-pool corner}
+
+This nested limit is useful for interpretation. The \(c\to0\) limit
+identifies the aggregation family with a known consensus operator; the
+\(\lambda=1.0\) slice identifies the objective-backed implementation
+used in the main server comparison. Neither limit grants the server-side
+\breaktt{robust\_aggregate} heuristic a variational objective or a
+bounded-influence guarantee. The FedGVI literature's rate and robustness
+results remain attached to their stated loss, divergence, and sampling
+assumptions (Mildner, Hamelijnck, et al. 2025; Mildner, Giampouras, et
+al. 2025).

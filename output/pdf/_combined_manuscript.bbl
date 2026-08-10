@@ -1,0 +1,506 @@
+\begin{thebibliography}{64}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Abbas(2009)]{abbas2009kullback}
+Ali~E. Abbas.
+\newblock A kullback--leibler view of linear and log-linear pools.
+\newblock \emph{Decision Analysis}, 6\penalty0 (1):\penalty0 25--37, 2009.
+\newblock \doi{10.1287/deca.1080.0133}.
+\newblock URL \url{https://doi.org/10.1287/deca.1080.0133}.
+
+\bibitem[Albarracin et~al.(2022)Albarracin, Demekas, Ramstead, and
+  Heins]{albarracin2022epistemic}
+Mahault Albarracin, Daphne Demekas, Maxwell J.~D. Ramstead, and Conor Heins.
+\newblock Epistemic communities under active inference.
+\newblock \emph{Entropy}, 24\penalty0 (4):\penalty0 476, 2022.
+\newblock \doi{10.3390/e24040476}.
+
+\bibitem[Ashman et~al.(2022)Ashman, Bui, Nguyen, Markou, Weller, Swaroop, and
+  Turner]{ashman2022partitioned}
+Matthew Ashman, Thang~D. Bui, Cuong~V. Nguyen, Stratis Markou, Adrian Weller,
+  Siddharth Swaroop, and Richard~E. Turner.
+\newblock Partitioned variational inference: A framework for probabilistic
+  federated learning, 2022.
+\newblock URL \url{https://arxiv.org/abs/2202.12275}.
+
+\bibitem[Bagaev et~al.(2023)Bagaev, Podusenko, and de~Vries]{bagaev2023rxinfer}
+Dmitry Bagaev, Albert Podusenko, and Bert de~Vries.
+\newblock {RxInfer}: A julia package for reactive real-time {Bayesian}
+  inference.
+\newblock \emph{Journal of Open Source Software}, 8\penalty0 (84):\penalty0
+  5161, 2023.
+\newblock \doi{10.21105/joss.05161}.
+
+\bibitem[Basu et~al.(1998)Basu, Harris, Hjort, and Jones]{basu1998robust}
+Ayanendranath Basu, Ian~R. Harris, Nils~L. Hjort, and M.~C. Jones.
+\newblock Robust and efficient estimation by minimising a density power
+  divergence.
+\newblock \emph{Biometrika}, 85\penalty0 (3):\penalty0 549--559, 1998.
+\newblock \doi{10.1093/biomet/85.3.549}.
+
+\bibitem[Bayes(1763)]{bayes1763essay}
+Thomas Bayes.
+\newblock An essay towards solving a problem in the doctrine of chances.
+\newblock \emph{Philosophical Transactions of the Royal Society of London},
+  53:\penalty0 370--418, 1763.
+\newblock \doi{10.1098/rstl.1763.0053}.
+\newblock URL \url{https://doi.org/10.1098/rstl.1763.0053}.
+
+\bibitem[Benjamini and Hochberg(1995)]{benjamini1995controlling}
+Yoav Benjamini and Yosef Hochberg.
+\newblock Controlling the false discovery rate: a practical and powerful
+  approach to multiple testing.
+\newblock \emph{Journal of the Royal Statistical Society: Series B
+  (Methodological)}, 57\penalty0 (1):\penalty0 289--300, 1995.
+\newblock \doi{10.1111/j.2517-6161.1995.tb02031.x}.
+
+\bibitem[Bernoulli(1738)]{bernoulli1738mensura}
+Daniel Bernoulli.
+\newblock Specimen theoriae novae de mensura sortis.
+\newblock \emph{Commentarii Academiae Scientiarum Imperialis Petropolitanae},
+  5:\penalty0 175--192, 1738.
+\newblock URL
+  \url{https://archive.org/details/SpecimenTheoriaeNovaeDeMensuraSortis}.
+
+\bibitem[Bernoulli(1713)]{bernoulli1713ars}
+Jacob Bernoulli.
+\newblock \emph{Ars conjectandi}.
+\newblock Thurneysen, Basel, 1713.
+\newblock URL \url{https://archive.org/details/jacobibernoulli00bern}.
+
+\bibitem[Bissiri et~al.(2016)Bissiri, Holmes, and Walker]{bissiri2016general}
+Pier~Giovanni Bissiri, Chris~C. Holmes, and Stephen~G. Walker.
+\newblock A general framework for updating belief distributions.
+\newblock \emph{Journal of the Royal Statistical Society: Series B (Statistical
+  Methodology)}, 78\penalty0 (5):\penalty0 1103--1130, 2016.
+\newblock \doi{10.1111/rssb.12158}.
+
+\bibitem[Blanchard et~al.(2017)Blanchard, El~Mhamdi, Guerraoui, and
+  Stainer]{blanchard2017krum}
+Peva Blanchard, El~Mahdi El~Mhamdi, Rachid Guerraoui, and Julien Stainer.
+\newblock Machine learning with adversaries: Byzantine tolerant gradient
+  descent.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~30, 2017.
+\newblock URL
+  \url{https://proceedings.neurips.cc/paper/2017/hash/f4b9ec30ad9f68f89b29639786cb62ef-Abstract.html}.
+
+\bibitem[Borda(1784)]{borda1784elections}
+Jean-Charles~de Borda.
+\newblock M{\'e}moire sur les {\'e}lections au scrutin.
+\newblock \emph{Histoire de l'Acad{\'e}mie Royale des Sciences}, pages
+  657--665, 1784.
+\newblock URL
+  \url{https://bibbase.org/network/publication/denbspborda-mmoiresurleslectionsauscrutin-1781}.
+
+\bibitem[Bui et~al.(2018)Bui, Nguyen, Swaroop, and Turner]{bui2018partitioned}
+Thang~D. Bui, Cuong~V. Nguyen, Siddharth Swaroop, and Richard~E. Turner.
+\newblock Partitioned variational inference: A unified framework encompassing
+  federated and continual learning, 2018.
+\newblock URL \url{https://arxiv.org/abs/1811.11206}.
+
+\bibitem[Carvalho et~al.(2023)Carvalho, Villela, Coelho, and
+  Bastos]{carvalho2023logpooling}
+Luiz~M. Carvalho, Daniel A.~M. Villela, Flavio~C. Coelho, and Leonardo~S.
+  Bastos.
+\newblock Bayesian inference for the weights in logarithmic pooling.
+\newblock \emph{Bayesian Analysis}, 18\penalty0 (1), 2023.
+\newblock \doi{10.1214/22-BA1311}.
+
+\bibitem[Condorcet(1785)]{condorcet1785essai}
+Jean-Antoine-Nicolas de~Caritat Condorcet.
+\newblock \emph{Essai sur l'application de l'analyse {\`a} la probabilit{\'e}
+  des d{\'e}cisions rendues {\`a} la pluralit{\'e} des voix}.
+\newblock Imprimerie Royale, Paris, 1785.
+\newblock URL \url{https://archive.org/details/essaisurlapplic00conggoog}.
+
+\bibitem[Da~Costa et~al.(2020)Da~Costa, Parr, Sajid, Veselic, Neacsu, and
+  Friston]{dacosta2020active}
+Lancelot Da~Costa, Thomas Parr, Noor Sajid, Sebastijan Veselic, Victorita
+  Neacsu, and Karl Friston.
+\newblock Active inference on discrete state-spaces: A synthesis.
+\newblock \emph{Journal of Mathematical Psychology}, 99:\penalty0 102447, 2020.
+\newblock \doi{10.1016/j.jmp.2020.102447}.
+
+\bibitem[de~Moivre(1718)]{demoivre1718doctrine}
+Abraham de~Moivre.
+\newblock \emph{The Doctrine of Chances: or, A Method of Calculating the
+  Probability of Events in Play}.
+\newblock W. Pearson, London, 1718.
+\newblock URL
+  \url{https://archive.org/details/bim_eighteenth-century_the-doctrine-of-chances_moivre-abraham-de_1718}.
+
+\bibitem[Dietrich(2021)]{dietrich2021fully}
+Franz Dietrich.
+\newblock Fully bayesian aggregation.
+\newblock \emph{Journal of Economic Theory}, 194:\penalty0 105255, 2021.
+\newblock \doi{10.1016/j.jet.2021.105255}.
+\newblock URL \url{https://doi.org/10.1016/j.jet.2021.105255}.
+
+\bibitem[Efron and Tibshirani(1993)]{efron1993bootstrap}
+Bradley Efron and Robert~J. Tibshirani.
+\newblock \emph{An Introduction to the Bootstrap}, volume~57 of
+  \emph{Monographs on Statistics and Applied Probability}.
+\newblock Chapman \& Hall, New York, 1993.
+\newblock \doi{10.1201/9780429246593}.
+
+\bibitem[Fay and Proschan(2010)]{fay2010wilcoxon}
+Michael~P. Fay and Michael~A. Proschan.
+\newblock Wilcoxon--mann--whitney or t-test? on assumptions for hypothesis
+  tests and multiple interpretations of decision rules.
+\newblock \emph{Statistics Surveys}, 4:\penalty0 1--39, 2010.
+\newblock \doi{10.1214/09-SS051}.
+\newblock URL \url{https://doi.org/10.1214/09-SS051}.
+
+\bibitem[Friston(2010)]{friston2010free}
+Karl Friston.
+\newblock The free-energy principle: a unified brain theory?
+\newblock \emph{Nature Reviews Neuroscience}, 11\penalty0 (2):\penalty0
+  127--138, 2010.
+\newblock \doi{10.1038/nrn2787}.
+
+\bibitem[Friston and Penny(2011)]{friston2011post}
+Karl Friston and Will Penny.
+\newblock Post hoc bayesian model selection.
+\newblock \emph{NeuroImage}, 56\penalty0 (4):\penalty0 2089--2099, 2011.
+\newblock \doi{10.1016/j.neuroimage.2011.03.062}.
+
+\bibitem[Friston et~al.(2017)Friston, FitzGerald, Rigoli, Schwartenbeck, and
+  Pezzulo]{friston2017active}
+Karl Friston, Thomas FitzGerald, Francesco Rigoli, Philipp Schwartenbeck, and
+  Giovanni Pezzulo.
+\newblock Active inference: A process theory.
+\newblock \emph{Neural Computation}, 29\penalty0 (1):\penalty0 1--49, 2017.
+\newblock \doi{10.1162/NECO_a_00912}.
+\newblock URL \url{https://doi.org/10.1162/NECO_a_00912}.
+
+\bibitem[Friston et~al.(2024)Friston, Parr, Heins, Constant, Friedman, Isomura,
+  Fields, Verbelen, Ramstead, Clippinger, and Frith]{friston2024federated}
+Karl~J. Friston, Thomas Parr, Conor Heins, Axel Constant, Daniel Friedman,
+  Takuya Isomura, Chris Fields, Tim Verbelen, Maxwell Ramstead, John
+  Clippinger, and Christopher~D. Frith.
+\newblock Federated inference and belief sharing.
+\newblock \emph{Neuroscience \& Biobehavioral Reviews}, 156:\penalty0 105500,
+  2024.
+\newblock \doi{10.1016/j.neubiorev.2023.105500}.
+\newblock URL \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC11139662/}.
+
+\bibitem[Fujisawa and Eguchi(2008)]{fujisawa2008robust}
+Hironori Fujisawa and Shinto Eguchi.
+\newblock Robust parameter estimation with a small bias against heavy
+  contamination.
+\newblock \emph{Journal of Multivariate Analysis}, 99\penalty0 (9):\penalty0
+  2053--2081, 2008.
+\newblock \doi{10.1016/j.jmva.2008.02.004}.
+
+\bibitem[Futami et~al.(2018)Futami, Sato, and Sugiyama]{futami2018robustvi}
+Futoshi Futami, Issei Sato, and Masashi Sugiyama.
+\newblock Variational inference based on robust divergences.
+\newblock In Amos Storkey and Fernando Perez-Cruz, editors, \emph{Proceedings
+  of the Twenty-First International Conference on Artificial Intelligence and
+  Statistics}, volume~84 of \emph{Proceedings of Machine Learning Research},
+  pages 813--822. PMLR, 2018.
+\newblock URL \url{https://proceedings.mlr.press/v84/futami18a.html}.
+
+\bibitem[Genest and Zidek(1986)]{genest1986combining}
+Christian Genest and James~V. Zidek.
+\newblock Combining probability distributions: A critique and an annotated
+  bibliography.
+\newblock \emph{Statistical Science}, 1\penalty0 (1), 1986.
+\newblock \doi{10.1214/ss/1177013825}.
+
+\bibitem[Genest et~al.(1986)Genest, McConway, and
+  Schervish]{genest1986externally}
+Christian Genest, Kevin~J. McConway, and Mark~J. Schervish.
+\newblock Characterization of externally bayesian pooling operators.
+\newblock \emph{The Annals of Statistics}, 14\penalty0 (2), 1986.
+\newblock \doi{10.1214/aos/1176349934}.
+
+\bibitem[Ghosh and Basu(2015)]{ghosh2015robust}
+Abhik Ghosh and Ayanendranath Basu.
+\newblock Robust bayes estimation using the density power divergence.
+\newblock \emph{Annals of the Institute of Statistical Mathematics},
+  68\penalty0 (2):\penalty0 413--437, 2015.
+\newblock \doi{10.1007/s10463-014-0499-0}.
+
+\bibitem[Gr{\"u}nwald(2012)]{grunwald2012safe}
+Peter Gr{\"u}nwald.
+\newblock The safe bayesian: Learning the learning rate via the mixability gap.
+\newblock In \emph{Algorithmic Learning Theory}, pages 169--183. Springer
+  Berlin Heidelberg, 2012.
+\newblock \doi{10.1007/978-3-642-34106-9_16}.
+
+\bibitem[Heins et~al.(2022)Heins, Millidge, Demekas, Klein, Friston, Couzin,
+  and Tschantz]{heins2022pymdp}
+Conor Heins, Beren Millidge, Daphne Demekas, Brennan Klein, Karl Friston,
+  Iain~D. Couzin, and Alexander Tschantz.
+\newblock pymdp: A python library for active inference in discrete state
+  spaces.
+\newblock \emph{Journal of Open Source Software}, 7\penalty0 (73):\penalty0
+  4098, 2022.
+\newblock \doi{10.21105/joss.04098}.
+
+\bibitem[Heins et~al.(2024)Heins, Millidge, Da~Costa, Mann, Friston, and
+  Couzin]{heins2023collective}
+Conor Heins, Beren Millidge, Lancelot Da~Costa, Richard~P. Mann, Karl~J.
+  Friston, and Iain~D. Couzin.
+\newblock Collective behavior from surprise minimization.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 121\penalty0
+  (17):\penalty0 e2320239121, 2024.
+\newblock \doi{10.1073/pnas.2320239121}.
+
+\bibitem[Hinton(2002)]{hinton2002products}
+Geoffrey~E. Hinton.
+\newblock Training products of experts by minimizing contrastive divergence.
+\newblock \emph{Neural Computation}, 14\penalty0 (8):\penalty0 1771--1800,
+  2002.
+\newblock \doi{10.1162/089976602760128018}.
+
+\bibitem[Huber and Ronchetti(2009)]{huber2009robust}
+Peter~J. Huber and Elvezio~M. Ronchetti.
+\newblock \emph{Robust Statistics}.
+\newblock Wiley Series in Probability and Statistics. Wiley, Hoboken, NJ, 2
+  edition, 2009.
+\newblock ISBN 9780470434697.
+\newblock \doi{10.1002/9780470434697}.
+\newblock URL \url{https://doi.org/10.1002/9780470434697}.
+
+\bibitem[Huygens(1657)]{huygens1657ratiociniis}
+Christiaan Huygens.
+\newblock \emph{De ratiociniis in ludo aleae}.
+\newblock Frans van Schooten, Leiden, 1657.
+\newblock URL \url{https://archive.org/details/DeRatiociniisInLudoAleae}.
+
+\bibitem[Jewson et~al.(2018)Jewson, Smith, and Holmes]{jewson2018divergence}
+Jack Jewson, Jim~Q. Smith, and Chris Holmes.
+\newblock Principles of {Bayesian} inference using general divergence criteria.
+\newblock \emph{Entropy}, 20\penalty0 (6):\penalty0 442, 2018.
+\newblock \doi{10.3390/e20060442}.
+\newblock URL \url{https://doi.org/10.3390/e20060442}.
+
+\bibitem[Jiang and Tanner(2008)]{jiang2008gibbs}
+Wenxin Jiang and Martin~A. Tanner.
+\newblock Gibbs posterior for variable selection in high-dimensional
+  classification and data mining.
+\newblock \emph{The Annals of Statistics}, 36\penalty0 (5), 2008.
+\newblock \doi{10.1214/07-AOS547}.
+
+\bibitem[Karakulev et~al.(2025)Karakulev, Zafar, Toor, and
+  Singh]{karakulev2025bayesian}
+Aleksandr Karakulev, Usama Zafar, Salman Toor, and Prashant Singh.
+\newblock Bayesian robust aggregation for federated learning, 2025.
+\newblock URL \url{https://arxiv.org/abs/2505.02490}.
+
+\bibitem[Kaufmann et~al.(2021)Kaufmann, Gupta, and
+  Taylor]{kaufmann2021collective}
+Rafael Kaufmann, Pranav Gupta, and Jacob Taylor.
+\newblock Active inference and collective intelligence.
+\newblock In \emph{Cognitive Systems Research}, volume~68, pages 1--13.
+  Elsevier, 2021.
+\newblock \doi{10.1016/j.cogsys.2021.01.001}.
+
+\bibitem[Kleijn and van~der Vaart(2012)]{kleijn2012misspecification}
+B.~J.~K. Kleijn and A.~W. van~der Vaart.
+\newblock The {Bernstein}-{von} {Mises} theorem under misspecification.
+\newblock \emph{Electronic Journal of Statistics}, 6:\penalty0 354--381, 2012.
+\newblock \doi{10.1214/12-EJS675}.
+\newblock URL \url{https://doi.org/10.1214/12-EJS675}.
+
+\bibitem[Knoblauch et~al.(2022)Knoblauch, Jewson, and
+  Damoulas]{knoblauch2022generalized}
+Jeremias Knoblauch, Jack Jewson, and Theodoros Damoulas.
+\newblock An optimization-centric view on bayes' rule: Reviewing and
+  generalizing variational inference.
+\newblock \emph{Journal of Machine Learning Research}, 23\penalty0
+  (132):\penalty0 1--109, 2022.
+\newblock URL \url{https://jmlr.org/papers/v23/19-1047.html}.
+
+\bibitem[Koehler et~al.(2009)Koehler, Brown, and Haneuse]{koehler2009mcse}
+Elizabeth Koehler, Elizabeth Brown, and Sebastien J.-P.~A. Haneuse.
+\newblock On the assessment of monte carlo error in simulation-based
+  statistical analyses.
+\newblock \emph{The American Statistician}, 63\penalty0 (2):\penalty0 155--162,
+  2009.
+\newblock \doi{10.1198/tast.2009.0030}.
+\newblock URL \url{https://pubmed.ncbi.nlm.nih.gov/22544972/}.
+
+\bibitem[Laplace(1774)]{laplace1774memoire}
+Pierre-Simon Laplace.
+\newblock M{\'e}moire sur la probabilit{\'e} des causes par les
+  {\'e}v{\'e}nements.
+\newblock \emph{M{\'e}moires de l'Acad{\'e}mie Royale des Sciences}, pages
+  621--656, 1774.
+\newblock URL \url{http://sites.mathdoc.fr/cgi-bin/oetoc?id=OE_LAPLACE__8}.
+
+\bibitem[Li et~al.(2022)Li, Huang, Ma, Hung, and Huang]{li2022gammafl}
+Cen-Jhih Li, Pin-Han Huang, Yi-Ting Ma, Hung Hung, and Su-Yun Huang.
+\newblock Robust aggregation for federated learning by minimum
+  {$\gamma$}-divergence estimation.
+\newblock \emph{Entropy}, 24\penalty0 (5):\penalty0 686, 2022.
+\newblock \doi{10.3390/e24050686}.
+
+\bibitem[Loy and Korobova(2021)]{loy2021lmeresampler}
+Adam Loy and Jenna Korobova.
+\newblock Bootstrapping clustered data in r using lmeresampler.
+\newblock \emph{arXiv preprint arXiv:2106.06568}, 2021.
+\newblock \doi{10.48550/arXiv.2106.06568}.
+\newblock URL \url{https://arxiv.org/abs/2106.06568}.
+
+\bibitem[McMahan et~al.(2017)McMahan, Moore, Ramage, Hampson, and
+  Arcas]{mcmahan2017communication}
+Brendan McMahan, Eider Moore, Daniel Ramage, Seth Hampson, and Blaise
+  Ag{\"u}era~y Arcas.
+\newblock Communication-efficient learning of deep networks from decentralized
+  data.
+\newblock In \emph{Proceedings of the 20th International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, volume~54, pages
+  1273--1282, 2017.
+\newblock URL \url{https://proceedings.mlr.press/v54/mcmahan17a.html}.
+
+\bibitem[Midway(2020)]{midway2020visualization}
+Stephen~R. Midway.
+\newblock Principles of effective data visualization.
+\newblock \emph{Patterns}, 1\penalty0 (9):\penalty0 100141, 2020.
+\newblock \doi{10.1016/j.patter.2020.100141}.
+\newblock URL \url{https://doi.org/10.1016/j.patter.2020.100141}.
+
+\bibitem[Mildner et~al.(2025{\natexlab{a}})Mildner, Giampouras, and
+  Damoulas]{mildner2025rates}
+Terje Mildner, Paris Giampouras, and Theodoros Damoulas.
+\newblock Rates of convergence of generalised variational inference posteriors
+  under prior misspecification.
+\newblock \emph{arXiv preprint arXiv:2510.03109}, 2025{\natexlab{a}}.
+\newblock \doi{10.48550/arXiv.2510.03109}.
+\newblock URL \url{https://arxiv.org/abs/2510.03109}.
+
+\bibitem[Mildner et~al.(2025{\natexlab{b}})Mildner, Hamelijnck, Giampouras, and
+  Damoulas]{mildner2025fedgvi}
+Terje Mildner, Oliver Hamelijnck, Paris Giampouras, and Theodoros Damoulas.
+\newblock Federated generalised variational inference: A robust probabilistic
+  federated learning framework.
+\newblock In Aarti Singh, Maryam Fazel, Daniel Hsu, Simon Lacoste-Julien, Felix
+  Berkenkamp, Tegan Maharaj, Kiri Wagstaff, and Jerry Zhu, editors,
+  \emph{Proceedings of the 42nd International Conference on Machine Learning},
+  volume 267 of \emph{Proceedings of Machine Learning Research}, pages
+  44134--44174. PMLR, 13--19 Jul 2025{\natexlab{b}}.
+\newblock URL \url{https://proceedings.mlr.press/v267/mildner25a.html}.
+
+\bibitem[Miller and Dunson(2018)]{miller2018coarsening}
+Jeffrey~W. Miller and David~B. Dunson.
+\newblock Robust {Bayesian} inference via coarsening.
+\newblock \emph{Journal of the American Statistical Association}, 114\penalty0
+  (527):\penalty0 1113--1125, 2018.
+\newblock \doi{10.1080/01621459.2018.1469995}.
+\newblock URL \url{https://doi.org/10.1080/01621459.2018.1469995}.
+
+\bibitem[Minsker et~al.(2017)Minsker, Srivastava, Lin, and
+  Dunson]{minsker2017median}
+Stanislav Minsker, Sanvesh Srivastava, Lizhen Lin, and David~B. Dunson.
+\newblock Robust and scalable {Bayes} via a median of subset posterior
+  measures.
+\newblock \emph{Journal of Machine Learning Research}, 18\penalty0
+  (124):\penalty0 1--40, 2017.
+\newblock URL \url{https://jmlr.org/papers/v18/16-655.html}.
+
+\bibitem[Montmort(1708)]{montmort1708essay}
+Pierre R{\'e}mond~de Montmort.
+\newblock \emph{Essay d'analyse sur les jeux de hazard}.
+\newblock Jacques Quillau, Paris, 1708.
+\newblock URL \url{https://archive.org/details/ldpd_6444894_000}.
+
+\bibitem[Morris et~al.(2019)Morris, White, and Crowther]{morris2019simulation}
+Tim~P. Morris, Ian~R. White, and Michael~J. Crowther.
+\newblock Using simulation studies to evaluate statistical methods.
+\newblock \emph{Statistics in Medicine}, 38\penalty0 (11):\penalty0 2074--2102,
+  2019.
+\newblock \doi{10.1002/sim.8086}.
+\newblock URL \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6492164/}.
+
+\bibitem[Nakagawa and Cuthill(2007)]{nakagawa2007effect}
+Shinichi Nakagawa and Innes~C. Cuthill.
+\newblock Effect size, confidence interval and statistical significance: A
+  practical guide for biologists.
+\newblock \emph{Biological Reviews}, 82\penalty0 (4):\penalty0 591--605, 2007.
+\newblock \doi{10.1111/j.1469-185X.2007.00027.x}.
+\newblock URL \url{https://doi.org/10.1111/j.1469-185X.2007.00027.x}.
+
+\bibitem[Nguyen and Westerhout(2026)]{nguyen2026closedformgvi}
+Hien~Duy Nguyen and Jacob Westerhout.
+\newblock Closed-form solutions to some generalized variational inference
+  problems, 2026.
+\newblock URL \url{https://arxiv.org/abs/2606.25492}.
+
+\bibitem[Pascal and Fermat(1654)]{pascal1654probability}
+Blaise Pascal and Pierre~de Fermat.
+\newblock Correspondence on the problem of points and games of chance.
+\newblock Letters; edited English resource hosted by the University of York,
+  1654.
+\newblock URL \url{https://www.york.ac.uk/depts/maths/histstat/pascal.pdf}.
+
+\bibitem[Peng(2011)]{peng2011reproducible}
+Roger~D. Peng.
+\newblock Reproducible research in computational science.
+\newblock \emph{Science}, 334\penalty0 (6060):\penalty0 1226--1227, 2011.
+\newblock \doi{10.1126/science.1213847}.
+
+\bibitem[Pillutla et~al.(2022)Pillutla, Kakade, and
+  Harchaoui]{pillutla2022robust}
+Krishna Pillutla, Sham~M. Kakade, and Zaid Harchaoui.
+\newblock Robust aggregation for federated learning.
+\newblock \emph{IEEE Transactions on Signal Processing}, 70:\penalty0
+  1142--1154, 2022.
+\newblock \doi{10.1109/TSP.2022.3153135}.
+\newblock URL \url{https://doi.org/10.1109/TSP.2022.3153135}.
+
+\bibitem[Rougier et~al.(2014)Rougier, Droettboom, and
+  Bourne]{rougier2014figures}
+Nicolas~P. Rougier, Michael Droettboom, and Philip~E. Bourne.
+\newblock Ten simple rules for better figures.
+\newblock \emph{PLOS Computational Biology}, 10\penalty0 (9):\penalty0
+  e1003833, 2014.
+\newblock \doi{10.1371/journal.pcbi.1003833}.
+\newblock URL \url{https://doi.org/10.1371/journal.pcbi.1003833}.
+
+\bibitem[Smith et~al.(2022)Smith, Schwartenbeck, Parr, and
+  Friston]{smith2020active}
+Ryan Smith, Philipp Schwartenbeck, Thomas Parr, and Karl~J. Friston.
+\newblock Active inference, bayesian optimal design, and expected utility.
+\newblock In \emph{The Drive for Knowledge: The Science of Human Information
+  Seeking}. Cambridge University Press, 2022.
+\newblock \doi{10.1017/9781009026949.007}.
+
+\bibitem[Tresp(2000)]{tresp2000bayesian}
+Volker Tresp.
+\newblock A bayesian committee machine.
+\newblock \emph{Neural Computation}, 12\penalty0 (11):\penalty0 2719--2741,
+  2000.
+\newblock \doi{10.1162/089976600300014908}.
+\newblock URL \url{https://www.dbs.ifi.lmu.de/~tresp/papers/bcm6.pdf}.
+
+\bibitem[Wasserstein and Lazar(2016)]{wasserstein2016asa}
+Ronald~L. Wasserstein and Nicole~A. Lazar.
+\newblock The {ASA}'s statement on p-values: Context, process, and purpose.
+\newblock \emph{The American Statistician}, 70\penalty0 (2):\penalty0 129--133,
+  2016.
+\newblock \doi{10.1080/00031305.2016.1154108}.
+\newblock URL \url{https://doi.org/10.1080/00031305.2016.1154108}.
+
+\bibitem[Wilcoxon(1945)]{wilcoxon1945individual}
+Frank Wilcoxon.
+\newblock Individual comparisons by ranking methods.
+\newblock \emph{Biometrics Bulletin}, 1\penalty0 (6):\penalty0 80--83, 1945.
+\newblock \doi{10.2307/3001968}.
+
+\bibitem[Zhang and Sabuncu(2018)]{zhang2018generalized}
+Zhilu Zhang and Mert~R. Sabuncu.
+\newblock Generalized cross entropy loss for training deep neural networks with
+  noisy labels.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~31, 2018.
+\newblock URL \url{https://arxiv.org/abs/1805.07836}.
+
+\end{thebibliography}

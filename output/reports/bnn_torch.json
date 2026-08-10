@@ -1,0 +1,40 @@
+{
+  "accuracy_by_config": {
+    "beta->0 (standard)": [
+      0.8515625,
+      0.8546875,
+      0.5578125
+    ],
+    "beta=0.5 (robust)": [
+      0.8515625,
+      0.8484375,
+      0.5453125
+    ]
+  },
+  "beta": 0.5,
+  "consensus_max_simplex_deviation": 2.220446049250313e-16,
+  "contamination_levels": [
+    0.0,
+    0.2,
+    0.4
+  ],
+  "deterministic": true,
+  "device": "cpu",
+  "device_receipt": {
+    "deterministic_algorithms": true,
+    "fallback": null,
+    "mps_available": true,
+    "requested": "cpu",
+    "resolved": "cpu"
+  },
+  "hidden_dim": 16,
+  "n_clients": 5,
+  "n_steps": 200,
+  "reported_contamination": 0.4,
+  "robust_accuracy": 0.5453125,
+  "robustness": 0.5,
+  "seed": 0,
+  "standard_accuracy": 0.5578125,
+  "status": "ok",
+  "torch_version": "2.12.1"
+}

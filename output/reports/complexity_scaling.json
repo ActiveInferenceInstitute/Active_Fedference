@@ -1,0 +1,1052 @@
+{
+  "analytic_specs": [
+    {
+      "memory_order": "Theta(N S)",
+      "notes": "The implementation normalizes and materializes all belief rows before one weighted log-matrix product.",
+      "operation": "log_linear_pool",
+      "representative_estimate": {
+        "memory_order": "Theta(N S)",
+        "operation": "log_linear_pool",
+        "parameters": {
+          "N": 256,
+          "S": 64
+        },
+        "time_order": "Theta(N S)",
+        "work_units": 16384,
+        "workspace_units": 16384
+      },
+      "source_modules": [
+        "src/fedference/aggregation.py"
+      ],
+      "time_order": "Theta(N S)",
+      "work_formula": "N S",
+      "workspace_formula": "N S"
+    },
+    {
+      "memory_order": "Theta(N S + I S)",
+      "notes": "Each solver iteration evaluates one divergence per agent and one weighted log-matrix product; history is returned.",
+      "operation": "robust_aggregate",
+      "representative_estimate": {
+        "memory_order": "Theta(N S + I S)",
+        "operation": "robust_aggregate",
+        "parameters": {
+          "I": 6,
+          "N": 256,
+          "S": 64
+        },
+        "time_order": "Theta(I N S)",
+        "work_units": 98304,
+        "workspace_units": 16768
+      },
+      "source_modules": [
+        "src/fedference/aggregation.py",
+        "src/fedference/divergences.py"
+      ],
+      "time_order": "Theta(I N S)",
+      "work_formula": "I N S",
+      "workspace_formula": "N S + I S"
+    },
+    {
+      "memory_order": "Theta(N S + I S + B S)",
+      "notes": "B is the number of starts (three in the default multistart path); each start performs cross-entropies and a log-matrix product.",
+      "operation": "variational_aggregate",
+      "representative_estimate": {
+        "memory_order": "Theta(N S + I S + B S)",
+        "operation": "variational_aggregate",
+        "parameters": {
+          "B": 3,
+          "I": 6,
+          "N": 256,
+          "S": 64
+        },
+        "time_order": "Theta(B I N S)",
+        "work_units": 294912,
+        "workspace_units": 16960
+      },
+      "source_modules": [
+        "src/fedference/aggregation.py"
+      ],
+      "time_order": "Theta(B I N S)",
+      "work_formula": "B I N S",
+      "workspace_formula": "N S + I S + B S"
+    },
+    {
+      "memory_order": "Theta(N S)",
+      "notes": "The objective evaluates per-agent cross-entropies over the dense belief matrix.",
+      "operation": "aggregation_free_energy",
+      "representative_estimate": {
+        "memory_order": "Theta(N S)",
+        "operation": "aggregation_free_energy",
+        "parameters": {
+          "N": 256,
+          "S": 64
+        },
+        "time_order": "Theta(N S)",
+        "work_units": 16384,
+        "workspace_units": 16384
+      },
+      "source_modules": [
+        "src/fedference/aggregation.py"
+      ],
+      "time_order": "Theta(N S)",
+      "work_formula": "N S",
+      "workspace_formula": "N S"
+    },
+    {
+      "memory_order": "Theta(N S)",
+      "notes": "With self-exclusion, one global pool plus N leave-one-out pools are computed; this is the naive project log-pool / qualified Eq. 7 bridge path.",
+      "operation": "share_round_naive",
+      "representative_estimate": {
+        "memory_order": "Theta(N S)",
+        "operation": "share_round_naive",
+        "parameters": {
+          "N": 256,
+          "S": 64,
+          "exclude_self": 1
+        },
+        "time_order": "Theta(N^2 S)",
+        "work_units": 4194304,
+        "workspace_units": 16384
+      },
+      "source_modules": [
+        "src/fedference/belief_sharing.py",
+        "src/fedference/aggregation.py"
+      ],
+      "time_order": "Theta(N^2 S)",
+      "work_formula": "N^2 S",
+      "workspace_formula": "N S"
+    },
+    {
+      "memory_order": "Theta(N S + I S)",
+      "notes": "The same leave-one-out fan-out calls the iterative robust server rule; I is its per-call solver budget.",
+      "operation": "share_round_robust",
+      "representative_estimate": {
+        "memory_order": "Theta(N S + I S)",
+        "operation": "share_round_robust",
+        "parameters": {
+          "I": 32,
+          "N": 256,
+          "S": 64,
+          "exclude_self": 1
+        },
+        "time_order": "Theta(I N^2 S)",
+        "work_units": 134217728,
+        "workspace_units": 18432
+      },
+      "source_modules": [
+        "src/fedference/belief_sharing.py",
+        "src/fedference/aggregation.py"
+      ],
+      "time_order": "Theta(I N^2 S)",
+      "work_formula": "I N^2 S",
+      "workspace_formula": "N S + I S"
+    },
+    {
+      "memory_order": "Theta(S)",
+      "notes": "Independent modality log-likelihood messages are accumulated over the shared state vector.",
+      "operation": "infer_states",
+      "representative_estimate": {
+        "memory_order": "Theta(S)",
+        "operation": "infer_states",
+        "parameters": {
+          "M": 8,
+          "S": 16384
+        },
+        "time_order": "Theta(M S)",
+        "work_units": 131072,
+        "workspace_units": 16384
+      },
+      "source_modules": [
+        "src/fedference/belief_updating.py"
+      ],
+      "time_order": "Theta(M S)",
+      "work_formula": "M S",
+      "workspace_formula": "S"
+    },
+    {
+      "memory_order": "Theta(N S)",
+      "notes": "Compute excludes queue/network wait; it includes worker-id sorting, belief deserialization, one robust server aggregation, and one result serialization. If broadcast bytes are counted per recipient, the outgoing volume is Theta(N S + N^2) because agent weights are included in every result.",
+      "operation": "federation_server_round",
+      "representative_estimate": {
+        "memory_order": "Theta(N S)",
+        "operation": "federation_server_round",
+        "parameters": {
+          "I": 6,
+          "N": 256,
+          "S": 64
+        },
+        "time_order": "Theta(N log N + I N S)",
+        "work_units": 100352,
+        "workspace_units": 16384
+      },
+      "source_modules": [
+        "src/fedference/federation/server.py",
+        "src/fedference/federation/transport.py",
+        "src/fedference/aggregation.py"
+      ],
+      "time_order": "Theta(N log N + I N S)",
+      "work_formula": "N log N + I N S",
+      "workspace_formula": "N S"
+    }
+  ],
+  "benchmark": {
+    "agent_sizes": [
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "fixed_agent_count": 256,
+    "fixed_state_count": 64,
+    "inference_state_count": 16384,
+    "max_iter": 6,
+    "modality_sizes": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "observation_count": 4,
+    "repeats": 5,
+    "seed": 20260728,
+    "sharing_agent_sizes": [
+      4,
+      8,
+      16,
+      32
+    ],
+    "state_sizes": [
+      256,
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "variational_starts": 3,
+    "warmups": 1
+  },
+  "claim_boundary": "Analytic orders are derived from the current dense NumPy implementation. Timing slopes are descriptive, machine-specific diagnostics on seeded inputs; they are not FLOP counts, inferential statistics, or cross-machine guarantees.",
+  "machine": {
+    "cpu_count": 10,
+    "machine": "arm64",
+    "numpy": "2.4.2",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "python_implementation": "CPython",
+    "sys_executable": "python3",
+    "system": "Darwin",
+    "timer": "time.perf_counter"
+  },
+  "measurements": [
+    {
+      "axis": "agents",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "2c4f81f3efd0f75d16d2b838b4a755a01d967b89450aa31c904640c8ebe85ba0",
+        "44d6a47d34d153d0a04d7ad1a94e716bd6cf567f3dd1f77e3d01a4ab04257a17",
+        "9a29896f20b2923b2b4ee2a2bd12fd6e0083ad8e681ddb8c3cc50e1d835887f1",
+        "f6d47d266c8f1d62a621a06ccd232b0a2b4f4f19b6d8d7fa64cb05ce5ab9a8a2",
+        "75de18cbe6f835d2fa34fac25b13f4e04a82b6433493e2c8041ebc0b37cdb8b3"
+      ],
+      "max_seconds": [
+        3.2791998819448054e-05,
+        6.145800580270588e-05,
+        0.00010466700769029558,
+        0.0001862920034909621,
+        0.00034445899655111134
+      ],
+      "median_seconds": [
+        2.8999987989664078e-05,
+        5.054099892731756e-05,
+        9.524999768473208e-05,
+        0.00017654099792707711,
+        0.00033999999868683517
+      ],
+      "method": "log_linear_pool",
+      "min_seconds": [
+        2.8291993658058345e-05,
+        4.933300078846514e-05,
+        9.47499938774854e-05,
+        0.00017191600636579096,
+        0.0003378330002306029
+      ],
+      "note": "N-scaling with fixed state cardinality; I and B are held constant.",
+      "observed_log_log_slope": 0.8907298239688726,
+      "parameters": {
+        "B": 1,
+        "I": 6,
+        "S": 64
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          3.2791998819448054e-05,
+          3.0458002584055066e-05,
+          2.8999987989664078e-05,
+          2.866600698325783e-05,
+          2.8291993658058345e-05
+        ],
+        [
+          6.145800580270588e-05,
+          5.054099892731756e-05,
+          4.9583002692088485e-05,
+          5.287499516271055e-05,
+          4.933300078846514e-05
+        ],
+        [
+          0.00010466700769029558,
+          9.524999768473208e-05,
+          9.524999768473208e-05,
+          9.499999578110874e-05,
+          9.47499938774854e-05
+        ],
+        [
+          0.00017287499213125557,
+          0.00017191600636579096,
+          0.0001862920034909621,
+          0.00017654099792707711,
+          0.00017737499729264528
+        ],
+        [
+          0.0003406249888939783,
+          0.00033975001133512706,
+          0.00033999999868683517,
+          0.0003378330002306029,
+          0.00034445899655111134
+        ]
+      ],
+      "sizes": [
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "warmups": 1,
+      "work_units": [
+        256,
+        512,
+        1024,
+        2048,
+        4096
+      ]
+    },
+    {
+      "axis": "states",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "a6bb7e1648a3c924214dab22ed5c09674b3654479853d53511b21e32411ef4b3",
+        "ed8ad84bf97861a3a10ca6698acd7ca736f09687780fc01d1cd847508a3f17f5",
+        "6c20c62811509dc5cdc5d4466220483df36d69f8653fcf906fccd509fd109856",
+        "d24de81c2ad1fe64f87655ba857ba06adbf5cff1268163b59f704844947ec4d2",
+        "5f93310d49cb2ae48a0924c0de2241e842606fbec91561de1bb45c9992315120"
+      ],
+      "max_seconds": [
+        0.0015027080080471933,
+        0.0017287079972447827,
+        0.00213666599302087,
+        0.0029717500001424924,
+        0.008300625006086193
+      ],
+      "median_seconds": [
+        0.0014856249908916652,
+        0.0017159159906441346,
+        0.002120584002113901,
+        0.0029395830060821027,
+        0.004804583004442975
+      ],
+      "method": "log_linear_pool",
+      "min_seconds": [
+        0.0014623750030295923,
+        0.0017082920094253495,
+        0.002103624996379949,
+        0.002884790999814868,
+        0.0047232079959940165
+      ],
+      "note": "S-scaling with fixed agent count; I and B are held constant.",
+      "observed_log_log_slope": 0.41633150623049314,
+      "parameters": {
+        "B": 1,
+        "I": 6,
+        "N": 256
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.0014623750030295923,
+          0.0014772499998798594,
+          0.0014856249908916652,
+          0.0015003750013420358,
+          0.0015027080080471933
+        ],
+        [
+          0.0017260419990634546,
+          0.0017155410023406148,
+          0.0017082920094253495,
+          0.0017287079972447827,
+          0.0017159159906441346
+        ],
+        [
+          0.00213666599302087,
+          0.002120584002113901,
+          0.0021154999994905666,
+          0.0021344999986467883,
+          0.002103624996379949
+        ],
+        [
+          0.0029637080006068572,
+          0.0029395830060821027,
+          0.002900624996982515,
+          0.002884790999814868,
+          0.0029717500001424924
+        ],
+        [
+          0.005019417003495619,
+          0.004729167005280033,
+          0.008300625006086193,
+          0.004804583004442975,
+          0.0047232079959940165
+        ]
+      ],
+      "sizes": [
+        256,
+        512,
+        1024,
+        2048,
+        4096
+      ],
+      "warmups": 1,
+      "work_units": [
+        65536,
+        131072,
+        262144,
+        524288,
+        1048576
+      ]
+    },
+    {
+      "axis": "agents",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "2c4f81f3efd0f75d16d2b838b4a755a01d967b89450aa31c904640c8ebe85ba0",
+        "44d6a47d34d153d0a04d7ad1a94e716bd6cf567f3dd1f77e3d01a4ab04257a17",
+        "9a29896f20b2923b2b4ee2a2bd12fd6e0083ad8e681ddb8c3cc50e1d835887f1",
+        "f6d47d266c8f1d62a621a06ccd232b0a2b4f4f19b6d8d7fa64cb05ce5ab9a8a2",
+        "75de18cbe6f835d2fa34fac25b13f4e04a82b6433493e2c8041ebc0b37cdb8b3"
+      ],
+      "max_seconds": [
+        0.00044745900959242135,
+        0.0007486250106012449,
+        0.0014484999992419034,
+        0.0028125000098953024,
+        0.005484583001816645
+      ],
+      "median_seconds": [
+        0.00040483399061486125,
+        0.0007469169941032305,
+        0.0014447080029640347,
+        0.0027849589969264343,
+        0.005460125001263805
+      ],
+      "method": "robust_aggregate",
+      "min_seconds": [
+        0.0004018339968752116,
+        0.000741249998100102,
+        0.0014390419964911416,
+        0.0027818749949801713,
+        0.005448374999104999
+      ],
+      "note": "N-scaling with fixed state cardinality; I and B are held constant.",
+      "observed_log_log_slope": 0.9405699554965363,
+      "parameters": {
+        "B": 1,
+        "I": 6,
+        "S": 64
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.0004158750089118257,
+          0.00040424999315291643,
+          0.00044745900959242135,
+          0.0004018339968752116,
+          0.00040483399061486125
+        ],
+        [
+          0.0007469169941032305,
+          0.0007442500063916668,
+          0.0007483329973183572,
+          0.0007486250106012449,
+          0.000741249998100102
+        ],
+        [
+          0.0014390419964911416,
+          0.0014447080029640347,
+          0.0014484999992419034,
+          0.001444375011487864,
+          0.0014465840067714453
+        ],
+        [
+          0.0028125000098953024,
+          0.002797166001982987,
+          0.0027818749949801713,
+          0.002783749994705431,
+          0.0027849589969264343
+        ],
+        [
+          0.005484583001816645,
+          0.005460125001263805,
+          0.005448374999104999,
+          0.005456833998323418,
+          0.005465249996632338
+        ]
+      ],
+      "sizes": [
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "warmups": 1,
+      "work_units": [
+        1536,
+        3072,
+        6144,
+        12288,
+        24576
+      ]
+    },
+    {
+      "axis": "states",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "a6bb7e1648a3c924214dab22ed5c09674b3654479853d53511b21e32411ef4b3",
+        "ed8ad84bf97861a3a10ca6698acd7ca736f09687780fc01d1cd847508a3f17f5",
+        "6c20c62811509dc5cdc5d4466220483df36d69f8653fcf906fccd509fd109856",
+        "d24de81c2ad1fe64f87655ba857ba06adbf5cff1268163b59f704844947ec4d2",
+        "5f93310d49cb2ae48a0924c0de2241e842606fbec91561de1bb45c9992315120"
+      ],
+      "max_seconds": [
+        0.024122834001900628,
+        0.02833287500834558,
+        0.034357333002844825,
+        0.04768666699237656,
+        0.07492412500141654
+      ],
+      "median_seconds": [
+        0.02395641700422857,
+        0.02789399999892339,
+        0.03401295900403056,
+        0.046879457993782125,
+        0.07384837500285357
+      ],
+      "method": "robust_aggregate",
+      "min_seconds": [
+        0.02384024999628309,
+        0.02775295899482444,
+        0.03392245799477678,
+        0.04668137499538716,
+        0.07284237499698065
+      ],
+      "note": "S-scaling with fixed agent count; I and B are held constant.",
+      "observed_log_log_slope": 0.39973091086414714,
+      "parameters": {
+        "B": 1,
+        "I": 6,
+        "N": 256
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.024122834001900628,
+          0.023881667002569884,
+          0.02403374999994412,
+          0.02384024999628309,
+          0.02395641700422857
+        ],
+        [
+          0.02833287500834558,
+          0.02800691699667368,
+          0.02783258400449995,
+          0.02775295899482444,
+          0.02789399999892339
+        ],
+        [
+          0.034357333002844825,
+          0.03417641700070817,
+          0.03401295900403056,
+          0.03397608399973251,
+          0.03392245799477678
+        ],
+        [
+          0.046688791990163736,
+          0.04668137499538716,
+          0.046879457993782125,
+          0.04768666699237656,
+          0.04756512500171084
+        ],
+        [
+          0.07492412500141654,
+          0.07384837500285357,
+          0.07284237499698065,
+          0.07476312499784399,
+          0.07317741699807812
+        ]
+      ],
+      "sizes": [
+        256,
+        512,
+        1024,
+        2048,
+        4096
+      ],
+      "warmups": 1,
+      "work_units": [
+        393216,
+        786432,
+        1572864,
+        3145728,
+        6291456
+      ]
+    },
+    {
+      "axis": "agents",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "2c4f81f3efd0f75d16d2b838b4a755a01d967b89450aa31c904640c8ebe85ba0",
+        "44d6a47d34d153d0a04d7ad1a94e716bd6cf567f3dd1f77e3d01a4ab04257a17",
+        "9a29896f20b2923b2b4ee2a2bd12fd6e0083ad8e681ddb8c3cc50e1d835887f1",
+        "f6d47d266c8f1d62a621a06ccd232b0a2b4f4f19b6d8d7fa64cb05ce5ab9a8a2",
+        "75de18cbe6f835d2fa34fac25b13f4e04a82b6433493e2c8041ebc0b37cdb8b3"
+      ],
+      "max_seconds": [
+        0.0011757500033127144,
+        0.0016379160078940913,
+        0.002692082998692058,
+        0.004921416999422945,
+        0.008156083000358194
+      ],
+      "median_seconds": [
+        0.001167499998700805,
+        0.0016347500059055164,
+        0.0026877920026890934,
+        0.004521790993749164,
+        0.008129416994052008
+      ],
+      "method": "variational_aggregate",
+      "min_seconds": [
+        0.001164832996437326,
+        0.0016307500045513734,
+        0.0026855000032810494,
+        0.004502583004068583,
+        0.008124332991428673
+      ],
+      "note": "N-scaling with fixed state cardinality; I and B are held constant.",
+      "observed_log_log_slope": 0.7067282968780193,
+      "parameters": {
+        "B": 3,
+        "I": 6,
+        "S": 64
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.0011757500033127144,
+          0.0011721659975592047,
+          0.001167499998700805,
+          0.001164832996437326,
+          0.0011649579973891377
+        ],
+        [
+          0.0016368750075343996,
+          0.0016347500059055164,
+          0.0016307500045513734,
+          0.0016323329909937456,
+          0.0016379160078940913
+        ],
+        [
+          0.0026877920026890934,
+          0.00268845800019335,
+          0.002692082998692058,
+          0.0026855000032810494,
+          0.00268658300046809
+        ],
+        [
+          0.004502583004068583,
+          0.004510166996624321,
+          0.004521790993749164,
+          0.004921416999422945,
+          0.0045546670007752255
+        ],
+        [
+          0.008156083000358194,
+          0.00813870900310576,
+          0.008129416994052008,
+          0.00812858299468644,
+          0.008124332991428673
+        ]
+      ],
+      "sizes": [
+        4,
+        8,
+        16,
+        32,
+        64
+      ],
+      "warmups": 1,
+      "work_units": [
+        4608,
+        9216,
+        18432,
+        36864,
+        73728
+      ]
+    },
+    {
+      "axis": "states",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "a6bb7e1648a3c924214dab22ed5c09674b3654479853d53511b21e32411ef4b3",
+        "ed8ad84bf97861a3a10ca6698acd7ca736f09687780fc01d1cd847508a3f17f5",
+        "6c20c62811509dc5cdc5d4466220483df36d69f8653fcf906fccd509fd109856",
+        "d24de81c2ad1fe64f87655ba857ba06adbf5cff1268163b59f704844947ec4d2",
+        "5f93310d49cb2ae48a0924c0de2241e842606fbec91561de1bb45c9992315120"
+      ],
+      "max_seconds": [
+        0.03464066699962132,
+        0.038813749997643754,
+        0.04736141600005794,
+        0.06650850000733044,
+        0.10836987500078976
+      ],
+      "median_seconds": [
+        0.033692833996610716,
+        0.038535208004759625,
+        0.0473292910028249,
+        0.06545966700650752,
+        0.10745541700453032
+      ],
+      "method": "variational_aggregate",
+      "min_seconds": [
+        0.0334959159954451,
+        0.03834312499384396,
+        0.0470242080045864,
+        0.065321333007887,
+        0.10651358299946878
+      ],
+      "note": "S-scaling with fixed agent count; I and B are held constant.",
+      "observed_log_log_slope": 0.41108781361132885,
+      "parameters": {
+        "B": 3,
+        "I": 6,
+        "N": 256
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.03464066699962132,
+          0.0337710000021616,
+          0.033692833996610716,
+          0.03353308299847413,
+          0.0334959159954451
+        ],
+        [
+          0.038813749997643754,
+          0.03873020799073856,
+          0.038535208004759625,
+          0.038402833000873215,
+          0.03834312499384396
+        ],
+        [
+          0.04706104200158734,
+          0.04736141600005794,
+          0.0473292910028249,
+          0.047330667002825066,
+          0.0470242080045864
+        ],
+        [
+          0.06545966700650752,
+          0.06540995900286362,
+          0.065321333007887,
+          0.06640966699342243,
+          0.06650850000733044
+        ],
+        [
+          0.10836987500078976,
+          0.10663762499461882,
+          0.10651358299946878,
+          0.10776795800484251,
+          0.10745541700453032
+        ]
+      ],
+      "sizes": [
+        256,
+        512,
+        1024,
+        2048,
+        4096
+      ],
+      "warmups": 1,
+      "work_units": [
+        1179648,
+        2359296,
+        4718592,
+        9437184,
+        18874368
+      ]
+    },
+    {
+      "axis": "agents",
+      "expected_exponent": 2.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "0c62359968c1d7bb02cd211b468d448562614ff63511646577a62c1b72ed0ccd",
+        "7067612e585e9227626be783509f6e614fdbebfcb390496a993fda6e068c7f3c",
+        "5578c34f9fb379376956264155eee7c0030dcdb6600a822eea4bf5b87098fc46",
+        "029a14a98cdd4e5a6dad0123f5457f45a126e9fdc46f25ab3f164b4812746a49"
+      ],
+      "max_seconds": [
+        0.00024850000045262277,
+        0.0006122089980635792,
+        0.0018532079993747175,
+        0.006474207999417558
+      ],
+      "median_seconds": [
+        0.0002390830049989745,
+        0.0006074589909985662,
+        0.0018448750051902607,
+        0.006468625011621043
+      ],
+      "method": "share_round_naive",
+      "min_seconds": [
+        0.00023545899603050202,
+        0.0006046249909559265,
+        0.0018375840008957312,
+        0.006457583003793843
+      ],
+      "note": "N-scaling of one self-excluding sharing round; one global plus N leave-one-out pools.",
+      "observed_log_log_slope": 1.5876290937971753,
+      "parameters": {
+        "I": 1,
+        "S": 64,
+        "exclude_self": 1
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.00024850000045262277,
+          0.0002390830049989745,
+          0.0002356670011067763,
+          0.0002452919870847836,
+          0.00023545899603050202
+        ],
+        [
+          0.0006122089980635792,
+          0.0006046249909559265,
+          0.0006074589909985662,
+          0.0006058750004740432,
+          0.0006094999989727512
+        ],
+        [
+          0.001843999998527579,
+          0.0018448750051902607,
+          0.0018375840008957312,
+          0.001845916995080188,
+          0.0018532079993747175
+        ],
+        [
+          0.006474207999417558,
+          0.006471125001553446,
+          0.006468625011621043,
+          0.006467541010351852,
+          0.006457583003793843
+        ]
+      ],
+      "sizes": [
+        4,
+        8,
+        16,
+        32
+      ],
+      "warmups": 1,
+      "work_units": [
+        1024,
+        4096,
+        16384,
+        65536
+      ]
+    },
+    {
+      "axis": "agents",
+      "expected_exponent": 2.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "0c62359968c1d7bb02cd211b468d448562614ff63511646577a62c1b72ed0ccd",
+        "7067612e585e9227626be783509f6e614fdbebfcb390496a993fda6e068c7f3c",
+        "5578c34f9fb379376956264155eee7c0030dcdb6600a822eea4bf5b87098fc46",
+        "029a14a98cdd4e5a6dad0123f5457f45a126e9fdc46f25ab3f164b4812746a49"
+      ],
+      "max_seconds": [
+        0.0073231249989476055,
+        0.02652366600523237,
+        0.1019663340121042,
+        0.41472812500433065
+      ],
+      "median_seconds": [
+        0.007298249998711981,
+        0.02640637499280274,
+        0.10182170900225174,
+        0.39815654199628625
+      ],
+      "method": "share_round_robust",
+      "min_seconds": [
+        0.007290499997907318,
+        0.02634095800749492,
+        0.09940216700488236,
+        0.3969283340120455
+      ],
+      "note": "N-scaling of one self-excluding sharing round; one global plus N leave-one-out pools.",
+      "observed_log_log_slope": 1.925601115929812,
+      "parameters": {
+        "I": 32,
+        "S": 64,
+        "exclude_self": 1
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          0.0073231249989476055,
+          0.00730874999135267,
+          0.007298249998711981,
+          0.00729620800120756,
+          0.007290499997907318
+        ],
+        [
+          0.02640637499280274,
+          0.02652366600523237,
+          0.02636795799480751,
+          0.02641812500951346,
+          0.02634095800749492
+        ],
+        [
+          0.09940216700488236,
+          0.10133170799235813,
+          0.1019663340121042,
+          0.10182170900225174,
+          0.10192645800998434
+        ],
+        [
+          0.3974243749980815,
+          0.41472812500433065,
+          0.4022083339950768,
+          0.39815654199628625,
+          0.3969283340120455
+        ]
+      ],
+      "sizes": [
+        4,
+        8,
+        16,
+        32
+      ],
+      "warmups": 1,
+      "work_units": [
+        32768,
+        131072,
+        524288,
+        2097152
+      ]
+    },
+    {
+      "axis": "modalities",
+      "expected_exponent": 1.0,
+      "fit_method": "ordinary least squares on log(size) versus log(median wall time)",
+      "input_digests": [
+        "87ea678e8663b331aed6bb2ec0eb021e8f9b168a7a984755dc8b165a05649207",
+        "1b3831cf2bde53a03715155918e10578dda023907144bb7df5d7614d99d6b7fe",
+        "ffc9f8e4e29881a6032ac376ed92df53a2a1b2b35179efc58696810811a8530d",
+        "c8495d4cbc82c3b3536480edc68ebf478e7729aeda93d90b0eba45dc1141b3ba"
+      ],
+      "max_seconds": [
+        9.24580090213567e-05,
+        0.0001369579986203462,
+        0.00021050000214017928,
+        0.00036420799733605236
+      ],
+      "median_seconds": [
+        9.079099982045591e-05,
+        0.0001289999927394092,
+        0.00020516700169537216,
+        0.00036216700391378254
+      ],
+      "method": "infer_states",
+      "min_seconds": [
+        8.991599315777421e-05,
+        0.00012820899428334087,
+        0.00020454099285416305,
+        0.00035704199399333447
+      ],
+      "note": "M-scaling with fixed state cardinality and observation-row count.",
+      "observed_log_log_slope": 0.6657529480893436,
+      "parameters": {
+        "S": 16384,
+        "n_observations": 4
+      },
+      "repeats": 5,
+      "samples_seconds": [
+        [
+          9.24580090213567e-05,
+          9.100000897888094e-05,
+          9.079099982045591e-05,
+          8.995798998512328e-05,
+          8.991599315777421e-05
+        ],
+        [
+          0.0001289999927394092,
+          0.00012866599718108773,
+          0.0001369579986203462,
+          0.000134292000439018,
+          0.00012820899428334087
+        ],
+        [
+          0.00020516700169537216,
+          0.00021050000214017928,
+          0.00020454099285416305,
+          0.0002046250010607764,
+          0.00020870800653938204
+        ],
+        [
+          0.00036420799733605236,
+          0.00036216700391378254,
+          0.0003572080022422597,
+          0.00036366700078360736,
+          0.00035704199399333447
+        ]
+      ],
+      "sizes": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "warmups": 1,
+      "work_units": [
+        16384,
+        32768,
+        65536,
+        131072
+      ]
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260728,
+  "status": "ok"
+}

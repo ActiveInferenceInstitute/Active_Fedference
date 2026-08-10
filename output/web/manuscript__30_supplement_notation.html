@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>30_supplement_notation.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="sec:supp-notation">Supplemental notation contract</h1>
+<p>This supplement is the authoritative notation contract for Active
+Fedference. The methods, formalism, results, figures, report schemas,
+and API documentation use these meanings even when a source paper uses a
+different symbol. A symbol is not reused for a different mathematical
+object merely because the objects are both probability vectors. The
+implementation names in the final column are the canonical names for new
+code and reports; old names survive only as warned, parity-tested
+compatibility adapters.</p>
+<h2 id="probability-objects-and-generative-model-quantities">Probability
+objects and generative-model quantities</h2>
+<h3 id="states-posteriors-and-site-factors">States, posteriors, and site
+factors</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Contractual meaning</th>
+<th>Canonical implementation term</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(s\)</span></td>
+<td>A hidden categorical state; <span
+class="math inline">\(s\in\{1,\ldots,n_s\}\)</span> is an index, not a
+distribution.</td>
+<td><code>state</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(o\)</span></td>
+<td>An observation/outcome index; <span
+class="math inline">\(o\in\{1,\ldots,n_o\}\)</span>.</td>
+<td><code>observation</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(q_n(s)\)</span></td>
+<td>Agent <span class="math inline">\(n\)</span>’s local posterior over
+the shared latent state after its local update.</td>
+<td><code>local_posteriors[n]</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(q(s)\)</span></td>
+<td>The server consensus posterior over the shared state.</td>
+<td><code>global_posterior</code> / <code>consensus</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(q_{-n}(s)\)</span></td>
+<td>The normalized cavity posterior with agent <span
+class="math inline">\(n\)</span>’s site contribution removed.</td>
+<td><code>cavity(...)</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(t_n(s)\)</span></td>
+<td>Agent <span class="math inline">\(n\)</span>’s site/factor term in
+natural-parameter space.</td>
+<td><code>site_factor</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(m_n(s)\)</span></td>
+<td>Bridge-only source-equation log potential: <span
+class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span> with
+state-constant <span class="math inline">\(\kappa_n\)</span>. It is not
+a claim that every source-protocol message is a broadcast
+posterior.</td>
+<td>No project API; notation for the qualified bridge only.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="priors-policies-and-pomdp-quantities">Priors, policies, and
+POMDP quantities</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Contractual meaning</th>
+<th>Canonical implementation term</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(\pi_0(s)\)</span></td>
+<td>A prior over hidden states. The subscript distinguishes a prior from
+a policy.</td>
+<td><code>prior</code> / <code>log_prior</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\boldsymbol{\pi}\)</span></td>
+<td>A policy or action sequence; it is not a prior and is bold when
+needed.</td>
+<td><code>policy</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(A[o,s]=P(o\mid s)\)</span></td>
+<td>Observation likelihood matrix; each state-indexed column is a
+pmf.</td>
+<td><code>likelihood</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(B[s&#39;,s,u]=P(s&#39;\mid
+s,u)\)</span></td>
+<td>State-transition tensor indexed by next state, current state, and
+control.</td>
+<td><code>transition</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(C[o]\)</span></td>
+<td>Log-preference over outcomes; <span
+class="math inline">\(p_C(o)=\operatorname{softmax}(C)[o]\)</span> is
+the preferred-outcome pmf.</td>
+<td><code>log_preferences</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(D_0[s]\)</span></td>
+<td>Initial hidden-state prior in the POMDP.</td>
+<td><code>initial_prior</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(q(o\mid\boldsymbol{\pi})\)</span></td>
+<td>Policy-conditional predicted outcome distribution in EFE
+calculations.</td>
+<td><code>predicted_outcomes</code></td>
+</tr>
+</tbody>
+</table>
+<p>The state index <span class="math inline">\(s\)</span>, posterior
+<span class="math inline">\(q(s)\)</span>, prior <span
+class="math inline">\(\pi_0(s)\)</span>, and policy <span
+class="math inline">\(\boldsymbol{\pi}\)</span> must not be conflated.
+In particular, the policy symbol is never used for a prior, and the
+prior is never called a policy. The uppercase POMDP tensors <span
+class="math inline">\(A,B,C,D_0\)</span> are model objects; they are not
+posterior factors.</p>
+<p>For the qualified relation to Friston et al.’s Eq. 7
+<span class="citation">(Friston et al. 2024)</span>, the shared support is finite, every <span
+class="math inline">\(q_n(s)\)</span> is positive on it, the Eq. 7
+softmax input is represented by the bridge-only <span
+class="math inline">\(m_n(s)\)</span> above, and the declared weights
+<span class="math inline">\(w_n\)</span> are fixed rather than functions
+of the emerging consensus. Under exactly those assumptions, additive
+<span class="math inline">\(\kappa_n\)</span> constants cancel under
+softmax and <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a> is the
+categorical posterior-log-potential specialization of the source
+message-combination term. It neither reconstructs source message
+construction, cavity/exclusion policy, scheduling, generative factors,
+nor the complete source protocol.</p>
+<h2 id="divergences-losses-and-scalar-controls">Divergences, losses, and
+scalar controls</h2>
+<h3 id="generalized-bayes-and-aggregation-terms">Generalized-Bayes and
+aggregation terms</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Contractual meaning</th>
+<th>Canonical implementation term</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(\mathcal D(q\Vert p)\)</span></td>
+<td>A regularizing divergence between distributions, such as KL, reverse
+KL, or <span class="math inline">\(\alpha\)</span>-Rényi.</td>
+<td><code>divergence</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(L(s;o)\)</span></td>
+<td>Loss evaluated at state <span class="math inline">\(s\)</span> for
+observation <span class="math inline">\(o\)</span>.</td>
+<td><code>loss_by_state</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\tau&gt;0\)</span></td>
+<td>Generalized-Bayes learning rate/temperature multiplying the
+accumulated loss.</td>
+<td><code>tau</code> (<code>learning_rate</code> is a warned
+compatibility alias)</td>
+</tr>
+<tr>
+<td><span class="math inline">\(w_n\)</span></td>
+<td>Non-negative raw/base aggregation weight supplied for local
+posterior <span class="math inline">\(q_n\)</span>.</td>
+<td><code>base_weights[n]</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(a_n\)</span></td>
+<td>Raw variational server effective weight before normalization. In the
+variational rule <span class="math inline">\(0\le a_n\le
+w_n\)</span>.</td>
+<td><code>raw_effective_weights[n]</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\widetilde a_n=a_n/\sum_m
+a_m\)</span></td>
+<td>Normalized influence weight returned for interpretation and
+plotting.</td>
+<td><code>normalized_effective_weights[n]</code></td>
+</tr>
+</tbody>
+</table>
+<p>The symbols <span class="math inline">\(w_n\)</span>, <span
+class="math inline">\(a_n\)</span>, and <span
+class="math inline">\(\widetilde a_n\)</span> are deliberately distinct.
+The first is supplied before aggregation, the second is the variational
+raw server output, and the third is only its normalized influence
+representation. The server heuristic’s reweighting is not a FedGVI
+client loss and does not inherit a client-side robustness theorem.
+<code>robust_aggregate</code> is a server heuristic with the tested
+<span class="math inline">\(c=0\)</span> recovery identity.
+<code>variational_aggregate</code> owns the explicit finite-simplex
+objective and the raw-weight bound; that bound is not an estimator-level
+B-robustness theorem.</p>
+<h3 id="robustness-divergences-and-loss-controls">Robustness,
+divergences, and loss controls</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Contractual meaning</th>
+<th>Canonical implementation term</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(c\ge0\)</span></td>
+<td>Server-side robustness coefficient used by the
+divergence-reweighting rule.</td>
+<td><code>robustness</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\lambda&gt;0\)</span></td>
+<td>Entropy weight in the variational server objective and its
+coordinate updates. The <span
+class="math inline">\(\lambda\downarrow0\)</span> endpoint is a separate
+deterministic tied-argmax rule.</td>
+<td><code>entropy_weight</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\alpha&gt;0\)</span></td>
+<td>Rényi divergence order.</td>
+<td><code>alpha</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\beta\ge0\)</span></td>
+<td>Density-power loss parameter.</td>
+<td><code>beta</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(q_{\rm loss}&gt;0\)</span></td>
+<td>Robust categorical cross-entropy parameter in <span
+class="math inline">\(L_{q_{\rm loss}}\)</span>. The <span
+class="math inline">\(q_{\rm loss}\downarrow0\)</span> NLL limit is
+handled separately, and the subscript prevents collision with posterior
+<span class="math inline">\(q(s)\)</span>.</td>
+<td><code>q_loss</code></td>
+</tr>
+<tr>
+<td><span class="math inline">\(\rho\in[0,1]\)</span></td>
+<td>Contamination strength/rate in a declared attack mechanism.</td>
+<td><code>contamination_rate</code> / <code>rate</code></td>
+</tr>
+</tbody>
+</table>
+<p>For the objective-backed server rule, the complete scalar-control
+contract is defined for <span class="math inline">\(c&gt;0\)</span> and
+<span class="math inline">\(\lambda&gt;0\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+F_\lambda(q,a)
+&amp;= \sum_n a_n\,\mathrm{CE}(q,q_n)
+    -\lambda H(q)
+    +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w),\\
+q &amp;\propto \exp\!\left(\frac{1}{\lambda}
+                  \sum_n a_n\log q_n\right),\\
+a_n &amp;= w_n\exp\!\big[-c\,\mathrm{CE}(q,q_n)\big].
+\end{aligned}
+\]</span> {#eq:notation-variational-objective}</p>
+<p>The implementation uses <span
+class="math inline">\(\lambda=1.0\)</span> by default; the
+<code>entropy_weight</code> argument exposes the stated tempered family.
+The <span class="math inline">\(c=0\)</span> branch is handled as a
+recovery limit outside the <span class="math inline">\(c&gt;0\)</span>
+objective; at <span class="math inline">\(\lambda=1.0\)</span> it is the
+exact project log-linear pool. The <span
+class="math inline">\(\lambda\downarrow0\)</span> endpoint is separately
+implemented as a deterministic tied-argmax rule and is not obtained by
+substituting <span class="math inline">\(\lambda=0\)</span> into the
+displayed objective or update.</p>
+<h2 id="cavity-and-factor-algebra">Cavity and factor algebra</h2>
+<p>For a positive-support global posterior and site term, the cavity
+operation is defined in log space and then normalized:</p>
+<p><span class="math display">\[
+q_{-n}(s)
+  = \frac{q(s)/t_n(s)}{\sum_{s&#39;}q(s&#39;)/t_n(s&#39;)}
+  = \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
+\]</span> {#eq:notation-cavity}</p>
+<p>The corresponding factor replacement is</p>
+<p><span class="math display">\[
+\log t_n^{\mathrm{new}}(s)
+= \log t_n^{\mathrm{old}}(s)
+   +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),
+\qquad
+t_n^{\mathrm{new}}(s)\leftarrow
+\frac{\exp(\log t_n^{\mathrm{new}}(s))}
+     {\sum_{s&#39;}\exp(\log t_n^{\mathrm{new}}(s&#39;))}.
+\]</span> {#eq:notation-factor-replacement}</p>
+<p>The code-level adapters are
+<code>cavity(global_posterior, site_factor)</code> and
+<code>update_factor(old_site_factor, old_global_posterior, new_global_posterior)</code>.
+The old keywords <code>posterior</code>, <code>factor</code>,
+<code>old_factor</code>, <code>old_posterior</code>, and
+<code>new_posterior</code> are accepted only with a
+<code>DeprecationWarning</code>; mixed canonical/old calls fail closed.
+Recombination is tested by normalizing <span
+class="math inline">\(q_{-n}(s)t_n(s)\)</span> and checking recovery of
+<span class="math inline">\(q(s)\)</span> to floating-point tolerance. A
+transported site factor is represented as a pmf, so its arbitrary
+positive natural-parameter scale is fixed by the explicit normalization
+above.</p>
+<h2 id="statistical-notation-and-nesting">Statistical notation and
+nesting</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Contractual meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(n_{\rm seed}\)</span></td>
+<td>Number of independently seeded worlds/replicates in a declared cell;
+the inferential unit for seed-level summaries.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(n_{\rm trial}\)</span></td>
+<td>Number of trials nested within one seed and cell; trials are
+averaged before seed-level inference.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(\Delta=b-a\)</span></td>
+<td>Matched robust-minus-naive contrast for the same seed/trial or the
+declared seed-level reduction.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(r_{\rm rb}\)</span></td>
+<td>Wilcoxon matched-pairs rank-biserial effect, primary standardized
+effect.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(d_{\rm eq}\)</span></td>
+<td><span class="math inline">\(2r_{\rm rb}/\sqrt{1-r_{\rm
+rb}^2}\)</span>, a secondary rank-biserial-derived display/planning
+d-equivalent, not raw Cohen’s <span
+class="math inline">\(d\)</span>.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(\mathrm{CI}_{1-\alpha}\)</span></td>
+<td>Percentile bootstrap interval for the named estimand, resampling the
+declared replication unit.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(\mathrm{MCSE}\)</span></td>
+<td>Monte Carlo standard error/precision diagnostic for a simulation
+summary; it is not a confidence interval.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(\mathrm{MDE}\)</span></td>
+<td>Observed-design minimum detectable effect diagnostic under its
+stated approximation; it is not confirmatory evidence.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(p,q\)</span></td>
+<td>Raw p-value and BH-adjusted q-value; the family and ownership are
+declared with every report.</td>
+</tr>
+</tbody>
+</table>
+<p>For the robustness sweep, the primary result is <span
+class="math inline">\(r_{\rm rb}\)</span> and the matched mean
+difference <span class="math inline">\(\overline{\Delta}\)</span> with
+its bootstrap interval. The d-equivalent is retained only as a monotone
+secondary display and planning input. When <span
+class="math inline">\(|r_{\rm rb}|=1\)</span>, the transform diverges;
+reports use a finite sentinel and captions disclose saturation rather
+than presenting a million-scale number as a scientifically interpretable
+effect. Power, prospective sample size, MCSE, and MDE are
+observed-effect planning/precision diagnostics, not evidence that a
+confirmatory effect exists.</p>
+<p>The predeclared headline display rule is the largest positive <span
+class="math inline">\(r_{\rm rb}\)</span> among robust methods, with the
+declared method order as a deterministic tie break. A report must also
+expose the complete tied-method set, the tie-break, the method with the
+largest mean <span class="math inline">\(\overline{\Delta}\)</span>, and
+the method with the largest mean at the worst rate. These are distinct
+summaries; none is a unique scientific winner when the evidence is tied
+or conditional.</p>
+<p>For the review grid, every configured robust method remains an
+inferential member and a displayed rate-profile curve. No pooled-mean
+selection creates a curve, interval, or hypothesis-test member for that
+surface.</p>
+<h2 id="code-and-manuscript-naming-map">Code and manuscript naming
+map</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Retired/ambiguous name</th>
+<th>Canonical name</th>
+<th>Compatibility rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>beliefs</code>, <code>agent_beliefs</code></td>
+<td><code>local_posteriors</code></td>
+<td>Warned keyword/property adapters; no silent reinterpretation.</td>
+</tr>
+<tr>
+<td><code>weights</code></td>
+<td><code>base_weights</code></td>
+<td>Warned keyword adapter. The federation wire key
+<code>agent_weights</code> remains unchanged.</td>
+</tr>
+<tr>
+<td><code>agent_weights</code> result property</td>
+<td><code>normalized_effective_weights</code></td>
+<td>Warned property adapter; serialized wire compatibility is
+preserved.</td>
+</tr>
+<tr>
+<td>Variational <code>agent_weights</code> argument</td>
+<td><code>raw_effective_weights</code></td>
+<td>Warned objective API adapter; reports use the canonical term.</td>
+</tr>
+<tr>
+<td><code>shared_beliefs</code></td>
+<td><code>shared_posteriors</code></td>
+<td>Warned diagnostics property adapter.</td>
+</tr>
+<tr>
+<td><code>loss_vec</code></td>
+<td><code>loss_by_state</code></td>
+<td>Warned generalized-Bayes keyword adapter.</td>
+</tr>
+<tr>
+<td><code>cohens_d_from_rank_biserial</code></td>
+<td><code>d_equivalent_from_rank_biserial</code></td>
+<td>Warned function adapter; the returned value is not raw Cohen’s <span
+class="math inline">\(d\)</span>.</td>
+</tr>
+<tr>
+<td>Report <code>cohens_d</code></td>
+<td>Report <code>d_equivalent</code></td>
+<td>New reports are canonical and schema-versioned; readers must fail
+closed on an unsupported version.</td>
+</tr>
+</tbody>
+</table>
+<p>The wire-level key <code>agent_weights</code> is preserved because it
+is a federation transport contract, not a claim about the scale or
+meaning of the new result fields. A future wire migration requires an
+explicit version and a fail-closed reader; it must not silently
+reinterpret the key.</p>
+<h2 id="source-and-evidence-boundaries">Source and evidence
+boundaries</h2>
+<p>The Friston belief-sharing equations are source equations/protocol
+claims. Only under the explicit finite-shared-support,
+posterior-log-potential, and fixed-weight bridge above does the
+categorical log-linear pool specialize the source message-combination
+term; the tested <span class="math inline">\(c=0\)</span> identity
+remains project-local. The generalized-Bayes and loss limits are
+implementation analogues checked in the finite categorical model. The
+contamination, gallery, onset, conditional-world, and review-grid
+quantities are conditional simulation evidence over declared cells. None
+of these finite surfaces is an external-data replication, a
+reconstructed source protocol, a universal attack taxonomy, a causal
+intervention, or a proof of a server-side robustness guarantee. Open
+theory, calibration, protocol, continuous-state, external-data,
+authenticated-federation, and clean-release work remains open in the
+project TODO and claim-audit documents.</p>
+</main>
+</body>
+</html>

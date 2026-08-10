@@ -1,0 +1,12 @@
+\frametitle{Methods: the federated active-inference stack}
+and generalized, robustness-bearing Bayesian updating (Bissiri et al.
+2016; Knoblauch et al. 2022; Basu et al. 1998; Zhang and Sabuncu 2018)
+--- but none has been carried into the generative-model-bearing,
+action-selecting POMDP setting. The methodology below is the bridge: it
+federates the FedGVI objective (Mildner et al. 2025) per agent inside an
+active-inference ensemble, proves the standard-Bayes client limits, and
+tests the project-local zero-robustness log-linear-pool identity. Under
+the qualified categorical bridge of sec.~5.8,
+that pool specializes Eq. 7's message-combination term rather than the
+complete source protocol. fig.~2 illustrates the
+three-axis architecture and the recovery hierarchy.

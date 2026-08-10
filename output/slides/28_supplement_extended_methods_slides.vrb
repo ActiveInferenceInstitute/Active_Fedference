@@ -1,0 +1,15 @@
+\frametitle{Greedy multi-hypothesis model reduction beyond the main BMR study}
+The single-step reduction of sec.~5.4 scores one
+candidate reduced prior. \breaktt{bayesian\_model\_reduction.py} adds
+\texttt{greedy\_reduce}, which performs structure learning over a
+\emph{family} of redundant states: starting from the full prior, it
+scores pruning each not-yet-pruned state against the current reduced
+prior, accepts the single prune with the largest positive free-energy
+gain, and repeats until no remaining prune improves model evidence.
+Every accepted step has a strictly positive incremental \(\Delta F\), so
+the cumulative evidence is monotone-increasing and the search recovers
+the sparse generative model the data support --- a state with genuine
+evidence yields \(\Delta F < 0\) when pruned and is kept. This is the
+multi-state analogue of the emergence result of
+sec.~7.4, and is verified directly in the
+model-reduction tests.

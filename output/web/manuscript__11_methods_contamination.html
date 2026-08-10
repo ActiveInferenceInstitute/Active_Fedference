@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>11_methods_contamination.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:methods-contamination">Contamination models: declared
+failure modes for belief fusion</h2>
+<p>Robust belief fusion only earns its keep when some agents are wrong.
+The active-inference community has built ensembles that coordinate by
+sharing beliefs and observations <span class="citation">(Friston et al. 2024; Heins et al. 2024; Albarracin et al. 2022; Kaufmann et al. 2021)</span>,
+but it has assumed those beliefs are trustworthy in the cited modeled
+protocols: fusion is treated as exact-Bayes pooling of well-calibrated
+reports. The robust-Bayes and federated-learning literatures
+<span class="citation">(McMahan et al. 2017; Ashman et al. 2022; Mildner et al. 2025)</span>
+have, in turn, studied robustness to corrupted clients under their
+declared settings, but outside the generative-model-bearing POMDP
+setting. This section defines the corruption process that lets us test
+fusion robustness inside the active-inference colony — the experimental
+complement of the robust aggregation rule of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>.</p>
+<h2 id="sec:methods-corruption">Corruption process for adversarial
+belief broadcasts</h2>
+<p>In the sentinel world a healthy sentinel reports a well-calibrated
+categorical over the creature’s location; a contaminated one reports
+something corrupted. <code>contamination.contaminate</code> manufactures
+the corrupted reports. Every corruption is a convex mixture of the
+agent’s belief <span class="math inline">\(b\)</span> with a corruption
+target <span class="math inline">\(t\)</span>, governed by a single rate
+<span class="math inline">\(r \in [0, 1]\)</span>,</p>
+<p><span class="math display">\[
+\tilde b \;=\; (1 - r)\, b \;+\; r\, t,
+\]</span> {#eq:contamination-mix}</p>
+<p>so the experiments sweep exactly one knob. The convex form of <span
+class="citation"
+data-cites="eq:contamination-mix"><a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a></span> gives a
+clean limit and is the anchor of the suite (ISC-26): at <span
+class="math inline">\(r = 0\)</span> every corruption kind returns the
+input belief unchanged, so contamination is a strict, continuous
+departure from the uncorrupted Friston belief-share — never a
+discontinuity. This section defines the three core corruption targets
+<span class="math inline">\(t\)</span>, each capturing a distinct
+failure of a federated agent. Geometrically the three are three
+landmarks of the probability simplex — a wrong vertex
+(<code>confident_wrong</code>), the flat centroid
+(<code>uniform</code>), and a random interior point
+(<code>label_noise</code>) — so the mixture of <a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a> drags
+an honest belief toward a qualitatively different destination in each
+case. Two further mechanisms (<code>byzantine</code> and
+<code>drift</code>) extend the same convex-mix contract and are
+introduced in the extended-methods supplement (<a class="xref" href="index.html#sec:supp-contamination">Section 12.2</a>).</p>
+<p><strong><code>confident_wrong</code> — the adversarial
+sentinel.</strong> This is the lookout that points to one wrong cell and
+insists on it with total certainty. The target is a one-hot spike on a
+wrong state, <span class="math inline">\(t =
+\mathrm{onehot}(s_{\text{wrong}})\)</span>, so <span
+class="math inline">\(\tilde b\)</span> is mixed toward a confident,
+mistaken delta. Callers choose <span
+class="math inline">\(s_{\text{wrong}}\)</span> explicitly; the verdict
+sweep of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+fixes it once per colony as the state diametrically opposite the true
+state on the location grid, held constant across the entire rate sweep,
+rather than deriving it from the agent’s current belief. At <span
+class="math inline">\(r = 1\)</span> this is a pure delta on the wrong
+cell. This is the saboteur that is <em>sure</em> and <em>mistaken</em>:
+exactly the agent that robust aggregation must reject.</p>
+<p><strong><code>label_noise</code> — the miscalibrated
+sentinel.</strong> This is the lookout with a scrambled sensor: it is
+not lying toward any particular cell, only diluting every honest report
+with the same fixed sprinkle of noise. The target is a fixed noisy
+categorical drawn once from a <span
+class="math inline">\(\mathrm{Dirichlet}(1)\)</span> (a random but valid
+pmf), modeling a sentinel whose report is partly random rather than
+adversarial. Because the noisy target is drawn once and then held fixed
+across the rate sweep, the corruption has no direction to exploit and no
+single cell to veto — the robust pool meets diffuse degradation, not a
+targeted attack.</p>
+<p><strong><code>uniform</code> — the apathetic sentinel.</strong> This
+is the lookout that shrugs: it has lost track of the creature and calls
+every cell equally likely. The target is the maximum-entropy uniform pmf
+<span class="math inline">\(t = (1/n_s)\mathbf{1}\)</span>, modeling a
+saturated sentinel that has lost all information. At <span
+class="math inline">\(r = 1\)</span> it reports uniform, contributing no
+evidence to the pool rather than actively pulling it toward a wrong
+cell.</p>
+<p>All three share the contract of <a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a> and
+require an explicit seeded generator — <code>label_noise</code> uses it
+to draw the noisy target — so every contaminated report is reproducible.
+The grid of rates the sweep uses, <span class="math inline">\(\{0,
+0.225, 0.45, 0.675, 0.9\}\)</span>, deliberately stops below the
+pure-veto limit <span class="math inline">\(r = 1\)</span>, where a
+fully-confident wrong delta forces <em>every</em> pooling rule’s
+accuracy to zero and the robust-versus-naive contrast vanishes.</p>
+<h2 id="sec:methods-contamination-axes">How contamination meets the
+three robustness axes</h2>
+<p>A contaminated report feeds the colony in distinct places, and the
+honesty contract of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> turns on
+keeping them separate.</p>
+<p>At the <em>server</em> (the aggregation step of <span
+class="citation"
+data-cites="sec:method-aggregation"><a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a></span>) a
+contaminated belief enters <code>robust_aggregate</code>, the
+iteratively-reweighted pool that discounts each agent by <span
+class="math inline">\(\exp(-c\,\mathrm{KL}(q_n\,\|\,q))\)</span>. A
+confidently-wrong agent sits far from the emerging consensus, earns a
+small effective weight, and is suppressed. This is the
+<em>heuristic</em> axis: its only proven property is that at <span
+class="math inline">\(c = 0\)</span> it recovers the project’s naive
+log-linear pool exactly (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>).
+Under the qualified bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+that pool specializes Eq. 7’s message-combination term rather than the
+complete source protocol. The robustness-sweep figures (<span
+class="citation"
+data-cites="fig:robustness-sweep"><a class="xref" href="index.html#fig:robustness-sweep">Figure 12</a></span>, <span
+class="citation"
+data-cites="fig:robust-weights"><a class="xref" href="index.html#fig:robust-weights">Figure 13</a></span>) illustrate
+this heuristic’s behavior — including the per-agent influence weights
+that drop the saboteurs — but they do not certify a per-agent
+guarantee.</p>
+<p>At the <em>client</em> (the per-agent generalized-Bayes update of
+<a class="xref" href="index.html#sec:method-losses">Section 5.7</a>)
+contamination is what the bounded <span
+class="math inline">\(\beta\)</span>-loss (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>) and rcce-loss (<span
+class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>) are
+designed to survive: a single corrupted observation with <span
+class="math inline">\(p(o)\to 0\)</span> drives the unbounded NLL to
+dominate the posterior, whereas the bounded losses cap its influence.
+This is the source-theorem-backed axis: the FedGVI guarantee
+<span class="citation">(Mildner et al. 2025)</span> is inherited only under the source theorem’s
+matching loss, divergence, and regularity assumptions. The federated
+logistic-regression baseline of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+applies this same client mechanism to flipped-label contamination (<span
+class="citation"
+data-cites="fig:bnn-robustness"><a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a></span>); it is the
+conjugate Bernoulli analogue of the categorical client update, and its
+robustness is the per-client loss, not the server reweighting.</p>
+<p>No figure, statistic, or sentence in this manuscript grants the
+server-side heuristic the per-client bounded-influence guarantee;
+contamination is the common stressor against which the three axes are
+kept distinct.</p>
+</main>
+</body>
+</html>

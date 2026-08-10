@@ -1,0 +1,65 @@
+{
+  "pipeline_start_time": 1785632366.3620522,
+  "last_stage_completed": 3,
+  "stage_results": [
+    {
+      "name": "Clean Output Directories",
+      "exit_code": 0,
+      "duration": 0.07109808921813965,
+      "timestamp": "2026-08-01 17:59:52",
+      "completed": true,
+      "status": "passed",
+      "context": {
+        "stage_num": 1,
+        "stage_name": "Clean Output Directories",
+        "success": true,
+        "exit_code": 0,
+        "hitl_pause": false,
+        "stage_completed": true,
+        "lessons": [],
+        "error_message": "",
+        "exception_type": ""
+      }
+    },
+    {
+      "name": "Environment Setup",
+      "exit_code": 0,
+      "duration": 0.7793872356414795,
+      "timestamp": "2026-08-01 17:59:52",
+      "completed": true,
+      "status": "passed",
+      "context": {
+        "stage_num": 2,
+        "stage_name": "Environment Setup",
+        "success": true,
+        "exit_code": 0,
+        "hitl_pause": false,
+        "stage_completed": true,
+        "lessons": [],
+        "error_message": "",
+        "exception_type": ""
+      }
+    },
+    {
+      "name": "Infrastructure Tests",
+      "exit_code": 0,
+      "duration": 24.73017120361328,
+      "timestamp": "2026-08-01 17:59:52",
+      "completed": true,
+      "status": "passed",
+      "context": {
+        "stage_num": 3,
+        "stage_name": "Infrastructure Tests",
+        "success": true,
+        "exit_code": 0,
+        "hitl_pause": false,
+        "stage_completed": true,
+        "lessons": [],
+        "error_message": "",
+        "exception_type": ""
+      }
+    }
+  ],
+  "total_stages": 8,
+  "checkpoint_time": 1785632392.533476
+}

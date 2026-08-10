@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>07_methods_aggregation.md.web</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    window.MathJax.startup.defaultReady();
+    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+  }
+});
+</script>
+<script defer=""
+  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
+  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+
+<link data-template-favicon rel="icon" href="favicon.ico">
+
+<style>
+:root {
+  --brand-1: #5b6ee0;
+  --web-bg: #f8f8f8;
+  --web-surface: #ffffff;
+  --web-text: #2c3e50;
+  --web-border: #bdc3c7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-1: #7e8ce8;
+    --web-bg: #0f1420;
+    --web-surface: #161c2b;
+    --web-text: #e6eaf2;
+    --web-border: #2a3447;
+  }
+}
+.theorem-box {
+  border-left: 4px solid var(--brand-1);
+  background: var(--web-surface);
+  padding: 0.6em 1em;
+  margin: 1.1em 0;
+  border-radius: 0 4px 4px 0;
+}
+.theorem-box.definition { border-left-style: dashed; }
+.theorem-box > p:first-child { margin-top: 0; }
+.theorem-box > p:last-child { margin-bottom: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Liberation Serif', 'Times New Roman', serif;
+  line-height: 1.6;
+  width: min(100%, 800px);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  overflow-x: visible;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.65rem 0.9rem;
+  transform: translateY(-120%);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.skip-link:visited {
+  color: #ffffff;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  body {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  figure img {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 800px) {
+  body {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+code {
+  background-color: #ecf0f1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Liberation Mono', 'Courier New', monospace;
+}
+
+pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+figure {
+  max-width: 100%;
+  margin: 1.5rem 0;
+}
+
+th, td {
+  border: 1px solid #bdc3c7;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #1f6f8b;
+  color: white;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  margin: 20px 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+a {
+  color: #b91c1c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+a:visited {
+  color: #8f1d1d;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
+}
+
+a:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.toc {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.toc a,
+#TOC a {
+  color: #b91c1c;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 1.5;
+  padding-block: 2px;
+}
+
+.toc li,
+#TOC li {
+  margin-block: 1px;
+}
+
+.math {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+mjx-container[display="true"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.figure {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* A reading column keeps prose comfortable, but dense scientific figures need
+   a larger inspection surface.  The rendered image remains responsive and the
+   explicit link opens its source-resolution asset without changing the PDF. */
+.figure-full-size-link {
+  color: inherit;
+  display: block;
+  max-width: 100%;
+  text-align: center;
+}
+
+.figure-full-size-link img {
+  cursor: zoom-in;
+  margin-bottom: 0.45rem;
+}
+
+.figure-full-size-label {
+  color: #1f6f8b;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.figure-full-size-link:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 4px;
+}
+
+@media (min-width: 1000px) {
+  .figure-full-size-link {
+    left: 50%;
+    max-width: none;
+    position: relative;
+    transform: translateX(-50%);
+    width: min(1080px, calc(100vw - 3rem));
+  }
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 10px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h2 id="sec:method-aggregation">Aggregation and message passing:
+standard pool, heuristic, and variational server</h2>
+<p>The server step lives in <code>aggregation.py</code>, where a
+categorical specialization of the active-inference belief-sharing
+relation <span class="citation">(Friston et al. 2024)</span> and the FedGVI objective
+<span class="citation">(Mildner et al. 2025)</span> meet. Each agent <span
+class="math inline">\(n\)</span> broadcasts a categorical local
+posterior <span class="math inline">\(q_n(s)\)</span> over the shared
+latent factor, optionally with a scalar base weight <span
+class="math inline">\(w_n\)</span>. Two fusion rules act directly on
+these broadcasts, and a third — the objective-backed
+<code>variational_aggregate</code> of <a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a> —
+refines the second into descent on a stated objective. The first is the
+<strong>log-linear pool</strong>, a project-local product-of-experts
+consensus. In the terminology of opinion pooling it is the logarithmic
+pool, a weighted geometric aggregation rule whose Bayesian-coherence
+assumptions have been studied independently of active inference
+<span class="citation">(Genest and Zidek 1986; Genest et al. 1986; Carvalho et al. 2023)</span>; in
+machine-learning terms it is the product-of-experts normalization of
+local posteriors <span class="citation">(Hinton 2002)</span>:</p>
+<p><span class="math display">\[
+\operatorname{log\_linear\_pool}(\{q_n\})
+\;=\; \mathrm{softmax}\!\Big(\textstyle\sum_n w_n \log q_n\Big),
+\]</span> {#eq:log-linear-pool}</p>
+<p>For the source bridge, fix one finite shared support <span
+class="math inline">\(\mathcal S\)</span> with <span
+class="math inline">\(q_n(s)&gt;0\)</span> for every agent and state.
+Suppose the inputs to Eq. 7’s softmax message-combination term can be
+represented as posterior log potentials <span
+class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span>, where <span
+class="math inline">\(\kappa_n\)</span> is constant in <span
+class="math inline">\(s\)</span>, and use declared fixed weights <span
+class="math inline">\(w_n\)</span> that do not depend on the emerging
+consensus (the unweighted case sets each <span
+class="math inline">\(w_n=1\)</span>). Additive constants then cancel
+under softmax, giving exactly <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>. This is a
+categorical posterior-log-potential specialization of the source
+equation’s message-combination term, not a reconstruction of source
+message construction, self-exclusion/cavity policy, scheduling,
+generative factors, or the complete protocol. The code alias
+<code>friston_belief_share</code> names this qualified specialization
+only.</p>
+<p>The second rule is <strong><code>robust_aggregate</code></strong>, an
+iteratively-reweighted pool that discounts each agent by <span
+class="math inline">\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\)</span>
+against the emerging consensus <span class="math inline">\(q\)</span>. A
+confidently-wrong (contaminated) agent sits far from the consensus, can
+earn a small effective weight and be suppressed in the declared
+diagnostic regimes. This independently motivated rule does not transfer
+FedGVI’s client theorem to the server side: it is the <strong>heuristic
+robustness axis</strong> of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>, distinct
+from the per-agent rigorous axis of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a>. It is also
+only an analogy to robust federated aggregation methods such as
+divergence-weighted gamma-mean aggregation, geometric-median robust
+aggregation, or Byzantine-tolerant gradient aggregation <span class="citation">(Li et al. 2022; Pillutla et al. 2022; Blanchard et al. 2017)</span>: those methods motivate the risk
+surface, but they do not supply this rule’s guarantee.</p>
+<p>The defining identity is bit-level: at zero robustness the reweighted
+pool is the log-linear pool unchanged.</p>
+<p><span class="math display">\[
+\operatorname{robust\_aggregate}(0)
+\;\equiv\;
+\operatorname{log\_linear\_pool}.
+\]</span> {#eq:robust-identity}</p>
+<p>This is an exact project-local code identity. Under the stated
+posterior-log-potential assumptions, its right-hand side specializes the
+message-combination term of Eq. 7; the identity itself neither recovers
+nor certifies the complete source protocol <span class="citation">(Friston et al. 2024)</span>.</p>
+<h3 id="sec:method-message-passing">Protocol map: local updates,
+broadcast, and server fusion</h3>
+<p>The visual map in <a class="xref" href="index.html#fig:message-passing">Figure 3</a> makes the
+protocol boundary explicit: each client updates and broadcasts a
+categorical posterior; the server chooses the standard pool, heuristic,
+or variational route. This is a mechanistic schematic, not an additional
+benchmark: client-side FedGVI is source- conditional, server-heuristic
+accuracy is conditional on declared contamination, and the variational
+route owns objective/descent/raw-weight properties.</p>
+<h4 id="visual-protocol-map-schematic">Visual protocol map
+(schematic)</h4>
+<figure id="fig:message-passing">
+<a class="figure-full-size-link" href="../figures/message_passing.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/message_passing.png" style="width:95.0%"
+alt="Message-passing schematic for Active Fedference." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Message-passing schematic for Active
+Fedference. Source relation: source-inspired original schematic related
+to Friston et al. (2024), Eq. 7 and Fig. 5; estimand: protocol stages
+and claim ownership; uncertainty: none. The x-axis is protocol stage
+from private outcome through local update, posterior broadcast, server
+fusion, and return; the y-axis uses lanes for local inference, server
+fusion, and claim ownership. Panel A shows three sentinel agents
+beginning with private categorical views over the nine-cell location
+space, converting those views into local posteriors, and broadcasting
+posteriors rather than raw outcomes. Panel B shows the same broadcast
+entering the standard log-linear pool, the server-side robust_aggregate
+heuristic, or the objective-backed variational_aggregate; Panel C keeps
+their claim ownership separate. The standard pool combines the client
+KL/NLL/<span class="math inline">\(\beta=0\)</span> recovery with the
+qualified categorical Eq. 7 message-combination specialization, while
+the heuristic retains recovery-limit status only. The return annotation
+marks cavity exclusion: an agent does not hear its own message. This
+deterministic formal/mechanistic schematic contains no empirical curve,
+error band, or confidence interval.</figcaption>
+</figure>
+<div id="thm:belief-sharing-recovery" class="theorem-box theorem">
+<p><strong>Theorem 1</strong> (Categorical message-combination
+specialization and local recovery). Let <span
+class="math inline">\(\mathcal S\)</span> be a finite shared support,
+let <span class="math inline">\(q_n(s)&gt;0\)</span> for every <span
+class="math inline">\(n,s\)</span>, and suppose Eq. 7’s softmax inputs
+are represented by <span class="math inline">\(m_n(s)=\log
+q_n(s)+\kappa_n\)</span> with <span
+class="math inline">\(\kappa_n\)</span> constant in <span
+class="math inline">\(s\)</span> and fixed declared weights <span
+class="math inline">\(w_n\)</span>. Then <span
+class="math inline">\(\operatorname{softmax}(\sum_n w_n m_n)\)</span>
+equals the log-linear pool of (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>). This
+identifies the categorical message-combination term under those
+assumptions only. Independently, the project’s robust server aggregator
+at <span class="math inline">\(c=0\)</span> equals that log-linear pool
+by (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>):
+every reweighting multiplier is <span
+class="math inline">\(\exp(0)=1\)</span>, the iteration is skipped, and
+the same pool code path is returned. Neither statement reproduces the
+complete source protocol or certifies behavior at <span
+class="math inline">\(c&gt;0\)</span>.</p>
+</div>
+<div id="cor:closed-form-bayes" class="theorem-box corollary">
+<p><strong>Corollary 2</strong> (Closed-form Bayes recovery). With the
+KL divergence and the NLL loss, the generalized posterior of (<a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a>) equals the
+closed-form prior-times-likelihood Bayes posterior, <span
+class="math display">\[
+q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),
+\]</span> so <code>generalized_posterior(KLD, NLL)</code> reproduces
+standard Bayes. Pooling those local posteriors in this project gives the
+log-linear pool of (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>); under the
+assumptions of <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>, that
+is the categorical message-combination specialization of Eq. 7, not a
+recovery of its complete source protocol.</p>
+</div>
+<p>The largest observed discrepancy between
+<code>robust_aggregate(robustness=0)</code> and
+<code>log_linear_pool</code> is 0 — bit-identical, since the
+zero-robustness branch runs the same code path — and between
+<code>generalized_posterior(KLD, NLL)</code> and the analytic Bayes
+posterior is 5.55e-17, exact to machine precision (about one ULP); both
+are reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>, so
+<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a> and <span
+class="citation"
+data-cites="eq:standard-bayes"><span class="xref">Eq. 6</span></span> are verified
+identities rather than approximations.</p>
+<p>The honesty contract binds at exactly this point. The recovery
+theorem and its corollary cover only the recovery identity and the
+per-agent rigorous axis of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a>; no statement
+<em>about <code>robust_aggregate</code></em> transfers a
+bounded-influence guarantee to that divergence-reweighting, whose
+positive property is the <span
+class="math inline">\(\texttt{robustness}=0\)</span> limit of <span
+class="citation"
+data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>. A scoped
+no-go rejects a declared separable objective class without supplying a
+broader objective certificate. The per-agent influence weights that the
+heuristic produces under contamination are <em>illustrated</em>, not
+guaranteed, in <a class="xref" href="index.html#fig:robust-weights">Figure 13</a> and <span
+class="citation"
+data-cites="fig:bnn-robustness"><a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a></span>; the
+genuine per-client FedGVI property is the rcce/AR client loss of <span
+class="citation"
+data-cites="sec:method-losses"><a class="xref" href="index.html#sec:method-losses">Section 5.7</a></span>. The next
+subsection closes this exact gap on the server side with a
+<em>different</em>, objective-backed aggregator.</p>
+<h3 id="sec:method-variational">Variational aggregation with
+objective-backed weight control</h3>
+<p>The related server construction becomes a genuinely variational rule
+by replacing the heuristic’s reverse-KL weight update with a forward
+cross-entropy update. For <span class="math inline">\(c&gt;0\)</span>
+and <span class="math inline">\(\lambda&gt;0\)</span>, treat the
+consensus <span class="math inline">\(q\)</span> and a vector of
+effective weights <span class="math inline">\(a = (a_n)\)</span> as
+joint variational parameters and define the <strong>aggregation free
+energy</strong></p>
+<p><span class="math display">\[
+F_\lambda(q, a) \;=\; \sum_n a_n\,\mathrm{CE}(q, q_n)\;-\;\lambda
+H(q)\;+\;\tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w),
+\]</span> {#eq:agg-free-energy}</p>
+<p>where <span class="math inline">\(\mathrm{CE}(q, q_n) = -\sum_i q_i
+\log q_{n,i}\)</span> is the cross-entropy of the consensus relative to
+agent <span class="math inline">\(n\)</span>, <span
+class="math inline">\(H(q)\)</span> is the consensus entropy, <span
+class="math inline">\(c\)</span> is the robustness, and <span
+class="math inline">\(\lambda&gt;0\)</span> is the
+<code>entropy_weight</code> coefficient (default <span
+class="math inline">\(\lambda=1.0\)</span>); <span
+class="math inline">\(\mathrm{KL_{gen}}(a \,\|\, w) = \sum_n [a_n
+\log(a_n/w_n) - a_n + w_n]\)</span> is the generalized KL between the
+effective and base weights. Each block of <span
+class="math inline">\(F_\lambda\)</span> has a closed-form minimizer, so
+alternating</p>
+<p><span class="math display">\[
+q \;\leftarrow\;
+\mathrm{softmax}\!\Big(\tfrac{1}{\lambda}\textstyle\sum_n a_n \log
+q_n\Big),
+\qquad
+a_n \;\leftarrow\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big)
+\]</span> {#eq:agg-updates}</p>
+<p>is exact block-coordinate descent on <a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>
+(<code>variational_aggregate</code>) for <span
+class="math inline">\(c&gt;0\)</span> and <span
+class="math inline">\(\lambda&gt;0\)</span>. The implementation defines
+the <span class="math inline">\(\lambda\downarrow0\)</span> endpoint
+separately as a deterministic tied-argmax rule; <span
+class="math inline">\(\lambda=0\)</span> is not substituted into the
+objective or its <span class="math inline">\(q\)</span>-update. This
+substitution changes both orientation and scale: <span
+class="math inline">\(\mathrm{CE}(q,q_n)=\mathrm{KL}(q\|q_n)+H(q)\)</span>,
+and its common <span class="math inline">\(H(q)\)</span> term scales all
+raw weights, which changes the entropy of the subsequent unnormalized
+weighted log pool. The paired <span class="math inline">\(q\)</span>-
+and <span class="math inline">\(a\)</span>-updates in <span
+class="citation" data-cites="eq:agg-updates"><a class="xref" href="index.html#eq:agg-updates">Eq. (8)</a></span>
+are exact block minimizers of the stated objective; that fact does not
+derive the reverse-KL heuristic. Because <span
+class="math inline">\(F\)</span> is biconvex, we run the descent
+<strong>multi-start</strong> (pool, uniform, and arithmetic-mean seeds,
+lowest observed <span class="math inline">\(F\)</span> among converged
+starts; otherwise the lowest unfinished trace is returned with
+<code>converged=False</code>) so a near-one-hot adversary is not left at
+the product-of-experts seed in the tested contamination regimes — the
+detail that supports the effective-weight diagnostic (<span
+class="citation"
+data-cites="sec:supp-variational"><a class="xref" href="index.html#sec:supp-variational">Section 11</a></span>). The
+full derivation, the formal statement (block descent, <span
+class="math inline">\(c\to0\)</span> recovery, and the raw
+effective-weight bound), and the numerical witnesses are in <span
+class="citation"
+data-cites="sec:supp-variational"><a class="xref" href="index.html#sec:supp-variational">Section 11</a></span>; the
+empirical descent and influence collapse are shown in <span
+class="citation"
+data-cites="fig:aggregation-descent"><a class="xref" href="index.html#fig:aggregation-descent">Figure 14</a></span>
+and <a class="xref" href="index.html#fig:bounded-influence">Figure 15</a> and
+reported in <a class="xref" href="index.html#sec:results-variational">Section 7.5.2</a>.
+The authoritative notation supplement records the complete objective
+contract in <a class="xref" href="index.html#eq:notation-variational-objective">Eq. (28)</a>.</p>
+<p>This upgrades the server side from an untracked heuristic to a
+derived generalized-Bayes aggregation with an explicit redescending
+raw-weight property: a single confidently-wrong agent earns raw weight
+<span class="math inline">\(a_n = w_n\exp(-c\,\mathrm{CE}(q,q_n)) \le
+w_n\)</span> that vanishes as it diverges, whereas the naive pool grants
+every agent the fixed weight <span class="math inline">\(w_n\)</span>
+however wrong it is. The trade is conservatism — the <span
+class="math inline">\(-H(q)\)</span> term makes the stationary point a
+maximum-entropy-biased consensus consistent with the weighted
+cross-entropies, so <code>variational_aggregate</code> is deliberately
+flatter than the product-of-experts and does <em>not</em> maximize peak
+point-accuracy. The two server-side rules therefore play complementary,
+never-conflated roles, both reported: the sharp
+<code>robust_aggregate</code> heuristic for accuracy under contamination
+(<a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a>) and the
+conservative <code>variational_aggregate</code> for a server-side
+objective with stated weight control (<a class="xref" href="index.html#sec:results-variational">Section 7.5.2</a>).
+A temperature parameter <span
+class="math inline">\(\lambda&gt;0\)</span> (controlled by
+<code>entropy_weight</code>, default <span class="math inline">\(\lambda
+= 1.0\)</span>) generalizes the objective to <span
+class="math inline">\(F_\lambda\)</span>; lower <span
+class="math inline">\(\lambda\)</span> sharpens the variational <span
+class="math inline">\(q\)</span>-block toward a maximizing state for its
+current weighted log pool. The tempered family (<a class="xref" href="index.html#sec:supp-tempered">Section 11.5</a>; objective
+<a class="xref" href="index.html#eq:tempered-family">Eq. (24)</a>) recovers
+the full-entropy variational aggregator at <span
+class="math inline">\(\lambda = 1.0\)</span> and has a separately
+implemented deterministic tied-argmax endpoint as <span
+class="math inline">\(\lambda\downarrow0\)</span>; neither endpoint is
+guaranteed accurate and neither is an algebraic recovery of
+<code>robust_aggregate</code>. The effective-weight <span
+class="math inline">\(a\)</span>-update is unchanged for every <span
+class="math inline">\(\lambda&gt;0\)</span>, so the raw-weight bound
+holds over the objective-defined family.</p>
+</main>
+</body>
+</html>

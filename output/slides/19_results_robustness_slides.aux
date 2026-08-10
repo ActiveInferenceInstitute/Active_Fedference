@@ -1,0 +1,139 @@
+\relax
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand*\HyPL@Entry[1]{}
+\HyPL@Entry{0<</P(\376\377\0001)>>}
+\@writefile{toc}{\beamer@subsectionintoc {0}{1}{Contamination sweep: regime-dependent server behavior under declared attacks}{1}{0}{0}}
+\@writefile{nav}{\headcommand {\beamer@subsectionpages {1}{0}}}
+\@writefile{nav}{\headcommand {\beamer@subsectionentry {0}{0}{1}{1}{Contamination sweep: regime-dependent server behavior under declared attacks}}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{1}{1/1}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {1}{1}}}
+\HyPL@Entry{1<</P(\376\377\0002)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{2}{2/2}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {2}{2}}}
+\HyPL@Entry{2<</P(\376\377\0003)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{3}{3/3}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {3}{3}}}
+\gdef \LT@i {\LT@entry
+    {1}{52.654pt}\LT@entry
+    {3}{16.51402pt}\LT@entry
+    {3}{16.51402pt}\LT@entry
+    {3}{16.51402pt}\LT@entry
+    {3}{16.51402pt}\LT@entry
+    {3}{15.51402pt}}
+\HyPL@Entry{3<</P(\376\377\0004)>>}
+\newlabel{tbl:robustness_sweep}{{1}{4}{Consensus accuracy \(q(\text {true state})\) by contamination rate and configured server operating point (\(n = 1\) deterministic sweep per cell). \protect \texttt {KLD} is the standard log-linear pool (eq.~6); the other columns use the fixed heuristic constants listed above in the same seeded colony. As the saboteurs capture more belief mass, \protect \texttt {KLD} falls monotonically while at least one robust member remains above the stated accuracy threshold. This table is descriptive; inferential paired evidence appears below}{tbl:robustness_sweep}{}}
+\@writefile{snm}{\beamer@slide {tbl:robustness_sweep}{4}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{4}{4/4}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {4}{4}}}
+\HyPL@Entry{4<</P(\376\377\0005)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{4}{4/5}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {4}{5}}}
+\HyPL@Entry{5<</P(\376\377\0006)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{5}{6/6}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {6}{6}}}
+\gdef \LT@ii {\LT@entry
+    {1}{43.19649pt}\LT@entry
+    {1}{44.19649pt}\LT@entry
+    {1}{44.19649pt}\LT@entry
+    {1}{44.19649pt}\LT@entry
+    {1}{44.19649pt}\LT@entry
+    {1}{44.19649pt}\LT@entry
+    {1}{43.19649pt}}
+\HyPL@Entry{6<</P(\376\377\0007)>>}
+\newlabel{tbl:paired-by-rate}{{2}{7}{Per-contamination-rate standard-vs-robust paired tests (matched-pairs Wilcoxon, (Wilcoxon 1945; Fay and Proschan 2010), \(n_{\rm trial} = 960\) matched trial replicates per cell), BH-deflated within each method's rate family. The trial-level result is conditional on the fixed seeded world and is not a claim about 960 independent worlds. The \protect \texttt {KLD} baseline is excluded because it is the standard reference, not a self-contrast. The displayed \(d\)-equivalent is a rank-biserial-derived transform, not raw Cohen's \(d\); the signed-saturation marker flags contrasts where the rank-biserial correlation saturates at \(\pm 1\). These contrasts decorate the server-side \protect \breaktt {robust\_aggregate} heuristic only}{tbl:paired-by-rate}{}}
+\@writefile{snm}{\beamer@slide {tbl:paired-by-rate}{7}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{6}{7/7}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {7}{7}}}
+\HyPL@Entry{7<</P(\376\377\0008)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{6}{7/8}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {7}{8}}}
+\HyPL@Entry{8<</P(\376\377\0009)>>}
+\newlabel{fig:robustness-sweep}{{1}{9}{Consensus accuracy: probability mass assigned to the true hidden state. The plotted estimand is \(q(\text {true state})\). Source relation: original project robustness extension; estimand: true-state probability mass; uncertainty: matched-trial percentile-bootstrap intervals over configured trials. The colony of \(7\) sentinel agents (acuity \(0.55\), of which \(2\) are saboteurs) as a function of contamination rate. x-axis: saboteur convex-mix contamination rate, sampled over \(\{0, 0.225, 0.45, 0.675, 0.9\}\); y-axis: consensus accuracy \(q(\text {true state})\) (probability mass on the true hidden state). One curve per configured server operating point: standard \protect \texttt {KLD} plus the robust \protect \breaktt {robust\_aggregate} settings \(KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta (c=1.70), rcce (c=1.60)\); these curves do not apply the named client losses or divergences. The dashed floor is the predeclared accuracy threshold \(0.50\); the in-figure box reports the matched-trial sample size and the largest-rate pooled robust-minus-naive separation, where the standard \protect \texttt {KLD} log-linear pool reaches 0.6697 and the highest pooled robust mean reaches 0.7857. Robust means are similar to or slightly below the standard pool at low contamination and some pooled robust operating points separate in favor of the robust family under severe contamination; individual robust members can still fall below the floor at the largest rate. The linear y-axis is deliberately truncated just below the threshold band so the curves, floor, and CIs remain legible. The plotted curve is the matched-trial mean over 960 trials per rate with percentile-bootstrap 95\% CIs; intervals are conditional on the fixed seeded true state and attack geometry, not alternate world models. The single-colony mechanistic table above remains descriptive and deterministic. The formal verdict-rate statistical test is reported immediately below}{fig:robustness-sweep}{}}
+\@writefile{snm}{\beamer@slide {fig:robustness-sweep}{7}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{6}{7/9}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {7}{9}}}
+\HyPL@Entry{9<</P(\376\377\0001\0000)>>}
+\@writefile{toc}{\beamer@subsubsectionintoc {0}{1}{1}{Earned robustness verdict at the decisive rate}{10}{0}{0}}
+\@writefile{nav}{\headcommand {\beamer@subsubsectionentry {0}{0}{1}{1}{10}{Earned robustness verdict at the decisive rate}}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{7}{10/10}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {10}{10}}}
+\gdef \LT@iii {\LT@entry
+    {1}{49.51001pt}\LT@entry
+    {1}{29.198pt}\LT@entry
+    {3}{27.84201pt}\LT@entry
+    {3}{27.84201pt}\LT@entry
+    {1}{14.27802pt}}
+\gdef \LT@iv {\LT@entry
+    {1}{29.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{30.93074pt}\LT@entry
+    {1}{29.93074pt}}
+\gdef \LT@v {\LT@entry
+    {1}{21.65202pt}\LT@entry
+    {3}{11.55801pt}\LT@entry
+    {1}{68.96597pt}\LT@entry
+    {3}{44.00201pt}}
+\HyPL@Entry{10<</P(\376\377\0001\0001)>>}
+\newlabel{tbl:robustness_verdict}{{3}{11}{Per-method paired verdict against the standard pool at verdict rate 0.800 (\(n_{\rm trial} = 960\) matched trial replicates, signed-rank test under the paired-difference assumptions of sec.~5.28). This is a fixed-world conditional diagnostic; seed-level inference is reported separately in sec.~12.2.4. Effect size is the matched-pairs rank-biserial correlation; positive values mean the robust member exceeds the standard pool. A \protect \texttt {Wins} value is true only when the BH-deflated null is rejected \emph {and} the effect is positive, with FDR scoped to this verdict family}{tbl:robustness_verdict}{}}
+\@writefile{snm}{\beamer@slide {tbl:robustness_verdict}{11}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{8}{11/11}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {11}{11}}}
+\HyPL@Entry{11<</P(\376\377\0001\0002)>>}
+\newlabel{tbl:verdict-effects}{{4}{12}{Standardized-effect verdict at rate 0.800 (\(n_{\rm trial} = 960\) matched trial replicates): the rank-biserial effect and its derived \(d\)-equivalent display label, the mean robust-minus-standard accuracy difference with its 95\% bootstrap CI, raw and BH-deflated p-values, the observed-effect design power of the paired Wilcoxon at \(\alpha = 0.05\) (alternative greater), and the prospective \(n_{\rm trial}\) a confirmatory fixed-world replication should budget for power 0.80. The signed-saturation marker replaces a misleading literal where the rank-biserial effect saturates; the power calculation is a planning approximation, not independent evidence}{tbl:verdict-effects}{}}
+\@writefile{snm}{\beamer@slide {tbl:verdict-effects}{11}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{8}{11/12}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {11}{12}}}
+\HyPL@Entry{12<</P(\376\377\0001\0003)>>}
+\newlabel{tbl:accuracy-at-verdict}{{5}{13}{Per-method consensus accuracy at the verdict rate 0.800 with 95\% percentile-bootstrap CI, including the standard \protect \texttt {KLD} baseline. The CI is conditional on the seeded matched-trial design and resamples trials, not alternate world models. The standard pool sits at 0.9021 (\([0.8993, 0.9049]\)); the highest pooled robust mean among the configured members is 0.9867 (\([0.9865, 0.9869]\))}{tbl:accuracy-at-verdict}{}}
+\@writefile{snm}{\beamer@slide {tbl:accuracy-at-verdict}{11}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{8}{11/13}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {11}{13}}}
+\HyPL@Entry{13<</P(\376\377\0001\0004)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{8}{11/14}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {11}{14}}}
+\HyPL@Entry{14<</P(\376\377\0001\0005)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{9}{15/15}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {15}{15}}}
+\HyPL@Entry{15<</P(\376\377\0001\0006)>>}
+\newlabel{server-side-heuristic-axis-accurate-but-not-guaranteed}{{16}{16}{Earned robustness verdict at the decisive rate}{server-side-heuristic-axis-accurate-but-not-guaranteed}{}}
+\@writefile{snm}{\beamer@slide {server-side-heuristic-axis-accurate-but-not-guaranteed}{16}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{10}{16/16}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {16}{16}}}
+\HyPL@Entry{16<</P(\376\377\0001\0007)>>}
+\newlabel{fig:robust-weights}{{2}{17}{Server-side influence weights assigned by \protect \breaktt {robust\_aggregate}. Source relation: original project server-side diagnostic; estimand: normalized pooling weight; uncertainty: deterministic single-run display. Divergence-reweighting weights for each of the \(7\) agents at the verdict contamination rate \(0.800\) (the convex-mix strength applied to each saboteur's belief --- distinct from the \emph {count} of contaminated agents, \(2\) of \(7\), reported in the in-figure box). x-axis: agent index, zero-based (\(a0\) upward), with each agent's role (honest / adversary) shown beneath its label; y-axis: normalized pooling weight, with weights summing to one and the dotted reference marking the equal-weight pool (\(1/n\)). The \(2\) contaminated saboteur agents are highlighted, with downward arrows marking their suppression below the equal-weight reference. The heuristic down-weights saboteurs relative to both the equal-weight reference and the \(7 - 2\) healthy agents. Important limitation: this is the \textbf {server-side heuristic axis only} --- the reweighting is proven solely at the \protect \texttt {robustness=0} recovery limit and does not carry the bounded-influence guarantee of the per-client FedGVI losses. Single deterministic run; no error band}{fig:robust-weights}{}}
+\@writefile{snm}{\beamer@slide {fig:robust-weights}{17}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{11}{17/17}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {17}{17}}}
+\HyPL@Entry{17<</P(\376\377\0001\0008)>>}
+\@writefile{toc}{\beamer@subsubsectionintoc {0}{1}{2}{Variational aggregator: conservative objective-backed weight control}{18}{0}{0}}
+\@writefile{nav}{\headcommand {\beamer@subsubsectionentry {0}{0}{1}{2}{18}{Variational aggregator: conservative objective-backed weight control}}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{12}{18/18}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {18}{18}}}
+\HyPL@Entry{18<</P(\376\377\0001\0009)>>}
+\newlabel{fig:aggregation-descent}{{3}{19}{Variational free energy \(F(q, a)\) as a function of block-coordinate descent iteration. Source relation: original project objective-descent diagnostic; estimand: free energy in nats by iteration; uncertainty: none for the deterministic seeded run. The trace is a single \protect \breaktt {variational\_aggregate} fusion of a \(7\)-agent contaminated colony (robustness \(1.50\)). x-axis: block-coordinate iteration number; y-axis: \(F(q, a)\) in nats. The curve is monotone non-increasing across all recorded iterations (largest single-step increase: \(8.88 \times 10^{-16}\) nats, at machine precision) and the implementation reports converged status Yes at value \(2.3780\) nats. This verifies objective descent on the executed run --- a diagnostic the \protect \breaktt {robust\_aggregate} heuristic does not provide. Deterministic seeded run; no error band}{fig:aggregation-descent}{}}
+\@writefile{snm}{\beamer@slide {fig:aggregation-descent}{19}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{13}{19/19}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {19}{19}}}
+\HyPL@Entry{19<</P(\376\377\0002\0000)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{14}{20/20}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {20}{20}}}
+\HyPL@Entry{20<</P(\376\377\0002\0001)>>}
+\newlabel{fig:bounded-influence}{{4}{21}{Normalized influence weight of one probed agent. Source relation: original project variational-server diagnostic; estimand: normalized influence weight; uncertainty: deterministic seeded sweep. The weight is shown as a function of the agent's drift toward a confident-wrong belief (delta distribution on the wrong state), under \protect \breaktt {variational\_aggregate} versus the naive log-linear pool. x-axis: outlier drift --- the mixing parameter carrying the probed agent's belief from the consensus posterior (zero, at consensus) to the confidently-wrong delta (one, full delta), increasing left to right; y-axis: normalized influence weight of the probed agent in the server weight vector. Under \protect \breaktt {variational\_aggregate} (falling curve) the weight collapses below \(0.001\) as the agent goes extreme, while the naive pool holds it fixed at \(1/n = 0.143\) regardless (flat line). This demonstrates redescending normalized-weight behavior on the tested path; the algebraic theorem bounds the raw effective weight, but the figure is not an estimator-level B-robustness proof. Deterministic seeded sweep over \(n = 7\) agents; no error band, and no claim that the sharper \protect \breaktt {robust\_aggregate} heuristic inherits this bound}{fig:bounded-influence}{}}
+\@writefile{snm}{\beamer@slide {fig:bounded-influence}{21}}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{15}{21/21}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {21}{21}}}
+\HyPL@Entry{21<</P(\376\377\0002\0002)>>}
+\@writefile{nav}{\headcommand {\slideentry {0}{1}{16}{22/22}{Contamination sweep: regime-dependent server behavior under declared attacks}{0}}}
+\@writefile{nav}{\headcommand {\beamer@framepages {22}{22}}}
+\@writefile{nav}{\headcommand {\beamer@partpages {1}{22}}}
+\@writefile{nav}{\headcommand {\beamer@subsectionpages {1}{22}}}
+\@writefile{nav}{\headcommand {\beamer@sectionpages {1}{22}}}
+\@writefile{nav}{\headcommand {\beamer@documentpages {22}}}
+\@writefile{nav}{\headcommand {\gdef \inserttotalframenumber {22}}}
+\gdef \@abspage@last{22}

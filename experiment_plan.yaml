@@ -1,0 +1,52 @@
+conditions:
+  - name: naive_belief_sharing
+    role: reference
+    description: "KL/NLL project-pool recovery; categorical Eq. 7 message-combination bridge under documented assumptions (log_linear_pool)."
+  - name: robust_aggregation_heuristic
+    role: proposed
+    description: "Server-side divergence-reweighted aggregation (robust_aggregate)."
+  - name: variational_aggregation_objective
+    role: variant
+    description: "Conservative objective-backed server rule (variational_aggregate)."
+metrics:
+  primary:
+    name: consensus_accuracy
+    direction: maximize
+  secondary:
+    - name: free_energy
+      direction: minimize
+    - name: influence_weight
+      direction: minimize
+protocol: >
+  Run three reduced categorical source-mechanism analogues related to Friston
+  et al. (2024), the executable recovery identities, and the FedGVI robustness
+  sweep with identical seeding, seed budgets, and paired statistics across all
+  declared aggregation conditions. Contamination mechanisms include confident
+  wrong, label noise, byzantine (multiplicative log-odds tilt), and drift.
+expected_figures:
+  - fig:aggregation_descent
+  - fig:belief_heatmap
+  - fig:bnn_robustness
+  - fig:bounded_influence
+  - fig:contamination_gallery
+  - fig:cross_study_summary
+  - fig:descent_comparison
+  - fig:disjoint_fov_world
+  - fig:efe_decomposition
+  - fig:emergence_bmr
+  - fig:free_energy_comparison
+  - fig:graphical_abstract
+  - fig:hierarchical_pomdp
+  - fig:language_kl_decay
+  - fig:moving_world
+  - fig:parameter_recovery
+  - fig:robust_influence_weights
+  - fig:robustness_onset
+  - fig:robustness_sweep
+  - fig:sensitivity_heatmap
+  - fig:system_overview
+baselines:
+  - naive_belief_sharing
+ablations:
+  - robust_aggregation_heuristic
+  - variational_aggregation_objective
