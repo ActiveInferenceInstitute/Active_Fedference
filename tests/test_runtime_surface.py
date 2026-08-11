@@ -7,8 +7,11 @@ project instructions; this test checks the executable Python surfaces themselves
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
+
+from _runtime import save_figure_data
 
 ROOT = Path(__file__).resolve().parent.parent
 # Scan the complete executable surface.  Keeping this at selected package
@@ -84,3 +87,13 @@ def test_test_suite_has_no_test_double_apis() -> None:
         if _TEST_DOUBLE_API_TESTS.search(line)
     ]
     assert offenders == []
+
+
+def test_save_figure_data_writes_nested_json_payload(tmp_path: Path) -> None:
+    """The shared figure-data boundary writes a portable, nested payload."""
+    payload = {"series": [1, 2, 3], "metadata": {"unit": "nats"}}
+
+    path = save_figure_data(payload, "runtime_surface", tmp_path)
+
+    assert path == tmp_path / "data" / "runtime_surface.json"
+    assert json.loads(path.read_text(encoding="utf-8")) == payload
