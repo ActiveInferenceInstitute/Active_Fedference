@@ -3865,10 +3865,10 @@ class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
 orders, not performance guarantees: agent-axis slopes are 0.88
-(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.59 (naive
-self-excluding sharing), and 1.94 (robust self-excluding sharing);
-state-axis slopes are 0.41, 0.41, and 0.42; the modality-axis inference
-slope is 0.67. The slope fit is a timing diagnostic on this machine, not
+(log-linear), 0.94 (iterative robust), 0.70 (variational), 1.63 (naive
+self-excluding sharing), and 1.92 (robust self-excluding sharing);
+state-axis slopes are 0.43, 0.41, and 0.40; the modality-axis inference
+slope is 0.66. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -4430,7 +4430,7 @@ sec. <a href="#sec:results-robustness">7.5</a> and sec. <a
 href="#sec:results-baseline">7.6</a> rest on the per-agent axis without
 leaning on the heuristic.</p>
 <p>257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy
-core carries project test coverage of 90.09% (gate <span
+core carries project test coverage of 90.10% (gate <span
 class="math inline">\(\ge 90\%\)</span>), with every stochastic step
 threaded through a single seeded <code>np.random.default_rng(0)</code>.
 sec. <a href="#sec:reproducibility">10</a> records the full environment
@@ -6960,10 +6960,10 @@ class="header-section-number">10.4</span> Test and coverage evidence for
 the claim surface</h2>
 <ul>
 <li>Acceptance criteria: 259 total, 257 passing.</li>
-<li>Project test suite: 1563 collected cases; the bound successful
+<li>Project test suite: 1564 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.</li>
-<li>Line coverage on <code>src/</code>: 90.09% (achieved by the bound
+<li>Line coverage on <code>src/</code>: 90.10% (achieved by the bound
 full gate; <span class="math inline">\(\ge 90\%\)</span> line coverage
 is enforced in CI, while branch coverage is tracked separately in
 CI).</li>

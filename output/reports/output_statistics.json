@@ -3,8 +3,8 @@
     "pdf": {
       "exists": true,
       "file_count": 10,
-      "size_mb": "10.03",
-      "total_size_bytes": 10513279,
+      "size_mb": "10.02",
+      "total_size_bytes": 10505090,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
@@ -37,8 +37,8 @@
     "web": {
       "exists": true,
       "file_count": 107,
-      "size_mb": "9.99",
-      "total_size_bytes": 10471315,
+      "size_mb": "9.98",
+      "total_size_bytes": 10463679,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -52,7 +52,7 @@
         },
         {
           "name": "complexity_scaling.png",
-          "size_mb": "0.48",
+          "size_mb": "0.47",
           "path": "web/figures/complexity_scaling.png"
         }
       ],
@@ -68,8 +68,8 @@
     "slides": {
       "exists": true,
       "file_count": 340,
-      "size_mb": "13.38",
-      "total_size_bytes": 14025841,
+      "size_mb": "13.36",
+      "total_size_bytes": 14005815,
       "largest_files": [
         {
           "name": "28_supplement_extended_methods_slides.pdf",
@@ -101,8 +101,8 @@
     "figures": {
       "exists": true,
       "file_count": 61,
-      "size_mb": "8.32",
-      "total_size_bytes": 8726563,
+      "size_mb": "8.31",
+      "total_size_bytes": 8717123,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -111,7 +111,7 @@
         },
         {
           "name": "complexity_scaling.png",
-          "size_mb": "0.48",
+          "size_mb": "0.47",
           "path": "figures/complexity_scaling.png"
         },
         {
@@ -130,7 +130,7 @@
       "exists": true,
       "file_count": 6,
       "size_mb": "0.30",
-      "total_size_bytes": 313273,
+      "total_size_bytes": 313125,
       "largest_files": [
         {
           "name": "pipeline_provenance.json",
@@ -156,7 +156,7 @@
       "exists": true,
       "file_count": 35,
       "size_mb": "3.17",
-      "total_size_bytes": 3323178,
+      "total_size_bytes": 3322865,
       "largest_files": [
         {
           "name": "robustness_review_grid.json",
@@ -214,7 +214,7 @@
     }
   },
   "total_files": 560,
-  "total_size_mb": 45.17898654937744,
+  "total_size_mb": 45.13535404205322,
   "largest_files": [
     {
       "name": "active_fedference_combined.pdf",
@@ -266,25 +266,25 @@
     },
     {
       "name": "complexity_scaling.png",
-      "size_mb": "0.48",
+      "size_mb": "0.47",
       "category": "web",
       "path": "web/figures/complexity_scaling.png"
     },
     {
       "name": "complexity_scaling.png",
-      "size_mb": "0.48",
+      "size_mb": "0.47",
       "category": "figures",
       "path": "figures/complexity_scaling.png"
     }
   ],
   "missing_expected_files": [],
   "sizes_by_category": {
-    "pdf": 10.026244163513184,
-    "web": 9.986224174499512,
-    "slides": 13.376084327697754,
-    "figures": 8.322299003601074,
-    "data": 0.29876041412353516,
-    "reports": 3.169229507446289,
+    "pdf": 10.018434524536133,
+    "web": 9.978941917419434,
+    "slides": 13.356986045837402,
+    "figures": 8.3132963180542,
+    "data": 0.29861927032470703,
+    "reports": 3.168931007385254,
     "simulations": 0.0,
     "llm": 0.0,
     "logs": 0.00014495849609375

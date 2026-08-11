@@ -74,10 +74,10 @@ alone are insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1563 collected cases; the bound successful
+- Project test suite: 1564 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 90.09% (achieved by the bound full
+- Line coverage on `src/`: 90.10% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 
