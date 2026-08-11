@@ -27,6 +27,13 @@ jobs:
       - name: Sync dependencies (locked dev extra)
         run: uv sync --locked --extra dev
 
+      - name: Install PDF surface validation tools
+        # The rendered-surface gate validates extracted text and PDF structure;
+        # keep those external probes explicit on the clean Ubuntu runner.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y poppler-utils qpdf
+
       - name: Ruff lint
         run: uv run --locked ruff check src/ tests/ scripts/ _fedference_build_backend.py
 

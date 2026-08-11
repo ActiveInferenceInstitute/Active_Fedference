@@ -465,6 +465,7 @@ def test_ci_workflow_runs_publication_package_and_release_round_trip() -> None:
     workflow = _read(".github/workflows/ci.yml")
     required_commands = (
         "uv run --locked python scripts/validate_all.py package",
+        "sudo apt-get install --no-install-recommends -y poppler-utils qpdf",
         "uv run --locked python scripts/build_release.py",
         "uv run --locked python scripts/build_release.py --verify",
         "actions/upload-artifact@v4",
