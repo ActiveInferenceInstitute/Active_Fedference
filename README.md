@@ -293,6 +293,28 @@ print([(row["method"], row["axis"], row["observed_log_log_slope"]) for row in r[
 '
 ```
 
+### Installable artifacts
+
+The source checkout is the reproducibility workspace. For a packaged install,
+build the wheel or source distribution with the pinned lockfile and install
+the resulting artifact into an isolated environment:
+
+```bash
+export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+uv build --out-dir .tmp/dist
+uv venv .tmp/package-env
+uv pip install --python .tmp/package-env/bin/python .tmp/dist/*.whl
+.tmp/package-env/bin/fedference list --json
+```
+
+The wheel contains the importable runtime and packaged compatibility inputs;
+the source distribution additionally carries the modular `docs/`, `manuscript/`,
+`scripts/`, and `tests/` trees for archival and source-level reproduction.
+The exact wheel/source-distribution installation and byte-reproducibility
+probes are maintained in
+[`docs/reference/verification-commands.md`](docs/reference/verification-commands.md).
+The runtime package is MIT-licensed; see [`LICENSE`](LICENSE).
+
 Experiment parameters (seed, per-study knobs, the robustness-sweep grid,
 divergence labels, statistical $\alpha$) all live in
 [`manuscript/config.yaml`](manuscript/config.yaml) → `experiment:`, mirroring the

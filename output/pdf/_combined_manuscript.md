@@ -1896,14 +1896,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.88
+performance guarantees: agent-axis slopes are 0.89
 (log-linear), 0.94 (iterative robust),
-0.70 (variational), 1.63
+0.71 (variational), 1.58
 (naive self-excluding sharing), and 1.92
 (robust self-excluding sharing); state-axis slopes
-are 0.43, 0.41, and
-0.40; the modality-axis inference slope is
-0.66. The slope fit is a timing diagnostic on this
+are 0.42, 0.39, and
+0.42; the modality-axis inference slope is
+0.67. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -2301,7 +2301,7 @@ without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-90.10% (gate $\ge 90\%$), with every stochastic step threaded
+91.24% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -3731,10 +3731,10 @@ alone are insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1564 collected cases; the bound successful
+- Project test suite: 1641 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 90.10% (achieved by the bound full
+- Line coverage on `src/`: 91.24% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 

@@ -102,3 +102,20 @@ def test_build_configuration_pins_and_ships_the_reproducible_backend() -> None:
     assert 'build-backend = "_fedference_build_backend"' in pyproject
     assert 'backend-path = ["."]' in pyproject
     assert "include _fedference_build_backend.py" in manifest
+
+
+def test_package_metadata_and_source_manifest_are_release_complete() -> None:
+    pyproject = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    manifest = (_ROOT / "MANIFEST.in").read_text(encoding="utf-8")
+
+    assert (_ROOT / "LICENSE").is_file()
+    assert 'readme = {file = "README.md", content-type = "text/markdown"}' in pyproject
+    assert 'license = "MIT"' in pyproject
+    assert 'license-files = ["LICENSE"]' in pyproject
+    assert '{name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"}' in pyproject
+    assert 'Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"' in pyproject
+    assert 'DOI = "https://doi.org/10.5281/zenodo.21864004"' in pyproject
+    assert "recursive-include docs *.md" in manifest
+    assert "recursive-include manuscript *.bib *.md *.png *.yaml" in manifest
+    assert "recursive-include scripts *.py *.md" in manifest
+    assert "recursive-include tests *.md *.py" in manifest

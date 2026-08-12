@@ -14,6 +14,7 @@ from publication.release_manifest import (
     build_release,
     compute_fingerprint,
     timestamp_from_source_date_epoch,
+    validate_utc_timestamp,
     verify_release,
 )
 
@@ -67,6 +68,19 @@ def test_build_writes_bundle_with_true_digests(tmp_path: Path) -> None:
     assert manifest["timestamp_policy"] == "recorded"
     # README counts are derived from the walk, not hand-typed.
     assert "3 files" in (release / "README.md").read_text()
+
+
+def test_release_bundle_carries_the_declared_license(tmp_path: Path) -> None:
+    _make_artifacts(tmp_path)
+    license_text = "MIT License\n"
+    (tmp_path / "LICENSE").write_text(license_text, encoding="utf-8")
+
+    manifest = build_release(tmp_path)
+
+    entry = next(item for item in manifest["artifacts"] if item["path"] == "LICENSE")
+    assert entry["bytes"] == len(license_text.encode("utf-8"))
+    assert entry["sha256"] == hashlib.sha256(license_text.encode("utf-8")).hexdigest()
+    assert verify_release(tmp_path) == []
 
 
 def test_bundle_excludes_its_own_directory_on_rebuild(tmp_path: Path) -> None:
@@ -341,3 +355,101 @@ def test_manifest_json_is_sha256sum_c_compatible(tmp_path: Path) -> None:
     assert proc.returncode == 0, proc.stdout + proc.stderr
     manifest = json.loads((tmp_path / "output" / "release" / "manifest.json").read_text())
     assert manifest["total_bytes"] == sum(e["bytes"] for e in manifest["artifacts"])
+
+
+@pytest.mark.parametrize(
+    ("mutation", "expected"),
+    (
+        (lambda payload: payload.__setitem__("artifacts", {}), "malformed artifacts list"),
+        (lambda payload: payload.__setitem__("manifest_schema_version", 1), "schema_version"),
+        (lambda payload: payload.__setitem__("pipeline_profile", ""), "pipeline_profile"),
+        (lambda payload: payload.__setitem__("generator", "other"), "generator identity"),
+        (lambda payload: payload.__setitem__("generator_version", "old"), "generator_version"),
+        (lambda payload: payload.pop("fingerprint"), "fingerprint missing"),
+        (lambda payload: payload.__setitem__("fingerprint_files", []), "fingerprint_files missing"),
+        (lambda payload: payload.__setitem__("fingerprint_inputs", []), "fingerprint_inputs drift"),
+    ),
+)
+def test_verify_rejects_top_level_manifest_contract_drift(tmp_path: Path, mutation, expected) -> None:
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    build_release(tmp_path)
+    path = tmp_path / "output" / "release" / "manifest.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    mutation(payload)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert any(expected in finding for finding in verify_release(tmp_path))
+
+
+@pytest.mark.parametrize(
+    ("path_value", "expected"),
+    (
+        ("", "unsafe artifact path"),
+        ("../outside", "unsafe artifact path"),
+        ("/absolute", "unsafe artifact path"),
+    ),
+)
+def test_verify_rejects_unsafe_artifact_paths(tmp_path: Path, path_value: str, expected: str) -> None:
+    _make_artifacts(tmp_path)
+    build_release(tmp_path)
+    path = tmp_path / "output" / "release" / "manifest.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["artifacts"][0]["path"] = path_value
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert any(expected in finding for finding in verify_release(tmp_path))
+
+
+@pytest.mark.parametrize(
+    ("mutation", "expected"),
+    (
+        (lambda entry: entry.__setitem__("bytes", -1), "invalid bytes metadata"),
+        (lambda entry: entry.__setitem__("bytes", True), "invalid bytes metadata"),
+        (lambda entry: entry.__setitem__("sha256", "wrong"), "output/pdf/paper.pdf"),
+        (lambda entry: entry.__setitem__("path", "output/pdf/missing.pdf"), "output/pdf/missing.pdf"),
+    ),
+)
+def test_verify_rejects_invalid_artifact_entries(tmp_path: Path, mutation, expected) -> None:
+    _make_artifacts(tmp_path)
+    build_release(tmp_path)
+    path = tmp_path / "output" / "release" / "manifest.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    mutation(payload["artifacts"][0])
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert any(expected in finding for finding in verify_release(tmp_path))
+
+
+def test_verify_rejects_a_non_mapping_artifact_entry(tmp_path: Path) -> None:
+    _make_artifacts(tmp_path)
+    build_release(tmp_path)
+    path = tmp_path / "output" / "release" / "manifest.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["artifacts"][0] = None
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert "manifest: malformed artifact entry" in verify_release(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "timestamp",
+    ["2026-02-30T00:00:00Z", "2026-07-01T00:00:00.000Z", 1],
+)
+def test_timestamp_validation_is_canonical_and_type_safe(timestamp) -> None:
+    with pytest.raises(ValueError, match="timestamp"):
+        validate_utc_timestamp(timestamp)
+
+    assert validate_utc_timestamp(None) is None
+
+
+def test_fingerprint_ignores_cache_and_agent_guidance_files(tmp_path: Path) -> None:
+    _make_source_tree(tmp_path)
+    baseline = compute_fingerprint(tmp_path)
+    (tmp_path / "docs" / "research" / "AGENTS.md").write_text(
+        "local guidance\n", encoding="utf-8"
+    )
+    (tmp_path / "src" / "__pycache__").mkdir()
+    (tmp_path / "src" / "__pycache__" / "junk.pyc").write_bytes(b"cache")
+
+    assert compute_fingerprint(tmp_path) == baseline

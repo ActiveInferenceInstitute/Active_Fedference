@@ -62,6 +62,7 @@ RELEASE_ROOTS: tuple[str, ...] = (
 
 #: Single files included alongside the artifact trees.
 RELEASE_FILES: tuple[str, ...] = (
+    "LICENSE",
     "CITATION.cff",
     ".zenodo.json",
     "codemeta.json",
@@ -76,6 +77,7 @@ _EXCLUDED_SUFFIXES: tuple[str, ...] = (".log", ".aux", ".bbl", ".blg", ".out", "
 #: ``fingerprint_inputs`` so the fingerprint boundary is self-documenting.
 #: Mutable output directories are deliberately outside this set.
 FINGERPRINT_INPUTS: tuple[str, ...] = (
+    "LICENSE",
     "README.md",
     "_fedference_build_backend.py",
     "MANIFEST.in",
@@ -432,9 +434,10 @@ def verify_release(project_root: Path | None = None) -> list[str]:
             if recorded_map.get(path) != current_files.get(path)
         )
         if recorded != current:
+            recorded_prefix = recorded[:12] if isinstance(recorded, str) else "<missing>"
             bad.append(
                 "manifest: provenance fingerprint mismatch — bundle records "
-                f"{recorded[:12]} but the current declared input tree computes {current[:12]} "
+                f"{recorded_prefix} but the current declared input tree computes {current[:12]} "
                 f"(changed inputs: {', '.join(changed_inputs[:20]) or 'not available'}); "
                 "the bundle is stale relative to the tree — rebuild with scripts/build_release.py"
             )

@@ -53,6 +53,11 @@ jobs:
           uv build --out-dir .tmp/dist-rebuilt
           cmp .tmp/dist/*.whl .tmp/dist-rebuilt/*.whl
           cmp .tmp/dist/*.tar.gz .tmp/dist-rebuilt/*.tar.gz
+          sdist="$(find .tmp/dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
+          test -n "$sdist"
+          for member in LICENSE docs/README.md manuscript/config.yaml scripts/02_run_analysis.py tests/README.md; do
+            tar -tzf "$sdist" | grep -Eq "/$member$"
+          done
           uv venv .tmp/wheel-smoke
           uv pip install --python .tmp/wheel-smoke/bin/python .tmp/dist/*.whl
           .tmp/wheel-smoke/bin/fedference list --json

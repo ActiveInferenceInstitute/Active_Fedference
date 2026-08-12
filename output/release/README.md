@@ -5,10 +5,11 @@ Generated at: omitted for a byte-reproducible unreleased build.
 
 Pipeline profile: `publication`; generator version: `4`.
 
-Artifacts: 475 files, 44314843 bytes, over:
+Artifacts: 476 files, 44339471 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)
+- `LICENSE`: 1 file(s)
 - `codemeta.json`: 1 file(s)
 - `output/data`: 6 file(s)
 - `output/docs`: 2 file(s)

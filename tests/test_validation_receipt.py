@@ -84,6 +84,12 @@ def _make_validation_tree(root: Path, *, analysis_profile: str = "smoke") -> Non
     record_pipeline_stage(root, "analysis")
 
 
+def test_validation_boundary_includes_the_package_license() -> None:
+    hashes = validation_input_hashes(_PROJECT_ROOT)
+
+    assert "LICENSE" in hashes
+
+
 def _write_successful_receipt(root: Path) -> dict[str, object]:
     return write_validation_receipt(
         root,
@@ -311,6 +317,11 @@ def test_writer_rejects_failed_or_below_policy_results_without_writing(tmp_path:
             "validation receipt command is invalid",
         ),
         (
+            "empty command",
+            lambda payload: payload.__setitem__("command", []),
+            "validation receipt command is invalid",
+        ),
+        (
             "drifted input contract",
             lambda payload: payload.__setitem__("input_patterns", []),
             "validation receipt input pattern contract drift",
@@ -324,6 +335,13 @@ def test_writer_rejects_failed_or_below_policy_results_without_writing(tmp_path:
             "invalid pre snapshot",
             _set_invalid_recorded_snapshot,
             "recorded pre-run validation snapshot has invalid input hashes",
+        ),
+        (
+            "invalid post snapshot",
+            lambda payload: payload["run_snapshots"]["post"].__setitem__(
+                "input_hashes", {"": "digest"}
+            ),
+            "recorded post-run validation snapshot has invalid input hashes",
         ),
         (
             "mismatched snapshots",
@@ -359,6 +377,11 @@ def test_writer_rejects_failed_or_below_policy_results_without_writing(tmp_path:
             "invalid environment container",
             lambda payload: payload.__setitem__("environment", []),
             "validation receipt environment is invalid",
+        ),
+        (
+            "invalid timestamp policy",
+            lambda payload: payload.__setitem__("timestamp_policy", "other"),
+            "validation receipt populated recorded_at requires timestamp_policy=recorded",
         ),
     ),
     ids=lambda case: str(case),
@@ -430,6 +453,14 @@ def test_receipt_findings_fail_closed_on_structural_corruption(
             "validation receipt percent must be numeric",
         ),
         (
+            "coverage threshold has an invalid number",
+            lambda payload: payload.__setitem__(
+                "coverage",
+                {"percent": 93.0, "threshold": "90"},
+            ),
+            "validation receipt threshold must be numeric",
+        ),
+        (
             "coverage threshold is below policy",
             lambda payload: payload.__setitem__(
                 "coverage",
@@ -449,6 +480,11 @@ def test_receipt_findings_fail_closed_on_structural_corruption(
             "environment lacks a required field",
             lambda payload: payload.__setitem__("environment", {"python_version": "3.13"}),
             "validation receipt environment is missing fields",
+        ),
+        (
+            "summary has a negative count",
+            lambda payload: payload["test_summary"].__setitem__("skipped", -1),
+            "validation receipt skipped must be a non-negative integer",
         ),
         (
             "dependency lock digest disagrees with inputs",
@@ -537,6 +573,7 @@ def test_writer_rejects_a_nonmapping_pre_run_snapshot(tmp_path: Path) -> None:
     ("kwargs", "expected"),
     (
         ({"command": ()}, "command must be non-empty strings"),
+        ({"command": ("python", "")}, "command must be non-empty strings"),
         (
             {"test_summary": {"collected": 3, "passed": 2, "failed": 0, "skipped": 0}},
             "does not partition collected tests",
@@ -546,6 +583,7 @@ def test_writer_rejects_a_nonmapping_pre_run_snapshot(tmp_path: Path) -> None:
             "collected must be a non-negative integer",
         ),
         ({"coverage_percent": "not-a-number"}, "coverage values must be numeric"),
+        ({"coverage_threshold": float("nan")}, "coverage values must be finite"),
         ({"coverage_percent": 89.0}, "below its coverage threshold"),
         ({"environment": {"python_version": "3.13"}}, "environment is missing fields"),
     ),

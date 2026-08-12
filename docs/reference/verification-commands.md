@@ -11,8 +11,10 @@ uv run --locked --extra dev pytest tests/ \
   --cov-fail-under=90
 ```
 
-Expected: all collected tests pass with zero failures and zero skips. PyTorch is
-part of the required dev environment, so missing PyTorch is a failing setup.
+Expected: all collected tests pass with zero failures. Any skip must come from
+an explicit dependency or unrendered-surface guard and remain visible in the
+test summary; PyTorch is part of the required dev environment, so missing
+PyTorch is a failing setup.
 
 Fast and scoped profiles are available for iteration; they select real tests and
 do not replace the full gate:
@@ -109,6 +111,10 @@ export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
 uv build --out-dir "$DIST_SMOKE/dist"
 uv build --out-dir "$DIST_SMOKE/rebuilt"
 shasum -a 256 "$DIST_SMOKE"/dist/* "$DIST_SMOKE"/rebuilt/*
+sdist="$(find "$DIST_SMOKE/dist" -maxdepth 1 -name '*.tar.gz' -print -quit)"
+for member in LICENSE docs/README.md manuscript/config.yaml scripts/02_run_analysis.py tests/README.md; do
+  tar -tzf "$sdist" | grep -Eq "/$member$"
+done
 uv venv "$DIST_SMOKE/wheel"
 uv pip install --python "$DIST_SMOKE/wheel/bin/python" "$DIST_SMOKE"/dist/*.whl
 "$DIST_SMOKE/wheel/bin/fedference" list --json
@@ -125,6 +131,12 @@ backend is exactly pinned and normalizes wheel/sdist archive metadata when
 `SOURCE_DATE_EPOCH` is set. The two directories above must therefore contain
 byte-identical wheel and sdist pairs; a differing digest is a release blocker,
 even when both artifacts install successfully.
+
+The source distribution is the archival source package: it includes `LICENSE`,
+the modular `docs/`, `manuscript/`, `scripts/`, and `tests/` trees, plus the
+source-bound metadata and acceptance files. The wheel is the runtime package;
+it includes the importable modules and packaged compatibility inputs, but not
+the committed reviewer snapshot under `output/`.
 
 ## Pinned external-data smoke
 

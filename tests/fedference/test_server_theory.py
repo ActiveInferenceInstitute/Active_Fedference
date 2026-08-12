@@ -86,3 +86,58 @@ def test_normalized_weight_companion_has_equal_reverse_weights_but_forward_gap()
 def test_normalized_weight_companion_rejects_nonpositive_robustness() -> None:
     with pytest.raises(ValueError, match="positive"):
         construct_normalized_weight_no_go_witness(robustness=0.0)
+
+
+@pytest.mark.parametrize("robustness", (float("nan"), float("inf"), -1.0))
+def test_objective_and_heuristic_blocks_reject_nonfinite_robustness(robustness) -> None:
+    for block in (objective_weight_block, heuristic_weight_block):
+        with pytest.raises(ValueError, match="positive"):
+            block([0.5, 0.5], [[0.5, 0.5]], robustness=robustness)
+
+
+@pytest.mark.parametrize("block", (objective_weight_block, heuristic_weight_block))
+def test_weight_blocks_require_posteriors_and_reject_unknown_keywords(block) -> None:
+    with pytest.raises(TypeError, match="required"):
+        block([0.5, 0.5], robustness=1.0)
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        block([0.5, 0.5], [[0.5, 0.5]], robustness=1.0, extra=True)
+    with pytest.raises(TypeError, match="cannot both"):
+        block(
+            [0.5, 0.5],
+            [[0.5, 0.5]],
+            robustness=1.0,
+            beliefs=[[0.5, 0.5]],
+        )
+
+
+def test_weight_blocks_keep_the_legacy_beliefs_alias() -> None:
+    with pytest.warns(DeprecationWarning, match="beliefs"):
+        objective = objective_weight_block(
+            [0.5, 0.5], beliefs=[[0.5, 0.5]], robustness=1.0
+        )
+    with pytest.warns(DeprecationWarning, match="beliefs"):
+        heuristic = heuristic_weight_block(
+            [0.5, 0.5], beliefs=[[0.5, 0.5]], robustness=1.0
+        )
+    np.testing.assert_allclose(objective, [1.0])
+    np.testing.assert_allclose(heuristic, [1.0])
+
+
+def test_orientation_witness_checks_legacy_and_missing_inputs() -> None:
+    with pytest.raises(TypeError, match="required"):
+        construct_orientation_witness([0.5, 0.5])
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        construct_orientation_witness(
+            [0.5, 0.5], [[0.5, 0.5]], unknown=True
+        )
+    with pytest.warns(DeprecationWarning, match="beliefs"):
+        witness = construct_orientation_witness(
+            [0.5, 0.5], beliefs=[[0.5, 0.5]], robustness=1.0
+        )
+    assert witness.max_absolute_gap == pytest.approx(0.0)
+
+
+def test_weight_blocks_reject_mismatched_consensus_dimensions() -> None:
+    for block in (objective_weight_block, heuristic_weight_block):
+        with pytest.raises(ValueError, match="dimension"):
+            block([0.5, 0.5], [[0.2, 0.3, 0.5]], robustness=1.0)

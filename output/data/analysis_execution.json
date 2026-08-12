@@ -1,6 +1,6 @@
 {
   "analysis_input_snapshot": {
-    "input_digest": "4b1348b5a28dfc7cdfbafc53da9ab474ee9ef0f8f2dd04a8d026df039f0b1c8c",
+    "input_digest": "e6fd1e676ce1cf36d839960b8a8527f100f4138633bf710c58f24de108aa8e99",
     "input_hashes": {
       "experiment_plan.yaml": "9c3f279e61fc31da6dd40b5f49061cf3db9d9ba8ba228d817ac8fdf14ee7b76f",
       "manuscript/00_abstract.md": "c2c6431b6ed6271aa1ae765d830c73b6715e06fb8d7b882eb5e4e4bb07631549",
@@ -51,7 +51,7 @@
       "manuscript/SYNTAX.md": "ad1399893c8ef8a67a871ce8c42e6e4d5bbbb2167187c03a74300091e0258a81",
       "manuscript/config.yaml": "a1505dcd39500d4f49d33e85e7f373f7944505051ee025f0fad257a565fc30e8",
       "manuscript/preamble.md": "e75ada000c3ceeb452e9a840d5469d747ebd616747864a08df3b94ba51a9942d",
-      "pyproject.toml": "6e2abe8ff85f47b83dc229e0e0e5c11c84229a5c5da73d8338dcf04139c46366",
+      "pyproject.toml": "f2cb027b9ac7ec541b321f4a510eb74fec27a399bd6f55ca43d7d9c9809af1af",
       "scripts/02_run_analysis.py": "9bdeec8d6ed7e326850752ff706567c9e95e13823bf9e49d1c20c42f9e72a167",
       "src/__init__.py": "332b6b62bb3f543d712d8dfb9302597166884b2b45b1300e98ff17e04782746c",
       "src/_runtime.py": "edfcfec269121d194809619002a5a6624a1926f51c4901d1707830a604f1c5bf",
@@ -164,13 +164,13 @@
       "src/manuscript_vars/tokens.py": "2d7efeb46aefad5501e9838a901c489f0928bd144d19e0fa107f86b4bccb4c2c",
       "src/project_paths.py": "4ce728569ec3552f71be2ec0081a9aaa7083fb903626ee6d3393bd5f63625dc1",
       "src/publication/__init__.py": "d2ba8335ed34efca0bf9b163e1c68fadef2ff0c31cd544615731efc4a64b235a",
-      "src/publication/clean_checkout.py": "1d18cf6c33b2d70615e616fdfc461b06c61003c0a10726e36c935f0b8696a696",
+      "src/publication/clean_checkout.py": "89d74fbac967436ccbf721c11a9b47047399e921805114045eff5e14d762013e",
       "src/publication/identifiers.py": "ef0cb58456a38caf168f7cd696621dd3233b8f551bb41108db178db3a6bdb165",
       "src/publication/metadata.py": "dbe1420767169c3100e74cf2714caea56c39b861248d5b61a98d00ca3573d605",
       "src/publication/pipeline_freshness.py": "f4230b18b64edbd2d2d838658a8aad29db64bc47761ea3aac01aae046af82f54",
-      "src/publication/release_manifest.py": "d80b2c4f20b02ef5279375135af55a3e07647faf73bb9ee94d7cebff896e9606",
+      "src/publication/release_manifest.py": "4795c0aaf5addf26596fc86702f9102ef7e56e746548b67b32df53733b926891",
       "src/publication/surface_validation.py": "c0e8620e42d3f2328638902b3b2acf3b80b3ed501ffb7486b5b995a37cd95810",
-      "src/publication/validation_receipt.py": "72c5dbe44faade3759b8fca7d9899c743c57e4c4e78b7cff79d26f8b7b8b6e3c",
+      "src/publication/validation_receipt.py": "c138d05232d82d8e4390d47c12eb3ff3000f84e8a167ee7d7604f86d0f5a4f6d",
       "src/publication/web_package.py": "5fa16fab8f3638663d4ef03ede8b1e66624fe13b15de91c8a766be35b1dddacb",
       "src/publication/zenodo.py": "c40d386be2bbe55ee122c2e45338eeddd42a0c0ab7bf3eaa458cec4f6858aa3b",
       "uv.lock": "f37c2171cfdfd171fa440ba646f2cae991b929944397e0524ef82bc90116706c"

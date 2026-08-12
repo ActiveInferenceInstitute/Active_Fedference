@@ -6,8 +6,11 @@ import numpy as np
 import pytest
 
 from fedference.hybrid import (
+    HybridAggregationResult,
     HybridBelief,
     _hybrid_divergence,
+    _normalise_weights,
+    _stack,
     hybrid_aggregate,
     hybrid_log_linear_pool,
 )
@@ -107,3 +110,78 @@ def test_hybrid_values_and_result_weights_are_owned_and_read_only() -> None:
 def test_hybrid_controls_reject_coercive_types(kwargs, message) -> None:
     with pytest.raises(ValueError, match=message):
         hybrid_aggregate(_beliefs(), **kwargs)
+
+
+def test_hybrid_stack_and_weights_fail_closed() -> None:
+    with pytest.raises(ValueError, match="non-empty"):
+        _stack([])
+    with pytest.raises(TypeError, match="HybridBelief"):
+        _stack([object()])
+    with pytest.raises(ValueError, match="positive"):
+        _normalise_weights([0.0, 0.0], 2)
+    np.testing.assert_allclose(_normalise_weights(None, 2), [0.5, 0.5])
+
+
+@pytest.mark.parametrize(
+    ("discrete", "mean", "variance", "message"),
+    (
+        ([0.5, 0.5], [0.0, np.nan], [1.0, 1.0], "finite"),
+        ([0.5, 0.5], [0.0, 1.0], [1.0, np.nan], "finite"),
+        ([0.5, 0.5], [0.0, 1.0], [1.0, -1.0], "strictly positive"),
+    ),
+)
+def test_hybrid_belief_rejects_nonfinite_parameters(discrete, mean, variance, message) -> None:
+    with pytest.raises(ValueError, match=message):
+        HybridBelief(np.asarray(discrete), np.asarray(mean), np.asarray(variance))
+
+
+def test_hybrid_legacy_aliases_and_unknown_arguments_are_explicit() -> None:
+    with pytest.warns(DeprecationWarning, match="beliefs"):
+        pooled = hybrid_log_linear_pool(beliefs=_beliefs())
+    assert pooled.n_components == 2
+    with pytest.warns(DeprecationWarning, match="weights"):
+        weighted = hybrid_log_linear_pool(beliefs=_beliefs(), weights=[1.0, 3.0])
+    assert weighted.n_components == 2
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        hybrid_log_linear_pool(_beliefs(), unknown=True)
+    with pytest.raises(TypeError, match="cannot both"):
+        hybrid_log_linear_pool(_beliefs(), beliefs=_beliefs())
+    with pytest.raises(TypeError, match="cannot both"):
+        hybrid_log_linear_pool(_beliefs(), base_weights=[1.0, 1.0], weights=[1.0, 1.0])
+
+
+def test_hybrid_result_validates_weights_iterations_and_convergence() -> None:
+    belief = _beliefs()[0]
+    for weights, message in (([], "probability"), ([0.2, 0.2], "probability"), ([np.nan], "probability")):
+        with pytest.raises(ValueError, match=message):
+            HybridAggregationResult(belief, weights, 0, True)
+    with pytest.raises(ValueError, match="non-negative integer"):
+        HybridAggregationResult(belief, [1.0], -1, True)
+    with pytest.raises(ValueError, match="boolean"):
+        HybridAggregationResult(belief, [1.0], 0, 1)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    (
+        ({"robustness": -0.1}, "robustness"),
+        ({"max_iter": 0}, "max_iter"),
+        ({"tol": 0.0}, "tol"),
+    ),
+)
+def test_hybrid_aggregate_rejects_invalid_controls(kwargs, message) -> None:
+    with pytest.raises(ValueError, match=message):
+        hybrid_aggregate(_beliefs(), **kwargs)
+
+
+def test_hybrid_aggregate_legacy_aliases_and_argument_conflicts() -> None:
+    with pytest.warns(DeprecationWarning, match="beliefs"):
+        result = hybrid_aggregate(beliefs=_beliefs(), robustness=0.0)
+    assert result.converged
+    with pytest.warns(DeprecationWarning, match="weights"):
+        result = hybrid_aggregate(beliefs=_beliefs(), weights=[1.0, 2.0], robustness=0.0)
+    assert result.iterations == 0
+    with pytest.raises(TypeError, match="cannot both"):
+        hybrid_aggregate(_beliefs(), beliefs=_beliefs())
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        hybrid_aggregate(_beliefs(), unknown=True)

@@ -15,6 +15,7 @@ _HERMETIC_GIT = ("git", "-c", "core.fsmonitor=false", "-c", "core.untrackedcache
 def test_validation_receipt_chain_is_required_for_clean_checkout() -> None:
     """Keep final-hydration evidence present in every clone-correct candidate."""
     assert {
+        "LICENSE",
         "src/publication/validation_receipt.py",
         "scripts/validate_test_coverage.py",
         "tests/test_validation_receipt.py",

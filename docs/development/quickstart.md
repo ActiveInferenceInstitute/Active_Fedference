@@ -21,9 +21,11 @@ uv run --locked --extra dev pytest tests/ \
   -q
 ```
 
-Expected: every collected test passes with zero skips; PyTorch is part of the
-required dev environment; coverage >=90% on `src/`. This full pass is the
-authoritative gate and is slow — real seeded experiments, no mocks.
+Expected: every collected test passes with zero failures; any skip must come
+from an explicit dependency or unrendered-surface guard and remain visible in
+the pytest summary. PyTorch is part of the required dev environment; coverage
+must be >=90% on `src/`. This full pass is the authoritative gate and is slow —
+real seeded experiments, no mocks.
 
 For fast iteration before the full gate:
 
@@ -60,6 +62,25 @@ uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
 
 The explicit output directory protects the committed reviewer snapshot.
 Confirmatory profiles remain blocked until their pilot design is frozen.
+
+### Install the built package
+
+To validate an artifact outside the editable checkout, use the documented
+wheel/source-distribution smoke. It checks that the installed CLI and core
+imports work without relying on the repository's `src/` path:
+
+```bash
+uv build --out-dir .tmp/dist
+uv venv .tmp/package-env
+uv pip install --python .tmp/package-env/bin/python .tmp/dist/*.whl
+.tmp/package-env/bin/fedference list --json
+.tmp/package-env/bin/python -c "from fedference import aggregate_result; print(aggregate_result([[.7, .3], [.6, .4]]).consensus)"
+```
+
+The source distribution retains the repository's documentation, manuscript,
+scripts, and tests for archival reproduction. The wheel carries only runtime
+modules and packaged compatibility data; it does not silently include the
+committed reviewer snapshot under `output/`.
 
 ## 3. Run core experiments
 

@@ -63,6 +63,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
     "CITATION.cff",
     "codemeta.json",
     "MANIFEST.in",
+    "LICENSE",
     "_fedference_build_backend.py",
     "domain_profile.yaml",
     "experiment_plan.yaml",
@@ -73,7 +74,10 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
 # would consume one if it were added.  Keep the pattern in the contract so a
 # later addition invalidates an older receipt, without making today's release
 # workflow fail solely because that optional source class is absent.
-_OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset({"manuscript/**/*.tex"})
+# These files are part of the source-bound contract when present.  Keeping
+# them optional preserves the fixture trees used by focused receipt tests,
+# while a real checkout still hashes the license as a release input.
+_OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset({"manuscript/**/*.tex", "LICENSE"})
 MINIMUM_COVERAGE_THRESHOLD = 90.0
 _ENVIRONMENT_FIELDS: tuple[str, ...] = (
     "python_version",

@@ -12,6 +12,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "ISA.md",
     "README.md",
     "TODO.md",
+    "LICENSE",
     "MANIFEST.in",
     "_fedference_build_backend.py",
     "pyproject.toml",

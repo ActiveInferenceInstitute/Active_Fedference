@@ -12,6 +12,7 @@ from fedference.scoring import (
     expected_calibration_error,
     reliability_curve,
     summarize_scores,
+    validate_score_summary,
 )
 
 
@@ -54,3 +55,82 @@ def test_summary_reports_declared_count_and_rejects_invalid_inputs():
         categorical_log_score(np.array([[0.7, 0.4]]), np.array([0]))
     with pytest.raises(ValueError, match="n_bins"):
         reliability_curve(probabilities, np.array([0, 1]), n_bins=0)
+
+
+@pytest.mark.parametrize(
+    ("probabilities", "states", "message"),
+    (
+        (np.asarray([]), np.asarray([], dtype=int), "shape"),
+        (np.asarray([[1.0]]), np.asarray([0]), "shape"),
+        (np.asarray([[np.nan, 0.0]]), np.asarray([0]), "finite"),
+        (np.asarray([[-0.1, 1.1]]), np.asarray([0]), "non-negative"),
+        (np.asarray([[0.6, 0.5]]), np.asarray([0]), "sum to one"),
+        (np.asarray([[0.5, 0.5]]), np.asarray([[0]]), "one-dimensional"),
+        (np.asarray([[0.5, 0.5]]), np.asarray([0.5]), "integer state"),
+        (np.asarray([[0.5, 0.5]]), np.asarray([2]), "outside"),
+    ),
+)
+def test_scoring_validates_shapes_values_and_labels(probabilities, states, message):
+    with pytest.raises(ValueError, match=message):
+        categorical_log_score(probabilities, states)
+
+
+@pytest.mark.parametrize("clip", (0.0, -1.0, 1.1, float("nan")))
+def test_log_score_rejects_invalid_clip(clip):
+    with pytest.raises(ValueError, match="clip"):
+        categorical_log_score(np.asarray([[0.5, 0.5]]), np.asarray([0]), clip=clip)
+
+
+@pytest.mark.parametrize("n_bins", (True, 1.5, 0))
+def test_reliability_curve_rejects_non_integer_bin_counts(n_bins):
+    with pytest.raises(ValueError, match="n_bins"):
+        reliability_curve(np.asarray([[0.5, 0.5]]), np.asarray([0]), n_bins=n_bins)
+
+
+@pytest.mark.parametrize(
+    ("n_states", "true_state", "message"),
+    (
+        (True, 0, "n_states"),
+        (1, 0, "n_states"),
+        (3, True, "true_state"),
+        (3, 1.5, "true_state"),
+        (3, 3, "within"),
+    ),
+)
+def test_score_controls_reject_invalid_state_declarations(n_states, true_state, message):
+    with pytest.raises(ValueError, match=message):
+        deterministic_score_controls(n_states=n_states, true_state=true_state)
+
+
+@pytest.mark.parametrize(
+    ("summary", "message"),
+    (
+        ({}, "missing"),
+        (
+            {"mean_log_score": float("nan"), "mean_brier_score": 0.0, "ece": 0.0, "n_observations": 1},
+            "finite",
+        ),
+        (
+            {"mean_log_score": 0.0, "mean_brier_score": 0.0, "ece": 0.0, "n_observations": True},
+            "positive integer",
+        ),
+        (
+            {"mean_log_score": 0.0, "mean_brier_score": 0.0, "ece": 0.0, "n_observations": 0},
+            "positive integer",
+        ),
+    ),
+)
+def test_serialized_score_summary_validation_is_fail_closed(summary, message):
+    with pytest.raises(ValueError, match=message):
+        validate_score_summary(summary)
+
+
+def test_reliability_curve_populates_nonempty_accuracy_bins() -> None:
+    curve = reliability_curve(
+        np.asarray([[0.4, 0.35, 0.25], [0.8, 0.1, 0.1], [0.5, 0.3, 0.2]]),
+        np.asarray([0, 1, 2]),
+        n_bins=4,
+    )
+
+    assert curve["count"] == [0, 1, 1, 1]
+    assert curve["accuracy"][1:] == [1.0, 0.0, 0.0]

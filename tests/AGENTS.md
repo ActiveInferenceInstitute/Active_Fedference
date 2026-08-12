@@ -56,9 +56,12 @@ tests/
 
 One file per figure generator (`test_free_energy_comparison.py`, …).
 
-Publication, CLI, documentation, metadata, freshness, clean-checkout, and
-rendered-surface contracts—including deterministic HTML accessibility failures—
-live in the top-level `tests/test_*.py` files. Smoke
+Publication, CLI, documentation, package/archive, metadata, freshness,
+clean-checkout, and rendered-surface contracts—including deterministic HTML
+accessibility failures—live in the top-level `tests/test_*.py` files. The
+package tests cover both the pinned PEP 517 backend and the source-distribution
+archival manifest; the receipt tests bind those inputs to the measured suite.
+Smoke
 or pilot execution proves only the declared implementation path; it is not
 confirmatory scientific evidence.
 
