@@ -10,12 +10,13 @@ tests/
 ├── conftest.py              # MPLBACKEND=Agg; sys.path → src/
 ├── fedference/              # Mirrors src/fedference/
 ├── figures/                 # Mirrors src/figures/
-├── analysis/test_workflow.py
+├── analysis/test_workflow.py / test_artifacts.py / test_report_schemas.py
 ├── test_manuscript_variables.py
 ├── test_experiment_config.py
 ├── test_invariants.py
 ├── test_documentation.py
 ├── test_scripts_smoke.py
+├── test_project_paths.py
 ├── test_docs_contract.py
 ├── test_token_provenance.py
 ├── test_xref_integrity.py

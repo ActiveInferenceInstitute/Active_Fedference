@@ -1,6 +1,10 @@
 # scripts/ — Active Fedference thin orchestrators
 
 Pipeline-facing entry points. **No domain math** — delegate to `../src/`.
+Thin scripts are a deliberate process boundary: they give CI and operators
+stable arguments, exit codes, and artifact paths while keeping the reusable
+implementation importable. Format-specific validators may parse and report
+their format, but numeric research logic remains in `../src/`.
 Conventions: [`CONVENTIONS.md`](CONVENTIONS.md) · Architecture:
 [`../docs/core/architecture.md`](../docs/core/architecture.md).
 
@@ -27,6 +31,15 @@ Conventions: [`CONVENTIONS.md`](CONVENTIONS.md) · Architecture:
 | `01_run_invariants.py` | Optional | Runs `invariants` checks |
 | `00_preflight.py` | Optional | Chrome/LaTeX environment warnings |
 | `generate_api_docs.py` | Aesthetic | Writes `output/docs/api_reference.md` |
+| `_generate_api_docs.py` | Compatibility | Delegates to `generate_api_docs.py`; retained for older local automation |
+
+All entries that read or write a checkout accept `--project-root PATH` (the
+legacy underscored API-doc entry point delegates to the public one). The
+explicit argument takes precedence over the validated
+`ACTIVE_FEDFERENCE_PROJECT_ROOT` review override. Use the shared helper in
+`src/project_paths.py`; do not duplicate root-selection logic. The canonical
+artifact validator is `analysis.artifacts.expected_artifacts()` and
+`validate_outputs.py` is intentionally fail-closed if it is unavailable.
 
 ## Stage 4 entry
 

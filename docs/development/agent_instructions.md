@@ -97,7 +97,7 @@ dimension, not a fourth robustness guarantee. See
 This project is its own standalone repository. The configured interim review
 mirror is `https://github.com/docxology/active_fedference`; the public target is
 `https://github.com/ActiveInferenceInstitute/Active_Fedference`, which contains
-the published v0.1.0 snapshot. Never copy or commit this project into the
+the published v1.0.1 snapshot. Never copy or commit this project into the
 unrelated public template remote. Future source changes remain unreleased
 until the explicit public GitHub review/push and, when the manuscript changes,
 the corresponding Zenodo versioning action.

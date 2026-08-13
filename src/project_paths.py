@@ -41,6 +41,25 @@ def resolve_env_project_root(default: Path) -> Path:
     return root.resolve()
 
 
+def resolve_script_project_root(default: Path, explicit: Path | None = None) -> Path:
+    """Resolve a script's effective checkout root.
+
+    A command-line ``--project-root`` takes precedence over the validated
+    ``ACTIVE_FEDFERENCE_PROJECT_ROOT`` test/review override. Keeping this
+    precedence in one source-owned helper makes scripts composable from CI, a
+    sibling checkout, or a real subprocess test without copying path-selection
+    rules into each entry point. The helper deliberately only requires an
+    existing directory: validators may target incomplete fixture trees and
+    should report their own findings.
+    """
+    if explicit is None:
+        return resolve_env_project_root(default)
+    root = Path(explicit).expanduser().resolve()
+    if not root.is_dir():
+        raise RuntimeError(f"explicit project root is not an existing directory: {root}")
+    return root
+
+
 def resolve_project_root(package_name: str) -> Path:
     """Resolve the project root directory from a loaded package or default to parent.
 

@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 from urllib.request import Request, urlopen
 
 DEFAULT_ZENODO_API = "https://zenodo.org/api"
@@ -183,13 +183,19 @@ def _file_record(payload: object) -> ZenodoFile:
         or not isinstance(filename, str)
         or not filename.strip()
         or isinstance(filesize, bool)
-        or not isinstance(filesize, int)
+        or not isinstance(filesize, (int, float))
+        or not math.isfinite(filesize)
+        or not float(filesize).is_integer()
         or filesize < 0
         or not isinstance(checksum, str)
         or not checksum.strip()
     ):
         raise ZenodoError("Zenodo returned an invalid file record")
-    return ZenodoFile(file_id, filename, filesize, checksum)
+    # Zenodo's upload response currently serializes ``filesize`` as a JSON
+    # number with a ``.0`` suffix, while deposition listings use an integer.
+    # Accept only an exact non-negative integral float so this wire-format
+    # variation does not weaken the typed boundary.
+    return ZenodoFile(file_id, filename, int(filesize), checksum)
 
 
 def _deposition(payload: object) -> ZenodoDeposition:
@@ -331,6 +337,38 @@ class ZenodoClient:
         payload = self._request("POST", "deposit/depositions", payload={"metadata": payload_metadata})
         return _deposition(payload)
 
+    def new_version(self, deposition_id: int) -> ZenodoDeposition:
+        """Create or retrieve the unpublished next version of a published record.
+
+        Zenodo returns the original record from the ``newversion`` action and
+        exposes the draft only through ``links.latest_draft``.  Resolve that
+        link explicitly so the caller cannot accidentally edit the immutable
+        published record or create an unrelated deposition.
+        """
+        source = self.get_deposition(deposition_id)
+        if source.state != "done":
+            raise ZenodoError(
+                f"Zenodo deposition {source.id} is {source.state!r}; "
+                "new versions require the latest published record"
+            )
+        payload = self._request(
+            "POST",
+            f"deposit/depositions/{_integer_id(deposition_id)}/actions/newversion",
+        )
+        if not isinstance(payload, Mapping):
+            raise ZenodoError("Zenodo new-version response is malformed")
+        links = payload.get("links")
+        latest_draft = links.get("latest_draft") if isinstance(links, Mapping) else None
+        if not isinstance(latest_draft, str) or not latest_draft.strip():
+            raise ZenodoError("Zenodo new-version response has no latest_draft link")
+        draft_path = urlsplit(latest_draft).path.rstrip("/")
+        draft_id_text = draft_path.rsplit("/", 1)[-1]
+        try:
+            draft_id = int(draft_id_text)
+        except ValueError as exc:
+            raise ZenodoError("Zenodo latest_draft link has an invalid deposition id") from exc
+        return self.get_deposition(_integer_id(draft_id))
+
     def update_metadata(self, deposition_id: int, metadata: Mapping[str, Any]) -> ZenodoDeposition:
         """Replace editable deposition metadata without publishing it."""
         self._editable_deposition(deposition_id)
@@ -343,7 +381,23 @@ class ZenodoClient:
         )
         return _deposition(payload)
 
-    def upload_pdf(self, deposition_id: int, pdf_path: str | Path) -> ZenodoFile:
+    def delete_file(self, deposition_id: int, file_id: str) -> None:
+        """Delete one file from an editable deposition."""
+        self._editable_deposition(deposition_id)
+        if not isinstance(file_id, str) or not file_id.strip() or "/" in file_id:
+            raise ZenodoError("Zenodo file id is unsafe")
+        self._request(
+            "DELETE",
+            f"deposit/depositions/{_integer_id(deposition_id)}/files/{quote(file_id, safe='')}",
+        )
+
+    def upload_pdf(
+        self,
+        deposition_id: int,
+        pdf_path: str | Path,
+        *,
+        replace_existing: bool = False,
+    ) -> ZenodoFile:
         """Upload one PDF, returning the server checksum and file identity."""
         path = _pdf_path(pdf_path)
         content = path.read_bytes()
@@ -356,10 +410,13 @@ class ZenodoClient:
                 f"md5:{expected_md5}",
             }:
                 return existing[0]
-            raise ZenodoError(
-                f"Zenodo deposition already contains a different file named {path.name!r}; "
-                "inspect or replace the draft explicitly"
-            )
+            if not replace_existing:
+                raise ZenodoError(
+                    f"Zenodo deposition already contains a different file named {path.name!r}; "
+                    "inspect or replace the draft explicitly"
+                )
+            for record in existing:
+                self.delete_file(deposition.id, record.id)
         body, content_type = _multipart_body("file", path.name, content)
         payload = self._request(
             "POST",

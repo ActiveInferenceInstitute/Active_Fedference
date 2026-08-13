@@ -54,10 +54,11 @@ claims* of the project's surfaces:
   automatically; figure generators' consumed fields are pinned via
   `FIGURE_DEPENDENCY_CONTRACTS`.
 - **Docs contract** — `tests/test_docs_contract.py` discovers every source-owned
-  `AGENTS.md` and `README.md` and checks that doc links
-  resolve, documented `scripts/*.py` commands name real files, stale claim
-  language does not reappear, and the figure registry agrees with manuscript
-  embeds and generator defaults.
+  `AGENTS.md` and `README.md` and checks that doc links resolve, every
+  `scripts/*.py` entry point is listed in the script quick reference,
+  root-aware help exposes `--project-root`, documented commands name real
+  files, stale claim language does not reappear, and the figure registry agrees
+  with manuscript embeds and generator defaults.
 - **Claim boundaries** — `tests/test_manuscript_claim_audit.py` rejects
   reintroduced unbounded claim phrases; `tests/test_token_provenance.py` and
   `tests/test_token_sourcing.py` guarantee manuscript numbers are derived

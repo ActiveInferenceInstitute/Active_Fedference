@@ -1,6 +1,6 @@
 # Active Fedference — Robust Federated Active Inference
 
-[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21864004.svg)](https://doi.org/10.5281/zenodo.21864004)
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21919307.svg)](https://doi.org/10.5281/zenodo.21919307)
 [![Public GitHub repository](https://img.shields.io/badge/GitHub-ActiveInferenceInstitute%2FActive_Fedference-181717?logo=github)](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 
 Active Fedference is a research project that reimplements **FedGVI** (Federated
@@ -12,18 +12,19 @@ the federated **belief-sharing** scenario of Friston et al.
 
 ## Published release
 
-The v0.1.0 research release is published and cross-referenced across both
+The v1.0.1 research release is published and cross-referenced across both
 surfaces:
 
-- **Permanent DOI:** [`10.5281/zenodo.21864004`](https://doi.org/10.5281/zenodo.21864004)
-  · [Zenodo record](https://zenodo.org/records/21864004)
+- **Permanent DOI:** [`10.5281/zenodo.21919307`](https://doi.org/10.5281/zenodo.21919307)
+  · [Zenodo record](https://zenodo.org/records/21919307)
 - **Public source and reviewer snapshot:**
   [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 - **Top-level manuscript PDF:**
-  [`Active_Fedference_Research_Manuscript_Zenodo_10.5281-zenodo.21864004.pdf`](Active_Fedference_Research_Manuscript_Zenodo_10.5281-zenodo.21864004.pdf)
+  [`Active_Fedference_Research_Manuscript_v1.0.1_Zenodo_10.5281-zenodo.21919307.pdf`](Active_Fedference_Research_Manuscript_v1.0.1_Zenodo_10.5281-zenodo.21919307.pdf)
 
 The deposited PDF embeds the DOI and public repository URL, and the Zenodo
-record lists the public repository as its related identifier. This checkout is
+record lists the public repository as its related identifier. The v0.1.0
+record remains available as the prior version. This checkout is
 the standalone development/review source; its configured `origin` is the
 interim [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
 remote.
@@ -72,8 +73,10 @@ categorical bridge rather than claiming a universal literature gap.
 
 ## Architecture
 
-Thin orchestrators, all math in `src/fedference/`, and named boundary adapters
-for evidence, data, checkpoints, and transport.
+Thin orchestrators provide stable subprocess/CI boundaries for root selection,
+validation, and release sequencing; reusable mathematics and publication
+logic remain importable in `src/`, with named boundary adapters for evidence,
+data, checkpoints, and transport.
 
 ```mermaid
 flowchart TD

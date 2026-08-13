@@ -2,9 +2,9 @@
 
 No mocks: each script is executed as a real subprocess and asserted to exit 0
 (or, for the invariants gate, exit 0 == all locked invariants hold). The
-scripts own no algorithm logic — they only wire paths, import from ``src``,
-call one function, and print artifact paths — so a green exit code is the
-contract these tests pin.
+scripts own no research algorithm logic. They wire paths, call source
+functions, and report status; specialized validators may parse their declared
+format. A green exit code is the contract these tests pin.
 
 All ``output/`` writes are redirected into a session-scoped temporary project
 scaffold via ``ACTIVE_FEDFERENCE_PROJECT_ROOT`` (see ``src/project_paths.py``).
@@ -104,6 +104,36 @@ _THIN_ORCHESTRATOR_SCRIPTS = [
     "validate_pipeline_freshness.py",
     "validate_rendered_surfaces.py",
     "validate_web_package.py",
+    "validate_outputs.py",
+    "summarize_tokens.py",
+    "emit_metadata.py",
+    "build_release.py",
+    "zenodo_release.py",
+    "validate_mermaid.py",
+    "_generate_api_docs.py",
+]
+
+_PROJECT_ROOT_AWARE_SCRIPTS = [
+    "00_preflight.py",
+    "01_run_invariants.py",
+    "02_run_analysis.py",
+    "_generate_api_docs.py",
+    "build_release.py",
+    "emit_metadata.py",
+    "generate_api_docs.py",
+    "prepare_web_package.py",
+    "record_pipeline_stage.py",
+    "summarize_tokens.py",
+    "validate_all.py",
+    "validate_clean_checkout.py",
+    "validate_mermaid.py",
+    "validate_outputs.py",
+    "validate_pipeline_freshness.py",
+    "validate_rendered_surfaces.py",
+    "validate_test_coverage.py",
+    "validate_web_package.py",
+    "z_generate_manuscript_variables.py",
+    "zenodo_release.py",
 ]
 
 
@@ -134,6 +164,43 @@ def test_scripts_never_write_into_the_real_project_tree(scaffold_root: Path) -> 
     assert not (scaffold_root / "output" / "data" / "pipeline_provenance.json").exists(), (
         "a config-selected smoke run must never mint an analysis receipt"
     )
+
+
+@pytest.mark.parametrize("script_name", _PROJECT_ROOT_AWARE_SCRIPTS)
+def test_project_root_aware_scripts_expose_explicit_root(script_name: str) -> None:
+    """Every checkout-facing entry point advertises the shared root contract."""
+    result = subprocess.run(
+        [sys.executable, str(_SCRIPTS / script_name), "--help"],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode == 0, f"{script_name}: {result.stderr}"
+    assert "--project-root" in result.stdout
+
+
+def test_validate_outputs_does_not_promote_arbitrary_files(tmp_path: Path) -> None:
+    """An unrelated output file cannot satisfy the registered artifact set."""
+    for name in ("figures", "reports", "data"):
+        directory = tmp_path / "output" / name
+        directory.mkdir(parents=True)
+        (directory / "unrelated.txt").write_text("not a registered artifact\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(_SCRIPTS / "validate_outputs.py"),
+            "--project-root",
+            str(tmp_path),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode in {1, 2}
+    assert "validation_result: PASS" not in result.stdout
 
 
 def test_invariants_script_writes_passing_report(scaffold_root: Path) -> None:

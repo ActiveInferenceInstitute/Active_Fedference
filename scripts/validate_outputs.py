@@ -6,7 +6,7 @@ variables) exists under ``output/`` and is non-zero in size.  Prints a
 label-prefixed line per artifact found and exits non-zero if any are missing or
 empty.
 
-All discovery logic lives in :func:`src.analysis.workflow.expected_artifacts`;
+All discovery logic lives in :func:`src.analysis.artifacts.expected_artifacts`;
 this script only prints results and maps the outcome to an exit code.
 
 Exit codes:
@@ -17,6 +17,7 @@ Exit codes:
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -25,19 +26,26 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 sys.path.insert(0, str(_PROJECT_ROOT))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Validate output artifacts and report status; 0/1/2 exit code."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project-root", type=Path, default=None)
+    args = parser.parse_args(argv)
+
+    from project_paths import resolve_script_project_root
+
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
     try:
-        from analysis.workflow import expected_artifacts
-    except ImportError:
-        # Fallback: scan output/ directly when expected_artifacts is unavailable.
-        return _fallback_scan(_PROJECT_ROOT)
+        from analysis.artifacts import expected_artifacts
+    except ImportError as exc:
+        print(f"expected_artifacts import failed: {exc}", file=sys.stderr)
+        return 2
 
     try:
-        artifacts = expected_artifacts(_PROJECT_ROOT)
+        artifacts = expected_artifacts(root)
     except Exception as exc:  # noqa: BLE001
         print(f"expected_artifacts failed: {exc}", file=sys.stderr)
-        return _fallback_scan(_PROJECT_ROOT)
+        return 2
 
     missing: list[str] = []
     empty: list[str] = []
@@ -60,44 +68,6 @@ def main() -> int:
         return 1
 
     print(f"\nvalidation_result: PASS ({len(artifacts)} artifacts)")
-    return 0
-
-
-def _fallback_scan(project_root: Path) -> int:
-    """Scan output/ for figures, reports, and data files directly."""
-    output = project_root / "output"
-    subdirs = {
-        "figures": output / "figures",
-        "reports": output / "reports",
-        "data": output / "data",
-    }
-    missing: list[str] = []
-    empty: list[str] = []
-    found = 0
-    for subdir_name, subdir in subdirs.items():
-        if not subdir.exists():
-            print(f"MISSING  {subdir_name}/: {subdir}")
-            missing.append(subdir_name)
-            continue
-        for f in sorted(subdir.iterdir()):
-            if not f.is_file():
-                continue
-            label = f"{subdir_name}/{f.name}"
-            if f.stat().st_size == 0:
-                empty.append(label)
-                print(f"EMPTY    {label}: {f}")
-            else:
-                found += 1
-                print(f"ok       {label}: {f}")
-
-    if missing or empty:
-        print(
-            f"\nvalidation_result: FAIL ({len(missing)} missing dirs, {len(empty)} empty files)",
-            file=sys.stderr,
-        )
-        return 1
-
-    print(f"\nvalidation_result: PASS ({found} files)")
     return 0
 
 

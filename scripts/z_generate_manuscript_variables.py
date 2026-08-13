@@ -26,7 +26,7 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 sys.path.insert(0, str(_PROJECT_ROOT))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Generate and persist the manuscript {{TOKEN}} variables JSON; 0/1 exit code."""
     parser = argparse.ArgumentParser(description="Generate manuscript variables for active_fedference")
     parser.add_argument(
@@ -46,12 +46,18 @@ def main() -> int:
             "must be rerun without this flag"
         ),
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="standalone checkout whose reports and manuscript tree are written",
+    )
+    args = parser.parse_args(argv)
     if args.allow_draft and args.provisional_validation:
         parser.error("--provisional-validation cannot be combined with --allow-draft")
 
     from manuscript_variables import generate_variables, render_manuscript_tree, save_variables
-    from project_paths import resolve_env_project_root
+    from project_paths import resolve_script_project_root
     from publication.pipeline_freshness import (
         record_pipeline_stage,
         require_fresh_publication_analysis,
@@ -62,7 +68,7 @@ def main() -> int:
     # Honor ACTIVE_FEDFERENCE_PROJECT_ROOT so subprocess tests can redirect
     # manuscript_variables.json and output/manuscript/ writes into a scaffold
     # instead of the real committed tree. An invalid override raises loudly.
-    root = resolve_env_project_root(_PROJECT_ROOT)
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
 
     # This is deliberately before *any* variable or manuscript write.  A
     # provisional render can occur after analysis to enable the full suite,

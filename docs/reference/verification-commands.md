@@ -55,6 +55,27 @@ Profile scope:
 - `full`: quick + manuscript + package + rendered-surface + freshness + source
   + full coverage gate.
 
+## Run root-aware scripts from another checkout
+
+Scripts default to the checkout containing the entry point. For a sibling
+checkout or clean-clone probe, pass an explicit root; it takes precedence over
+the `ACTIVE_FEDFERENCE_PROJECT_ROOT` review override:
+
+```bash
+uv run --locked python scripts/02_run_analysis.py \
+  --project-root /path/to/active_fedference --profile smoke
+uv run --locked python scripts/validate_outputs.py \
+  --project-root /path/to/active_fedference
+uv run --locked python scripts/validate_mermaid.py \
+  --project-root /path/to/active_fedference
+```
+
+`validate_outputs.py` uses the canonical `analysis.artifacts.expected_artifacts()`
+contract and fails
+closed if that contract is unavailable; it never treats an arbitrary set of
+files under `output/` as a valid substitute. `00_preflight.py` additionally
+accepts `--template-root PATH` for the optional sibling template renderer.
+
 ## Public API, registry, and receipt verification
 
 ```bash

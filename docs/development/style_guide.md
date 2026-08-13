@@ -24,7 +24,7 @@ scripts under the template repo's `scripts/` directory may use
 | Named `fedference` boundary adapters | Explicit evidence/data/checkpoint/replay I/O to caller-owned paths; optional Torch behind extras | Hidden writes, default Torch imports, `infrastructure.*` |
 | `src/analysis/workflow.py` | Serialize JSON via `_write_json` (schema-validated), call experiments + figures | New formulas; bypassing `_write_json` |
 | `src/figures/` | Matplotlib I/O, styling via `_common.py` | Domain algorithms |
-| `scripts/` | `main()`, argparse, print paths | Business logic |
+| `scripts/` | `main(argv=None)`, argparse, `--project-root`, subprocess ordering, output/status mapping, format-specific validation | Domain formulas, experiment loops, ad-hoc artifact discovery, silent fallback to another checkout |
 
 ## Rule 4: Show, not tell
 

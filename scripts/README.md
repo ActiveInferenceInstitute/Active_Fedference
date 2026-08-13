@@ -1,29 +1,60 @@
 # scripts/ — Quick reference
 
-Thin orchestrators for Active Fedference. Logic lives in `../src/`.
+Thin orchestrators for Active Fedference. Domain and publication logic lives in
+`../src/`; scripts own the command-line contract, checkout-root selection,
+subprocess sequencing, stdout/status mapping, and release-boundary safety.
+
+## Why thin orchestrators are useful
+
+The scripts are deliberately useful even though they do not contain the
+research algorithms. They provide stable subprocess and CI boundaries with
+predictable exit codes, explicit artifact paths, and one documented way to run
+the same operation from the checkout, a sibling checkout, or a clean-clone
+probe. The reusable implementation remains importable for unit and integration
+tests, library callers, and the installed CLI. This separation also keeps
+publication actions auditable: a script may require a receipt, validate a
+surface, or refuse a stale input, but it must not invent a result or silently
+discover a different output tree.
+
+The thin boundary does not mean every script is a one-line wrapper. Specialized
+validators such as `validate_mermaid.py` and `validate_outputs.py` own their
+format-specific parsing and status reporting; their checks are still
+dependency-light, source-owned, and fail closed. Numeric research logic stays
+in `src/`.
 
 | Script | Output | Status |
 | --- | --- | --- |
-| `02_run_analysis.py [--profile publication|smoke]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
-| `record_pipeline_stage.py render [--timestamp UTC]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
-| `validate_test_coverage.py [--verify]` | `output/data/test_coverage_receipt.json` | REQUIRED full-suite receipt before final hydration |
-| `z_generate_manuscript_variables.py [--provisional-validation]` | `output/data/manuscript_variables.json`, `output/manuscript/` | REQUIRED; final non-draft mode consumes the test/coverage receipt, while provisional mode never records hydration |
-| `prepare_web_package.py` | Mirrored figures and numbered cross-format web references | REQUIRED for web package QA |
-| `validate_web_package.py` | Asset, reference-target, markup, and deterministic HTML-accessibility validation status | REQUIRED for web package QA |
-| `validate_rendered_surfaces.py` | PDF/slide/web text, layout-warning, link, asset, and HTML-accessibility checks | REQUIRED before release |
-| `validate_all.py` | Local validation profiles | REQUIRED before release |
-| `validate_pipeline_freshness.py` | Content-hashed stage dependency validation | REQUIRED before release |
-| `validate_clean_checkout.py` | Clean Git/tracking/import probe | REQUIRED for fresh-checkout release evidence |
-| `build_release.py [--verify] [--timestamp UTC]` | Metadata-, surface-, and receipt-preflighted local reviewer bundle (default) or verifies an existing one | REQUIRED before release |
-| `emit_metadata.py [--check\|--write]` | Checks or regenerates the generated metadata surfaces (`publication.metadata`) | REQUIRED before release |
-| `zenodo_release.py` | Reserve/update/upload/verify an unsubmitted DOI draft or explicitly publish a new version; `--confirm-publish` is required | Release boundary |
-| `validate_mermaid.py` | Validate README/docs Mermaid fences; optionally render every block to SVG | Documentation/publication QA |
-| `01_run_invariants.py` | Invariant report (stdout) | Optional |
-| `00_preflight.py` | Environment diagnostics | Optional |
-| `summarize_tokens.py` | Summary of all manuscript tokens and their resolved values (stdout) | Optional audit |
-| `validate_outputs.py` | Checks all expected Stage-02 figures/reports/variables exist and are non-empty | Optional audit |
-| `generate_api_docs.py` | `output/docs/api_reference.md` | Aesthetic |
-| `_generate_api_docs.py` | API doc generation orchestrator (calls `src.documentation.run_api_doc_generation`) | Aesthetic |
+| `02_run_analysis.py [--profile publication|smoke] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
+| `record_pipeline_stage.py render [--timestamp UTC] [--project-root PATH]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
+| `validate_test_coverage.py [--verify] [--project-root PATH]` | `output/data/test_coverage_receipt.json` | REQUIRED full-suite receipt before final hydration |
+| `z_generate_manuscript_variables.py [--provisional-validation] [--project-root PATH]` | `output/data/manuscript_variables.json`, `output/manuscript/` | REQUIRED; final non-draft mode consumes the test/coverage receipt, while provisional mode never records hydration |
+| `prepare_web_package.py [--project-root PATH]` | Mirrored figures and numbered cross-format web references | REQUIRED for web package QA |
+| `validate_web_package.py [--project-root PATH]` | Asset, reference-target, markup, and deterministic HTML-accessibility validation status | REQUIRED for web package QA |
+| `validate_rendered_surfaces.py [--project-root PATH]` | PDF/slide/web text, layout-warning, link, asset, and HTML-accessibility checks | REQUIRED before release |
+| `validate_all.py PROFILE [--project-root PATH]` | Local validation profiles | REQUIRED before release |
+| `validate_pipeline_freshness.py [--project-root PATH]` | Content-hashed stage dependency validation | REQUIRED before release |
+| `validate_clean_checkout.py [--project-root PATH]` | Clean Git/tracking/import probe | REQUIRED for fresh-checkout release evidence |
+| `build_release.py [--verify] [--timestamp UTC] [--project-root PATH]` | Metadata-, surface-, and receipt-preflighted local reviewer bundle (default) or verifies an existing one | REQUIRED before release |
+| `emit_metadata.py [--check\|--write] [--project-root PATH]` | Checks or regenerates the generated metadata surfaces (`publication.metadata`) | REQUIRED before release |
+| `zenodo_release.py [--project-root PATH]` | Create a linked `--new-version-of` draft or `--reserve` one, update metadata, upload with explicit `--replace-existing`, verify, and explicitly publish; `--confirm-publish` is required | Release boundary |
+| `validate_mermaid.py [--project-root PATH]` | Validate README/docs Mermaid fences; optionally render every block to SVG | Documentation/publication QA |
+| `01_run_invariants.py [--project-root PATH]` | Invariant report (stdout) | Optional |
+| `00_preflight.py [--project-root PATH] [--template-root PATH]` | Environment diagnostics | Optional |
+| `summarize_tokens.py [--project-root PATH]` | Summary of all manuscript tokens and their resolved values (stdout) | Optional audit |
+| `validate_outputs.py [--project-root PATH]` | Checks all expected Stage-02 figures/reports/variables exist and are non-empty | Optional audit |
+| `generate_api_docs.py [--project-root PATH]` | `output/docs/api_reference.md` | Aesthetic |
+| `_generate_api_docs.py [--project-root PATH]` | Compatibility shim for `generate_api_docs.py` | Aesthetic |
+
+## Root selection
+
+Every project-root-aware entry point defaults to the checkout containing the
+script. `ACTIVE_FEDFERENCE_PROJECT_ROOT` is a validated test/review override;
+an explicit `--project-root PATH` takes precedence over that environment
+variable. Relative metadata, upload, verification, output, and scratch paths
+are resolved against the selected root where the command owns those paths.
+Invalid explicit roots fail rather than redirecting writes to the script's
+checkout. `00_preflight.py` additionally accepts `--template-root PATH` for
+the optional sibling template rendering environment.
 
 ```bash
 uv run --locked python scripts/02_run_analysis.py                  # publication profile from config
@@ -35,6 +66,16 @@ uv run --locked python scripts/validate_pipeline_freshness.py
 uv run --locked python scripts/validate_clean_checkout.py --skip-imports
 uv run --locked python scripts/prepare_web_package.py
 uv run --locked python scripts/validate_web_package.py
+```
+
+To drive a sibling checkout without changing the working directory, add the
+same explicit root to each command:
+
+```bash
+uv run --locked python scripts/02_run_analysis.py \
+  --project-root /path/to/active_fedference --profile smoke
+uv run --locked python scripts/validate_outputs.py \
+  --project-root /path/to/active_fedference
 ```
 
 Validate the shared GitHub/local Mermaid source before a documentation or

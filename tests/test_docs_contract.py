@@ -84,12 +84,28 @@ def _repository_guide_files() -> tuple[str, ...]:
     return tuple(sorted(guides))
 
 
+def _source_owned_markdown_files() -> tuple[str, ...]:
+    """Discover every source-owned page under ``docs/``.
+
+    The curated list above documents the highest-risk contracts, but every
+    source-owned page is part of the standalone reader surface. Keeping this
+    discovery here prevents a new research note, section README, or roadmap
+    page from escaping link and stale-claim checks merely because nobody added
+    it to a test tuple.
+    """
+    docs_root = ROOT / "docs"
+    return tuple(
+        sorted(path.relative_to(ROOT).as_posix() for path in docs_root.rglob("*.md"))
+    )
+
+
 def _contract_files() -> tuple[str, ...]:
     return tuple(
         dict.fromkeys(
             (
                 *DOC_CONTRACT_FILES,
                 *_repository_guide_files(),
+                *_source_owned_markdown_files(),
                 *_todo_doc_files(),
             )
         )
@@ -142,6 +158,15 @@ def test_documented_local_commands_reference_existing_scripts() -> None:
         assert obsolete not in text
     assert 'grep -r "{{"' not in text
     assert r"\{\{[A-Z][A-Z0-9_]*\}\}" in text
+
+
+def test_script_quick_reference_covers_every_entrypoint() -> None:
+    documented = _read("scripts/README.md")
+    script_names = sorted(
+        path.name for path in (ROOT / "scripts").glob("*.py") if path.name != "__init__.py"
+    )
+    missing = [name for name in script_names if f"`{name}" not in documented]
+    assert missing == []
 
 
 def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> None:
@@ -250,26 +275,26 @@ def test_release_metadata_matches_public_project_identity() -> None:
     assert "template_code_project" not in metadata
     assert "Convergence Analysis of Gradient Descent Optimization" not in metadata
     assert "10.5281/zenodo.20417136" not in metadata
-    assert "10.5281/zenodo.21864004" in metadata
+    assert "10.5281/zenodo.21919307" in metadata
 
     config = yaml.safe_load(_read("manuscript/config.yaml"))
     assert ":" not in config["paper"]["title"]
     assert config["paper"]["subtitle"]
     assert ":" not in config["paper"]["subtitle"]
     assert config["publication"]["github_repository"] == "https://github.com/ActiveInferenceInstitute/Active_Fedference"
-    assert config["publication"]["doi"] == "10.5281/zenodo.21864004"
-    assert config["publication"]["date_released"] == "2026-08-10"
+    assert config["publication"]["doi"] == "10.5281/zenodo.21919307"
+    assert config["publication"]["date_released"] == "2026-08-13"
     assert config["metadata"]["license"] == "MIT"
     assert "active inference" in config["keywords"]
     assert "FedGVI" in config["keywords"]
     assert yaml.safe_load(_read("CITATION.cff"))["identifiers"] == [
-        {"type": "doi", "value": "10.5281/zenodo.21864004"}
+        {"type": "doi", "value": "10.5281/zenodo.21919307"}
     ]
-    assert yaml.safe_load(_read("CITATION.cff"))["date-released"] == "2026-08-10"
-    assert json.loads(_read(".zenodo.json"))["doi"] == "10.5281/zenodo.21864004"
-    assert json.loads(_read(".zenodo.json"))["publication_date"] == "2026-08-10"
-    assert json.loads(_read("codemeta.json"))["identifier"] == "https://doi.org/10.5281/zenodo.21864004"
-    assert json.loads(_read("codemeta.json"))["dateModified"] == "2026-08-10"
+    assert yaml.safe_load(_read("CITATION.cff"))["date-released"] == "2026-08-13"
+    assert json.loads(_read(".zenodo.json"))["doi"] == "10.5281/zenodo.21919307"
+    assert json.loads(_read(".zenodo.json"))["publication_date"] == "2026-08-13"
+    assert json.loads(_read("codemeta.json"))["identifier"] == "https://doi.org/10.5281/zenodo.21919307"
+    assert json.loads(_read("codemeta.json"))["dateModified"] == "2026-08-13"
 
 
 def test_docs_do_not_reintroduce_stale_claim_language() -> None:

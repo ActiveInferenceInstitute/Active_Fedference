@@ -20,6 +20,21 @@ for label, path in paths.items():
 consensus = np.exp(np.sum(np.log(beliefs), axis=0))
 ```
 
+The boundary is useful because it gives CI and human operators stable
+subprocess commands, predictable exit statuses, and explicit artifact paths
+without making the numerical implementation untestable. A specialized
+format validator may parse its own format and map findings to an exit code;
+that is orchestration/validation logic, not research math. `validate_outputs.py`
+must use the canonical `analysis.artifacts.expected_artifacts()` contract and
+fail closed when that contract cannot be imported or evaluated; it must not
+fall back to an ad-hoc directory scan.
+
+Project-root selection is part of the script contract. Use
+`resolve_script_project_root()` from `src/project_paths.py`: an explicit
+`--project-root` wins over `ACTIVE_FEDFERENCE_PROJECT_ROOT`, and an invalid
+root fails loudly. Do not copy path-selection or environment-precedence rules
+into individual scripts.
+
 ## Import patterns
 
 Project scripts run with `src/` on `PYTHONPATH` (via pytest `conftest` or

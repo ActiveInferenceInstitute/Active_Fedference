@@ -9,12 +9,16 @@ This package owns deterministic workflow orchestration for the project experimen
 | `__init__.py` | Public module exports for the analysis layer. |
 | `workflow.py` | Pipeline entrypoint for source-mechanism analogues, figure generation, and report materialisation. |
 | `report_schemas.py` | Typed report/figure-registry schemas and the runtime validator enforced at the write boundary. |
+| `artifacts.py` | Source-declared Stage-02 report, figure, registry, and data-path contract for audits and CI. |
 
 ## Workflow contract
 
 - **Inputs:** `experiment_config.py` is the single source of experiment truth.
 - **Execution:** Scripts call into `workflow` functions; this package stays importable and testable.
 - **Output:** Writes JSON and figure files into `output/` under deterministic, test-backed filenames.
+- **Audit contract:** `artifacts.expected_artifacts(project_root)` declares the
+  complete hand-off without accepting arbitrary files discovered under
+  `output/`.
 - **Determinism:** All analyses are keyed by explicit `seed` values from config.
 
 ## Schema and validation boundary

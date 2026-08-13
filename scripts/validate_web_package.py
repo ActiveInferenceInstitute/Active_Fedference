@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -9,11 +10,17 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Validate generated web assets, references, markup, and accessibility."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project-root", type=Path, default=None)
+    args = parser.parse_args(argv)
+
+    from project_paths import resolve_script_project_root
     from publication.web_package import validate_web_package
 
-    result = validate_web_package(_PROJECT_ROOT)
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+    result = validate_web_package(root)
     print(f"web_html_files: {result.html_files}")
     print(f"web_assets_checked: {result.assets_checked}")
     if result.ok:

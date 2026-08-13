@@ -13,6 +13,7 @@ Exit codes:
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -22,15 +23,19 @@ for _path in (PROJECT_ROOT, PROJECT_ROOT / "src"):
         sys.path.insert(0, str(_path))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Generate the API/glossary documentation artifacts; return a 0/1 exit code."""
-    from project_paths import resolve_env_project_root
-    from src.documentation import run_api_doc_generation
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project-root", type=Path, default=None)
+    args = parser.parse_args(argv)
 
     # Honor ACTIVE_FEDFERENCE_PROJECT_ROOT so subprocess tests write
     # output/docs/*.md into a scaffold, not the real tree. An invalid
     # override raises loudly, never falls back to the real root.
-    root = resolve_env_project_root(PROJECT_ROOT)
+    from project_paths import resolve_script_project_root
+    from src.documentation import run_api_doc_generation
+
+    root = resolve_script_project_root(PROJECT_ROOT, args.project_root)
 
     try:
         docs_files = run_api_doc_generation(root)

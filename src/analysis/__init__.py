@@ -7,6 +7,7 @@ categorical source-mechanism analogues and diagnostics and writes reports + figu
 
 from __future__ import annotations
 
+from .artifacts import expected_artifacts
 from .workflow import main, run_analysis_pipeline
 
-__all__ = ["main", "run_analysis_pipeline"]
+__all__ = ["expected_artifacts", "main", "run_analysis_pipeline"]

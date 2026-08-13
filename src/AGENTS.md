@@ -9,7 +9,7 @@ Business logic for robust federated active inference. Deep architecture:
 src/
 ├── fedference/          # Domain logic + explicit boundary adapters (NO infrastructure imports)
 ├── fedference_cli/      # Installed list/run/benchmark/verify/replay adapter
-├── analysis/            # workflow.py orchestrator + report_schemas.py write-boundary validator
+├── analysis/            # workflow.py + schemas + canonical artifact contract
 ├── figures/             # manuscript figure generators + _common.py
 ├── manuscript_vars/     # Manuscript token generator package (loaders/tokens/render/generate)
 ├── publication/         # Publication packaging, identifiers, Zenodo, freshness, and surface validation
@@ -44,6 +44,7 @@ Tests: `tests/fedference/test_*.py` (mirror module names).
 | --- | --- |
 | `analysis/workflow.py` | `run_analysis_pipeline()` — JSON reports + figures |
 | `analysis/report_schemas.py` | Typed report/figure-registry schemas + write-boundary validator |
+| `analysis/artifacts.py` | Canonical expected Stage-02 artifact paths; fail-closed audit contract |
 | `figures/*.py` | One generator per PNG; shared palette in `_common.py` |
 | `manuscript_variables.py` | `generate_variables()` → `{{TOKEN}}` map |
 | `experiment_config.py` | `ExperimentConfig` from `manuscript/config.yaml` |

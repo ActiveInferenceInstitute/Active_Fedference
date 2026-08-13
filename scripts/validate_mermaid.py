@@ -154,7 +154,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--project-root",
         type=Path,
-        default=Path(__file__).resolve().parent.parent,
+        default=None,
+        help="standalone checkout whose README/docs should be checked",
     )
     parser.add_argument("--render", action="store_true", help="render every block to SVG")
     parser.add_argument(
@@ -169,7 +170,9 @@ def main(argv: list[str] | None = None) -> int:
         help="Mermaid CLI executable, or npx for @mermaid-js/mermaid-cli",
     )
     args = parser.parse_args(argv)
-    root = args.project_root.resolve()
+    from project_paths import resolve_script_project_root
+
+    root = resolve_script_project_root(Path(__file__).resolve().parent.parent, args.project_root)
     try:
         blocks = validate_mermaid_blocks(root)
         if args.render:

@@ -39,10 +39,16 @@ def main() -> int:
         default=None,
         help="Override the config budget profile; default reads manuscript/config.yaml.",
     )
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="standalone checkout to read and write (default: this checkout)",
+    )
     args = parser.parse_args()
 
     from analysis.workflow import resolve_analysis_profile, run_analysis_pipeline
-    from project_paths import resolve_env_project_root
+    from project_paths import resolve_script_project_root
     from publication.pipeline_freshness import record_publication_analysis_stage
     from publication.release_manifest import timestamp_from_source_date_epoch
 
@@ -50,7 +56,7 @@ def main() -> int:
     # output/ writes into a scaffold instead of the real committed tree. An
     # invalid override raises here (loud traceback, exit 1) — never a silent
     # fallback to the real root.
-    root = resolve_env_project_root(_PROJECT_ROOT)
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
 
     try:
         # Resolve once, then pass the effective profile into the producer. This

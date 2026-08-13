@@ -1,15 +1,15 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "927cc0a0e5404d648de7f7806692d0a3d259f8272d62f1e811da10d2dc3a84ec",
+  "binding_sha256": "09d559a35bb2624a7c4e6c156234121c6f126cd6c526bb39e157425daccd1fa7",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "4204f162248c8187a1c478d1e5b5d20bb19000a967034f7390b5c4ade7623d78",
+  "combined_sha256": "6d50491fba6bf3856a372207d715f2496e6b23f8462114b868e30a38361b2b77",
   "combined_size_bytes": 345078,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
       "ordinal": 1,
       "path": "output/manuscript/00_abstract.md",
-      "sha256": "aa62e67688ec67d39b31e1b6e3300cf009b9d93cf9516eaf5d94b4c798dbc9bd",
+      "sha256": "e725adb09a94ceca2729249968268be058112f732c675f2a0ee46ffc09d23139",
       "size_bytes": 4665
     },
     {
@@ -87,7 +87,7 @@
     {
       "ordinal": 14,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "96ffbb2830cee0f89c1f734b1220815398a28f0e53a68e461a417762c18ed379",
+      "sha256": "9aa73ed0c6952fd0255742c790f146a6d51d503a2b77ab4852b9d219fb7cf0c8",
       "size_bytes": 13715
     },
     {
@@ -99,7 +99,7 @@
     {
       "ordinal": 16,
       "path": "output/manuscript/15_results_recovery.md",
-      "sha256": "ee76f48a7f3d6516658775843c743c5751427a24e1139f8b3a3a816a9773425c",
+      "sha256": "c4997ffa68f3d2be7b8801fcf473057d727ebffa8215b772927303753d0b38c4",
       "size_bytes": 5931
     },
     {
@@ -165,7 +165,7 @@
     {
       "ordinal": 27,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "25b2468e84c20f96a6898b98366da285eaa8042aa62afa5cc30aeddf09cd6548",
+      "sha256": "504a9c2e6745d386ab9a302198b2c5b537e133236665d07b415100a1d85945bd",
       "size_bytes": 7189
     },
     {
@@ -265,7 +265,7 @@
       "size_bytes": 969
     }
   ],
-  "ordered_inputs_sha256": "d29fbf945d53c9ae24c0ecae67ffa10f628fc2125a4675ffcdd8902ec2690503",
+  "ordered_inputs_sha256": "20cc83509c795541f97878e4a9e3a86d39881b9e135e5282267713477cdd426b",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }

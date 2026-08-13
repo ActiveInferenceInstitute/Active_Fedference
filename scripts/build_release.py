@@ -59,7 +59,7 @@ def _require_current_reviewer_snapshot(project_root: Path = _PROJECT_ROOT) -> No
     require_fresh_pipeline_stages(root, ("render",))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Build output/release/ (default) or --verify it; 0/1/2 exit."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--verify", action="store_true", help="verify the existing bundle, write nothing")
@@ -76,8 +76,15 @@ def main() -> int:
             "omit for a byte-reproducible unreleased build"
         ),
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="standalone checkout to validate and bundle (default: this checkout)",
+    )
+    args = parser.parse_args(argv)
 
+    from project_paths import resolve_script_project_root
     from publication.release_manifest import (
         build_release,
         timestamp_from_source_date_epoch,
@@ -85,11 +92,12 @@ def main() -> int:
     )
 
     try:
-        _require_current_reviewer_snapshot()
+        root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+        _require_current_reviewer_snapshot(root)
         if args.verify:
             if args.timestamp is not None:
                 parser.error("--timestamp cannot be combined with --verify")
-            bad = verify_release(_PROJECT_ROOT)
+            bad = verify_release(root)
             if bad:
                 print("MISMATCH: " + ", ".join(bad[:20]))
                 return 1
@@ -104,8 +112,8 @@ def main() -> int:
             else args.timestamp
         )
         manifest = build_release(
-            _PROJECT_ROOT,
-            profile="publication",
+            root,
+            profile=args.profile,
             timestamp=timestamp,
         )
         print(f"output/release written: {manifest['n_artifacts']} artifacts, {manifest['total_bytes']} bytes")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shlex
 import subprocess
 import sys
@@ -108,22 +109,33 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("profile", choices=sorted(_PROFILES))
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--keep-going", action="store_true")
+    parser.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="standalone checkout in which the profile should run",
+    )
     return parser.parse_args(argv)
 
 
-def _run(command: Command, *, dry_run: bool) -> int:
+def _run(command: Command, *, dry_run: bool, project_root: Path) -> int:
     print(f"$ {shlex.join(command)}", flush=True)
     if dry_run:
         return 0
-    return subprocess.run(command, cwd=_PROJECT_ROOT).returncode
+    env = dict(os.environ)
+    env["ACTIVE_FEDFERENCE_PROJECT_ROOT"] = str(project_root)
+    return subprocess.run(command, cwd=project_root, env=env).returncode
 
 
 def main(argv: list[str] | None = None) -> int:
     """Run one local validation profile."""
     args = _parse_args(list(sys.argv[1:] if argv is None else argv))
+    from project_paths import resolve_script_project_root
+
+    project_root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
     failures: list[int] = []
     for command in _PROFILES[args.profile]:
-        exit_code = _run(command, dry_run=args.dry_run)
+        exit_code = _run(command, dry_run=args.dry_run, project_root=project_root)
         if exit_code == 0:
             continue
         failures.append(exit_code)

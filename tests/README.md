@@ -23,10 +23,10 @@ and never belong in a release snapshot.
 | `fedference/` | `src/fedference/*` domain modules |
 | `test_fedference_cli.py` | Installed CLI parsing, output isolation, receipts, verification, and unimplemented-run failure |
 | `figures/` | `src/figures/*` generators |
-| `analysis/` | `src/analysis/workflow.py`; `test_report_schemas.py` covers the write-boundary validator and stage contracts |
+| `analysis/` | `src/analysis/workflow.py`, `artifacts.py`, and `report_schemas.py`; tests cover orchestration, the canonical artifact set, write-boundary validation, and stage contracts |
 | `test_manuscript_variables.py` | Token hydration |
 | `test_experiment_config.py` | `manuscript/config.yaml` |
-| `test_scripts_smoke.py` | Auxiliary script subprocess smoke |
+| `test_scripts_smoke.py` | Auxiliary script subprocess smoke, root-aware CLI help, and no-numeric-import thin-boundary checks |
 | `test_invariants.py` | Numerical invariants (PMF, recovery, EFE, KL) |
 | `test_build_backend.py` | PEP 517 backend pinning, archive normalization, metadata, and source-manifest contract |
 | `test_release_manifest.py` | Release bundle manifest and provenance fingerprint |
@@ -35,7 +35,7 @@ and never belong in a release snapshot.
 | `test_pipeline_freshness.py` | Analysis → hydration → render provenance ordering and content digests |
 | `test_clean_checkout.py` | Clean-clone tracking, required release inputs, and isolated import probes |
 | `test_publication_metadata.py` | Generated metadata surface consistency |
-| `test_docs_contract.py` | Every source-owned `AGENTS.md`/`README.md`, docs consistency, Mermaid structure, retired-name gate, SYNTAX registry, and stale-language gate |
+| `test_docs_contract.py` | Every source-owned `AGENTS.md`/`README.md` plus every `docs/**/*.md`, docs consistency, Mermaid structure, retired-name gate, SYNTAX registry, and stale-language gate |
 | `test_documentation.py` | Documentation contract oracle |
 | `test_manuscript_claim_audit.py` | Manuscript claim-strength / three-axis audit |
 | `test_token_provenance.py` | No hardcoded decimals/percentages in prose |

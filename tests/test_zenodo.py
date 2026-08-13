@@ -101,6 +101,73 @@ class _ZenodoHandler(BaseHTTPRequestHandler):
         self._write_json({"error": "not found"}, status=404)
 
 
+class _NewVersionHandler(BaseHTTPRequestHandler):
+    """A real loopback HTTP boundary for the Zenodo new-version action."""
+
+    authorization_headers: list[str] = []
+    new_version_calls = 0
+
+    def log_message(self, _format: str, *_args: object) -> None:
+        return
+
+    def _write_json(self, payload: object, status: int = 200) -> None:
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    @staticmethod
+    def _published_source() -> dict[str, Any]:
+        return {
+            "id": 7,
+            "state": "done",
+            "doi": "10.5281/zenodo.7",
+            "metadata": {},
+            "links": {
+                "html": "http://example.test/records/7",
+                "self": "http://example.test/api/deposit/depositions/7",
+            },
+            "files": [],
+        }
+
+    @staticmethod
+    def _draft() -> dict[str, Any]:
+        return {
+            "id": 8,
+            "state": "unsubmitted",
+            "metadata": {"prereserve_doi": {"doi": "10.5281/zenodo.8", "recid": 8}},
+            "links": {
+                "html": "http://example.test/records/8",
+                "self": "http://example.test/api/deposit/depositions/8",
+            },
+            "files": [
+                {"id": "inherited", "filename": "paper.pdf", "filesize": 1, "checksum": "md5:old"}
+            ],
+        }
+
+    def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
+        type(self).authorization_headers.append(self.headers.get("Authorization", ""))
+        if self.path == "/api/deposit/depositions/7":
+            self._write_json(self._published_source())
+            return
+        if self.path == "/api/deposit/depositions/8":
+            self._write_json(self._draft())
+            return
+        self._write_json({"error": "not found"}, status=404)
+
+    def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
+        type(self).authorization_headers.append(self.headers.get("Authorization", ""))
+        if self.path == "/api/deposit/depositions/7/actions/newversion":
+            type(self).new_version_calls += 1
+            self._write_json(
+                {"links": {"latest_draft": "http://zenodo.test/api/deposit/depositions/8"}}
+            )
+            return
+        self._write_json({"error": "not found"}, status=404)
+
+
 def test_token_sources_and_missing_token(tmp_path: Path) -> None:
     env_file = tmp_path / ".env"
     env_file.write_text("export ZENODO_TOKEN='secret-token'\n", encoding="utf-8")
@@ -177,6 +244,34 @@ def test_response_and_multipart_boundaries_fail_closed() -> None:
                 "files": [{"id": 1, "filename": "paper.pdf", "filesize": 1, "checksum": "bad"}],
             }
         )
+    integral_float = _deposition(
+        {
+            "id": 7,
+            "state": "unsubmitted",
+            "metadata": {},
+            "links": {},
+            "files": [{"id": "file-1", "filename": "paper.pdf", "filesize": 1.0, "checksum": "bad"}],
+        }
+    )
+    assert integral_float.files[0].filesize == 1
+    for filesize in (-1.0, 1.25, float("inf")):
+        with pytest.raises(ZenodoError, match="invalid file record"):
+            _deposition(
+                {
+                    "id": 7,
+                    "state": "unsubmitted",
+                    "metadata": {},
+                    "links": {},
+                    "files": [
+                        {
+                            "id": "file-1",
+                            "filename": "paper.pdf",
+                            "filesize": filesize,
+                            "checksum": "bad",
+                        }
+                    ],
+                }
+            )
     for payload in (
         {"id": True, "state": "unsubmitted"},
         {"id": 7, "state": ""},
@@ -232,6 +327,32 @@ def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
         assert published.doi == "10.5281/zenodo.7"
         assert _ZenodoHandler.authorization_headers
         assert set(_ZenodoHandler.authorization_headers) == {"Bearer test-token"}
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_new_version_resolves_latest_draft_link() -> None:
+    _NewVersionHandler.authorization_headers = []
+    _NewVersionHandler.new_version_calls = 0
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _NewVersionHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        api_base = f"http://127.0.0.1:{server.server_port}/api"
+        client = ZenodoClient("test-token", api_base=api_base, timeout=5.0)
+        result = client.new_version(7)
+        assert result.id == 8
+        assert result.state == "unsubmitted"
+        assert result.reserved_doi == "10.5281/zenodo.8"
+        assert result.files[0].filename == "paper.pdf"
+        assert _NewVersionHandler.new_version_calls == 1
+        assert _NewVersionHandler.authorization_headers == [
+            "Bearer test-token",
+            "Bearer test-token",
+            "Bearer test-token",
+        ]
     finally:
         server.shutdown()
         server.server_close()

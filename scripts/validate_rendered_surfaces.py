@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
-from publication.surface_validation import validate_rendered_surfaces
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -15,10 +17,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--project-root",
         type=Path,
-        default=Path(__file__).resolve().parent.parent,
+        default=None,
+        help="standalone checkout whose surfaces should be checked (default: this checkout)",
     )
     args = parser.parse_args(argv)
-    result = validate_rendered_surfaces(args.project_root)
+    from project_paths import resolve_script_project_root
+    from publication.surface_validation import validate_rendered_surfaces
+
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+    result = validate_rendered_surfaces(root)
     print(
         "rendered surfaces: "
         f"{int(result.manuscript_pdf)} combined PDF, "

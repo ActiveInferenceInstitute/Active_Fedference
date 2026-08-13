@@ -14,6 +14,7 @@ Exit codes:
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -21,15 +22,19 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Run the locked-core numerical invariants and write the report; 0/1 exit code."""
     from invariants import write_invariants_report
-    from project_paths import resolve_env_project_root
+    from project_paths import resolve_script_project_root
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project-root", type=Path, default=None)
+    args = parser.parse_args(argv)
 
     # Honor ACTIVE_FEDFERENCE_PROJECT_ROOT so subprocess tests write
     # output/reports/invariants.json into a scaffold, not the real tree.
     # An invalid override raises loudly (exit via traceback), never falls back.
-    root = resolve_env_project_root(_PROJECT_ROOT)
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
 
     try:
         path, all_passed = write_invariants_report(root)

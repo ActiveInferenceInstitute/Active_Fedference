@@ -27,7 +27,7 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 sys.path.insert(0, str(_PROJECT_ROOT))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Print token summary from JSON or by regenerating; 0/1/2 exit code."""
     parser = argparse.ArgumentParser(
         description="Summarise all manuscript {{TOKEN}} values for active_fedference"
@@ -43,9 +43,14 @@ def main() -> int:
         default="",
         help="Only print tokens whose key starts with PREFIX (case-insensitive).",
     )
-    args = parser.parse_args()
+    parser.add_argument("--project-root", type=Path, default=None)
+    args = parser.parse_args(argv)
 
-    json_path = _PROJECT_ROOT / "output" / "data" / "manuscript_variables.json"
+    from project_paths import resolve_script_project_root
+
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+
+    json_path = root / "output" / "data" / "manuscript_variables.json"
 
     variables: dict[str, str] | None = None
 
@@ -60,7 +65,7 @@ def main() -> int:
         try:
             from src.manuscript_variables import generate_variables
 
-            variables = generate_variables(_PROJECT_ROOT)
+            variables = generate_variables(root)
             print(f"source: generated (no cache at {json_path})")
         except Exception as exc:  # noqa: BLE001
             print(f"token generation failed: {exc}", file=sys.stderr)

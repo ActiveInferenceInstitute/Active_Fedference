@@ -10,5 +10,6 @@ How to modify code and tests in Active Fedference.
 | [style_guide.md](style_guide.md) | Thin orchestrator, layer contract, show-not-tell |
 
 These pages are themselves contract surfaces: `tests/test_docs_contract.py`
-verifies that their relative links resolve, that documented `scripts/*.py`
-commands name real files, and that stale claim language does not reappear.
+discovers every Markdown page under `docs/`, verifies that relative links
+resolve, that documented `scripts/*.py` commands name real files, and that
+stale claim language does not reappear.

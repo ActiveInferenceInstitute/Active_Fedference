@@ -45,7 +45,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-The production Zenodo release DOI is [10.5281/zenodo.21864004](https://doi.org/10.5281/zenodo.21864004),
+The production Zenodo release DOI is [10.5281/zenodo.21919307](https://doi.org/10.5281/zenodo.21919307),
 and the repository and deposited PDF point to each other through this DOI and
 the repository URL.
 
@@ -1896,12 +1896,12 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.89
+performance guarantees: agent-axis slopes are 0.90
 (log-linear), 0.94 (iterative robust),
-0.71 (variational), 1.58
-(naive self-excluding sharing), and 1.92
+0.70 (variational), 1.59
+(naive self-excluding sharing), and 1.93
 (robust self-excluding sharing); state-axis slopes
-are 0.42, 0.39, and
+are 0.40, 0.41, and
 0.42; the modality-axis inference slope is
 0.67. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
@@ -2301,7 +2301,7 @@ without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-91.24% (gate $\ge 90\%$), with every stochastic step threaded
+91.15% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -3703,7 +3703,7 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | a1505dcd39500d4f |
+| Config hash (SHA-256, first 16) | 82a24fc96a72b38e |
 | Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
@@ -3731,10 +3731,10 @@ alone are insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1641 collected cases; the bound successful
+- Project test suite: 1670 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 91.24% (achieved by the bound full
+- Line coverage on `src/`: 91.15% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 

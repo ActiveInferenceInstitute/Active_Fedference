@@ -66,12 +66,9 @@ def _coverage_percent(path: Path) -> float:
 
 
 def _project_root_from_args(args: argparse.Namespace) -> Path:
-    if args.project_root is not None:
-        root = args.project_root.resolve()
-    else:
-        from project_paths import resolve_env_project_root
+    from project_paths import resolve_script_project_root
 
-        root = resolve_env_project_root(_PROJECT_ROOT)
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
     if not (root / "manuscript" / "config.yaml").is_file():
         raise RuntimeError(f"invalid project root (missing manuscript/config.yaml): {root}")
     return root

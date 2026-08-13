@@ -19,7 +19,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--project-root",
         type=Path,
-        default=_PROJECT_ROOT,
+        default=None,
+        help="standalone checkout to inspect (default: this checkout)",
     )
     parser.add_argument(
         "--skip-imports",
@@ -27,7 +28,10 @@ def main(argv: list[str] | None = None) -> int:
         help="Only check Git cleanliness and the required tracking set.",
     )
     args = parser.parse_args(argv)
-    report = inspect_clean_checkout(args.project_root, check_imports=not args.skip_imports)
+    from project_paths import resolve_script_project_root
+
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+    report = inspect_clean_checkout(root, check_imports=not args.skip_imports)
     print(f"tracked_files: {report.tracked_files}")
     if report.ok:
         print("clean checkout: PASS")

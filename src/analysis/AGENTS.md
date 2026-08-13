@@ -7,6 +7,8 @@ Importable analysis orchestration for Active Fedference.
 ## Rules
 
 - Keep orchestration code in `workflow.py`; avoid placing domain math here.
+- Keep the canonical Stage-02 path declaration in `artifacts.py`; validators
+  consume it instead of scanning `output/` or duplicating filename lists.
 - Keep CLI parsing in `scripts/`; this package should expose callable workflow
   functions.
 - Keep generated file writes explicit and covered by tests.

@@ -1,6 +1,6 @@
 {
   "analysis_input_snapshot": {
-    "input_digest": "e6fd1e676ce1cf36d839960b8a8527f100f4138633bf710c58f24de108aa8e99",
+    "input_digest": "5c9301ee12b86fe6615ea4fad95a0cd427804e506cec54c48629b7c8d4cdc7a3",
     "input_hashes": {
       "experiment_plan.yaml": "9c3f279e61fc31da6dd40b5f49061cf3db9d9ba8ba228d817ac8fdf14ee7b76f",
       "manuscript/00_abstract.md": "c2c6431b6ed6271aa1ae765d830c73b6715e06fb8d7b882eb5e4e4bb07631549",
@@ -49,13 +49,14 @@
       "manuscript/S16_results_hierarchical_bmr.md": "f2c6bdb9b75aac37b5abb649eeaca5d29172f6f86ff0084a335c210028280ceb",
       "manuscript/S17_results_heuristic_characterization.md": "38824451abac395a32c07a02dc83cf168fa1d3ca1f944cdf4bd64d3aa4e0bc58",
       "manuscript/SYNTAX.md": "ad1399893c8ef8a67a871ce8c42e6e4d5bbbb2167187c03a74300091e0258a81",
-      "manuscript/config.yaml": "a1505dcd39500d4f49d33e85e7f373f7944505051ee025f0fad257a565fc30e8",
+      "manuscript/config.yaml": "82a24fc96a72b38e1610010b0fcfa4affe48747260f927d8e43c681c56654af0",
       "manuscript/preamble.md": "e75ada000c3ceeb452e9a840d5469d747ebd616747864a08df3b94ba51a9942d",
-      "pyproject.toml": "f2cb027b9ac7ec541b321f4a510eb74fec27a399bd6f55ca43d7d9c9809af1af",
-      "scripts/02_run_analysis.py": "9bdeec8d6ed7e326850752ff706567c9e95e13823bf9e49d1c20c42f9e72a167",
+      "pyproject.toml": "761237b836c4f4d0b0ba37095e61a994729a968175aca80a92121e52b28585c3",
+      "scripts/02_run_analysis.py": "45feb30f7b36933d1b942eacf7ad4ac16b15fbb44b614af1f581384c772734cd",
       "src/__init__.py": "332b6b62bb3f543d712d8dfb9302597166884b2b45b1300e98ff17e04782746c",
       "src/_runtime.py": "edfcfec269121d194809619002a5a6624a1926f51c4901d1707830a604f1c5bf",
-      "src/analysis/__init__.py": "4ae6ee14dd707849af6fd6c9b7e290e27d531aaaaa895b0407fd640098d41be3",
+      "src/analysis/__init__.py": "558911ed2f766fdab30ecaffc93c4bda2af89ba741c1cae355a3da7eb39dbd16",
+      "src/analysis/artifacts.py": "7c5568bf2c9c2e42edb5552e5a049b9ac139533cb366954df6ba79b36f2de7d9",
       "src/analysis/report_schemas.py": "d1ffa9886182af2ead64d45595041e88bb8e46bd18fc14011e318f87b25eac46",
       "src/analysis/workflow.py": "c30e7e20c7b37bf0deb3230397b9425763121e8fd4bb83232594d166a50743ef",
       "src/documentation.py": "48677c5c2507b037cc1851953191a7895e4f3b1a4eebe4310274062c25f9b13d",
@@ -162,9 +163,9 @@
       "src/manuscript_vars/loaders.py": "b107891ef7bc27e6ddef44ff5cae4ddfab1365f0866201e3fcbda37cd7e6f086",
       "src/manuscript_vars/render.py": "8a1ff74ea47f1dbb387b4ab316cc9c8598d2e0d7b23d7d79a7e4afd76f0348a5",
       "src/manuscript_vars/tokens.py": "2d7efeb46aefad5501e9838a901c489f0928bd144d19e0fa107f86b4bccb4c2c",
-      "src/project_paths.py": "4ce728569ec3552f71be2ec0081a9aaa7083fb903626ee6d3393bd5f63625dc1",
+      "src/project_paths.py": "ec40a76c41ce2f1fc1a3dfe8b7f0a8d4720b8bad6ac82d834b1d21b46422a011",
       "src/publication/__init__.py": "d2ba8335ed34efca0bf9b163e1c68fadef2ff0c31cd544615731efc4a64b235a",
-      "src/publication/clean_checkout.py": "89d74fbac967436ccbf721c11a9b47047399e921805114045eff5e14d762013e",
+      "src/publication/clean_checkout.py": "ddb89931896ebf64b6e33e9f9098b7fd6b4c67b6ba7d99e8f0b83b29fdcb4843",
       "src/publication/identifiers.py": "ef0cb58456a38caf168f7cd696621dd3233b8f551bb41108db178db3a6bdb165",
       "src/publication/metadata.py": "dbe1420767169c3100e74cf2714caea56c39b861248d5b61a98d00ca3573d605",
       "src/publication/pipeline_freshness.py": "f4230b18b64edbd2d2d838658a8aad29db64bc47761ea3aac01aae046af82f54",
@@ -172,8 +173,8 @@
       "src/publication/surface_validation.py": "c0e8620e42d3f2328638902b3b2acf3b80b3ed501ffb7486b5b995a37cd95810",
       "src/publication/validation_receipt.py": "c138d05232d82d8e4390d47c12eb3ff3000f84e8a167ee7d7604f86d0f5a4f6d",
       "src/publication/web_package.py": "5fa16fab8f3638663d4ef03ede8b1e66624fe13b15de91c8a766be35b1dddacb",
-      "src/publication/zenodo.py": "c40d386be2bbe55ee122c2e45338eeddd42a0c0ab7bf3eaa458cec4f6858aa3b",
-      "uv.lock": "f37c2171cfdfd171fa440ba646f2cae991b929944397e0524ef82bc90116706c"
+      "src/publication/zenodo.py": "1388d350a58b443d5606b87245f5a9c15e4131f65b8c447ec5fb452cfba717b5",
+      "uv.lock": "036a830b3152c805ae668895295f57cb5bb7db9a8e27b4c9131e2024f50f75f9"
     }
   },
   "configured_profile": "publication",

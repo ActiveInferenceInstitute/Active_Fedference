@@ -29,10 +29,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--project-root",
         type=Path,
-        default=_PROJECT_ROOT,
+        default=None,
+        help="standalone checkout whose receipts should be checked (default: this checkout)",
     )
     args = parser.parse_args(argv)
-    findings = validate_publication_pipeline_freshness(args.project_root, args.stages)
+    from project_paths import resolve_script_project_root
+
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+    findings = validate_publication_pipeline_freshness(root, args.stages)
     if findings:
         print("pipeline freshness: FAIL")
         for finding in findings:

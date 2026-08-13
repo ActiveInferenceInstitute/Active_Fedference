@@ -7,7 +7,7 @@
     }
   ],
   "description": "Source code and reproducible artifacts for Active Fedference, a discrete-categorical research package connecting FedGVI to federated active-inference belief sharing.",
-  "doi": "10.5281/zenodo.21864004",
+  "doi": "10.5281/zenodo.21919307",
   "keywords": [
     "active inference",
     "federated learning",
@@ -17,7 +17,7 @@
     "FedGVI"
   ],
   "license": "MIT",
-  "publication_date": "2026-08-10",
+  "publication_date": "2026-08-13",
   "related_identifiers": [
     {
       "identifier": "https://github.com/ActiveInferenceInstitute/Active_Fedference",
@@ -34,5 +34,5 @@
   ],
   "title": "Active Fedference",
   "upload_type": "software",
-  "version": "0.1.0"
+  "version": "1.0.1"
 }

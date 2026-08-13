@@ -23,7 +23,7 @@ authors:
     corresponding: true
 
 publication:
-  doi: "10.5281/zenodo.21864004" # Production Zenodo DOI for the public release.
+  doi: "10.5281/zenodo.21919307" # Production Zenodo DOI for the v1.0.1 public release.
   github_repository: "https://github.com/ActiveInferenceInstitute/Active_Fedference"
   journal: ""
   year: "2026"
@@ -33,7 +33,7 @@ publication:
   # --write`; never hand-edit the three generated files.
   software_name: "Active Fedference"
   date_created: "2026-06-24"
-  date_released: "2026-08-10"
+  date_released: "2026-08-13"
   abstract: >-
     Active Fedference is a tested, reproducible research package that connects
     two previously separate ideas: the belief-sharing account of distributed

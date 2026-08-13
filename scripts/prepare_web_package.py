@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -9,8 +10,13 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     """Prepare and validate the generated web package."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project-root", type=Path, default=None)
+    args = parser.parse_args(argv)
+
+    from project_paths import resolve_script_project_root
     from publication.web_package import (
         mirror_web_figures,
         normalize_web_xrefs,
@@ -18,10 +24,11 @@ def main() -> int:
         validate_web_package,
     )
 
-    sanitized = sanitize_machine_paths(_PROJECT_ROOT)
-    copied = mirror_web_figures(_PROJECT_ROOT)
-    replacements = normalize_web_xrefs(_PROJECT_ROOT)
-    result = validate_web_package(_PROJECT_ROOT)
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
+    sanitized = sanitize_machine_paths(root)
+    copied = mirror_web_figures(root)
+    replacements = normalize_web_xrefs(root)
+    result = validate_web_package(root)
     print(f"machine_paths_sanitized: {len(sanitized)}")
     print(f"web_figures_copied: {len(copied)}")
     print(f"web_xrefs_normalized: {replacements}")

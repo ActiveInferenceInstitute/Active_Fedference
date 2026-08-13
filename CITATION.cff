@@ -22,10 +22,10 @@ authors:
   given-names: Daniel Ari
   orcid: 0000-0001-6232-9096
 cff-version: 1.2.0
-date-released: '2026-08-10'
+date-released: '2026-08-13'
 identifiers:
 - type: doi
-  value: 10.5281/zenodo.21864004
+  value: 10.5281/zenodo.21919307
 keywords:
 - active inference
 - federated learning
@@ -38,4 +38,4 @@ message: If you use this software, please cite it using the metadata from this f
 repository-code: https://github.com/ActiveInferenceInstitute/Active_Fedference
 title: Active Fedference
 type: software
-version: 0.1.0
+version: 1.0.1

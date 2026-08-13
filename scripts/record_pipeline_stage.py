@@ -41,9 +41,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--project-root",
         type=Path,
-        default=_PROJECT_ROOT,
+        default=None,
+        help="standalone checkout whose rendered surfaces should be recorded",
     )
     args = parser.parse_args(argv)
+    from project_paths import resolve_script_project_root
+
+    root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
     if args.renderer is not None and args.stage != "render":
         parser.error("--renderer is valid only for the render stage")
     from publication.release_manifest import timestamp_from_source_date_epoch
@@ -56,12 +60,12 @@ def main(argv: list[str] | None = None) -> int:
         if source_date_epoch is not None
         else args.timestamp
     )
-    surfaces = validate_rendered_surfaces(args.project_root)
+    surfaces = validate_rendered_surfaces(root)
     if not surfaces.ok:
         detail = "; ".join(surfaces.findings)
         raise ValueError(f"cannot record render before rendered-surface validation passes: {detail}")
     record = record_pipeline_stage(
-        args.project_root,
+        root,
         args.stage,
         renderer=args.renderer,
         timestamp=timestamp,
