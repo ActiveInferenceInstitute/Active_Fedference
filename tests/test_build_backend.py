@@ -114,7 +114,7 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
     assert 'license-files = ["LICENSE"]' in pyproject
     assert '{name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"}' in pyproject
     assert 'Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"' in pyproject
-    assert 'DOI = "https://doi.org/10.5281/zenodo.21919307"' in pyproject
+    assert 'DOI = "https://doi.org/10.5281/zenodo.21934992"' in pyproject
     assert "recursive-include docs *.md" in manifest
     assert "recursive-include manuscript *.bib *.md *.png *.yaml" in manifest
     assert "recursive-include scripts *.py *.md" in manifest

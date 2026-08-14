@@ -1128,7 +1128,26 @@ FIGURE_DEPENDENCY_CONTRACTS: dict[str, tuple[FigureDependencyContract, ...]] = {
 
 
 def _is_number(value: object) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+    )
+
+
+def _check_finite_json(value: object, *, path: str = "payload") -> None:
+    """Reject non-standard JSON numbers at every nested report position."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if not math.isfinite(float(value)):
+            raise ReportSchemaError(f"{path} contains a non-finite JSON number")
+        return
+    if isinstance(value, Mapping):
+        for key, nested in value.items():
+            _check_finite_json(nested, path=f"{path}.{key}")
+        return
+    if isinstance(value, list):
+        for index, nested in enumerate(value):
+            _check_finite_json(nested, path=f"{path}[{index}]")
 
 
 def _matches_type(tag: TypeTag, value: object) -> bool:
@@ -1528,6 +1547,9 @@ def _check_review_grid(payload: Mapping[str, object]) -> None:
 def validate_report(schema: str, payload: Mapping[str, object]) -> None:
     """Validate one report or figure-registry payload before it is written."""
 
+    if not isinstance(payload, Mapping):
+        raise ReportSchemaError(f"{schema} payload must be a mapping")
+    _check_finite_json(payload)
     if schema == "figure_registry":
         _check_figure_registry(payload)
         return
@@ -1557,6 +1579,9 @@ def check_figure_contract(
 ) -> None:
     """Validate the declared report fields consumed by one figure generator."""
 
+    if not isinstance(report, Mapping):
+        raise ReportSchemaError(f"figure {generator!r} report {report_name!r} must be a mapping")
+    _check_finite_json(report)
     if generator not in FIGURE_DEPENDENCY_CONTRACTS:
         raise ReportSchemaError(f"Unknown figure contract for generator {generator!r}")
     for contract in FIGURE_DEPENDENCY_CONTRACTS[generator]:

@@ -56,3 +56,14 @@ def test_publication_style_contract_is_readable() -> None:
     assert plt.rcParams["xtick.labelsize"] >= 11
     assert plt.rcParams["legend.fontsize"] >= MIN_QUANTITATIVE_FONT_SIZE
     assert MIN_SCHEMATIC_FONT_SIZE >= 8.5
+
+
+def test_source_analogue_uncertainty_metadata_matches_captions() -> None:
+    assert (
+        FIGURE_METADATA["free_energy_comparison"]["uncertainty"]
+        == "across-seed standard-deviation spread; not a confidence interval"
+    )
+    assert FIGURE_METADATA["emergence_bmr"]["uncertainty"] == (
+        "none; deterministic closed-form comparison on a single posterior"
+    )
+    assert FIGURE_METADATA["emergence_bmr"]["replication_unit"] == "not applicable"

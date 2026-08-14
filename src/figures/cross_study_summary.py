@@ -35,6 +35,33 @@ _UNIT_TITLES: dict[str, str] = {
 }
 
 
+def _value_annotation_position(
+    value: float,
+    endpoint: float,
+    span: float,
+) -> tuple[float, str, dict[str, object] | None]:
+    """Choose a legible data-label lane for a horizontal bar.
+
+    Small negative effects end immediately to the left of the zero line. If
+    their interval endpoint is labelled on that side, the text can collide
+    with the long study labels in the left margin. Put those labels in a
+    dedicated, lightly boxed lane just to the right of zero; the sign and bar
+    still carry the direction, while the printed value remains readable.
+    """
+    if value < 0.0 and abs(endpoint) < 0.12 * span:
+        return (
+            0.02 * span,
+            "left",
+            {"facecolor": "white", "edgecolor": "none", "alpha": 0.82, "pad": 0.6},
+        )
+    sign = 1.0 if value >= 0.0 else -1.0
+    return (
+        endpoint + sign * 0.025 * span,
+        "left" if sign > 0 else "right",
+        None,
+    )
+
+
 def _load_cross_study_report(
     project_root: Path | None,
     report: dict | None,
@@ -155,15 +182,16 @@ def generate_cross_study_summary(
         ax.set_xlim(x_lo - 0.05 * span, x_hi + 0.18 * span)
         for index, (entry, value) in enumerate(zip(entries, means, strict=True)):
             endpoint = float(ci_hi[index] if value >= 0.0 else ci_lo[index])
-            sign = 1.0 if value >= 0.0 else -1.0
+            annotation_x, alignment, bbox = _value_annotation_position(value, endpoint, span)
             ax.text(
-                endpoint + sign * 0.025 * span,
+                annotation_x,
                 index,
                 f"{value:+.3f}",
                 va="center",
-                ha="left" if sign > 0 else "right",
+                ha=alignment,
                 fontsize=10.5,
                 fontweight="bold",
+                bbox=bbox,
             )
         ax.set_yticks(y)
         ax.set_yticklabels([str(entry["label"]) for entry in entries], fontsize=10.5)

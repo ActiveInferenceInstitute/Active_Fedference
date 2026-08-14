@@ -516,15 +516,19 @@ manuscript is rewritten to the appropriate LaTeX citation command and
 resolved against the bib file. Titles in the bib file are reproduced
 verbatim, including any British spellings, because they are quotations
 of the original sources.</p>
-<p>To validate that <code>references.bib</code> is syntactically clean
-and contains the required fields per entry type, this validator is only
-runnable when the project is checked out under the template monorepo’s
-<code>projects/working/</code> (it is not on the standalone repo’s own
-dependency graph), invoked from the monorepo root with a
-monorepo-relative path:</p>
+<p>The standalone checkout provides a local cross-reference gate for
+citation labels and all manuscript references:</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">-m</span> infrastructure.reference.citation.cli validate <span class="dt">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    projects/working/active_fedference/manuscript/references.bib <span class="at">--strict</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--locked</span> pytest tests/test_xref_integrity.py <span class="at">-q</span></span></code></pre></div>
+<p>To validate that <code>references.bib</code> is syntactically clean
+and contains the required fields per entry type, the stricter citation
+validator is available when the project is checked out under the
+template monorepo’s <code>projects/working/</code> (it is not on the
+standalone repo’s own dependency graph), invoked from the monorepo root
+with a monorepo-relative path:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python <span class="at">-m</span> infrastructure.reference.citation.cli validate <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    projects/working/active_fedference/manuscript/references.bib <span class="at">--strict</span></span></code></pre></div>
 </main>
 </body>
 </html>

@@ -162,6 +162,19 @@ def test_missing_publication_block_fails_loudly(tmp_path: Path) -> None:
         assert "publication" in str(exc)
 
 
+def test_malformed_experiment_block_uses_the_shared_config_boundary(tmp_path: Path) -> None:
+    root = _make_project(tmp_path)
+    config_path = root / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["experiment"] = []
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    try:
+        build_metadata(root)
+        raise AssertionError("expected ValueError")
+    except ValueError as exc:
+        assert "experiment block must be a mapping" in str(exc)
+
+
 def test_real_repository_surfaces_are_emitter_consistent() -> None:
     """The shipped CITATION.cff/.zenodo.json/codemeta.json must be exactly what
     the config emits — hand-edits to generated surfaces cannot land silently."""

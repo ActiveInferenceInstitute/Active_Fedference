@@ -1,6 +1,6 @@
 # Scholarly audit and evidence boundary
 
-Updated 2026-08-01. This page records the literature pass used to tighten the
+Updated 2026-08-13. This page records the literature pass used to tighten the
 claims and simulation design of Active Fedference. It is a claim map, not a
 literature review pretending that results in a neighboring field automatically
 transfer to this repository.
@@ -8,7 +8,7 @@ transfer to this repository.
 The phase-indexed implementation plan is in
 [`docs/todo/scholarship-and-phase-plan.md`](../todo/scholarship-and-phase-plan.md).
 
-## Current primary-source recheck — 2026-08-01
+## Current primary-source recheck — 2026-08-13
 
 The current pass rechecked the authoritative [Friston et al. (2024) open
 record](https://pmc.ncbi.nlm.nih.gov/articles/PMC11139662/) and the final
@@ -33,6 +33,31 @@ belief-sharing, FedGVI, and candidate-objective lanes, respectively. The
 proposition excludes its declared separable class only and neither imports nor
 creates a broader robustness or objective claim.
 
+## Current primary-source search protocol — 2026-08-13
+
+To keep this audit source-current, a fresh web search was run on 2026-08-13 and
+the linked primary records were opened directly. The search interfaces and
+queries were:
+
+| Interface/domain | Query |
+| --- | --- |
+| PMC | `site:pmc.ncbi.nlm.nih.gov "Federated inference and belief sharing"` |
+| PMLR | `site:proceedings.mlr.press "Federated Generalised Variational Inference"` |
+| arXiv | `site:arxiv.org "Robust Federated Inference" Dhasade` |
+| arXiv | `site:arxiv.org "generalized Bayesian" federated inference robustness` |
+
+Inclusion required a primary author or publisher record with direct relevance
+to belief sharing, generalized-Bayesian/FedGVI inference, or robustness of
+federated prediction. Secondary summaries and unverified search snippets were
+excluded. The Friston and Mildner records were re-confirmed as the source
+bridges already used by the manuscript. [Dhasade et al. (2025), *Robust
+Federated Inference*](https://arxiv.org/abs/2510.00310) was retained here as
+adjacent design context: its robustness conditions for averaging and its
+adversarial framing of nonlinear aggregators reinforce the separation between
+this repository's categorical client evidence and server heuristic. It was not
+promoted to a manuscript numeric claim or treated as evidence for this
+implementation.
+
 ## Anchor sources
 
 | Source | What it supports here | What it does not establish here |
@@ -40,6 +65,7 @@ creates a broader robustness or objective claim.
 | [Friston et al. (2024), *Federated inference and belief sharing*](https://pmc.ncbi.nlm.nih.gov/articles/PMC11139662/) | The active-inference belief-sharing setting and the standard log-linear pooling limit. | Robustness to contaminated or adversarial broadcasts; statistical significance of this implementation. |
 | [Mildner et al. (2025), *Federated Generalised Variational Inference*](https://proceedings.mlr.press/v267/mildner25a.html) | FedGVI's generalized-Bayesian federated objective, cavity construction, misspecification framing, and the source method reimplemented in the categorical lane. | A guarantee for Active Fedference's discrete-categorical active-inference architecture or its server heuristic. |
 | [Mildner et al. (2025), arXiv version](https://arxiv.org/abs/2502.00846) | The accessible preprint record and version history for the same primary work. | A substitute for a repository-specific proof; the code must keep theorem-backed client updates distinct from heuristic server pooling. |
+| [Dhasade et al. (2025), *Robust Federated Inference*](https://arxiv.org/abs/2510.00310) | Current adjacent robustness context: averaging error depends on honest-response dissimilarity/margin, while nonlinear aggregation is framed as an adversarial-learning problem. | Evidence for this repository's categorical server heuristic, a Byzantine guarantee, or transfer of its benchmark results. |
 | [FedGVI public implementation](https://github.com/Terje-M/FedGVI), pinned by full revision in `research_registry.py` | The implementation-level protocol authority for variational family, site factors, cavity construction, factor replacement, data splits, rounds, stopping, predictive sampling, and ELBO sampling. | Evidence that an unresolved parity row is matched, or that the local M4 profile is exact source-scale CUDA replication. |
 
 The pinned FashionMNIST shell uses run indices 1--5 against a six-value seed
@@ -75,11 +101,13 @@ that an open extension has already been completed.
 
 1. The independent Monte Carlo unit is the seed. Clients, episodes, observations,
    and repeated trials are nested within a seed and are reduced before inference.
-2. The primary budgets are 240 independent seeds for the main across-seed
-   belief-sharing evidence and 480 matched trials for the headline robustness
-   contrast. The structural-extension/cross-study tier now uses 64 independent
-   seeds, up from the former five-seed smoke summary, plus 20 matched trials per
-   contamination rate in its robustness row.
+2. The current publication configuration uses 480 independent seeds for the
+   main across-seed belief-sharing evidence and 960 matched trials for the
+   headline robustness verdict. The structural-extension/cross-study tier uses
+   128 independent seeds, while the conditional-world/proper-score extension
+   separately uses 64 seeds with 24 nested trials per cell; the cross-study
+   overview uses 40 matched trials per contamination rate. These are checked-in
+   configuration budgets, not universal power claims.
 3. Every multi-seed summary reports the mean, median, standard deviation, MCSE,
    percentile-bootstrap interval, and an approximate two-sided MDE. The MDE is a
    planning quantity conditional on the observed seed variance, not a claim of
@@ -114,13 +142,12 @@ as such in the manuscript limitations and roadmap.
 
 The fixed hidden state and attack target are an important boundary: the within-rate
 bootstrap intervals quantify Monte Carlo variation conditional on that world, not
-generalization over hidden states or attack geometries. The 64-seed cross-study
+generalization over hidden states or attack geometries. The 128-seed cross-study
 layer partially widens the independent unit, but it still reuses the declared
 data-generating mechanism and should not be read as a deployment sample.
 
-The 2026-07-28 refresh rechecked the primary source records used by this audit:
-Friston et al. is linked to its open PMC record, Mildner et al. to the final
-PMLR paper, and the simulation-precision sources to their PMC records. The
+The 2026-07-28 refresh rechecked the primary source records used by this audit;
+the 2026-08-13 search protocol above is the current source-current pass. The
 repository continues to use those sources as design constraints and evidence
 boundaries, not as proof that this implementation inherits their assumptions or
 results.

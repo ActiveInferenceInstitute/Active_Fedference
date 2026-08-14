@@ -6,7 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from figures.cross_study_summary import generate_cross_study_summary
+from figures.cross_study_summary import (
+    _value_annotation_position,
+    generate_cross_study_summary,
+)
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 
@@ -64,3 +67,18 @@ def test_cross_study_summary_rejects_missing_native_facet(tmp_path: Path) -> Non
     report["studies"] = [study for study in report["studies"] if study["unit"] != "R-sq"]
     with pytest.raises(ValueError, match="missing native-unit facet"):
         generate_cross_study_summary(report, project_root=tmp_path)
+
+
+def test_small_negative_value_labels_use_the_zero_side_lane() -> None:
+    x, alignment, bbox = _value_annotation_position(-0.002, -0.004, 0.55)
+    assert x > 0.0
+    assert alignment == "left"
+    assert bbox is not None
+    assert bbox["facecolor"] == "white"
+
+
+def test_material_negative_value_labels_stay_at_the_interval_endpoint() -> None:
+    x, alignment, bbox = _value_annotation_position(-0.2, -0.24, 0.55)
+    assert x < -0.24
+    assert alignment == "right"
+    assert bbox is None

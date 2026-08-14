@@ -211,14 +211,14 @@
       "generated_by": "emergence_bmr",
       "label": "fig:emergence-bmr",
       "path": "output/figures/emergence_bmr.png",
-      "replication_unit": "independent configured seed",
+      "replication_unit": "not applicable",
       "source_citation": "Friston et al. (2024), Federated inference and belief sharing",
       "source_equation": "",
       "source_figure": "Fig. 9",
       "source_manuscript": "manuscript/18_results_emergence.md",
       "source_relation": "source-mechanism analogue",
       "status": "source-mechanism analogue",
-      "uncertainty": "deterministic or seed-level interval as declared in the caption",
+      "uncertainty": "none; deterministic closed-form comparison on a single posterior",
       "unit": "nats"
     },
     {
@@ -235,7 +235,7 @@
       "source_manuscript": "manuscript/16_results_belief_sharing.md",
       "source_relation": "source-mechanism analogue",
       "status": "source-mechanism analogue",
-      "uncertainty": "deterministic or seed-level interval as declared in the caption",
+      "uncertainty": "across-seed standard-deviation spread; not a confidence interval",
       "unit": "nats"
     },
     {

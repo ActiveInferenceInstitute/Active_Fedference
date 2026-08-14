@@ -80,13 +80,15 @@ def reliability_curve(
     true_states: ArrayF,
     *,
     n_bins: int = 10,
-) -> dict[str, list[float] | list[int]]:
+) -> dict[str, list[float | None] | list[int]]:
     """Return equal-width confidence/reliability bins for multiclass beliefs.
 
     Each observation contributes its maximum predicted probability, whether
     that prediction is correct, and its count. Empty bins are retained with
-    ``NaN`` summaries so the bin geometry remains explicit in reports. The
-    result is a diagnostic curve, not a calibration guarantee.
+    ``None`` summaries so the bin geometry remains explicit in JSON reports.
+    Plotting and ECE consumers convert those explicit missing-bin markers to
+    ``NaN`` masks locally. The result is a diagnostic curve, not a calibration
+    guarantee.
     """
     if isinstance(n_bins, bool) or not isinstance(n_bins, (int, np.integer)) or n_bins < 1:
         raise ValueError("n_bins must be a positive integer")
@@ -96,17 +98,17 @@ def reliability_curve(
     correct = (predicted == states).astype(np.float64)
     edges = np.linspace(0.0, 1.0, int(n_bins) + 1)
     indices = np.minimum(np.searchsorted(edges, confidence, side="right") - 1, n_bins - 1)
-    mean_confidence: list[float] = []
-    accuracy: list[float] = []
+    mean_confidence: list[float | None] = []
+    accuracy: list[float | None] = []
     counts: list[int] = []
-    centers: list[float] = []
+    centers: list[float | None] = []
     for index in range(int(n_bins)):
         mask = indices == index
         centers.append(float((edges[index] + edges[index + 1]) / 2.0))
         counts.append(int(mask.sum()))
         if not np.any(mask):
-            mean_confidence.append(float("nan"))
-            accuracy.append(float("nan"))
+            mean_confidence.append(None)
+            accuracy.append(None)
         else:
             mean_confidence.append(float(confidence[mask].mean()))
             accuracy.append(float(correct[mask].mean()))

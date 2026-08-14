@@ -1,6 +1,6 @@
 # Active Fedference — Robust Federated Active Inference
 
-[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21919307.svg)](https://doi.org/10.5281/zenodo.21919307)
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21934992.svg)](https://doi.org/10.5281/zenodo.21934992)
 [![Public GitHub repository](https://img.shields.io/badge/GitHub-ActiveInferenceInstitute%2FActive_Fedference-181717?logo=github)](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 
 Active Fedference is a research project that reimplements **FedGVI** (Federated
@@ -12,15 +12,15 @@ the federated **belief-sharing** scenario of Friston et al.
 
 ## Published release
 
-The v1.0.1 research release is published and cross-referenced across both
+The v1.0.2 research release is published and cross-referenced across both
 surfaces:
 
-- **Permanent DOI:** [`10.5281/zenodo.21919307`](https://doi.org/10.5281/zenodo.21919307)
-  · [Zenodo record](https://zenodo.org/records/21919307)
+- **Permanent DOI:** [`10.5281/zenodo.21934992`](https://doi.org/10.5281/zenodo.21934992)
+  · [Zenodo record](https://zenodo.org/records/21934992)
 - **Public source and reviewer snapshot:**
   [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 - **Top-level manuscript PDF:**
-  [`Active_Fedference_Research_Manuscript_v1.0.1_Zenodo_10.5281-zenodo.21919307.pdf`](Active_Fedference_Research_Manuscript_v1.0.1_Zenodo_10.5281-zenodo.21919307.pdf)
+  [`Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf`](Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf)
 
 The deposited PDF embeds the DOI and public repository URL, and the Zenodo
 record lists the public repository as its related identifier. The v0.1.0

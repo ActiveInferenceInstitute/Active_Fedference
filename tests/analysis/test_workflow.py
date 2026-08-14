@@ -61,6 +61,19 @@ def test_bnn_torch_profile_is_explicitly_loaded_and_validated(tmp_path: Path) ->
     with pytest.raises(ValueError, match="n_steps"):
         workflow._bnn_torch_options(tmp_path)
 
+    invalid_blocks = (
+        {"n_steps": 2.5},
+        {"robustness": float("nan")},
+        {"contamination_levels": 0.5},
+    )
+    for block in invalid_blocks:
+        (tmp_path / "manuscript" / "config.yaml").write_text(
+            yaml.safe_dump({"experiment": {"bnn_torch": block}}),
+            encoding="utf-8",
+        )
+        with pytest.raises(ValueError, match="bnn_torch"):
+            workflow._bnn_torch_options(tmp_path)
+
 
 def test_analysis_profile_is_explicit_and_validated(tmp_path: Path) -> None:
     _make_project(tmp_path)

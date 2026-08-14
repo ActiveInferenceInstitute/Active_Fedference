@@ -1,6 +1,6 @@
 # Visual claim audit
 
-Updated 2026-08-10. The numerical and render records dated 2026-07-17,
+Updated 2026-08-13. The numerical and render records dated 2026-07-17,
 2026-07-28, and 2026-08-01 are historical snapshots. The checked-out source
 declares an enlarged experiment configuration and a revised selection-free
 review-grid producer. A visual is current only when its named report and the
@@ -17,6 +17,29 @@ manuscript visual is allowed to communicate. It
 keeps the Friston et al. (2024) generative-model/message-sharing connection
 visible without allowing a schematic, server heuristic, or conditional
 simulation to inherit a guarantee it does not own.
+
+## 2026-08-13 source-current refresh
+
+The source-current reviewer snapshot was regenerated after the publication
+analysis, receipt-backed hydration, and the template 03–05 renderer passes.
+The combined manuscript is 75 pages, with 43 manuscript HTML surfaces, 43
+slide PDFs, and 30 registered figure PNG/PDF pairs. The rendered-surface and
+web-package gates passed; `qpdf --check` reports no syntax or stream errors.
+The combined PDF remains untagged (`pdfinfo: Tagged: no`), so HTML is the
+accessibility-enhanced surface and PDF/UA conformance is not claimed.
+
+Visual review found one concrete layout defect in the cross-study summary:
+small negative effects placed their value labels immediately left of zero,
+where they could collide with long study labels. The figure producer now puts
+near-zero negative labels in a lightly boxed lane just right of zero, while
+keeping material negative effects at their interval endpoints. The regenerated
+figure was inspected after the fix alongside the review grid, calibration,
+complexity, graphical-abstract, and BNN robustness figures; no clipping,
+overlap, unreadable glyphs, or misleading uncertainty encoding was observed.
+
+This refresh records rendering and legibility evidence only; it does not
+promote any scientific claim beyond the source-bound estimands and claim
+ledger.
 
 ## Current visual source contract
 

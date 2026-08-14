@@ -28,6 +28,7 @@ from typing import Any
 
 import yaml
 
+from experiment_config import load_manuscript_config
 from publication.identifiers import doi_url, normalize_doi
 
 #: The generated surfaces, relative to the project root.
@@ -41,10 +42,25 @@ def _project_root(project_root: Path | None) -> Path:
 
 def _load_config(root: Path) -> dict[str, Any]:
     config_path = root / "manuscript" / "config.yaml"
-    with config_path.open("r", encoding="utf-8") as handle:
-        data = yaml.safe_load(handle) or {}
-    if not data.get("publication"):
-        raise ValueError("config.yaml has no publication: block")
+    if not config_path.exists():
+        raise ValueError("config.yaml is missing")
+    data = load_manuscript_config(root)
+    publication = data.get("publication")
+    if not isinstance(publication, dict) or not publication:
+        raise ValueError("config.yaml publication block must be a non-empty mapping")
+    authors = data.get("authors")
+    if (
+        not isinstance(authors, list)
+        or not authors
+        or any(not isinstance(author, dict) for author in authors)
+    ):
+        raise ValueError("config.yaml authors must be a non-empty list of mappings")
+    keywords = data.get("keywords", [])
+    if not isinstance(keywords, list) or any(not isinstance(keyword, str) for keyword in keywords):
+        raise ValueError("config.yaml keywords must be a list of strings")
+    metadata = data.get("metadata", {})
+    if not isinstance(metadata, dict):
+        raise ValueError("config.yaml metadata block must be a mapping")
     return data
 
 

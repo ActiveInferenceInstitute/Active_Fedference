@@ -34,7 +34,7 @@ Technical index for `docs/`. Navigation hub:
 | **reference/** | |
 | `reference/verification-commands.md` | ISA probes; copy-paste commands |
 | `reference/api-stability.md` | Public API/schema compatibility and deprecation policy |
-| `reference/zenodo-release.md` | Published v1.0.1 DOI record and safe new-version/update/upload/verify/publish boundary for future versions |
+| `reference/zenodo-release.md` | Published v1.0.2 DOI record and safe new-version/update/upload/verify/publish boundary for future versions |
 | `reference/README.md` | Reference-document index and metadata/release boundary signposts |
 | **research/** | |
 | `research/*.md` | Source-audited literature, statistical, complexity, claim, visual, and composability reviews |

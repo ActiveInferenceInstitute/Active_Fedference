@@ -148,6 +148,16 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
+% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
+\newcounter{codelisting}
+\renewcommand{\thecodelisting}{\arabic{codelisting}}
+\newenvironment{codelisting}{%
+  \refstepcounter{codelisting}%
+  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
+  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
+}{%
+  \end{minipage}\end{center}%
+}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -300,7 +310,7 @@ rest on the per-agent axis without leaning on the heuristic.
 \begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
 and project-pool corners are exact to machine precision}
 257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy core
-carries project test coverage of 91.15\% (gate \(\ge 90\%\)), with every
+carries project test coverage of 91.01\% (gate \(\ge 90\%\)), with every
 stochastic step threaded through a single seeded
 \breaktt{np.random.default\_rng(0)}. sec.~10
 records the full environment fingerprint, and the expected-free-energy

@@ -45,7 +45,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-The production Zenodo release DOI is [10.5281/zenodo.21919307](https://doi.org/10.5281/zenodo.21919307),
+The production Zenodo release DOI is [10.5281/zenodo.21934992](https://doi.org/10.5281/zenodo.21934992),
 and the repository and deposited PDF point to each other through this DOI and
 the repository URL.
 
@@ -1896,14 +1896,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.90
-(log-linear), 0.94 (iterative robust),
-0.70 (variational), 1.59
-(naive self-excluding sharing), and 1.93
+performance guarantees: agent-axis slopes are 0.75
+(log-linear), 1.03 (iterative robust),
+0.71 (variational), 1.62
+(naive self-excluding sharing), and 2.04
 (robust self-excluding sharing); state-axis slopes
-are 0.40, 0.41, and
-0.42; the modality-axis inference slope is
-0.67. The slope fit is a timing diagnostic on this
+are 0.28, 0.51, and
+0.41; the modality-axis inference slope is
+0.66. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -2301,7 +2301,7 @@ without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-91.15% (gate $\ge 90\%$), with every stochastic step threaded
+91.01% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -3703,8 +3703,8 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 82a24fc96a72b38e |
-| Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
+| Config hash (SHA-256, first 16) | 369c47138f41608a |
+| Reproducible build epoch (UTC) | 2026-08-13T17:38:31Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -3731,10 +3731,10 @@ alone are insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1670 collected cases; the bound successful
+- Project test suite: 1687 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 91.15% (achieved by the bound full
+- Line coverage on `src/`: 91.01% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 
@@ -3804,7 +3804,7 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.0.
+This is project version 1.0.2.
 
 
 # Supplement: variational aggregation objective and weight control {#sec:supp-variational}
@@ -5415,11 +5415,18 @@ the appropriate LaTeX citation command and resolved against the bib file. Titles
 in the bib file are reproduced verbatim, including any British spellings,
 because they are quotations of the original sources.
 
+The standalone checkout provides a local cross-reference gate for citation
+labels and all manuscript references:
+
+```bash
+uv run --locked pytest tests/test_xref_integrity.py -q
+```
+
 To validate that `references.bib` is syntactically clean and contains the
-required fields per entry type, this validator is only runnable when the
-project is checked out under the template monorepo's `projects/working/`
-(it is not on the standalone repo's own dependency graph), invoked from the
-monorepo root with a monorepo-relative path:
+required fields per entry type, the stricter citation validator is available
+when the project is checked out under the template monorepo's
+`projects/working/` (it is not on the standalone repo's own dependency graph),
+invoked from the monorepo root with a monorepo-relative path:
 
 ```bash
 uv run python -m infrastructure.reference.citation.cli validate \

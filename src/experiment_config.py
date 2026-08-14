@@ -142,13 +142,58 @@ class ExperimentConfig:
     complexity: ComplexityBenchmarkConfig = field(default_factory=ComplexityBenchmarkConfig)
 
     def __post_init__(self) -> None:
+        integer_fields = (
+            "n_agents",
+            "n_locations",
+            "n_seeds",
+            "replicate_seeds",
+            "n_trials",
+            "cross_study_n_trials",
+            "conditional_world_n_seeds",
+            "conditional_world_n_trials",
+            "review_grid_n_seeds",
+            "review_grid_n_trials",
+            "gallery_n_seeds",
+            "gallery_n_trials",
+            "onset_n_seeds",
+            "onset_n_trials",
+            "bnn_n_seeds",
+            "bnn_n_per",
+        )
+        for name in integer_fields:
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise ValueError(f"{name} must be an integer")
+
+        real_fields = (
+            "review_grid_target_max_mcse",
+            "robustness",
+            "fdr_alpha",
+            "power_alpha",
+            "target_power",
+        )
+        for name in real_fields:
+            value = getattr(self, name)
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(float(value))
+            ):
+                raise ValueError(f"{name} must be a finite number")
+
         if self.n_agents < 2:
             raise ValueError("n_agents must be >= 2 (belief sharing needs a colony)")
         if self.n_locations < 2:
             raise ValueError("n_locations must be >= 2")
         if not self.contamination_rates:
             raise ValueError("contamination_rates must be non-empty")
-        if any(not 0.0 <= r <= 1.0 for r in self.contamination_rates):
+        if any(
+            isinstance(rate, bool)
+            or not isinstance(rate, (int, float))
+            or not math.isfinite(float(rate))
+            or not 0.0 <= rate <= 1.0
+            for rate in self.contamination_rates
+        ):
             raise ValueError("contamination_rates must lie in [0, 1]")
         if not self.divergences or any(
             not isinstance(divergence, str) or not divergence for divergence in self.divergences
@@ -176,7 +221,13 @@ class ExperimentConfig:
             raise ValueError("review_grid_n_trials must be >= 2")
         if (
             not self.review_grid_rates
-            or any(not math.isfinite(rate) or not 0.0 <= rate <= 1.0 for rate in self.review_grid_rates)
+            or any(
+                isinstance(rate, bool)
+                or not isinstance(rate, (int, float))
+                or not math.isfinite(float(rate))
+                or not 0.0 <= rate <= 1.0
+                for rate in self.review_grid_rates
+            )
             or tuple(self.review_grid_rates) != tuple(sorted(self.review_grid_rates))
             or len(set(self.review_grid_rates)) != len(self.review_grid_rates)
         ):
@@ -218,20 +269,43 @@ class ExperimentConfig:
         return tuple(d for d in self.divergences if d != "KLD")
 
 
-def _coerce_float_tuple(values: Any, default: tuple[float, ...]) -> tuple[float, ...]:
-    if values is None or values == []:
-        return default
-    if isinstance(values, (list, tuple)):
-        return tuple(float(v) for v in values)
-    return (float(values),)
+def _strict_int(value: Any, *, field: str) -> int:
+    """Read an integer YAML scalar without truncating or string-coercing it."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"manuscript/config.yaml {field} must be an integer")
+    return value
 
 
-def _coerce_str_tuple(values: Any, default: tuple[str, ...]) -> tuple[str, ...]:
-    if values is None or values == []:
+def _strict_float(value: Any, *, field: str) -> float:
+    """Read a finite numeric YAML scalar without accepting text or booleans."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"manuscript/config.yaml {field} must be a number")
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError(f"manuscript/config.yaml {field} must be finite")
+    return number
+
+
+def _coerce_float_tuple(values: Any, default: tuple[float, ...], *, field: str) -> tuple[float, ...]:
+    if values is None:
         return default
     if isinstance(values, (list, tuple)):
-        return tuple(str(v) for v in values)
-    return (str(values),)
+        return tuple(_strict_float(value, field=f"{field}[]") for value in values)
+    if isinstance(values, (int, float)) and not isinstance(values, bool):
+        return (_strict_float(values, field=field),)
+    raise ValueError(f"manuscript/config.yaml {field} must be a number or list of numbers")
+
+
+def _coerce_str_tuple(values: Any, default: tuple[str, ...], *, field: str) -> tuple[str, ...]:
+    if values is None:
+        return default
+    if isinstance(values, (list, tuple)):
+        if any(not isinstance(value, str) for value in values):
+            raise ValueError(f"manuscript/config.yaml {field} must contain only strings")
+        return tuple(values)
+    if isinstance(values, str):
+        return (values,)
+    raise ValueError(f"manuscript/config.yaml {field} must be a string or list of strings")
 
 
 def load_manuscript_config(project_root: Path | None = None) -> dict[str, Any]:
@@ -338,39 +412,80 @@ def load_experiment_config(project_root: Path | None = None) -> ExperimentConfig
     n_trials = exp.get("n_trials", sweep.get("n_trials", _DEFAULT_N_TRIALS))
 
     return ExperimentConfig(
-        n_agents=int(n_agents),
-        n_locations=int(exp.get("n_locations", 9)),
-        contamination_rates=_coerce_float_tuple(contamination, _DEFAULT_CONTAMINATION_RATES),
-        divergences=_coerce_str_tuple(divergences, _DEFAULT_DIVERGENCES),
-        n_seeds=int(n_seeds),
-        replicate_seeds=int(exp.get("replicate_seeds", _DEFAULT_REPLICATE_SEEDS)),
-        n_trials=int(n_trials),
-        cross_study_n_trials=int(exp.get("cross_study_n_trials", _DEFAULT_CROSS_STUDY_N_TRIALS)),
-        conditional_world_n_seeds=int(
-            exp.get("conditional_world_n_seeds", _DEFAULT_CONDITIONAL_WORLD_N_SEEDS)
+        n_agents=_strict_int(n_agents, field="experiment.n_agents"),
+        n_locations=_strict_int(exp.get("n_locations", 9), field="experiment.n_locations"),
+        contamination_rates=_coerce_float_tuple(
+            contamination, _DEFAULT_CONTAMINATION_RATES, field="experiment.contamination_rates"
         ),
-        conditional_world_n_trials=int(
-            exp.get("conditional_world_n_trials", _DEFAULT_CONDITIONAL_WORLD_N_TRIALS)
+        divergences=_coerce_str_tuple(divergences, _DEFAULT_DIVERGENCES, field="experiment.divergences"),
+        n_seeds=_strict_int(n_seeds, field="experiment.n_seeds"),
+        replicate_seeds=_strict_int(
+            exp.get("replicate_seeds", _DEFAULT_REPLICATE_SEEDS), field="experiment.replicate_seeds"
         ),
-        review_grid_n_seeds=int(exp.get("review_grid_n_seeds", _DEFAULT_REVIEW_GRID_N_SEEDS)),
-        review_grid_n_trials=int(exp.get("review_grid_n_trials", _DEFAULT_REVIEW_GRID_N_TRIALS)),
-        review_grid_rates=_coerce_float_tuple(exp.get("review_grid_rates"), _DEFAULT_REVIEW_GRID_RATES),
-        review_grid_target_max_mcse=float(
-            exp.get("review_grid_target_max_mcse", _DEFAULT_REVIEW_GRID_TARGET_MAX_MCSE)
+        n_trials=_strict_int(n_trials, field="experiment.n_trials"),
+        cross_study_n_trials=_strict_int(
+            exp.get("cross_study_n_trials", _DEFAULT_CROSS_STUDY_N_TRIALS),
+            field="experiment.cross_study_n_trials",
         ),
-        gallery_n_seeds=int(exp.get("gallery_n_seeds", _DEFAULT_GALLERY_N_SEEDS)),
-        gallery_n_trials=int(exp.get("gallery_n_trials", _DEFAULT_GALLERY_N_TRIALS)),
-        onset_n_seeds=int(exp.get("onset_n_seeds", _DEFAULT_ONSET_N_SEEDS)),
-        onset_n_trials=int(exp.get("onset_n_trials", _DEFAULT_ONSET_N_TRIALS)),
-        bnn_n_seeds=int(exp.get("bnn_n_seeds", _DEFAULT_BNN_N_SEEDS)),
-        bnn_n_per=int(exp.get("bnn_n_per", _DEFAULT_BNN_N_PER)),
-        robustness=float(exp.get("robustness", 0.0)),
-        fdr_alpha=float(stats.get("fdr_alpha", exp.get("fdr_alpha", 0.05))),
-        power_alpha=float(stats.get("power_alpha", exp.get("power_alpha", 0.05))),
-        power_alternative=str(stats.get("power_alternative", exp.get("power_alternative", "greater"))),
-        target_power=float(stats.get("target_power", exp.get("target_power", 0.80))),
+        conditional_world_n_seeds=_strict_int(
+            exp.get("conditional_world_n_seeds", _DEFAULT_CONDITIONAL_WORLD_N_SEEDS),
+            field="experiment.conditional_world_n_seeds",
+        ),
+        conditional_world_n_trials=_strict_int(
+            exp.get("conditional_world_n_trials", _DEFAULT_CONDITIONAL_WORLD_N_TRIALS),
+            field="experiment.conditional_world_n_trials",
+        ),
+        review_grid_n_seeds=_strict_int(
+            exp.get("review_grid_n_seeds", _DEFAULT_REVIEW_GRID_N_SEEDS),
+            field="experiment.review_grid_n_seeds",
+        ),
+        review_grid_n_trials=_strict_int(
+            exp.get("review_grid_n_trials", _DEFAULT_REVIEW_GRID_N_TRIALS),
+            field="experiment.review_grid_n_trials",
+        ),
+        review_grid_rates=_coerce_float_tuple(
+            exp.get("review_grid_rates"), _DEFAULT_REVIEW_GRID_RATES, field="experiment.review_grid_rates"
+        ),
+        review_grid_target_max_mcse=_strict_float(
+            exp.get("review_grid_target_max_mcse", _DEFAULT_REVIEW_GRID_TARGET_MAX_MCSE),
+            field="experiment.review_grid_target_max_mcse",
+        ),
+        gallery_n_seeds=_strict_int(
+            exp.get("gallery_n_seeds", _DEFAULT_GALLERY_N_SEEDS), field="experiment.gallery_n_seeds"
+        ),
+        gallery_n_trials=_strict_int(
+            exp.get("gallery_n_trials", _DEFAULT_GALLERY_N_TRIALS), field="experiment.gallery_n_trials"
+        ),
+        onset_n_seeds=_strict_int(
+            exp.get("onset_n_seeds", _DEFAULT_ONSET_N_SEEDS), field="experiment.onset_n_seeds"
+        ),
+        onset_n_trials=_strict_int(
+            exp.get("onset_n_trials", _DEFAULT_ONSET_N_TRIALS), field="experiment.onset_n_trials"
+        ),
+        bnn_n_seeds=_strict_int(exp.get("bnn_n_seeds", _DEFAULT_BNN_N_SEEDS), field="experiment.bnn_n_seeds"),
+        bnn_n_per=_strict_int(exp.get("bnn_n_per", _DEFAULT_BNN_N_PER), field="experiment.bnn_n_per"),
+        robustness=_strict_float(exp.get("robustness", 0.0), field="experiment.robustness"),
+        fdr_alpha=_strict_float(
+            stats.get("fdr_alpha", exp.get("fdr_alpha", 0.05)), field="experiment.statistics.fdr_alpha"
+        ),
+        power_alpha=_strict_float(
+            stats.get("power_alpha", exp.get("power_alpha", 0.05)), field="experiment.statistics.power_alpha"
+        ),
+        power_alternative=_power_alternative(stats, exp),
+        target_power=_strict_float(
+            stats.get("target_power", exp.get("target_power", 0.80)),
+            field="experiment.statistics.target_power",
+        ),
         complexity=ComplexityBenchmarkConfig.from_mapping(complexity),
     )
+
+
+def _power_alternative(stats: Mapping[str, Any], experiment: Mapping[str, Any]) -> str:
+    """Read the declared power direction without stringifying malformed YAML."""
+    value = stats.get("power_alternative", experiment.get("power_alternative", "greater"))
+    if not isinstance(value, str):
+        raise ValueError("manuscript/config.yaml experiment.statistics.power_alternative must be a string")
+    return value
 
 
 __all__ = ["ExperimentConfig", "load_experiment_config", "load_manuscript_config"]

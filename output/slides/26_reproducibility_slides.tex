@@ -186,6 +186,16 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
+% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
+\newcounter{codelisting}
+\renewcommand{\thecodelisting}{\arabic{codelisting}}
+\newenvironment{codelisting}{%
+  \refstepcounter{codelisting}%
+  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
+  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
+}{%
+  \end{minipage}\end{center}%
+}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -267,28 +277,18 @@ configuration from which this manuscript was rendered.
 
 \begin{frame}[fragile,allowframebreaks]{Environment fingerprint for the
 reported run}
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\begin{longtable}[]{@{}ll@{}}
 \caption{Software and configuration fingerprint for the hydrated
 manuscript. The build epoch is derived from
 \protect\breaktt{SOURCE\_DATE\_EPOCH}; an unreleased build records an
 explicit omitted sentinel rather than wall-clock
 time.}\label{tbl:repro_env}\tabularnewline
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Field
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Value
-\end{minipage} \\
+Field & Value \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Field
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Value
-\end{minipage} \\
+Field & Value \\
 \midrule\noalign{}
 \endhead
 Python & 3.13.11 \\
@@ -296,9 +296,8 @@ NumPy & 2.4.2 \\
 SciPy & 1.18.0 \\
 PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
-Config hash (SHA-256, first 16) & 82a24fc96a72b38e \\
-Reproducible build epoch (UTC) & omitted (unreleased reproducible
-build) \\
+Config hash (SHA-256, first 16) & 369c47138f41608a \\
+Reproducible build epoch (UTC) & 2026-08-13T17:38:31Z \\
 \bottomrule\noalign{}
 \end{longtable}
 
@@ -347,11 +346,11 @@ the claim surface}
 \item
   Acceptance criteria: 259 total, 257 passing.
 \item
-  Project test suite: 1670 collected cases; the bound successful receipt
+  Project test suite: 1687 collected cases; the bound successful receipt
   records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 \item
-  Line coverage on \texttt{src/}: 91.15\% (achieved by the bound full
+  Line coverage on \texttt{src/}: 91.01\% (achieved by the bound full
   gate; \(\ge 90\%\) line coverage is enforced in CI, while branch
   coverage is tracked separately in CI).
 \end{itemize}
@@ -476,7 +475,7 @@ limit alone, not for any bounded-influence property
 \begin{frame}[fragile,allowframebreaks]{Recovery-limit certificate for
 the client and project-pool corners}
 All code is authored by Daniel Ari Friedman and licensed under the MIT
-license. This is project version 1.0.
+license. This is project version 1.0.2.
 \end{frame}
 
 \end{document}

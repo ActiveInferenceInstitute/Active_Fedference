@@ -186,6 +186,16 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
+% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
+\newcounter{codelisting}
+\renewcommand{\thecodelisting}{\arabic{codelisting}}
+\newenvironment{codelisting}{%
+  \refstepcounter{codelisting}%
+  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
+  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
+}{%
+  \end{minipage}\end{center}%
+}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -219,13 +229,25 @@ original sources.
 \end{frame}
 
 \begin{frame}[fragile,allowframebreaks]{References}
-To validate that \texttt{references.bib} is syntactically clean and
-contains the required fields per entry type, this validator is only
-runnable when the project is checked out under the template monorepo's
-\breaktt{projects/working/} (it is not on the standalone repo's own
-dependency graph), invoked from the monorepo root with a
-monorepo-relative path:
+The standalone checkout provides a local cross-reference gate for
+citation labels and all manuscript references:
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{uv}\NormalTok{ run }\AttributeTok{{-}{-}locked}\NormalTok{ pytest tests/test\_xref\_integrity.py }\AttributeTok{{-}q}
+\end{Highlighting}
+\end{Shaded}
+
+To validate that \texttt{references.bib} is syntactically clean and
+contains the required fields per entry type, the stricter citation
+validator is available when the project is checked out under the
+template monorepo's \breaktt{projects/working/} (it is not on the
+standalone repo's own dependency graph), invoked from the monorepo root
+with a monorepo-relative path:
+
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]{References}
 \begin{Shaded}
 \begin{Highlighting}[]
 \ExtensionTok{uv}\NormalTok{ run python }\AttributeTok{{-}m}\NormalTok{ infrastructure.reference.citation.cli validate }\DataTypeTok{\textbackslash{}}

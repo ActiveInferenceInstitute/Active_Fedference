@@ -97,3 +97,16 @@ def test_save_figure_data_writes_nested_json_payload(tmp_path: Path) -> None:
 
     assert path == tmp_path / "data" / "runtime_surface.json"
     assert json.loads(path.read_text(encoding="utf-8")) == payload
+
+
+def test_save_figure_data_rejects_nonfinite_payload_before_replacing_file(tmp_path: Path) -> None:
+    path = tmp_path / "data" / "runtime_surface.json"
+    path.parent.mkdir()
+    path.write_text("original\n", encoding="utf-8")
+
+    try:
+        save_figure_data({"value": float("nan")}, "runtime_surface", tmp_path)
+        raise AssertionError("expected strict JSON serialization to fail")
+    except ValueError:
+        pass
+    assert path.read_text(encoding="utf-8") == "original\n"

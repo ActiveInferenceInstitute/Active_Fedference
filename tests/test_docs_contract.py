@@ -275,26 +275,26 @@ def test_release_metadata_matches_public_project_identity() -> None:
     assert "template_code_project" not in metadata
     assert "Convergence Analysis of Gradient Descent Optimization" not in metadata
     assert "10.5281/zenodo.20417136" not in metadata
-    assert "10.5281/zenodo.21919307" in metadata
+    assert "10.5281/zenodo.21934992" in metadata
 
     config = yaml.safe_load(_read("manuscript/config.yaml"))
     assert ":" not in config["paper"]["title"]
     assert config["paper"]["subtitle"]
     assert ":" not in config["paper"]["subtitle"]
     assert config["publication"]["github_repository"] == "https://github.com/ActiveInferenceInstitute/Active_Fedference"
-    assert config["publication"]["doi"] == "10.5281/zenodo.21919307"
-    assert config["publication"]["date_released"] == "2026-08-13"
+    assert config["publication"]["doi"] == "10.5281/zenodo.21934992"
+    assert config["publication"]["date_released"] == "2026-08-14"
     assert config["metadata"]["license"] == "MIT"
     assert "active inference" in config["keywords"]
     assert "FedGVI" in config["keywords"]
     assert yaml.safe_load(_read("CITATION.cff"))["identifiers"] == [
-        {"type": "doi", "value": "10.5281/zenodo.21919307"}
+        {"type": "doi", "value": "10.5281/zenodo.21934992"}
     ]
-    assert yaml.safe_load(_read("CITATION.cff"))["date-released"] == "2026-08-13"
-    assert json.loads(_read(".zenodo.json"))["doi"] == "10.5281/zenodo.21919307"
-    assert json.loads(_read(".zenodo.json"))["publication_date"] == "2026-08-13"
-    assert json.loads(_read("codemeta.json"))["identifier"] == "https://doi.org/10.5281/zenodo.21919307"
-    assert json.loads(_read("codemeta.json"))["dateModified"] == "2026-08-13"
+    assert yaml.safe_load(_read("CITATION.cff"))["date-released"] == "2026-08-14"
+    assert json.loads(_read(".zenodo.json"))["doi"] == "10.5281/zenodo.21934992"
+    assert json.loads(_read(".zenodo.json"))["publication_date"] == "2026-08-14"
+    assert json.loads(_read("codemeta.json"))["identifier"] == "https://doi.org/10.5281/zenodo.21934992"
+    assert json.loads(_read("codemeta.json"))["dateModified"] == "2026-08-14"
 
 
 def test_docs_do_not_reintroduce_stale_claim_language() -> None:

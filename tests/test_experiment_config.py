@@ -190,6 +190,26 @@ def test_scalar_coercion_for_single_value_lists(tmp_path: Path) -> None:
     assert cfg.divergences == ("KLD",)
 
 
+@pytest.mark.parametrize(
+    ("experiment", "message"),
+    [
+        ({"n_agents": 2.5}, "experiment.n_agents"),
+        ({"n_seeds": "8"}, "experiment.n_seeds"),
+        ({"review_grid_target_max_mcse": "0.01"}, "experiment.review_grid_target_max_mcse"),
+        ({"contamination_rates": ["0.3"]}, r"experiment.contamination_rates\[\]"),
+        ({"statistics": {"power_alternative": 1}}, "power_alternative must be a string"),
+    ],
+)
+def test_numeric_yaml_values_are_not_silently_truncated_or_coerced(
+    tmp_path: Path,
+    experiment: dict[str, object],
+    message: str,
+) -> None:
+    _write_config(tmp_path, experiment)
+    with pytest.raises(ValueError, match=message):
+        load_experiment_config(tmp_path)
+
+
 def test_frozen_dataclass_is_immutable() -> None:
     cfg = ExperimentConfig()
     with pytest.raises(AttributeError):
@@ -199,6 +219,8 @@ def test_frozen_dataclass_is_immutable() -> None:
 @pytest.mark.parametrize(
     "kwargs",
     [
+        {"n_agents": 2.5},
+        {"n_agents": True},
         {"n_agents": 1},
         {"n_locations": 1},
         {"contamination_rates": ()},

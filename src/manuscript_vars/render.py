@@ -20,7 +20,7 @@ def save_variables(variables: dict[str, str], output_path: Path) -> Path:
         raise RuntimeError(f"Refusing to write variables through symlink: {output_path}")
     temporary = output_path.with_name(f".{output_path.name}.{uuid.uuid4().hex}.tmp")
     temporary.write_text(
-        json.dumps(variables, indent=2, sort_keys=True, ensure_ascii=False),
+        json.dumps(variables, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n",
         encoding="utf-8",
     )
     temporary.replace(output_path)

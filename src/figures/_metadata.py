@@ -56,9 +56,13 @@ def _build_metadata() -> dict[str, dict[str, str]]:
             uncertainty=(
                 "pointwise percentile bootstrap across independent seeds"
                 if name == "language_kl_decay"
-                else "deterministic or seed-level interval as declared in the caption"
+                else (
+                    "across-seed standard-deviation spread; not a confidence interval"
+                    if name == "free_energy_comparison"
+                    else "none; deterministic closed-form comparison on a single posterior"
+                )
             ),
-            replication_unit="independent configured seed",
+            replication_unit=("not applicable" if name == "emergence_bmr" else "independent configured seed"),
         )
     metadata["free_energy_comparison"]["source_figure"] = "Fig. 5"
     metadata["language_kl_decay"]["source_figure"] = "Fig. 7"

@@ -128,7 +128,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "docs/manuscript/accessibility.md",
     "docs/reference/api-stability.md",
     "docs/reference/zenodo-release.md",
-    "Active_Fedference_Research_Manuscript_v1.0.1_Zenodo_10.5281-zenodo.21919307.pdf",
+    "Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf",
     "manuscript/30_supplement_notation.md",
     "docs/security/README.md",
     "docs/security/active_fedference-threat-model.md",

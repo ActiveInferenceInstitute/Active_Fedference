@@ -12,6 +12,7 @@ still gets accept/reject coverage automatically.
 from __future__ import annotations
 
 import json
+import math
 from copy import deepcopy
 from pathlib import Path
 
@@ -226,6 +227,14 @@ def test_bool_is_not_an_int_and_int_is_a_number() -> None:
     payload = _valid_payload(spec)
     payload["delta_F_redundant"] = 2
     validate_report("emergence", payload)
+
+
+@pytest.mark.parametrize("value", [math.nan, math.inf, -math.inf])
+def test_nested_nonfinite_json_numbers_are_rejected(value: float) -> None:
+    payload = _valid_payload_for_name("language_acquisition")
+    payload["kl_trajectory"] = [value]
+    with pytest.raises(ReportSchemaError, match="non-finite JSON number"):
+        validate_report("language_acquisition", payload)
 
 
 def test_unknown_schema_name_rejected() -> None:
@@ -462,3 +471,19 @@ def test_write_boundary_accepts_valid_payload_and_round_trips(tmp_path: Path) ->
     written = _write_json(payload, target, schema="emergence")
     assert written == target
     assert json.loads(target.read_text(encoding="utf-8")) == payload
+
+
+def test_write_boundary_rejects_nonfinite_payload_before_replacing_existing_file(tmp_path: Path) -> None:
+    target = tmp_path / "report.json"
+    target.write_text("original\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        _write_json({"value": math.nan}, target)
+    assert target.read_text(encoding="utf-8") == "original\n"
+
+
+def test_write_boundary_serialization_failure_preserves_existing_file(tmp_path: Path) -> None:
+    target = tmp_path / "report.json"
+    target.write_text("original\n", encoding="utf-8")
+    with pytest.raises(TypeError):
+        _write_json({"value": object()}, target)
+    assert target.read_text(encoding="utf-8") == "original\n"

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+import tempfile
 from pathlib import Path
 
 try:
@@ -42,11 +44,23 @@ def experiment_config() -> ExperimentConfig:
 
 def save_figure_data(data: object, name: str, output_dir: Path) -> Path:
     """Write JSON figure data below ``output_dir/data`` and return its path."""
+    serialized = json.dumps(data, indent=2, sort_keys=True, allow_nan=False) + "\n"
     data_dir = output_dir / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
     data_path = data_dir / f"{name}.json"
-    with open(data_path, "w") as f:
-        json.dump(data, f, indent=2, default=str)
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{data_path.name}.", suffix=".tmp", dir=data_dir)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(serialized)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_name, data_path)
+    except BaseException:
+        try:
+            os.unlink(temporary_name)
+        except FileNotFoundError:
+            pass
+        raise
     return data_path
 
 

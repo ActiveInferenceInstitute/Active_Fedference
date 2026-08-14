@@ -45,7 +45,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-The production Zenodo release DOI is [10.5281/zenodo.21919307](https://doi.org/10.5281/zenodo.21919307),
+The production Zenodo release DOI is [10.5281/zenodo.21934992](https://doi.org/10.5281/zenodo.21934992),
 and the repository and deposited PDF point to each other through this DOI and
 the repository URL.
 

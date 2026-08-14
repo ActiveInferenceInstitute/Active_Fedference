@@ -32,6 +32,8 @@ The four invariants pin the mathematical hinges of the project:
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -228,7 +230,20 @@ def write_invariants_report(
     reports = project_root / "output" / "reports"
     reports.mkdir(parents=True, exist_ok=True)
     out_path = reports / "invariants.json"
-    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    serialized = json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{out_path.name}.", suffix=".tmp", dir=reports)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(serialized)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_name, out_path)
+    except BaseException:
+        try:
+            os.unlink(temporary_name)
+        except FileNotFoundError:
+            pass
+        raise
     return out_path, all_passed
 
 

@@ -43,6 +43,7 @@ def test_reliability_curve_keeps_empty_bins_and_ece_is_zero_for_perfect_control(
     curve = reliability_curve(probabilities, states, n_bins=5)
     assert len(curve["bin_center"]) == 5
     assert sum(curve["count"]) == 4
+    assert any(value is None for value in curve["accuracy"])
     assert expected_calibration_error(probabilities, states, n_bins=5) == pytest.approx(0.0)
 
 

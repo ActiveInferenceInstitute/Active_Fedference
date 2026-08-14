@@ -1,15 +1,15 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "09d559a35bb2624a7c4e6c156234121c6f126cd6c526bb39e157425daccd1fa7",
+  "binding_sha256": "aed0029bdaa1ec449aa0bd36b639e7a47a7b4b82a7342720119e5a5ebf751f1c",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "6d50491fba6bf3856a372207d715f2496e6b23f8462114b868e30a38361b2b77",
-  "combined_size_bytes": 345078,
+  "combined_sha256": "29ec7887a4cca83b9d93b5bead47fa4fbb6cd43fb303c49618b687f27b6abe74",
+  "combined_size_bytes": 345256,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
       "ordinal": 1,
       "path": "output/manuscript/00_abstract.md",
-      "sha256": "e725adb09a94ceca2729249968268be058112f732c675f2a0ee46ffc09d23139",
+      "sha256": "816fe5f31d912ca84ae1595d0c426c03c65ec050c51868568ec2679740c7a5b1",
       "size_bytes": 4665
     },
     {
@@ -87,7 +87,7 @@
     {
       "ordinal": 14,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "9aa73ed0c6952fd0255742c790f146a6d51d503a2b77ab4852b9d219fb7cf0c8",
+      "sha256": "57bdb3c6fa886158c2f54df7506ee0076ed9a865c1d88d10bec04eff01524650",
       "size_bytes": 13715
     },
     {
@@ -99,7 +99,7 @@
     {
       "ordinal": 16,
       "path": "output/manuscript/15_results_recovery.md",
-      "sha256": "c4997ffa68f3d2be7b8801fcf473057d727ebffa8215b772927303753d0b38c4",
+      "sha256": "493ac51fe956046d8d61bee59ebb446ae0a9a7f7daed5383ab30762fb7af59fb",
       "size_bytes": 5931
     },
     {
@@ -165,8 +165,8 @@
     {
       "ordinal": 27,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "504a9c2e6745d386ab9a302198b2c5b537e133236665d07b415100a1d85945bd",
-      "size_bytes": 7189
+      "sha256": "33160ac80825256e8ffef442a51a2f6e12edaa6095728d67551f0089a8c6f61b",
+      "size_bytes": 7172
     },
     {
       "ordinal": 28,
@@ -261,11 +261,11 @@
     {
       "ordinal": 43,
       "path": "output/manuscript/99_references.md",
-      "sha256": "756b515a2087c664c71cc99dc7844e55cefc895c263b8be1119d366e61f2026d",
-      "size_bytes": 969
+      "sha256": "3d276f3936c34468318484cd1ac35821786e5c93a219931757b678d41f56a79a",
+      "size_bytes": 1164
     }
   ],
-  "ordered_inputs_sha256": "20cc83509c795541f97878e4a9e3a86d39881b9e135e5282267713477cdd426b",
+  "ordered_inputs_sha256": "05706ed5a40882544474f1a736ac5ba6e83af94d7bbb6eb55c20d3144acaaf86",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }

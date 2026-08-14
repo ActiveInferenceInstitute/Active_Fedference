@@ -21,7 +21,10 @@ are sourced from different core calls and never conflated.
 from __future__ import annotations
 
 import json
+import math
+import os
 import re
+import tempfile
 import time
 from collections.abc import Mapping
 from dataclasses import replace
@@ -126,8 +129,21 @@ def _write_json(
 ) -> Path:
     if schema is not None:
         report_schemas.validate_report(schema, payload)
+    serialized = json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(serialized)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_name, path)
+    except BaseException:
+        try:
+            os.unlink(temporary_name)
+        except FileNotFoundError:
+            pass
+        raise
     return path
 
 
@@ -407,18 +423,38 @@ def _bnn_torch_options(project_root: Path | None) -> BnnTorchOptions:
     block = data["experiment"].get("bnn_torch", {})
     if not isinstance(block, Mapping):  # defensive: the shared loader enforces this
         raise ValueError("experiment.bnn_torch must be a mapping when provided")
+
+    def _integer(value: object, *, key: str) -> int:
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise ValueError(f"experiment.bnn_torch.{key} must be an integer")
+        return value
+
+    def _real(value: object, *, key: str) -> float:
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError(f"experiment.bnn_torch.{key} must be a number")
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError(f"experiment.bnn_torch.{key} must be finite")
+        return number
+
     options: dict[str, object] = {}
     for key in ("n_clients", "n_per", "hidden_dim", "n_steps"):
         if key in block:
-            value = int(block[key])
+            value = _integer(block[key], key=key)
             if value < 1:
                 raise ValueError(f"experiment.bnn_torch.{key} must be >= 1")
             options[key] = value
     for key in ("robustness", "beta"):
         if key in block:
-            options[key] = float(block[key])
+            value_real = _real(block[key], key=key)
+            if value_real < 0.0:
+                raise ValueError(f"experiment.bnn_torch.{key} must be >= 0")
+            options[key] = value_real
     if "contamination_levels" in block:
-        levels = tuple(float(value) for value in block["contamination_levels"])
+        raw_levels = block["contamination_levels"]
+        if not isinstance(raw_levels, (list, tuple)):
+            raise ValueError("experiment.bnn_torch.contamination_levels must be a list of numbers")
+        levels = tuple(_real(value, key="contamination_levels[]") for value in raw_levels)
         if not levels or any(not 0.0 <= value <= 1.0 for value in levels):
             raise ValueError("experiment.bnn_torch.contamination_levels must be non-empty in [0, 1]")
         options["contamination_levels"] = levels
@@ -899,8 +935,7 @@ def run_analysis_pipeline(
     # --- Write stage timings -----------------------------------------------
     _timings["total"] = time.time() - _pipeline_start
     _timings_path = root / "output" / "data" / "stage_timings.json"
-    _timings_path.parent.mkdir(parents=True, exist_ok=True)
-    _timings_path.write_text(json.dumps(_timings, indent=2, sort_keys=True), encoding="utf-8")
+    _write_json(_timings, _timings_path)
     # This producer-owned sidecar records the exact budget selection and, for a
     # publication run, the pre-run input snapshot that wrote the report tree.
     # A publication receipt must consume this artifact rather than infer the

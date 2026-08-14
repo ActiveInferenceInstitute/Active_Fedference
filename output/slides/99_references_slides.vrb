@@ -1,11 +1,4 @@
 \frametitle{References}
-To validate that \texttt{references.bib} is syntactically clean and
-contains the required fields per entry type, this validator is only
-runnable when the project is checked out under the template monorepo's
-\breaktt{projects/working/} (it is not on the standalone repo's own
-dependency graph), invoked from the monorepo root with a
-monorepo-relative path:
-
 \begin{Shaded}
 \begin{Highlighting}[]
 \ExtensionTok{uv}\NormalTok{ run python }\AttributeTok{{-}m}\NormalTok{ infrastructure.reference.citation.cli validate }\DataTypeTok{\textbackslash{}}

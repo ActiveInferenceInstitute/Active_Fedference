@@ -163,6 +163,16 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
+% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
+\newcounter{codelisting}
+\renewcommand{\thecodelisting}{\arabic{codelisting}}
+\newenvironment{codelisting}{%
+  \refstepcounter{codelisting}%
+  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
+  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
+}{%
+  \end{minipage}\end{center}%
+}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -248,7 +258,7 @@ execution record.
 The open-source repository is
 ActiveInferenceInstitute/Active\_Fedference. The production Zenodo
 release DOI is
-\href{https://doi.org/10.5281/zenodo.21919307}{10.5281/zenodo.21919307},
+\href{https://doi.org/10.5281/zenodo.21934992}{10.5281/zenodo.21934992},
 and the repository and deposited PDF point to each other through this
 DOI and the repository URL.
 

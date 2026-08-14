@@ -8,8 +8,8 @@ Friston et al. (2024) federated **belief-sharing**.
 **Acceptance contract:** [`ISA.md`](ISA.md) · **Documentation hub:** [`docs/README.md`](docs/README.md)
 
 This checkout is intentionally a standalone development and review repository;
-the v1.0.1 public snapshot is already published at the target below; the
-v0.1.0 record remains the prior Zenodo version.
+the v1.0.2 public snapshot is already published at the target below; the
+v1.0.1 and v0.1.0 records remain prior Zenodo versions.
 The configured interim remote is
 [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
 (`origin`); the public destination is

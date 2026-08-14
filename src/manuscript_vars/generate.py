@@ -11,12 +11,12 @@ from pathlib import Path
 
 import numpy as np
 import scipy
-import yaml
 
 from experiment_config import (
     DEFAULT_SENSITIVITY_ACUITY,
     DEFAULT_SENSITIVITY_COLONY_SIZES,
     load_experiment_config,
+    load_manuscript_config,
 )
 from fedference.experiments import run_belief_sharing, run_emergence
 from publication.identifiers import doi_url, normalize_doi
@@ -240,7 +240,7 @@ def generate_variables(
     if config_path.exists():
         config_bytes = config_path.read_bytes()
         config_hash = hashlib.sha256(config_bytes).hexdigest()[:16]
-        data = yaml.safe_load(config_bytes.decode("utf-8")) or {}
+        data = load_manuscript_config(root)
         paper_version = str(data.get("paper", {}).get("version", "1.0"))
         authors = data.get("authors", [])
         first_author = authors[0].get("name", "Unknown") if authors else "Unknown"
