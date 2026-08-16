@@ -10,6 +10,8 @@ import zipfile
 from pathlib import Path
 
 import pytest
+import tomllib
+import yaml
 
 _ROOT = Path(__file__).resolve().parent.parent
 _BACKEND_PATH = _ROOT / "_fedference_build_backend.py"
@@ -114,8 +116,11 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
     assert 'license-files = ["LICENSE"]' in pyproject
     assert '{name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"}' in pyproject
     assert 'Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"' in pyproject
-    assert 'DOI = "https://doi.org/10.5281/zenodo.21934992"' in pyproject
+    config = yaml.safe_load((_ROOT / "manuscript/config.yaml").read_text(encoding="utf-8"))
+    expected_doi = config["publication"]["doi"]
+    assert tomllib.loads(pyproject)["project"]["urls"]["DOI"] == f"https://doi.org/{expected_doi}"
     assert "recursive-include docs *.md" in manifest
+    assert "recursive-include src *.md" in manifest
     assert "recursive-include manuscript *.bib *.md *.png *.yaml" in manifest
     assert "recursive-include scripts *.py *.md" in manifest
     assert "recursive-include tests *.md *.py" in manifest

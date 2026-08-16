@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from publication.identifiers import doi_url, normalize_doi
+from publication.identifiers import doi_url, manuscript_pdf_filename, normalize_doi
 from publication.web_package import (
     WebPackageValidation,
     mirror_web_figures,
@@ -22,6 +22,7 @@ __all__ = [
     "mirror_web_figures",
     "normalize_web_xrefs",
     "doi_url",
+    "manuscript_pdf_filename",
     "normalize_doi",
     "sanitize_machine_paths",
     "ZenodoClient",

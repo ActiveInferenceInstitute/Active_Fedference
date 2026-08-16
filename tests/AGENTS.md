@@ -66,6 +66,12 @@ Smoke
 or pilot execution proves only the declared implementation path; it is not
 confirmatory scientific evidence.
 
+The CLI tests also protect the package split: `fedference_cli.__init__` stays a
+small compatibility facade, `_parser` owns grammar, `_commands` owns registry
+dispatch, and `_support` owns output/receipt mechanics. New command behavior
+must be tested through the public `main()` boundary and through the reusable
+domain operation where applicable.
+
 ## Authoritative command
 
 ```bash

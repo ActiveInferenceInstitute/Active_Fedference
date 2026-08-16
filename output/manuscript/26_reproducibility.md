@@ -46,8 +46,8 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | fdc5ed49031acd3b |
-| Reproducible build epoch (UTC) | 2026-08-14T15:10:44Z |
+| Config hash (SHA-256, first 16) | 45a2d3cff4d553e2 |
+| Reproducible build epoch (UTC) | 2026-08-16T03:59:37Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -79,10 +79,10 @@ insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1692 collected cases; the bound successful
+- Project test suite: 1694 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 90.69% (achieved by the bound full
+- Line coverage on `src/`: 90.26% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 
@@ -152,4 +152,4 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.0.2.
+This is project version 1.0.3.

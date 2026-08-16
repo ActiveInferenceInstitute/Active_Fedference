@@ -8,8 +8,8 @@ Friston et al. (2024) federated **belief-sharing**.
 **Acceptance contract:** [`ISA.md`](ISA.md) · **Documentation hub:** [`docs/README.md`](docs/README.md)
 
 This checkout is intentionally a standalone development and review repository;
-the v1.0.2 public snapshot is already published at the target below; the
-v1.0.1 and v0.1.0 records remain prior Zenodo versions.
+the v1.0.3 public snapshot is already published at the target below; the
+v1.0.2, v1.0.1, and v0.1.0 records remain prior Zenodo versions.
 The configured interim remote is
 [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
 (`origin`); the public destination is
@@ -58,6 +58,11 @@ Full module map, experiments, and artifacts:
 - Evidence, checkpoint, external-data, replay, DOI, and report-writing code is
   explicit boundary code. Reports cross the typed `_write_json` boundary only;
   optional Torch/BNN modules stay outside the default import graph.
+- The installed `fedference_cli` is a composable adapter, not a second domain
+  implementation: `__init__.py` is the compatibility facade, `_parser.py`
+  owns process grammar, `_commands.py` owns registry dispatch, and `_support.py`
+  owns output isolation and receipt construction. Its package contract is
+  [`src/fedference_cli/README.md`](src/fedference_cli/README.md).
 - Figures are generated through `src/figures/`, whose metadata registry,
   manuscript captions, report payloads, and output filenames must agree.
 
@@ -129,6 +134,11 @@ figure consumes it. The release manifest records a provenance fingerprint
 that no longer matches those inputs.
 
 Full probe list: [`docs/reference/verification-commands.md`](docs/reference/verification-commands.md).
+
+The cross-layer extension and orchestration rules are in
+[`docs/development/modularity.md`](docs/development/modularity.md). Read that
+guide before adding a domain operation, research lane, CLI command, report,
+figure, script, or durable documentation page.
 
 Scientific claim boundaries and the MAJ-1 server-rule evidence ladder are
 maintained in [`docs/research/manuscript-claim-audit.md`](docs/research/manuscript-claim-audit.md),

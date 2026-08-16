@@ -21,7 +21,7 @@ and never belong in a release snapshot.
 | Suite slice | Covers |
 | --- | --- |
 | `fedference/` | `src/fedference/*` domain modules |
-| `test_fedference_cli.py` | Installed CLI parsing, output isolation, receipts, verification, and unimplemented-run failure |
+| `test_fedference_cli.py` | Installed CLI facade/parser split, output isolation, receipts, verification, and unimplemented-run failure |
 | `figures/` | `src/figures/*` generators |
 | `analysis/` | `src/analysis/workflow.py`, `artifacts.py`, and `report_schemas.py`; tests cover orchestration, the canonical artifact set, write-boundary validation, and stage contracts |
 | `test_manuscript_variables.py` | Token hydration |
@@ -61,3 +61,4 @@ clean tree, and `uv.lock` digest. These are implementation gates; they do not
 convert a smoke run into scientific evidence.
 
 Philosophy: [`../docs/development/testing_philosophy.md`](../docs/development/testing_philosophy.md)
+Modularity contract: [`../docs/development/modularity.md`](../docs/development/modularity.md).

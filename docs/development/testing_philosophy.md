@@ -160,7 +160,7 @@ covers both `system_overview.py` and `graphical_abstract.py` jointly.
 | `test_publication_metadata.py` | Publication metadata sourcing + tamper detection |
 | `test_release_manifest.py` | Release bundle digests, provenance fingerprint, `--verify` round trip |
 | `test_runtime_surface.py` | No retired runtime markers or test-double APIs |
-| `test_fedference_cli.py` | Installed CLI list/run/benchmark/verify/replay contracts and output isolation |
+| `test_fedference_cli.py` | Installed CLI facade/parser split, list/run/benchmark/verify/replay contracts, and output isolation |
 | `test_web_publication_contract.py` | Web publication metadata contract |
 | `test_token_tables.py` | Token table structure |
 | `test_scripts_smoke.py` | Subprocess smoke for auxiliary scripts; writes go to a temp scaffold via `ACTIVE_FEDFERENCE_PROJECT_ROOT`, never the committed `output/` tree |

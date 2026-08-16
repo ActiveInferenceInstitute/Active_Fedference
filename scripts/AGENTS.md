@@ -7,6 +7,7 @@ implementation importable. Format-specific validators may parse and report
 their format, but numeric research logic remains in `../src/`.
 Conventions: [`CONVENTIONS.md`](CONVENTIONS.md) · Architecture:
 [`../docs/core/architecture.md`](../docs/core/architecture.md).
+Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/development/modularity.md).
 
 ## Scripts
 

@@ -13,8 +13,20 @@ import pytest
 from fedference.evidence import load_run_receipt
 from fedference.federation import run_socket_round
 from fedference_cli import _report_fallbacks, main
+from fedference_cli._parser import main as parser_main
+from fedference_cli._support import _report_fallbacks as support_report_fallbacks
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_cli_facade_preserves_public_imports_and_delegates_by_responsibility() -> None:
+    facade = (ROOT / "src/fedference_cli/__init__.py").read_text(encoding="utf-8")
+    assert main is parser_main
+    assert _report_fallbacks is support_report_fallbacks
+    assert "argparse" not in facade
+    assert "run_external_benchmark_pack" not in facade
+    assert "def _build_parser" not in facade
+    assert len(facade.splitlines()) <= 24
 
 
 def test_report_fallbacks_summarizes_solver_health_without_pseudoreplication() -> None:

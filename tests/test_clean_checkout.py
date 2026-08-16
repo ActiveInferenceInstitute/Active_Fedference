@@ -21,6 +21,10 @@ def test_validation_receipt_chain_is_required_for_clean_checkout() -> None:
         "tests/test_validation_receipt.py",
         "output/data/analysis_execution.json",
         "output/data/test_coverage_receipt.json",
+        "src/fedference_cli/README.md",
+        "src/fedference_cli/_commands.py",
+        "src/fedference_cli/_parser.py",
+        "src/fedference_cli/_support.py",
     } <= set(REQUIRED_TRACKED_PATHS)
 
 

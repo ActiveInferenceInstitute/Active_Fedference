@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import urllib.parse
 from pathlib import Path
 
+import tomllib
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -20,6 +22,7 @@ DOC_CONTRACT_FILES = (
     "docs/core/experiments-and-artifacts.md",
     "docs/development/agent_instructions.md",
     "docs/development/quickstart.md",
+    "docs/development/modularity.md",
     "docs/development/style_guide.md",
     "docs/development/testing_philosophy.md",
     "docs/manuscript/accessibility.md",
@@ -32,6 +35,7 @@ DOC_CONTRACT_FILES = (
     "docs/reference/zenodo-release.md",
     "docs/research/literature-audit.md",
     "docs/research/manuscript-claim-audit.md",
+    "docs/research/cli-modularity-review-2026-08-15.md",
     "docs/research/runtime-surface-composability-review-2026-07-17.md",
     "docs/research/visual-claim-audit.md",
     "docs/security/README.md",
@@ -46,6 +50,8 @@ DOC_CONTRACT_FILES = (
     "scripts/README.md",
     "src/AGENTS.md",
     "src/README.md",
+    "src/fedference_cli/README.md",
+    "src/fedference_cli/AGENTS.md",
     "src/STYLE.md",
     "src/analysis/AGENTS.md",
     "src/analysis/README.md",
@@ -78,7 +84,7 @@ def _repository_guide_files() -> tuple[str, ...]:
         relative = path.relative_to(ROOT)
         if path.name not in {"AGENTS.md", "README.md"}:
             continue
-        if relative.parts[0] in {".pytest_cache", ".venv", "output"}:
+        if relative.parts[0] in {".pytest_cache", ".tmp", ".venv", "build", "node_modules", "output"}:
             continue
         guides.append(relative.as_posix())
     return tuple(sorted(guides))
@@ -247,18 +253,25 @@ def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> N
         ".yml",
     }
     offenders: list[str] = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in text_suffixes:
-            continue
-        if ignored_directories.intersection(path.relative_to(ROOT).parts):
-            continue
-        text = path.read_text(encoding="utf-8", errors="ignore").lower()
-        if any(marker in text for marker in markers):
-            offenders.append(path.relative_to(ROOT).as_posix())
+    for directory, directory_names, file_names in os.walk(ROOT):
+        directory_names[:] = [
+            name for name in directory_names if name not in ignored_directories
+        ]
+        for file_name in file_names:
+            path = Path(directory) / file_name
+            if path.suffix.lower() not in text_suffixes:
+                continue
+            text = path.read_text(encoding="utf-8", errors="ignore").lower()
+            if any(marker in text for marker in markers):
+                offenders.append(path.relative_to(ROOT).as_posix())
     assert offenders == []
 
 
 def test_release_metadata_matches_public_project_identity() -> None:
+    config = yaml.safe_load(_read("manuscript/config.yaml"))
+    expected_doi = config["publication"]["doi"]
+    expected_date = config["publication"]["date_released"]
+    expected_version = config["paper"]["version"]
     metadata = "\n".join(
         _read(path)
         for path in (
@@ -275,26 +288,31 @@ def test_release_metadata_matches_public_project_identity() -> None:
     assert "template_code_project" not in metadata
     assert "Convergence Analysis of Gradient Descent Optimization" not in metadata
     assert "10.5281/zenodo.20417136" not in metadata
-    assert "10.5281/zenodo.21934992" in metadata
+    assert expected_doi in metadata
 
-    config = yaml.safe_load(_read("manuscript/config.yaml"))
     assert ":" not in config["paper"]["title"]
     assert config["paper"]["subtitle"]
     assert ":" not in config["paper"]["subtitle"]
     assert config["publication"]["github_repository"] == "https://github.com/ActiveInferenceInstitute/Active_Fedference"
-    assert config["publication"]["doi"] == "10.5281/zenodo.21934992"
-    assert config["publication"]["date_released"] == "2026-08-14"
+    assert expected_doi.startswith("10.")
+    assert expected_date
     assert config["metadata"]["license"] == "MIT"
     assert "active inference" in config["keywords"]
     assert "FedGVI" in config["keywords"]
-    assert yaml.safe_load(_read("CITATION.cff"))["identifiers"] == [
-        {"type": "doi", "value": "10.5281/zenodo.21934992"}
-    ]
-    assert yaml.safe_load(_read("CITATION.cff"))["date-released"] == "2026-08-14"
-    assert json.loads(_read(".zenodo.json"))["doi"] == "10.5281/zenodo.21934992"
-    assert json.loads(_read(".zenodo.json"))["publication_date"] == "2026-08-14"
-    assert json.loads(_read("codemeta.json"))["identifier"] == "https://doi.org/10.5281/zenodo.21934992"
-    assert json.loads(_read("codemeta.json"))["dateModified"] == "2026-08-14"
+    citation = yaml.safe_load(_read("CITATION.cff"))
+    zenodo = json.loads(_read(".zenodo.json"))
+    codemeta = json.loads(_read("codemeta.json"))
+    package_metadata = tomllib.loads(_read("pyproject.toml"))
+    assert citation["identifiers"] == [{"type": "doi", "value": expected_doi}]
+    assert citation["date-released"] == expected_date
+    assert citation["version"] == expected_version
+    assert zenodo["doi"] == expected_doi
+    assert zenodo["publication_date"] == expected_date
+    assert zenodo["version"] == expected_version
+    assert codemeta["identifier"] == f"https://doi.org/{expected_doi}"
+    assert codemeta["dateModified"] == expected_date
+    assert codemeta["version"] == expected_version
+    assert package_metadata["project"]["version"] == expected_version
 
 
 def test_docs_do_not_reintroduce_stale_claim_language() -> None:

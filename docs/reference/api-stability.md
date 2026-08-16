@@ -1,6 +1,6 @@
 # API and schema stability
 
-Active Fedference uses additive evolution throughout the v0.x series.
+Active Fedference uses additive evolution throughout the current release line.
 
 ## Stable public surface
 
@@ -36,8 +36,16 @@ Active Fedference uses additive evolution throughout the v0.x series.
   `config_sha256`.
 - The installed `fedference` command exposes `list`, `run`, `benchmark`,
   `verify`, and `replay`.
+- The installed CLI's stable public facade is `fedference_cli.main`; the
+  internal `_parser`, `_commands`, and `_support` modules are responsibility
+  boundaries rather than public API. Existing imports of
+  `fedference_cli._report_fallbacks` remain available for compatibility, but
+  new callers should use typed domain/evidence APIs instead of private helpers.
 - Torch is optional through the `bnn` extra. The default `fedference` import
   remains NumPy/SciPy-only.
+- `publication.identifiers.manuscript_pdf_filename` is the canonical
+  version-and-DOI-bound top-level manuscript filename helper; clean-checkout
+  and release tooling use it instead of embedding a historical release name.
 
 Experimental comparators, theory witnesses, recovery fixtures, and planned
 registry runners may evolve while their roadmap item remains open. Their

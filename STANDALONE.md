@@ -13,10 +13,10 @@ complete source message-passing protocol.
 
 The public release target is
 [ActiveInferenceInstitute/Active_Fedference](https://github.com/ActiveInferenceInstitute/Active_Fedference).
-The v1.0.2 release is now published there and has the permanent Zenodo DOI
-[`10.5281/zenodo.21934992`](https://doi.org/10.5281/zenodo.21934992), with the
-public record at <https://zenodo.org/records/21934992>. The v1.0.1 and v0.1.0
-records remain available as prior versions. This checkout remains a
+The v1.0.3 release is now published there and has the permanent Zenodo DOI
+[`10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756), with the
+public record at <https://zenodo.org/records/21969756>. The v1.0.2, v1.0.1,
+and v0.1.0 records remain available as prior versions. This checkout remains a
 standalone development/review source with the interim `docxology` remote; it
 is not the public repository and future changes remain unreleased until an
 explicit review and publication action.
@@ -26,6 +26,13 @@ explicit review and publication action.
 The genuinely standalone part is `src/fedference/` — pure NumPy/SciPy, typed,
 deterministic, with **no `infrastructure.*` imports** (the layer contract,
 ISC-21). It can be exercised in isolation:
+
+The surrounding installed CLI remains modular rather than being part of the
+domain core: its facade, parser, command handlers, and evidence/output helpers
+are documented in [`src/fedference_cli/README.md`](src/fedference_cli/README.md).
+The cross-layer rules for keeping scripts, reports, figures, manuscript
+hydration, and publication composable are in
+[`docs/development/modularity.md`](docs/development/modularity.md).
 
 ```bash
 uv run --locked --extra dev pytest tests/ \
@@ -51,7 +58,7 @@ This checkout is a standalone repository, separate from both the sibling
 template repository and the public GitHub target. Do not merge it into the
 unrelated template remote. Credentials, uncached external data, and local
 review scratch remain private and are excluded from the release; the reviewed
-v1.0.2 source snapshot itself is public. Verify the repository root before
+v1.0.3 source snapshot itself is public. Verify the repository root before
 running render or release commands:
 
 ```bash
@@ -61,7 +68,7 @@ git remote -v
 
 Zenodo publication is a composable release boundary: `src/publication/zenodo.py`
 contains the typed REST client, while `scripts/zenodo_release.py` is the thin
-new-version/update/upload/verify/publish adapter. The v1.0.2 deposition is
+new-version/update/upload/verify/publish adapter. The v1.0.3 deposition is
 published; future metadata or PDF changes require a separately reviewed
 Zenodo version/deposition. Credentials are read from the process environment
 or a local ignored dotenv file and are never written to the repository,

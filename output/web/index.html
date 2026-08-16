@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Daniel Ari Friedman" />
   <meta name="description" content="A Recovery-Tested Generalized-Variational Framework for Categorical Contamination-Aware Consensus" />
@@ -1205,7 +1205,7 @@ the same execution record.</p>
 <p>The open-source repository is
 ActiveInferenceInstitute/Active_Fedference. The production Zenodo
 release DOI is <a
-href="https://doi.org/10.5281/zenodo.21934992">10.5281/zenodo.21934992</a>,
+href="https://doi.org/10.5281/zenodo.21969756">10.5281/zenodo.21969756</a>,
 and the repository and deposited PDF point to each other through this
 DOI and the repository URL.</p>
 <p><strong>Keywords:</strong> active inference, federated learning,
@@ -3864,11 +3864,11 @@ class="math inline">\(arm64\)</span> machine using Python <span
 class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.89
-(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.60 (naive
+orders, not performance guarantees: agent-axis slopes are 0.90
+(log-linear), 0.95 (iterative robust), 0.72 (variational), 1.61 (naive
 self-excluding sharing), and 1.93 (robust self-excluding sharing);
-state-axis slopes are 0.41, 0.39, and 0.42; the modality-axis inference
-slope is 0.67. The slope fit is a timing diagnostic on this machine, not
+state-axis slopes are 0.42, 0.40, and 0.41; the modality-axis inference
+slope is 0.63. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -4430,7 +4430,7 @@ sec. <a href="#sec:results-robustness">7.5</a> and sec. <a
 href="#sec:results-baseline">7.6</a> rest on the per-agent axis without
 leaning on the heuristic.</p>
 <p>257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy
-core carries project test coverage of 90.69% (gate <span
+core carries project test coverage of 90.26% (gate <span
 class="math inline">\(\ge 90\%\)</span>), with every stochastic step
 threaded through a single seeded <code>np.random.default_rng(0)</code>.
 sec. <a href="#sec:reproducibility">10</a> records the full environment
@@ -6922,11 +6922,11 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Config hash (SHA-256, first 16)</td>
-<td>fdc5ed49031acd3b</td>
+<td>45a2d3cff4d553e2</td>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>2026-08-14T15:10:44Z</td>
+<td>2026-08-16T03:59:37Z</td>
 </tr>
 </tbody>
 </table>
@@ -6961,10 +6961,10 @@ class="header-section-number">10.4</span> Test and coverage evidence for
 the claim surface</h2>
 <ul>
 <li>Acceptance criteria: 259 total, 257 passing.</li>
-<li>Project test suite: 1692 collected cases; the bound successful
+<li>Project test suite: 1694 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.</li>
-<li>Line coverage on <code>src/</code>: 90.69% (achieved by the bound
+<li>Line coverage on <code>src/</code>: 90.26% (achieved by the bound
 full gate; <span class="math inline">\(\ge 90\%\)</span> line coverage
 is enforced in CI, while branch coverage is tracked separately in
 CI).</li>
@@ -7056,7 +7056,7 @@ theorem’s matching assumptions only; the server-side
 recovery limit alone, not for any bounded-influence property (sec. <a
 href="#sec:limitations">8.13</a>).</p>
 <p>All code is authored by Daniel Ari Friedman and licensed under the
-MIT license. This is project version 1.0.2.</p>
+MIT license. This is project version 1.0.3.</p>
 <hr />
 <h1 data-number="11" id="sec:supp-variational"><span
 class="header-section-number">11</span> Supplement: variational

@@ -11,7 +11,7 @@ resource, and replay I/O.
 | Layer | Path | Rule |
 | --- | --- | --- |
 | Domain layer | `src/fedference/` | Mathematical modules use NumPy/SciPy and remain side-effect free; named evidence/data/checkpoint/replay adapters own explicit I/O; optional Torch modules stay behind extras; **no** `infrastructure.*` imports (ISC-21) |
-| Installed CLI | `src/fedference_cli/` | Thin registry/run/benchmark/verify/replay adapter; writes only to an explicit caller-owned directory |
+| Installed CLI | `src/fedference_cli/` | Split facade/parser/command/support adapter for registry/run/benchmark/verify/replay; writes only to an explicit caller-owned directory |
 | Orchestration | `src/analysis/`, `src/figures/`, `src/manuscript_variables.py` | Wires experiments, serialises JSON (validated at the write boundary by `analysis/report_schemas.py`), generates figures and tokens; still no `infrastructure.*` in this project |
 | Scripts | `scripts/*.py` | Thin, root-aware entry points; stable subprocess/CI arguments and exit statuses; call into `src/`; format validators may own format parsing but never research math or ad-hoc artifact discovery |
 | Manuscript | `manuscript/` | Markdown + `config.yaml`; numbers are `{{TOKEN}}` only |
@@ -30,7 +30,11 @@ flowchart LR
     scripts[scripts/] --> analysis[src/analysis/workflow.py]
     scripts --> vars[scripts/z_generate_manuscript_variables.py]
     analysis --> fedference[src/fedference/]
-    cli[src/fedference_cli/] --> fedference
+    cli_facade["src/fedference_cli/__init__.py"] --> cli_parser["_parser.py"]
+    cli_parser --> cli_commands["_commands.py"]
+    cli_commands --> cli_support["_support.py"]
+    cli_commands --> fedference
+    cli_support --> fedference
     analysis --> figures[src/figures/]
     vars --> manuscript_vars[src/manuscript_variables.py]
     manuscript_vars --> fedference
@@ -52,6 +56,14 @@ tests and library integrations, while release commands can enforce receipts
 and refuse stale or ambiguous inputs before any write. The explicit
 `--project-root` contract also lets clean-clone and sibling-checkout probes run
 without copying the repository or relying on the caller's current directory.
+
+The installed CLI applies the same rule internally: `__init__.py` is only the
+compatibility facade; `_parser.py` owns the process grammar; `_commands.py`
+owns registry dispatch; and `_support.py` owns output isolation and evidence
+receipts. The package-local map is in
+[`src/fedference_cli/README.md`](../../src/fedference_cli/README.md), and the
+cross-layer extension recipe is in
+[`../development/modularity.md`](../development/modularity.md).
 
 Specialized validators (`validate_mermaid.py`, `validate_outputs.py`, and the
 publication-surface checks) may contain format parsing and diagnostic logic.
@@ -199,7 +211,10 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `src/experiment_config.py` | Loads `manuscript/config.yaml` → `ExperimentConfig` |
 | `src/invariants.py` | Project-local invariant checks (invoked by `scripts/01_run_invariants.py`) |
 | `src/documentation.py` | API doc helpers for `scripts/generate_api_docs.py` |
-| `src/fedference_cli/` | Installed `fedference` entry point for registry listing, bounded execution, external benchmarks, receipt verification, and replay validation |
+| `src/fedference_cli/__init__.py` | Stable installed `fedference` facade; preserves `main` and `_report_fallbacks` |
+| `src/fedference_cli/_parser.py` | `fedference` argument grammar and process-facing error mapping |
+| `src/fedference_cli/_commands.py` | Registry listing/run/benchmark/verify/replay dispatch |
+| `src/fedference_cli/_support.py` | Explicit output isolation, atomic JSON, validation, and receipt construction |
 
 ## Scripts (pipeline-facing)
 

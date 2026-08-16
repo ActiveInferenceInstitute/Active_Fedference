@@ -89,7 +89,7 @@ without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-90.69% (gate $\ge 90\%$), with every stochastic step threaded
+90.26% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is

@@ -6,18 +6,18 @@ AESTHETIC table for what is gate-checked versus convention.
 
 **Contract & identity:** [`../ISA.md`](../ISA.md) · [`../README.md`](../README.md) · [`../STANDALONE.md`](../STANDALONE.md)
 
-**Published release v1.0.2:** [Zenodo DOI `10.5281/zenodo.21934992`](https://doi.org/10.5281/zenodo.21934992) · [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference) · [Zenodo record](https://zenodo.org/records/21934992) · prior [v1.0.1 record](https://zenodo.org/records/21919307) · [v0.1.0 record](https://zenodo.org/records/21864004)
+**Published release v1.0.3:** [Zenodo DOI `10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756) · [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference) · [Zenodo record](https://zenodo.org/records/21969756) · prior [v1.0.2 record](https://zenodo.org/records/21934992) · [v1.0.1 record](https://zenodo.org/records/21919307) · [v0.1.0 record](https://zenodo.org/records/21864004)
 
 ## Subfolders
 
 | Folder | Purpose |
 | --- | --- |
 | [`core/`](core/README.md) | Science narrative, architecture, experiments & artifacts |
-| [`development/`](development/README.md) | Agent rules, quickstart, testing, style |
+| [`development/`](development/README.md) | Agent rules, quickstart, modularity, testing, style |
 | [`manuscript/`](manuscript/README.md) | PDF/web pipeline, accessibility boundary, tokens & labels |
 | [`operations/`](operations/README.md) | Output layout, troubleshooting, FAQ |
 | [`reference/`](reference/README.md) | Verification, API/schema stability, and Zenodo release boundary |
-| [`research/`](research/literature-audit.md) | Source-audited scholarship, claim boundaries, simulation-design rationale, the [dated extended statistical audit](research/extended-statistical-audit-2026-07-14.md), the [first-principles/RedTeam review](research/first-principles-redteam-review-2026-07-16.md), and the [runtime-surface/composability follow-up](research/runtime-surface-composability-review-2026-07-17.md) |
+| [`research/`](research/literature-audit.md) | Source-audited scholarship, claim boundaries, simulation-design rationale, the [dated extended statistical audit](research/extended-statistical-audit-2026-07-14.md), the [first-principles/RedTeam review](research/first-principles-redteam-review-2026-07-16.md), the [runtime-surface/composability follow-up](research/runtime-surface-composability-review-2026-07-17.md), and the [CLI/orchestration modularity review](research/cli-modularity-review-2026-08-15.md) |
 | [`security/`](security/README.md) | Runtime/development trust boundaries, abuse paths, mitigations, and no-claim constraints |
 | [`todo/`](todo/README.md) | Scoped forward roadmap pages linked from `TODO.md` |
 
@@ -26,11 +26,12 @@ AESTHETIC table for what is gate-checked versus convention.
 1. [`development/agent_instructions.md`](development/agent_instructions.md) — repository editing rules and visual QA
 2. [`core/architecture.md`](core/architecture.md) — layer boundaries
 3. [`development/testing_philosophy.md`](development/testing_philosophy.md) — zero mocks + coverage
-4. [`manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) — before editing outputs
-5. [`manuscript/accessibility.md`](manuscript/accessibility.md) — before accessibility or publication-surface claims
-6. [`development/style_guide.md`](development/style_guide.md) — before editing source
-7. [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md) — before editing manuscript prose
-8. [`reference/zenodo-release.md`](reference/zenodo-release.md) — before reserving, updating, uploading, or publishing a DOI deposition
+4. [`development/modularity.md`](development/modularity.md) — before adding software, scripts, reports, figures, or documentation
+5. [`manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) — before editing outputs
+6. [`manuscript/accessibility.md`](manuscript/accessibility.md) — before accessibility or publication-surface claims
+7. [`development/style_guide.md`](development/style_guide.md) — before editing source
+8. [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md) — before editing manuscript prose
+9. [`reference/zenodo-release.md`](reference/zenodo-release.md) — before reserving, updating, uploading, or publishing a DOI deposition
 
 ## Read order (new contributors)
 
@@ -57,6 +58,7 @@ AESTHETIC table for what is gate-checked versus convention.
 | Task | Read first |
 | --- | --- |
 | `src/fedference/*` | [`core/architecture.md`](core/architecture.md), [`development/style_guide.md`](development/style_guide.md) |
+| `src/fedference_cli/*`, `src/analysis/*`, or `src/publication/*` | [`development/modularity.md`](development/modularity.md), [`core/architecture.md`](core/architecture.md) |
 | `tests/*` | [`development/testing_philosophy.md`](development/testing_philosophy.md) |
 | `manuscript/*.md` | [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md), [`../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md) |
 | `scripts/*` | [`core/architecture.md`](core/architecture.md), [`../scripts/AGENTS.md`](../scripts/AGENTS.md) |

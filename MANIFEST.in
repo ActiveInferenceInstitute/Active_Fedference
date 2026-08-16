@@ -9,6 +9,7 @@ include STANDALONE.md
 include TODO.md
 recursive-include data *.csv *.md *.yaml
 recursive-include docs *.md
+recursive-include src *.md
 recursive-include manuscript *.bib *.md *.png *.yaml
 recursive-include scripts *.py *.md
 recursive-include tests *.md *.py

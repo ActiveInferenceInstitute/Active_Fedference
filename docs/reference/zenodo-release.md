@@ -1,16 +1,16 @@
 # Zenodo release boundary
 
-Active Fedference v1.0.2 is the current public release:
+Active Fedference v1.0.3 is the current public release:
 
-- prior depositions: `21864004` (v0.1.0), `21919307` (v1.0.1)
-- current deposition: `21934992` (v1.0.2)
-- DOI: [`10.5281/zenodo.21934992`](https://doi.org/10.5281/zenodo.21934992)
-- public record: <https://zenodo.org/records/21934992>
+- prior depositions: `21864004` (v0.1.0), `21919307` (v1.0.1), `21934992` (v1.0.2)
+- current deposition: `21969756` (v1.0.3)
+- DOI: [`10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756)
+- public record: <https://zenodo.org/records/21969756>
 - state: **published** (`done`)
 - released PDF: `active_fedference_combined.pdf` (the same bytes as the
   top-level GitHub manuscript PDF)
 
-The v1.0.2 DOI is the permanent identifier for the current release. Its PDF
+The v1.0.3 DOI is the permanent identifier for the current release. Its PDF
 and the public GitHub repository
 ([`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference))
 cross-reference each other through the release metadata. The v0.1.0 record
@@ -42,7 +42,7 @@ inherits the prior metadata and files. The CLI resolves Zenodo's
 
 ```bash
 ENV_FILE="/path/to/ignored/zenodo.env"
-SOURCE_ID="21934992"  # latest published deposition, not the global concept id
+SOURCE_ID="21969756"  # latest published deposition, not the global concept id
 
 uv run --locked python scripts/zenodo_release.py \
   --env-file "$ENV_FILE" \
@@ -102,8 +102,8 @@ and uploaded-PDF checksum.
 For the current public record, the no-token checks are:
 
 ```bash
-curl -fsSIL https://doi.org/10.5281/zenodo.21934992
-curl -fsSL https://zenodo.org/api/records/21934992 | jq \
+curl -fsSIL https://doi.org/10.5281/zenodo.21969756
+curl -fsSL https://zenodo.org/api/records/21969756 | jq \
   '{doi, version: .metadata.version, files: [.files[] | {key, size, checksum}], related_identifiers: .metadata.related_identifiers}'
 ```
 
@@ -116,7 +116,7 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
 
 ## Invariants
 
-- The v1.0.2 DOI in `manuscript/config.yaml`, generated metadata, manuscript
+- The v1.0.3 DOI in `manuscript/config.yaml`, generated metadata, manuscript
   token, rendered PDF, README, and Zenodo record must agree.
 - The Zenodo record title must be the complete paper title plus subtitle, and
   its `description` field must be the full source-controlled abstract. A

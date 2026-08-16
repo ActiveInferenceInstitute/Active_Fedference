@@ -3,6 +3,9 @@
 Thin orchestrators for Active Fedference. Domain and publication logic lives in
 `../src/`; scripts own the command-line contract, checkout-root selection,
 subprocess sequencing, stdout/status mapping, and release-boundary safety.
+The installed CLI follows the same split; see
+[`../src/fedference_cli/README.md`](../src/fedference_cli/README.md) and the
+cross-layer [`../docs/development/modularity.md`](../docs/development/modularity.md).
 
 ## Why thin orchestrators are useful
 

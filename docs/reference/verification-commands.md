@@ -133,7 +133,7 @@ uv build --out-dir "$DIST_SMOKE/dist"
 uv build --out-dir "$DIST_SMOKE/rebuilt"
 shasum -a 256 "$DIST_SMOKE"/dist/* "$DIST_SMOKE"/rebuilt/*
 sdist="$(find "$DIST_SMOKE/dist" -maxdepth 1 -name '*.tar.gz' -print -quit)"
-for member in LICENSE docs/README.md manuscript/config.yaml scripts/02_run_analysis.py tests/README.md; do
+for member in LICENSE docs/README.md docs/development/modularity.md manuscript/config.yaml scripts/02_run_analysis.py src/fedference_cli/README.md tests/README.md; do
   tar -tzf "$sdist" | grep -Eq "/$member$"
 done
 uv venv "$DIST_SMOKE/wheel"

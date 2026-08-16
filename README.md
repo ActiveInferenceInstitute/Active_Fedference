@@ -1,6 +1,6 @@
 # Active Fedference — Robust Federated Active Inference
 
-[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21934992.svg)](https://doi.org/10.5281/zenodo.21934992)
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21969756.svg)](https://doi.org/10.5281/zenodo.21969756)
 [![Public GitHub repository](https://img.shields.io/badge/GitHub-ActiveInferenceInstitute%2FActive_Fedference-181717?logo=github)](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 
 Active Fedference is a research project that reimplements **FedGVI** (Federated
@@ -12,19 +12,20 @@ the federated **belief-sharing** scenario of Friston et al.
 
 ## Published release
 
-The v1.0.2 research release is published and cross-referenced across both
+The v1.0.3 research release is published and cross-referenced across both
 surfaces:
 
-- **Permanent DOI:** [`10.5281/zenodo.21934992`](https://doi.org/10.5281/zenodo.21934992)
-  · [Zenodo record](https://zenodo.org/records/21934992)
+- **Permanent DOI:** [`10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756)
+  · [Zenodo record](https://zenodo.org/records/21969756)
 - **Public source and reviewer snapshot:**
   [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 - **Top-level manuscript PDF:**
-  [`Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf`](Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf)
+  [`Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf`](Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf)
 
 The deposited PDF embeds the DOI and public repository URL, and the Zenodo
 record lists the public repository as its related identifier. The v0.1.0
-record remains available as the prior version. This checkout is
+record remains available as the prior version, alongside v1.0.2 and v1.0.1.
+This checkout is
 the standalone development/review source; its configured `origin` is the
 interim [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
 remote.
@@ -78,6 +79,14 @@ validation, and release sequencing; reusable mathematics and publication
 logic remain importable in `src/`, with named boundary adapters for evidence,
 data, checkpoints, and transport.
 
+The installed CLI follows the same modular contract: `fedference_cli/__init__.py`
+is a compatibility facade, `_parser.py` owns the process grammar,
+`_commands.py` owns registry-backed dispatch, and `_support.py` owns atomic
+writes, output isolation, validation, and receipts. The package map and
+extension recipe are documented in
+[`src/fedference_cli/README.md`](src/fedference_cli/README.md) and
+[`docs/development/modularity.md`](docs/development/modularity.md).
+
 ```mermaid
 flowchart TD
     subgraph core["src/fedference/ — NumPy/SciPy mathematical core"]
@@ -118,7 +127,13 @@ flowchart TD
         RR["research_registry.py<br/>source, dataset, experiment profiles"]
         EV["evidence.py<br/>versioned receipts and hashes"]
         ED["external_data.py<br/>pinned archive acquisition"]
-        CLI["fedference_cli<br/>list, run, benchmark, verify, replay"]
+        subgraph CLI["fedference_cli installed boundary"]
+            CLIF["__init__.py<br/>compatibility facade"]
+            CLIP["_parser.py<br/>argument grammar"]
+            CLIC["_commands.py<br/>registry dispatch"]
+            CLIS["_support.py<br/>output isolation and receipts"]
+            CLIF --> CLIP --> CLIC --> CLIS
+        end
     end
     D --> G --> AG --> BS
     AC --> CAL
@@ -136,9 +151,9 @@ flowchart TD
     BNNP -. "future cavity-conditioned client wiring" .-> BNNV
     FP --> FS
     FS --> FW
-    RR --> CLI
-    ED --> CLI
-    CLI --> EV
+    RR --> CLIC
+    ED --> CLIC
+    CLIS --> EV
 ```
 
 The architecture diagram is source documentation, not an import-graph claim:
@@ -471,6 +486,7 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 | Entry | Purpose |
 | --- | --- |
 | [`docs/README.md`](docs/README.md) | Modular documentation hub (architecture, testing, pipeline, ops) |
+| [`docs/development/modularity.md`](docs/development/modularity.md) | Software, orchestration, report, figure, and documentation extension contract |
 | [`AGENTS.md`](AGENTS.md) | Slim technical reference and validation commands |
 | [`ISA.md`](ISA.md) | Live acceptance-criteria contract |
 | [`STANDALONE.md`](STANDALONE.md) | Confidentiality and standalone/fork notes |

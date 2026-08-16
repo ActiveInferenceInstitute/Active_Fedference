@@ -7,7 +7,7 @@
     }
   ],
   "description": "Active Fedference is a tested, reproducible research package that connects two previously separate ideas: the belief-sharing account of distributed cognition from active inference, and robust federated learning. It reimplements the core update rules of Federated Generalized Variational Inference (FedGVI) in the discrete-categorical setting and certifies, in executable form within that implementation, the project-local identity `robust_aggregate(robustness=0) == log_linear_pool`. Under documented shared-support, posterior-log-potential, and fixed-weight assumptions, that log pool is a categorical specialization of the message-combination term in Friston et al. (2024) Eq. 7; it is not a reconstruction of the complete source protocol. In the declared confident-wrong contamination study, turning the tested robustness settings on can preserve higher true-state consensus mass while contaminated members broadcast confidently wrong beliefs; turning them off exactly recovers the project log-linear pool. Nine seeded studies, a paired statistical verdict, and a fully token-injected manuscript make every reported number reproducible from one command. The public source repository is ActiveInferenceInstitute/Active_Fedference.",
-  "doi": "10.5281/zenodo.21934992",
+  "doi": "10.5281/zenodo.21969756",
   "keywords": [
     "active inference",
     "federated learning",
@@ -17,7 +17,7 @@
     "FedGVI"
   ],
   "license": "MIT",
-  "publication_date": "2026-08-14",
+  "publication_date": "2026-08-16",
   "related_identifiers": [
     {
       "identifier": "https://github.com/ActiveInferenceInstitute/Active_Fedference",
@@ -34,5 +34,5 @@
   ],
   "title": "Robust Belief Sharing in Federated Active Inference: A Recovery-Tested Generalized-Variational Framework for Categorical Contamination-Aware Consensus",
   "upload_type": "software",
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

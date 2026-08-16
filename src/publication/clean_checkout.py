@@ -7,6 +7,10 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+import yaml
+
+from publication.identifiers import manuscript_pdf_filename
+
 REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "AGENTS.md",
     "ISA.md",
@@ -47,6 +51,11 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "src/fedference/torch_bnn.py",
     "src/fedference_cli/__init__.py",
     "src/fedference_cli/__main__.py",
+    "src/fedference_cli/AGENTS.md",
+    "src/fedference_cli/README.md",
+    "src/fedference_cli/_commands.py",
+    "src/fedference_cli/_parser.py",
+    "src/fedference_cli/_support.py",
     "src/project_paths.py",
     "src/publication/clean_checkout.py",
     "src/publication/identifiers.py",
@@ -128,7 +137,6 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "docs/manuscript/accessibility.md",
     "docs/reference/api-stability.md",
     "docs/reference/zenodo-release.md",
-    "Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf",
     "manuscript/30_supplement_notation.md",
     "docs/security/README.md",
     "docs/security/active_fedference-threat-model.md",
@@ -176,7 +184,7 @@ def _import_probe(root: Path) -> str | None:
         "from pathlib import Path\n"
         f"source_root = Path({str(source_root)!r}).resolve()\n"
         "sys.path.insert(0, str(source_root))\n"
-        "for name in ('analysis', 'fedference', 'figures', 'publication'):\n"
+        "for name in ('analysis', 'fedference', 'fedference_cli', 'figures', 'publication'):\n"
         "    module = importlib.import_module(name)\n"
         "    module_file = getattr(module, '__file__', None)\n"
         "    if not module_file:\n"
@@ -204,6 +212,20 @@ def _import_probe(root: Path) -> str | None:
         return None
     detail = (result.stderr or result.stdout).strip().splitlines()
     return detail[-1] if detail else f"import probe exited {result.returncode}"
+
+
+def _expected_manuscript_pdf(root: Path) -> str | None:
+    """Return the configured top-level manuscript PDF name when available."""
+    config_path = root / "manuscript" / "config.yaml"
+    if not config_path.is_file():
+        return None
+    try:
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        paper = config["paper"]
+        publication = config["publication"]
+        return manuscript_pdf_filename(paper["version"], publication["doi"])
+    except (KeyError, TypeError, ValueError, yaml.YAMLError) as exc:
+        raise ValueError(f"invalid manuscript PDF identity in {config_path}: {exc}") from exc
 
 
 def inspect_clean_checkout(
@@ -235,6 +257,14 @@ def inspect_clean_checkout(
     missing = sorted(set(REQUIRED_TRACKED_PATHS) - tracked_paths)
     if missing:
         findings.append("required files are not tracked: " + ", ".join(missing))
+
+    try:
+        expected_pdf = _expected_manuscript_pdf(root)
+    except ValueError as exc:
+        findings.append(str(exc))
+    else:
+        if expected_pdf is not None and expected_pdf not in tracked_paths:
+            findings.append(f"configured manuscript PDF is not tracked: {expected_pdf}")
 
     if check_imports:
         import_failure = _import_probe(root)

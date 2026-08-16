@@ -8,7 +8,7 @@ manuscript-variable generation for the active-inference federation study.
 ```text
 src/
 ├── fedference/             # Domain logic + explicit I/O/optional-Torch boundaries
-├── fedference_cli/         # Installed list/run/benchmark/verify/replay adapter
+├── fedference_cli/         # Installed list/run/benchmark/verify/replay adapter (facade/parser/commands/support)
 ├── analysis/               # workflow.py + schemas + canonical artifact contract
 ├── figures/                # Figure generators used by reproducible scripts
 ├── manuscript_vars/         # Deterministic manuscript token generator package
@@ -75,6 +75,19 @@ expected Stage-02 hand-off for audits, so validators never promote arbitrary
 files discovered under `output/` (see [`analysis/README.md`](analysis/README.md)).
 `src/figures/*.py` are figure generators; each file maps to one or more files
 in `output/figures/` and has a corresponding test in `tests/figures/`.
+
+`src/publication/identifiers.py` centralizes DOI normalization and the
+version/DOI-bound top-level manuscript filename used by clean-checkout and
+release tooling; publication metadata and Zenodo transport remain explicit
+boundary adapters.
+
+The installed CLI is intentionally split by responsibility: the public facade
+is in `fedference_cli/__init__.py`, parser and process dispatch are in
+`fedference_cli/_parser.py`, registry-backed handlers are in
+`fedference_cli/_commands.py`, and output/receipt mechanics are in
+`fedference_cli/_support.py`. See the package
+[`README.md`](fedference_cli/README.md) and the cross-layer
+[`../docs/development/modularity.md`](../docs/development/modularity.md).
 
 ## Commands
 

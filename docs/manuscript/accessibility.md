@@ -15,7 +15,7 @@ Tagged structure is not the same as PDF/UA certification. A PDF/UA claim is
 allowed only when the retained veraPDF report and manual reading-order,
 keyboard, reflow/zoom, mathematical-content, and screen-reader checks pass.
 If those checks are not complete, the accurate status is “tagged PDF producer
-enabled; PDF/UA conformance not established.” The public v1.0.2 artifact may
+enabled; PDF/UA conformance not established.” The public v1.0.3 artifact may
 retain older surface properties; the current source and its regenerated
 reviewer snapshot are the evidence for this contract.
 

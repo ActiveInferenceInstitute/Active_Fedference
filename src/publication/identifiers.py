@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 
 _DOI_RE = re.compile(r"^10\.\d{4,9}/\S+$")
+_VERSION_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.+_-]*$")
 _DOI_PREFIXES = (
     "https://doi.org/",
     "http://doi.org/",
@@ -48,4 +49,22 @@ def doi_url(value: object, *, allow_placeholder: bool = False) -> str | None:
     return f"https://doi.org/{normalized}" if normalized is not None else None
 
 
-__all__ = ["doi_url", "normalize_doi"]
+def manuscript_pdf_filename(version: object, doi: object) -> str:
+    """Return the canonical informative top-level manuscript PDF filename.
+
+    The release identity is derived from the package version and the reserved
+    bare DOI, so clean-checkout and README/release tooling do not need a
+    version-specific hard-coded filename. Characters that are unsafe or
+    ambiguous in a filename are replaced deterministically in the DOI slug.
+    """
+    normalized_version = str(version).strip()
+    if not _VERSION_RE.fullmatch(normalized_version):
+        raise ValueError(f"invalid package version for manuscript filename: {version!r}")
+    normalized_doi = normalize_doi(doi)
+    if normalized_doi is None:
+        raise ValueError("manuscript PDF filename requires an assigned DOI")
+    doi_slug = re.sub(r"[^A-Za-z0-9._-]+", "-", normalized_doi.replace("/", "-"))
+    return f"Active_Fedference_Research_Manuscript_v{normalized_version}_Zenodo_{doi_slug}.pdf"
+
+
+__all__ = ["doi_url", "manuscript_pdf_filename", "normalize_doi"]

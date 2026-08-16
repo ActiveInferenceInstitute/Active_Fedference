@@ -55,7 +55,7 @@ jobs:
           cmp .tmp/dist/*.tar.gz .tmp/dist-rebuilt/*.tar.gz
           sdist="$(find .tmp/dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
           test -n "$sdist"
-          for member in LICENSE docs/README.md manuscript/config.yaml scripts/02_run_analysis.py tests/README.md; do
+          for member in LICENSE docs/README.md docs/development/modularity.md manuscript/config.yaml scripts/02_run_analysis.py src/fedference_cli/README.md tests/README.md; do
             tar -tzf "$sdist" | grep -Eq "/$member$"
           done
           uv venv .tmp/wheel-smoke

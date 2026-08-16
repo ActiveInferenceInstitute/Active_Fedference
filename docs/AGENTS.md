@@ -21,6 +21,7 @@ Technical index for `docs/`. Navigation hub:
 | `development/quickstart.md` | First green run |
 | `development/testing_philosophy.md` | Zero-mock; test inventory |
 | `development/style_guide.md` | Seven coding/manuscript rules |
+| `development/modularity.md` | Cross-layer extension and orchestration contract |
 | **manuscript/** | |
 | `manuscript/README.md` | Manuscript-pipeline index and authoritative registry signposts |
 | `manuscript/accessibility.md` | Canonical HTML accessibility contract, PDF/UA no-claim boundary, and manual release review |
@@ -34,10 +35,13 @@ Technical index for `docs/`. Navigation hub:
 | **reference/** | |
 | `reference/verification-commands.md` | ISA probes; copy-paste commands |
 | `reference/api-stability.md` | Public API/schema compatibility and deprecation policy |
-| `reference/zenodo-release.md` | Published v1.0.2 DOI record and safe new-version/update/upload/verify/publish boundary for future versions |
+| `reference/zenodo-release.md` | Published v1.0.3 DOI record and safe new-version/update/upload/verify/publish boundary for future versions |
 | `reference/README.md` | Reference-document index and metadata/release boundary signposts |
 | **research/** | |
 | `research/*.md` | Source-audited literature, statistical, complexity, claim, visual, and composability reviews |
+| **source package docs** | |
+| `../src/fedference_cli/README.md` | Installed CLI module map, stable facade, and extension recipe |
+| `../src/fedference_cli/AGENTS.md` | Package-local CLI boundary and testing rules |
 | **security/** | |
 | `security/README.md` | Security navigation and current no-deployment boundary |
 | `security/active_fedference-threat-model.md` | Repository-grounded assets, trust boundaries, attacker capabilities, threats, controls, and MAJ-4A review paths |
@@ -53,6 +57,7 @@ Technical index for `docs/`. Navigation hub:
 | `src/analysis/workflow.py` | REQUIRED | Pipeline stage 4; `tests/analysis/test_workflow.py` |
 | `src/analysis/artifacts.py` | REQUIRED | Canonical Stage-02 artifact declaration; `tests/analysis/test_artifacts.py` and `tests/test_scripts_smoke.py` |
 | `src/analysis/report_schemas.py` | REQUIRED | Report/figure write-boundary schemas + figure dependency contracts; `tests/analysis/test_report_schemas.py` |
+| `src/fedference_cli/` | REQUIRED | Installed CLI facade, command dispatch, output isolation, and receipt contracts; `tests/test_fedference_cli.py` |
 | `src/figures/*.py` | REQUIRED | Figure generators (one module per figure); `tests/figures/` |
 | `README.md`, `docs/**/*.md` Mermaid blocks | REQUIRED | `scripts/validate_mermaid.py`; renderer probe for release review |
 | `src/manuscript_variables.py` | REQUIRED | `tests/test_manuscript_variables.py`; live tokens |

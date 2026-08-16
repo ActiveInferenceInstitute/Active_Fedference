@@ -20,14 +20,14 @@ See [`../core/conceptual-foundations.md`](../core/conceptual-foundations.md).
 The public source and reviewer snapshot are maintained at
 [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
 The corresponding permanent manuscript release is
-[Zenodo DOI `10.5281/zenodo.21934992`](https://doi.org/10.5281/zenodo.21934992),
-with its [public record](https://zenodo.org/records/21934992). The DOI and
+[Zenodo DOI `10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756),
+with its [public record](https://zenodo.org/records/21969756). The DOI and
 repository are cross-referenced in the metadata and PDF.
 
 ## Can I commit this project to the public template repo?
 
 **No.** It is a standalone repository, not a subdirectory of the public
-template repository. The reviewed v1.0.2 release is already published at
+template repository. The reviewed v1.0.3 release is already published at
 ActiveInferenceInstitute/Active_Fedference; future changes to this checkout
 still require the explicit target-repository review/push workflow. Do not push
 it into the public template repository. See
