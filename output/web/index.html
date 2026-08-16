@@ -1215,7 +1215,7 @@ FedGVI</p>
 href="#fig:graphical-abstract">1</a>.</p>
 <figure id="fig:graphical-abstract">
 <a class="figure-full-size-link" href="../figures/graphical_abstract.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/graphical_abstract.png" style="width:100.0%"
-alt="Figure 1: Graphical abstract." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Wide schematic linking private categorical beliefs, contaminated broadcasts, a robust aggregation server, naive versus reweighted consensus, and three separate claim axes: client FedGVI, server heuristic, and variational server." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 1: Graphical abstract. Source
 relation: original project schematic; estimand: component relationships
 and recovery boundaries; uncertainty: none. <strong>Recovery
@@ -1513,7 +1513,7 @@ defined in sec. <a href="#sec:gap">3</a> and sec. <a
 href="#sec:robustness-axes">3.3</a>.</p>
 <figure id="fig:system-overview">
 <a class="figure-full-size-link" href="../figures/system_overview.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/system_overview.png" style="width:100.0%"
-alt="Figure 2: System overview." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Three-part schematic of a five-agent colony with two adversarial agents, naive equal-weight pooling, and heuristic reweighting. The naive argmax is off target, while the reweighted consensus recovers the displayed true state." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 2: System overview. Source
 relation: original project schematic; estimand: displayed posterior-mass
 and influence-weight contrasts; uncertainty: none. 5 agents with
@@ -2484,7 +2484,7 @@ class="header-section-number">5.8.1.1</span> Visual protocol map
 (schematic)</h4>
 <figure id="fig:message-passing">
 <a class="figure-full-size-link" href="../figures/message_passing.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/message_passing.png" style="width:95.0%"
-alt="Figure 3: Message-passing schematic for Active Fedference." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Three-lane protocol schematic: agents keep private observations, broadcast local categorical posteriors, and enter standard, heuristic, or variational server fusion. The bottom lane separates the ownership of each claim." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 3: Message-passing schematic for
 Active Fedference. Source relation: source-inspired original schematic
 related to Friston et al. (2024), Eq. 7 and Fig. 5; estimand: protocol
@@ -2792,7 +2792,7 @@ assertion that every displayed dependency is simultaneously estimated in
 every study.</p>
 <figure id="fig:generative-model-schema">
 <a class="figure-full-size-link" href="../figures/generative_model_schema.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/generative_model_schema.png" style="width:95.0%"
-alt="Figure 4: Formal categorical generative-model schema." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Four-panel categorical generative-model schematic: private observation, A/B/C/D-zero factors feeding a local posterior, temporal state-observation-action order, and optional hierarchical context." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 4: Formal categorical
 generative-model schema. Source relation: source-inspired original
 schematic related to Friston et al. (2024), Figs. 1 and 4; estimand:
@@ -2965,7 +2965,7 @@ into a claim that every study estimates every latent or policy
 quantity.</p>
 <figure id="fig:pomdp-loop">
 <a class="figure-full-size-link" href="../figures/pomdp_loop.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/pomdp_loop.png" style="width:95.0%"
-alt="Figure 5: Sentinel-world and active-inference loop." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Three-panel active-inference schematic showing a shared hidden world, one cavity-excluded belief-sharing round, and the temporal hidden-state, observation, posterior, action, and transition loop." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 5: Sentinel-world and
 active-inference loop. Source relation: source-inspired original
 schematic related to Friston et al. (2024), Figs. 1 and 4; estimand:
@@ -3864,11 +3864,11 @@ class="math inline">\(arm64\)</span> machine using Python <span
 class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.75
-(log-linear), 1.03 (iterative robust), 0.71 (variational), 1.62 (naive
-self-excluding sharing), and 2.04 (robust self-excluding sharing);
-state-axis slopes are 0.28, 0.51, and 0.41; the modality-axis inference
-slope is 0.66. The slope fit is a timing diagnostic on this machine, not
+orders, not performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.60 (naive
+self-excluding sharing), and 1.93 (robust self-excluding sharing);
+state-axis slopes are 0.41, 0.39, and 0.42; the modality-axis inference
+slope is 0.67. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -3880,7 +3880,7 @@ implementation-derived orders and the corresponding finite-grid timing
 diagnostic.</p>
 <figure id="fig:complexity-scaling">
 <a class="figure-full-size-link" href="../figures/complexity_scaling.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/complexity_scaling.png" style="width:95.0%"
-alt="Figure 6: Implementation-derived complexity and seeded machine-scaling diagnostic." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Four-panel log-log timing figure showing median wall-clock scaling with agents, states, and modalities for aggregation, self-excluding sharing, and state inference. Error bars show timing spans and dotted lines are normalized order guides." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 6: Implementation-derived
 complexity and seeded machine-scaling diagnostic. Source relation:
 original project computational-complexity diagnostic; estimand: median
@@ -4127,7 +4127,7 @@ the identity residual; it visualizes <a class="xref" href="#prop:efe-decompositi
 fitted result, so it carries no error bars.</p>
 <figure id="fig:efe-decomp">
 <a class="figure-full-size-link" href="../figures/efe_decomposition.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/efe_decomposition.png" style="width:85.0%"
-alt="Figure 7: Expected-free-energy decomposition for the categorical generative model (expected_free_energy.py)." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Two views of a categorical expected-free-energy identity in nats. The left stack shows risk plus ambiguity; the right signed waterfall shows pragmatic value and a negative epistemic correction ending at the same terminal value." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 7: Expected-free-energy
 decomposition for the categorical generative model
 (expected_free_energy.py). Source relation: formal specialization of
@@ -4430,7 +4430,7 @@ sec. <a href="#sec:results-robustness">7.5</a> and sec. <a
 href="#sec:results-baseline">7.6</a> rest on the per-agent axis without
 leaning on the heuristic.</p>
 <p>257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy
-core carries project test coverage of 91.01% (gate <span
+core carries project test coverage of 90.69% (gate <span
 class="math inline">\(\ge 90\%\)</span>), with every stochastic step
 threaded through a single seeded <code>np.random.default_rng(0)</code>.
 sec. <a href="#sec:reproducibility">10</a> records the full environment
@@ -4489,7 +4489,7 @@ private posterior toward the joint minimizer, so the mean free energy
 when communicating sits below the incommunicado value.</p>
 <figure id="fig:free-energy">
 <a class="figure-full-size-link" href="../figures/free_energy_comparison.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/free_energy_comparison.png" style="width:80.0%"
-alt="Figure 8: Mean variational free energy of the sentinel colony." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Per-seed free-energy points over communicating and incommunicado colony conditions, with mean bars and across-seed spread. The communicating mean is lower than the incommunicado mean." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 8: Mean variational free energy of
 the sentinel colony. Source relation: source-mechanism analogue to the
 belief-sharing mechanism in Friston et al. (2024), Fig. 5; estimand:
@@ -4514,7 +4514,7 @@ fig. <a href="#fig:belief-heatmap">9</a> shows the per-agent mechanism
 behind it.</p>
 <figure id="fig:belief-heatmap">
 <a class="figure-full-size-link" href="../figures/belief_heatmap.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/belief_heatmap.png" style="width:80.0%"
-alt="Figure 9: Single-panel belief heatmap over the hidden creature location." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Heatmap of posterior probability over nine location cells for seven agent rows and a consensus row. Agent mass is dispersed, while the consensus row concentrates near one cell." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 9: Single-panel belief heatmap
 over the hidden creature location. Source relation: original project
 diagnostic supporting the Study 1 analogue; estimand: posterior
@@ -4616,7 +4616,7 @@ update’s behavior, not a convergence-rate result for arbitrary
 data-generating processes.</p>
 <figure id="fig:language-kl">
 <a class="figure-full-size-link" href="../figures/language_kl_decay.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/language_kl_decay.png" style="width:80.0%"
-alt="Figure 10: Seed-mean KL divergence from the true likelihood A to the learned likelihood A." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Seed-mean KL divergence from the true categorical likelihood to the learned likelihood across ordered learning batches. The curve decreases rapidly and then approaches zero, with a seed-bootstrap interval band." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 10: Seed-mean KL divergence from
 the true likelihood A to the learned likelihood A. The plotted quantity
 is <span class="math inline">\(\mathrm{KL}(\text{true }A \,\|\,
@@ -4686,7 +4686,7 @@ the structure its data never support and retains the structure they
 do.</p>
 <figure id="fig:emergence-bmr">
 <a class="figure-full-size-link" href="../figures/emergence_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/emergence_bmr.png" style="width:80.0%"
-alt="Figure 11: Bayesian-model-reduction (BMR) free-energy difference." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Two bars show Bayesian model-reduction free-energy differences for pruning a redundant versus a supported likelihood column. The redundant-pruning control is positive and the supported-column control is negative." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 11: Bayesian-model-reduction (BMR)
 free-energy difference. Source relation: source-mechanism analogue to
 the model-reduction mechanism in Friston et al. (2024), Fig. 9;
@@ -5044,7 +5044,7 @@ class="math inline">\(d\)</span>-equivalent</th>
 </table>
 <figure id="fig:robustness-sweep">
 <a class="figure-full-size-link" href="../figures/robustness_sweep.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robustness_sweep.png" style="width:80.0%"
-alt="Figure 12: Consensus accuracy: probability mass assigned to the true hidden state." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Consensus accuracy curves for naive KLD and four robust client operating points across contamination rates. Lines and markers show matched-trial means with 95-percent seed-bootstrap intervals; a horizontal line marks the predeclared accuracy floor." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 12: Consensus accuracy:
 probability mass assigned to the true hidden state. The plotted estimand
 is <span class="math inline">\(q(\text{true state})\)</span>. Source
@@ -5344,7 +5344,7 @@ separately on the per-client axis in sec. <a
 href="#sec:results-baseline">7.6</a>.</p>
 <figure id="fig:robust-weights">
 <a class="figure-full-size-link" href="../figures/robust_influence_weights.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robust_influence_weights.png" style="width:80.0%"
-alt="Figure 13: Server-side influence weights assigned by robust_aggregate ." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Bar chart of server weights for two contaminated and five honest agents. The heuristic assigns near-zero weight to contaminated broadcasts and larger, near-equal weights to honest agents; the dotted line is equal weight." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 13: Server-side influence weights
 assigned by <code>robust_aggregate</code>. Source relation: original
 project server-side diagnostic; estimand: normalized pooling weight;
@@ -5389,7 +5389,7 @@ block-coordinate iterations, converged: Yes), with a largest single-step
 the descent theorem (sec. <a href="#sec:supp-theorem">11.3</a>).</p>
 <figure id="fig:aggregation-descent">
 <a class="figure-full-size-link" href="../figures/aggregation_descent.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/aggregation_descent.png" style="width:80.0%"
-alt="Figure 14: Variational free energy F(q, a) as a function of block-coordinate descent iteration." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Line plot of variational free energy versus block-coordinate iteration. The trace drops steeply at first, then remains flat through convergence." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 14: Variational free energy <span
 class="math inline">\(F(q, a)\)</span> as a function of block-coordinate
 descent iteration. Source relation: original project objective-descent
@@ -5416,7 +5416,7 @@ The gap between the falling variational curve and the flat naive line is
 the empirical redescending weight response, drawn.</p>
 <figure id="fig:bounded-influence">
 <a class="figure-full-size-link" href="../figures/bounded_influence.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/bounded_influence.png" style="width:80.0%"
-alt="Figure 15: Normalized influence weight of one probed agent." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Line plot of a variational server&#x27;s normalized influence weight as one agent drifts toward a confident-wrong belief. The variational weight falls below the flat naive-pool reference; the plot is a tested-path diagnostic." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 15: Normalized influence weight of
 one probed agent. Source relation: original project variational-server
 diagnostic; estimand: normalized influence weight; uncertainty:
@@ -5530,7 +5530,7 @@ scale reported by the source paper (sec. <a
 href="#sec:future-scale">8.19</a>).</p>
 <figure id="fig:bnn-robustness">
 <a class="figure-full-size-link" href="../figures/bnn_robustness.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/bnn_robustness.png" style="width:80.0%"
-alt="Figure 16: Held-out classification accuracy of the federated Bayesian baseline." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Held-out accuracy curves for standard NLL/KLD and robust RCCE/AR client losses across per-client label-contamination fractions, with seed-level interval bands. The curves are similar at low contamination and separate at moderate contamination before both fall at the highest rate." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 16: Held-out classification
 accuracy of the federated Bayesian baseline. Source relation: original
 project FedGVI complement; estimand: clean held-out accuracy fraction;
@@ -6922,11 +6922,11 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Config hash (SHA-256, first 16)</td>
-<td>369c47138f41608a</td>
+<td>fdc5ed49031acd3b</td>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>2026-08-13T17:38:31Z</td>
+<td>2026-08-14T15:10:44Z</td>
 </tr>
 </tbody>
 </table>
@@ -6944,22 +6944,27 @@ deterministic checks are not a claim of WCAG conformance:
 alternative-text quality, contrast, keyboard behavior, reading order,
 reflow, mathematics, and assistive-technology behavior still require
 manual review.</p>
-<p>The combined manuscript and slide PDFs are checked structurally,
-textually, through retained renderer logs, and by raster inspection.
-They are not claimed to be tagged or PDF/UA-conformant. A future
-accessible-PDF claim requires a tagged producer, a dedicated conformance
-report, and screen-reader and reading-order review; <code>qpdf</code>
-structure checks and successful text extraction alone are
-insufficient.</p>
+<p>The combined manuscript PDF is generated through the
+source-controlled LuaLaTeX/tagpdf path and is released only when
+<code>pdfinfo</code> reports <code>Tagged: yes</code>, qpdf exposes a
+non-empty <code>/Lang</code> and <code>StructTreeRoot</code>, and the
+source-bound language check passes. Some Poppler builds omit the
+language line from <code>pdfinfo</code> even when <code>/Lang</code> is
+present. The separate slide PDFs are checked structurally, textually,
+through retained renderer logs, and by raster inspection, but do not
+inherit the manuscript tagging status. Tagged structure is not PDF/UA
+conformance: a PDF/UA claim requires a dedicated conformance report plus
+screen-reader and reading-order review; <code>qpdf</code> structure
+checks and successful text extraction alone are insufficient.</p>
 <h2 data-number="10.4" id="sec:repro-tests"><span
 class="header-section-number">10.4</span> Test and coverage evidence for
 the claim surface</h2>
 <ul>
 <li>Acceptance criteria: 259 total, 257 passing.</li>
-<li>Project test suite: 1687 collected cases; the bound successful
+<li>Project test suite: 1692 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.</li>
-<li>Line coverage on <code>src/</code>: 91.01% (achieved by the bound
+<li>Line coverage on <code>src/</code>: 90.69% (achieved by the bound
 full gate; <span class="math inline">\(\ge 90\%\)</span> line coverage
 is enforced in CI, while branch coverage is tracked separately in
 CI).</li>
@@ -7339,7 +7344,7 @@ class="math inline">\(F = -0.2305\)</span> vetoing basin — a gap of
 seed and solving the stated objective properly.</p>
 <figure id="fig:descent-comparison">
 <a class="figure-full-size-link" href="../figures/descent_comparison.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/descent_comparison.png" style="width:80.0%"
-alt="Figure 17: Variational free-energy descent on a near-vertex adversarial colony." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Line plot comparing single-start and multi-start variational free-energy descent. The single start remains in a higher local basin, while the multi-start run reaches a lower basin after fewer iterations." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 17: Variational free-energy
 descent on a near-vertex adversarial colony. Source relation: original
 project objective-descent diagnostic; estimand: free energy <span
@@ -7650,7 +7655,7 @@ attack strength or world, and they do not turn a pooled display
 selection into selection-free inference.</p>
 <figure id="fig:contamination-gallery">
 <a class="figure-full-size-link" href="../figures/contamination_gallery.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/contamination_gallery.png" style="width:85.0%"
-alt="Figure 18: Seed-aggregated mean consensus accuracy." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Grouped bars compare naive pooling with the pooled display robust member for five contamination mechanisms. Bars show mean true-state consensus accuracy with seed-bootstrap intervals; annotations identify the selected method and its across-seed win fraction." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 18: Seed-aggregated mean consensus
 accuracy. Source relation: original project contamination diagnostic;
 estimand: true-state accuracy fraction by attack mechanism; uncertainty:
@@ -7748,7 +7753,7 @@ against additive directional contamination and only transient against a
 multiplicative one.</p>
 <figure id="fig:robustness-onset">
 <a class="figure-full-size-link" href="../figures/robustness_onset.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robustness_onset.png" style="width:95.0%"
-alt="Figure 19: Naive (dashed) versus the pooled display method." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Three mechanism-specific panels plot pooled robust-member and naive consensus accuracy against contamination rate. Vertical lines mark descriptive onset rates, and byzantine contamination shows a transient contrast before collapse." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 19: Naive (dashed) versus the
 pooled display method. Source relation: original project
 robustness-onset diagnostic; estimand: mean consensus accuracy fraction
@@ -7787,7 +7792,7 @@ pass, and the report remains explicitly labelled
 is shown in fig. <a href="#fig:conditional-world">20</a>.</p>
 <figure id="fig:conditional-world">
 <a class="figure-full-size-link" href="../figures/conditional_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/conditional_world.png" style="width:95.0%"
-alt="Figure 20: Conditional-world robustness grid." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Two-panel finite-grid robustness diagnostic. The left heatmap shows the robust-minus-naive true-state-mass contrast across attack mechanisms and world or acuity cells; the right panel shows finite-grid means with min/max spans by attack mechanism." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 20: Conditional-world robustness
 grid. Source relation: original project finite-grid generalization of
 the MAJ-1 characterization; estimand: naive true-state error minus
@@ -7837,7 +7842,7 @@ does not close the open calibration or server-theory questions.</p>
 href="#fig:robustness-review-grid">21</a>.</p>
 <figure id="fig:robustness-review-grid">
 <a class="figure-full-size-link" href="../figures/robustness_review_grid.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robustness_review_grid.png" style="width:95.0%"
-alt="Figure 21: Expanded source-bound robustness review grid." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Expanded finite robustness review. The left heatmap summarizes conditional robust-minus-naive contrasts for two adversarial weights; the three right panels show signed rate profiles for all predeclared methods under confident-wrong, byzantine, and drift attacks." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 21: Expanded source-bound
 robustness review grid. Source relation: original project finite
 simulation review diagnostic composed from the existing
@@ -7881,7 +7886,7 @@ independent seeds and 24 nested trials per seed. The diagnostic is shown
 in fig. <a href="#fig:belief-quality">22</a>.</p>
 <figure id="fig:belief-quality">
 <a class="figure-full-size-link" href="../figures/belief_quality.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/belief_quality.png" style="width:90.0%"
-alt="Figure 22: Proper scoring and calibration controls." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Two-panel control figure. The left panel compares oracle, uniform, and confidently-wrong mean categorical log scores; the right panel plots empirical accuracy against mean confidence with a perfect-calibration line." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 22: Proper scoring and calibration
 controls. Source relation: original project belief-quality diagnostic;
 estimand: categorical log score as the primary measure, with Brier score
@@ -8561,9 +8566,10 @@ rule, and the exact condition protocol are detailed in the supplement
 (sec. <a href="#sec:supp-moving">13.8</a>).</p>
 <figure id="fig:moving-world">
 <a class="figure-full-size-link" href="../figures/moving_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/moving_world.png" style="width:80.0%"
-alt="Figure 23: Source relation: original project schematic for the moving-world protocol; estimand: condition-level consensus accuracy, signed free-energy gap, and steps-to-consensus proxy in the stated native units; uncertainty:…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 23: Source relation: original
-project schematic for the moving-world protocol; estimand:
+alt="Three-panel moving-world comparison of isolated, communicating, and expected-free-energy-guided conditions, showing accuracy, signed free-energy gap, and steps to consensus." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 23: Moving sentinel world across
+isolated, communicating, and EFE-guided conditions. Source relation:
+original project schematic for the moving-world protocol; estimand:
 condition-level consensus accuracy, signed free-energy gap, and
 steps-to-consensus proxy in the stated native units; uncertainty:
 deterministic seeded run, so no resampling interval is shown. Moving
@@ -8621,8 +8627,9 @@ fig. <a href="#fig:disjoint-fov-world">24</a> summarizes the necessity
 result.</p>
 <figure id="fig:disjoint-fov-world">
 <a class="figure-full-size-link" href="../figures/disjoint_fov_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/disjoint_fov_world.png" style="width:80.0%"
-alt="Figure 24: Source relation: source-inspired original project extension of the moving-world mechanism; estimand: condition-level consensus accuracy in the two declared disjoint-FOV protocols; uncertainty: across-seed standard-deviation…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 24: Source relation:
+alt="Two-panel disjoint-field-of-view diagnostic. The left bars compare isolated and communicating consensus accuracy; the right bars compare EFE-guided and random movement, where both policies are near ceiling." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 24: Disjoint-field-of-view
+communication and navigation comparison. Source relation:
 source-inspired original project extension of the moving-world
 mechanism; estimand: condition-level consensus accuracy in the two
 declared disjoint-FOV protocols; uncertainty: across-seed
@@ -8743,8 +8750,9 @@ colony size on these results, see sec. <a
 href="#sec:results-sensitivity">13.13</a>.</p>
 <figure id="fig:hierarchical-pomdp">
 <a class="figure-full-size-link" href="../figures/hierarchical_pomdp.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/hierarchical_pomdp.png" style="width:80.0%"
-alt="Figure 25: Source relation: source-inspired original project diagnostic for a hierarchical POMDP extension; estimand: posterior probabilities and final location-accuracy gap in the declared seeded protocol; uncertainty: deterministic…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 25: Source relation:
+alt="Six-panel hierarchical POMDP diagnostic. The top row shows two-level location, context, and colony beliefs; the bottom row shows three-level beliefs and the measured hierarchical-minus-flat accuracy gaps." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 25: Six-panel hierarchical POMDP
+belief-dynamics and accuracy diagnostic. Source relation:
 source-inspired original project diagnostic for a hierarchical POMDP
 extension; estimand: posterior probabilities and final location-accuracy
 gap in the declared seeded protocol; uncertainty: deterministic seeded
@@ -9163,10 +9171,11 @@ cross-study overview of the headline metrics across all 9 studies is
 shown in fig. <a href="#fig:cross-study-summary">27</a>.</p>
 <figure id="fig:sensitivity-heatmap">
 <a class="figure-full-size-link" href="../figures/sensitivity_heatmap.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/sensitivity_heatmap.png" style="width:90.0%"
-alt="Figure 26: Source relation: original project sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as functions of acuity and colony size; uncertainty: deterministic per-cell means over the declared trials, with no…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 26: Source relation: original
-project sensitivity diagnostic; estimand: per-cell accuracy gaps
-(fractions) as functions of acuity and colony size; uncertainty:
+alt="Two heatmaps of accuracy gaps over sensor acuity and colony size: communicating minus isolated on the left, and hierarchical minus flat on the right. A symmetric color scale is centered at zero and hatched cells mark near-zero gaps." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 26: Two-panel sensitivity heatmap
+of belief-sharing and hierarchical accuracy gaps. Source relation:
+original project sensitivity diagnostic; estimand: per-cell accuracy
+gaps (fractions) as functions of acuity and colony size; uncertainty:
 deterministic per-cell means over the declared trials, with no
 resampling interval. Two-panel heatmap (1×2) of the Study 8 parameter
 sensitivity sweep. Left panel: y-axis indexes sensor acuity (0.40–0.95,
@@ -9183,8 +9192,9 @@ detailed in the sensitivity supplement.</figcaption>
 </figure>
 <figure id="fig:cross-study-summary">
 <a class="figure-full-size-link" href="../figures/cross_study_summary.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/cross_study_summary.png" style="width:75.0%"
-alt="Figure 27: Source relation: original project cross-study summary; estimand: grouped study-level means in native units (accuracy fractions, nats, or R^2 ), never a cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 27: Source relation: original
+alt="Three vertically stacked horizontal native-unit summaries: accuracy gaps, information or free-energy changes, and parameter-recovery R-squared. Each study is shown with a seed-bootstrap interval; facets are not ranked across units." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 27: Native-unit cross-study
+summary of the headline federation metrics. Source relation: original
 project cross-study summary; estimand: grouped study-level means in
 native units (accuracy fractions, nats, or <span
 class="math inline">\(R^2\)</span>), never a cross-unit ranking;
@@ -9409,7 +9419,7 @@ design, not a proof of global or structural identifiability and not an
 acuity-by-colony-size study.</p>
 <figure id="fig:parameter-recovery">
 <a class="figure-full-size-link" href="../figures/parameter_recovery.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/parameter_recovery.png" style="width:90.0%"
-alt="Figure 28: Two-panel parameter-recovery figure." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Two-panel sensor-acuity recovery diagnostic. The left scatter with empirical intervals follows the identity line; the right bars show absolute recovery error at each tested acuity." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Figure 28: Two-panel parameter-recovery
 figure. Source relation: original project parameter-recovery diagnostic;
 estimand: recovered acuity and absolute error in probability units;
@@ -9463,27 +9473,29 @@ information alone — the reduction discovers the right depth rather than
 assuming it.</p>
 <figure id="fig:hierarchical-bmr">
 <a class="figure-full-size-link" href="../figures/hierarchical_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/hierarchical_bmr.png" style="width:80.0%"
-alt="Figure 29: Source relation: original project BMR structure-learning diagnostic related to the mechanism in Friston et al." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 29: Source relation: original
-project BMR structure-learning diagnostic related to the mechanism in
-Friston et al. Fig. 9; estimand: per-level Bayesian surprise in nats and
-the resulting prune/keep decision; uncertainty: deterministic schematic
-worlds, so no resampling interval is shown. Per-level Bayesian surprise
-for the two 3-level worlds. y-axis: the non-leaf reduction targets,
-indexed top-down from the reduction routine as level 0 = the
-meta-context (the topmost non-leaf level, L3 in the location-first
-L1/L2/L3 convention used elsewhere) and level 1 = the context (L2); the
-leaf location level (L1) is never a reduction target. x-axis: Bayesian
-surprise <span class="math inline">\(\mathrm{KL}(q \,\|\,
-\text{prior})\)</span> in nats — the information the leaf observation
-added at that level. Blue bars: the informative world (top level kept).
-Grey bars: the degenerate world (top level prunable). The dashed red
-line is the prune threshold; a level whose surprise falls below it is
-structurally unnecessary. The degenerate meta-context (grey, level 0)
-sits at 0.000 nats and is pruned, recovering the two-level model, while
-the informative meta-context (blue, level 0) at 0.328 nats is retained;
-both worlds keep the context level (level 1). Deterministic schematic
-worlds (no resampling), so no error band is applicable.</figcaption>
+alt="Horizontal bars show Bayesian surprise at two non-leaf hierarchy levels for informative and degenerate worlds. The informative upper level is kept, whereas the degenerate upper level falls below the prune threshold." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 29: Per-level Bayesian surprise
+and prune/keep decisions for two hierarchical worlds. Source relation:
+original project BMR structure-learning diagnostic related to the
+mechanism in Friston et al. Fig. 9; estimand: per-level Bayesian
+surprise in nats and the resulting prune/keep decision; uncertainty:
+deterministic schematic worlds, so no resampling interval is shown.
+Per-level Bayesian surprise for the two 3-level worlds. y-axis: the
+non-leaf reduction targets, indexed top-down from the reduction routine
+as level 0 = the meta-context (the topmost non-leaf level, L3 in the
+location-first L1/L2/L3 convention used elsewhere) and level 1 = the
+context (L2); the leaf location level (L1) is never a reduction target.
+x-axis: Bayesian surprise <span class="math inline">\(\mathrm{KL}(q
+\,\|\, \text{prior})\)</span> in nats — the information the leaf
+observation added at that level. Blue bars: the informative world (top
+level kept). Grey bars: the degenerate world (top level prunable). The
+dashed red line is the prune threshold; a level whose surprise falls
+below it is structurally unnecessary. The degenerate meta-context (grey,
+level 0) sits at 0.000 nats and is pruned, recovering the two-level
+model, while the informative meta-context (blue, level 0) at 0.328 nats
+is retained; both worlds keep the context level (level 1). Deterministic
+schematic worlds (no resampling), so no error band is
+applicable.</figcaption>
 </figure>
 <p>This is the same Beta-function model-reduction machinery that drives
 the emergence study (sec. <a href="#sec:results-emergence">7.4</a>,
@@ -9547,8 +9559,9 @@ evidence against a universal guarantee; an uncaptured row is only “not
 found within this search budget.”</p>
 <figure id="fig:heuristic-breakdown">
 <a class="figure-full-size-link" href="../figures/heuristic_breakdown.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/heuristic_breakdown.png" style="width:95.0%"
-alt="Figure 30: Source relation: original project diagnostic of the server-side heuristic; estimand: numerical influence, finite-search breakdown count, and declared-grid capture fraction; uncertainty: deterministic seeded colonies, so no…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Figure 30: Source relation: original
+alt="Three-panel server-heuristic diagnostic: numerical influence along a probed contamination path, finite colluder counts needed to capture consensus for two aggregators, and the fraction of a declared attack grid with capture." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Figure 30: Three-panel empirical
+characterization of the server-side heuristic. Source relation: original
 project diagnostic of the server-side heuristic; estimand: numerical
 influence, finite-search breakdown count, and declared-grid capture
 fraction; uncertainty: deterministic seeded colonies, so no resampling

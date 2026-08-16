@@ -1896,14 +1896,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.75
-(log-linear), 1.03 (iterative robust),
-0.71 (variational), 1.62
-(naive self-excluding sharing), and 2.04
+performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust),
+0.71 (variational), 1.60
+(naive self-excluding sharing), and 1.93
 (robust self-excluding sharing); state-axis slopes
-are 0.28, 0.51, and
-0.41; the modality-axis inference slope is
-0.66. The slope fit is a timing diagnostic on this
+are 0.41, 0.39, and
+0.42; the modality-axis inference slope is
+0.67. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -2301,7 +2301,7 @@ without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-91.01% (gate $\ge 90\%$), with every stochastic step threaded
+90.69% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -3703,8 +3703,8 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 369c47138f41608a |
-| Reproducible build epoch (UTC) | 2026-08-13T17:38:31Z |
+| Config hash (SHA-256, first 16) | fdc5ed49031acd3b |
+| Reproducible build epoch (UTC) | 2026-08-14T15:10:44Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -3721,20 +3721,25 @@ WCAG conformance: alternative-text quality, contrast, keyboard behavior,
 reading order, reflow, mathematics, and assistive-technology behavior still
 require manual review.
 
-The combined manuscript and slide PDFs are checked structurally, textually,
-through retained renderer logs, and by raster inspection. They are not claimed
-to be tagged or PDF/UA-conformant. A future accessible-PDF claim requires a
-tagged producer, a dedicated conformance report, and screen-reader and
-reading-order review; `qpdf` structure checks and successful text extraction
-alone are insufficient.
+The combined manuscript PDF is generated through the source-controlled
+LuaLaTeX/tagpdf path and is released only when `pdfinfo` reports `Tagged: yes`,
+qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the source-bound
+language check passes. Some Poppler builds omit the language line from
+`pdfinfo` even when `/Lang` is present. The
+separate slide PDFs are checked structurally, textually, through retained
+renderer logs, and by raster inspection, but do not inherit the manuscript
+tagging status. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+requires a dedicated conformance report plus screen-reader and reading-order
+review; `qpdf` structure checks and successful text extraction alone are
+insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1687 collected cases; the bound successful
+- Project test suite: 1692 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 91.01% (achieved by the bound full
+- Line coverage on `src/`: 90.69% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 
@@ -4653,7 +4658,8 @@ meant to fuse the two complementary views into a decisive consensus. That
 regime is not separately measured here — the construction, the three actions, the EFE rule, and the
 exact condition protocol are detailed in the supplement ([@sec:supp-moving]).
 
-![Source relation: original project schematic for the moving-world protocol;
+![Moving sentinel world across isolated, communicating, and EFE-guided conditions.
+Source relation: original project schematic for the moving-world protocol;
 estimand: condition-level consensus accuracy, signed free-energy gap, and
 steps-to-consensus proxy in the stated native units; uncertainty: deterministic
 seeded run, so no resampling interval is shown. Moving sentinel world across the three conditions (x-axis is condition:
@@ -4711,7 +4717,8 @@ sharing is active. We report this as the null result it is rather than
 claiming an unmeasured EFE benefit. [@fig:disjoint-fov-world] summarizes the
 necessity result.
 
-![Source relation: source-inspired original project extension of the moving-world
+![Disjoint-field-of-view communication and navigation comparison.
+Source relation: source-inspired original project extension of the moving-world
 mechanism; estimand: condition-level consensus accuracy in the two declared
 disjoint-FOV protocols; uncertainty: across-seed standard-deviation error bars.
 Disjoint-FOV extension of the moving sentinel world, as a two-panel figure
@@ -4823,7 +4830,8 @@ parameter sweep are detailed in the supplement ([@sec:supp-hierarchical]). For
 the effect of acuity and colony size on these results, see
 [@sec:results-sensitivity].
 
-![Source relation: source-inspired original project diagnostic for a hierarchical
+![Six-panel hierarchical POMDP belief-dynamics and accuracy diagnostic.
+Source relation: source-inspired original project diagnostic for a hierarchical
 POMDP extension; estimand: posterior probabilities and final location-accuracy
 gap in the declared seeded protocol; uncertainty: deterministic seeded run, so
 no resampling interval is shown. Six-panel (2x3) visualization of the V2 hierarchical POMDP belief dynamics.
@@ -5115,7 +5123,8 @@ The full parameter grid and protocol details are in the supplement
 metrics across all 9 studies is shown in
 [@fig:cross-study-summary].
 
-![Source relation: original project sensitivity diagnostic; estimand: per-cell
+![Two-panel sensitivity heatmap of belief-sharing and hierarchical accuracy gaps.
+Source relation: original project sensitivity diagnostic; estimand: per-cell
 accuracy gaps (fractions) as functions of acuity and colony size; uncertainty:
 deterministic per-cell means over the declared trials, with no resampling
 interval. Two-panel heatmap (1×2) of the Study 8 parameter sensitivity sweep.
@@ -5131,7 +5140,8 @@ over 20 trials; no resampling error band is shown — the sweep
 protocol is detailed in the sensitivity supplement.
 ](../figures/sensitivity_heatmap.png){#fig:sensitivity-heatmap width=90%}
 
-![Source relation: original project cross-study summary; estimand: grouped
+![Native-unit cross-study summary of the headline federation metrics.
+Source relation: original project cross-study summary; estimand: grouped
 study-level means in native units (accuracy fractions, nats, or $R^2$), never a
 cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals.
 Horizontal native-unit facet chart summarizing the key federation benefit metric for each
@@ -5307,7 +5317,8 @@ parameter, the opposite verdict is attributable to the meta-context's
 information alone — the reduction discovers the right depth rather than assuming
 it.
 
-![Source relation: original project BMR structure-learning diagnostic related to
+![Per-level Bayesian surprise and prune/keep decisions for two hierarchical worlds.
+Source relation: original project BMR structure-learning diagnostic related to
 the mechanism in Friston et al. Fig. 9; estimand: per-level Bayesian surprise
 in nats and the resulting prune/keep decision; uncertainty: deterministic
 schematic worlds, so no resampling interval is shown. Per-level Bayesian surprise for the two 3-level worlds. y-axis:
@@ -5382,7 +5393,8 @@ counterexamples, not a random sample of worlds and not a theorem search over all
 simplexes. A finite capture row is evidence against a universal guarantee; an
 uncaptured row is only “not found within this search budget.”
 
-![Source relation: original project diagnostic of the server-side heuristic;
+![Three-panel empirical characterization of the server-side heuristic.
+Source relation: original project diagnostic of the server-side heuristic;
 estimand: numerical influence, finite-search breakdown count, and declared-grid
 capture fraction; uncertainty: deterministic seeded colonies, so no resampling
 interval is shown. Empirical characterization of the `robust_aggregate` heuristic (two panels plus

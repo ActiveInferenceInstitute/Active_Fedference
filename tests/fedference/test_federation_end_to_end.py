@@ -194,6 +194,10 @@ def test_server_rejects_unknown_worker_and_response_queue_sets() -> None:
 def test_federation_timeouts_reject_boolean_values() -> None:
     with pytest.raises(ValueError, match="timeout"):
         FederationServer(n_workers=1, timeout=True)
+    with pytest.raises(ValueError, match="startup_timeout"):
+        run_multiprocess_round(
+            [np.asarray([0.5, 0.5])], timeout=1.0, startup_timeout=True
+        )
 
 
 def test_federation_adapters_reject_non_configuration_objects() -> None:

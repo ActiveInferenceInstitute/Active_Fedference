@@ -723,11 +723,11 @@ class="math inline">\(arm64\)</span> machine using Python <span
 class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.75
-(log-linear), 1.03 (iterative robust), 0.71 (variational), 1.62 (naive
-self-excluding sharing), and 2.04 (robust self-excluding sharing);
-state-axis slopes are 0.28, 0.51, and 0.41; the modality-axis inference
-slope is 0.66. The slope fit is a timing diagnostic on this machine, not
+orders, not performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.60 (naive
+self-excluding sharing), and 1.93 (robust self-excluding sharing);
+state-axis slopes are 0.41, 0.39, and 0.42; the modality-axis inference
+slope is 0.67. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -739,7 +739,7 @@ visualizes the implementation-derived orders and the corresponding
 finite-grid timing diagnostic.</p>
 <figure id="fig:complexity-scaling">
 <a class="figure-full-size-link" href="../figures/complexity_scaling.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/complexity_scaling.png" style="width:95.0%"
-alt="Implementation-derived complexity and seeded machine-scaling diagnostic." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Four-panel log-log timing figure showing median wall-clock scaling with agents, states, and modalities for aggregation, self-excluding sharing, and state inference. Error bars show timing spans and dotted lines are normalized order guides." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Implementation-derived complexity and
 seeded machine-scaling diagnostic. Source relation: original project
 computational-complexity diagnostic; estimand: median wall-clock time of

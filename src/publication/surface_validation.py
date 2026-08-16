@@ -11,11 +11,14 @@ contract; PDF structure/text checks do not imply tagged-PDF or PDF/UA status.
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+import yaml
 
 from publication.web_package import WebPackageValidation, validate_web_package
 
@@ -123,6 +126,110 @@ def _pdf_structure_findings(path: Path) -> list[str]:
     ]
 
 
+def _tagged_pdf_requested(project_root: Path) -> bool:
+    """Return whether the source configuration requires a tagged manuscript PDF."""
+    config_path = project_root / "manuscript" / "config.yaml"
+    if not config_path.exists():
+        return False
+    try:
+        payload = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return False
+    if not isinstance(payload, dict):
+        return False
+    metadata = payload.get("metadata")
+    return isinstance(metadata, dict) and metadata.get("tagged_pdf") is True
+
+
+def _pdfinfo_tagging_status(text: str) -> tuple[bool, str | None]:
+    """Parse the structural tagging and language facts emitted by ``pdfinfo``."""
+    fields: dict[str, str] = {}
+    for line in text.splitlines():
+        key, separator, value = line.partition(":")
+        if separator:
+            fields[key.strip().lower()] = value.strip()
+    tagged = fields.get("tagged", "").lower() == "yes"
+    language = fields.get("language") or None
+    return tagged, language
+
+
+def _qpdf_tagging_status(text: str) -> tuple[bool, bool]:
+    """Return whether qpdf JSON exposes structure and catalog language.
+
+    Poppler versions differ in whether ``pdfinfo`` prints the catalog
+    language, even when the tagged PDF contains ``/Lang``.  qpdf's JSON is
+    the more direct probe for the catalog and structure tree, so use it as a
+    portable fallback without treating arbitrary text matches as evidence.
+    """
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return False, False
+
+    def walk(value: object) -> tuple[bool, bool]:
+        structure_tree = False
+        language = False
+        if isinstance(value, dict):
+            for key, child in value.items():
+                key_text = str(key)
+                if key_text in {"/StructTreeRoot", "StructTreeRoot"} and child not in (None, "", "null"):
+                    structure_tree = True
+                if key_text in {"/Lang", "Lang"} and child not in (None, "", "null"):
+                    language = True
+                child_structure, child_language = walk(child)
+                structure_tree = structure_tree or child_structure
+                language = language or child_language
+        elif isinstance(value, list):
+            for child in value:
+                child_structure, child_language = walk(child)
+                structure_tree = structure_tree or child_structure
+                language = language or child_language
+        return structure_tree, language
+
+    return walk(payload)
+
+
+def _pdf_tagging_findings(path: Path, *, required: bool) -> list[str]:
+    """Check source-requested manuscript tagging without claiming PDF/UA."""
+    if not required:
+        return []
+    if shutil.which("pdfinfo") is None:
+        return [f"{path}: pdfinfo is required when metadata.tagged_pdf is enabled"]
+    result = subprocess.run(
+        ["pdfinfo", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=120,
+    )
+    if result.returncode != 0:
+        return [f"{path}: pdfinfo failed while checking tagged-PDF metadata"]
+    tagged, language = _pdfinfo_tagging_status(result.stdout)
+    findings: list[str] = []
+    if not tagged:
+        findings.append(f"{path}: source configuration requires Tagged: yes")
+    if shutil.which("qpdf") is None:
+        findings.append(f"{path}: qpdf is required to confirm a StructTreeRoot for tagged output")
+    else:
+        tree = subprocess.run(
+            ["qpdf", "--json", "--json-stream-data=none", str(path)],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+        )
+        struct_tree, qpdf_language = (
+            _qpdf_tagging_status(tree.stdout) if tree.returncode == 0 else (False, False)
+        )
+        if not struct_tree:
+            findings.append(f"{path}: tagged output is missing a qpdf-visible StructTreeRoot")
+        if language is None and not qpdf_language:
+            findings.append(f"{path}: tagged-PDF source configuration requires a document language")
+    if language is None and shutil.which("qpdf") is None:
+        findings.append(f"{path}: tagged-PDF source configuration requires a document language")
+    return findings
+
+
 def _slide_inventory_findings(
     slides_dir: Path,
     slide_pdfs: list[Path],
@@ -167,6 +274,9 @@ def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
                 f"{manuscript_pdf}: suspiciously small PDF ({manuscript_pdf.stat().st_size} bytes)"
             )
         findings.extend(_pdf_structure_findings(manuscript_pdf))
+        findings.extend(
+            _pdf_tagging_findings(manuscript_pdf, required=_tagged_pdf_requested(root))
+        )
         findings.extend(_pdf_text_findings(manuscript_pdf))
     if not manuscript_logs:
         findings.append(f"missing combined manuscript logs: {manuscript_dir}")

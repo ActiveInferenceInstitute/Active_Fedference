@@ -147,8 +147,9 @@ one manuscript embed with a self-contained caption. Captions state the axes,
 estimand, units, source relation, uncertainty disposition, replication unit,
 and no-claim boundary. Inspect native figure PNGs plus representative PDF,
 HTML, and slide surfaces after regeneration. The HTML reader is the
-accessibility-enhanced canonical surface; `qpdf` and text extraction do not
-establish PDF/UA conformance for an untagged PDF.
+accessibility-enhanced canonical surface; the combined manuscript PDF has a
+source-controlled tagged-structure gate, while `qpdf` and text extraction do
+not establish PDF/UA conformance.
 
 ## Pre-submit checklist
 

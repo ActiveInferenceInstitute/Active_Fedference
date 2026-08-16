@@ -1,3 +1,4 @@
+\DocumentMetadata{pdfversion=2.0,lang=en,tagging=on,pdfstandard=ua-2}
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
@@ -164,17 +165,6 @@
   colorlinks=true,linkcolor=red,urlcolor=red,citecolor=red,anchorcolor=red,filecolor=red,
   pdfcreator={LaTeX via pandoc}}
 
-\ifXeTeX
-\special{pdf:trailerid [ <e29a3ec77b00b01eb6e0e50af32443e4> <e29a3ec77b00b01eb6e0e50af32443e4> ]}
-\fi
-\ifPDFTeX
-\pdftrailerid{}
-\pdftrailer{/ID [ <e29a3ec77b00b01eb6e0e50af32443e4> <e29a3ec77b00b01eb6e0e50af32443e4> ]}
-\fi
-\ifLuaTeX
-\pdfvariable trailerid {[ <e29a3ec77b00b01eb6e0e50af32443e4> <e29a3ec77b00b01eb6e0e50af32443e4> ]}
-\fi
-
 \title{Robust Belief Sharing in Federated Active Inference}
 \author{Daniel Ari Friedman}
 \date{}
@@ -303,7 +293,7 @@
 {\@date\par}
 \makeatother
 \vfill
-\includegraphics[width=0.98\textwidth,height=0.6\textheight,keepaspectratio]{\detokenize{../../manuscript/cover_image.png}}
+\includegraphics[width=0.98\textwidth,height=0.6\textheight,keepaspectratio,alt={Graphical abstract showing honest and contaminated agents broadcasting beliefs into a robust fusion server, with naive and robust consensus outcomes compared as schematic distribution cards.}]{\detokenize{../../manuscript/cover_image.png}}
 \vfill
 \end{titlepage}
 \thispagestyle{empty}
@@ -378,7 +368,7 @@ fig.~\ref{fig:graphical-abstract}.
 
 \begin{figure}
 \centering
-\includegraphics[width=1\linewidth,height=0.5\textheight,keepaspectratio,alt={Graphical abstract. Source relation: original project schematic; estimand: component relationships and recovery boundaries; uncertainty: none. Recovery ribbon: the zero-robustness identity anchors the construction at the standard log-linear belief-sharing pool. Network panel: the federated diagram shows 5 agents (3 honest, 2 adversarial) transmitting categorical beliefs to a central server. x-axis is agent position in the ring layout (left to right); y-axis/rows: each per-agent mini-bar glyph indexes posterior probability mass over hidden states. Consensus panel: deterministic outcome cards under 40\% adversarial contamination compare the naive pool with canonical robust\_aggregate heuristic reweighting; the displayed 39\% and 50\% are computed from the schematic beliefs. Axis strip: client-side FedGVI, server-side heuristic, and variational-server claims are shown as separate routes with non-transferable guarantees. This deterministic formal/mechanistic schematic has no CI, error band, or significance marker; it does not assign the variational server's objective-backed property to robust\_aggregate.}]{../figures/graphical_abstract.png}
+\includegraphics[width=1\linewidth,height=0.5\textheight,keepaspectratio,alt={Wide schematic linking private categorical beliefs, contaminated broadcasts, a robust aggregation server, naive versus reweighted consensus, and three separate claim axes: client FedGVI, server heuristic, and variational server.}]{../figures/graphical_abstract.png}
 \caption{Graphical abstract. Source relation: original project
 schematic; estimand: component relationships and recovery boundaries;
 uncertainty: none. \textbf{Recovery ribbon:} the zero-robustness
@@ -607,7 +597,7 @@ defined in sec.~\ref{sec:gap} and sec.~\ref{sec:robustness-axes}.
 
 \begin{figure}
 \centering
-\includegraphics[width=1\linewidth,height=0.5\textheight,keepaspectratio,alt={System overview. Source relation: original project schematic; estimand: displayed posterior-mass and influence-weight contrasts; uncertainty: none. 5 agents with heterogeneous beliefs (blue = honest, red = adversarial) feed into naive pooling (Panel B, argmax pulled off-target) versus canonical robust\_aggregate heuristic reweighting (Panel C, true state recovered). x-axis is hidden-state index (1--8) in Panels B and C; y-axis: bar height indexes probability mass per state, and each agent in Panel A carries its own mini posterior bar chart (green column = true state). The true hidden state is 3; under 40\% contamination the equal-weight pool concentrates 39\% of consensus mass on the true state (its argmax lands on the adversaries' state), while the heuristic concentrates 50\% and recovers the correct argmax. This is a single deterministic schematic (no resampling, hence no error bars or CI); all percentages are computed from the pooled beliefs shown, and the panel does not claim the variational server's objective-backed weight-control result for robust\_aggregate.}]{../figures/system_overview.png}
+\includegraphics[width=1\linewidth,height=0.5\textheight,keepaspectratio,alt={Three-part schematic of a five-agent colony with two adversarial agents, naive equal-weight pooling, and heuristic reweighting. The naive argmax is off target, while the reweighted consensus recovers the displayed true state.}]{../figures/system_overview.png}
 \caption{System overview. Source relation: original project schematic;
 estimand: displayed posterior-mass and influence-weight contrasts;
 uncertainty: none. 5 agents with heterogeneous beliefs (blue = honest,
@@ -1422,7 +1412,7 @@ route owns objective/descent/raw-weight properties.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Message-passing schematic for Active Fedference. Source relation: source-inspired original schematic related to Friston et al.~(2024), Eq. 7 and Fig. 5; estimand: protocol stages and claim ownership; uncertainty: none. The x-axis is protocol stage from private outcome through local update, posterior broadcast, server fusion, and return; the y-axis uses lanes for local inference, server fusion, and claim ownership. Panel A shows three sentinel agents beginning with private categorical views over the nine-cell location space, converting those views into local posteriors, and broadcasting posteriors rather than raw outcomes. Panel B shows the same broadcast entering the standard log-linear pool, the server-side robust\_aggregate heuristic, or the objective-backed variational\_aggregate; Panel C keeps their claim ownership separate. The standard pool combines the client KL/NLL/\textbackslash beta=0 recovery with the qualified categorical Eq. 7 message-combination specialization, while the heuristic retains recovery-limit status only. The return annotation marks cavity exclusion: an agent does not hear its own message. This deterministic formal/mechanistic schematic contains no empirical curve, error band, or confidence interval.}]{../figures/message_passing.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Three-lane protocol schematic: agents keep private observations, broadcast local categorical posteriors, and enter standard, heuristic, or variational server fusion. The bottom lane separates the ownership of each claim.}]{../figures/message_passing.png}
 \caption{Message-passing schematic for Active Fedference. Source
 relation: source-inspired original schematic related to Friston et
 al.~(2024), Eq. 7 and Fig. 5; estimand: protocol stages and claim
@@ -1687,7 +1677,7 @@ is simultaneously estimated in every study.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Formal categorical generative-model schema. Source relation: source-inspired original schematic related to Friston et al.~(2024), Figs. 1 and 4; estimand: categorical dependency structure; uncertainty: none. The x-axis is the dependency or role order within each panel; the y-axis positions hidden states, observations, model factors, and optional context levels. Panel A shows a hidden 9-cell location and the corresponding categorical likelihood row A{[}o,s{]}, making the private sensory report explicit. Panel B shows A, B, C, and D\_0 feeding the local posterior q(s); Panel C shows temporal state, observation, posterior, and action order; Panel D shows optional top-down conditioned priors. The equation ribbon records the implemented state-inference form and the zero-robustness recovery identity. This deterministic formal schematic contains no fitted values, empirical sample, error band, or confidence interval.}]{../figures/generative_model_schema.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Four-panel categorical generative-model schematic: private observation, A/B/C/D-zero factors feeding a local posterior, temporal state-observation-action order, and optional hierarchical context.}]{../figures/generative_model_schema.png}
 \caption{Formal categorical generative-model schema. Source relation:
 source-inspired original schematic related to Friston et al.~(2024),
 Figs. 1 and 4; estimand: categorical dependency structure; uncertainty:
@@ -1842,7 +1832,7 @@ estimates every latent or policy quantity.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Sentinel-world and active-inference loop. Source relation: source-inspired original schematic related to Friston et al.~(2024), Figs. 1 and 4; estimand: POMDP message-and-action sequence; uncertainty: none. The x-axis is the POMDP cycle in Panel C from hidden state through observation, posterior, action, and next state; the y-axis separates the shared-world, belief-sharing, and temporal-loop panels. Panel A shows three agents viewing the same 9-cell hidden world through private, noisy categorical observations; raw observations remain local. Panel B shows those local posteriors entering a log-linear-pool or robust server and returning as a cavity-excluded consensus. Panel C gives the POMDP cycle from hidden state s\_t through observation o\_t, posterior q\_t(s), action u\_t, and transition to s\_\{t+1\}, with A, B, and C marking the likelihood, transition, and preference factors. The flat studies execute the inference-sharing branch; the moving-world extension also executes transitions and EFE-guided actions. This is a deterministic model schematic, not an uncertainty-bearing empirical result.}]{../figures/pomdp_loop.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Three-panel active-inference schematic showing a shared hidden world, one cavity-excluded belief-sharing round, and the temporal hidden-state, observation, posterior, action, and transition loop.}]{../figures/pomdp_loop.png}
 \caption{Sentinel-world and active-inference loop. Source relation:
 source-inspired original schematic related to Friston et al.~(2024),
 Figs. 1 and 4; estimand: POMDP message-and-action sequence; uncertainty:
@@ -2631,11 +2621,11 @@ range shown as a min--max bar. The fixed input seed is \(20260728\) on
 the \(arm64\) machine using Python \(3.13.11\) and NumPy \(2.4.2\).
 
 The measured log--log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.75
-(log-linear), 1.03 (iterative robust), 0.71 (variational), 1.62 (naive
-self-excluding sharing), and 2.04 (robust self-excluding sharing);
-state-axis slopes are 0.28, 0.51, and 0.41; the modality-axis inference
-slope is 0.66. The slope fit is a timing diagnostic on this machine, not
+orders, not performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.60 (naive
+self-excluding sharing), and 1.93 (robust self-excluding sharing);
+state-axis slopes are 0.41, 0.39, and 0.42; the modality-axis inference
+slope is 0.67. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -2649,7 +2639,7 @@ diagnostic.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity diagnostic; estimand: median wall-clock time of the real categorical aggregation, naive and robust self-excluding sharing, and state-inference call paths as the declared dimension changes; uncertainty: min--max span over the repeated timings, not a confidence interval; replication unit: fixed seeded input at each grid point with the declared timing repeats. The x-axis is the varied agent, state, or modality dimension, and the y-axis is median wall-clock time in seconds. The panels show agent scaling for the aggregation rules, naive and iterative-robust N\^{}2 leave-one-out sharing, state scaling for the aggregators, and modality scaling for one-step inference. Dotted lines are normalized \textbackslash Theta-order guides from the implementation-derived accounting; they are not fitted claims. The experiment ran on arm64 with Python 3.13.11, NumPy 2.4.2, seed 20260728, and 5 measured repeat(s) after 1 warmup(s).}]{../figures/complexity_scaling.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Four-panel log-log timing figure showing median wall-clock scaling with agents, states, and modalities for aggregation, self-excluding sharing, and state inference. Error bars show timing spans and dotted lines are normalized order guides.}]{../figures/complexity_scaling.png}
 \caption{Implementation-derived complexity and seeded machine-scaling
 diagnostic. Source relation: original project computational-complexity
 diagnostic; estimand: median wall-clock time of the real categorical
@@ -2872,7 +2862,7 @@ result, so it carries no error bars.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.85\linewidth,height=0.5\textheight,keepaspectratio,alt={Expected-free-energy decomposition for the categorical generative model (expected\_free\_energy.py). Source relation: formal specialization of Friston et al.~(2024), Eq. 2; estimand: categorical EFE identity in nats. x-axis: two views of the same identity (left, additive cost view: risk + ambiguity; right, signed value waterfall: positive minus-pragmatic contribution followed by a negative epistemic correction). y-axis: EFE contribution in nats. The heavy endpoint marker and connector, rather than the intermediate top extent, identify the terminal G(\textbackslash boldsymbol\{\textbackslash pi\}) value. The epistemic term is state--outcome mutual information I(s;o\textbackslash mid\textbackslash boldsymbol\{\textbackslash pi\}); it is visible because the diagnostic prior is uniform, whereas the canonical point-mass D\_0 is the corresponding zero-information null. The finite terms satisfy the identity at machine precision. This deterministic algebraic check has no error bars or independent sample size, and it does not reproduce every parameter-learning term in the source equation.}]{../figures/efe_decomposition.png}
+\includegraphics[width=0.85\linewidth,height=0.5\textheight,keepaspectratio,alt={Two views of a categorical expected-free-energy identity in nats. The left stack shows risk plus ambiguity; the right signed waterfall shows pragmatic value and a negative epistemic correction ending at the same terminal value.}]{../figures/efe_decomposition.png}
 \caption{Expected-free-energy decomposition for the categorical
 generative model (expected\_free\_energy.py). Source relation: formal
 specialization of Friston et al.~(2024), Eq. 2; estimand: categorical
@@ -3141,7 +3131,7 @@ sec.~\ref{sec:results-robustness} and sec.~\ref{sec:results-baseline}
 rest on the per-agent axis without leaning on the heuristic.
 
 257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy core
-carries project test coverage of 91.01\% (gate \(\ge 90\%\)), with every
+carries project test coverage of 90.69\% (gate \(\ge 90\%\)), with every
 stochastic step threaded through a single seeded
 \breaktt{np.random.default\_rng(0)}. sec.~\ref{sec:reproducibility}
 records the full environment fingerprint, and the expected-free-energy
@@ -3199,7 +3189,7 @@ mean free energy when communicating sits below the incommunicado value.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Mean variational free energy of the sentinel colony. Source relation: source-mechanism analogue to the belief-sharing mechanism in Friston et al.~(2024), Fig. 5; estimand: colony-mean variational free energy in nats; uncertainty: across-seed spread over independent seeds. The sentinel colony (7 agents, acuity 0.55) under two communication conditions. x-axis: condition (incommunicado vs.~communicating --- one standard belief-sharing round), plotted in that order; y-axis: colony-mean variational free energy in nats. Bars show the mean free energy averaged across n = 480 independent random seeds, with whiskers marking \textbackslash pmone across-seed standard deviation and grey points overlaying the individual per-seed values. The communicating bar is strictly lower than the incommunicado bar, with \textbackslash Delta \textbackslash bar F = 3.3109 nats --- the quantitative ``two heads are better than one'' result. Each seed is a fully deterministic run; the whiskers are the across-seed spread, not a bootstrap or resampling interval.}]{../figures/free_energy_comparison.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Per-seed free-energy points over communicating and incommunicado colony conditions, with mean bars and across-seed spread. The communicating mean is lower than the incommunicado mean.}]{../figures/free_energy_comparison.png}
 \caption{Mean variational free energy of the sentinel colony. Source
 relation: source-mechanism analogue to the belief-sharing mechanism in
 Friston et al.~(2024), Fig. 5; estimand: colony-mean variational free
@@ -3223,7 +3213,7 @@ fig.~\ref{fig:belief-heatmap} shows the per-agent mechanism behind it.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Single-panel belief heatmap over the hidden creature location. Source relation: original project diagnostic supporting the Study 1 analogue; estimand: posterior probability mass by hidden state; uncertainty: deterministic single-seed display. The hidden creature location (7 sentinels, acuity 0.55, seed 0). x-axis: hidden-state grid cell (creature location, 9 cells); rows: the 7 individual agents' private posteriors (one row per agent, dominant cell annotated), plus a bottom consensus row --- separated by the divider line --- holding the federated consensus fused from those posteriors by the cavity-exclusion round defined in the methods. Each private posterior concentrates only moderately on the cell its noisy observation suggests; the consensus row concentrates far more sharply on the true location, and that after-sharing concentration is the mechanism behind the free-energy reduction reported by the free-energy comparison. All cell values are deterministic posterior probabilities for the single displayed seed; no error band is applicable.}]{../figures/belief_heatmap.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Heatmap of posterior probability over nine location cells for seven agent rows and a consensus row. Agent mass is dispersed, while the consensus row concentrates near one cell.}]{../figures/belief_heatmap.png}
 \caption{Single-panel belief heatmap over the hidden creature location.
 Source relation: original project diagnostic supporting the Study 1
 analogue; estimand: posterior probability mass by hidden state;
@@ -3326,7 +3316,7 @@ data-generating processes.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Seed-mean KL divergence from the true likelihood A to the learned likelihood A. The plotted quantity is \textbackslash mathrm\{KL\}(\textbackslash text\{true \}A \textbackslash,\textbackslash|\textbackslash, \textbackslash text\{learned \}A). Source relation: source-mechanism analogue to Friston et al.~(2024), Fig. 7; estimand: seed-mean KL in nats by ordered learning step. x-axis: ordered Dirichlet count batch, from the flat prior at zero through all 24 batches (25 points per seed); y-axis: summed per-column KL divergence between the true likelihood and the current expected likelihood, in nats. The solid line is the mean over 480 independent configured seeds, and the shaded band is the pointwise 95\% percentile-bootstrap interval resampling seeds at each learning step. The replication unit is seed, not the ordered trajectory points. The mean curve falls monotonically from 3.4231 nats to 0.0027 nats (total reduction 3.4204 nats, computed from the unrounded endpoints); the computed monotone-decreasing verdict is Yes. This reduced categorical protocol is related to, but does not exactly reproduce, the richer multi-episode protocol in Friston et al.~(2024).}]{../figures/language_kl_decay.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Seed-mean KL divergence from the true categorical likelihood to the learned likelihood across ordered learning batches. The curve decreases rapidly and then approaches zero, with a seed-bootstrap interval band.}]{../figures/language_kl_decay.png}
 \caption{Seed-mean KL divergence from the true likelihood A to the
 learned likelihood A. The plotted quantity is
 \(\mathrm{KL}(\text{true }A \,\|\, \text{learned }A)\). Source relation:
@@ -3394,7 +3384,7 @@ structure its data never support and retains the structure they do.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Bayesian-model-reduction (BMR) free-energy difference. Source relation: source-mechanism analogue to the model-reduction mechanism in Friston et al.~(2024), Fig. 9; estimand: BMR \textbackslash Delta F in nats; uncertainty: deterministic closed-form comparison. \textbackslash Delta F for two candidate likelihood-column prunings in a colony with n = 4 hidden states. x-axis: the candidate pruning (redundant column vs.~supported-column control); y-axis: \textbackslash Delta F in nats, where a positive value means the reduced model has more evidence and the pruning is accepted. The redundant-column bar is positive (\textbackslash Delta F = 3.68 nats) --- the data never supported this structure, so pruning it is the correct decision --- while the supported-column control bar is negative (\textbackslash Delta F = -27.67 nats), correctly rejected. The opposing signs constitute the emergence verdict (Yes). No error bar applies: BMR is a deterministic closed-form comparison on a single posterior.}]{../figures/emergence_bmr.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Two bars show Bayesian model-reduction free-energy differences for pruning a redundant versus a supported likelihood column. The redundant-pruning control is positive and the supported-column control is negative.}]{../figures/emergence_bmr.png}
 \caption{Bayesian-model-reduction (BMR) free-energy difference. Source
 relation: source-mechanism analogue to the model-reduction mechanism in
 Friston et al.~(2024), Fig. 9; estimand: BMR \(\Delta F\) in nats;
@@ -3571,7 +3561,7 @@ rcce & 0.9 & 0.14 & negligible & 6.54e-02 & 6.54e-02 & No \\
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Consensus accuracy: probability mass assigned to the true hidden state. The plotted estimand is q(\textbackslash text\{true state\}). Source relation: original project robustness extension; estimand: true-state probability mass; uncertainty: matched-trial percentile-bootstrap intervals over configured trials. The colony of 7 sentinel agents (acuity 0.55, of which 2 are saboteurs) as a function of contamination rate. x-axis: saboteur convex-mix contamination rate, sampled over \textbackslash\{0, 0.225, 0.45, 0.675, 0.9\textbackslash\}; y-axis: consensus accuracy q(\textbackslash text\{true state\}) (probability mass on the true hidden state). One curve per configured server operating point: standard KLD plus the robust robust\_aggregate settings KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta (c=1.70), rcce (c=1.60); these curves do not apply the named client losses or divergences. The dashed floor is the predeclared accuracy threshold 0.50; the in-figure box reports the matched-trial sample size and the largest-rate pooled robust-minus-naive separation, where the standard KLD log-linear pool reaches 0.6697 and the highest pooled robust mean reaches 0.7857. Robust means are similar to or slightly below the standard pool at low contamination and some pooled robust operating points separate in favor of the robust family under severe contamination; individual robust members can still fall below the floor at the largest rate. The linear y-axis is deliberately truncated just below the threshold band so the curves, floor, and CIs remain legible. The plotted curve is the matched-trial mean over 960 trials per rate with percentile-bootstrap 95\% CIs; intervals are conditional on the fixed seeded true state and attack geometry, not alternate world models. The single-colony mechanistic table above remains descriptive and deterministic. The formal verdict-rate statistical test is reported immediately below.}]{../figures/robustness_sweep.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Consensus accuracy curves for naive KLD and four robust client operating points across contamination rates. Lines and markers show matched-trial means with 95-percent seed-bootstrap intervals; a horizontal line marks the predeclared accuracy floor.}]{../figures/robustness_sweep.png}
 \caption{Consensus accuracy: probability mass assigned to the true
 hidden state. The plotted estimand is \(q(\text{true state})\). Source
 relation: original project robustness extension; estimand: true-state
@@ -3805,7 +3795,7 @@ separately on the per-client axis in sec.~\ref{sec:results-baseline}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Server-side influence weights assigned by robust\_aggregate. Source relation: original project server-side diagnostic; estimand: normalized pooling weight; uncertainty: deterministic single-run display. Divergence-reweighting weights for each of the 7 agents at the verdict contamination rate 0.800 (the convex-mix strength applied to each saboteur's belief --- distinct from the count of contaminated agents, 2 of 7, reported in the in-figure box). x-axis: agent index, zero-based (a0 upward), with each agent's role (honest / adversary) shown beneath its label; y-axis: normalized pooling weight, with weights summing to one and the dotted reference marking the equal-weight pool (1/n). The 2 contaminated saboteur agents are highlighted, with downward arrows marking their suppression below the equal-weight reference. The heuristic down-weights saboteurs relative to both the equal-weight reference and the 7 - 2 healthy agents. Important limitation: this is the server-side heuristic axis only --- the reweighting is proven solely at the robustness=0 recovery limit and does not carry the bounded-influence guarantee of the per-client FedGVI losses. Single deterministic run; no error band.}]{../figures/robust_influence_weights.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Bar chart of server weights for two contaminated and five honest agents. The heuristic assigns near-zero weight to contaminated broadcasts and larger, near-equal weights to honest agents; the dotted line is equal weight.}]{../figures/robust_influence_weights.png}
 \caption{Server-side influence weights assigned by
 \protect\breaktt{robust\_aggregate}. Source relation: original project
 server-side diagnostic; estimand: normalized pooling weight;
@@ -3848,7 +3838,7 @@ the descent theorem (sec.~\ref{sec:supp-theorem}).
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Variational free energy F(q, a) as a function of block-coordinate descent iteration. Source relation: original project objective-descent diagnostic; estimand: free energy in nats by iteration; uncertainty: none for the deterministic seeded run. The trace is a single variational\_aggregate fusion of a 7-agent contaminated colony (robustness 1.50). x-axis: block-coordinate iteration number; y-axis: F(q, a) in nats. The curve is monotone non-increasing across all recorded iterations (largest single-step increase: 8.88 \textbackslash times 10\^{}\{-16\} nats, at machine precision) and the implementation reports converged status Yes at value 2.3780 nats. This verifies objective descent on the executed run --- a diagnostic the robust\_aggregate heuristic does not provide. Deterministic seeded run; no error band.}]{../figures/aggregation_descent.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Line plot of variational free energy versus block-coordinate iteration. The trace drops steeply at first, then remains flat through convergence.}]{../figures/aggregation_descent.png}
 \caption{Variational free energy \(F(q, a)\) as a function of
 block-coordinate descent iteration. Source relation: original project
 objective-descent diagnostic; estimand: free energy in nats by
@@ -3874,7 +3864,7 @@ line is the empirical redescending weight response, drawn.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Normalized influence weight of one probed agent. Source relation: original project variational-server diagnostic; estimand: normalized influence weight; uncertainty: deterministic seeded sweep. The weight is shown as a function of the agent's drift toward a confident-wrong belief (delta distribution on the wrong state), under variational\_aggregate versus the naive log-linear pool. x-axis: outlier drift --- the mixing parameter carrying the probed agent's belief from the consensus posterior (zero, at consensus) to the confidently-wrong delta (one, full delta), increasing left to right; y-axis: normalized influence weight of the probed agent in the server weight vector. Under variational\_aggregate (falling curve) the weight collapses below 0.001 as the agent goes extreme, while the naive pool holds it fixed at 1/n = 0.143 regardless (flat line). This demonstrates redescending normalized-weight behavior on the tested path; the algebraic theorem bounds the raw effective weight, but the figure is not an estimator-level B-robustness proof. Deterministic seeded sweep over n = 7 agents; no error band, and no claim that the sharper robust\_aggregate heuristic inherits this bound.}]{../figures/bounded_influence.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Line plot of a variational server's normalized influence weight as one agent drifts toward a confident-wrong belief. The variational weight falls below the flat naive-pool reference; the plot is a tested-path diagnostic.}]{../figures/bounded_influence.png}
 \caption{Normalized influence weight of one probed agent. Source
 relation: original project variational-server diagnostic; estimand:
 normalized influence weight; uncertainty: deterministic seeded sweep.
@@ -3970,7 +3960,7 @@ the effect at the scale reported by the source paper
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Held-out classification accuracy of the federated Bayesian baseline. Source relation: original project FedGVI complement; estimand: clean held-out accuracy fraction; uncertainty: seed-level bootstrap interval. The logistic-regression baseline (5 clients, 200 points per class per client, gradient-descent point-estimate weights --- no posterior covariance is computed for this anchor) as a function of per-client label-contamination fraction. x-axis: contamination fraction (fraction of each client's labels flipped); y-axis: held-out classification accuracy on a clean test set, averaged over 64 independent seeds. The standard configuration (nll loss / KLD regularizer) and the robust FedGVI configuration (rcce loss / AR regularizer, q=1.00) are shown as separate curves; shaded bands show seed-level 95\% bootstrap intervals. The two curves are close at low-to-moderate contamination, separate over the moderate-to-high range (peak margin at 0.35 contamination), then reconverge at the highest swept level, where both decline sharply and neither curve reliably leads --- that level is included rather than omitted, since it is the one part of the sweep that does not favor the robust client. Note: this figure plots the NumPy logistic-regression anchor, not the separate PyTorch deterministic MLP of the final paragraph (whose 16-hidden-unit, \textbackslash beta=0.5 configuration is an executed point-mass-family complement). The recovery identities establish compatibility at the named limit; the per-client bounded-influence result belongs to the cited FedGVI theorem under its matching assumptions, distinct from the server-side heuristic reweighting shown in the robustness results. Each point and interval is computed across 64 independent seeds.}]{../figures/bnn_robustness.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Held-out accuracy curves for standard NLL/KLD and robust RCCE/AR client losses across per-client label-contamination fractions, with seed-level interval bands. The curves are similar at low contamination and separate at moderate contamination before both fall at the highest rate.}]{../figures/bnn_robustness.png}
 \caption{Held-out classification accuracy of the federated Bayesian
 baseline. Source relation: original project FedGVI complement; estimand:
 clean held-out accuracy fraction; uncertainty: seed-level bootstrap
@@ -5152,8 +5142,8 @@ NumPy & 2.4.2 \\
 SciPy & 1.18.0 \\
 PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
-Config hash (SHA-256, first 16) & 369c47138f41608a \\
-Reproducible build epoch (UTC) & 2026-08-13T17:38:31Z \\
+Config hash (SHA-256, first 16) & fdc5ed49031acd3b \\
+Reproducible build epoch (UTC) & 2026-08-14T15:10:44Z \\
 \end{longtable}
 
 The exact environment used for the reported run is recorded in
@@ -5172,12 +5162,18 @@ alternative-text quality, contrast, keyboard behavior, reading order,
 reflow, mathematics, and assistive-technology behavior still require
 manual review.
 
-The combined manuscript and slide PDFs are checked structurally,
-textually, through retained renderer logs, and by raster inspection.
-They are not claimed to be tagged or PDF/UA-conformant. A future
-accessible-PDF claim requires a tagged producer, a dedicated conformance
-report, and screen-reader and reading-order review; \texttt{qpdf}
-structure checks and successful text extraction alone are insufficient.
+The combined manuscript PDF is generated through the source-controlled
+LuaLaTeX/tagpdf path and is released only when \texttt{pdfinfo} reports
+\texttt{Tagged:\ yes}, qpdf exposes a non-empty \texttt{/Lang} and
+\texttt{StructTreeRoot}, and the source-bound language check passes.
+Some Poppler builds omit the language line from \texttt{pdfinfo} even
+when \texttt{/Lang} is present. The separate slide PDFs are checked
+structurally, textually, through retained renderer logs, and by raster
+inspection, but do not inherit the manuscript tagging status. Tagged
+structure is not PDF/UA conformance: a PDF/UA claim requires a dedicated
+conformance report plus screen-reader and reading-order review;
+\texttt{qpdf} structure checks and successful text extraction alone are
+insufficient.
 
 \subsection{Test and coverage evidence for the claim
 surface}\label{sec:repro-tests}
@@ -5187,11 +5183,11 @@ surface}\label{sec:repro-tests}
 \item
   Acceptance criteria: 259 total, 257 passing.
 \item
-  Project test suite: 1687 collected cases; the bound successful receipt
+  Project test suite: 1692 collected cases; the bound successful receipt
   records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 \item
-  Line coverage on \texttt{src/}: 91.01\% (achieved by the bound full
+  Line coverage on \texttt{src/}: 90.69\% (achieved by the bound full
   gate; \(\ge 90\%\) line coverage is enforced in CI, while branch
   coverage is tracked separately in CI).
 \end{itemize}
@@ -5543,7 +5539,7 @@ objective properly.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Variational free-energy descent on a near-vertex adversarial colony. Source relation: original project objective-descent diagnostic; estimand: free energy F in nats by iteration; uncertainty: none for deterministic seeded runs. The figure compares the single (log-linear-pool) start versus the multi-start descent. The x-axis is the block-coordinate iteration; the y-axis is the free energy F in nats. The single-start trajectory settles in the high-F capture basin (F = 1.3092, the saboteur retains weight); the multi-start trajectory reaches the lower-F vetoing basin (F = -0.2305), a gap of 1.5397 nats. Deterministic seeded runs, so no error band.}]{../figures/descent_comparison.png}
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Line plot comparing single-start and multi-start variational free-energy descent. The single start remains in a higher local basin, while the multi-start run reaches a lower basin after fewer iterations.}]{../figures/descent_comparison.png}
 \caption{Variational free-energy descent on a near-vertex adversarial
 colony. Source relation: original project objective-descent diagnostic;
 estimand: free energy \(F\) in nats by iteration; uncertainty: none for
@@ -5835,7 +5831,7 @@ selection-free inference.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.85\linewidth,height=0.5\textheight,keepaspectratio,alt={Seed-aggregated mean consensus accuracy. Source relation: original project contamination diagnostic; estimand: true-state accuracy fraction by attack mechanism; uncertainty: the bars show 95\% seed-level bootstrap confidence intervals for the pooled-selected display member, while the adjacent table reports its conditional paired difference interval. q(\textbackslash text\{true state\}) for the naive log-linear pool versus the robust method selected once by pooled mean under each contamination mechanism (n = 24 trials \texorpdfstring{\ensuremath{\times}}{x} 64 seeds at strength 0.60). The x-axis is the contamination mechanism; the y-axis is mean consensus accuracy. Each group has two bars: naive log-linear pooling and the pooled display member for that mechanism. The robust bar is drawn in full color only where the across-seed win fraction (annotated above the group) clears the 0.95 display bar --- confident wrong, drift; the byzantine mechanism and entropy attacks are muted because they do not clear that descriptive screen. The in-figure summary gives the display-flag count across mechanisms and reminds readers that the labels are win fractions, not p-values. The bars are means over 64 seeds; the selected method is shown above each bar. This is a descriptive pooled-selection graphic, not selection-free post-selection inference; the all-method review grid supplies the latter surface.}]{../figures/contamination_gallery.png}
+\includegraphics[width=0.85\linewidth,height=0.5\textheight,keepaspectratio,alt={Grouped bars compare naive pooling with the pooled display robust member for five contamination mechanisms. Bars show mean true-state consensus accuracy with seed-bootstrap intervals; annotations identify the selected method and its across-seed win fraction.}]{../figures/contamination_gallery.png}
 \caption{Seed-aggregated mean consensus accuracy. Source relation:
 original project contamination diagnostic; estimand: true-state accuracy
 fraction by attack mechanism; uncertainty: the bars show 95\% seed-level
@@ -5935,7 +5931,7 @@ multiplicative one.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Naive (dashed) versus the pooled display method. Source relation: original project robustness-onset diagnostic; estimand: mean consensus accuracy fraction by attack rate; uncertainty: shaded 95\% seed-level bootstrap confidence intervals conditional on the pooled-selected display member. Mean consensus accuracy (solid, robust method selected once by pooled mean across seeds at each rate; dashed, naive) as the contamination rate rises, one panel per directional mechanism (n = 24 trials \texorpdfstring{\ensuremath{\times}}{x} 64 seeds per rate). The x-axis is the contamination rate; the y-axis is mean consensus accuracy. The dotted vertical line marks the descriptive onset rate (pooled robust win fraction \texorpdfstring{\textgreater{}=}{>=} 0.95), and each panel's inset reports that onset plus the final pooled robust-minus-naive gap at the largest swept rate. Confident-wrong and drift show a sustained displayed contrast past onset; byzantine shows a transient display window before both aggregators lose consensus accuracy at the highest corruption rates. The plotted values are seed-aggregated means with shaded bootstrap intervals; the companion table carries the displayed onset, worst-rate values, and selected method. This pooled-selection display is not selection-free post-selection inference; the all-method review grid supplies that inferential surface.}]{../figures/robustness_onset.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Three mechanism-specific panels plot pooled robust-member and naive consensus accuracy against contamination rate. Vertical lines mark descriptive onset rates, and byzantine contamination shows a transient contrast before collapse.}]{../figures/robustness_onset.png}
 \caption{Naive (dashed) versus the pooled display method. Source
 relation: original project robustness-onset diagnostic; estimand: mean
 consensus accuracy fraction by attack rate; uncertainty: shaded 95\%
@@ -5975,7 +5971,7 @@ shown in fig.~\ref{fig:conditional-world}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Conditional-world robustness grid. Source relation: original project finite-grid generalization of the MAJ-1 characterization; estimand: naive true-state error minus robust true-state error; uncertainty: each heatmap cell is a seed-level mean with a 95\% seed bootstrap interval in the source report, while the right panel shows finite-grid min/max span rather than a confidence interval; independent unit: seeded world/scenario row. The x-axis is the declared hidden-state and observability cell; the y-axis is the attack mechanism. The left panel varies hidden state and observability across columns and attack mechanism across rows; the right panel summarizes the finite-grid span by attack. Positive values favour robust true-state mass, negative values favour naive pooling, and zero is the recovery/no-contrast reference. This is conditional evidence over a declared finite grid, not a theorem, breakdown bound, or universal attack result.}]{../figures/conditional_world.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Two-panel finite-grid robustness diagnostic. The left heatmap shows the robust-minus-naive true-state-mass contrast across attack mechanisms and world or acuity cells; the right panel shows finite-grid means with min/max spans by attack mechanism.}]{../figures/conditional_world.png}
 \caption{Conditional-world robustness grid. Source relation: original
 project finite-grid generalization of the MAJ-1 characterization;
 estimand: naive true-state error minus robust true-state error;
@@ -6029,7 +6025,7 @@ fig.~\ref{fig:robustness-review-grid}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Expanded source-bound robustness review grid. Source relation: original project finite simulation review diagnostic composed from the existing conditional-world and onset mechanisms; estimand: seed-level robust-minus-naive true-state probability-mass contrast; uncertainty: the right-panel shaded bands are percentile bootstrap intervals over independent seeds for every configured robust method, while the second line in each left-panel cell is half the finite-grid min--max span, not a confidence interval; replication unit: configured seed, with trials nested within seed and cell. The x-axis is the declared adversarial-weight setting in the left panel and the contamination rate in the right panel; the y-axis is the seed-level robust-minus-naive true-state mass contrast in both panels. The left panel summarizes conditional attack cells, and the right panel shows every configured directional method's signed rate profile over the registered rates. Positive values favour robust true-state mass, negative values favour naive pooling, and zero is the recovery/no-contrast reference. No method or curve is selected by pooled mean for this grid; all displayed intervals and comparisons are selection-free. This visualization is conditional finite-grid evidence and does not claim a universal winner, breakdown bound, causal effect, or independence across shared design cells.}]{../figures/robustness_review_grid.png}
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Expanded finite robustness review. The left heatmap summarizes conditional robust-minus-naive contrasts for two adversarial weights; the three right panels show signed rate profiles for all predeclared methods under confident-wrong, byzantine, and drift attacks.}]{../figures/robustness_review_grid.png}
 \caption{Expanded source-bound robustness review grid. Source relation:
 original project finite simulation review diagnostic composed from the
 existing conditional-world and onset mechanisms; estimand: seed-level
@@ -6075,7 +6071,7 @@ in fig.~\ref{fig:belief-quality}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,height=0.5\textheight,keepaspectratio,alt={Proper scoring and calibration controls. Source relation: original project belief-quality diagnostic; estimand: categorical log score as the primary measure, with Brier score and reliability error as secondary diagnostics; uncertainty: 95\% seed bootstrap confidence intervals for control log scores; independent unit: seed, with trials nested within seed. The x-axis is the control type in the left panel and mean confidence in the right panel; the y-axis is mean categorical log score in the left panel and empirical accuracy in the right panel. The left panel compares oracle, uniform, and confidently-wrong controls on the higher-is-better log-score scale. The right panel plots mean confidence against empirical accuracy for the same controls and a perfect-calibration diagonal. The controls are negative checks on score implementation, not evidence for decision optimality, distribution-shift calibration, or robustness outside the tested finite world.}]{../figures/belief_quality.png}
+\includegraphics[width=0.9\linewidth,height=0.5\textheight,keepaspectratio,alt={Two-panel control figure. The left panel compares oracle, uniform, and confidently-wrong mean categorical log scores; the right panel plots empirical accuracy against mean confidence with a perfect-calibration line.}]{../figures/belief_quality.png}
 \caption{Proper scoring and calibration controls. Source relation:
 original project belief-quality diagnostic; estimand: categorical log
 score as the primary measure, with Brier score and reliability error as
@@ -6617,9 +6613,10 @@ supplement (sec.~\ref{sec:supp-moving}).
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: original project schematic for the moving-world protocol; estimand: condition-level consensus accuracy, signed free-energy gap, and steps-to-consensus proxy in the stated native units; uncertainty: deterministic seeded run, so no resampling interval is shown. Moving sentinel world across the three conditions (x-axis is condition: isolated, communicating, EFE-guided). Left panel: y-axis shows consensus accuracy (fraction of 960 trials whose pooled argmax matches the truth). Center panel: y-axis shows the signed free-energy gap in nats (isolated surprise minus the condition's surprise on the true state, so a positive value would mean lower free energy than isolated; the measured gaps are negative, plotted against a zero reference line and annotated per bar). Right panel: y-axis shows a coarse steps-to-consensus proxy, with per-bar value annotations showing the three conditions are essentially tied. Each colony runs 6 steps over a 4-cell linear grid with 2 disjoint-FOV agents. Deterministic seeded run, so the bars carry no error band.}]{../figures/moving_world.png}
-\caption{Source relation: original project schematic for the
-moving-world protocol; estimand: condition-level consensus accuracy,
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Three-panel moving-world comparison of isolated, communicating, and expected-free-energy-guided conditions, showing accuracy, signed free-energy gap, and steps to consensus.}]{../figures/moving_world.png}
+\caption{Moving sentinel world across isolated, communicating, and
+EFE-guided conditions. Source relation: original project schematic for
+the moving-world protocol; estimand: condition-level consensus accuracy,
 signed free-energy gap, and steps-to-consensus proxy in the stated
 native units; uncertainty: deterministic seeded run, so no resampling
 interval is shown. Moving sentinel world across the three conditions
@@ -6678,10 +6675,11 @@ necessity result.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: source-inspired original project extension of the moving-world mechanism; estimand: condition-level consensus accuracy in the two declared disjoint-FOV protocols; uncertainty: across-seed standard-deviation error bars. Disjoint-FOV extension of the moving sentinel world, as a two-panel figure whose panels come from two separately configured experiments. Left panel (communication necessity, 3 agents each observing a 2-position non-overlapping window of the 6-position world): the x-axis is the condition (isolated vs.~communicating); the y-axis is consensus accuracy --- drawn as accuracy, the fraction of trials whose pooled argmax matches the true state. The accuracy gap between communicating and isolated conditions quantifies the necessity of belief sharing under fully disjoint fields of view, now backed by the paired Wilcoxon test in the text (p = 0.0000) rather than a single point estimate. Right panel (EFE vs random navigation, a smaller 2-agent, 4-position configuration): the x-axis is the movement policy (EFE-guided vs.~random); the y-axis is final consensus accuracy --- the panel is titled as a null result because that is what it shows. Both policies sit near ceiling once belief sharing is active, so the EFE-guided vs.~random contrast is the null result reported in the text (p = 0.1046). In both panels, bars show accuracy averaged across seeds; error bars show the across-seed standard deviation.}]{../figures/disjoint_fov_world.png}
-\caption{Source relation: source-inspired original project extension of
-the moving-world mechanism; estimand: condition-level consensus accuracy
-in the two declared disjoint-FOV protocols; uncertainty: across-seed
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Two-panel disjoint-field-of-view diagnostic. The left bars compare isolated and communicating consensus accuracy; the right bars compare EFE-guided and random movement, where both policies are near ceiling.}]{../figures/disjoint_fov_world.png}
+\caption{Disjoint-field-of-view communication and navigation comparison.
+Source relation: source-inspired original project extension of the
+moving-world mechanism; estimand: condition-level consensus accuracy in
+the two declared disjoint-FOV protocols; uncertainty: across-seed
 standard-deviation error bars. Disjoint-FOV extension of the moving
 sentinel world, as a two-panel figure whose panels come from two
 separately configured experiments. Left panel (communication necessity,
@@ -6802,8 +6800,9 @@ sec.~\ref{sec:results-sensitivity}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: source-inspired original project diagnostic for a hierarchical POMDP extension; estimand: posterior probabilities and final location-accuracy gap in the declared seeded protocol; uncertainty: deterministic seeded run, so no resampling interval is shown. Six-panel (2x3) visualization of the V2 hierarchical POMDP belief dynamics. Top row shows the 2-level world; bottom row shows the 3-level extension. Top-left panel: x-axis indexes the 9 location states; y-axis shows posterior probability for the flat-prior and 2-level hierarchical conditions given a single center-cell observation. Top-middle panel: x-axis is alternating-minimization iteration number; y-axis shows the L2 context posteriors P(quiet) and P(alert) under 2-level inference, pinned by the center-cell observation and stable from the first iteration onward. Top-right panel: x-axis indexes location states; y-axis shows the colony L1 consensus probability after federating 4 agents, comparing flat vs 2-level hierarchical. Bottom-left panel: x-axis indexes location states; y-axis shows posterior probability for the flat-prior and 3-level hierarchical conditions given a single center-cell observation. Bottom-middle panel: x-axis is alternating-minimization iteration number; y-axis shows L2 P(alert) and L3 P(high\_threat) under 3-level inference, stable across iterations. Bottom-right panel: two bars showing the measured final location-accuracy gap (hierarchical minus flat) for the 2-level and 3-level systems, each a single scalar measured over 960 trials, with a zero reference line. Deterministic seeded run (seed 0), so bars carry no error band.}]{../figures/hierarchical_pomdp.png}
-\caption{Source relation: source-inspired original project diagnostic
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Six-panel hierarchical POMDP diagnostic. The top row shows two-level location, context, and colony beliefs; the bottom row shows three-level beliefs and the measured hierarchical-minus-flat accuracy gaps.}]{../figures/hierarchical_pomdp.png}
+\caption{Six-panel hierarchical POMDP belief-dynamics and accuracy
+diagnostic. Source relation: source-inspired original project diagnostic
 for a hierarchical POMDP extension; estimand: posterior probabilities
 and final location-accuracy gap in the declared seeded protocol;
 uncertainty: deterministic seeded run, so no resampling interval is
@@ -7203,28 +7202,30 @@ fig.~\ref{fig:cross-study-summary}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: original project sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as functions of acuity and colony size; uncertainty: deterministic per-cell means over the declared trials, with no resampling interval. Two-panel heatmap (1\texorpdfstring{\ensuremath{\times}}{x}2) of the Study 8 parameter sensitivity sweep. Left panel: y-axis indexes sensor acuity (0.40--0.95, 5 levels); x-axis indexes colony size (2--10 agents, 5 levels); color encodes the belief-sharing accuracy gap (communicating minus isolated mean accuracy). Right panel: identical axes; color encodes the hierarchical POMDP location accuracy gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero --- green denotes federation benefit, red denotes deficit. Diagonal hatching marks cells with |\textbackslash mathrm\{gap\}|{} \textbackslash le 0.05 (unreliable, near-zero benefit). Cell values are deterministic per-cell means over 20 trials; no resampling error band is shown --- the sweep protocol is detailed in the sensitivity supplement.}]{../figures/sensitivity_heatmap.png}
-\caption{Source relation: original project sensitivity diagnostic;
-estimand: per-cell accuracy gaps (fractions) as functions of acuity and
-colony size; uncertainty: deterministic per-cell means over the declared
-trials, with no resampling interval. Two-panel heatmap (1\texorpdfstring{\ensuremath{\times}}{x}2) of the
-Study 8 parameter sensitivity sweep. Left panel: y-axis indexes sensor
-acuity (0.40--0.95, 5 levels); x-axis indexes colony size (2--10 agents,
-5 levels); color encodes the belief-sharing accuracy gap (communicating
-minus isolated mean accuracy). Right panel: identical axes; color
-encodes the hierarchical POMDP location accuracy gap (hierarchical minus
-flat). Color scale: RdYlGn symmetric around zero --- green denotes
-federation benefit, red denotes deficit. Diagonal hatching marks cells
-with \(|\mathrm{gap}| \le 0.05\) (unreliable, near-zero benefit). Cell
-values are deterministic per-cell means over 20 trials; no resampling
-error band is shown --- the sweep protocol is detailed in the
-sensitivity supplement.}\label{fig:sensitivity-heatmap}
+\includegraphics[width=0.9\linewidth,height=0.5\textheight,keepaspectratio,alt={Two heatmaps of accuracy gaps over sensor acuity and colony size: communicating minus isolated on the left, and hierarchical minus flat on the right. A symmetric color scale is centered at zero and hatched cells mark near-zero gaps.}]{../figures/sensitivity_heatmap.png}
+\caption{Two-panel sensitivity heatmap of belief-sharing and
+hierarchical accuracy gaps. Source relation: original project
+sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as
+functions of acuity and colony size; uncertainty: deterministic per-cell
+means over the declared trials, with no resampling interval. Two-panel
+heatmap (1\texorpdfstring{\ensuremath{\times}}{x}2) of the Study 8 parameter sensitivity sweep. Left panel:
+y-axis indexes sensor acuity (0.40--0.95, 5 levels); x-axis indexes
+colony size (2--10 agents, 5 levels); color encodes the belief-sharing
+accuracy gap (communicating minus isolated mean accuracy). Right panel:
+identical axes; color encodes the hierarchical POMDP location accuracy
+gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero
+--- green denotes federation benefit, red denotes deficit. Diagonal
+hatching marks cells with \(|\mathrm{gap}| \le 0.05\) (unreliable,
+near-zero benefit). Cell values are deterministic per-cell means over 20
+trials; no resampling error band is shown --- the sweep protocol is
+detailed in the sensitivity supplement.}\label{fig:sensitivity-heatmap}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.75\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: original project cross-study summary; estimand: grouped study-level means in native units (accuracy fractions, nats, or R\^{}2), never a cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals. Horizontal native-unit facet chart summarizing the key federation benefit metric for each of the 9 studies (Studies 1--9). x-axis indexes benefit value in metric-specific units (accuracy gain for Studies 1, 4, 5, 6, 7, 8; KL reduction for Study 2; \texorpdfstring{\ensuremath{\Delta}}{Delta}F for Study 3; R\^{}2 for Study 9). y-axis lists the 9 studies (one row each), ordered from Study 1 at the top to Study 9 at the bottom within each native-unit facet. Each mark shows the mean over 128 independent seeds with intervals spanning the 95 \% bootstrap confidence interval. There is no cross-unit ranking: zero is a within-unit reference only, and the facet labels carry the units. Consistent with the per-study results, Studies 5 (moving world, EFE) and 6 (2-level hierarchical) sit at approximately zero within their respective units.}]{../figures/cross_study_summary.png}
-\caption{Source relation: original project cross-study summary;
+\includegraphics[width=0.75\linewidth,height=0.5\textheight,keepaspectratio,alt={Three vertically stacked horizontal native-unit summaries: accuracy gaps, information or free-energy changes, and parameter-recovery R-squared. Each study is shown with a seed-bootstrap interval; facets are not ranked across units.}]{../figures/cross_study_summary.png}
+\caption{Native-unit cross-study summary of the headline federation
+metrics. Source relation: original project cross-study summary;
 estimand: grouped study-level means in native units (accuracy fractions,
 nats, or \(R^2\)), never a cross-unit ranking; uncertainty: seed-level
 bootstrap confidence intervals. Horizontal native-unit facet chart
@@ -7428,7 +7429,7 @@ structural identifiability and not an acuity-by-colony-size study.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,height=0.5\textheight,keepaspectratio,alt={Two-panel parameter-recovery figure. Source relation: original project parameter-recovery diagnostic; estimand: recovered acuity and absolute error in probability units; uncertainty: empirical percentile intervals across independent trials. In the left panel, the x-axis is true acuity and the y-axis is recovered acuity, both in probability units; error bars show the 95\% empirical percentile interval across 960 trials per condition, and the diagonal is the identity reference. This interval is a descriptive quantile of the independent-trial estimates, not a bootstrap confidence interval or Bayesian credible interval. In the right panel, the x-axis is tested true acuity and the y-axis is absolute acuity error in probability units; the horizontal line is the global mean absolute error. These finite-grid results quantify acuity recovery for 200 observations per trial; they do not establish global structural identifiability.}]{../figures/parameter_recovery.png}
+\includegraphics[width=0.9\linewidth,height=0.5\textheight,keepaspectratio,alt={Two-panel sensor-acuity recovery diagnostic. The left scatter with empirical intervals follows the identity line; the right bars show absolute recovery error at each tested acuity.}]{../figures/parameter_recovery.png}
 \caption{Two-panel parameter-recovery figure. Source relation: original
 project parameter-recovery diagnostic; estimand: recovered acuity and
 absolute error in probability units; uncertainty: empirical percentile
@@ -7481,26 +7482,28 @@ depth rather than assuming it.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: original project BMR structure-learning diagnostic related to the mechanism in Friston et al.~Fig. 9; estimand: per-level Bayesian surprise in nats and the resulting prune/keep decision; uncertainty: deterministic schematic worlds, so no resampling interval is shown. Per-level Bayesian surprise for the two 3-level worlds. y-axis: the non-leaf reduction targets, indexed top-down from the reduction routine as level 0 = the meta-context (the topmost non-leaf level, L3 in the location-first L1/L2/L3 convention used elsewhere) and level 1 = the context (L2); the leaf location level (L1) is never a reduction target. x-axis: Bayesian surprise \textbackslash mathrm\{KL\}(q \textbackslash,\textbackslash|\textbackslash, \textbackslash text\{prior\}) in nats --- the information the leaf observation added at that level. Blue bars: the informative world (top level kept). Grey bars: the degenerate world (top level prunable). The dashed red line is the prune threshold; a level whose surprise falls below it is structurally unnecessary. The degenerate meta-context (grey, level 0) sits at 0.000 nats and is pruned, recovering the two-level model, while the informative meta-context (blue, level 0) at 0.328 nats is retained; both worlds keep the context level (level 1). Deterministic schematic worlds (no resampling), so no error band is applicable.}]{../figures/hierarchical_bmr.png}
-\caption{Source relation: original project BMR structure-learning
-diagnostic related to the mechanism in Friston et al.~Fig. 9; estimand:
-per-level Bayesian surprise in nats and the resulting prune/keep
-decision; uncertainty: deterministic schematic worlds, so no resampling
-interval is shown. Per-level Bayesian surprise for the two 3-level
-worlds. y-axis: the non-leaf reduction targets, indexed top-down from
-the reduction routine as level 0 = the meta-context (the topmost
-non-leaf level, L3 in the location-first L1/L2/L3 convention used
-elsewhere) and level 1 = the context (L2); the leaf location level (L1)
-is never a reduction target. x-axis: Bayesian surprise
-\(\mathrm{KL}(q \,\|\, \text{prior})\) in nats --- the information the
-leaf observation added at that level. Blue bars: the informative world
-(top level kept). Grey bars: the degenerate world (top level prunable).
-The dashed red line is the prune threshold; a level whose surprise falls
-below it is structurally unnecessary. The degenerate meta-context (grey,
-level 0) sits at 0.000 nats and is pruned, recovering the two-level
-model, while the informative meta-context (blue, level 0) at 0.328 nats
-is retained; both worlds keep the context level (level 1). Deterministic
-schematic worlds (no resampling), so no error band is
+\includegraphics[width=0.8\linewidth,height=0.5\textheight,keepaspectratio,alt={Horizontal bars show Bayesian surprise at two non-leaf hierarchy levels for informative and degenerate worlds. The informative upper level is kept, whereas the degenerate upper level falls below the prune threshold.}]{../figures/hierarchical_bmr.png}
+\caption{Per-level Bayesian surprise and prune/keep decisions for two
+hierarchical worlds. Source relation: original project BMR
+structure-learning diagnostic related to the mechanism in Friston et
+al.~Fig. 9; estimand: per-level Bayesian surprise in nats and the
+resulting prune/keep decision; uncertainty: deterministic schematic
+worlds, so no resampling interval is shown. Per-level Bayesian surprise
+for the two 3-level worlds. y-axis: the non-leaf reduction targets,
+indexed top-down from the reduction routine as level 0 = the
+meta-context (the topmost non-leaf level, L3 in the location-first
+L1/L2/L3 convention used elsewhere) and level 1 = the context (L2); the
+leaf location level (L1) is never a reduction target. x-axis: Bayesian
+surprise \(\mathrm{KL}(q \,\|\, \text{prior})\) in nats --- the
+information the leaf observation added at that level. Blue bars: the
+informative world (top level kept). Grey bars: the degenerate world (top
+level prunable). The dashed red line is the prune threshold; a level
+whose surprise falls below it is structurally unnecessary. The
+degenerate meta-context (grey, level 0) sits at 0.000 nats and is
+pruned, recovering the two-level model, while the informative
+meta-context (blue, level 0) at 0.328 nats is retained; both worlds keep
+the context level (level 1). Deterministic schematic worlds (no
+resampling), so no error band is
 applicable.}\label{fig:hierarchical-bmr}
 \end{figure}
 
@@ -7567,29 +7570,30 @@ found within this search budget.''
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Source relation: original project diagnostic of the server-side heuristic; estimand: numerical influence, finite-search breakdown count, and declared-grid capture fraction; uncertainty: deterministic seeded colonies, so no resampling interval is shown. Empirical characterization of the robust\_aggregate heuristic (two panels plus an optional attack-grid diagnostic). Left panel (numerical influence): the x-axis is the perturbation fraction by which one agent's belief is dragged toward a confident-wrong contamination point; the y-axis is that agent's converged normalized pooling weight, plotted for the naive pool (flat at 1/n, dotted reference) and the robust heuristic (down-weighting). The inset reports the final naive-minus-robust weight gap at the end of the probed path. Labeled ``empirical, at these settings --- not a guarantee.'' Right panel (measured breakdown point): the x-axis is the aggregator (robust heuristic vs objective-backed variational); the y-axis is the number of colluding confident-wrong adversaries that captures that aggregator's consensus argmax --- the robust heuristic at k = 2 and the variational rule at k = 4. Both bars are finite, so neither rule has an unconditional truth-recovery guarantee against coordinated collusion; this does not negate the variational rule's per-agent effective-weight theorem. Deterministic seeded colonies (no resampling), so no error band is applicable. The optional third panel reports the fraction of declared grid rows with finite capture within the configured adversary budget; it is not a probability or a global breakdown bound.}]{../figures/heuristic_breakdown.png}
-\caption{Source relation: original project diagnostic of the server-side
-heuristic; estimand: numerical influence, finite-search breakdown count,
-and declared-grid capture fraction; uncertainty: deterministic seeded
-colonies, so no resampling interval is shown. Empirical characterization
-of the \protect\breaktt{robust\_aggregate} heuristic (two panels plus an
-optional attack-grid diagnostic). Left panel (numerical influence): the
-x-axis is the perturbation fraction by which one agent's belief is
-dragged toward a confident-wrong contamination point; the y-axis is that
-agent's converged normalized pooling weight, plotted for the naive pool
-(flat at \(1/n\), dotted reference) and the robust heuristic
-(down-weighting). The inset reports the final naive-minus-robust weight
-gap at the end of the probed path. Labeled ``empirical, at these
-settings --- not a guarantee.'' Right panel (measured breakdown point):
-the x-axis is the aggregator (robust heuristic vs objective-backed
-variational); the y-axis is the number of colluding confident-wrong
-adversaries that captures that aggregator's consensus argmax --- the
-robust heuristic at \(k = 2\) and the variational rule at \(k = 4\).
-Both bars are finite, so neither rule has an unconditional
-truth-recovery guarantee against coordinated collusion; this does not
-negate the variational rule's per-agent effective-weight theorem.
-Deterministic seeded colonies (no resampling), so no error band is
-applicable. The optional third panel reports the fraction of declared
+\includegraphics[width=0.95\linewidth,height=0.5\textheight,keepaspectratio,alt={Three-panel server-heuristic diagnostic: numerical influence along a probed contamination path, finite colluder counts needed to capture consensus for two aggregators, and the fraction of a declared attack grid with capture.}]{../figures/heuristic_breakdown.png}
+\caption{Three-panel empirical characterization of the server-side
+heuristic. Source relation: original project diagnostic of the
+server-side heuristic; estimand: numerical influence, finite-search
+breakdown count, and declared-grid capture fraction; uncertainty:
+deterministic seeded colonies, so no resampling interval is shown.
+Empirical characterization of the \protect\breaktt{robust\_aggregate}
+heuristic (two panels plus an optional attack-grid diagnostic). Left
+panel (numerical influence): the x-axis is the perturbation fraction by
+which one agent's belief is dragged toward a confident-wrong
+contamination point; the y-axis is that agent's converged normalized
+pooling weight, plotted for the naive pool (flat at \(1/n\), dotted
+reference) and the robust heuristic (down-weighting). The inset reports
+the final naive-minus-robust weight gap at the end of the probed path.
+Labeled ``empirical, at these settings --- not a guarantee.'' Right
+panel (measured breakdown point): the x-axis is the aggregator (robust
+heuristic vs objective-backed variational); the y-axis is the number of
+colluding confident-wrong adversaries that captures that aggregator's
+consensus argmax --- the robust heuristic at \(k = 2\) and the
+variational rule at \(k = 4\). Both bars are finite, so neither rule has
+an unconditional truth-recovery guarantee against coordinated collusion;
+this does not negate the variational rule's per-agent effective-weight
+theorem. Deterministic seeded colonies (no resampling), so no error band
+is applicable. The optional third panel reports the fraction of declared
 grid rows with finite capture within the configured adversary budget; it
 is not a probability or a global breakdown
 bound.}\label{fig:heuristic-breakdown}

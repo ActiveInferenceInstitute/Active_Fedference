@@ -10,8 +10,11 @@ import pytest
 from publication.surface_validation import (
     _log_findings,
     _pdf_structure_findings,
+    _pdf_tagging_findings,
     _pdf_text_findings,
+    _pdfinfo_tagging_status,
     _publication_text_findings,
+    _qpdf_tagging_status,
     _slide_inventory_findings,
     validate_rendered_surfaces,
 )
@@ -26,6 +29,26 @@ def test_publication_text_findings_rejects_unresolved_manuscript_tokens() -> Non
     assert any("unresolved manuscript token" in finding for finding in findings)
     assert any("raw Pandoc" in finding for finding in findings)
     assert any("unresolved reference" in finding for finding in findings)
+
+
+def test_pdfinfo_tagging_status_parses_structural_fields() -> None:
+    tagged, language = _pdfinfo_tagging_status("Tagged: yes\nLanguage: en\n")
+    assert tagged
+    assert language == "en"
+
+    tagged, language = _pdfinfo_tagging_status("Tagged: no\n")
+    assert not tagged
+    assert language is None
+
+
+def test_qpdf_tagging_status_reads_catalog_language_and_structure_tree() -> None:
+    tagged_pdf_json = '{"objects":{"trailer":{"/Lang":"u:en","/StructTreeRoot":"2 0 R"}}}'
+    assert _qpdf_tagging_status(tagged_pdf_json) == (True, True)
+    assert _qpdf_tagging_status("not JSON") == (False, False)
+
+
+def test_pdf_tagging_is_not_required_for_legacy_surface_profiles(tmp_path: Path) -> None:
+    assert _pdf_tagging_findings(tmp_path / "paper.pdf", required=False) == []
 
 
 def test_log_findings_accepts_small_hbox_but_blocks_material_layout_errors(tmp_path: Path) -> None:

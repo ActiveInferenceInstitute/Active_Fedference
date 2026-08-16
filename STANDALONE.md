@@ -102,7 +102,8 @@ matching tests; rendering and publication packaging are a separate surface.
 - Do not present the loopback/HMAC adapter as confidential, identity-bound,
   Byzantine-tolerant, or cross-host. Its complete threat boundary is in
   [`docs/security/active_fedference-threat-model.md`](docs/security/active_fedference-threat-model.md).
-- Do not present structural PDF validation as tagged PDF or PDF/UA
-  conformance. The canonical accessibility-enhanced surface and promotion
+- Do not present qpdf/text/raster validation or tagged structure as PDF/UA
+  conformance. The current combined manuscript PDF has a source-controlled
+  tagging gate; the canonical accessibility-enhanced surface and promotion
   requirements are in
   [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).

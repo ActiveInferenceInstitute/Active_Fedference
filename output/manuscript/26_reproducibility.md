@@ -46,8 +46,8 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 369c47138f41608a |
-| Reproducible build epoch (UTC) | 2026-08-13T17:38:31Z |
+| Config hash (SHA-256, first 16) | fdc5ed49031acd3b |
+| Reproducible build epoch (UTC) | 2026-08-14T15:10:44Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -64,20 +64,25 @@ WCAG conformance: alternative-text quality, contrast, keyboard behavior,
 reading order, reflow, mathematics, and assistive-technology behavior still
 require manual review.
 
-The combined manuscript and slide PDFs are checked structurally, textually,
-through retained renderer logs, and by raster inspection. They are not claimed
-to be tagged or PDF/UA-conformant. A future accessible-PDF claim requires a
-tagged producer, a dedicated conformance report, and screen-reader and
-reading-order review; `qpdf` structure checks and successful text extraction
-alone are insufficient.
+The combined manuscript PDF is generated through the source-controlled
+LuaLaTeX/tagpdf path and is released only when `pdfinfo` reports `Tagged: yes`,
+qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the source-bound
+language check passes. Some Poppler builds omit the language line from
+`pdfinfo` even when `/Lang` is present. The
+separate slide PDFs are checked structurally, textually, through retained
+renderer logs, and by raster inspection, but do not inherit the manuscript
+tagging status. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+requires a dedicated conformance report plus screen-reader and reading-order
+review; `qpdf` structure checks and successful text extraction alone are
+insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1687 collected cases; the bound successful
+- Project test suite: 1692 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 91.01% (achieved by the bound full
+- Line coverage on `src/`: 90.69% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 

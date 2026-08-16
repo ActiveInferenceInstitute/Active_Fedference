@@ -59,7 +59,8 @@ meant to fuse the two complementary views into a decisive consensus. That
 regime is not separately measured here — the construction, the three actions, the EFE rule, and the
 exact condition protocol are detailed in the supplement ([@sec:supp-moving]).
 
-![Source relation: original project schematic for the moving-world protocol;
+![Moving sentinel world across isolated, communicating, and EFE-guided conditions.
+Source relation: original project schematic for the moving-world protocol;
 estimand: condition-level consensus accuracy, signed free-energy gap, and
 steps-to-consensus proxy in the stated native units; uncertainty: deterministic
 seeded run, so no resampling interval is shown. Moving sentinel world across the three conditions (x-axis is condition:
@@ -117,7 +118,8 @@ sharing is active. We report this as the null result it is rather than
 claiming an unmeasured EFE benefit. [@fig:disjoint-fov-world] summarizes the
 necessity result.
 
-![Source relation: source-inspired original project extension of the moving-world
+![Disjoint-field-of-view communication and navigation comparison.
+Source relation: source-inspired original project extension of the moving-world
 mechanism; estimand: condition-level consensus accuracy in the two declared
 disjoint-FOV protocols; uncertainty: across-seed standard-deviation error bars.
 Disjoint-FOV extension of the moving sentinel world, as a two-panel figure

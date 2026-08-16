@@ -186,16 +186,6 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
-% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
-\newcounter{codelisting}
-\renewcommand{\thecodelisting}{\arabic{codelisting}}
-\newenvironment{codelisting}{%
-  \refstepcounter{codelisting}%
-  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
-  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
-}{%
-  \end{minipage}\end{center}%
-}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -296,8 +286,8 @@ NumPy & 2.4.2 \\
 SciPy & 1.18.0 \\
 PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
-Config hash (SHA-256, first 16) & 369c47138f41608a \\
-Reproducible build epoch (UTC) & 2026-08-13T17:38:31Z \\
+Config hash (SHA-256, first 16) & fdc5ed49031acd3b \\
+Reproducible build epoch (UTC) & 2026-08-14T15:10:44Z \\
 \bottomrule\noalign{}
 \end{longtable}
 
@@ -326,12 +316,18 @@ manual review.
 
 \begin{frame}[fragile,allowframebreaks]{Reader-surface accessibility
 boundary}
-The combined manuscript and slide PDFs are checked structurally,
-textually, through retained renderer logs, and by raster inspection.
-They are not claimed to be tagged or PDF/UA-conformant. A future
-accessible-PDF claim requires a tagged producer, a dedicated conformance
-report, and screen-reader and reading-order review; \texttt{qpdf}
-structure checks and successful text extraction alone are insufficient.
+The combined manuscript PDF is generated through the source-controlled
+LuaLaTeX/tagpdf path and is released only when \texttt{pdfinfo} reports
+\texttt{Tagged:\ yes}, qpdf exposes a non-empty \texttt{/Lang} and
+\texttt{StructTreeRoot}, and the source-bound language check passes.
+Some Poppler builds omit the language line from \texttt{pdfinfo} even
+when \texttt{/Lang} is present. The separate slide PDFs are checked
+structurally, textually, through retained renderer logs, and by raster
+inspection, but do not inherit the manuscript tagging status. Tagged
+structure is not PDF/UA conformance: a PDF/UA claim requires a dedicated
+conformance report plus screen-reader and reading-order review;
+\texttt{qpdf} structure checks and successful text extraction alone are
+insufficient.
 \end{frame}
 
 \begin{frame}[fragile,allowframebreaks]{Test and coverage evidence for
@@ -346,11 +342,11 @@ the claim surface}
 \item
   Acceptance criteria: 259 total, 257 passing.
 \item
-  Project test suite: 1687 collected cases; the bound successful receipt
+  Project test suite: 1692 collected cases; the bound successful receipt
   records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 \item
-  Line coverage on \texttt{src/}: 91.01\% (achieved by the bound full
+  Line coverage on \texttt{src/}: 90.69\% (achieved by the bound full
   gate; \(\ge 90\%\) line coverage is enforced in CI, while branch
   coverage is tracked separately in CI).
 \end{itemize}

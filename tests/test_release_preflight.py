@@ -34,6 +34,10 @@ def _metadata_project(root: Path) -> Path:
     (root / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump(
             {
+                "paper": {
+                    "title": "Preflight Fixture Paper",
+                    "subtitle": "A Complete Fixture Subtitle",
+                },
                 "authors": [
                     {
                         "name": "Ada Lovelace",

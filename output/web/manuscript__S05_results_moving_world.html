@@ -527,23 +527,25 @@ rule, and the exact condition protocol are detailed in the supplement
 (<a class="xref" href="index.html#sec:supp-moving">Section 13.8</a>).</p>
 <figure id="fig:moving-world">
 <a class="figure-full-size-link" href="../figures/moving_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/moving_world.png" style="width:80.0%"
-alt="Source relation: original project schematic for the moving-world protocol; estimand: condition-level consensus accuracy, signed free-energy gap, and steps-to-consensus proxy in the stated native units; uncertainty: deterministic seeded…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Source relation: original project
-schematic for the moving-world protocol; estimand: condition-level
-consensus accuracy, signed free-energy gap, and steps-to-consensus proxy
-in the stated native units; uncertainty: deterministic seeded run, so no
-resampling interval is shown. Moving sentinel world across the three
-conditions (x-axis is condition: isolated, communicating, EFE-guided).
-Left panel: y-axis shows consensus accuracy (fraction of 960 trials
-whose pooled argmax matches the truth). Center panel: y-axis shows the
-signed free-energy gap in nats (isolated surprise minus the condition’s
-surprise on the true state, so a positive value would mean lower free
-energy than isolated; the measured gaps are negative, plotted against a
-zero reference line and annotated per bar). Right panel: y-axis shows a
-coarse steps-to-consensus proxy, with per-bar value annotations showing
-the three conditions are essentially tied. Each colony runs 6 steps over
-a 4-cell linear grid with 2 disjoint-FOV agents. Deterministic seeded
-run, so the bars carry no error band.</figcaption>
+alt="Three-panel moving-world comparison of isolated, communicating, and expected-free-energy-guided conditions, showing accuracy, signed free-energy gap, and steps to consensus." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Moving sentinel world across isolated,
+communicating, and EFE-guided conditions. Source relation: original
+project schematic for the moving-world protocol; estimand:
+condition-level consensus accuracy, signed free-energy gap, and
+steps-to-consensus proxy in the stated native units; uncertainty:
+deterministic seeded run, so no resampling interval is shown. Moving
+sentinel world across the three conditions (x-axis is condition:
+isolated, communicating, EFE-guided). Left panel: y-axis shows consensus
+accuracy (fraction of 960 trials whose pooled argmax matches the truth).
+Center panel: y-axis shows the signed free-energy gap in nats (isolated
+surprise minus the condition’s surprise on the true state, so a positive
+value would mean lower free energy than isolated; the measured gaps are
+negative, plotted against a zero reference line and annotated per bar).
+Right panel: y-axis shows a coarse steps-to-consensus proxy, with
+per-bar value annotations showing the three conditions are essentially
+tied. Each colony runs 6 steps over a 4-cell linear grid with 2
+disjoint-FOV agents. Deterministic seeded run, so the bars carry no
+error band.</figcaption>
 </figure>
 <h3 id="sec:results-disjoint-fov">Disjoint field-of-view extension</h3>
 <p>To test whether communication is necessary (not merely beneficial)
@@ -584,21 +586,22 @@ the null result it is rather than claiming an unmeasured EFE benefit.
 summarizes the necessity result.</p>
 <figure id="fig:disjoint-fov-world">
 <a class="figure-full-size-link" href="../figures/disjoint_fov_world.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/disjoint_fov_world.png" style="width:80.0%"
-alt="Source relation: source-inspired original project extension of the moving-world mechanism; estimand: condition-level consensus accuracy in the two declared disjoint-FOV protocols; uncertainty: across-seed standard-deviation error bars." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Source relation: source-inspired original
-project extension of the moving-world mechanism; estimand:
-condition-level consensus accuracy in the two declared disjoint-FOV
-protocols; uncertainty: across-seed standard-deviation error bars.
-Disjoint-FOV extension of the moving sentinel world, as a two-panel
-figure whose panels come from two separately configured experiments.
-Left panel (communication necessity, 3 agents each observing a
-2-position non-overlapping window of the 6-position world): the x-axis
-is the condition (isolated vs. communicating); the y-axis is consensus
-accuracy — drawn as accuracy, the fraction of trials whose pooled argmax
-matches the true state. The accuracy gap between communicating and
-isolated conditions quantifies the necessity of belief sharing under
-fully disjoint fields of view, now backed by the paired Wilcoxon test in
-the text (<span class="math inline">\(p = 0.0000\)</span>) rather than a
+alt="Two-panel disjoint-field-of-view diagnostic. The left bars compare isolated and communicating consensus accuracy; the right bars compare EFE-guided and random movement, where both policies are near ceiling." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Disjoint-field-of-view communication and
+navigation comparison. Source relation: source-inspired original project
+extension of the moving-world mechanism; estimand: condition-level
+consensus accuracy in the two declared disjoint-FOV protocols;
+uncertainty: across-seed standard-deviation error bars. Disjoint-FOV
+extension of the moving sentinel world, as a two-panel figure whose
+panels come from two separately configured experiments. Left panel
+(communication necessity, 3 agents each observing a 2-position
+non-overlapping window of the 6-position world): the x-axis is the
+condition (isolated vs. communicating); the y-axis is consensus accuracy
+— drawn as accuracy, the fraction of trials whose pooled argmax matches
+the true state. The accuracy gap between communicating and isolated
+conditions quantifies the necessity of belief sharing under fully
+disjoint fields of view, now backed by the paired Wilcoxon test in the
+text (<span class="math inline">\(p = 0.0000\)</span>) rather than a
 single point estimate. Right panel (EFE vs random navigation, a smaller
 2-agent, 4-position configuration): the x-axis is the movement policy
 (EFE-guided vs. random); the y-axis is final consensus accuracy — the

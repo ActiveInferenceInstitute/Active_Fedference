@@ -186,16 +186,6 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
-% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
-\newcounter{codelisting}
-\renewcommand{\thecodelisting}{\arabic{codelisting}}
-\newenvironment{codelisting}{%
-  \refstepcounter{codelisting}%
-  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
-  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
-}{%
-  \end{minipage}\end{center}%
-}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}

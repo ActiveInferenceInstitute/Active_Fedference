@@ -163,16 +163,6 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
-% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
-\newcounter{codelisting}
-\renewcommand{\thecodelisting}{\arabic{codelisting}}
-\newenvironment{codelisting}{%
-  \refstepcounter{codelisting}%
-  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
-  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
-}{%
-  \end{minipage}\end{center}%
-}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -283,28 +273,30 @@ fig.~\ref{fig:cross-study-summary}.
 benefit}
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,height=0.40\textheight,keepaspectratio,alt={Source relation: original project sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as functions of acuity and colony size; uncertainty: deterministic per-cell means over the declared trials, with no resampling interval. Two-panel heatmap (1×2) of the Study 8 parameter sensitivity sweep. Left panel: y-axis indexes sensor acuity (0.40--0.95, 5 levels); x-axis indexes colony size (2--10 agents, 5 levels); color encodes the belief-sharing accuracy gap (communicating minus isolated mean accuracy). Right panel: identical axes; color encodes the hierarchical POMDP location accuracy gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero --- green denotes federation benefit, red denotes deficit. Diagonal hatching marks cells with \textbar\textbackslash mathrm\{gap\}\textbar{} \textbackslash le 0.05 (unreliable, near-zero benefit). Cell values are deterministic per-cell means over 20 trials; no resampling error band is shown --- the sweep protocol is detailed in the sensitivity supplement.}]{../figures/sensitivity_heatmap.png}
-\caption{Source relation: original project sensitivity diagnostic;
-estimand: per-cell accuracy gaps (fractions) as functions of acuity and
-colony size; uncertainty: deterministic per-cell means over the declared
-trials, with no resampling interval. Two-panel heatmap (1×2) of the
-Study 8 parameter sensitivity sweep. Left panel: y-axis indexes sensor
-acuity (0.40--0.95, 5 levels); x-axis indexes colony size (2--10 agents,
-5 levels); color encodes the belief-sharing accuracy gap (communicating
-minus isolated mean accuracy). Right panel: identical axes; color
-encodes the hierarchical POMDP location accuracy gap (hierarchical minus
-flat). Color scale: RdYlGn symmetric around zero --- green denotes
-federation benefit, red denotes deficit. Diagonal hatching marks cells
-with \(|\mathrm{gap}| \le 0.05\) (unreliable, near-zero benefit). Cell
-values are deterministic per-cell means over 20 trials; no resampling
-error band is shown --- the sweep protocol is detailed in the
-sensitivity supplement.}\label{fig:sensitivity-heatmap}
+\includegraphics[width=0.9\linewidth,height=0.40\textheight,keepaspectratio,alt={Two-panel sensitivity heatmap of belief-sharing and hierarchical accuracy gaps. Source relation: original project sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as functions of acuity and colony size; uncertainty: deterministic per-cell means over the declared trials, with no resampling interval. Two-panel heatmap (1×2) of the Study 8 parameter sensitivity sweep. Left panel: y-axis indexes sensor acuity (0.40--0.95, 5 levels); x-axis indexes colony size (2--10 agents, 5 levels); color encodes the belief-sharing accuracy gap (communicating minus isolated mean accuracy). Right panel: identical axes; color encodes the hierarchical POMDP location accuracy gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero --- green denotes federation benefit, red denotes deficit. Diagonal hatching marks cells with \textbar\textbackslash mathrm\{gap\}\textbar{} \textbackslash le 0.05 (unreliable, near-zero benefit). Cell values are deterministic per-cell means over 20 trials; no resampling error band is shown --- the sweep protocol is detailed in the sensitivity supplement.}]{../figures/sensitivity_heatmap.png}
+\caption{Two-panel sensitivity heatmap of belief-sharing and
+hierarchical accuracy gaps. Source relation: original project
+sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as
+functions of acuity and colony size; uncertainty: deterministic per-cell
+means over the declared trials, with no resampling interval. Two-panel
+heatmap (1×2) of the Study 8 parameter sensitivity sweep. Left panel:
+y-axis indexes sensor acuity (0.40--0.95, 5 levels); x-axis indexes
+colony size (2--10 agents, 5 levels); color encodes the belief-sharing
+accuracy gap (communicating minus isolated mean accuracy). Right panel:
+identical axes; color encodes the hierarchical POMDP location accuracy
+gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero
+--- green denotes federation benefit, red denotes deficit. Diagonal
+hatching marks cells with \(|\mathrm{gap}| \le 0.05\) (unreliable,
+near-zero benefit). Cell values are deterministic per-cell means over 20
+trials; no resampling error band is shown --- the sweep protocol is
+detailed in the sensitivity supplement.}\label{fig:sensitivity-heatmap}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.75\linewidth,height=0.40\textheight,keepaspectratio,alt={Source relation: original project cross-study summary; estimand: grouped study-level means in native units (accuracy fractions, nats, or R\^{}2), never a cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals. Horizontal native-unit facet chart summarizing the key federation benefit metric for each of the 9 studies (Studies 1--9). x-axis indexes benefit value in metric-specific units (accuracy gain for Studies 1, 4, 5, 6, 7, 8; KL reduction for Study 2; ΔF for Study 3; R\^{}2 for Study 9). y-axis lists the 9 studies (one row each), ordered from Study 1 at the top to Study 9 at the bottom within each native-unit facet. Each mark shows the mean over 128 independent seeds with intervals spanning the 95 \% bootstrap confidence interval. There is no cross-unit ranking: zero is a within-unit reference only, and the facet labels carry the units. Consistent with the per-study results, Studies 5 (moving world, EFE) and 6 (2-level hierarchical) sit at approximately zero within their respective units.}]{../figures/cross_study_summary.png}
-\caption{Source relation: original project cross-study summary;
+\includegraphics[width=0.75\linewidth,height=0.40\textheight,keepaspectratio,alt={Native-unit cross-study summary of the headline federation metrics. Source relation: original project cross-study summary; estimand: grouped study-level means in native units (accuracy fractions, nats, or R\^{}2), never a cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals. Horizontal native-unit facet chart summarizing the key federation benefit metric for each of the 9 studies (Studies 1--9). x-axis indexes benefit value in metric-specific units (accuracy gain for Studies 1, 4, 5, 6, 7, 8; KL reduction for Study 2; ΔF for Study 3; R\^{}2 for Study 9). y-axis lists the 9 studies (one row each), ordered from Study 1 at the top to Study 9 at the bottom within each native-unit facet. Each mark shows the mean over 128 independent seeds with intervals spanning the 95 \% bootstrap confidence interval. There is no cross-unit ranking: zero is a within-unit reference only, and the facet labels carry the units. Consistent with the per-study results, Studies 5 (moving world, EFE) and 6 (2-level hierarchical) sit at approximately zero within their respective units.}]{../figures/cross_study_summary.png}
+\caption{Native-unit cross-study summary of the headline federation
+metrics. Source relation: original project cross-study summary;
 estimand: grouped study-level means in native units (accuracy fractions,
 nats, or \(R^2\)), never a cross-unit ranking; uncertainty: seed-level
 bootstrap confidence intervals. Horizontal native-unit facet chart

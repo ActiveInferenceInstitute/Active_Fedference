@@ -32,6 +32,7 @@ def test_every_figure_generator_has_complete_metadata() -> None:
         "unit",
         "uncertainty",
         "replication_unit",
+        "alt_text",
     }
     for generator, metadata in FIGURE_METADATA.items():
         assert required <= set(metadata), generator
@@ -42,6 +43,8 @@ def test_every_figure_generator_has_complete_metadata() -> None:
         assert metadata["unit"]
         assert metadata["uncertainty"]
         assert metadata["replication_unit"]
+        assert metadata["alt_text"]
+        assert len(metadata["alt_text"]) <= 500
         assert metadata["estimand"] != "project-specific diagnostic quantity"
         assert metadata["unit"] != "declared in the embedded caption"
         assert metadata["uncertainty"] != "caption declares the interval or deterministic status"

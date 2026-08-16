@@ -471,6 +471,7 @@ class FigureMetadataEntry(TypedDict):
     unit: str
     uncertainty: str
     replication_unit: str
+    alt_text: str
 
 
 class FigureRegistryPayload(TypedDict):
@@ -895,6 +896,7 @@ _FIGURE_METADATA_SCHEMA = SchemaDefinition(
         "unit": "str",
         "uncertainty": "str",
         "replication_unit": "str",
+        "alt_text": "str",
     }
 )
 

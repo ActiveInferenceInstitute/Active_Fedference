@@ -523,28 +523,30 @@ native-unit cross-study overview of the headline metrics across all 9
 studies is shown in <a class="xref" href="index.html#fig:cross-study-summary">Figure 27</a>.</p>
 <figure id="fig:sensitivity-heatmap">
 <a class="figure-full-size-link" href="../figures/sensitivity_heatmap.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/sensitivity_heatmap.png" style="width:90.0%"
-alt="Source relation: original project sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as functions of acuity and colony size; uncertainty: deterministic per-cell means over the declared trials, with no resampling interval." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Source relation: original project
-sensitivity diagnostic; estimand: per-cell accuracy gaps (fractions) as
-functions of acuity and colony size; uncertainty: deterministic per-cell
-means over the declared trials, with no resampling interval. Two-panel
-heatmap (1×2) of the Study 8 parameter sensitivity sweep. Left panel:
-y-axis indexes sensor acuity (0.40–0.95, 5 levels); x-axis indexes
-colony size (2–10 agents, 5 levels); color encodes the belief-sharing
-accuracy gap (communicating minus isolated mean accuracy). Right panel:
-identical axes; color encodes the hierarchical POMDP location accuracy
-gap (hierarchical minus flat). Color scale: RdYlGn symmetric around zero
-— green denotes federation benefit, red denotes deficit. Diagonal
-hatching marks cells with <span class="math inline">\(|\mathrm{gap}| \le
-0.05\)</span> (unreliable, near-zero benefit). Cell values are
-deterministic per-cell means over 20 trials; no resampling error band is
-shown — the sweep protocol is detailed in the sensitivity
-supplement.</figcaption>
+alt="Two heatmaps of accuracy gaps over sensor acuity and colony size: communicating minus isolated on the left, and hierarchical minus flat on the right. A symmetric color scale is centered at zero and hatched cells mark near-zero gaps." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Two-panel sensitivity heatmap of
+belief-sharing and hierarchical accuracy gaps. Source relation: original
+project sensitivity diagnostic; estimand: per-cell accuracy gaps
+(fractions) as functions of acuity and colony size; uncertainty:
+deterministic per-cell means over the declared trials, with no
+resampling interval. Two-panel heatmap (1×2) of the Study 8 parameter
+sensitivity sweep. Left panel: y-axis indexes sensor acuity (0.40–0.95,
+5 levels); x-axis indexes colony size (2–10 agents, 5 levels); color
+encodes the belief-sharing accuracy gap (communicating minus isolated
+mean accuracy). Right panel: identical axes; color encodes the
+hierarchical POMDP location accuracy gap (hierarchical minus flat).
+Color scale: RdYlGn symmetric around zero — green denotes federation
+benefit, red denotes deficit. Diagonal hatching marks cells with <span
+class="math inline">\(|\mathrm{gap}| \le 0.05\)</span> (unreliable,
+near-zero benefit). Cell values are deterministic per-cell means over 20
+trials; no resampling error band is shown — the sweep protocol is
+detailed in the sensitivity supplement.</figcaption>
 </figure>
 <figure id="fig:cross-study-summary">
 <a class="figure-full-size-link" href="../figures/cross_study_summary.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/cross_study_summary.png" style="width:75.0%"
-alt="Source relation: original project cross-study summary; estimand: grouped study-level means in native units (accuracy fractions, nats, or R^2 ), never a cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Source relation: original project
+alt="Three vertically stacked horizontal native-unit summaries: accuracy gaps, information or free-energy changes, and parameter-recovery R-squared. Each study is shown with a seed-bootstrap interval; facets are not ranked across units." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Native-unit cross-study summary of the
+headline federation metrics. Source relation: original project
 cross-study summary; estimand: grouped study-level means in native units
 (accuracy fractions, nats, or <span class="math inline">\(R^2\)</span>),
 never a cross-unit ranking; uncertainty: seed-level bootstrap confidence

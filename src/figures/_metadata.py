@@ -25,6 +25,170 @@ _GENERATORS: Final[tuple[str, ...]] = (
 
 _SOURCE_CITATION = "Friston et al. (2024), Federated inference and belief sharing"
 
+# Concise alternatives for the tagged PDF figure structure and other readers
+# that cannot inspect the raster.  These describe the visible encodings and
+# the claim boundary; the neighbouring manuscript caption remains the long
+# description with source-bound numeric tokens.
+_ALT_TEXT: Final[dict[str, str]] = {
+    "aggregation_descent": (
+        "Line plot of variational free energy versus block-coordinate iteration. "
+        "The trace drops steeply at first, then remains flat through convergence."
+    ),
+    "belief_heatmap": (
+        "Heatmap of posterior probability over nine location cells for seven agent "
+        "rows and a consensus row. Agent mass is dispersed, while the consensus "
+        "row concentrates near one cell."
+    ),
+    "belief_quality": (
+        "Two-panel control figure. The left panel compares oracle, uniform, and "
+        "confidently-wrong mean categorical log scores; the right panel plots "
+        "empirical accuracy against mean confidence with a perfect-calibration line."
+    ),
+    "bnn_robustness": (
+        "Held-out accuracy curves for standard NLL/KLD and robust RCCE/AR client "
+        "losses across per-client label-contamination fractions, with seed-level "
+        "interval bands. The curves are similar at low contamination and separate "
+        "at moderate contamination before both fall at the highest rate."
+    ),
+    "bounded_influence": (
+        "Line plot of a variational server's normalized influence weight as one "
+        "agent drifts toward a confident-wrong belief. The variational weight falls "
+        "below the flat naive-pool reference; the plot is a tested-path diagnostic."
+    ),
+    "complexity_scaling": (
+        "Four-panel log-log timing figure showing median wall-clock scaling with "
+        "agents, states, and modalities for aggregation, self-excluding sharing, "
+        "and state inference. Error bars show timing spans and dotted lines are "
+        "normalized order guides."
+    ),
+    "conditional_world": (
+        "Two-panel finite-grid robustness diagnostic. The left heatmap shows the "
+        "robust-minus-naive true-state-mass contrast across attack mechanisms and "
+        "world or acuity cells; the right panel shows finite-grid means with "
+        "min/max spans by attack mechanism."
+    ),
+    "contamination_gallery": (
+        "Grouped bars compare naive pooling with the pooled display robust member "
+        "for five contamination mechanisms. Bars show mean true-state consensus "
+        "accuracy with seed-bootstrap intervals; annotations identify the selected "
+        "method and its across-seed win fraction."
+    ),
+    "cross_study_summary": (
+        "Three vertically stacked horizontal native-unit summaries: accuracy gaps, "
+        "information or free-energy changes, and parameter-recovery R-squared. "
+        "Each study is shown with a seed-bootstrap interval; facets are not ranked "
+        "across units."
+    ),
+    "descent_comparison": (
+        "Line plot comparing single-start and multi-start variational free-energy "
+        "descent. The single start remains in a higher local basin, while the "
+        "multi-start run reaches a lower basin after fewer iterations."
+    ),
+    "disjoint_fov_world": (
+        "Two-panel disjoint-field-of-view diagnostic. The left bars compare isolated "
+        "and communicating consensus accuracy; the right bars compare EFE-guided "
+        "and random movement, where both policies are near ceiling."
+    ),
+    "efe_decomposition": (
+        "Two views of a categorical expected-free-energy identity in nats. The left "
+        "stack shows risk plus ambiguity; the right signed waterfall shows pragmatic "
+        "value and a negative epistemic correction ending at the same terminal value."
+    ),
+    "emergence_bmr": (
+        "Two bars show Bayesian model-reduction free-energy differences for pruning "
+        "a redundant versus a supported likelihood column. The redundant-pruning "
+        "control is positive and the supported-column control is negative."
+    ),
+    "free_energy_comparison": (
+        "Per-seed free-energy points over communicating and incommunicado colony "
+        "conditions, with mean bars and across-seed spread. The communicating mean "
+        "is lower than the incommunicado mean."
+    ),
+    "generative_model_schema": (
+        "Four-panel categorical generative-model schematic: private observation, "
+        "A/B/C/D-zero factors feeding a local posterior, temporal state-observation-"
+        "action order, and optional hierarchical context."
+    ),
+    "graphical_abstract": (
+        "Wide schematic linking private categorical beliefs, contaminated broadcasts, "
+        "a robust aggregation server, naive versus reweighted consensus, and three "
+        "separate claim axes: client FedGVI, server heuristic, and variational server."
+    ),
+    "heuristic_breakdown": (
+        "Three-panel server-heuristic diagnostic: numerical influence along a probed "
+        "contamination path, finite colluder counts needed to capture consensus for "
+        "two aggregators, and the fraction of a declared attack grid with capture."
+    ),
+    "hierarchical_bmr": (
+        "Horizontal bars show Bayesian surprise at two non-leaf hierarchy levels for "
+        "informative and degenerate worlds. The informative upper level is kept, "
+        "whereas the degenerate upper level falls below the prune threshold."
+    ),
+    "hierarchical_pomdp": (
+        "Six-panel hierarchical POMDP diagnostic. The top row shows two-level "
+        "location, context, and colony beliefs; the bottom row shows three-level "
+        "beliefs and the measured hierarchical-minus-flat accuracy gaps."
+    ),
+    "language_kl_decay": (
+        "Seed-mean KL divergence from the true categorical likelihood to the learned "
+        "likelihood across ordered learning batches. The curve decreases rapidly and "
+        "then approaches zero, with a seed-bootstrap interval band."
+    ),
+    "message_passing": (
+        "Three-lane protocol schematic: agents keep private observations, broadcast "
+        "local categorical posteriors, and enter standard, heuristic, or variational "
+        "server fusion. The bottom lane separates the ownership of each claim."
+    ),
+    "moving_world": (
+        "Three-panel moving-world comparison of isolated, communicating, and "
+        "expected-free-energy-guided conditions, showing accuracy, signed free-energy "
+        "gap, and steps to consensus."
+    ),
+    "parameter_recovery": (
+        "Two-panel sensor-acuity recovery diagnostic. The left scatter with empirical "
+        "intervals follows the identity line; the right bars show absolute recovery "
+        "error at each tested acuity."
+    ),
+    "pomdp_loop": (
+        "Three-panel active-inference schematic showing a shared hidden world, one "
+        "cavity-excluded belief-sharing round, and the temporal hidden-state, "
+        "observation, posterior, action, and transition loop."
+    ),
+    "robust_influence_weights": (
+        "Bar chart of server weights for two contaminated and five honest agents. "
+        "The heuristic assigns near-zero weight to contaminated broadcasts and "
+        "larger, near-equal weights to honest agents; the dotted line is equal weight."
+    ),
+    "robustness_onset": (
+        "Three mechanism-specific panels plot pooled robust-member and naive consensus "
+        "accuracy against contamination rate. Vertical lines mark descriptive onset "
+        "rates, and byzantine contamination shows a transient contrast before collapse."
+    ),
+    "robustness_review_grid": (
+        "Expanded finite robustness review. The left heatmap summarizes conditional "
+        "robust-minus-naive contrasts for two adversarial weights; the three right "
+        "panels show signed rate profiles for all predeclared methods under confident-"
+        "wrong, byzantine, and drift attacks."
+    ),
+    "robustness_sweep": (
+        "Consensus accuracy curves for naive KLD and four robust client operating "
+        "points across contamination rates. Lines and markers show matched-trial means "
+        "with 95-percent seed-bootstrap intervals; a horizontal line marks the "
+        "predeclared accuracy floor."
+    ),
+    "sensitivity_heatmap": (
+        "Two heatmaps of accuracy gaps over sensor acuity and colony size: "
+        "communicating minus isolated on the left, and hierarchical minus flat on "
+        "the right. A symmetric color scale is centered at zero and hatched cells "
+        "mark near-zero gaps."
+    ),
+    "system_overview": (
+        "Three-part schematic of a five-agent colony with two adversarial agents, "
+        "naive equal-weight pooling, and heuristic reweighting. The naive argmax is "
+        "off target, while the reweighted consensus recovers the displayed true state."
+    ),
+}
+
 
 def _default_metadata() -> dict[str, str]:
     return {
@@ -41,7 +205,13 @@ def _default_metadata() -> dict[str, str]:
 
 
 def _build_metadata() -> dict[str, dict[str, str]]:
+    if set(_ALT_TEXT) != set(_GENERATORS):
+        missing = sorted(set(_GENERATORS) - set(_ALT_TEXT))
+        extra = sorted(set(_ALT_TEXT) - set(_GENERATORS))
+        raise ValueError(f"figure alternative registry mismatch: missing={missing}, extra={extra}")
     metadata = {name: _default_metadata() for name in _GENERATORS}
+    for name, alt_text in _ALT_TEXT.items():
+        metadata[name]["alt_text"] = alt_text
     for name, estimand, unit in (
         ("free_energy_comparison", "communicating minus incommunicado colony mean free energy", "nats"),
         ("language_kl_decay", "seed-mean KL(true likelihood || learned likelihood) by learning step", "nats"),

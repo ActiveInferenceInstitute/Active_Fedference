@@ -444,8 +444,13 @@ manuscript and slide log for missing glyphs, undefined references, and material
 layout overflow, and validates the local web package. Every retained log is
 evidence-bearing: obsolete logs may be removed only after a current,
 source-bound render establishes that the producer no longer emits them.
-Warnings in any retained log fail the gate. These probes do not establish
-tagged PDF or PDF/UA conformance.
+Warnings in any retained log fail the gate. The manuscript-PDF branch
+additionally enforces the source-requested tagged structure (`Tagged: yes`,
+qpdf-visible `/Lang`, language, and `StructTreeRoot`). The validator accepts
+the catalog `/Lang` when a Poppler build omits its optional `Language:` line.
+These probes do not establish PDF/UA conformance; retain and inspect the
+dedicated conformance report and complete the manual accessibility review
+before making that claim.
 
 ## Markdown pre-render
 

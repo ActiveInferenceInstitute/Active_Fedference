@@ -143,6 +143,7 @@ def _valid_figure_entry(label: str = "fig:belief-heatmap") -> dict[str, str]:
         "unit": "probability",
         "uncertainty": "none",
         "replication_unit": "seed",
+        "alt_text": "Heatmap alternative text.",
     }
 
 

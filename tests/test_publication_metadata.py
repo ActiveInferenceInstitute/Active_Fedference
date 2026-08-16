@@ -27,7 +27,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 def _make_project(tmp_path: Path) -> Path:
     (tmp_path / "manuscript").mkdir()
     config = {
-        "paper": {"title": "T", "version": "1.0"},
+        "paper": {"title": "T", "subtitle": "A complete subtitle", "version": "1.0"},
         "authors": [
             {
                 "name": "Ada Q Lovelace",
@@ -67,8 +67,10 @@ def test_build_emits_all_three_surfaces_from_config(tmp_path: Path) -> None:
     cm = json.loads(out["codemeta.json"])
     # Version comes from pyproject (the packaging source of truth), everywhere.
     assert cff["version"] == zen["version"] == cm["version"] == "9.9.9"
-    # Same title/author/orcid/license on every surface.
-    assert cff["title"] == zen["title"] == cm["name"] == "Proj"
+    # Software citation surfaces use the package name; Zenodo identifies the
+    # deposited manuscript with its complete paper title.
+    assert cff["title"] == cm["name"] == "Proj"
+    assert zen["title"] == "T: A complete subtitle"
     assert cff["authors"][0]["orcid"] == zen["creators"][0]["orcid"]
     assert cm["author"][0]["@id"].endswith(zen["creators"][0]["orcid"])
     assert cff["license"] == zen["license"] == "MIT"
@@ -79,6 +81,8 @@ def test_build_emits_all_three_surfaces_from_config(tmp_path: Path) -> None:
     assert zen["creators"][0]["name"] == "Lovelace, Ada Q"
     # Folded abstract collapses to one normalized line.
     assert cff["abstract"] == "Line one folds into one line."
+    assert zen["description"] == cff["abstract"]
+    assert cm["abstract"] == cff["abstract"]
     # Related identifiers pass through with the stated direction.
     assert zen["related_identifiers"] == [{"relation": "cites", "identifier": "https://doi.org/10.1/x"}]
 
@@ -149,6 +153,18 @@ def test_check_detects_a_tampered_surface(tmp_path: Path) -> None:
     assert check_metadata(root) == [".zenodo.json"]
 
 
+def test_zenodo_uses_full_paper_identity_and_abstract(tmp_path: Path) -> None:
+    """Zenodo must not regress to the abbreviated package metadata fields."""
+    root = _make_project(tmp_path)
+    config = yaml.safe_load((root / "manuscript" / "config.yaml").read_text(encoding="utf-8"))
+    output = build_metadata(root)
+    zenodo = json.loads(output[".zenodo.json"])
+    abstract = " ".join(str(config["publication"]["abstract"]).split())
+    assert zenodo["title"] == "T: A complete subtitle"
+    assert zenodo["description"] == abstract
+    assert zenodo["description"] != "Short description."
+
+
 def test_missing_publication_block_fails_loudly(tmp_path: Path) -> None:
     (tmp_path / "manuscript").mkdir()
     (tmp_path / "manuscript" / "config.yaml").write_text(
@@ -160,6 +176,19 @@ def test_missing_publication_block_fails_loudly(tmp_path: Path) -> None:
         raise AssertionError("expected ValueError")
     except ValueError as exc:
         assert "publication" in str(exc)
+
+
+def test_missing_paper_title_fails_loudly(tmp_path: Path) -> None:
+    root = _make_project(tmp_path)
+    config_path = root / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["paper"]["title"] = ""
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    try:
+        build_metadata(root)
+        raise AssertionError("expected ValueError")
+    except ValueError as exc:
+        assert "paper block must contain a non-empty title" in str(exc)
 
 
 def test_malformed_experiment_block_uses_the_shared_config_boundary(tmp_path: Path) -> None:

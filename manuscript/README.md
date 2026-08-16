@@ -70,7 +70,12 @@ hydration, and web preparation precedes the final receipt because it writes
 is in [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/rendering_pipeline.md).
 
 The HTML manuscript is the canonical accessibility-enhanced surface. The
-current PDFs are not tagged or PDF/UA-conformant; see
+source-current combined manuscript PDF is generated with tagged structure and
+must pass the repository's `Tagged: yes`, qpdf `/Lang`, language, and
+`StructTreeRoot` gates; Poppler's optional `pdfinfo` language line is not the
+only accepted language evidence.
+the separate slide PDFs do not inherit that status. Tagged structure is not a
+PDF/UA-conformance claim; see
 [`../docs/manuscript/accessibility.md`](../docs/manuscript/accessibility.md).
 
 Cover image is configured in `config.yaml` via `paper.cover.image` and currently

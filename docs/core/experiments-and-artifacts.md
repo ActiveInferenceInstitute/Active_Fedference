@@ -344,8 +344,9 @@ uv run --locked python scripts/validate_web_package.py
 The validator includes the source-owned accessibility contract for document
 language/title, skip/main navigation, image alternatives, figure captions,
 labelled full-size links, and unique identifiers. Passing it defines the
-HTML surface as accessibility-enhanced, not WCAG-conformant. PDF/UA remains a
-separate producer and validation lane; see
+HTML surface as accessibility-enhanced, not WCAG-conformant. The combined
+manuscript PDF has a separate source-controlled tagged-structure gate; PDF/UA
+remains a separate conformance and manual-review lane. See
 [`../manuscript/accessibility.md`](../manuscript/accessibility.md).
 
 ## See also

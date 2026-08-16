@@ -416,9 +416,13 @@ are ignored. They are useful for visual QA but are not publication evidence or
 release inputs.
 
 The validated HTML manuscript is the canonical accessibility-enhanced reader
-surface. The current combined and slide PDFs are structurally/textually/
-visually checked but untagged and are not claimed PDF/UA-conformant. The exact
-automated and manual boundary is in
+surface. The source-current combined manuscript PDF is generated through the
+tagged LuaLaTeX/tagpdf path and is released only after `pdfinfo` reports
+`Tagged: yes`, qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the
+source-bound language check passes. Some Poppler builds omit the language line
+from `pdfinfo` even when `/Lang` is present. Slide PDFs remain a separate
+Beamer surface. Tagged structure does not establish PDF/UA conformance; the
+exact automated and manual boundary is in
 [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
 
 ## Evidence status and active research

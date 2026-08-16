@@ -82,8 +82,9 @@ suite, template stages, visual/browser review, package validation,
 distribution comparison, and release verification named in the old receipt are
 therefore historical local facts. They cannot be carried forward as fresh
 validation. The old HTML accessibility-enhancement and untagged-PDF status are
-also historical build facts; clean-clone replication, DOI publication, remote
-push, and author signoff remained separate gates.
+also historical build facts; the current source requests tagged combined-PDF
+structure, which requires a new render and receipts. Clean-clone replication,
+DOI publication, remote push, and author signoff remained separate gates.
 
 ## Historical replication structure and estimands
 

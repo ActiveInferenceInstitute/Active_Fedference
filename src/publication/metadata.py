@@ -48,6 +48,9 @@ def _load_config(root: Path) -> dict[str, Any]:
     publication = data.get("publication")
     if not isinstance(publication, dict) or not publication:
         raise ValueError("config.yaml publication block must be a non-empty mapping")
+    paper = data.get("paper")
+    if not isinstance(paper, dict) or not str(paper.get("title", "")).strip():
+        raise ValueError("config.yaml paper block must contain a non-empty title")
     authors = data.get("authors")
     if (
         not isinstance(authors, list)
@@ -78,6 +81,20 @@ def _one_line(text: str) -> str:
     return " ".join(str(text).split())
 
 
+def _full_paper_title(paper: dict[str, Any]) -> str:
+    """Return the reader-facing paper title used for a Zenodo deposition.
+
+    The software citation title intentionally remains ``publication.software_name``.
+    Zenodo stores the deposited research artifact, so its title must identify the
+    complete manuscript rather than the short package name.  The subtitle is
+    joined here instead of being duplicated in a second metadata-only config
+    field, keeping the manuscript title block authoritative.
+    """
+    title = _one_line(str(paper["title"]))
+    subtitle = _one_line(str(paper.get("subtitle", "")))
+    return f"{title}: {subtitle}" if subtitle else title
+
+
 def _author_email(author: dict[str, Any]) -> str | None:
     email = str(author.get("email", "")).strip()
     return email or None
@@ -103,12 +120,14 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     cfg = _load_config(root)
     pub = cfg["publication"]
     authors = cfg["authors"]
+    paper = cfg["paper"]
     keywords = [str(k) for k in cfg.get("keywords", [])]
     license_id = str(cfg.get("metadata", {}).get("license", "MIT"))
     version = _package_version(root)
     name = _one_line(pub["software_name"])
     abstract = _one_line(pub["abstract"])
     description = _one_line(pub["description"])
+    zenodo_title = _full_paper_title(paper)
     repo = str(pub["github_repository"])
     date_created = str(pub["date_created"])
     date_released = _release_date(pub.get("date_released"))
@@ -149,9 +168,12 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     )
 
     zenodo: dict[str, Any] = {
-        "title": name,
+        # Zenodo's API calls the UI's abstract field ``description``.  Keep it
+        # equal to the full canonical abstract, not the short software
+        # description used by the package metadata surfaces.
+        "title": zenodo_title,
         "upload_type": "software",
-        "description": description,
+        "description": abstract,
         "version": version,
         "license": license_id,
         "keywords": keywords,
@@ -174,6 +196,7 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
         "@type": "SoftwareSourceCode",
         "name": name,
         "description": description,
+        "abstract": abstract,
         "version": version,
         "dateCreated": date_created,
         "codeRepository": repo,

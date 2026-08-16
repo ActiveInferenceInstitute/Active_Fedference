@@ -47,7 +47,8 @@ counterexamples, not a random sample of worlds and not a theorem search over all
 simplexes. A finite capture row is evidence against a universal guarantee; an
 uncaptured row is only “not found within this search budget.”
 
-![Source relation: original project diagnostic of the server-side heuristic;
+![Three-panel empirical characterization of the server-side heuristic.
+Source relation: original project diagnostic of the server-side heuristic;
 estimand: numerical influence, finite-search breakdown count, and declared-grid
 capture fraction; uncertainty: deterministic seeded colonies, so no resampling
 interval is shown. Empirical characterization of the `robust_aggregate` heuristic (two panels plus

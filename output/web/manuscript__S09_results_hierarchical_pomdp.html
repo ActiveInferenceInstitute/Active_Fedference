@@ -519,32 +519,33 @@ class="citation"
 data-cites="sec:results-sensitivity"><a class="xref" href="index.html#sec:results-sensitivity">Section 13.13</a></span>.</p>
 <figure id="fig:hierarchical-pomdp">
 <a class="figure-full-size-link" href="../figures/hierarchical_pomdp.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/hierarchical_pomdp.png" style="width:80.0%"
-alt="Source relation: source-inspired original project diagnostic for a hierarchical POMDP extension; estimand: posterior probabilities and final location-accuracy gap in the declared seeded protocol; uncertainty: deterministic seeded run, so…" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Source relation: source-inspired original
-project diagnostic for a hierarchical POMDP extension; estimand:
-posterior probabilities and final location-accuracy gap in the declared
-seeded protocol; uncertainty: deterministic seeded run, so no resampling
-interval is shown. Six-panel (2x3) visualization of the V2 hierarchical
-POMDP belief dynamics. Top row shows the 2-level world; bottom row shows
-the 3-level extension. Top-left panel: x-axis indexes the 9 location
-states; y-axis shows posterior probability for the flat-prior and
-2-level hierarchical conditions given a single center-cell observation.
-Top-middle panel: x-axis is alternating-minimization iteration number;
-y-axis shows the L2 context posteriors P(quiet) and P(alert) under
-2-level inference, pinned by the center-cell observation and stable from
-the first iteration onward. Top-right panel: x-axis indexes location
-states; y-axis shows the colony L1 consensus probability after
-federating 4 agents, comparing flat vs 2-level hierarchical. Bottom-left
-panel: x-axis indexes location states; y-axis shows posterior
-probability for the flat-prior and 3-level hierarchical conditions given
-a single center-cell observation. Bottom-middle panel: x-axis is
-alternating-minimization iteration number; y-axis shows L2 P(alert) and
-L3 P(high_threat) under 3-level inference, stable across iterations.
-Bottom-right panel: two bars showing the measured final
-location-accuracy gap (hierarchical minus flat) for the 2-level and
-3-level systems, each a single scalar measured over 960 trials, with a
-zero reference line. Deterministic seeded run (seed 0), so bars carry no
-error band.</figcaption>
+alt="Six-panel hierarchical POMDP diagnostic. The top row shows two-level location, context, and colony beliefs; the bottom row shows three-level beliefs and the measured hierarchical-minus-flat accuracy gaps." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Six-panel hierarchical POMDP
+belief-dynamics and accuracy diagnostic. Source relation:
+source-inspired original project diagnostic for a hierarchical POMDP
+extension; estimand: posterior probabilities and final location-accuracy
+gap in the declared seeded protocol; uncertainty: deterministic seeded
+run, so no resampling interval is shown. Six-panel (2x3) visualization
+of the V2 hierarchical POMDP belief dynamics. Top row shows the 2-level
+world; bottom row shows the 3-level extension. Top-left panel: x-axis
+indexes the 9 location states; y-axis shows posterior probability for
+the flat-prior and 2-level hierarchical conditions given a single
+center-cell observation. Top-middle panel: x-axis is
+alternating-minimization iteration number; y-axis shows the L2 context
+posteriors P(quiet) and P(alert) under 2-level inference, pinned by the
+center-cell observation and stable from the first iteration onward.
+Top-right panel: x-axis indexes location states; y-axis shows the colony
+L1 consensus probability after federating 4 agents, comparing flat vs
+2-level hierarchical. Bottom-left panel: x-axis indexes location states;
+y-axis shows posterior probability for the flat-prior and 3-level
+hierarchical conditions given a single center-cell observation.
+Bottom-middle panel: x-axis is alternating-minimization iteration
+number; y-axis shows L2 P(alert) and L3 P(high_threat) under 3-level
+inference, stable across iterations. Bottom-right panel: two bars
+showing the measured final location-accuracy gap (hierarchical minus
+flat) for the 2-level and 3-level systems, each a single scalar measured
+over 960 trials, with a zero reference line. Deterministic seeded run
+(seed 0), so bars carry no error band.</figcaption>
 </figure>
 </main>
 </body>

@@ -787,7 +787,7 @@ class="math inline">\(d\)</span>-equivalent</th>
 </table>
 <figure id="fig:robustness-sweep">
 <a class="figure-full-size-link" href="../figures/robustness_sweep.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robustness_sweep.png" style="width:80.0%"
-alt="Consensus accuracy: probability mass assigned to the true hidden state." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Consensus accuracy curves for naive KLD and four robust client operating points across contamination rates. Lines and markers show matched-trial means with 95-percent seed-bootstrap intervals; a horizontal line marks the predeclared accuracy floor." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Consensus accuracy: probability mass
 assigned to the true hidden state. The plotted estimand is <span
 class="math inline">\(q(\text{true state})\)</span>. Source relation:
@@ -1078,7 +1078,7 @@ generalized-Bayes guarantee, which is established separately on the
 per-client axis in <a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>.</p>
 <figure id="fig:robust-weights">
 <a class="figure-full-size-link" href="../figures/robust_influence_weights.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robust_influence_weights.png" style="width:80.0%"
-alt="Server-side influence weights assigned by robust_aggregate ." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Bar chart of server weights for two contaminated and five honest agents. The heuristic assigns near-zero weight to contaminated broadcasts and larger, near-equal weights to honest agents; the dotted line is equal weight." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Server-side influence weights assigned by
 <code>robust_aggregate</code>. Source relation: original project
 server-side diagnostic; estimand: normalized pooling weight;
@@ -1121,7 +1121,7 @@ block-coordinate iterations, converged: Yes), with a largest single-step
 the descent theorem (<a class="xref" href="index.html#sec:supp-theorem">Section 11.3</a>).</p>
 <figure id="fig:aggregation-descent">
 <a class="figure-full-size-link" href="../figures/aggregation_descent.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/aggregation_descent.png" style="width:80.0%"
-alt="Variational free energy F(q, a) as a function of block-coordinate descent iteration." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Line plot of variational free energy versus block-coordinate iteration. The trace drops steeply at first, then remains flat through convergence." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Variational free energy <span
 class="math inline">\(F(q, a)\)</span> as a function of block-coordinate
 descent iteration. Source relation: original project objective-descent
@@ -1148,7 +1148,7 @@ The gap between the falling variational curve and the flat naive line is
 the empirical redescending weight response, drawn.</p>
 <figure id="fig:bounded-influence">
 <a class="figure-full-size-link" href="../figures/bounded_influence.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/bounded_influence.png" style="width:80.0%"
-alt="Normalized influence weight of one probed agent." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+alt="Line plot of a variational server&#x27;s normalized influence weight as one agent drifts toward a confident-wrong belief. The variational weight falls below the flat naive-pool reference; the plot is a tested-path diagnostic." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Normalized influence weight of one probed
 agent. Source relation: original project variational-server diagnostic;
 estimand: normalized influence weight; uncertainty: deterministic seeded

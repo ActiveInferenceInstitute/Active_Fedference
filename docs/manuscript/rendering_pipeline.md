@@ -175,7 +175,11 @@ uv run --locked python scripts/pipeline/stage_03_render.py \
 `output/web/`, and per-section Beamer slide decks under `output/slides/`.
 
 The HTML manuscript is the canonical accessibility-enhanced reader surface.
-The current PDF and slide outputs are not tagged/PDF-UA surfaces. Read
+The combined manuscript PDF is generated through the source-controlled tagged
+producer and must pass the repository's `Tagged: yes`, qpdf `/Lang`, language,
+and `StructTreeRoot` gates; Poppler's optional `pdfinfo` language line is not
+the only accepted language evidence. Slide outputs are separate Beamer
+surfaces. Tagged structure is not PDF/UA conformance. Read
 [`accessibility.md`](accessibility.md) before changing the renderer or making
 an accessibility claim.
 

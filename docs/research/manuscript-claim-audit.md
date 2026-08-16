@@ -97,7 +97,7 @@ is complete, but it does not close those scientific or governance boundaries.
 | Robust server methods dominate the standard pool | Conditional empirical | False at low contamination in the current sweep; the strongest supported claim is regime-dependent benefit under severe declared contamination. |
 | The robustness verdict is statistically supported | Conditional empirical | Matched trials, Wilcoxon test, BH-FDR within the declared family, percentile-bootstrap intervals, and observed-effect planning. The fixed hidden state and attack target remain part of the estimand. |
 | The robustness figure caption reports the plotted estimand | Scoped implementation fact | The rendered caption now hydrates matched-trial profile means from `per_rate_summary`; a regression test rejects the deterministic single-colony scalar when it differs. |
-| The manuscript renders across publication surfaces | Source-current scoped implementation fact only when matching receipts verify | The 2026-08-01 second-pass template stages produced 43/43 section decks, 43 TeX sources, 44 HTML surfaces including the index, an 84-page combined PDF, and 30 registered figure stems with 60 PNG/PDF assets; those are historical local build facts. The current surface must instead be traced through a matching analysis → test receipt → final hydration → render → web/PDF/slide validation chain. The HTML accessibility enhancement and `Tagged: no` PDF status remain build-surface facts, not scientific evidence. |
+| The manuscript renders across publication surfaces | Source-current scoped implementation fact only when matching receipts verify | The 2026-08-01 second-pass template stages produced 43/43 section decks, 43 TeX sources, 44 HTML surfaces including the index, an 84-page combined PDF, and 30 registered figure stems with 60 PNG/PDF assets; those are historical local build facts. The current surface must instead be traced through a matching analysis → test receipt → final hydration → render → web/PDF/slide validation chain. HTML accessibility, source-requested tagged-PDF structure, and any PDF/UA disposition remain build-surface facts, not scientific evidence. |
 | The reported trial count is an independent sample size | Scoped implementation fact | Trials are conditionally independent within the declared world; seeds are the independent Monte Carlo unit for cross-study summaries. Do not count clients/episodes as extra replicates. |
 | Bootstrap intervals describe deployment uncertainty | Open / explicitly denied | They quantify variation over the declared resampling unit, not alternate worlds, hidden states, attacks, or real deployments. |
 | Communication is necessary in the moving-world study | Conditional empirical and split by control | The binary-complement control is a null/cost result; the larger disjoint-FOV extension shows a substantial conditional benefit over isolation. |
@@ -201,8 +201,10 @@ log was removed because the current renderer no longer produces it.
 The combined manuscript and slide PDFs pass structural and raster inspection;
 the HTML manuscript additionally passes the strengthened accessibility,
 responsive-layout, keyboard-navigation, deep-link, image, and asset checks in
-a real browser. The PDFs remain untagged convenience surfaces and are not
-PDF/UA artifacts. Package, source, rendering, or accessibility validation does
-not change any theorem or empirical claim above. This dated candidate record
-predates the published v0.1.0 snapshot and is not a current release-status
-statement.
+a real browser. The historical PDFs were convenience surfaces without a
+verified tagged-PDF contract and were not PDF/UA artifacts. The current source
+requests tagged structure for the combined manuscript, but that disposition
+must be established by the matching regenerated receipts. Package, source,
+rendering, or accessibility validation does not change any theorem or
+empirical claim above. This dated candidate record predates the published
+v0.1.0 snapshot and is not a current release-status statement.

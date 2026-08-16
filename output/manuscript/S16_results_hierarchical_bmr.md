@@ -30,7 +30,8 @@ parameter, the opposite verdict is attributable to the meta-context's
 information alone — the reduction discovers the right depth rather than assuming
 it.
 
-![Source relation: original project BMR structure-learning diagnostic related to
+![Per-level Bayesian surprise and prune/keep decisions for two hierarchical worlds.
+Source relation: original project BMR structure-learning diagnostic related to
 the mechanism in Friston et al. Fig. 9; estimand: per-level Bayesian surprise
 in nats and the resulting prune/keep decision; uncertainty: deterministic
 schematic worlds, so no resampling interval is shown. Per-level Bayesian surprise for the two 3-level worlds. y-axis:

@@ -15,9 +15,10 @@ rcParams and honor the legibility floors in `_common.py`
 mechanistic, deterministic, or data-bearing; data-bearing captions name the
 estimand, replication/resampling unit, and uncertainty disposition. Those same
 provenance fields are declared per generator in `_metadata.py`
-(`FIGURE_METADATA`), and the figure registry, captions, and manuscript embed
-must agree on the exact filename. Figures use color-independent cues for
-meaningful group distinctions, and captions/HTML alternatives must remain
+(`FIGURE_METADATA`), including a concise `alt_text` for every generator, and
+the figure registry, captions, and manuscript embed must agree on the exact
+filename. Figures use color-independent cues for meaningful group distinctions,
+and captions/HTML alternatives must remain
 useful without color or visual inspection; see the
 [publication accessibility contract](../../docs/manuscript/accessibility.md).
 
@@ -27,7 +28,7 @@ useful without color or visual inspection; see the
 | --- | --- |
 | `__init__.py` | Public figure-builder exports. |
 | `_common.py` | Shared plotting helpers, palette constants, font-size floors, and figure savers. |
-| `_metadata.py` | Data-only provenance registry (`FIGURE_METADATA`): status, source relation, estimand, unit, uncertainty, and replication unit per generator. |
+| `_metadata.py` | Data-only provenance registry (`FIGURE_METADATA`): status, source relation, estimand, unit, uncertainty, replication unit, and concise `alt_text` per generator. |
 | `aggregation_descent.py` | Variational aggregation descent figure. |
 | `bounded_influence.py` | Legacy-named variational redescending-weight diagnostic; not an estimator-level B-robustness figure. |
 | `belief_heatmap.py` | Belief-ensemble consensus visualisation. |

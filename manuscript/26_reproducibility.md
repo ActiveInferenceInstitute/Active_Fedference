@@ -64,12 +64,17 @@ WCAG conformance: alternative-text quality, contrast, keyboard behavior,
 reading order, reflow, mathematics, and assistive-technology behavior still
 require manual review.
 
-The combined manuscript and slide PDFs are checked structurally, textually,
-through retained renderer logs, and by raster inspection. They are not claimed
-to be tagged or PDF/UA-conformant. A future accessible-PDF claim requires a
-tagged producer, a dedicated conformance report, and screen-reader and
-reading-order review; `qpdf` structure checks and successful text extraction
-alone are insufficient.
+The combined manuscript PDF is generated through the source-controlled
+LuaLaTeX/tagpdf path and is released only when `pdfinfo` reports `Tagged: yes`,
+qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the source-bound
+language check passes. Some Poppler builds omit the language line from
+`pdfinfo` even when `/Lang` is present. The
+separate slide PDFs are checked structurally, textually, through retained
+renderer logs, and by raster inspection, but do not inherit the manuscript
+tagging status. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+requires a dedicated conformance report plus screen-reader and reading-order
+review; `qpdf` structure checks and successful text extraction alone are
+insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 

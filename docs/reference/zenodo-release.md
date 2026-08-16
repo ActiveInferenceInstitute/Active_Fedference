@@ -19,9 +19,15 @@ documented in the [Zenodo REST API documentation](https://developers.zenodo.org/
 
 ## Source of truth
 
-`manuscript/config.yaml` owns the DOI. The metadata emitter propagates it to
+`manuscript/config.yaml` owns the DOI, manuscript title, subtitle, and full
+publication abstract. The metadata emitter propagates the DOI to
 `CITATION.cff`, `.zenodo.json`, `codemeta.json`, and the manuscript token
-`{{PUBLICATION_DOI}}`. `src/publication/identifiers.py` provides the shared
+`{{PUBLICATION_DOI}}`. It emits the software name to the citation surfaces,
+but emits the complete paper title (`paper.title` plus `paper.subtitle`) to
+Zenodo. Zenodo's API calls the record's abstract field `description`, so the
+Zenodo `description` must equal the normalized full `publication.abstract`,
+not the shorter software `publication.description`. `codemeta.json` carries
+both fields explicitly. `src/publication/identifiers.py` provides the shared
 normalization contract; `src/publication/zenodo.py` provides the typed,
 standard-library client; and `scripts/zenodo_release.py` is the thin CLI
 boundary. The token is read from an ignored dotenv file or process environment
@@ -112,12 +118,20 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
 
 - The v1.0.2 DOI in `manuscript/config.yaml`, generated metadata, manuscript
   token, rendered PDF, README, and Zenodo record must agree.
+- The Zenodo record title must be the complete paper title plus subtitle, and
+  its `description` field must be the full source-controlled abstract. A
+  short package description is not an acceptable Zenodo abstract.
 - The uploaded PDF must be generated after the final source and test gates;
   checksum verification does not substitute for manuscript or scientific
   review.
 - The HTML surface remains the accessibility-enhanced canonical reader. The
-  current untagged PDF is structurally and visually checked, but no PDF/UA
-  conformance claim is made.
+  source-current combined manuscript PDF carries the repository's tagged-PDF
+  structure gate (`Tagged: yes`, qpdf-visible `/Lang`, language, and
+  `StructTreeRoot`); the validator accepts catalog language when Poppler omits
+  its optional `Language:` line. Slide PDFs are separate outputs. Tagged
+  structure is not PDF/UA conformance, and no such claim is made without a
+  retained conformance report and manual review. Older
+  Zenodo records may preserve their historical surface properties.
 - Zenodo receipts do not replace clean-clone evidence, the public GitHub push,
   licence/confidentiality/author approval, or any DOI/publisher policy review
   for a future version.

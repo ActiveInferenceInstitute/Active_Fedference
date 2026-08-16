@@ -72,10 +72,15 @@ Full module map, experiments, and artifacts:
 - README/docs diagrams use fenced GitHub-compatible Mermaid with quoted labels
   whenever punctuation could be parsed as syntax; validate statically and with
   the renderer before release.
-- Every figure has a source relation, estimand, unit, uncertainty disposition,
-  and replication unit in `_metadata.py`, with a self-contained caption and
-  final PDF/HTML visual QA. HTML is the accessibility-enhanced surface; an
-  untagged PDF is never described as PDF/UA-conformant.
+- Every figure has source relation, estimand, unit, uncertainty disposition,
+  replication unit, and concise `alt_text` in `_metadata.py`, with a
+  self-contained caption and final PDF/HTML visual QA. HTML remains the
+  accessibility-enhanced canonical surface. The source-current combined PDF
+  requests tagged structure and is released only when `pdfinfo` reports
+  `Tagged: yes`, qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and
+  the source-bound language check passes; some Poppler builds omit the
+  language line even when `/Lang` is present. Tagged structure is not a PDF/UA
+  conformance claim.
 
 ## New module checklist
 

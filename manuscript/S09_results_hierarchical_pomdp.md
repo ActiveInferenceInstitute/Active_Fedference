@@ -48,7 +48,8 @@ parameter sweep are detailed in the supplement ([@sec:supp-hierarchical]). For
 the effect of acuity and colony size on these results, see
 [@sec:results-sensitivity].
 
-![Source relation: source-inspired original project diagnostic for a hierarchical
+![Six-panel hierarchical POMDP belief-dynamics and accuracy diagnostic.
+Source relation: source-inspired original project diagnostic for a hierarchical
 POMDP extension; estimand: posterior probabilities and final location-accuracy
 gap in the declared seeded protocol; uncertainty: deterministic seeded run, so
 no resampling interval is shown. Six-panel (2x3) visualization of the V2 hierarchical POMDP belief dynamics.

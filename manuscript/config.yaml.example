@@ -43,21 +43,21 @@ publication:
   journal: ""
   year: "2026"
   # Required by src/publication/metadata.py::build_metadata() — that function
-  # does direct dict indexing (pub["software_name"], pub["abstract"],
-  # pub["description"], pub["date_created"], pub["date_released"], no
-  # fallback) to emit CITATION.cff, .zenodo.json, and codemeta.json. Fill
-  # these in before running `python scripts/emit_metadata.py --write`, or
-  # that command raises a KeyError.
+  # validates the paper title and does direct dict indexing (pub["software_name"],
+  # pub["abstract"], pub["description"], pub["date_created"],
+  # pub["date_released"], no fallback) to emit CITATION.cff, .zenodo.json,
+  # and codemeta.json. Fill these in before running
+  # `python scripts/emit_metadata.py --write`.
   software_name: "Your Project Name"
   date_created: "YYYY-MM-DD"
   # Keep null until the external release authority approves publication.
   date_released: null # Replace with "YYYY-MM-DD" at release
   abstract: >-
-    One-paragraph abstract describing the software for CITATION.cff and
-    .zenodo.json.
+    Full one-paragraph abstract. Zenodo's `description` field is populated
+    from this text, because Zenodo calls its abstract field `description`.
   description: >-
     Short description of the source code and reproducible artifacts for
-    codemeta.json and .zenodo.json.
+    software metadata surfaces such as codemeta.json.
   # Optional (build_metadata() reads these with .get(), so they are not
   # strictly required):
   github_description: >-
@@ -77,6 +77,8 @@ keywords:
 metadata:
   license: "MIT"  # or Apache-2.0, etc.
   language: "en"
+  # Opt into the compatible LuaLaTeX/tagpdf combined-PDF path.
+  tagged_pdf: true
 
 # Render format toggles.
 render:

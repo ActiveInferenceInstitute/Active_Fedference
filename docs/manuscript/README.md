@@ -4,7 +4,7 @@ Publishing pipeline and token protocol for the Active Fedference paper.
 
 | Document | Purpose |
 | --- | --- |
-| [accessibility.md](accessibility.md) | Canonical HTML accessibility contract; untagged-PDF/PDF-UA boundary; manual review |
+| [accessibility.md](accessibility.md) | Canonical HTML contract; source-tagged manuscript-PDF gate; PDF/UA no-claim and manual review boundary |
 | [rendering_pipeline.md](rendering_pipeline.md) | Manuscript → PDF flow; config.yaml; script names |
 | [tokens-and-labels.md](tokens-and-labels.md) | Token groups; links to authoritative registries |
 

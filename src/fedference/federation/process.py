@@ -4,6 +4,7 @@ import queue
 import warnings
 from collections.abc import Sequence
 from multiprocessing import get_context
+from time import monotonic
 from typing import Any
 
 import numpy as np
@@ -12,6 +13,8 @@ from fedference.aggregation import AggregationConfig
 from fedference.federation.server import FederationServer
 from fedference.federation.worker import FederationWorker
 
+DEFAULT_STARTUP_TIMEOUT = 15.0
+
 
 def _worker_round(
     worker_id: int,
@@ -19,20 +22,23 @@ def _worker_round(
     request_queue: Any,
     response_queue: Any,
     result_queue: Any,
+    ready_queue: Any,
     timeout: float,
 ) -> None:
     worker = FederationWorker(worker_id, request_queue, response_queue, timeout=timeout)
+    ready_queue.put(worker_id)
     worker.send_belief(belief)
     consensus = worker.receive_consensus(timeout=timeout)
     result_queue.put((worker_id, consensus))
 
 
 def _stop_processes(processes: Sequence[Any], timeout: float) -> None:
+    deadline = monotonic() + timeout * max(1, len(processes))
     for process in processes:
-        process.join(timeout=timeout)
+        process.join(timeout=max(0.0, deadline - monotonic()))
         if process.is_alive():
             process.terminate()
-            process.join(timeout=timeout)
+            process.join(timeout=max(0.0, deadline - monotonic()))
 
 
 def run_multiprocess_round(
@@ -41,6 +47,7 @@ def run_multiprocess_round(
     robustness: float | None = None,
     config: AggregationConfig | None = None,
     timeout: float = 5.0,
+    startup_timeout: float | None = None,
     **legacy: object,
 ) -> np.ndarray:
     """Run one real spawned-process federation round and return its consensus.
@@ -48,7 +55,11 @@ def run_multiprocess_round(
     The server and workers exchange serialized beliefs through multiprocessing
     queues. Worker responses are checked against the server result before the
     child processes are joined, so a transport or lifecycle mismatch fails the
-    round rather than returning a partial result.
+    round rather than returning a partial result. ``timeout`` bounds each
+    federation queue operation. ``startup_timeout`` separately bounds the
+    one-time wait for all spawned workers to import and announce readiness;
+    when omitted it is at least ``DEFAULT_STARTUP_TIMEOUT`` so macOS spawn
+    latency cannot consume the transport timeout under normal system load.
     """
     if "beliefs" in legacy:
         if local_posteriors is not None:
@@ -82,11 +93,22 @@ def run_multiprocess_round(
         or timeout <= 0.0
     ):
         raise ValueError("timeout must be finite and positive")
+    if startup_timeout is None:
+        startup_timeout = max(float(timeout), DEFAULT_STARTUP_TIMEOUT)
+    elif (
+        isinstance(startup_timeout, bool)
+        or not isinstance(startup_timeout, (int, float, np.integer, np.floating))
+        or not np.isfinite(startup_timeout)
+        or startup_timeout <= 0.0
+    ):
+        raise ValueError("startup_timeout must be finite and positive")
+    startup_timeout = float(startup_timeout)
 
     context = get_context("spawn")
     request_queue = context.Queue()
     response_queues = {worker_id: context.Queue() for worker_id in range(len(belief_arrays))}
     result_queue = context.Queue()
+    ready_queue = context.Queue()
     processes = [
         context.Process(
             target=_worker_round,
@@ -96,6 +118,7 @@ def run_multiprocess_round(
                 request_queue,
                 response_queues[worker_id],
                 result_queue,
+                ready_queue,
                 float(timeout),
             ),
         )
@@ -108,6 +131,27 @@ def run_multiprocess_round(
         for process in processes:
             process.start()
             started_processes.append(process)
+        ready_worker_ids: set[int] = set()
+        startup_deadline = monotonic() + startup_timeout
+        while len(ready_worker_ids) < len(processes):
+            remaining = startup_deadline - monotonic()
+            if remaining <= 0.0:
+                raise TimeoutError(
+                    "multiprocess federation worker startup timed out"
+                )
+            worker_id = ready_queue.get(timeout=remaining)
+            if (
+                isinstance(worker_id, bool)
+                or not isinstance(worker_id, (int, np.integer))
+                or int(worker_id) not in range(len(processes))
+            ):
+                raise RuntimeError("multiprocess worker announced an invalid id")
+            worker_id = int(worker_id)
+            if worker_id in ready_worker_ids:
+                raise RuntimeError(
+                    f"multiprocess worker announced duplicate id: {worker_id}"
+                )
+            ready_worker_ids.add(worker_id)
         server = FederationServer(
             n_workers=len(belief_arrays),
             robustness=robustness,
@@ -125,6 +169,7 @@ def run_multiprocess_round(
         for transport_queue in (
             request_queue,
             result_queue,
+            ready_queue,
             *response_queues.values(),
         ):
             transport_queue.close()

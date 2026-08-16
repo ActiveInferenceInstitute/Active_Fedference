@@ -1,11 +1,23 @@
 # Publication accessibility contract
 
-Active Fedference treats the validated HTML manuscript as its canonical
-accessibility-enhanced reading surface. The combined manuscript PDF and slide
-PDFs are convenience and archival surfaces. They remain release-checked for
-structure, extracted text, references, layout warnings, and visual integrity,
-but the current tracked combined PDF reports `Tagged: no`; the PDF surfaces
-must not be described as tagged, accessible PDF, or PDF/UA-conformant.
+Active Fedference treats the validated HTML manuscript as its canonical,
+accessibility-enhanced reading surface. The combined manuscript PDF is also
+generated through the source-controlled LuaLaTeX/tagpdf path requested by
+`metadata.tagged_pdf: true`. Its release gate requires `pdfinfo` to report
+`Tagged: yes`, qpdf JSON to expose a non-empty catalog `/Lang` and a
+`StructTreeRoot`, and the source-bound language check to pass. Some Poppler
+builds omit the language line from `pdfinfo`; that is why the validator checks
+the PDF catalog as well. Figure alternatives are bound from
+`src/figures/_metadata.py` through the figure registry. Slide PDFs are separate
+Beamer outputs and are not automatically promoted to the tagged-PDF contract.
+
+Tagged structure is not the same as PDF/UA certification. A PDF/UA claim is
+allowed only when the retained veraPDF report and manual reading-order,
+keyboard, reflow/zoom, mathematical-content, and screen-reader checks pass.
+If those checks are not complete, the accurate status is “tagged PDF producer
+enabled; PDF/UA conformance not established.” The public v1.0.2 artifact may
+retain older surface properties; the current source and its regenerated
+reviewer snapshot are the evidence for this contract.
 
 This is a scoped engineering contract, not a declaration of WCAG conformance.
 The automated rules cover deterministic properties that this repository can
@@ -48,30 +60,29 @@ separate long description.
 
 ## PDF and slide boundary
 
-`qpdf --check`, `pdftotext`, clean LaTeX logs, and raster inspection answer
-important but different questions. They do not prove reading order, semantic
-tagging, alternative descriptions, table structure, language metadata, or
-assistive-technology interoperability. Tagged PDF supplies the semantic
-structure used for those purposes; see the
+`qpdf --check`, `pdftotext`, clean LaTeX logs, raster inspection, and
+`pdfinfo Tagged: yes` answer important but different questions. They do not
+prove PDF/UA reading order, table structure, or assistive-technology
+interoperability. Tagged PDF supplies a semantic structure and figure
+alternatives for those purposes; see the
 [PDF Association accessibility resources](https://pdfa.org/accessibility/).
 
-A future tagged-PDF promotion requires all of the following from the sibling
-rendering producer:
+A source-current tagged manuscript PDF requires all of the following from the
+sibling rendering producer:
 
-1. tagged manuscript and slide files produced from source, never post-hoc
-   hand-edited reviewer artifacts;
-2. document language, title, heading hierarchy, lists, tables, equations,
-   figures, alternatives, artifacts, and logical reading order represented in
-   the tag tree;
-3. `pdfinfo` reporting `Tagged: yes`;
-4. a dedicated PDF/UA conformance validator with its full report retained;
-5. keyboard, reflow/zoom, text extraction, and at least one screen-reader pass;
-6. source-bound render and release receipts regenerated after the producer
-   change.
+1. the combined manuscript is produced from source, never post-hoc hand-edited;
+2. the source document language and title are present;
+3. figure alternatives are complete in the typed registry and bound to every
+   embedded figure;
+4. `pdfinfo` reports `Tagged: yes`, qpdf exposes `/Lang` and a
+   `StructTreeRoot`, and the source-bound language check passes;
+5. the source-bound render and release receipts are regenerated after any
+   producer change.
 
-Until every item passes, publication prose must say “HTML
-accessibility-enhanced; PDFs structurally and visually validated but untagged,”
-not “fully accessible,” “WCAG conformant,” or “PDF/UA conformant.”
+Until the additional veraPDF and manual checks pass, publication prose must
+say “HTML accessibility-enhanced; tagged PDF structure verified, PDF/UA
+conformance not established,” not “fully accessible,” “WCAG conformant,” or
+“PDF/UA conformant.”
 
 ## Release review sequence
 
@@ -82,9 +93,14 @@ render through the sibling producer, prepare the web package, and execute:
 uv run --locked python scripts/validate_web_package.py
 uv run --locked python scripts/validate_rendered_surfaces.py
 pdfinfo output/pdf/active_fedference_combined.pdf | grep '^Tagged:'
+qpdf --json --json-stream-data=none output/pdf/active_fedference_combined.pdf \
+  | grep -Eq '"/(Lang|StructTreeRoot)"'
+verapdf --format text --flavour ua2 \
+  output/pdf/active_fedference_combined.pdf > .tmp/verapdf-ua2.txt
 ```
 
-Finally perform the manual checks above in a real browser and PDF reader.
-Record findings with the render receipt. Do not repair generated files in
-`output/`; fix the manuscript, figure producer, or sibling renderer and rerun
-the producer chain.
+Treat the veraPDF command as a conformance probe, not as a pass by invocation;
+inspect and retain its complete report. Finally perform the manual checks above
+in a real browser and PDF reader. Record findings with the render receipt. Do
+not repair generated files in `output/`; fix the manuscript, figure producer,
+or sibling renderer and rerun the producer chain.

@@ -500,27 +500,29 @@ to the meta-context’s information alone — the reduction discovers the
 right depth rather than assuming it.</p>
 <figure id="fig:hierarchical-bmr">
 <a class="figure-full-size-link" href="../figures/hierarchical_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/hierarchical_bmr.png" style="width:80.0%"
-alt="Source relation: original project BMR structure-learning diagnostic related to the mechanism in Friston et al." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Source relation: original project BMR
-structure-learning diagnostic related to the mechanism in Friston et
-al. Fig. 9; estimand: per-level Bayesian surprise in nats and the
-resulting prune/keep decision; uncertainty: deterministic schematic
-worlds, so no resampling interval is shown. Per-level Bayesian surprise
-for the two 3-level worlds. y-axis: the non-leaf reduction targets,
-indexed top-down from the reduction routine as level 0 = the
-meta-context (the topmost non-leaf level, L3 in the location-first
-L1/L2/L3 convention used elsewhere) and level 1 = the context (L2); the
-leaf location level (L1) is never a reduction target. x-axis: Bayesian
-surprise <span class="math inline">\(\mathrm{KL}(q \,\|\,
-\text{prior})\)</span> in nats — the information the leaf observation
-added at that level. Blue bars: the informative world (top level kept).
-Grey bars: the degenerate world (top level prunable). The dashed red
-line is the prune threshold; a level whose surprise falls below it is
-structurally unnecessary. The degenerate meta-context (grey, level 0)
-sits at 0.000 nats and is pruned, recovering the two-level model, while
-the informative meta-context (blue, level 0) at 0.328 nats is retained;
-both worlds keep the context level (level 1). Deterministic schematic
-worlds (no resampling), so no error band is applicable.</figcaption>
+alt="Horizontal bars show Bayesian surprise at two non-leaf hierarchy levels for informative and degenerate worlds. The informative upper level is kept, whereas the degenerate upper level falls below the prune threshold." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Per-level Bayesian surprise and
+prune/keep decisions for two hierarchical worlds. Source relation:
+original project BMR structure-learning diagnostic related to the
+mechanism in Friston et al. Fig. 9; estimand: per-level Bayesian
+surprise in nats and the resulting prune/keep decision; uncertainty:
+deterministic schematic worlds, so no resampling interval is shown.
+Per-level Bayesian surprise for the two 3-level worlds. y-axis: the
+non-leaf reduction targets, indexed top-down from the reduction routine
+as level 0 = the meta-context (the topmost non-leaf level, L3 in the
+location-first L1/L2/L3 convention used elsewhere) and level 1 = the
+context (L2); the leaf location level (L1) is never a reduction target.
+x-axis: Bayesian surprise <span class="math inline">\(\mathrm{KL}(q
+\,\|\, \text{prior})\)</span> in nats — the information the leaf
+observation added at that level. Blue bars: the informative world (top
+level kept). Grey bars: the degenerate world (top level prunable). The
+dashed red line is the prune threshold; a level whose surprise falls
+below it is structurally unnecessary. The degenerate meta-context (grey,
+level 0) sits at 0.000 nats and is pruned, recovering the two-level
+model, while the informative meta-context (blue, level 0) at 0.328 nats
+is retained; both worlds keep the context level (level 1). Deterministic
+schematic worlds (no resampling), so no error band is
+applicable.</figcaption>
 </figure>
 <p>This is the same Beta-function model-reduction machinery that drives
 the emergence study (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>,

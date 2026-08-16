@@ -51,7 +51,8 @@ The full parameter grid and protocol details are in the supplement
 metrics across all {{N_STUDIES}} studies is shown in
 [@fig:cross-study-summary].
 
-![Source relation: original project sensitivity diagnostic; estimand: per-cell
+![Two-panel sensitivity heatmap of belief-sharing and hierarchical accuracy gaps.
+Source relation: original project sensitivity diagnostic; estimand: per-cell
 accuracy gaps (fractions) as functions of acuity and colony size; uncertainty:
 deterministic per-cell means over the declared trials, with no resampling
 interval. Two-panel heatmap (1×2) of the Study 8 parameter sensitivity sweep.
@@ -67,7 +68,8 @@ over {{SENS_N_TRIALS}} trials; no resampling error band is shown — the sweep
 protocol is detailed in the sensitivity supplement.
 ](../output/figures/sensitivity_heatmap.png){#fig:sensitivity-heatmap width=90%}
 
-![Source relation: original project cross-study summary; estimand: grouped
+![Native-unit cross-study summary of the headline federation metrics.
+Source relation: original project cross-study summary; estimand: grouped
 study-level means in native units (accuracy fractions, nats, or $R^2$), never a
 cross-unit ranking; uncertainty: seed-level bootstrap confidence intervals.
 Horizontal native-unit facet chart summarizing the key federation benefit metric for each

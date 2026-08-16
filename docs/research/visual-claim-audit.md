@@ -25,8 +25,11 @@ analysis, receipt-backed hydration, and the template 03–05 renderer passes.
 The combined manuscript is 75 pages, with 43 manuscript HTML surfaces, 43
 slide PDFs, and 30 registered figure PNG/PDF pairs. The rendered-surface and
 web-package gates passed; `qpdf --check` reports no syntax or stream errors.
-The combined PDF remains untagged (`pdfinfo: Tagged: no`), so HTML is the
-accessibility-enhanced surface and PDF/UA conformance is not claimed.
+The archived combined PDF for that refresh reported `Tagged: no`, so the HTML
+surface was the accessibility-enhanced surface and PDF/UA conformance was not
+claimed. The current source now requests tagged structure for the combined
+manuscript; the regenerated surface and its receipts must be checked before
+the status is changed.
 
 Visual review found one concrete layout defect in the cross-study summary:
 small negative effects placed their value labels immediately left of zero,
@@ -136,9 +139,12 @@ than confidence intervals; and robustness axes remain distinct.
 
 All five Mermaid blocks in the root README and `docs/` render to SVG with the
 same source contract used by the static validator. The combined PDF passes
-`qpdf --check`; `pdfinfo` reports `Tagged: no`, so the HTML surface remains the
-accessibility-enhanced canonical surface and no PDF/UA conformance is claimed.
-These are render and claim-boundary facts, not additional empirical evidence.
+`qpdf --check`; the archived PDF reported `Tagged: no`, so the HTML surface
+remained the accessibility-enhanced canonical surface and no PDF/UA
+conformance was claimed. The source-current combined PDF has an additional
+tagging/language/structure gate, but tagged structure is still not PDF/UA
+conformance. These are render and claim-boundary facts, not additional
+empirical evidence.
 
 ## Historical render-surface record
 
@@ -195,9 +201,10 @@ warnings only.
 Native inspection of the robustness review-grid figure and notation, EFE,
 robustness-sweep/onset, complexity, generative-schema, and message-passing
 surfaces found no clipping or illegible annotations at the reviewed scales.
-The combined PDF passes `qpdf --check`, but `pdfinfo` reports `Tagged: no`;
-the HTML surface is therefore described as accessibility-enhanced and no
-PDF/UA conformance is claimed. These are build and legibility facts, not new
-scientific evidence. This render predates the enlarged configuration and the
-selection-free review-grid figure contract above, so it cannot serve as their
-current visual-validation record.
+The archived combined PDF passes `qpdf --check`, but `pdfinfo` reports
+`Tagged: no`; the HTML surface was therefore described as accessibility-
+enhanced and no PDF/UA conformance was claimed. These are build and legibility
+facts, not new scientific evidence. The current source-controlled render must
+be validated separately through the tagged-PDF gate. This render predates the
+enlarged configuration and the selection-free review-grid figure contract
+above, so it cannot serve as their current visual-validation record.

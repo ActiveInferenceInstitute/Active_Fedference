@@ -432,8 +432,9 @@ def test_security_and_accessibility_boundaries_are_explicit_and_gated() -> None:
         assert threat_id in threat_model
     for boundary in (
         "not a declaration of WCAG conformance",
-        "Tagged: no",
-        "must not be described as tagged",
+        "Tagged: yes",
+        "PDF/UA conformance not established",
+        "StructTreeRoot",
     ):
         assert boundary in accessibility
     for enforced_marker in (

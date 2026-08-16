@@ -67,11 +67,13 @@ one independent verification lane remains unexercised.
    the claim surface. A no-signal result is recorded as unsatisfied, never
    substituted.
 4. **Accessibility disposition.** Treat the validated HTML manuscript as the
-   canonical accessibility-enhanced publication surface. The combined PDF and
-   slide PDFs remain structurally and visually checked convenience surfaces,
-   but they must not be described as tagged or PDF/UA-conformant until the
-   sibling rendering producer emits tagged files and a dedicated conformance
-   validator passes them.
+   canonical accessibility-enhanced publication surface. The combined
+   manuscript PDF must be emitted by the source-controlled tagged producer and
+   pass the `Tagged: yes`, qpdf `/Lang`, language, and `StructTreeRoot` gates.
+   The validator accepts catalog language when Poppler omits its optional
+   `Language:` line. Slide PDFs are separate convenience surfaces. Tagged
+   structure is not PDF/UA conformance; a PDF/UA statement still requires a
+   dedicated conformance validator and manual review.
 
 ## Implementation Notes
 

@@ -163,16 +163,6 @@
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
 
-% Pandoc's article template uses codelisting floats for captioned code; Beamer has no such float, so provide a slide-safe numbered block.
-\newcounter{codelisting}
-\renewcommand{\thecodelisting}{\arabic{codelisting}}
-\newenvironment{codelisting}{%
-  \refstepcounter{codelisting}%
-  \begin{center}\begin{minipage}{0.96\linewidth}\footnotesize%
-  \renewcommand{\caption}[1]{\par\smallskip\textbf{Listing~\thecodelisting: }##1\par\smallskip}%
-}{%
-  \end{minipage}\end{center}%
-}
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \usepackage{bookmark}
@@ -263,29 +253,30 @@ found within this search budget.''
 influence and finite-breakdown characterization}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.40\textheight,keepaspectratio,alt={Source relation: original project diagnostic of the server-side heuristic; estimand: numerical influence, finite-search breakdown count, and declared-grid capture fraction; uncertainty: deterministic seeded colonies, so no resampling interval is shown. Empirical characterization of the robust\_aggregate heuristic (two panels plus an optional attack-grid diagnostic). Left panel (numerical influence): the x-axis is the perturbation fraction by which one agent's belief is dragged toward a confident-wrong contamination point; the y-axis is that agent's converged normalized pooling weight, plotted for the naive pool (flat at 1/n, dotted reference) and the robust heuristic (down-weighting). The inset reports the final naive-minus-robust weight gap at the end of the probed path. Labeled ``empirical, at these settings --- not a guarantee.'' Right panel (measured breakdown point): the x-axis is the aggregator (robust heuristic vs objective-backed variational); the y-axis is the number of colluding confident-wrong adversaries that captures that aggregator's consensus argmax --- the robust heuristic at k = 2 and the variational rule at k = 4. Both bars are finite, so neither rule has an unconditional truth-recovery guarantee against coordinated collusion; this does not negate the variational rule's per-agent effective-weight theorem. Deterministic seeded colonies (no resampling), so no error band is applicable. The optional third panel reports the fraction of declared grid rows with finite capture within the configured adversary budget; it is not a probability or a global breakdown bound.}]{../figures/heuristic_breakdown.png}
-\caption{Source relation: original project diagnostic of the server-side
-heuristic; estimand: numerical influence, finite-search breakdown count,
-and declared-grid capture fraction; uncertainty: deterministic seeded
-colonies, so no resampling interval is shown. Empirical characterization
-of the \protect\breaktt{robust\_aggregate} heuristic (two panels plus an
-optional attack-grid diagnostic). Left panel (numerical influence): the
-x-axis is the perturbation fraction by which one agent's belief is
-dragged toward a confident-wrong contamination point; the y-axis is that
-agent's converged normalized pooling weight, plotted for the naive pool
-(flat at \(1/n\), dotted reference) and the robust heuristic
-(down-weighting). The inset reports the final naive-minus-robust weight
-gap at the end of the probed path. Labeled ``empirical, at these
-settings --- not a guarantee.'' Right panel (measured breakdown point):
-the x-axis is the aggregator (robust heuristic vs objective-backed
-variational); the y-axis is the number of colluding confident-wrong
-adversaries that captures that aggregator's consensus argmax --- the
-robust heuristic at \(k = 2\) and the variational rule at \(k = 4\).
-Both bars are finite, so neither rule has an unconditional
-truth-recovery guarantee against coordinated collusion; this does not
-negate the variational rule's per-agent effective-weight theorem.
-Deterministic seeded colonies (no resampling), so no error band is
-applicable. The optional third panel reports the fraction of declared
+\includegraphics[width=0.95\linewidth,height=0.40\textheight,keepaspectratio,alt={Three-panel empirical characterization of the server-side heuristic. Source relation: original project diagnostic of the server-side heuristic; estimand: numerical influence, finite-search breakdown count, and declared-grid capture fraction; uncertainty: deterministic seeded colonies, so no resampling interval is shown. Empirical characterization of the robust\_aggregate heuristic (two panels plus an optional attack-grid diagnostic). Left panel (numerical influence): the x-axis is the perturbation fraction by which one agent's belief is dragged toward a confident-wrong contamination point; the y-axis is that agent's converged normalized pooling weight, plotted for the naive pool (flat at 1/n, dotted reference) and the robust heuristic (down-weighting). The inset reports the final naive-minus-robust weight gap at the end of the probed path. Labeled ``empirical, at these settings --- not a guarantee.'' Right panel (measured breakdown point): the x-axis is the aggregator (robust heuristic vs objective-backed variational); the y-axis is the number of colluding confident-wrong adversaries that captures that aggregator's consensus argmax --- the robust heuristic at k = 2 and the variational rule at k = 4. Both bars are finite, so neither rule has an unconditional truth-recovery guarantee against coordinated collusion; this does not negate the variational rule's per-agent effective-weight theorem. Deterministic seeded colonies (no resampling), so no error band is applicable. The optional third panel reports the fraction of declared grid rows with finite capture within the configured adversary budget; it is not a probability or a global breakdown bound.}]{../figures/heuristic_breakdown.png}
+\caption{Three-panel empirical characterization of the server-side
+heuristic. Source relation: original project diagnostic of the
+server-side heuristic; estimand: numerical influence, finite-search
+breakdown count, and declared-grid capture fraction; uncertainty:
+deterministic seeded colonies, so no resampling interval is shown.
+Empirical characterization of the \protect\breaktt{robust\_aggregate}
+heuristic (two panels plus an optional attack-grid diagnostic). Left
+panel (numerical influence): the x-axis is the perturbation fraction by
+which one agent's belief is dragged toward a confident-wrong
+contamination point; the y-axis is that agent's converged normalized
+pooling weight, plotted for the naive pool (flat at \(1/n\), dotted
+reference) and the robust heuristic (down-weighting). The inset reports
+the final naive-minus-robust weight gap at the end of the probed path.
+Labeled ``empirical, at these settings --- not a guarantee.'' Right
+panel (measured breakdown point): the x-axis is the aggregator (robust
+heuristic vs objective-backed variational); the y-axis is the number of
+colluding confident-wrong adversaries that captures that aggregator's
+consensus argmax --- the robust heuristic at \(k = 2\) and the
+variational rule at \(k = 4\). Both bars are finite, so neither rule has
+an unconditional truth-recovery guarantee against coordinated collusion;
+this does not negate the variational rule's per-agent effective-weight
+theorem. Deterministic seeded colonies (no resampling), so no error band
+is applicable. The optional third panel reports the fraction of declared
 grid rows with finite capture within the configured adversary budget; it
 is not a probability or a global breakdown
 bound.}\label{fig:heuristic-breakdown}
