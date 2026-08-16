@@ -130,4 +130,16 @@ jobs:
         run: uv sync --locked --extra dev
 
       - name: Non-slow source smoke suite
-        run: uv run --locked --extra dev pytest tests/ -m "not slow and not publication" -q
+        # Python 3.10 has no stdlib tomllib; the test suite's TOML probes are
+        # intentionally kept stdlib-first, so alias the locked tomli fallback
+        # only for this compatibility subprocess.  Python 3.11+ uses its
+        # standard-library module unchanged.
+        run: |
+          uv run --locked --extra dev python -c '
+          import sys
+          if sys.version_info < (3, 11):
+              import tomli
+              sys.modules["tomllib"] = tomli
+          import pytest
+          raise SystemExit(pytest.main(["tests/", "-m", "not slow and not publication", "-q"]))
+          '

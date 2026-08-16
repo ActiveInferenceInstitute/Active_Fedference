@@ -504,7 +504,7 @@
       "dependencies": [
         "analysis"
       ],
-      "input_digest": "b9e5ae2e4d1acc343ee91d69aecf84d139e6e208066109de2ec0cd94fa1cbe74",
+      "input_digest": "6c30b42463cc5dbe4d062e5ebdfe57b18b7b81b905556394df5b8fb583a54004",
       "input_hashes": {
         "ISA.md": "0d375fca288077150fb3fcedda75f636021956d0928258378b48f69cfdc5437b",
         "manuscript/00_abstract.md": "c2c6431b6ed6271aa1ae765d830c73b6715e06fb8d7b882eb5e4e4bb07631549",
@@ -558,7 +558,7 @@
         "manuscript/preamble.md": "e75ada000c3ceeb452e9a840d5469d747ebd616747864a08df3b94ba51a9942d",
         "manuscript/references.bib": "3f9cf7d5f3ddc9b1fbeddd5d7e4fc886aac21f4fc13fa69d6ccd4572f7d9250f",
         "output/data/stage_timings.json": "9a62b3fdad3e227d197325f0663b415d6bb6592ad7a4dfba564e65b173b810b7",
-        "output/data/test_coverage_receipt.json": "67edead61d0b048caf825cc267a811d78b3aa5d95fdbb0678271bf99ef87a07f",
+        "output/data/test_coverage_receipt.json": "79964180792212576c512e2551513dfe211c326f12b85bdd341f6f036572ebed",
         "output/reports/belief_quality.json": "e4592f8d897a3fa6ed7fee617ef4bccb18873b7c0389cef2395687202a47ccb2",
         "output/reports/belief_sharing.json": "dbc1cb1be4ac5ab317df44c65e73076258ed4a58b8d3f129f4c468c1c2dd4fd8",
         "output/reports/bnn_robustness.json": "0a1b71062f433f578a8408f25b4281baf8fabc0d7aa86d031531464298029104",

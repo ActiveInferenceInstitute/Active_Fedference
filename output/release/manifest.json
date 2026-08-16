@@ -2118,7 +2118,7 @@
     {
       "bytes": 141569,
       "path": "output/data/pipeline_provenance.json",
-      "sha256": "6ef35a8c63cdc418d5d9bcac3b3bf32ceea6b3ef39b0c840ebcbad2e0b51331b"
+      "sha256": "155b254e6d21883d5641ffa0e2297df7ee9f90973449c39ea6f9dad5388a3eeb"
     },
     {
       "bytes": 224,
@@ -2126,9 +2126,9 @@
       "sha256": "9a62b3fdad3e227d197325f0663b415d6bb6592ad7a4dfba564e65b173b810b7"
     },
     {
-      "bytes": 136415,
+      "bytes": 136430,
       "path": "output/data/test_coverage_receipt.json",
-      "sha256": "67edead61d0b048caf825cc267a811d78b3aa5d95fdbb0678271bf99ef87a07f"
+      "sha256": "79964180792212576c512e2551513dfe211c326f12b85bdd341f6f036572ebed"
     },
     {
       "bytes": 4665,
@@ -2381,9 +2381,9 @@
       "sha256": "69afd17b1d8762652ead90b87c9814ca8b92f942a51aa81faaaef7de491a15d4"
     }
   ],
-  "fingerprint": "57bef084e98dcc7204cafbfb8fcc2b2ad3b23c9a3cd1ba2e9bc46ad39d5dff89",
+  "fingerprint": "f90d14d6b4f76bb65a2322292967eeba480ee919bc24b20da74ca847be7deb07",
   "fingerprint_files": {
-    ".github/workflows/ci.yml": "5aba47aa3c31d29a92bac19aca922a410465815254e9ffe5265fbf4424a0b960",
+    ".github/workflows/ci.yml": "f8f4da02317d174a19212fdd73f12bfb2298dcd928ac515059b84044574bc988",
     "ISA.md": "0d375fca288077150fb3fcedda75f636021956d0928258378b48f69cfdc5437b",
     "LICENSE": "0b276ab0e688d6f3bc4592805390f5b94ab8b1ca1dd62ca8f5d5949f0b60411c",
     "MANIFEST.in": "646f95a91bf512d665097b343a63b5a80a79b41aa0bb248a724d7b5e275bdbf7",
@@ -2786,5 +2786,5 @@
   "package_version": "1.0.3",
   "pipeline_profile": "publication",
   "timestamp_policy": "omitted",
-  "total_bytes": 46833013
+  "total_bytes": 46833028
 }

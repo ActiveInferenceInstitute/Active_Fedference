@@ -5,7 +5,7 @@ Generated at: omitted for a byte-reproducible unreleased build.
 
 Pipeline profile: `publication`; generator version: `4`.
 
-Artifacts: 476 files, 46833013 bytes, over:
+Artifacts: 476 files, 46833028 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)
