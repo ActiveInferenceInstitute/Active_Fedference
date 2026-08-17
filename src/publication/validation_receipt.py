@@ -19,6 +19,7 @@ import hashlib
 import json
 import math
 import platform
+import re
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -87,6 +88,16 @@ _ENVIRONMENT_FIELDS: tuple[str, ...] = (
     "scipy_version",
     "pytest_version",
 )
+_MACHINE_PATH_RE = re.compile(
+    r"(?P<prefix>/private/tmp|/tmp|/Users|/home|/Volumes)/[^/\s\"'<>]+"
+)
+_MACHINE_PATH_REPLACEMENTS = {
+    "/private/tmp": "<tmp>",
+    "/tmp": "<tmp>",
+    "/Users": "<home>",
+    "/home": "<home>",
+    "/Volumes": "<volume>",
+}
 
 
 class ValidationReceiptError(ValueError):
@@ -106,6 +117,23 @@ def _map_digest(file_hashes: Mapping[str, str]) -> str:
     for relative, file_hash in sorted(file_hashes.items()):
         digest.update(f"{file_hash}  {relative}\n".encode("utf-8"))
     return digest.hexdigest()
+
+
+def _canonicalize_command(command: Iterable[str]) -> list[str]:
+    """Remove machine-specific prefixes from the durable command evidence.
+
+    A receipt is committed and later passed through the web-package sanitizer.
+    If the live command embeds an absolute interpreter or temporary-report path,
+    that sanitizer would mutate the receipt after hydration and invalidate the
+    source-bound pipeline fingerprint.  Canonicalizing at the write boundary
+    keeps the receipt stable across local macOS, Linux CI, and external-volume
+    checkouts while preserving the useful path suffix.
+    """
+
+    def replace(match: re.Match[str]) -> str:
+        return _MACHINE_PATH_REPLACEMENTS[match.group("prefix")]
+
+    return [_MACHINE_PATH_RE.sub(replace, part) for part in command]
 
 
 def validation_input_hashes(project_root: Path) -> dict[str, str]:
@@ -270,7 +298,7 @@ def write_validation_receipt(
     changed source/analysis boundary while the test suite was running.
     """
     root = Path(project_root).resolve()
-    command_parts = list(command)
+    command_parts = _canonicalize_command(command)
     if not command_parts or any(not isinstance(part, str) or not part for part in command_parts):
         raise ValidationReceiptError("validation receipt command must be non-empty strings")
     summary: dict[str, Any] = dict(test_summary)

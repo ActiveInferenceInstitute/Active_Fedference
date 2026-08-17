@@ -1896,14 +1896,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.90
-(log-linear), 0.95 (iterative robust),
-0.72 (variational), 1.61
-(naive self-excluding sharing), and 1.93
+performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust),
+0.71 (variational), 1.59
+(naive self-excluding sharing), and 1.92
 (robust self-excluding sharing); state-axis slopes
 are 0.42, 0.40, and
-0.41; the modality-axis inference slope is
-0.63. The slope fit is a timing diagnostic on this
+0.42; the modality-axis inference slope is
+0.66. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -3736,7 +3736,7 @@ insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1694 collected cases; the bound successful
+- Project test suite: 1695 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 - Line coverage on `src/`: 90.26% (achieved by the bound full

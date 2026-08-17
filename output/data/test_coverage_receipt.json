@@ -1,20 +1,20 @@
 {
   "analysis_stage": {
-    "input_digest": "ed5fa77f836bdeb16212cb52906bc7983e4bc5fe85bfa33611b68e9545823460",
-    "output_digest": "97b75c8632d2d08497eeed7a5c7683c55d143119a4f58cab75927989c08e228e"
+    "input_digest": "d4ab454d5c92b1408837ed03f86b36b990699784609b1c710b13574f1c024836",
+    "output_digest": "a175b31bd3a51a7c9af92cf2b68860b92ded16c0f693028c50ad8ac301676006"
   },
   "command": [
-    "/Users/mini/Documents/GitHub/template/projects/working/active_fedference/.venv/bin/python3",
+    "<home>/Documents/GitHub/template/projects/working/active_fedference/.venv/bin/python3",
     "-m",
     "pytest",
     "tests/",
     "--cov=src",
     "--cov-fail-under=90",
-    "--junitxml=/Users/mini/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-27s5ie98/pytest-junit.xml",
-    "--cov-report=json:/Users/mini/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-27s5ie98/coverage.json"
+    "--junitxml=<home>/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-z92oelbv/pytest-junit.xml",
+    "--cov-report=json:<home>/Documents/GitHub/template/projects/working/active_fedference/.tmp/test-coverage-receipt-z92oelbv/coverage.json"
   ],
   "coverage": {
-    "percent": 90.25995575221239,
+    "percent": 90.26372532758334,
     "threshold": 90.0
   },
   "environment": {
@@ -25,7 +25,7 @@
     "python_version": "3.13.11",
     "scipy_version": "1.18.0"
   },
-  "input_digest": "634216342766fdbf74783b4489f7495ddb8976e378fc607e0344811ea7136cf4",
+  "input_digest": "9a3b9837f8bad585600d31e15859fdac328062d8f8ed4208402bdbde7501b277",
   "input_hashes": {
     ".github/workflows/ci.yml": "f8f4da02317d174a19212fdd73f12bfb2298dcd928ac515059b84044574bc988",
     ".gitignore": "89737f33643cb2fef8242382f01b804d59cfe0ec4feaf319857c16e24c4a05b0",
@@ -295,7 +295,7 @@
     "src/publication/pipeline_freshness.py": "f4230b18b64edbd2d2d838658a8aad29db64bc47761ea3aac01aae046af82f54",
     "src/publication/release_manifest.py": "4795c0aaf5addf26596fc86702f9102ef7e56e746548b67b32df53733b926891",
     "src/publication/surface_validation.py": "8fd231455c9fd23672c239de2e0a8667b233eb9a35702659604029e07fcde72b",
-    "src/publication/validation_receipt.py": "c138d05232d82d8e4390d47c12eb3ff3000f84e8a167ee7d7604f86d0f5a4f6d",
+    "src/publication/validation_receipt.py": "852b05a09e0cb0b7852c7ed0a8cd6228ad423185d55af78a6bf079363854503d",
     "src/publication/web_package.py": "5fa16fab8f3638663d4ef03ede8b1e66624fe13b15de91c8a766be35b1dddacb",
     "src/publication/zenodo.py": "1388d350a58b443d5606b87245f5a9c15e4131f65b8c447ec5fb452cfba717b5",
     "tests/AGENTS.md": "57d84df04a86c53c7058d769ca8d1ec5dc324aa0f0f368f18bf547b3d49030c3",
@@ -422,7 +422,7 @@
     "tests/test_token_sourcing.py": "930c53200bfd9628a3a3b32bfa72e0df4c7c4bc9b44d9ec821a60824a8b8e4af",
     "tests/test_token_tables.py": "41809d23b5d0d9978505083db78a3386758923495baa4c6c362242a6962de38c",
     "tests/test_validate_test_coverage.py": "fcb2ac2177ef1c5e9d59df73282b6e42a7a11b680aa198b1eb68783f52b6a5f4",
-    "tests/test_validation_receipt.py": "65255b419ead1f77c40d783813b8a3b1bb1e695352ae52154ce369c7ccdacee4",
+    "tests/test_validation_receipt.py": "bfc42aa5b5593ee56c69d8f6c7efbba77d93cc0c7010d47370d6d2bd1f61b32b",
     "tests/test_web_publication_contract.py": "731384ae7437cb21a46a801460c1262943cb03ed2e63954736ba294a62e40973",
     "tests/test_xref_integrity.py": "87f9fa081c93182fae962f360425a9f8d6f03ffa82214087ef779938036cda97",
     "tests/test_zenodo.py": "f55f3bab252d0c8c5901f15e9f19fb88b8dda7471517bf293472195cc90e0e37",
@@ -465,10 +465,10 @@
   "run_snapshots": {
     "post": {
       "analysis_stage": {
-        "input_digest": "ed5fa77f836bdeb16212cb52906bc7983e4bc5fe85bfa33611b68e9545823460",
-        "output_digest": "97b75c8632d2d08497eeed7a5c7683c55d143119a4f58cab75927989c08e228e"
+        "input_digest": "d4ab454d5c92b1408837ed03f86b36b990699784609b1c710b13574f1c024836",
+        "output_digest": "a175b31bd3a51a7c9af92cf2b68860b92ded16c0f693028c50ad8ac301676006"
       },
-      "input_digest": "634216342766fdbf74783b4489f7495ddb8976e378fc607e0344811ea7136cf4",
+      "input_digest": "9a3b9837f8bad585600d31e15859fdac328062d8f8ed4208402bdbde7501b277",
       "input_hashes": {
         ".github/workflows/ci.yml": "f8f4da02317d174a19212fdd73f12bfb2298dcd928ac515059b84044574bc988",
         ".gitignore": "89737f33643cb2fef8242382f01b804d59cfe0ec4feaf319857c16e24c4a05b0",
@@ -738,7 +738,7 @@
         "src/publication/pipeline_freshness.py": "f4230b18b64edbd2d2d838658a8aad29db64bc47761ea3aac01aae046af82f54",
         "src/publication/release_manifest.py": "4795c0aaf5addf26596fc86702f9102ef7e56e746548b67b32df53733b926891",
         "src/publication/surface_validation.py": "8fd231455c9fd23672c239de2e0a8667b233eb9a35702659604029e07fcde72b",
-        "src/publication/validation_receipt.py": "c138d05232d82d8e4390d47c12eb3ff3000f84e8a167ee7d7604f86d0f5a4f6d",
+        "src/publication/validation_receipt.py": "852b05a09e0cb0b7852c7ed0a8cd6228ad423185d55af78a6bf079363854503d",
         "src/publication/web_package.py": "5fa16fab8f3638663d4ef03ede8b1e66624fe13b15de91c8a766be35b1dddacb",
         "src/publication/zenodo.py": "1388d350a58b443d5606b87245f5a9c15e4131f65b8c447ec5fb452cfba717b5",
         "tests/AGENTS.md": "57d84df04a86c53c7058d769ca8d1ec5dc324aa0f0f368f18bf547b3d49030c3",
@@ -865,7 +865,7 @@
         "tests/test_token_sourcing.py": "930c53200bfd9628a3a3b32bfa72e0df4c7c4bc9b44d9ec821a60824a8b8e4af",
         "tests/test_token_tables.py": "41809d23b5d0d9978505083db78a3386758923495baa4c6c362242a6962de38c",
         "tests/test_validate_test_coverage.py": "fcb2ac2177ef1c5e9d59df73282b6e42a7a11b680aa198b1eb68783f52b6a5f4",
-        "tests/test_validation_receipt.py": "65255b419ead1f77c40d783813b8a3b1bb1e695352ae52154ce369c7ccdacee4",
+        "tests/test_validation_receipt.py": "bfc42aa5b5593ee56c69d8f6c7efbba77d93cc0c7010d47370d6d2bd1f61b32b",
         "tests/test_web_publication_contract.py": "731384ae7437cb21a46a801460c1262943cb03ed2e63954736ba294a62e40973",
         "tests/test_xref_integrity.py": "87f9fa081c93182fae962f360425a9f8d6f03ffa82214087ef779938036cda97",
         "tests/test_zenodo.py": "f55f3bab252d0c8c5901f15e9f19fb88b8dda7471517bf293472195cc90e0e37",
@@ -874,10 +874,10 @@
     },
     "pre": {
       "analysis_stage": {
-        "input_digest": "ed5fa77f836bdeb16212cb52906bc7983e4bc5fe85bfa33611b68e9545823460",
-        "output_digest": "97b75c8632d2d08497eeed7a5c7683c55d143119a4f58cab75927989c08e228e"
+        "input_digest": "d4ab454d5c92b1408837ed03f86b36b990699784609b1c710b13574f1c024836",
+        "output_digest": "a175b31bd3a51a7c9af92cf2b68860b92ded16c0f693028c50ad8ac301676006"
       },
-      "input_digest": "634216342766fdbf74783b4489f7495ddb8976e378fc607e0344811ea7136cf4",
+      "input_digest": "9a3b9837f8bad585600d31e15859fdac328062d8f8ed4208402bdbde7501b277",
       "input_hashes": {
         ".github/workflows/ci.yml": "f8f4da02317d174a19212fdd73f12bfb2298dcd928ac515059b84044574bc988",
         ".gitignore": "89737f33643cb2fef8242382f01b804d59cfe0ec4feaf319857c16e24c4a05b0",
@@ -1147,7 +1147,7 @@
         "src/publication/pipeline_freshness.py": "f4230b18b64edbd2d2d838658a8aad29db64bc47761ea3aac01aae046af82f54",
         "src/publication/release_manifest.py": "4795c0aaf5addf26596fc86702f9102ef7e56e746548b67b32df53733b926891",
         "src/publication/surface_validation.py": "8fd231455c9fd23672c239de2e0a8667b233eb9a35702659604029e07fcde72b",
-        "src/publication/validation_receipt.py": "c138d05232d82d8e4390d47c12eb3ff3000f84e8a167ee7d7604f86d0f5a4f6d",
+        "src/publication/validation_receipt.py": "852b05a09e0cb0b7852c7ed0a8cd6228ad423185d55af78a6bf079363854503d",
         "src/publication/web_package.py": "5fa16fab8f3638663d4ef03ede8b1e66624fe13b15de91c8a766be35b1dddacb",
         "src/publication/zenodo.py": "1388d350a58b443d5606b87245f5a9c15e4131f65b8c447ec5fb452cfba717b5",
         "tests/AGENTS.md": "57d84df04a86c53c7058d769ca8d1ec5dc324aa0f0f368f18bf547b3d49030c3",
@@ -1274,7 +1274,7 @@
         "tests/test_token_sourcing.py": "930c53200bfd9628a3a3b32bfa72e0df4c7c4bc9b44d9ec821a60824a8b8e4af",
         "tests/test_token_tables.py": "41809d23b5d0d9978505083db78a3386758923495baa4c6c362242a6962de38c",
         "tests/test_validate_test_coverage.py": "fcb2ac2177ef1c5e9d59df73282b6e42a7a11b680aa198b1eb68783f52b6a5f4",
-        "tests/test_validation_receipt.py": "65255b419ead1f77c40d783813b8a3b1bb1e695352ae52154ce369c7ccdacee4",
+        "tests/test_validation_receipt.py": "bfc42aa5b5593ee56c69d8f6c7efbba77d93cc0c7010d47370d6d2bd1f61b32b",
         "tests/test_web_publication_contract.py": "731384ae7437cb21a46a801460c1262943cb03ed2e63954736ba294a62e40973",
         "tests/test_xref_integrity.py": "87f9fa081c93182fae962f360425a9f8d6f03ffa82214087ef779938036cda97",
         "tests/test_zenodo.py": "f55f3bab252d0c8c5901f15e9f19fb88b8dda7471517bf293472195cc90e0e37",
@@ -1286,9 +1286,9 @@
   "source_lock_sha256": "5df793789bd7ac75326b19dbc8c550acd97ede335bc6a2d8ce091076c30d7698",
   "success": true,
   "test_summary": {
-    "collected": 1694,
+    "collected": 1695,
     "failed": 0,
-    "passed": 1694,
+    "passed": 1695,
     "skipped": 0
   },
   "timestamp_policy": "recorded"

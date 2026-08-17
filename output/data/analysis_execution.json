@@ -1,6 +1,6 @@
 {
   "analysis_input_snapshot": {
-    "input_digest": "ed5fa77f836bdeb16212cb52906bc7983e4bc5fe85bfa33611b68e9545823460",
+    "input_digest": "d4ab454d5c92b1408837ed03f86b36b990699784609b1c710b13574f1c024836",
     "input_hashes": {
       "experiment_plan.yaml": "9c3f279e61fc31da6dd40b5f49061cf3db9d9ba8ba228d817ac8fdf14ee7b76f",
       "manuscript/00_abstract.md": "c2c6431b6ed6271aa1ae765d830c73b6715e06fb8d7b882eb5e4e4bb07631549",
@@ -174,7 +174,7 @@
       "src/publication/pipeline_freshness.py": "f4230b18b64edbd2d2d838658a8aad29db64bc47761ea3aac01aae046af82f54",
       "src/publication/release_manifest.py": "4795c0aaf5addf26596fc86702f9102ef7e56e746548b67b32df53733b926891",
       "src/publication/surface_validation.py": "8fd231455c9fd23672c239de2e0a8667b233eb9a35702659604029e07fcde72b",
-      "src/publication/validation_receipt.py": "c138d05232d82d8e4390d47c12eb3ff3000f84e8a167ee7d7604f86d0f5a4f6d",
+      "src/publication/validation_receipt.py": "852b05a09e0cb0b7852c7ed0a8cd6228ad423185d55af78a6bf079363854503d",
       "src/publication/web_package.py": "5fa16fab8f3638663d4ef03ede8b1e66624fe13b15de91c8a766be35b1dddacb",
       "src/publication/zenodo.py": "1388d350a58b443d5606b87245f5a9c15e4131f65b8c447ec5fb452cfba717b5",
       "uv.lock": "5df793789bd7ac75326b19dbc8c550acd97ede335bc6a2d8ce091076c30d7698"

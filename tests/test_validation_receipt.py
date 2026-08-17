@@ -647,6 +647,29 @@ def test_receipt_supports_a_deterministic_omitted_timestamp(tmp_path: Path) -> N
     assert validation_receipt_findings(tmp_path) == []
 
 
+def test_receipt_canonicalizes_machine_paths_in_command_evidence(tmp_path: Path) -> None:
+    """Web-package sanitization must not mutate a freshly written receipt."""
+    _make_validation_tree(tmp_path)
+    receipt = write_validation_receipt(
+        tmp_path,
+        command=(
+            "/Users/mini/Documents/project/.venv/bin/python3",
+            "--junitxml=/tmp/test-coverage/pytest-junit.xml",
+            "--cov-report=json:/Volumes/blue/project/.tmp/coverage.json",
+        ),
+        test_summary={"collected": 3, "passed": 3, "failed": 0, "skipped": 0},
+        coverage_percent=93.25,
+        pre_run_snapshot=capture_validation_snapshot(tmp_path),
+    )
+
+    assert receipt["command"] == [
+        "<home>/Documents/project/.venv/bin/python3",
+        "--junitxml=<tmp>/pytest-junit.xml",
+        "--cov-report=json:<volume>/project/.tmp/coverage.json",
+    ]
+    assert validation_receipt_findings(tmp_path) == []
+
+
 def test_receipt_findings_reject_nonfinite_coverage_and_current_hash_failure(tmp_path: Path) -> None:
     """Live receipt verification must reject nonfinite values and unreadable input boundaries."""
     findings = _mutated_receipt_findings(

@@ -3864,11 +3864,11 @@ class="math inline">\(arm64\)</span> machine using Python <span
 class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.90
-(log-linear), 0.95 (iterative robust), 0.72 (variational), 1.61 (naive
-self-excluding sharing), and 1.93 (robust self-excluding sharing);
-state-axis slopes are 0.42, 0.40, and 0.41; the modality-axis inference
-slope is 0.63. The slope fit is a timing diagnostic on this machine, not
+orders, not performance guarantees: agent-axis slopes are 0.89
+(log-linear), 0.94 (iterative robust), 0.71 (variational), 1.59 (naive
+self-excluding sharing), and 1.92 (robust self-excluding sharing);
+state-axis slopes are 0.42, 0.40, and 0.42; the modality-axis inference
+slope is 0.66. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -6961,7 +6961,7 @@ class="header-section-number">10.4</span> Test and coverage evidence for
 the claim surface</h2>
 <ul>
 <li>Acceptance criteria: 259 total, 257 passing.</li>
-<li>Project test suite: 1694 collected cases; the bound successful
+<li>Project test suite: 1695 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.</li>
 <li>Line coverage on <code>src/</code>: 90.26% (achieved by the bound
