@@ -16,8 +16,9 @@ allowed only when the retained veraPDF report and manual reading-order,
 keyboard, reflow/zoom, mathematical-content, and screen-reader checks pass.
 If those checks are not complete, the accurate status is “tagged PDF producer
 enabled; PDF/UA conformance not established.” The public v1.0.3 artifact may
-retain older surface properties; the current source and its regenerated
-reviewer snapshot are the evidence for this contract.
+retain older surface properties; the published v1.0.4 artifact and its
+regenerated reviewer snapshot satisfy the repository's tagged-structure gate,
+while PDF/UA conformance remains unestablished.
 
 This is a scoped engineering contract, not a declaration of WCAG conformance.
 The automated rules cover deterministic properties that this repository can

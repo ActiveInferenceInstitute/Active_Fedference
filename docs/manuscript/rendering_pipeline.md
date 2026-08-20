@@ -147,7 +147,7 @@ recorded as a render receipt.
 surfaces; in particular, web preparation mirrors figures and normalizes
 cross-references under `output/web/`. The final render receipt therefore comes
 only after both have completed and the prepared web/PDF/slide surfaces have
-validated. Its hashes then describe the actual release candidate rather than
+validated. Its hashes then describe the actual release artifact rather than
 the pre-package renderer output.
 
 ## Phase 3 — PDF, web, and slides render (pipeline stage 7)
@@ -239,7 +239,7 @@ release claim.
 The phase-3 command assumes that explicit hydration has already produced
 `output/manuscript/`; use `--skip-manuscript-hydration` so the renderer does
 not silently replace it. Follow the two-pass sequence above rather than
-treating a one-off stage-03 call as a source-current release candidate. It
+treating a one-off stage-03 call as a source-current release artifact. It
 prepares the web package before recording the final render receipt and records
 the template commit/diff label only after the final surface exists.
 

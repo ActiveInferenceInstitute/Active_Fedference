@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.24.0 (TeX Live 2026)  (format=lualatex 2026.3.1)  16 AUG 2026 19:24
+This is LuaHBTeX, Version 1.24.0 (TeX Live 2026)  (format=lualatex 2026.3.1)  20 AUG 2026 09:26
 **_combined_manuscript.tex
 (./_combined_manuscript.tex
 LaTeX2e <2025-11-01>
@@ -2089,114 +2089,114 @@ Package luatex.def Info: ../figures/bnn_robustness.png  used on input line 3963
 (luatex.def)             Requested size: 479.88367pt x 315.3624pt.
 [38<../figures/bnn_robustness.png>] [39] [40] [41] [42] [43] [44] [45] [46]
 [47] [48] [49]
-Floatstructure:5890
-<../figures/descent_comparison.png, id=12001, 446.76pt x 302.22pt>
+Floatstructure:5942
+<../figures/descent_comparison.png, id=12053, 446.76pt x 302.22pt>
 File: ../figures/descent_comparison.png Graphic file (type png)
 <use ../figures/descent_comparison.png>
 Package luatex.def Info: ../figures/descent_comparison.png  used on input line
-5542.
+5553.
 (luatex.def)             Requested size: 479.88269pt x 324.62653pt.
 [50<../figures/descent_comparison.png>] [51]
-Floatstructure:6288
-<../figures/contamination_gallery.png, id=12570, 793.656pt x 424.0935pt>
+Floatstructure:6340
+<../figures/contamination_gallery.png, id=12622, 793.656pt x 424.0935pt>
 File: ../figures/contamination_gallery.png Graphic file (type png)
 <use ../figures/contamination_gallery.png>
 Package luatex.def Info: ../figures/contamination_gallery.png  used on input li
-ne 5834.
+ne 5845.
 (luatex.def)             Requested size: 509.87575pt x 272.4543pt.
 [52<../figures/contamination_gallery.png>]
-Floatstructure:6443
-<../figures/robustness_onset.png, id=12754, 984.5145pt x 319.6305pt>
+Floatstructure:6495
+<../figures/robustness_onset.png, id=12806, 984.5145pt x 319.6305pt>
 File: ../figures/robustness_onset.png Graphic file (type png)
 <use ../figures/robustness_onset.png>
 Package luatex.def Info: ../figures/robustness_onset.png  used on input line 59
-34.
+45.
 (luatex.def)             Requested size: 569.84705pt x 185.00539pt.
-Floatstructure:6458
-<../figures/conditional_world.png, id=12776, 890.892pt x 401.427pt>
+Floatstructure:6510
+<../figures/conditional_world.png, id=12828, 890.892pt x 401.427pt>
 File: ../figures/conditional_world.png Graphic file (type png)
 <use ../figures/conditional_world.png>
 Package luatex.def Info: ../figures/conditional_world.png  used on input line 5
-974.
+985.
 (luatex.def)             Requested size: 569.84268pt x 256.76538pt.
 [53<../figures/robustness_onset.png>] [54<../figures/conditional_world.png>]
-Floatstructure:6477
-<../figures/robustness_review_grid.png, id=12829, 1037.7315pt x 532.4985pt>
+Floatstructure:6529
+<../figures/robustness_review_grid.png, id=12881, 1037.7315pt x 532.4985pt>
 File: ../figures/robustness_review_grid.png Graphic file (type png)
 <use ../figures/robustness_review_grid.png>
 Package luatex.def Info: ../figures/robustness_review_grid.png  used on input l
-ine 6028.
+ine 6039.
 (luatex.def)             Requested size: 569.86737pt x 292.42006pt.
-Floatstructure:6492
-<../figures/belief_quality.png, id=12847, 778.8735pt x 380.403pt>
+Floatstructure:6544
+<../figures/belief_quality.png, id=12899, 778.8735pt x 380.403pt>
 File: ../figures/belief_quality.png Graphic file (type png)
 <use ../figures/belief_quality.png>
-Package luatex.def Info: ../figures/belief_quality.png  used on input line 6074
+Package luatex.def Info: ../figures/belief_quality.png  used on input line 6085
 .
 (luatex.def)             Requested size: 539.88342pt x 263.67987pt.
 [55<../figures/robustness_review_grid.png>] [56<../figures/belief_quality.png>]
 [57]
 ignored: Infinite glue shrinkage found in box being split [58] [59] [60]
-Floatstructure:7191
-<../figures/moving_world.png, id=13715, 716.13pt x 281.196pt>
+Floatstructure:7243
+<../figures/moving_world.png, id=13767, 716.13pt x 281.196pt>
 File: ../figures/moving_world.png Graphic file (type png)
 <use ../figures/moving_world.png>
-Package luatex.def Info: ../figures/moving_world.png  used on input line 6616.
+Package luatex.def Info: ../figures/moving_world.png  used on input line 6627.
 (luatex.def)             Requested size: 479.87018pt x 188.42607pt.
-Floatstructure:7213
-<../figures/disjoint_fov_world.png, id=13746, 815.337pt x 351.8235pt>
+Floatstructure:7265
+<../figures/disjoint_fov_world.png, id=13798, 815.337pt x 351.8235pt>
 File: ../figures/disjoint_fov_world.png Graphic file (type png)
 <use ../figures/disjoint_fov_world.png>
 Package luatex.def Info: ../figures/disjoint_fov_world.png  used on input line
-6678.
+6689.
 (luatex.def)             Requested size: 479.87521pt x 207.06943pt.
 [61<../figures/moving_world.png>] [62<../figures/disjoint_fov_world.png>]
-Floatstructure:7274
-<../figures/hierarchical_pomdp.png, id=13854, 724.671pt x 422.7795pt>
+Floatstructure:7326
+<../figures/hierarchical_pomdp.png, id=13906, 724.671pt x 422.7795pt>
 File: ../figures/hierarchical_pomdp.png Graphic file (type png)
 <use ../figures/hierarchical_pomdp.png>
 Package luatex.def Info: ../figures/hierarchical_pomdp.png  used on input line
-6803.
+6814.
 (luatex.def)             Requested size: 479.87663pt x 279.96428pt.
 [63] [64<../figures/hierarchical_pomdp.png>] [65]
-Floatstructure:7637
-<../figures/sensitivity_heatmap.png, id=14358, 770.9895pt x 360.3645pt>
+Floatstructure:7689
+<../figures/sensitivity_heatmap.png, id=14410, 770.9895pt x 360.3645pt>
 File: ../figures/sensitivity_heatmap.png Graphic file (type png)
 <use ../figures/sensitivity_heatmap.png>
 Package luatex.def Info: ../figures/sensitivity_heatmap.png  used on input line
- 7205.
+ 7216.
 (luatex.def)             Requested size: 539.87721pt x 252.3414pt.
-Floatstructure:7646
-<../figures/cross_study_summary.png, id=14373, 815.337pt x 1201.9815pt>
+Floatstructure:7698
+<../figures/cross_study_summary.png, id=14425, 815.337pt x 1201.9815pt>
 File: ../figures/cross_study_summary.png Graphic file (type png)
 <use ../figures/cross_study_summary.png>
 Package luatex.def Info: ../figures/cross_study_summary.png  used on input line
- 7226.
+ 7237.
 (luatex.def)             Requested size: 234.93631pt x 346.34648pt.
 [66] [67<../figures/sensitivity_heatmap.png>] [68<../figures/cross_study_summary
 .png>] [69]
-Floatstructure:7861
-<../figures/parameter_recovery.png, id=14703, 793.656pt x 373.176pt>
+Floatstructure:7913
+<../figures/parameter_recovery.png, id=14755, 793.656pt x 373.176pt>
 File: ../figures/parameter_recovery.png Graphic file (type png)
 <use ../figures/parameter_recovery.png>
 Package luatex.def Info: ../figures/parameter_recovery.png  used on input line
-7432.
+7443.
 (luatex.def)             Requested size: 539.8606pt x 253.84172pt.
 [70<../figures/parameter_recovery.png>]
-Floatstructure:7884
-<../figures/hierarchical_bmr.png, id=14749, 497.0205pt x 273.312pt>
+Floatstructure:7936
+<../figures/hierarchical_bmr.png, id=14801, 497.0205pt x 273.312pt>
 File: ../figures/hierarchical_bmr.png Graphic file (type png)
 <use ../figures/hierarchical_bmr.png>
 Package luatex.def Info: ../figures/hierarchical_bmr.png  used on input line 74
-85.
+96.
 (luatex.def)             Requested size: 479.8872pt x 263.89038pt.
 [71<../figures/hierarchical_bmr.png>]
-Floatstructure:7917
-<../figures/heuristic_breakdown.png, id=14814, 1082.736pt x 331.128pt>
+Floatstructure:7969
+<../figures/heuristic_breakdown.png, id=14866, 1082.736pt x 331.128pt>
 File: ../figures/heuristic_breakdown.png Graphic file (type png)
 <use ../figures/heuristic_breakdown.png>
 Package luatex.def Info: ../figures/heuristic_breakdown.png  used on input line
- 7573.
+ 7584.
 (luatex.def)             Requested size: 569.86574pt x 174.27931pt.
 (./_combined_manuscript.bbl [72<../figures/heuristic_breakdown.png>] [73]
 [74]) [75]<<latex-list-css.html>><<latex-align-css.html>>
@@ -2218,8 +2218,8 @@ MathML statistic
 ==> 802 MathML AF attached
 
 Package tagpdf Info: Finalizing the tagging structure:
-(tagpdf)             Writing out ~8368 structure objects
-(tagpdf)             with ~9033 'MC' leaf nodes.
+(tagpdf)             Writing out ~8420 structure objects
+(tagpdf)             with ~9041 'MC' leaf nodes.
 (tagpdf)             Be patient if there are lots of objects!
 
 Package tagpdf Info: writing ParentTree
@@ -2232,16 +2232,16 @@ Package tagpdf Info: writing Root
 )
 
 Here is how much of LuaTeX's memory you used:
- 53486 strings out of 476076
+ 53590 strings out of 476076
  382253,5906145 words of node,token memory allocated
- 21529 words of node memory still in use:
+ 21749 words of node memory still in use:
    7 hlist, 2 vlist, 2 rule, 1 local_par, 4 glue, 4 kern, 1 penalty, 1 margin_ke
-rn, 4 glyph, 8503 attribute, 68 glue_spec, 1961 attribute_list, 1 write, 1 user_
+rn, 4 glyph, 8591 attribute, 68 glue_spec, 1983 attribute_list, 1 write, 1 user_
 defined nodes
    avail lists: 1:21,2:73480,3:2492,4:475,5:1068,6:348,7:20720,8:112,9:2464,10:4
 1,11:1662
- 73914 multiletter control sequences out of 65536+600000
- 91 fonts using 20732535 bytes
+ 74018 multiletter control sequences out of 65536+600000
+ 91 fonts using 20732407 bytes
  90i,13n,117p,2105b,1642s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026basic/texmf-dist/fonts/opentype/public/lm/lmroman10-ital
 ic.otf></usr/local/texlive/2026basic/texmf-dist/fonts/opentype/public/lm/lmmonol
@@ -2263,9 +2263,9 @@ public/lm/lmmono10-regular.otf></usr/local/texlive/2026basic/texmf-dist/fonts/op
 entype/public/lm/lmsans9-regular.otf></usr/local/texlive/2026basic/texmf-dist/fo
 nts/opentype/public/lm/lmsans12-regular.otf></usr/local/texlive/2026basic/texmf-
 dist/fonts/opentype/public/lm/lmsans10-bold.otf>
-Output written on _combined_manuscript.pdf (76 pages, 9131129 bytes).
+Output written on _combined_manuscript.pdf (76 pages, 9133435 bytes).
 
-PDF statistics: 16379 PDF objects out of 18468 (max. 8388607)
- 14840 compressed objects within 149 object streams
+PDF statistics: 16432 PDF objects out of 18468 (max. 8388607)
+ 14893 compressed objects within 149 object streams
  632 named destinations out of 1000 (max. 1048576)
- 63686 words of extra memory for PDF output out of 74501 (max. 100000000)
+ 63951 words of extra memory for PDF output out of 74501 (max. 100000000)

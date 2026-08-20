@@ -13,12 +13,13 @@ complete source message-passing protocol.
 
 The public release target is
 [ActiveInferenceInstitute/Active_Fedference](https://github.com/ActiveInferenceInstitute/Active_Fedference).
-The v1.0.3 release is now published there and has the permanent Zenodo DOI
-[`10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756), with the
-public record at <https://zenodo.org/records/21969756>. The v1.0.2, v1.0.1,
+The v1.0.4 release is published at
+[GitHub](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
+and [Zenodo](https://doi.org/10.5281/zenodo.21972644), with public record
+[21972644](https://zenodo.org/records/21972644). The v1.0.3, v1.0.2, v1.0.1,
 and v0.1.0 records remain available as prior versions. This checkout remains a
 standalone development/review source with the interim `docxology` remote; it
-is not the public repository and future changes remain unreleased until an
+is not the public repository, and future changes remain unreleased until an
 explicit review and publication action.
 
 ## The standalone core
@@ -57,9 +58,9 @@ only the project-local server recovery identity used by the categorical bridge.
 This checkout is a standalone repository, separate from both the sibling
 template repository and the public GitHub target. Do not merge it into the
 unrelated template remote. Credentials, uncached external data, and local
-review scratch remain private and are excluded from the release; the reviewed
-v1.0.3 source snapshot itself is public. Verify the repository root before
-running render or release commands:
+review scratch remain private and are excluded from the release; the published
+v1.0.4 snapshot is public, while any later uncommitted changes are not. Verify
+the repository root before running render or release commands:
 
 ```bash
 git rev-parse --show-toplevel
@@ -68,9 +69,9 @@ git remote -v
 
 Zenodo publication is a composable release boundary: `src/publication/zenodo.py`
 contains the typed REST client, while `scripts/zenodo_release.py` is the thin
-new-version/update/upload/verify/publish adapter. The v1.0.3 deposition is
-published; future metadata or PDF changes require a separately reviewed
-Zenodo version/deposition. Credentials are read from the process environment
+new-version/update/upload/verify/publish adapter. The v1.0.4 deposition is
+published at `10.5281/zenodo.21972644`; future metadata or PDF changes require
+a separately reviewed Zenodo version/deposition. Credentials are read from the process environment
 or a local ignored dotenv file and are never written to the repository,
 generated manifest, or PDF.
 

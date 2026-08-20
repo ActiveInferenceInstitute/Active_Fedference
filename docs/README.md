@@ -6,7 +6,10 @@ AESTHETIC table for what is gate-checked versus convention.
 
 **Contract & identity:** [`../ISA.md`](../ISA.md) · [`../README.md`](../README.md) · [`../STANDALONE.md`](../STANDALONE.md)
 
-**Published release v1.0.3:** [Zenodo DOI `10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756) · [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference) · [Zenodo record](https://zenodo.org/records/21969756) · prior [v1.0.2 record](https://zenodo.org/records/21934992) · [v1.0.1 record](https://zenodo.org/records/21919307) · [v0.1.0 record](https://zenodo.org/records/21864004)
+**Current public release v1.0.4:** [DOI `10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
+· [GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
+· [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference)
+· [Zenodo record](https://zenodo.org/records/21972644) · prior [v1.0.3 record](https://zenodo.org/records/21969756) · [v1.0.2 record](https://zenodo.org/records/21934992) · [v1.0.1 record](https://zenodo.org/records/21919307) · [v0.1.0 record](https://zenodo.org/records/21864004)
 
 ## Subfolders
 

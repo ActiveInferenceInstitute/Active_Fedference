@@ -1,6 +1,5 @@
 # Active Fedference — Robust Federated Active Inference
 
-[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21969756.svg)](https://doi.org/10.5281/zenodo.21969756)
 [![Public GitHub repository](https://img.shields.io/badge/GitHub-ActiveInferenceInstitute%2FActive_Fedference-181717?logo=github)](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 
 Active Fedference is a research project that reimplements **FedGVI** (Federated
@@ -10,21 +9,23 @@ the federated **belief-sharing** scenario of Friston et al.
 (2024), *Federated inference and belief sharing* (Neurosci. Biobehav. Rev.
 156:105500).
 
-## Published release
+## v1.0.4 public release
 
-The v1.0.3 research release is published and cross-referenced across both
-surfaces:
+The source-bound v1.0.4 reviewer snapshot is published and its release metadata
+has been checked against the live Zenodo record. The public source, release tag,
+and immutable research artifact now cross-reference the same version.
 
-- **Permanent DOI:** [`10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756)
-  · [Zenodo record](https://zenodo.org/records/21969756)
-- **Public source and reviewer snapshot:**
+- **Published DOI:** [`10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
+  · [Zenodo record](https://zenodo.org/records/21972644)
+- **Current public release:** [v1.0.4 GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
+- **Public source repository:**
   [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
-- **Top-level manuscript PDF:**
-  [`Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf`](Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf)
+- **Released manuscript PDF:**
+  [`Active_Fedference_Research_Manuscript_v1.0.4_Zenodo_10.5281-zenodo.21972644.pdf`](Active_Fedference_Research_Manuscript_v1.0.4_Zenodo_10.5281-zenodo.21972644.pdf)
 
-The deposited PDF embeds the DOI and public repository URL, and the Zenodo
-record lists the public repository as its related identifier. The v0.1.0
-record remains available as the prior version, alongside v1.0.2 and v1.0.1.
+The released PDF embeds the published DOI and public repository URL as release
+metadata; both cross-references were rechecked after publication. The v1.0.3,
+v1.0.2, v1.0.1, and v0.1.0 records remain available as public prior versions.
 This checkout is
 the standalone development/review source; its configured `origin` is the
 interim [`docxology/active_fedference`](https://github.com/docxology/active_fedference)

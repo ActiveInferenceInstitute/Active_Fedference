@@ -9,7 +9,7 @@ backend-path = ["."]
 
 [project]
 name = "active_fedference"
-version = "1.0.3"
+version = "1.0.4"
 description = "Robust federated active inference: FedGVI applied to Friston et al. (2024) belief sharing"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = "MIT"
@@ -52,7 +52,7 @@ fedference = "fedference_cli:main"
 Homepage = "https://github.com/ActiveInferenceInstitute/Active_Fedference"
 Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"
 Documentation = "https://github.com/ActiveInferenceInstitute/Active_Fedference/tree/main/docs"
-DOI = "https://doi.org/10.5281/zenodo.21969756"
+DOI = "https://doi.org/10.5281/zenodo.21972644"
 
 [project.optional-dependencies]
 dev = [

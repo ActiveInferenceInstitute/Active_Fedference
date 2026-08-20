@@ -1,20 +1,19 @@
 # Zenodo release boundary
 
-Active Fedference v1.0.3 is the current public release:
+Active Fedference v1.0.4 is the current public release. Its source-bound
+reviewer snapshot and release metadata are published:
 
-- prior depositions: `21864004` (v0.1.0), `21919307` (v1.0.1), `21934992` (v1.0.2)
-- current deposition: `21969756` (v1.0.3)
-- DOI: [`10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756)
-- public record: <https://zenodo.org/records/21969756>
-- state: **published** (`done`)
-- released PDF: `active_fedference_combined.pdf` (the same bytes as the
-  top-level GitHub manuscript PDF)
+- public deposition: `21972644` (v1.0.4)
+- public DOI: [`10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
+- public GitHub release: [`v1.0.4`](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
+- public PDF: `active_fedference_combined.pdf` (the same bytes as the local
+  top-level released manuscript PDF)
+- prior public deposition: `21969756` (v1.0.3)
 
-The v1.0.3 DOI is the permanent identifier for the current release. Its PDF
-and the public GitHub repository
+The v1.0.4 DOI is now publicly resolvable. Its PDF and the public GitHub repository
 ([`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference))
-cross-reference each other through the release metadata. The v0.1.0 record
-remains available as the prior version. The official API boundary is
+cross-reference each other through the release metadata. The v1.0.3 and older
+records remain available as prior versions. The official API boundary is
 documented in the [Zenodo REST API documentation](https://developers.zenodo.org/).
 
 ## Source of truth
@@ -99,12 +98,19 @@ verification flag and the draft-state guard. After publication, verify the DOI
 redirect and public record metadata, including the GitHub related identifier
 and uploaded-PDF checksum.
 
-For the current public record, the no-token checks are:
+For the current public v1.0.4 record, the no-token checks are:
 
 ```bash
-curl -fsSIL https://doi.org/10.5281/zenodo.21969756
-curl -fsSL https://zenodo.org/api/records/21969756 | jq \
+curl -fsSIL https://doi.org/10.5281/zenodo.21972644
+curl -fsSL https://zenodo.org/api/records/21972644 | jq \
   '{doi, version: .metadata.version, files: [.files[] | {key, size, checksum}], related_identifiers: .metadata.related_identifiers}'
+```
+
+The prior v1.0.3 record remains independently checkable:
+
+```bash
+curl -fsSL https://zenodo.org/api/records/21969756 | jq \
+  '{doi, version: .metadata.version, files: [.files[] | {key, size, checksum}]}'
 ```
 
 The prior v0.1.0 record remains independently checkable:
@@ -116,8 +122,9 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
 
 ## Invariants
 
-- The v1.0.3 DOI in `manuscript/config.yaml`, generated metadata, manuscript
-  token, rendered PDF, README, and Zenodo record must agree.
+- The published v1.0.4 DOI in `manuscript/config.yaml`, generated metadata,
+  manuscript token, rendered PDF, README, live Zenodo record, and public
+  GitHub release must agree.
 - The Zenodo record title must be the complete paper title plus subtitle, and
   its `description` field must be the full source-controlled abstract. A
   short package description is not an acceptable Zenodo abstract.

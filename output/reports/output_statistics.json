@@ -4,12 +4,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "8.71",
-      "total_size_bytes": 9131129,
+      "total_size_bytes": 9133435,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "8.71",
-          "size_bytes": 9131129,
+          "size_bytes": 9133435,
           "path": "pdf/active_fedference_combined.pdf"
         }
       ],
@@ -21,7 +21,7 @@
       "exists": true,
       "file_count": 107,
       "size_mb": "10.00",
-      "total_size_bytes": 10482564,
+      "total_size_bytes": 10480711,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -32,13 +32,13 @@
         {
           "name": "index.html",
           "size_mb": "0.52",
-          "size_bytes": 544362,
+          "size_bytes": 544458,
           "path": "web/index.html"
         },
         {
           "name": "complexity_scaling.png",
           "size_mb": "0.47",
-          "size_bytes": 492890,
+          "size_bytes": 490795,
           "path": "web/figures/complexity_scaling.png"
         }
       ],
@@ -55,18 +55,18 @@
       "exists": true,
       "file_count": 43,
       "size_mb": "8.89",
-      "total_size_bytes": 9320190,
+      "total_size_bytes": 9323957,
       "largest_files": [
         {
           "name": "28_supplement_extended_methods_slides.pdf",
           "size_mb": "1.27",
-          "size_bytes": 1332374,
+          "size_bytes": 1332375,
           "path": "slides/28_supplement_extended_methods_slides.pdf"
         },
         {
           "name": "00_abstract_slides.pdf",
           "size_mb": "0.96",
-          "size_bytes": 1004595,
+          "size_bytes": 1004655,
           "path": "slides/00_abstract_slides.pdf"
         },
         {
@@ -96,7 +96,7 @@
       "exists": true,
       "file_count": 61,
       "size_mb": "8.33",
-      "total_size_bytes": 8736395,
+      "total_size_bytes": 8737596,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -107,7 +107,7 @@
         {
           "name": "complexity_scaling.png",
           "size_mb": "0.48",
-          "size_bytes": 503741,
+          "size_bytes": 504896,
           "path": "figures/complexity_scaling.png"
         },
         {
@@ -127,18 +127,18 @@
       "exists": true,
       "file_count": 6,
       "size_mb": "0.30",
-      "total_size_bytes": 318169,
+      "total_size_bytes": 318130,
       "largest_files": [
         {
           "name": "pipeline_provenance.json",
-          "size_mb": "0.14",
-          "size_bytes": 141569,
+          "size_mb": "0.13",
+          "size_bytes": 141531,
           "path": "data/pipeline_provenance.json"
         },
         {
           "name": "test_coverage_receipt.json",
           "size_mb": "0.13",
-          "size_bytes": 136415,
+          "size_bytes": 136396,
           "path": "data/test_coverage_receipt.json"
         },
         {
@@ -156,7 +156,7 @@
       "exists": true,
       "file_count": 25,
       "size_mb": "2.91",
-      "total_size_bytes": 3055914,
+      "total_size_bytes": 3055890,
       "largest_files": [
         {
           "name": "robustness_review_grid.json",
@@ -226,7 +226,7 @@
       "exists": true,
       "file_count": 46,
       "size_mb": "0.37",
-      "total_size_bytes": 384371,
+      "total_size_bytes": 384413,
       "largest_files": [
         {
           "name": "references.bib",
@@ -257,12 +257,12 @@
       "exists": true,
       "file_count": 3,
       "size_mb": "0.17",
-      "total_size_bytes": 180734,
+      "total_size_bytes": 180733,
       "largest_files": [
         {
           "name": "manifest.json",
           "size_mb": "0.12",
-          "size_bytes": 127083,
+          "size_bytes": 127082,
           "path": "release/manifest.json"
         },
         {
@@ -288,12 +288,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "8.71",
-      "total_size_bytes": 9131129,
+      "total_size_bytes": 9133435,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "8.71",
-          "size_bytes": 9131129,
+          "size_bytes": 9133435,
           "path": "active_fedference_combined.pdf"
         }
       ],
@@ -303,19 +303,19 @@
     }
   },
   "total_files": 295,
-  "total_size_mb": 48.43164920806885,
+  "total_size_mb": 48.43899726867676,
   "largest_files": [
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "8.71",
-      "size_bytes": 9131129,
+      "size_bytes": 9133435,
       "category": "root",
       "path": "active_fedference_combined.pdf"
     },
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "8.71",
-      "size_bytes": 9131129,
+      "size_bytes": 9133435,
       "category": "pdf",
       "path": "pdf/active_fedference_combined.pdf"
     },
@@ -329,14 +329,14 @@
     {
       "name": "28_supplement_extended_methods_slides.pdf",
       "size_mb": "1.27",
-      "size_bytes": 1332374,
+      "size_bytes": 1332375,
       "category": "slides",
       "path": "slides/28_supplement_extended_methods_slides.pdf"
     },
     {
       "name": "00_abstract_slides.pdf",
       "size_mb": "0.96",
-      "size_bytes": 1004595,
+      "size_bytes": 1004655,
       "category": "slides",
       "path": "slides/00_abstract_slides.pdf"
     },
@@ -378,16 +378,16 @@
   ],
   "missing_expected_files": [],
   "sizes_by_category": {
-    "pdf": 8.708123207092285,
-    "web": 9.996952056884766,
-    "slides": 8.888425827026367,
-    "figures": 8.33167552947998,
-    "data": 0.30342960357666016,
-    "reports": 2.914346694946289,
+    "pdf": 8.710322380065918,
+    "web": 9.995184898376465,
+    "slides": 8.89201831817627,
+    "figures": 8.332820892333984,
+    "data": 0.3033924102783203,
+    "reports": 2.9143238067626953,
     "docs": 0.04164695739746094,
-    "manuscript": 0.3665647506713867,
-    "release": 0.1723613739013672,
-    "root": 8.708123207092285
+    "manuscript": 0.3666048049926758,
+    "release": 0.17236042022705078,
+    "root": 8.710322380065918
   },
   "inventory_mode": "stable-local-output-v1",
   "inventory_scope": "stage5-delivery-mirror",

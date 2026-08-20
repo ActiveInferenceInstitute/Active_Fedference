@@ -74,6 +74,7 @@ def test_build_emits_all_three_surfaces_from_config(tmp_path: Path) -> None:
     assert cff["authors"][0]["orcid"] == zen["creators"][0]["orcid"]
     assert cm["author"][0]["@id"].endswith(zen["creators"][0]["orcid"])
     assert cff["license"] == zen["license"] == "MIT"
+    assert zen["access_right"] == "open"
     assert cm["license"].endswith("/MIT")
     # Name split: everything before the last space is given names.
     assert cff["authors"][0]["given-names"] == "Ada Q"

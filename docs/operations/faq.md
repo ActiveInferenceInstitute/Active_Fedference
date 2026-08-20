@@ -15,22 +15,23 @@ See [`../core/conceptual-foundations.md`](../core/conceptual-foundations.md).
 
 [`../../ISA.md`](../../ISA.md) — see its Criteria section for the current ISC range and checked/open counts (this drifts every iteration, so it is not snapshotted here); probes for verification.
 
-## Where is the published release?
+## What is the current release status?
 
 The public source and reviewer snapshot are maintained at
 [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
-The corresponding permanent manuscript release is
-[Zenodo DOI `10.5281/zenodo.21969756`](https://doi.org/10.5281/zenodo.21969756),
-with its [public record](https://zenodo.org/records/21969756). The DOI and
-repository are cross-referenced in the metadata and PDF.
+The current public release is
+[v1.0.4](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
+with [Zenodo record 21972644](https://zenodo.org/records/21972644) and DOI
+[`10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644). The
+v1.0.3 and older records remain available as prior versions.
 
 ## Can I commit this project to the public template repo?
 
 **No.** It is a standalone repository, not a subdirectory of the public
-template repository. The reviewed v1.0.3 release is already published at
-ActiveInferenceInstitute/Active_Fedference; future changes to this checkout
-still require the explicit target-repository review/push workflow. Do not push
-it into the public template repository. See
+template repository. The v1.0.4 release is published from the standalone
+target repository; future changes to this checkout require the explicit
+target-repository review/push and Zenodo versioning workflow. Do not push it into the public template
+repository. See
 [`../../STANDALONE.md`](../../STANDALONE.md).
 
 ## Where does the math live?

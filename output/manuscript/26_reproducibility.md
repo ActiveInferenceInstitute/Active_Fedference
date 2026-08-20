@@ -46,8 +46,8 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 45a2d3cff4d553e2 |
-| Reproducible build epoch (UTC) | 2026-08-16T03:59:37Z |
+| Config hash (SHA-256, first 16) | 72ab9bf43b9f7914 |
+| Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -152,4 +152,4 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.0.3.
+This is project version 1.0.4.

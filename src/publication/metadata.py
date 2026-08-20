@@ -122,7 +122,9 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     authors = cfg["authors"]
     paper = cfg["paper"]
     keywords = [str(k) for k in cfg.get("keywords", [])]
-    license_id = str(cfg.get("metadata", {}).get("license", "MIT"))
+    metadata_cfg = cfg.get("metadata", {})
+    license_id = str(metadata_cfg.get("license", "MIT"))
+    access_right = str(metadata_cfg.get("access_right", "open"))
     version = _package_version(root)
     name = _one_line(pub["software_name"])
     abstract = _one_line(pub["abstract"])
@@ -176,6 +178,7 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
         "description": abstract,
         "version": version,
         "license": license_id,
+        "access_right": access_right,
         "keywords": keywords,
         **({"publication_date": date_released} if date_released is not None else {}),
         "creators": [

@@ -45,7 +45,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-The production Zenodo release DOI is [10.5281/zenodo.21969756](https://doi.org/10.5281/zenodo.21969756),
+The production Zenodo release DOI is [10.5281/zenodo.21972644](https://doi.org/10.5281/zenodo.21972644),
 and the repository and deposited PDF point to each other through this DOI and
 the repository URL.
 
@@ -1986,13 +1986,13 @@ machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
 performance guarantees: agent-axis slopes are 0.89
-(log-linear), 0.94 (iterative robust),
-0.71 (variational), 1.59
-(naive self-excluding sharing), and 1.92
+(log-linear), 0.95 (iterative robust),
+0.82 (variational), 1.59
+(naive self-excluding sharing), and 1.94
 (robust self-excluding sharing); state-axis slopes
-are 0.42, 0.40, and
-0.42; the modality-axis inference slope is
-0.66. The slope fit is a timing diagnostic on this
+are 0.42, 0.41, and
+0.37; the modality-axis inference slope is
+0.67. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -3865,8 +3865,8 @@ rendered.
 | SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 45a2d3cff4d553e2 |
-| Reproducible build epoch (UTC) | 2026-08-16T03:59:37Z |
+| Config hash (SHA-256, first 16) | 72ab9bf43b9f7914 |
+| Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -3971,7 +3971,7 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.0.3.
+This is project version 1.0.4.
 
 
 
