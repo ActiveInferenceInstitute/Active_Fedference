@@ -10,6 +10,7 @@ to generated files can never land silently.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -209,3 +210,25 @@ def test_real_repository_surfaces_are_emitter_consistent() -> None:
     """The shipped CITATION.cff/.zenodo.json/codemeta.json must be exactly what
     the config emits — hand-edits to generated surfaces cannot land silently."""
     assert check_metadata(_PROJECT_ROOT) == []
+
+
+def test_zenodo_description_is_the_hydrated_manuscript_abstract() -> None:
+    """The deposited description must be the paper abstract, not a package blurb."""
+    source = (_PROJECT_ROOT / "manuscript" / "00_abstract.md").read_text(encoding="utf-8")
+    abstract = source.split("# Abstract", 1)[1].split("**Keywords:**", 1)[0]
+    abstract = re.sub(r"\s*\{#[^}]+\}", "", abstract, count=1)
+    config = yaml.safe_load(
+        (_PROJECT_ROOT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    )
+    doi = str(config["publication"]["doi"])
+    abstract = abstract.replace("{{PUBLICATION_DOI}}", doi)
+    abstract = abstract.replace("{{PUBLICATION_DOI_URL}}", f"https://doi.org/{doi}")
+    abstract = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", abstract)
+    abstract = re.sub(r"`([^`]+)`", r"\1", abstract)
+    expected = " ".join(abstract.split())
+
+    zenodo = json.loads(build_metadata(_PROJECT_ROOT)[".zenodo.json"])
+    assert zenodo["description"] == expected
+    assert "Keywords:" not in zenodo["description"]
+    assert "tested, reproducible research package" not in zenodo["description"]
+    assert "{{PUBLICATION_" not in zenodo["description"]

@@ -39,7 +39,7 @@ in `src/`.
 | `validate_clean_checkout.py [--project-root PATH]` | Clean Git/tracking/import probe | REQUIRED for fresh-checkout release evidence |
 | `build_release.py [--verify] [--timestamp UTC] [--project-root PATH]` | Metadata-, surface-, and receipt-preflighted local reviewer bundle (default) or verifies an existing one | REQUIRED before release |
 | `emit_metadata.py [--check\|--write] [--project-root PATH]` | Checks or regenerates the generated metadata surfaces (`publication.metadata`) | REQUIRED before release |
-| `zenodo_release.py [--project-root PATH]` | Create a linked `--new-version-of` draft or `--reserve` one, update metadata, upload with explicit `--replace-existing`, verify, and explicitly publish; `--confirm-publish` is required | Release boundary |
+| `zenodo_release.py [--project-root PATH]` | Create a linked `--new-version-of` draft or `--reserve` one, update draft metadata, optionally correct published metadata in place with `--edit-published-metadata`, upload with explicit `--replace-existing`, verify, and explicitly publish; `--confirm-publish` is required | Release boundary |
 | `validate_mermaid.py [--project-root PATH]` | Validate README/docs Mermaid fences; optionally render every block to SVG | Documentation/publication QA |
 | `01_run_invariants.py [--project-root PATH]` | Invariant report (stdout) | Optional |
 | `00_preflight.py [--project-root PATH] [--template-root PATH]` | Environment diagnostics | Optional |

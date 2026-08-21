@@ -66,6 +66,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="replace editable metadata on an existing deposition from --metadata",
     )
+    parser.add_argument(
+        "--edit-published-metadata",
+        action="store_true",
+        help="open and update a published record's metadata without changing its DOI",
+    )
     parser.add_argument("--upload", type=Path, help="upload this PDF to the selected deposition")
     parser.add_argument(
         "--replace-existing",
@@ -106,6 +111,14 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--deposition-id and --new-version-of are mutually exclusive")
         if args.update_metadata and args.reserve:
             parser.error("--update-metadata requires an existing --deposition-id")
+        if args.edit_published_metadata and args.deposition_id is None:
+            parser.error("--edit-published-metadata requires --deposition-id")
+        if args.edit_published_metadata and args.update_metadata:
+            parser.error("--edit-published-metadata replaces --update-metadata")
+        if args.edit_published_metadata and (args.reserve or args.new_version_of is not None):
+            parser.error("--edit-published-metadata cannot be combined with a new deposition")
+        if args.edit_published_metadata and args.upload is not None:
+            parser.error("--edit-published-metadata cannot upload or replace files")
         if args.replace_existing and upload_path is None:
             parser.error("--replace-existing requires --upload")
         if args.publish and not args.confirm_publish:
@@ -130,7 +143,10 @@ def main(argv: list[str] | None = None) -> int:
                 parser.error("one of --reserve, --new-version-of, or --deposition-id is required")
             deposition = client.get_deposition(args.deposition_id)
 
-        if args.update_metadata:
+        if args.edit_published_metadata:
+            metadata = _load_metadata(metadata_path)
+            deposition = client.edit_published_metadata(deposition.id, metadata)
+        elif args.update_metadata:
             metadata = _load_metadata(metadata_path)
             # Zenodo owns the DOI after reservation; the repository-side
             # generated surface may contain it, but the editable API metadata
@@ -154,7 +170,10 @@ def main(argv: list[str] | None = None) -> int:
             )
             deposition = client.get_deposition(deposition.id)
         if args.publish:
-            deposition = client.publish(deposition.id)
+            if args.edit_published_metadata:
+                deposition = client.publish_metadata_edit(deposition.id)
+            else:
+                deposition = client.publish(deposition.id)
 
         result = _summary(deposition)
         result["token_source"] = token_name

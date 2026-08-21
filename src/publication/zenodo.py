@@ -381,6 +381,49 @@ class ZenodoClient:
         )
         return _deposition(payload)
 
+    def edit_published_metadata(
+        self, deposition_id: int, metadata: Mapping[str, Any]
+    ) -> ZenodoDeposition:
+        """Open and update a published record's metadata-only edit draft.
+
+        Zenodo permits metadata corrections on a published record without
+        changing its DOI.  This is deliberately separate from
+        :meth:`update_metadata`, which is reserved for ordinary unsubmitted
+        drafts and never unlocks a published deposition.  Files are not
+        touched by this operation.
+        """
+        source = self.get_deposition(deposition_id)
+        if source.state not in {"done", "inprogress", "unsubmitted"}:
+            raise ZenodoError(
+                f"Zenodo deposition {source.id} is {source.state!r}; "
+                "published metadata edits require the latest published record"
+            )
+        if source.state == "done":
+            payload = self._request(
+                "POST",
+                f"deposit/depositions/{_integer_id(deposition_id)}/actions/edit",
+            )
+            editable = _deposition(payload)
+            if editable.id != source.id:
+                raise ZenodoError("Zenodo metadata-edit response changed the deposition id")
+            if editable.state == "done":
+                raise ZenodoError("Zenodo metadata-edit action did not open an editable draft")
+        else:
+            # Re-running the explicit operation against its already-open edit
+            # draft must update the draft rather than attempt a second action.
+            editable = source
+        payload_metadata = dict(metadata)
+        # The DOI remains owned by the published record and must not be sent as
+        # a replacement metadata field during an edit.
+        payload_metadata.pop("doi", None)
+        payload_metadata.setdefault("access_right", "open")
+        updated = self._request(
+            "PUT",
+            f"deposit/depositions/{_integer_id(deposition_id)}",
+            payload={"metadata": payload_metadata},
+        )
+        return _deposition(updated)
+
     def delete_file(self, deposition_id: int, file_id: str) -> None:
         """Delete one file from an editable deposition."""
         self._editable_deposition(deposition_id)
@@ -456,6 +499,20 @@ class ZenodoClient:
         """Publish a deposition explicitly; callers must gate this action."""
         self._editable_deposition(deposition_id)
         payload = self._request("POST", f"deposit/depositions/{_integer_id(deposition_id)}/actions/publish")
+        return _deposition(payload)
+
+    def publish_metadata_edit(self, deposition_id: int) -> ZenodoDeposition:
+        """Publish an already-updated metadata-only edit draft."""
+        deposition = self.get_deposition(deposition_id)
+        if deposition.state == "done":
+            raise ZenodoError(
+                f"Zenodo deposition {deposition.id} is already published; "
+                "open a metadata edit before publishing"
+            )
+        payload = self._request(
+            "POST",
+            f"deposit/depositions/{_integer_id(deposition_id)}/actions/publish",
+        )
         return _deposition(payload)
 
 

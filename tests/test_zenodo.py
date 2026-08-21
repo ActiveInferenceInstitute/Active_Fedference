@@ -168,6 +168,72 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
         self._write_json({"error": "not found"}, status=404)
 
 
+class _PublishedMetadataEditHandler(BaseHTTPRequestHandler):
+    """Loopback boundary for Zenodo's metadata-only published-record edit."""
+
+    authorization_headers: list[str] = []
+    edit_calls = 0
+    publish_calls = 0
+    put_payloads: list[dict[str, Any]] = []
+    state = "done"
+
+    def log_message(self, _format: str, *_args: object) -> None:
+        return
+
+    def _write_json(self, payload: object, status: int = 200) -> None:
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _read_body(self) -> bytes:
+        size = int(self.headers.get("Content-Length", "0"))
+        return self.rfile.read(size)
+
+    @classmethod
+    def _deposition(cls) -> dict[str, Any]:
+        return {
+            "id": 7,
+            "state": cls.state,
+            "doi": "10.5281/zenodo.7",
+            "metadata": {"prereserve_doi": {"doi": "10.5281/zenodo.7", "recid": 7}},
+            "links": {
+                "html": "http://example.test/records/7",
+                "self": "http://example.test/api/deposit/depositions/7",
+            },
+            "files": [],
+        }
+
+    def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
+        type(self).authorization_headers.append(self.headers.get("Authorization", ""))
+        if self.path == "/api/deposit/depositions/7":
+            self._write_json(type(self)._deposition())
+            return
+        self._write_json({"error": "not found"}, status=404)
+
+    def do_PUT(self) -> None:  # noqa: N802 - stdlib handler API
+        type(self).authorization_headers.append(self.headers.get("Authorization", ""))
+        payload = json.loads(self._read_body().decode("utf-8"))
+        type(self).put_payloads.append(payload)
+        self._write_json(type(self)._deposition())
+
+    def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
+        type(self).authorization_headers.append(self.headers.get("Authorization", ""))
+        if self.path == "/api/deposit/depositions/7/actions/edit":
+            type(self).edit_calls += 1
+            type(self).state = "inprogress"
+            self._write_json(type(self)._deposition(), status=201)
+            return
+        if self.path == "/api/deposit/depositions/7/actions/publish":
+            type(self).publish_calls += 1
+            type(self).state = "done"
+            self._write_json(type(self)._deposition(), status=202)
+            return
+        self._write_json({"error": "not found"}, status=404)
+
+
 def test_token_sources_and_missing_token(tmp_path: Path) -> None:
     env_file = tmp_path / ".env"
     env_file.write_text("export ZENODO_TOKEN='secret-token'\n", encoding="utf-8")
@@ -353,6 +419,40 @@ def test_new_version_resolves_latest_draft_link() -> None:
             "Bearer test-token",
             "Bearer test-token",
         ]
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_published_metadata_edit_preserves_doi_and_does_not_touch_files() -> None:
+    _PublishedMetadataEditHandler.authorization_headers = []
+    _PublishedMetadataEditHandler.edit_calls = 0
+    _PublishedMetadataEditHandler.publish_calls = 0
+    _PublishedMetadataEditHandler.put_payloads = []
+    _PublishedMetadataEditHandler.state = "done"
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _PublishedMetadataEditHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        api_base = f"http://127.0.0.1:{server.server_port}/api"
+        client = ZenodoClient("test-token", api_base=api_base, timeout=5.0)
+        edited = client.edit_published_metadata(
+            7,
+            {"description": "The complete paper abstract.", "doi": "10.5281/zenodo/other"},
+        )
+        assert edited.state == "inprogress"
+        assert edited.doi == "10.5281/zenodo.7"
+        assert _PublishedMetadataEditHandler.edit_calls == 1
+        assert _PublishedMetadataEditHandler.put_payloads == [
+            {"metadata": {"description": "The complete paper abstract.", "access_right": "open"}}
+        ]
+
+        published = client.publish_metadata_edit(7)
+        assert published.state == "done"
+        assert published.doi == "10.5281/zenodo.7"
+        assert _PublishedMetadataEditHandler.publish_calls == 1
+        assert set(_PublishedMetadataEditHandler.authorization_headers) == {"Bearer test-token"}
     finally:
         server.shutdown()
         server.server_close()

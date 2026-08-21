@@ -18,25 +18,62 @@ documented in the [Zenodo REST API documentation](https://developers.zenodo.org/
 
 ## Source of truth
 
-`manuscript/config.yaml` owns the DOI, manuscript title, subtitle, and full
-publication abstract. The metadata emitter propagates the DOI to
+`manuscript/config.yaml` owns the DOI, manuscript title, subtitle, and the
+reader-facing paper abstract. That abstract must remain synchronized with
+`manuscript/00_abstract.md`; a short package description is not an acceptable
+Zenodo abstract. The metadata emitter propagates the DOI to
 `CITATION.cff`, `.zenodo.json`, `codemeta.json`, and the manuscript token
 `{{PUBLICATION_DOI}}`. It emits the software name to the citation surfaces,
 but emits the complete paper title (`paper.title` plus `paper.subtitle`) to
 Zenodo. Zenodo's API calls the record's abstract field `description`, so the
-Zenodo `description` must equal the normalized full `publication.abstract`,
-not the shorter software `publication.description`. `codemeta.json` carries
-both fields explicitly. `src/publication/identifiers.py` provides the shared
+Zenodo `description` must equal the normalized paper abstract after DOI
+hydration and removal of source-only Markdown link/code delimiters, not the
+shorter software `publication.description`. `codemeta.json` carries both
+fields explicitly. `src/publication/identifiers.py` provides the shared
 normalization contract; `src/publication/zenodo.py` provides the typed,
 standard-library client; and `scripts/zenodo_release.py` is the thin CLI
 boundary. The token is read from an ignored dotenv file or process environment
 and is never committed, printed, or included in the release manifest.
 
+## Correcting published metadata on the current DOI
+
+Zenodo permits metadata-only corrections to a published record without
+changing its DOI. The explicit project adapter supports this path for a
+description/abstract correction and never uploads, deletes, or replaces a
+published file. The operation creates an editable metadata draft; inspect the
+returned state and publish it only after the corrected description has been
+reviewed:
+
+```bash
+ENV_FILE="/path/to/ignored/zenodo.env"
+PUBLISHED_ID="21972644"
+
+uv run --locked python scripts/zenodo_release.py \
+  --env-file "$ENV_FILE" \
+  --deposition-id "$PUBLISHED_ID" \
+  --edit-published-metadata
+
+uv run --locked python scripts/zenodo_release.py \
+  --env-file "$ENV_FILE" \
+  --deposition-id "$PUBLISHED_ID" \
+  --edit-published-metadata \
+  --verify output/pdf/active_fedference_combined.pdf \
+  --publish --confirm-publish
+```
+
+The second command is idempotent with respect to an already-open metadata edit
+draft: it updates the draft from the generated `.zenodo.json`, verifies that
+the unchanged PDF still matches the published file, and then publishes the
+metadata correction. The DOI remains the same. See [Zenodo's published-record
+editing guidance](https://help.zenodo.org/docs/deposit/manage-records/#edit)
+for the repository's upstream metadata-edit contract.
+
 ## Creating the next version
 
-Never update or upload against a published deposition. Zenodo's `newversion`
-action creates a linked unpublished draft, preserves the concept record, and
-inherits the prior metadata and files. The CLI resolves Zenodo's
+Never upload or replace files against a published deposition. When the paper
+or released files change, Zenodo's `newversion` action creates a linked
+unpublished draft, preserves the concept record, and inherits the prior
+metadata and files. The CLI resolves Zenodo's
 `latest_draft` link and exposes inherited-file replacement explicitly:
 
 ```bash
@@ -94,9 +131,10 @@ uv run --locked python scripts/zenodo_release.py \
 
 Run it only after final PDF review, metadata review, licence/author approval,
 and the GitHub release decision. The publish command requires the checksum
-verification flag and the draft-state guard. After publication, verify the DOI
-redirect and public record metadata, including the GitHub related identifier
-and uploaded-PDF checksum.
+verification flag and either the ordinary draft-state guard or the explicit
+published-metadata-edit path. After publication, verify the DOI redirect and
+public record metadata, including the GitHub related identifier and
+uploaded-PDF checksum.
 
 For the current public v1.0.4 record, the no-token checks are:
 

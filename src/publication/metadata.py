@@ -81,6 +81,42 @@ def _one_line(text: str) -> str:
     return " ".join(str(text).split())
 
 
+_INLINE_LINK_RE = re.compile(r"\[([^\]]+)\]\([^\)]+\)")
+_INLINE_CODE_RE = re.compile(r"`([^`]+)`")
+_METADATA_TOKEN_RE = re.compile(r"\{\{([A-Z][A-Z0-9_]*)\}\}")
+
+
+def _publication_abstract(value: object, doi: str | None) -> str:
+    """Return the reader-facing paper abstract for citation metadata.
+
+    The paper source uses the same DOI tokens as the hydrated manuscript.  The
+    generated metadata must resolve those tokens against the current DOI, and
+    must store the rendered text rather than Markdown link/code delimiters.
+    Keeping this normalization here makes the Zenodo ``description`` field
+    semantically identical to the abstract printed in the paper while still
+    allowing a future DOI reservation to flow through every surface.
+    """
+    text = str(value)
+    replacements = {
+        "{{PUBLICATION_DOI}}": doi or "N/A",
+        "{{PUBLICATION_DOI_URL}}": doi_url(doi) or "N/A",
+    }
+    for token, replacement in replacements.items():
+        text = text.replace(token, replacement)
+    unresolved = sorted(set(_METADATA_TOKEN_RE.findall(text)))
+    if unresolved:
+        raise ValueError(
+            "publication.abstract contains unresolved manuscript tokens: "
+            + ", ".join(unresolved)
+        )
+    # The rendered paper displays the link label and code contents, not the
+    # source-only Markdown delimiters.  Zenodo's abstract is plain metadata,
+    # so store the same visible text there.
+    text = _INLINE_LINK_RE.sub(r"\1", text)
+    text = _INLINE_CODE_RE.sub(r"\1", text)
+    return _one_line(text)
+
+
 def _full_paper_title(paper: dict[str, Any]) -> str:
     """Return the reader-facing paper title used for a Zenodo deposition.
 
@@ -127,7 +163,6 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     access_right = str(metadata_cfg.get("access_right", "open"))
     version = _package_version(root)
     name = _one_line(pub["software_name"])
-    abstract = _one_line(pub["abstract"])
     description = _one_line(pub["description"])
     zenodo_title = _full_paper_title(paper)
     repo = str(pub["github_repository"])
@@ -135,6 +170,7 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     date_released = _release_date(pub.get("date_released"))
     doi = normalize_doi(pub.get("doi"), allow_placeholder=True)
     doi_resolver = doi_url(doi)
+    abstract = _publication_abstract(pub["abstract"], doi)
     related = [
         {"relation": str(r["relation"]), "identifier": str(r["identifier"])}
         for r in pub.get("related_identifiers", [])

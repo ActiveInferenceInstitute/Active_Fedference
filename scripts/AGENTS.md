@@ -19,7 +19,7 @@ Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/devel
 | `validate_test_coverage.py` | Validation (REQUIRED) | Runs the full coverage gate and atomically writes/verifies `output/data/test_coverage_receipt.json` |
 | `build_release.py` | Release (REQUIRED) | Requires current metadata, PDF/slide/web validation, and provenance before `build_release()` / `verify_release()`; default builds `output/release/`, `--verify` re-checks it |
 | `emit_metadata.py` | Release (REQUIRED) | Checks (`--check`) or regenerates (`--write`) the generated metadata surfaces via `publication.metadata` |
-| `zenodo_release.py` | Release boundary | Reserves, updates, uploads, verifies, or explicitly publishes the configured Zenodo deposition; publication requires confirmation |
+| `zenodo_release.py` | Release boundary | Reserves, updates, corrects published metadata, uploads, verifies, or explicitly publishes the configured Zenodo deposition; publication requires confirmation |
 | `validate_mermaid.py` | Documentation/publication | Checks every README/docs Mermaid fence and optionally renders every block to SVG |
 | `validate_rendered_surfaces.py` | Release (REQUIRED) | Checks every manuscript/slide PDF structurally and textually, enforces slide triplets, rejects material LaTeX warnings, and validates web links/assets/accessibility invariants |
 | `prepare_web_package.py` | Publication (REQUIRED) | Mirrors declared assets and builds numbered cross-format web references |
