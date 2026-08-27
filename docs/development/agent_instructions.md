@@ -98,10 +98,12 @@ This project is its own standalone repository. The configured interim review
 mirror is `https://github.com/docxology/active_fedference`; the public target is
 `https://github.com/ActiveInferenceInstitute/Active_Fedference`, whose current
 public release is v1.0.4. The v1.0.4 snapshot is published from this standalone
-repository. Never copy or commit this project into the unrelated public template
-remote. Future source changes remain unreleased until the explicit public GitHub
-review/push and, when the manuscript changes, the corresponding Zenodo versioning
-action.
+repository. The current `1.1.0.dev0` line has no version DOI or release date;
+the v1.0.4 DOI identifies only its immutable release/PDF. Never copy or commit
+this project into the unrelated public template remote. A feature-branch push,
+private-main integration, public-main promotion, versioned GitHub release, and
+Zenodo publication are distinct actions. Future source changes remain
+unreleased until their explicit gates and approvals close.
 
 ## Rule 8: N-level hierarchical inference — use LayerSpec
 

@@ -1,4 +1,4 @@
-# Clone-Correct Release And Full Verification Ladder
+# Clone-Correct Integration And Release Verification Ladder
 
 [Back to roadmap](../../TODO.md)
 
@@ -18,14 +18,18 @@ overlay, even when the later source suite is green. Analysis, hydration,
 rendering, and release receipts are likewise trusted only when their declared
 input and output hashes match the reviewed tree in producer order.
 
-The v0.1.0 GitHub/Zenodo publication is complete, but the complete ladder still
-requires two genuinely isolated clones of the exact
-reviewed commit. Those clone runs establish regeneration and
-independent-environment behavior; they do not substitute for the separate
-cross-vendor or release-authority gates.
-Separately, the cross-vendor audit gate has never produced a structured verdict
-(the local Codex installation has two binaries with a version/cache skew), so
-one independent verification lane remains unexercised.
+The latest published snapshot is v1.0.4. The current v1.1 application work is
+an unreleased development line and deliberately carries neither a version DOI
+nor a release date. A scoped feature-branch push and review PR may expose an
+exact candidate to hosted checks only after the exact-history confidentiality
+gate below passes. It does not integrate the candidate into private or public
+`main` and does not create a release. Hosted checks govern the development PR.
+After that PR and the separate release-identity PR are merged, the complete
+release ladder requires two genuinely isolated clones of the exact final
+public-main commit before a tag is created. Those clone runs establish
+regeneration and independent-environment behavior for the release-identity
+commit; they do not substitute for the separate cross-vendor or
+release-authority gates.
 
 ## Scope
 
@@ -35,7 +39,22 @@ one independent verification lane remains unexercised.
    statement becomes current again. The sibling
    template repository's rendering changes remain owned by that repository.
    Keep the executable tracking/import probe in the release ladder.
-2. **Fresh-clone verification (the rigorous "check everything" procedure).**
+2. **Exact-history confidentiality before a public push.** Refresh the public
+   base, fix the exact candidate SHA, and inspect every object newly reachable
+   in `public/main..candidate`, not only the candidate tree. Enumerate current
+   and deleted paths and blobs; scan the full range for secrets; review commit
+   messages and author identities; inspect machine-local paths, confidential
+   drafts, proprietary inputs, and generated artifacts; review every object at
+   or above 50 MiB; and hard-block any object over GitHub's 100 MiB limit.
+   Retain the public-base SHA, candidate SHA, tool versions, findings, and
+   disposition. Any unresolved publishability concern blocks the public branch
+   push and PR. Do not silently replace exact lineage with a compact or
+   sanitized replay: that is a different history policy requiring new approval
+   and complete commit-bound regeneration.
+3. **Fresh-clone verification (the rigorous "check everything" procedure).**
+   Run this authoritative two-clone campaign only after the development PR and
+   release-identity PR have merged and public `main` is green, on the exact
+   final public-main SHA that would be tagged.
    Recheck free space and provision at least 40 GiB of safe working headroom
    without reclaiming active research data or caches absent a separate
    ownership check. From each of two isolated clean checkouts, run the full
@@ -61,12 +80,12 @@ one independent verification lane remains unexercised.
      wrapper normalizes archive order, owner, and time metadata and the
      setuptools build backend is exactly pinned; backend-version or checkout
      mtime drift is a real release failure.
-3. **Cross-vendor verdict.** Repair the codex installation (reconcile the two
+4. **Cross-vendor verdict.** Repair the codex installation (reconcile the two
    installed binaries and the models-cache version skew) or use another
    non-Anthropic lane, and obtain one structured pass/concerns/fail verdict on
    the claim surface. A no-signal result is recorded as unsatisfied, never
    substituted.
-4. **Accessibility disposition.** Treat the validated HTML manuscript as the
+5. **Accessibility disposition.** Treat the validated HTML manuscript as the
    canonical accessibility-enhanced publication surface. The combined
    manuscript PDF must be emitted by the source-controlled tagged producer and
    pass the `Tagged: yes`, qpdf `/Lang`, language, and `StructTreeRoot` gates.
@@ -96,10 +115,14 @@ one independent verification lane remains unexercised.
   Free space is volatile and must be rechecked immediately before each
   isolated clone/render run; the 40 GiB threshold is a planning floor, not
   deletion authority.
-- For a new unreleased draft, metadata omits `date_released`, CFF
-  `date-released`, Zenodo `publication_date`, and CodeMeta `dateModified`.
-  The published v0.1.0 surfaces intentionally contain those release fields;
-  a future draft must not copy them forward before approval.
+- For a new unreleased draft, the exact package/manuscript version ends in
+  `.devN`, `publication.doi` is the empty string,
+  `publication.doi_status` is exactly `(forthcoming)`, and `date_released` is
+  null. The split preserves plain cover text without inventing an unassigned
+  DOI resolver link. Generated CFF, Zenodo, and CodeMeta surfaces omit their DOI
+  and release-date fields, and the package URL table omits a version-specific
+  DOI. The immutable v1.0.4 release retains its DOI/date on its own tag and
+  artifacts; development metadata must not copy them forward before approval.
 
 ## Acceptance Criteria
 
@@ -113,12 +136,16 @@ one independent verification lane remains unexercised.
   verified baseline.
 - The full ladder passes from a fresh clone with no machine-local dependencies
   beyond the declared toolchain.
-- Wheel and source-distribution installs expose `fedference list`, `run`,
-  `benchmark`, `verify`, and `replay` without importing Torch in the default
+- Wheel and source-distribution installs expose `fedference aggregate`, `list`,
+  `run`, `benchmark`, `verify`, and `replay`, retain `py.typed`, and run a
+  labeled own-data application without importing Torch in the default
   NumPy/SciPy path.
-- A future draft carries no release date until confidentiality, license,
-  attribution, and author approval are complete. The published v0.1.0 metadata
-  is not a draft.
+- Before any public development-branch push, the exact-history scan covers all
+  newly reachable commits and blobs, including deleted paths, and records an
+  explicit publishability disposition with no unresolved concerns.
+- A future draft carries no DOI or release date until confidentiality, license,
+  attribution, and author approval are complete. Published v1.0.4 metadata is
+  immutable release identity, not a development default.
 - The eventual committed `output/` snapshot matches a post-commit regeneration at
   publication scale (value-identical reports, declared volatile fields aside).
 - One structured cross-vendor verdict exists, or the gate is explicitly
@@ -136,6 +163,9 @@ one independent verification lane remains unexercised.
   passes `validate_pipeline_freshness.py` without the dependent receipt being
   regenerated falsifies the stage-order guard.
 - `git ls-files` audit against the recorded load-bearing set.
+- `git fetch --prune public`, followed by a commit- and blob-level audit of the
+  fixed `public/main..candidate` range, a full-history secret scan, size review,
+  and recorded disposition before the public branch push.
 - `uv run --locked python scripts/validate_clean_checkout.py` from the clean clone and
   `uv run --locked python scripts/validate_pipeline_freshness.py` after stages 03–05.
 - The ordered ladder commands in `TODO.md` "Gates For Any Item" plus the
@@ -163,4 +193,4 @@ capability in `src/publication/release_manifest.py` and
 Future public release waves additionally require confidentiality, third-party
 attribution, license, and author approval outside local validation. Those
 governance checks are not retroactively claimed as scientific evidence for the
-published v0.1.0 artifact.
+published v1.0.4 artifact.

@@ -2,6 +2,185 @@
 
 Symptom-driven fixes for Active Fedference.
 
+## `import fedference` fails in application code
+
+**Cause:** The source-layout package is not installed in the interpreter that
+launched the application. Pytest's path fixture is a test-only convenience and
+is not an application installation method.
+
+**Fix from a source checkout:**
+
+```bash
+uv sync --locked
+uv run --locked python -c "from fedference import aggregate_result; print(aggregate_result([[.7, .3], [.6, .4]]).consensus)"
+```
+
+For a non-editable consumer environment, follow the isolated wheel recipe in
+the [`application guide`](../application-guide.md#install-a-wheel-or-source-distribution). Do not
+silently repair this by setting a global `PYTHONPATH`.
+
+If `uv` says an active `VIRTUAL_ENV` does not match the project `.venv`, it is
+warning that it will use the locked project environment. Deactivate the
+unrelated environment if that was not intentional; do not add `--active`
+without deliberately choosing to mutate that other environment.
+
+## A posterior matrix or base-weight vector is rejected
+
+**Cause:** At least one posterior is empty, scalar, multidimensional,
+non-finite, negative, all-zero, or a different length; or `base_weights` is not
+one-dimensional, does not match the number of agents, contains invalid values,
+or has no positive entry. Version 1.1 no longer flattens row/column matrices or
+higher-rank tensors supplied where one categorical vector is required.
+
+**Fix:** Confirm that every agent emits a genuinely one-dimensional, finite non-negative vector over the
+same ordered state labels. Rows may be unnormalized positive masses because the
+boundary normalizes them. Exact zeros are supported and floored internally for
+log-domain operations; do not pre-emptively clip negative or non-finite data.
+Validate the upstream producer instead.
+
+A shared row length does not prove shared semantics. If two agents assign the
+same columns to different label orders, the library cannot detect the mismatch
+and the numeric result is meaningless. Keep the ordered labels beside the
+matrix as shown in the
+[`canonical application recipe`](../application-guide.md#labeled-python-api).
+
+## CLI or example says the output directory must be empty
+
+**Cause:** Write-producing commands preserve existing evidence and never clear
+or mix a prior run on the caller's behalf.
+
+**Fix:** Choose a new directory for each run:
+
+```bash
+FEDFERENCE_RUN_ROOT="$(mktemp -d /tmp/active-fedference-run.XXXXXX)"
+uv run --locked fedference run server-theory \
+  --profile smoke --seed 0 \
+  --output-dir "$FEDFERENCE_RUN_ROOT/server-theory" \
+  --project-root .
+```
+
+Archive or inspect the old directory separately. Do not delete retained
+evidence merely to make a rerun pass.
+
+## CLI refuses a path beneath `output/`
+
+**Cause:** Project-local `output/` is the committed, producer-owned reviewer
+snapshot. Ad hoc CLI writes there would mix caller runs with source-bound
+artifacts.
+
+**Fix:** Use a new caller-owned directory under `.tmp/`, `/tmp`, or another
+application data root. Passing a deeper path beneath `output/` does not bypass
+the guard.
+
+## Aggregation configuration conflicts with method or tuning arguments
+
+**Cause:** A typed `AggregationConfig` and compatibility arguments such as
+`method` or `robustness` were supplied to the same adapter. The API refuses to
+guess precedence.
+
+**Fix:** Construct one explicit configuration and pass only `config=...` through
+direct aggregation, sharing, process, and socket calls. Preserve its complete
+dictionary or fingerprint for replay. See
+[`Choose an aggregation rule`](../application-guide.md#choose-an-aggregation-rule).
+
+## Spawned federation recurses, hangs, or fails during bootstrap
+
+**Cause:** `run_multiprocess_round` always uses spawned processes. An unguarded
+module body, `python -c`, notebook cell, or other non-importable entry point
+cannot be safely re-imported by each child.
+
+**Fix:** Put the call in a real Python file and protect it with:
+
+```python
+def main() -> None:
+    # Construct beliefs/configuration and call run_multiprocess_round here.
+    ...
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Use [`examples/03_federation_boundaries.py`](../../examples/03_federation_boundaries.py)
+as the executable reference. Increase `startup_timeout` only when measured
+process-import latency exceeds the default; do not use an unbounded timeout to
+hide a bootstrap error.
+
+## Socket federation rejects the host or round identifier
+
+**Cause:** The convenience transport accepts loopback hosts only, requires a
+non-empty round identifier, and can reject a reused identifier when a replay
+guard owns the replay domain.
+
+**Fix:** Use `127.0.0.1`, `localhost`, or another validated loopback form and a
+unique application round ID. `ReplayGuard` remembers IDs within one process;
+`PersistentReplayGuard` uses caller-owned SQLite state across local restarts.
+Neither is a shared multi-host replay domain.
+
+## `fedference replay` reports an integrity or solver finding
+
+**Cause:** The replay relationship is invalid: a belief, consensus, digest,
+worker order, protocol field, loopback host, or aggregation configuration does
+not match; or integrity is valid but recomputed solver health is non-nominal.
+A well-formed mismatch exits 1 with a stable finding code/message. Malformed
+JSON or an invalid array is a command error and exits 2 with a parser diagnostic.
+
+**Fix:** Use the caller-retained beliefs and consensus from the same round, then
+inspect the recorded aggregation event:
+
+```bash
+FEDFERENCE_REPLAY_PATH=/path/to/replay.json
+uv run --locked python - "$FEDFERENCE_REPLAY_PATH" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+events = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+event = next(item for item in events if item.get("event") == "aggregate")
+print(json.dumps(event["aggregation_config"], indent=2, sort_keys=True))
+PY
+```
+
+The command reads that recorded configuration by default. Any explicit
+`method`, `robustness`, `entropy_weight`, `max_iter`, `tol`, or multistart flag
+is an equality assertion, not a replacement. Add `--json` for categorized
+machine-readable findings and `--require-nominal-solver` when integrity-valid
+nonconvergence/fallback should also fail the command. A numerically equivalent
+consensus does not compensate for a different configuration fingerprint.
+
+## Receipt verification fails after files move or outside the checkout
+
+**Cause:** Ordinary verification cannot find a bound artifact relative to the
+receipt, or strict verification cannot resolve the source Git state and
+`uv.lock` from the current directory.
+
+**Fix:** Keep all artifacts bound by the receipt together. An application run
+contains `request.json`, `result.json`, and `receipt.json`; a research run
+contains `config.json`, `report.json`, and `receipt.json`. The receipt's own
+directory is the default artifact root. If the receipt is stored separately
+from an otherwise intact artifact directory, select that directory explicitly:
+
+```bash
+fedference verify /path/to/receipt.json --root /path/to/run
+```
+
+For strict source-equivalence verification from another directory, identify
+the source checkout separately:
+
+```bash
+uv run --project /path/to/Active_Fedference --locked \
+  fedference verify /path/to/run/receipt.json \
+  --root /path/to/run \
+  --require-clean-git \
+  --project-root /path/to/Active_Fedference
+```
+
+`--root` resolves hash-bound artifacts; `--project-root` resolves source
+provenance. Neither substitutes for the other. An ordinary receipt may
+honestly record a dirty development tree. Strict verification requires the
+exact recorded commit, clean tree state, and lock digest; it is a separate
+source-equivalence gate.
+
 ## Literal `{{TOKEN}}` in the rendered PDF
 
 **Cause:** Variable hydration not run, or token missing from `generate_variables()`.
@@ -182,16 +361,6 @@ uv run --locked pytest tests/ \
 
 Add tests in `tests/fedference/` for uncovered branches.
 
-## `import fedference` fails outside pytest
-
-**Cause:** `src/` not on `PYTHONPATH`.
-
-**Fix:** Run from project directory or use pytest/conftest path setup:
-
-```bash
-uv run --locked pytest tests/ -q
-```
-
 ## Analysis script Python error
 
 **Fix:**
@@ -210,4 +379,5 @@ uv run --locked python -c "import yaml; yaml.safe_load(open('manuscript/config.y
 ## See also
 
 - [`faq.md`](faq.md)
+- [`../application-guide.md`](../application-guide.md)
 - [`../development/quickstart.md`](../development/quickstart.md)

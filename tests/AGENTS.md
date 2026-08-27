@@ -15,6 +15,7 @@ tests/
 ├── test_experiment_config.py
 ├── test_invariants.py
 ├── test_documentation.py
+├── test_examples.py
 ├── test_scripts_smoke.py
 ├── test_project_paths.py
 ├── test_docs_contract.py
@@ -35,7 +36,7 @@ tests/
 | `test_core_edges.py` | Numerical edge cases |
 | `test_divergences.py` | Divergence dispatch |
 | `test_belief_updating.py` | VFE / infer_states |
-| `test_belief_sharing.py` | share_round |
+| `test_aggregation_config.py` / `test_core_identities.py` / `test_review_hardening.py` | `share_round`, aggregation configuration, recovery, and hardening |
 | `test_dirichlet_learning.py` | Language acquisition |
 | `test_expected_free_energy.py` | EFE identity |
 | `test_bayesian_model_reduction.py` | BMR |
@@ -71,6 +72,11 @@ small compatibility facade, `_parser` owns grammar, `_commands` owns registry
 dispatch, and `_support` owns output/receipt mechanics. New command behavior
 must be tested through the public `main()` boundary and through the reusable
 domain operation where applicable.
+
+`test_examples.py` executes every supported program under `../examples/` as a
+real child process from outside the repository working directory. It pins
+stable JSON semantics, direct/process/socket parity, replay positive and tamper
+controls, receipt verification, and caller-owned output isolation.
 
 ## Authoritative command
 

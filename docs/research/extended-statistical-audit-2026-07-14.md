@@ -59,6 +59,26 @@ those values are consumed by the producer rather than being decorative
 metadata. The review-grid configuration does not promote its finite attack cells to independent
 populations, prove a universal robustness result, or close the research phase.
 
+## Source-current addendum for the pre-v1.1 candidate — 2026-08-24
+
+The reviewer snapshot at commit `79bf82cc41068f69a28a5d36d51fdb39e0aa92f7`
+contains the enlarged source-bound review-grid report with 160 seeds and 24
+nested trials per cell. Its successful validation receipt records 1,729 tests,
+zero failures, and 90.20434996986796% source coverage. The pipeline-provenance
+receipt contains an ordered analysis → hydration → render chain, and the
+validation report records all nine declared checks as true: artifact manifest,
+enabled render outputs, evidence registry, figure registry, Markdown
+validation, output structure, PDF validation, project design overlays, and
+transmission bookends.
+
+Those records establish the integrity of that exact pre-v1.1 reviewer
+snapshot. The current application-development edits intentionally make the old
+receipts stale until the full producer sequence is rerun; this addendum must not
+be cited as validation of a later dirty tree, fresh-clone reproduction,
+cross-vendor review, calibration, external-data confirmation, or release
+authority. The 160-seed grid remains a finite conditional evidence surface, not
+a population-level or universal robustness result.
+
 ## Historical publication-profile evidence — 2026-08-01
 
 The following was recorded for the earlier source/API/formalism snapshot. It

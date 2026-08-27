@@ -11,6 +11,34 @@ protocol.
 
 See [`../core/conceptual-foundations.md`](../core/conceptual-foundations.md).
 
+## Can I use my own data?
+
+Yes, when each participating client already produces a categorical posterior
+over one shared ordered finite state space. The labeled API/CLI accepts one
+finite, non-negative vector per identified agent, preserves the explicit state
+order, and returns a categorical consensus plus solver diagnostics. It does not
+train a raw-data model or turn logits, class labels, samples, or arbitrary
+scores into calibrated posteriors.
+
+Follow the [`application guide`](../application-guide.md) for the exact input
+contract, a labeled-state recipe, base-weight semantics, and a result-acceptance
+check.
+
+## Which interface and aggregation method should I choose?
+
+Start with `fedference aggregate` when you need labeled JSON and an application
+receipt, or `aggregate_labeled` for pure Python. Use `aggregate_result` only when
+your program already owns labels/evidence; use rich sharing, process, or socket
+results only for those specific boundaries. The
+[`interface table`](../application-guide.md#choose-the-narrowest-interface)
+shows the imports and evidence returned by each choice.
+
+`naive`, `robust`, and `variational` are distinct modeling choices, not a
+quality ranking. The [`method table`](../application-guide.md#choose-an-aggregation-rule)
+states their supported properties and no-claim boundaries. Construct one
+explicit `AggregationConfig` across all compared boundaries; compatibility
+defaults are not interchangeable configuration records.
+
 ## Where is the acceptance contract?
 
 [`../../ISA.md`](../../ISA.md) — see its Criteria section for the current ISC range and checked/open counts (this drifts every iteration, so it is not snapshotted here); probes for verification.
@@ -23,7 +51,9 @@ The current public release is
 [v1.0.4](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
 with [Zenodo record 21972644](https://zenodo.org/records/21972644) and DOI
 [`10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644). The
-v1.0.3 and older records remain available as prior versions.
+v1.0.3 and older records remain available as prior versions. This checkout is
+the unreleased `1.1.0.dev0` application line; it has no version DOI/date, and
+the v1.0.4 DOI must not be associated with its post-release code.
 
 ## Can I commit this project to the public template repo?
 
@@ -84,24 +114,52 @@ not establish privacy or Byzantine robustness. See the
 ## How do I inspect or run registered research?
 
 ```bash
-uv run --locked fedference list --json
+FEDFERENCE_FAQ_ROOT="$(mktemp -d /tmp/active-fedference-faq.XXXXXX)"
+uv run --locked fedference list
 uv run --locked fedference run server-theory \
-  --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
-uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
+  --profile smoke --seed 0 \
+  --output-dir "$FEDFERENCE_FAQ_ROOT/server-theory" \
+  --project-root .
+uv run --locked fedference verify \
+  "$FEDFERENCE_FAQ_ROOT/server-theory/receipt.json"
 ```
 
 Write-producing commands require an explicit empty directory outside committed
 `output/`. Confirmatory profiles remain blocked until their pilot freezes the
 effect, MCSE target, budget, comparison family, and configuration.
 
-## How do I run everything?
+## How do I use the aggregation API?
 
-[`../development/quickstart.md`](../development/quickstart.md) or:
+Start with the copy-pasteable labeled-state recipe in
+[`../application-guide.md`](../application-guide.md#labeled-python-api),
+then run the numbered [`examples`](../../examples/README.md).
+
+## How do I run all analysis studies?
 
 ```bash
 uv run --locked python scripts/02_run_analysis.py
-uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
+
+This produces validated reports and figures. It does not run tests, hydrate or
+render the manuscript, validate web/PDF surfaces, or establish publication
+readiness.
+
+## How do I reproduce the source-current reviewer snapshot?
+
+Use the exact producer order in the
+[`two-pass rendering sequence`](../manuscript/rendering_pipeline.md). It binds
+analysis, the full-suite validation receipt, final hydration, rendering, web
+preparation, and freshness checks. The
+[`contributor quickstart`](../development/quickstart.md) provides context and
+stopping points.
+
+## How do I run all acceptance gates?
+
+Use [`../reference/verification-commands.md`](../reference/verification-commands.md).
+Tests, source-only checks, generated-artifact freshness, rendered-surface
+validation, package reproducibility, release-bundle verification, push, and
+external publication are separate gates; no two-command shortcut establishes
+all of them.
 
 ## How do I extend the hierarchy to 4 or more levels?
 
@@ -146,5 +204,6 @@ pipeline boundaries.
 
 ## See also
 
+- [`../application-guide.md`](../application-guide.md)
 - [`troubleshooting.md`](troubleshooting.md)
 - [`../../TODO.md`](../../TODO.md) — forward backlog only

@@ -92,8 +92,12 @@ non-draft pre-test escape hatch and must not be used for the final manuscript.
 
 ### Unresolved token check
 
+Hydration applies to the Markdown reader surface. Auxiliary config, preamble,
+and BibTeX files remain source-exact; their consumer-specific producers resolve
+or validate any supported placeholders.
+
 ```bash
-if rg -n '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else

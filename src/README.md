@@ -35,11 +35,17 @@ from fedference import AggregationConfig, aggregate_result, generalized_posterio
 from fedference.experiments import run_belief_sharing
 
 cfg = load_experiment_config()
-print(cfg.seed)
+seed = cfg.seeds[0]
+print(cfg.seeds)
 aggregation = AggregationConfig(method="robust", robustness=1.5)
 print(aggregate_result([[0.3, 0.7], [0.4, 0.6]], config=aggregation).consensus)
-print(run_belief_sharing(cfg.seed).keys())
+print(run_belief_sharing(seed).keys())
 ```
+
+For complete executable programs—including method comparison, direct sharing,
+spawned-process federation, loopback replay, and CLI receipts—start with
+[`../examples/README.md`](../examples/README.md). `ExperimentConfig.seeds` is
+the configured seed budget; it intentionally has no singular `seed` attribute.
 
 ## Principles
 
@@ -47,7 +53,8 @@ print(run_belief_sharing(cfg.seed).keys())
 - Keep scripts thin: this package provides testable functions, scripts invoke
   them and provide stable subprocess/CI boundaries rather than reimplementing
   domain logic.
-- Keep outputs deterministic by default (`seed` in `manuscript/config.yaml`).
+- Keep outputs deterministic under the explicit seed budget in
+  `manuscript/config.yaml`.
 - Keep API exports synchronized with `__init__.py` and `__all__`.
 - Keep mathematical primitives side-effect free. Restrict filesystem/network
   effects to the named evidence, data, checkpoint, and transport adapters, all
