@@ -117,10 +117,40 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
     assert '{name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"}' in pyproject
     assert 'Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"' in pyproject
     config = yaml.safe_load((_ROOT / "manuscript/config.yaml").read_text(encoding="utf-8"))
-    expected_doi = config["publication"]["doi"]
-    assert tomllib.loads(pyproject)["project"]["urls"]["DOI"] == f"https://doi.org/{expected_doi}"
+    package_metadata = tomllib.loads(pyproject)["project"]
+    assert package_metadata["version"].endswith(".dev0")
+    assert config["publication"]["doi"] == ""
+    assert config["publication"]["doi_status"] == "(forthcoming)"
+    assert config["publication"]["date_released"] is None
+    assert "DOI" not in package_metadata["urls"]
+    assert (_ROOT / "manuscript" / "config.yaml.example").is_file()
     assert "recursive-include docs *.md" in manifest
+    assert "recursive-include examples *.json *.md *.py" in manifest
     assert "recursive-include src *.md" in manifest
-    assert "recursive-include manuscript *.bib *.md *.png *.yaml" in manifest
+    assert "include src/fedference/py.typed" in manifest
+    assert '"py.typed"' in pyproject
+    assert "recursive-include manuscript *.bib *.md *.png *.yaml *.yaml.example" in manifest
     assert "recursive-include scripts *.py *.md" in manifest
     assert "recursive-include tests *.md *.py" in manifest
+
+
+def test_ci_installed_artifact_gate_executes_the_labeled_application_outside_checkout() -> None:
+    workflow = (_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    for required_member in (
+        "docs/application-guide.md",
+        "examples/05_labeled_application.py",
+        "examples/data/labeled_aggregation_request.json",
+        "src/fedference/py.typed",
+    ):
+        assert required_member in workflow
+    assert 'cd "$installed_smoke_root"' in workflow
+    assert "LabeledAggregationRequest.from_json" in workflow
+    assert "aggregate_labeled(request).aggregation.solver_status == 'nominal'" in workflow
+    assert workflow.count('aggregate --input request.json --output-dir') == 2
+    assert workflow.count('verify wheel-run/receipt.json --require-nominal-solver') == 1
+    assert workflow.count('verify sdist-run/receipt.json --require-nominal-solver') == 1
+    assert workflow.count("assert 'torch' not in") >= 4
+    assert workflow.count("joinpath('py.typed').is_file()") == 2
+    assert "version('active_fedference')" in workflow
+    assert "== '1.1.0.dev0'" not in workflow
+    assert workflow.count("- name: Release bundle verify") == 1

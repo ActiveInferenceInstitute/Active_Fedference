@@ -35,6 +35,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from ._validation import as_pmf
 from .divergences import kl_divergence
 from .generalized_bayes import softmax
 
@@ -156,10 +157,9 @@ def decompose(
     entropy_matrix = _raw_column_pmf(_as_2d(A))
     state_entropy = np.array([_entropy(entropy_matrix[:, s]) for s in range(n_s)], dtype=np.float64)
 
-    state_belief = np.clip(np.asarray(prior, dtype=np.float64).ravel(), _EPS, None)
+    state_belief = as_pmf(prior, name="prior")
     if state_belief.shape[0] != n_s:
         raise ValueError("prior length must match the hidden-state count of A")
-    state_belief = state_belief / state_belief.sum()
 
     n_a = b_tensor.shape[2]
     risk = ambiguity = pragmatic = epistemic = 0.0

@@ -32,6 +32,11 @@ _UNDEFINED_REFERENCE_RE = re.compile(
 )
 _OVERFULL_VBOX_RE = re.compile(r"Overfull \\vbox")
 _OVERFULL_HBOX_RE = re.compile(r"Overfull \\hbox \((?P<points>[0-9.]+)pt")
+_PLACEHOLDER_DOI_URL_RE = re.compile(
+    r"https?://doi\.org/(?:\(?forthcoming\)?|%28forthcoming%29|none|null)"
+    r"(?=[\s\\}\])]|$)",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -86,6 +91,15 @@ def _publication_text_findings(path: Path, text: str) -> list[str]:
     if _UNRESOLVED_TOKEN_RE.search(text):
         findings.append(f"{path}: unresolved manuscript token in extracted text")
     return findings
+
+
+def _placeholder_doi_url_findings(path: Path, text: str) -> list[str]:
+    """Reject resolver links constructed from unassigned DOI placeholders."""
+    matches = sorted({match.group(0) for match in _PLACEHOLDER_DOI_URL_RE.finditer(text)})
+    return [
+        f"{path}: placeholder DOI resolver URL is not permitted: {match}"
+        for match in matches
+    ]
 
 
 def _pdf_text_findings(path: Path) -> list[str]:
@@ -259,6 +273,7 @@ def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
     root = Path(project_root)
     manuscript_dir = root / "output" / "pdf"
     manuscript_pdf = manuscript_dir / "active_fedference_combined.pdf"
+    manuscript_tex = manuscript_dir / "_combined_manuscript.tex"
     manuscript_logs = sorted(manuscript_dir.glob("*.log")) if manuscript_dir.exists() else []
     slides_dir = root / "output" / "slides"
     slide_pdfs = sorted(slides_dir.glob("*_slides.pdf")) if slides_dir.exists() else []
@@ -280,6 +295,15 @@ def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
         findings.extend(_pdf_text_findings(manuscript_pdf))
     if not manuscript_logs:
         findings.append(f"missing combined manuscript logs: {manuscript_dir}")
+    if not manuscript_tex.exists():
+        findings.append(f"missing required manuscript TeX source: {manuscript_tex}")
+    else:
+        findings.extend(
+            _placeholder_doi_url_findings(
+                manuscript_tex,
+                manuscript_tex.read_text(encoding="utf-8", errors="replace"),
+            )
+        )
     for required_log in ("_combined_manuscript.log", "_latex_stdout.log"):
         required_path = manuscript_dir / required_log
         if not required_path.exists():

@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 
+from publication.clean_checkout import IMMUTABLE_RELEASE_PDFS
 from publication.release_manifest import (
     FINGERPRINT_INPUTS,
     build_release,
@@ -35,20 +36,63 @@ def _make_source_tree(tmp_path: Path) -> None:
     """Fingerprint inputs: code, producers, manuscript, claims, and configs."""
     (tmp_path / "src" / "analysis").mkdir(parents=True)
     (tmp_path / "src" / "analysis" / "model.py").write_text("SEED = 7\n")
+    (tmp_path / "src" / "AGENTS.md").write_text("# Source guidance\n")
+    (tmp_path / "src" / "fedference" / "config").mkdir(parents=True)
+    (tmp_path / "src" / "fedference" / "config" / "hierarchical_layers.yaml").write_text(
+        "layers: 3\n"
+    )
+    (tmp_path / "src" / "fedference" / "data").mkdir()
+    (tmp_path / "src" / "fedference" / "data" / "README.md").write_text("# Package data\n")
+    (tmp_path / "src" / "fedference" / "data" / "synthetic_tabular.csv").write_text(
+        "feature,label\n0,0\n"
+    )
+    (tmp_path / "src" / "fedference" / "py.typed").write_text("")
     (tmp_path / "scripts").mkdir()
     (tmp_path / "scripts" / "producer.py").write_text("PROFILE = 'publication'\n")
+    (tmp_path / "scripts" / "AGENTS.md").write_text("# Script guidance\n")
+    (tmp_path / "scripts" / "CONVENTIONS.md").write_text("# Script conventions\n")
+    (tmp_path / "scripts" / "README.md").write_text("# Scripts\n")
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "AGENTS.md").write_text("# Test guidance\n")
+    (tmp_path / "tests" / "PATTERNS.md").write_text("# Test patterns\n")
+    (tmp_path / "tests" / "README.md").write_text("# Tests\n")
+    (tmp_path / "examples").mkdir()
+    (tmp_path / "examples" / "README.md").write_text("# Runnable examples\n")
+    (tmp_path / "examples" / "minimal.py").write_text("print('ok')\n")
+    (tmp_path / "examples" / "data").mkdir()
+    (tmp_path / "examples" / "data" / "labeled_aggregation_request.json").write_text(
+        '{"schema_version":"1.0","state_labels":["clear"],"agents":[]}\n'
+    )
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "README.md").write_text("# Scientific data\n")
+    (tmp_path / "data" / "AGENTS.md").write_text("# Data guidance\n")
+    (tmp_path / "data" / "claim_ledger.yaml").write_text("claims: []\n")
+    (tmp_path / "data" / "synthetic_tabular.csv").write_text("feature,label\n0,0\n")
     (tmp_path / "manuscript").mkdir()
     (tmp_path / "manuscript" / "config.yaml").write_text("seed: 7\n")
+    (tmp_path / "manuscript" / "config.yaml.example").write_text("seed: 0\n")
     (tmp_path / "manuscript" / "01_introduction.md").write_text("Claim A.\n")
+    (tmp_path / "manuscript" / "AGENTS.md").write_text("# Manuscript guidance\n")
     (tmp_path / "manuscript" / "references.bib").write_text("@article{a,\n  year = {2026}\n}\n")
+    (tmp_path / "manuscript" / "cover_image.png").write_text("fixture image bytes\n")
     (tmp_path / "experiment_plan.yaml").write_text("plan: baseline\n")
+    (tmp_path / "domain_profile.yaml").write_text("profile: fixture\n")
     (tmp_path / "docs" / "research").mkdir(parents=True)
     (tmp_path / "docs" / "research" / "claim-audit.md").write_text("Scoped.\n")
+    (tmp_path / "docs" / "research" / "AGENTS.md").write_text("# Research guidance\n")
+    (tmp_path / "docs" / "reference").mkdir()
+    (tmp_path / "docs" / "reference" / "historical-release-pdfs.json").write_text(
+        '{"releases":[]}\n'
+    )
     (tmp_path / "pyproject.toml").write_text('[project]\nname = "fixture"\nversion = "0.0.1"\n')
     (tmp_path / "uv.lock").write_text("version = 1\n")
     (tmp_path / "ISA.md").write_text("phase: learn\n")
+    (tmp_path / "AGENTS.md").write_text("# Repository guidance\n")
+    (tmp_path / "STANDALONE.md").write_text("# Standalone contract\n")
     (tmp_path / "TODO.md").write_text("- open\n")
     (tmp_path / "REDTEAM_REVIEW.md").write_text("Reviewed.\n")
+    for filename in IMMUTABLE_RELEASE_PDFS:
+        (tmp_path / filename).write_text(f"historical PDF fixture: {filename}\n")
 
 
 def test_build_writes_bundle_with_true_digests(tmp_path: Path) -> None:
@@ -67,7 +111,10 @@ def test_build_writes_bundle_with_true_digests(tmp_path: Path) -> None:
     assert manifest["generated_at"] == "2026-07-06T00:00:00Z"
     assert manifest["timestamp_policy"] == "recorded"
     # README counts are derived from the walk, not hand-typed.
-    assert "3 files" in (release / "README.md").read_text()
+    release_readme = (release / "README.md").read_text(encoding="utf-8")
+    assert "3 files" in release_readme
+    assert "uv run --locked python scripts/build_release.py" in release_readme
+    assert "uv run python scripts/build_release.py" not in release_readme
 
 
 def test_release_bundle_carries_the_declared_license(tmp_path: Path) -> None:
@@ -262,9 +309,16 @@ def test_manifest_carries_fingerprint_stable_across_rebuild(tmp_path: Path) -> N
     assert first["fingerprint"] == compute_fingerprint(tmp_path)
     assert first["fingerprint_inputs"] == list(FINGERPRINT_INPUTS)
     assert first["pipeline_profile"] == "publication"
-    assert first["generator_version"] == "4"
+    assert first["generator_version"] == "5"
     assert first["package_version"] == "0.0.1"
     assert first["fingerprint_files"]["scripts/producer.py"]
+    assert first["fingerprint_files"]["examples/minimal.py"]
+    assert first["fingerprint_files"]["examples/README.md"]
+    assert first["fingerprint_files"]["manuscript/config.yaml.example"]
+    assert not any(entry["path"].startswith("examples/") for entry in first["artifacts"])
+    assert not any(
+        entry["path"] == "manuscript/config.yaml.example" for entry in first["artifacts"]
+    )
     assert verify_release(tmp_path) == []
 
 
@@ -288,13 +342,120 @@ def test_verify_rejects_stale_bundle_after_test_change(tmp_path: Path) -> None:
     _make_artifacts(tmp_path)
     _make_source_tree(tmp_path)
     test_path = tmp_path / "tests" / "test_model.py"
-    test_path.parent.mkdir()
+    test_path.parent.mkdir(exist_ok=True)
     test_path.write_text("def test_model():\n    assert True\n")
     build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
     test_path.write_text("def test_model():\n    assert 2 == 2\n")
     bad = verify_release(tmp_path)
     assert len(bad) == 1
     assert "tests/test_model.py" in bad[0]
+
+
+@pytest.mark.parametrize(
+    ("relative", "replacement"),
+    (
+        ("examples/minimal.py", "print('changed')\n"),
+        ("examples/README.md", "# Revised examples\n"),
+        (
+            "examples/data/labeled_aggregation_request.json",
+            '{"schema_version":"1.0","state_labels":["changed"],"agents":[]}\n',
+        ),
+        ("manuscript/config.yaml.example", "seed: 1\n"),
+    ),
+)
+def test_verify_rejects_stale_bundle_after_example_contract_change(
+    tmp_path: Path,
+    relative: str,
+    replacement: str,
+) -> None:
+    """Runnable examples and the copyable config are provenance inputs."""
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
+
+    (tmp_path / relative).write_text(replacement, encoding="utf-8")
+
+    bad = verify_release(tmp_path)
+    assert len(bad) == 1
+    assert "provenance fingerprint mismatch" in bad[0]
+    assert relative in bad[0]
+
+
+@pytest.mark.parametrize(
+    ("relative", "replacement"),
+    (
+        ("src/fedference/data/README.md", "# Revised package data\n"),
+        ("src/fedference/config/hierarchical_layers.yaml", "layers: 4\n"),
+        ("src/fedference/data/synthetic_tabular.csv", "feature,label\n1,1\n"),
+        ("src/fedference/py.typed", "changed\n"),
+        ("data/README.md", "# Revised scientific data\n"),
+        ("data/claim_ledger.yaml", "claims: [changed]\n"),
+        ("data/synthetic_tabular.csv", "feature,label\n1,1\n"),
+        ("docs/reference/historical-release-pdfs.json", '{"releases":["changed"]}\n'),
+        ("manuscript/cover_image.png", "changed image bytes\n"),
+        ("domain_profile.yaml", "profile: changed\n"),
+    ),
+)
+def test_verify_rejects_stale_bundle_after_packaged_or_scientific_data_change(
+    tmp_path: Path,
+    relative: str,
+    replacement: str,
+) -> None:
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
+
+    (tmp_path / relative).write_text(replacement, encoding="utf-8")
+
+    bad = verify_release(tmp_path)
+    assert len(bad) == 1
+    assert "provenance fingerprint mismatch" in bad[0]
+    assert relative in bad[0]
+
+
+@pytest.mark.parametrize(
+    "relative",
+    (
+        "AGENTS.md",
+        "STANDALONE.md",
+        "scripts/README.md",
+        "tests/PATTERNS.md",
+        "docs/research/AGENTS.md",
+        "src/AGENTS.md",
+        "data/AGENTS.md",
+        "manuscript/AGENTS.md",
+    ),
+)
+def test_verify_rejects_stale_bundle_after_shipped_document_change(
+    tmp_path: Path,
+    relative: str,
+) -> None:
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
+
+    (tmp_path / relative).write_text("# Revised source contract\n", encoding="utf-8")
+
+    bad = verify_release(tmp_path)
+    assert len(bad) == 1
+    assert "provenance fingerprint mismatch" in bad[0]
+    assert relative in bad[0]
+
+
+def test_verify_rejects_stale_bundle_after_immutable_historical_pdf_change(
+    tmp_path: Path,
+) -> None:
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
+
+    target = tmp_path / IMMUTABLE_RELEASE_PDFS[-1]
+    target.write_bytes(b"substituted historical PDF\n")
+
+    bad = verify_release(tmp_path)
+    assert len(bad) == 1
+    assert "provenance fingerprint mismatch" in bad[0]
+    assert IMMUTABLE_RELEASE_PDFS[-1] in bad[0]
 
 
 def test_verify_rejects_stale_bundle_after_config_change(tmp_path: Path) -> None:
@@ -443,12 +604,9 @@ def test_timestamp_validation_is_canonical_and_type_safe(timestamp) -> None:
     assert validate_utc_timestamp(None) is None
 
 
-def test_fingerprint_ignores_cache_and_agent_guidance_files(tmp_path: Path) -> None:
+def test_fingerprint_ignores_cache_files(tmp_path: Path) -> None:
     _make_source_tree(tmp_path)
     baseline = compute_fingerprint(tmp_path)
-    (tmp_path / "docs" / "research" / "AGENTS.md").write_text(
-        "local guidance\n", encoding="utf-8"
-    )
     (tmp_path / "src" / "__pycache__").mkdir()
     (tmp_path / "src" / "__pycache__" / "junk.pyc").write_bytes(b"cache")
 

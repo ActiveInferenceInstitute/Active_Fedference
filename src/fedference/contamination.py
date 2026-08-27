@@ -51,6 +51,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from ._validation import as_pmf
+
 ArrayF = np.ndarray
 _EPS = 1e-12
 
@@ -64,13 +66,7 @@ _BYZANTINE_TILT: float = 8.0
 
 def _as_pmf(belief: ArrayF) -> ArrayF:
     """Coerce ``belief`` to a clipped, renormalized 1-D probability vector."""
-    arr: ArrayF = np.asarray(belief, dtype=np.float64).ravel()
-    if arr.size == 0:
-        raise ValueError("belief is empty")
-    if np.any(arr < -1e-9):
-        raise ValueError("belief has negative entries")
-    arr = np.clip(arr, _EPS, None)  # clip floors every entry, so sum > 0 always
-    return arr / arr.sum()
+    return as_pmf(belief, name="belief")
 
 
 def contaminate(

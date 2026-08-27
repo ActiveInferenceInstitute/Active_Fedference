@@ -21,14 +21,22 @@ from typing import Any, Sequence
 import numpy as np
 
 from fedference.aggregation import AggregationConfig
+from fedference.application import LabeledAggregationRequest, LabeledAggregationResult
 from fedference.evidence import (
+    ApplicationReceipt,
     GitTreeState,
     RunReceipt,
     canonical_sha256,
     make_artifact_record,
     sha256_file,
     validate_evidence_report,
+    write_application_receipt,
     write_run_receipt,
+)
+from fedference.provenance import (
+    SourceProvenance,
+    active_fedference_checkout_version,
+    runtime_provenance,
 )
 from fedference.research_registry import get_experiment_spec
 
@@ -46,6 +54,10 @@ def _write_json(path: Path, payload: object) -> Path:
             encoding="utf-8",
             delete=False,
         ) as handle:
+            # Capture the path before serialization begins so the ``finally``
+            # block can remove a partial file when ``json.dump`` rejects a
+            # non-finite or otherwise unserializable payload.
+            temporary = Path(handle.name)
             json.dump(
                 payload,
                 handle,
@@ -54,7 +66,6 @@ def _write_json(path: Path, payload: object) -> Path:
                 allow_nan=False,
             )
             handle.write("\n")
-            temporary = Path(handle.name)
         os.replace(temporary, path)
     finally:
         if temporary is not None:
@@ -89,13 +100,30 @@ def _resolve_project_root(path: str | Path) -> Path:
 def _validate_output_dir(path: str, project_root: Path) -> Path:
     """Reject committed-output writes and non-empty run destinations."""
     output_dir = Path(path).resolve()
-    reviewer_output = (project_root / "output").resolve()
-    try:
-        output_dir.relative_to(reviewer_output)
-    except ValueError:
-        pass
-    else:
-        raise ValueError("CLI research runs may not write into the committed reviewer output tree")
+    reviewer_outputs: set[Path] = set()
+    if active_fedference_checkout_version(project_root) is not None:
+        reviewer_outputs.add((project_root / "output").resolve())
+    existing = output_dir
+    while not existing.exists() and existing != existing.parent:
+        existing = existing.parent
+    target_root = subprocess.run(
+        ["git", "-C", str(existing), "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if target_root.returncode == 0 and target_root.stdout.strip():
+        candidate_root = Path(target_root.stdout.strip()).resolve()
+        if active_fedference_checkout_version(candidate_root) is not None:
+            reviewer_outputs.add(candidate_root / "output")
+    for reviewer_output in reviewer_outputs:
+        try:
+            output_dir.relative_to(reviewer_output)
+        except ValueError:
+            continue
+        raise ValueError(
+            "CLI runs may not write into the committed reviewer output tree"
+        )
     if output_dir.exists() and not output_dir.is_dir():
         raise ValueError(f"output path is not a directory: {output_dir}")
     if output_dir.exists() and any(output_dir.iterdir()):
@@ -327,6 +355,41 @@ def _write_evidence_run(
     return report_path, receipt_path
 
 
+def _write_application_run(
+    *,
+    output_dir: Path,
+    request: LabeledAggregationRequest,
+    result: LabeledAggregationResult,
+    source_provenance: SourceProvenance,
+    started_at: str,
+) -> tuple[Path, Path, Path]:
+    """Write canonical application input/result files and bind both in a receipt."""
+    if not isinstance(request, LabeledAggregationRequest):
+        raise ValueError("request must be a LabeledAggregationRequest")
+    if not isinstance(result, LabeledAggregationResult):
+        raise ValueError("result must be a LabeledAggregationResult")
+    if not isinstance(source_provenance, SourceProvenance):
+        raise ValueError("source_provenance must be a SourceProvenance")
+    request_path = _write_json(output_dir / "request.json", request.as_dict())
+    result_path = _write_json(output_dir / "result.json", result.as_dict())
+    receipt = ApplicationReceipt(
+        runtime_provenance=runtime_provenance(),
+        source_provenance=source_provenance,
+        request_sha256=request.request_sha256,
+        config_fingerprint=request.config.fingerprint,
+        solver_status=result.aggregation.solver_status,
+        fallback_events=result.aggregation.fallback_events,
+        outputs=(
+            make_artifact_record("request", request_path, root=output_dir),
+            make_artifact_record("result", result_path, root=output_dir),
+        ),
+        started_at_utc=started_at,
+        completed_at_utc=datetime.now(timezone.utc).isoformat(),
+    )
+    receipt_path = write_application_receipt(output_dir / "receipt.json", receipt)
+    return request_path, result_path, receipt_path
+
+
 __all__ = [
     "_dataset_digests",
     "_environment_lock_digest",
@@ -340,4 +403,5 @@ __all__ = [
     "_validate_output_dir",
     "_validate_seeds",
     "_write_evidence_run",
+    "_write_application_run",
 ]

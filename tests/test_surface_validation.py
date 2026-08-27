@@ -13,6 +13,7 @@ from publication.surface_validation import (
     _pdf_tagging_findings,
     _pdf_text_findings,
     _pdfinfo_tagging_status,
+    _placeholder_doi_url_findings,
     _publication_text_findings,
     _qpdf_tagging_status,
     _slide_inventory_findings,
@@ -29,6 +30,18 @@ def test_publication_text_findings_rejects_unresolved_manuscript_tokens() -> Non
     assert any("unresolved manuscript token" in finding for finding in findings)
     assert any("raw Pandoc" in finding for finding in findings)
     assert any("unresolved reference" in finding for finding in findings)
+
+
+def test_placeholder_doi_resolver_links_fail_closed_without_blocking_real_dois() -> None:
+    path = Path("_combined_manuscript.tex")
+    bogus = r"DOI: \href{https://doi.org/(forthcoming)}{(forthcoming)}"
+    assigned = r"DOI: \href{https://doi.org/10.5281/zenodo.12345}{10.5281/zenodo.12345}"
+
+    assert _placeholder_doi_url_findings(path, assigned) == []
+    assert _placeholder_doi_url_findings(path, bogus) == [
+        f"{path}: placeholder DOI resolver URL is not permitted: "
+        "https://doi.org/(forthcoming)"
+    ]
 
 
 def test_pdfinfo_tagging_status_parses_structural_fields() -> None:

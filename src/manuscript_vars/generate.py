@@ -19,7 +19,7 @@ from experiment_config import (
     load_manuscript_config,
 )
 from fedference.experiments import run_belief_sharing, run_emergence
-from publication.identifiers import doi_url, normalize_doi
+from publication.identifiers import doi_url, normalize_doi, publication_identity_sentence
 
 from .loaders import (
     _BOOTSTRAP_ALPHA,
@@ -255,6 +255,7 @@ def generate_variables(
     v["CONFIG_HASH"] = config_hash
     v["PUBLICATION_DOI"] = publication_doi or "N/A"
     v["PUBLICATION_DOI_URL"] = doi_url(publication_doi) or "N/A"
+    v["PUBLICATION_IDENTITY_SENTENCE"] = publication_identity_sentence(publication_doi)
 
     # ---- Artifact counts ----
     counts = {"figures": 0, "data": 0, "reports": 0}

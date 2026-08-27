@@ -128,6 +128,11 @@ def test_replay_log_rejects_tampered_consensus_digest() -> None:
     (
         ("n_workers", 999),
         ("authentication", "tampered"),
+        ("host", "203.0.113.1"),
+        ("host", "0.0.0.0"),
+        ("host", "localhost"),
+        ("host", "not-a-host"),
+        ("host", "::1"),
     ),
 )
 def test_replay_log_rejects_tampered_listen_metadata(field, value) -> None:
@@ -250,6 +255,27 @@ def test_replay_rejects_duplicate_worker_events_and_config_tamper() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("method", "naive"),
+        ("robustness", 999.0),
+        ("robustness", True),
+    ),
+)
+def test_replay_rejects_top_level_aggregate_config_tamper(field, value) -> None:
+    out = run_socket_round(_BELIEFS, robustness=1.5)
+    replay = [dict(event) for event in out["replay"]]
+    aggregate = next(event for event in replay if event["event"] == "aggregate")
+    aggregate[field] = value
+    assert not validate_socket_replay(
+        replay,
+        _BELIEFS,
+        out["consensus"],
+        robustness=1.5,
+    )
+
+
 def test_replay_rejects_unknown_fields_and_out_of_order_events() -> None:
     out = run_socket_round(_BELIEFS, robustness=1.5)
     extra = [dict(event) for event in out["replay"]]
@@ -286,6 +312,7 @@ def test_replay_rejects_unknown_fields_and_out_of_order_events() -> None:
 @pytest.mark.parametrize(
     "worker_order",
     (
+        [3, 2, 1, 0],
         [0, 1, 2, []],
         [0, 1, 2, "3"],
         [False, 1, 2, 3],

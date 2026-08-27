@@ -39,7 +39,10 @@ def _log_pmf(p: ArrayF) -> ArrayF:
 
 def softmax(logits: ArrayF) -> ArrayF:
     """Numerically stable softmax returning a categorical pmf."""
-    z = np.asarray(logits, dtype=np.float64).ravel()
+    z = np.asarray(logits)
+    if z.ndim != 1:
+        raise ValueError("softmax logits must be one-dimensional")
+    z = np.asarray(z, dtype=np.float64)
     if z.size == 0:
         raise ValueError("softmax requires at least one logit")
     if not np.all(np.isfinite(z)):
@@ -190,8 +193,12 @@ def generalized_posterior(
         raise TypeError(f"unexpected keyword argument(s): {names}")
     if loss_by_state is None:
         raise TypeError("loss_by_state is required")
-    lp = np.asarray(log_prior, dtype=np.float64).ravel()
-    lv = np.asarray(loss_by_state, dtype=np.float64).ravel()
+    lp = np.asarray(log_prior)
+    lv = np.asarray(loss_by_state)
+    if lp.ndim != 1 or lv.ndim != 1:
+        raise ValueError("log_prior and loss_by_state must be one-dimensional")
+    lp = np.asarray(lp, dtype=np.float64)
+    lv = np.asarray(lv, dtype=np.float64)
     if lp.shape != lv.shape:
         raise ValueError("log_prior and loss_by_state must have the same shape")
     if lp.size == 0:

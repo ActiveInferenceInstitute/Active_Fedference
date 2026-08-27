@@ -42,9 +42,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from publication.clean_checkout import IMMUTABLE_RELEASE_PDFS
+
 # Increment when the manifest metadata contract changes incompatibly.
 RELEASE_MANIFEST_SCHEMA_VERSION = 3
-RELEASE_GENERATOR_VERSION = "4"
+RELEASE_GENERATOR_VERSION = "5"
 
 _UTC_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -77,20 +79,39 @@ _EXCLUDED_SUFFIXES: tuple[str, ...] = (".log", ".aux", ".bbl", ".blg", ".out", "
 #: ``fingerprint_inputs`` so the fingerprint boundary is self-documenting.
 #: Mutable output directories are deliberately outside this set.
 FINGERPRINT_INPUTS: tuple[str, ...] = (
+    *IMMUTABLE_RELEASE_PDFS,
+    "AGENTS.md",
     "LICENSE",
     "README.md",
+    "STANDALONE.md",
     "_fedference_build_backend.py",
     "MANIFEST.in",
     "src/**/*.py",
+    "src/**/*.md",
+    "src/**/*.yaml",
+    "src/**/*.csv",
+    "src/**/py.typed",
     "tests/**/*.py",
+    "tests/**/*.md",
     "scripts/**/*.py",
+    "scripts/**/*.md",
+    "examples/**/*.py",
+    "examples/**/*.md",
+    "examples/**/*.json",
+    "data/**/*.md",
+    "data/**/*.yaml",
+    "data/**/*.csv",
     "manuscript/**/*.md",
     "manuscript/**/*.bib",
     "manuscript/**/*.tex",
+    "manuscript/**/*.png",
     "manuscript/**/*.yaml",
+    "manuscript/**/*.yaml.example",
     "docs/**/*.md",
+    "docs/**/*.json",
     ".github/workflows/*.yml",
     "experiment_plan.yaml",
+    "domain_profile.yaml",
     "pyproject.toml",
     "uv.lock",
     "ISA.md",
@@ -100,7 +121,6 @@ FINGERPRINT_INPUTS: tuple[str, ...] = (
 
 #: Path components that never count as fingerprint inputs (build/cache noise).
 _FINGERPRINT_EXCLUDED_PARTS: tuple[str, ...] = ("__pycache__",)
-_FINGERPRINT_EXCLUDED_NAMES: tuple[str, ...] = ("AGENTS.md",)
 
 
 def _project_root(project_root: Path | None) -> Path:
@@ -151,7 +171,6 @@ def _iter_fingerprint_inputs(root: Path) -> list[tuple[str, Path]]:
             parts = path.relative_to(root).parts
             if (
                 any(part in _FINGERPRINT_EXCLUDED_PARTS or part.endswith(".egg-info") for part in parts)
-                or path.name in _FINGERPRINT_EXCLUDED_NAMES
             ):
                 continue
             seen[path.relative_to(root).as_posix()] = path
@@ -286,7 +305,7 @@ def build_release(
             if stamp is not None
             else "Generated at: omitted for a byte-reproducible unreleased build."
         ),
-        "(invoked via `uv run python scripts/build_release.py`).",
+        "(invoked via `uv run --locked python scripts/build_release.py`).",
         "",
         f"Pipeline profile: `{profile}`; generator version: `{RELEASE_GENERATOR_VERSION}`.",
         "",
@@ -300,7 +319,7 @@ def build_release(
         "",
         "```bash",
         "shasum -a 256 -c output/release/sha256sums.txt",
-        "# or: uv run python scripts/build_release.py --verify",
+        "# or: uv run --locked python scripts/build_release.py --verify",
         "```",
         "",
         "Scientific reports are regenerated under the seeds in",

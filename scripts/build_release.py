@@ -34,6 +34,15 @@ def _require_current_metadata(root: Path) -> None:
         raise ValueError("generated publication metadata is stale: " + ", ".join(drifted))
 
 
+def _require_immutable_release_pdfs(root: Path) -> None:
+    """Reject release work if any historical versioned PDF bytes drifted."""
+    from publication.clean_checkout import historical_release_pdf_findings
+
+    findings = historical_release_pdf_findings(root)
+    if findings:
+        raise ValueError("historical release PDF validation failed: " + "; ".join(findings))
+
+
 def _require_current_rendered_surfaces(root: Path) -> None:
     """Run the live PDF/slide/web gate before bundling rendered artifacts."""
     from publication.surface_validation import validate_rendered_surfaces
@@ -52,6 +61,7 @@ def _require_current_reviewer_snapshot(project_root: Path = _PROJECT_ROOT) -> No
     from publication.validation_receipt import require_fresh_validation_receipt
 
     root = Path(project_root).resolve()
+    _require_immutable_release_pdfs(root)
     _require_current_metadata(root)
     _require_current_rendered_surfaces(root)
     require_fresh_publication_analysis(root)
