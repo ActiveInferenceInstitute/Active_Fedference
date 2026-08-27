@@ -67,7 +67,17 @@ def _metadata_project(root: Path) -> Path:
         encoding="utf-8",
     )
     (root / "pyproject.toml").write_text(
-        '[project]\nname = "preflight-fixture"\nversion = "0.0.1.dev0"\n', encoding="utf-8"
+        '[project]\nname = "preflight-fixture"\nversion = "0.0.1.dev0"\n'
+        "[project.urls]\n",
+        encoding="utf-8",
+    )
+    (root / "uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "preflight-fixture"\n'
+        'version = "0.0.1.dev0"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
     )
     write_metadata(root)
     return root

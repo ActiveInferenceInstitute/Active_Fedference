@@ -11,10 +11,13 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT / "src"))
+
+if TYPE_CHECKING:
+    from publication.zenodo import ZenodoDeposition
 
 
 def _load_metadata(path: Path) -> dict[str, Any]:
@@ -24,25 +27,23 @@ def _load_metadata(path: Path) -> dict[str, Any]:
     return payload
 
 
-def _summary(deposition: Any) -> dict[str, Any]:
-    return {
-        "id": deposition.id,
-        "state": deposition.state,
-        "doi": deposition.doi,
-        "reserved_doi": deposition.reserved_doi,
-        "html_url": deposition.html_url,
-        "files": [
-            {
-                "filename": file.filename,
-                "filesize": file.filesize,
-                "checksum": file.checksum,
-            }
-            for file in deposition.files
-        ],
-    }
+def _summary(
+    deposition: ZenodoDeposition,
+    *,
+    source_deposition_id: int | None = None,
+) -> dict[str, Any]:
+    """Return a credential- and local-path-free deposition inspection record."""
+    result = deposition.as_dict()
+    if source_deposition_id is not None:
+        result["source_deposition_id"] = source_deposition_id
+    return result
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    api_base: str | None = None,
+) -> int:
     """Run one explicit Zenodo deposition operation."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--env-file", type=Path, help="dotenv file containing a Zenodo token")
@@ -91,7 +92,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     from project_paths import resolve_script_project_root
-    from publication.zenodo import ZenodoClient, ZenodoError, token_from_env_file, token_from_environment
+    from publication.zenodo import (
+        DEFAULT_ZENODO_API,
+        ZenodoClient,
+        ZenodoError,
+        token_from_env_file,
+        token_from_environment,
+    )
 
     try:
         root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
@@ -109,6 +116,21 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--reserve cannot be combined with --deposition-id or --new-version-of")
         if args.deposition_id is not None and args.new_version_of is not None:
             parser.error("--deposition-id and --new-version-of are mutually exclusive")
+        if args.new_version_of is not None and any(
+            (
+                args.update_metadata,
+                upload_path is not None,
+                verify_path is not None,
+                args.replace_existing,
+                args.remote_filename is not None,
+                args.publish,
+                args.confirm_publish,
+            )
+        ):
+            parser.error(
+                "--new-version-of is inspection-only; use the returned --deposition-id "
+                "for metadata, file, verification, or publication operations"
+            )
         if args.update_metadata and args.reserve:
             parser.error("--update-metadata requires an existing --deposition-id")
         if args.edit_published_metadata and args.deposition_id is None:
@@ -121,6 +143,8 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--edit-published-metadata cannot upload or replace files")
         if args.replace_existing and upload_path is None:
             parser.error("--replace-existing requires --upload")
+        if args.remote_filename is not None and verify_path is None:
+            parser.error("--remote-filename requires --verify")
         if args.publish and not args.confirm_publish:
             parser.error("--publish requires --confirm-publish")
         if args.publish and verify_path is None:
@@ -131,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
             token, token_name = token_from_env_file(env_file_path)
         else:
             token, token_name = token_from_environment()
-        client = ZenodoClient(token)
+        client = ZenodoClient(token, api_base=api_base or DEFAULT_ZENODO_API)
 
         if args.reserve:
             metadata = _load_metadata(metadata_path)
@@ -149,9 +173,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.update_metadata:
             metadata = _load_metadata(metadata_path)
             # Zenodo owns the DOI after reservation; the repository-side
-            # generated surface may contain it, but the editable API metadata
-            # must not try to replace that server-owned identifier.
-            metadata.pop("doi", None)
+            # generated surface contains it so the typed client can first bind
+            # the selected draft's reserved DOI. The client removes the field
+            # only after that equality check, before sending server metadata.
             metadata.setdefault("access_right", "open")
             deposition = client.update_metadata(deposition.id, metadata)
 
@@ -162,7 +186,7 @@ def main(argv: list[str] | None = None) -> int:
                 replace_existing=args.replace_existing,
             )
             deposition = client.get_deposition(deposition.id)
-        if verify_path is not None:
+        if verify_path is not None and (not args.publish or args.edit_published_metadata):
             client.verify_pdf(
                 deposition.id,
                 verify_path,
@@ -173,9 +197,17 @@ def main(argv: list[str] | None = None) -> int:
             if args.edit_published_metadata:
                 deposition = client.publish_metadata_edit(deposition.id)
             else:
-                deposition = client.publish(deposition.id)
+                assert verify_path is not None  # guarded by argparse above
+                deposition = client.publish_verified_pdf(
+                    deposition.id,
+                    verify_path,
+                    remote_filename=args.remote_filename,
+                )
 
-        result = _summary(deposition)
+        result = _summary(
+            deposition,
+            source_deposition_id=args.new_version_of,
+        )
         result["token_source"] = token_name
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0

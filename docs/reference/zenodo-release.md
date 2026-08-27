@@ -77,11 +77,111 @@ uv run --locked python scripts/zenodo_release.py \
   --new-version-of "$SOURCE_ID"
 ```
 
-Record the returned draft id and reserved DOI before changing
+The returned JSON is an inspection record: it binds the source deposition id,
+draft/record/concept identifiers, complete inherited metadata and its canonical
+SHA-256, file names/sizes/checksums, and the credential-variable name only. It
+never includes the bearer token or local env-file path. Confirm that the draft
+is `unsubmitted`, its purpose and inherited metadata are expected, and its file
+set is exactly the inherited v1.0.4 PDF. Then record the returned draft id and
+reserved DOI before changing
 `manuscript/config.yaml` from the empty-DOI/forthcoming-status development state
 to the assigned DOI/date final release identity and removing `doi_status`. Then
 emit metadata, regenerate the complete source-bound analysis/hydration/render
 chain, and run the release checks.
+
+`--new-version-of` is deliberately inspection-only. It cannot be combined with
+metadata updates, file operations, verification, or publication; every later
+operation must select the inspected draft explicitly with `--deposition-id`.
+The client also rejects HTTP redirects rather than forwarding the bearer token
+to another origin or protocol.
+
+## Stage and verify the GitHub release assets
+
+After the final identity and reproducible distributions are built, stage only
+the four approved non-checksum assets through the typed publication boundary.
+The destination must be absent, and every source is named explicitly; the
+operation performs no glob discovery. Replace the DOI below with the reserved
+v1.1.0 DOI and keep the wheel/sdist paths aligned with the certified build:
+
+```bash
+VERSION="1.1.0"
+DOI="10.5281/zenodo.<reserved-record-id>"
+mkdir -p .tmp/github-release
+
+uv run --locked python - "$VERSION" "$DOI" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+from publication import (
+    ReleaseAssetInput,
+    expected_release_asset_names,
+    stage_release_assets,
+)
+
+root = Path.cwd()
+version, doi = sys.argv[1:]
+names = expected_release_asset_names(version, doi)
+inputs = (
+    ReleaseAssetInput("pdf", Path(names["pdf"]), names["pdf"]),
+    ReleaseAssetInput("wheel", Path(".tmp/dist") / names["wheel"], names["wheel"]),
+    ReleaseAssetInput("sdist", Path(".tmp/dist") / names["sdist"], names["sdist"]),
+    ReleaseAssetInput("manifest", Path("output/release/manifest.json"), names["manifest"]),
+)
+result = stage_release_assets(
+    root,
+    Path(".tmp/github-release/v1.1.0-assets"),
+    inputs,
+    version=version,
+    doi=doi,
+)
+print(json.dumps(result.as_dict(), indent=2, sort_keys=True))
+PY
+```
+
+Upload exactly the resulting five files: the four named assets and the sorted
+`SHA256SUMS.txt`. After creating the GitHub release, retain the release API
+response and download every asset into a new directory, then verify both
+surfaces against the staged bytes:
+
+```bash
+VERIFY_ROOT="$(mktemp -d .tmp/github-release-verify.XXXXXX)"
+gh api repos/ActiveInferenceInstitute/Active_Fedference/releases/tags/v1.1.0 \
+  > "$VERIFY_ROOT/github-release.json"
+mkdir "$VERIFY_ROOT/downloaded"
+gh release download v1.1.0 \
+  --repo ActiveInferenceInstitute/Active_Fedference \
+  --dir "$VERIFY_ROOT/downloaded"
+
+uv run --locked python - "$VERSION" "$DOI" "$VERIFY_ROOT" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+from publication import load_github_release_assets, verify_github_release_downloads
+
+version, doi, verification_root = sys.argv[1:]
+verification = Path(verification_root)
+result = verify_github_release_downloads(
+    Path(".tmp/github-release/v1.1.0-assets"),
+    verification / "downloaded",
+    load_github_release_assets(verification / "github-release.json"),
+    version=version,
+    doi=doi,
+)
+print(json.dumps(result.as_dict(), indent=2, sort_keys=True))
+PY
+```
+
+`SHA256SUMS.txt` covers exactly the four non-checksum files. Its own integrity
+is established separately by the GitHub asset API's `sha256:` digest and by
+byte identity between the staged and downloaded copy; a checksum file must not
+attempt to include a self-referential checksum. These checks establish asset
+integrity, not scientific validity or publication authority. Staging claims
+the destination name with an atomic no-clobber directory creation, then writes
+each file exclusively. It does not claim that all five files become visible as
+one atomic directory operation; consumers must wait for the command to return
+successfully before reading or uploading that directory.
 
 ## Metadata and upload verification
 
@@ -110,6 +210,14 @@ uv run --locked python scripts/zenodo_release.py \
 `--replace-existing` is required only when a new-version draft inherited a
 same-named prior file whose checksum differs. The adapter refuses that case by
 default, and it never deletes or replaces a file on a published deposition.
+Metadata update requires the DOI in final `.zenodo.json` and compares it with
+the selected draft's reserved DOI before removing that server-owned field from
+the PUT payload; missing release identity or a wrong draft therefore fails
+before metadata changes. After the PUT, the adapter refetches the draft and
+compares the complete canonical caller-owned metadata; only Zenodo's explicit
+`doi` and `prereserve_doi` fields are excluded. Inspect the post-upload summary
+and require exactly one file,
+`active_fedference_combined.pdf`.
 
 ## Publication gate
 
@@ -125,8 +233,19 @@ uv run --locked python scripts/zenodo_release.py \
 
 Run it only after final PDF review, metadata review, licence/author approval,
 and the GitHub release decision. The publish command requires the checksum
-verification flag and either the ordinary draft-state guard or the explicit
-published-metadata-edit path. After publication, verify the DOI redirect and
+verification flag. For an ordinary release draft, the combined command
+re-fetches the editable deposition, verifies the local bytes, and requires its
+entire file set to contain exactly that one PDF immediately before issuing the
+publish request. An inherited or already-present unexpected file blocks the
+request. The GET and publish POST are separate Zenodo operations and cannot be
+made atomic by this client: an exclusive release operator is still required,
+and a concurrent mutation inside that narrow interval remains a service-level
+race. The adapter validates the publish response and immediately refetches the
+record, so a resulting identity, metadata, or file-set change is reported
+loudly even though the irreversible POST has already occurred. The separately
+authorized published-metadata-edit path accepts only a `done` source or an
+`inprogress` edit, binds its assigned DOI and concept identity, and publishes
+only an edit opened and verified by the same client. After publication, verify the DOI redirect and
 public record metadata, including the GitHub related identifier and
 uploaded-PDF checksum.
 

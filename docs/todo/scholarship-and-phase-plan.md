@@ -109,17 +109,22 @@ release version is chosen only after the observed result and integrity review.
 ### Release evidence contract
 
 The v1.0.4 public artifact is published, but this roadmap retains the stricter
-release-wave criteria for the next independently reviewed version. Publication
-does not close a scientific phase or substitute for clean-clone, cross-vendor,
-licence, attribution, or author-authority evidence.
+release-wave criteria for the next reviewed version. Publication does not
+close a scientific phase or substitute for clean-clone, broader cross-vendor
+or independent-reproduction, licence, attribution, or author-authority
+evidence.
 
 - **v1.1 development PR:** labeled own-data interfaces, strict validation,
   solver-health and replay findings, application receipts, installed-artifact
   smoke, and hosted checks. A green PR is not a release.
 - **v1.1.0:** two isolated exact-commit clone passes, wheel and source-
-  distribution installation, installed CLI/application smoke, independent
-  verdict, confidentiality/attribution/license review, author approval, final
-  DOI metadata, and separately approved GitHub/Zenodo publication.
+  distribution installation, installed CLI/application smoke, and one
+  structured release verdict from an identified human or genuinely
+  different-vendor reviewer, plus confidentiality/attribution/license review,
+  author approval, final DOI metadata, and separately approved GitHub/Zenodo
+  publication. Daniel Ari Friedman's selected verdict is identified
+  owner-author human review, not independent external replication; a local
+  subagent is ineligible, and ISC-89 remains open.
 - **Post-v1.1 scientific evidence waves:** source-bound evidence packs may
   publish negative results; malformed reports, failed controls, stale receipts,
   or unresolved source discrepancies may not. The separate scientific branch
