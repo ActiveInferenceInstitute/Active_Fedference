@@ -4,15 +4,20 @@ import hashlib
 import json
 import re
 import threading
+from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 
 from publication.zenodo import (
     ZenodoClient,
+    ZenodoDeposition,
     ZenodoError,
+    ZenodoFile,
+    ZenodoMetadataSnapshot,
     _deposition,
     _multipart_body,
     token_from_env_file,
@@ -159,6 +164,7 @@ class _ZenodoHandler(BaseHTTPRequestHandler):
 class _NewVersionHandler(BaseHTTPRequestHandler):
     """A real loopback HTTP boundary for the Zenodo new-version action."""
 
+    api_base = ""
     authorization_headers: list[str] = []
     new_version_calls = 0
     draft_state = "unsubmitted"
@@ -167,7 +173,63 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
     draft_concept_doi = "10.5281/zenodo.6"
     reserved_record_id = 8
     reserved_doi = "10.5281/zenodo.8"
-    draft_version = "1.0.4"
+    draft_version: str | None = "1.0.4"
+    draft_publication_date: str | None = "2026-08-20"
+    draft_created: object | None = "2026-08-27T18:30:00-07:00"
+    draft_extra_metadata: dict[str, Any] = {}
+    source_files: list[dict[str, Any]] = []
+    draft_files: list[dict[str, Any]] = []
+    draft_exists = False
+    expose_source_latest_draft = True
+    source_latest_draft: str | None = None
+    post_mode = "success"
+    listing_mode = "single"
+    listing_paths: list[str] = []
+
+    @classmethod
+    def reset(cls) -> None:
+        """Restore one exact legacy-inheritance response for each test."""
+        cls.api_base = ""
+        cls.authorization_headers = []
+        cls.new_version_calls = 0
+        cls.draft_state = "unsubmitted"
+        cls.include_reserved_doi = True
+        cls.draft_concept_record_id = 6
+        cls.draft_concept_doi = "10.5281/zenodo.6"
+        cls.reserved_record_id = 8
+        cls.reserved_doi = "10.5281/zenodo.8"
+        cls.draft_version = "1.0.4"
+        cls.draft_publication_date = "2026-08-20"
+        cls.draft_created = "2026-08-27T18:30:00-07:00"
+        cls.draft_extra_metadata = {}
+        cls.draft_exists = False
+        cls.expose_source_latest_draft = True
+        cls.source_latest_draft = None
+        cls.post_mode = "success"
+        cls.listing_mode = "single"
+        cls.listing_paths = []
+        cls.source_files = [
+            {
+                "id": "published-file",
+                "filename": "paper.pdf",
+                "filesize": 1,
+                "checksum": "md5:old",
+            }
+        ]
+        cls.draft_files = [
+            {
+                "id": "inherited",
+                "filename": "paper.pdf",
+                "filesize": 1,
+                "checksum": "md5:old",
+            }
+        ]
+
+    @classmethod
+    def _draft_link(cls, deposition_id: int) -> str:
+        """Return one absolute loopback link on the configured fixture API."""
+        assert cls.api_base
+        return f"{cls.api_base}/deposit/depositions/{deposition_id}"
 
     def log_message(self, _format: str, *_args: object) -> None:
         return
@@ -180,8 +242,16 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    @staticmethod
-    def _published_source() -> dict[str, Any]:
+    @classmethod
+    def _published_source(cls) -> dict[str, Any]:
+        links = {
+            "html": "http://example.test/records/7",
+            "self": "http://example.test/api/deposit/depositions/7",
+        }
+        if cls.source_latest_draft is not None:
+            links["latest_draft"] = cls.source_latest_draft
+        elif cls.draft_exists and cls.expose_source_latest_draft:
+            links["latest_draft"] = cls._draft_link(8)
         return {
             "id": 7,
             "record_id": 7,
@@ -193,19 +263,11 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
                 "title": "Published source",
                 "description": "Inherited abstract.",
                 "version": "1.0.4",
+                "publication_date": "2026-08-20",
+                "upload_type": "software",
             },
-            "links": {
-                "html": "http://example.test/records/7",
-                "self": "http://example.test/api/deposit/depositions/7",
-            },
-            "files": [
-                {
-                    "id": "published-file",
-                    "filename": "paper.pdf",
-                    "filesize": 1,
-                    "checksum": "md5:old",
-                }
-            ],
+            "links": links,
+            "files": [dict(file) for file in cls.source_files],
         }
 
     @classmethod
@@ -213,14 +275,19 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
         metadata: dict[str, Any] = {
             "title": "Published source",
             "description": "Inherited abstract.",
-            "version": cls.draft_version,
+            "upload_type": "software",
         }
+        if cls.draft_version is not None:
+            metadata["version"] = cls.draft_version
+        if cls.draft_publication_date is not None:
+            metadata["publication_date"] = cls.draft_publication_date
+        metadata.update(cls.draft_extra_metadata)
         if cls.include_reserved_doi:
             metadata["prereserve_doi"] = {
                 "doi": cls.reserved_doi,
                 "recid": cls.reserved_record_id,
             }
-        return {
+        draft = {
             "id": 8,
             "record_id": 8,
             "conceptrecid": str(cls.draft_concept_record_id),
@@ -231,13 +298,46 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
                 "html": "http://example.test/records/8",
                 "self": "http://example.test/api/deposit/depositions/8",
             },
-            "files": [
-                {"id": "inherited", "filename": "paper.pdf", "filesize": 1, "checksum": "md5:old"}
-            ],
+            "files": [dict(file) for file in cls.draft_files],
         }
+        if cls.draft_created is not None:
+            draft["created"] = cls.draft_created
+        return draft
+
+    @classmethod
+    def _other_draft(cls, *, concept_record_id: int = 6) -> dict[str, Any]:
+        draft = cls._draft()
+        draft["id"] = 9
+        draft["record_id"] = 9
+        draft["conceptrecid"] = str(concept_record_id)
+        draft["conceptdoi"] = f"10.5281/zenodo.{concept_record_id}"
+        metadata = dict(draft["metadata"])
+        metadata["prereserve_doi"] = {"doi": "10.5281/zenodo.9", "recid": 9}
+        draft["metadata"] = metadata
+        return draft
+
+    @classmethod
+    def _listing(cls) -> object:
+        if cls.listing_mode == "malformed":
+            return {"not": "an array"}
+        if cls.listing_mode == "partial":
+            return [{"id": 8, "state": "unsubmitted"}]
+        if cls.listing_mode == "truncated":
+            return [cls._published_source() for _index in range(100)]
+        if cls.listing_mode == "zero":
+            return [cls._published_source()]
+        if cls.listing_mode == "multiple":
+            return [cls._published_source(), cls._draft(), cls._other_draft()]
+        if cls.listing_mode == "wrong_concept":
+            return [cls._published_source(), cls._other_draft(concept_record_id=99)]
+        return [cls._published_source(), cls._draft()]
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
         type(self).authorization_headers.append(self.headers.get("Authorization", ""))
+        if self.path.startswith("/api/deposit/depositions?"):
+            type(self).listing_paths.append(self.path)
+            self._write_json(type(self)._listing())
+            return
         if self.path == "/api/deposit/depositions/7":
             self._write_json(self._published_source())
             return
@@ -250,11 +350,73 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
         type(self).authorization_headers.append(self.headers.get("Authorization", ""))
         if self.path == "/api/deposit/depositions/7/actions/newversion":
             type(self).new_version_calls += 1
+            if type(self).post_mode == "unrelated_error":
+                self._write_json(
+                    {"status": 400, "message": "The record cannot be versioned."},
+                    status=400,
+                )
+                return
+            if type(self).post_mode == "already_exists_extra":
+                self._write_json(
+                    {
+                        "status": 400,
+                        "message": "A draft already exists.",
+                        "unexpected": True,
+                    },
+                    status=400,
+                )
+                return
+            if type(self).post_mode == "already_exists_wrong_status":
+                self._write_json(
+                    {"status": 409, "message": "A draft already exists."},
+                    status=409,
+                )
+                return
+            if type(self).post_mode == "echo_token":
+                authorization = self.headers.get("Authorization", "")
+                self._write_json(
+                    {"status": 400, "message": authorization.removeprefix("Bearer ")},
+                    status=400,
+                )
+                return
+            if type(self).post_mode == "already_exists" or type(self).draft_exists:
+                type(self).draft_exists = True
+                self._write_json(
+                    {"status": 400, "message": "A draft already exists."},
+                    status=400,
+                )
+                return
+            type(self).draft_exists = True
             self._write_json(
-                {"links": {"latest_draft": "http://zenodo.test/api/deposit/depositions/8"}}
+                {"links": {"latest_draft": type(self)._draft_link(8)}}
             )
             return
         self._write_json({"error": "not found"}, status=404)
+
+
+@pytest.fixture(autouse=True)
+def _reset_new_version_handler() -> None:
+    """Keep mutable loopback service shapes independent across tests."""
+    _NewVersionHandler.reset()
+
+
+@pytest.fixture
+def new_version_client() -> Iterator[ZenodoClient]:
+    """Serve the mutable new-version fixture over the real HTTP adapter."""
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _NewVersionHandler)
+    _NewVersionHandler.api_base = f"http://127.0.0.1:{server.server_port}/api"
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield ZenodoClient(
+            "test-token",
+            api_base=_NewVersionHandler.api_base,
+            timeout=5.0,
+        )
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
 
 
 class _PublishedMetadataEditHandler(BaseHTTPRequestHandler):
@@ -517,6 +679,58 @@ def test_response_and_multipart_boundaries_fail_closed() -> None:
         _multipart_body("file", 'unsafe\"name.pdf', b"%PDF")
 
 
+def test_zenodo_deposition_preserves_the_former_positional_constructor() -> None:
+    metadata = ZenodoMetadataSnapshot.from_mapping({"title": "Legacy caller"})
+    files = (ZenodoFile("file-1", "paper.pdf", 1, "md5:old"),)
+
+    deposition = ZenodoDeposition(
+        7,
+        7,
+        6,
+        "10.5281/zenodo.6",
+        "done",
+        "10.5281/zenodo.7",
+        None,
+        None,
+        "https://example.test/records/7",
+        "https://example.test/api/deposit/depositions/7",
+        None,
+        None,
+        metadata,
+        files,
+    )
+
+    assert deposition.metadata is metadata
+    assert deposition.files is files
+    assert deposition.created_utc is None
+    assert deposition.linked_version_shape is None
+
+
+def test_zenodo_deposition_preserves_the_former_keyword_constructor() -> None:
+    metadata = ZenodoMetadataSnapshot.from_mapping({"title": "Legacy caller"})
+    deposition = ZenodoDeposition(
+        id=7,
+        record_id=7,
+        concept_record_id=6,
+        concept_doi="10.5281/zenodo.6",
+        state="done",
+        doi="10.5281/zenodo.7",
+        reserved_doi=None,
+        reserved_record_id=None,
+        html_url=None,
+        self_url=None,
+        bucket_url=None,
+        publish_url=None,
+        metadata=metadata,
+        files=(),
+    )
+
+    assert deposition.metadata is metadata
+    assert deposition.files == ()
+    assert deposition.created_utc is None
+    assert deposition.linked_version_shape is None
+
+
 def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
     pdf = tmp_path / "paper.pdf"
     pdf.write_bytes(b"%PDF-1.7\nActive Fedference\n")
@@ -633,6 +847,7 @@ def test_new_version_resolves_latest_draft_link() -> None:
     _NewVersionHandler.reserved_doi = "10.5281/zenodo.8"
     _NewVersionHandler.draft_version = "1.0.4"
     server = ThreadingHTTPServer(("127.0.0.1", 0), _NewVersionHandler)
+    _NewVersionHandler.api_base = f"http://127.0.0.1:{server.server_port}/api"
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
@@ -649,6 +864,8 @@ def test_new_version_resolves_latest_draft_link() -> None:
         assert result.metadata.as_dict()["title"] == "Published source"
         assert result.metadata.as_dict()["version"] == "1.0.4"
         assert result.files[0].filename == "paper.pdf"
+        assert result.created_utc == "2026-08-28T01:30:00Z"
+        assert result.linked_version_shape == "legacy_inherited"
         cli_summary = _summary(result, source_deposition_id=7)
         assert cli_summary["source_deposition_id"] == 7
         assert cli_summary["metadata"] == result.metadata.as_dict()
@@ -667,6 +884,440 @@ def test_new_version_resolves_latest_draft_link() -> None:
         thread.join(timeout=5)
 
 
+def test_legacy_linked_version_does_not_require_a_creation_timestamp(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.draft_created = None
+
+    result = new_version_client.new_version(7)
+
+    assert result.linked_version_shape == "legacy_inherited"
+    assert result.created_utc is None
+
+
+@pytest.mark.parametrize("draft_version", [None, "1.0.4"])
+def test_new_version_accepts_the_current_empty_separate_record_shape(
+    new_version_client: ZenodoClient,
+    draft_version: str | None,
+) -> None:
+    _NewVersionHandler.draft_version = draft_version
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files = []
+
+    result = new_version_client.new_version(7)
+
+    assert result.linked_version_shape == "current_separate_record"
+    assert result.created_utc == "2026-08-28T01:30:00Z"
+    assert result.files == ()
+    assert result.metadata.as_dict()["publication_date"] == "2026-08-28"
+    if draft_version is None:
+        assert "version" not in result.metadata.as_dict()
+    else:
+        assert result.metadata.as_dict()["version"] == "1.0.4"
+
+
+@pytest.mark.parametrize(
+    ("created", "publication_date", "created_utc"),
+    [
+        ("2026-08-28T01:30:00Z", "2026-08-28", "2026-08-28T01:30:00Z"),
+        (
+            "2026-08-28T01:30:00.1+00:00",
+            "2026-08-28",
+            "2026-08-28T01:30:00.100000Z",
+        ),
+        (
+            "2026-08-28T01:30:00.123456Z",
+            "2026-08-28",
+            "2026-08-28T01:30:00.123456Z",
+        ),
+        (
+            "2026-08-27T18:30:00-07:00",
+            "2026-08-28",
+            "2026-08-28T01:30:00Z",
+        ),
+        (
+            "2026-08-28T05:00:00+05:30",
+            "2026-08-27",
+            "2026-08-27T23:30:00Z",
+        ),
+    ],
+)
+def test_current_linked_version_accepts_only_strict_rfc3339_creation_timestamps(
+    new_version_client: ZenodoClient,
+    created: str,
+    publication_date: str,
+    created_utc: str,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = publication_date
+    _NewVersionHandler.draft_created = created
+    _NewVersionHandler.draft_files = []
+
+    result = new_version_client.new_version(7)
+
+    assert result.linked_version_shape == "current_separate_record"
+    assert result.created_utc == created_utc
+
+
+@pytest.mark.parametrize("publication_date", [None, "2026-08-27", "2026-08-28T00:00:00Z"])
+def test_new_version_rejects_an_arbitrary_or_missing_normalized_publication_date(
+    new_version_client: ZenodoClient,
+    publication_date: str | None,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = publication_date
+    _NewVersionHandler.draft_files = []
+
+    with pytest.raises(ZenodoError, match="publication_date"):
+        new_version_client.new_version(7)
+
+
+@pytest.mark.parametrize(
+    "created",
+    [
+        None,
+        123,
+        "2026-08-28",
+        "2026-08-28 09:30:00Z",
+        "2026-08-28_09:30:00Z",
+        "20260828T093000Z",
+        "2026-W35-5T09:30:00Z",
+        "2026-08-28T09:30:00",
+        "2026-08-28t09:30:00z",
+        "2026-08-28T09:30Z",
+        "2026-08-28T09:30:00+2400",
+        "2026-08-28T09:30:00+24:00",
+        "2026-08-28T09:30:00+01:60",
+        "2026-02-30T09:30:00Z",
+        "2026-13-28T09:30:00Z",
+        " 2026-08-28T09:30:00Z",
+        "2026-08-28T09:30:00Z ",
+        "2026-08-28T09:30:00.1234567Z",
+        "2026-08-28T09:30:00,123Z",
+    ],
+)
+def test_new_version_rejects_a_missing_or_invalid_server_creation_timestamp(
+    new_version_client: ZenodoClient,
+    created: object | None,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_created = created
+    _NewVersionHandler.draft_files = []
+
+    with pytest.raises(ZenodoError, match="creation timestamp"):
+        new_version_client.new_version(7)
+
+
+def test_new_version_rejects_any_other_purpose_metadata_drift(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_extra_metadata = {"notes": "unexpected drift"}
+    _NewVersionHandler.draft_files = []
+
+    with pytest.raises(ZenodoError, match="purpose metadata"):
+        new_version_client.new_version(7)
+
+
+@pytest.mark.parametrize("file_shape", ["partial", "unrelated", "normalized_with_file"])
+def test_new_version_rejects_partial_unrelated_or_mixed_file_shapes(
+    new_version_client: ZenodoClient,
+    file_shape: str,
+) -> None:
+    if file_shape == "partial":
+        _NewVersionHandler.source_files.append(
+            {
+                "id": "published-data",
+                "filename": "data.json",
+                "filesize": 2,
+                "checksum": "md5:data",
+            }
+        )
+    elif file_shape == "unrelated":
+        _NewVersionHandler.draft_files = [
+            {
+                "id": "unrelated",
+                "filename": "unrelated.txt",
+                "filesize": 3,
+                "checksum": "md5:unrelated",
+            }
+        ]
+    else:
+        _NewVersionHandler.draft_version = None
+        _NewVersionHandler.draft_publication_date = "2026-08-28"
+
+    with pytest.raises(ZenodoError, match="file set"):
+        new_version_client.new_version(7)
+
+
+def test_new_version_reuses_the_same_valid_current_draft_idempotently(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files = []
+
+    first = new_version_client.new_version(7)
+    second = new_version_client.new_version(7)
+
+    assert first.as_dict() == second.as_dict()
+    assert first.id == second.id == 8
+    assert first.linked_version_shape == second.linked_version_shape
+    assert _NewVersionHandler.new_version_calls == 1
+
+
+def test_new_version_recovers_the_exact_production_already_exists_response(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.post_mode = "already_exists"
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files = []
+
+    result = new_version_client.new_version(7)
+
+    assert result.id == 8
+    assert result.linked_version_shape == "current_separate_record"
+    assert _NewVersionHandler.new_version_calls == 1
+    assert len(_NewVersionHandler.authorization_headers) == 4
+
+
+def test_source_self_link_does_not_preempt_a_successful_new_version_post(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.source_latest_draft = _NewVersionHandler._draft_link(7)
+
+    result = new_version_client.new_version(7)
+
+    assert result.id == 8
+    assert result.linked_version_shape == "legacy_inherited"
+    assert _NewVersionHandler.new_version_calls == 1
+    assert _NewVersionHandler.listing_paths == []
+
+
+def test_source_latest_draft_accepts_one_exact_trailing_slash(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.source_latest_draft = (
+        f"{_NewVersionHandler._draft_link(8)}/"
+    )
+
+    result = new_version_client.new_version(7)
+
+    assert result.id == 8
+    assert result.linked_version_shape == "legacy_inherited"
+    assert _NewVersionHandler.new_version_calls == 0
+
+
+@pytest.mark.parametrize(
+    "link_case",
+    [
+        "foreign_origin",
+        "hostname_mismatch",
+        "protocol_relative",
+        "missing_netloc",
+        "malformed_scheme",
+        "relative",
+        "scheme_mismatch",
+        "arbitrary_prefix",
+        "query",
+        "fragment",
+        "credentials",
+        "port_mismatch",
+        "two_trailing_slashes",
+        "zero_id",
+        "leading_zero_id",
+        "missing_id",
+    ],
+)
+def test_latest_draft_link_is_bound_to_the_exact_configured_api(
+    new_version_client: ZenodoClient,
+    link_case: str,
+) -> None:
+    api_base = _NewVersionHandler.api_base
+    parsed = urlsplit(api_base)
+    assert parsed.hostname == "127.0.0.1"
+    assert parsed.port is not None
+    origin = f"{parsed.scheme}://{parsed.hostname}:{parsed.port}"
+    valid = _NewVersionHandler._draft_link(8)
+    links = {
+        "foreign_origin": "https://example.test/api/deposit/depositions/8",
+        "hostname_mismatch": (
+            f"{parsed.scheme}://localhost:{parsed.port}/api/deposit/depositions/8"
+        ),
+        "protocol_relative": f"//{parsed.netloc}/api/deposit/depositions/8",
+        "missing_netloc": f"{parsed.scheme}:///api/deposit/depositions/8",
+        "malformed_scheme": (
+            f"zenodo+{parsed.scheme}://{parsed.netloc}/api/deposit/depositions/8"
+        ),
+        "relative": "/api/deposit/depositions/8",
+        "scheme_mismatch": (
+            f"https://{parsed.hostname}:{parsed.port}/api/deposit/depositions/8"
+        ),
+        "arbitrary_prefix": f"{origin}/prefix/api/deposit/depositions/8",
+        "query": f"{valid}?access_token=not-allowed",
+        "fragment": f"{valid}#not-allowed",
+        "credentials": (
+            f"{parsed.scheme}://user:password@{parsed.netloc}"
+            "/api/deposit/depositions/8"
+        ),
+        "port_mismatch": (
+            f"{parsed.scheme}://{parsed.hostname}:{parsed.port + 1}"
+            "/api/deposit/depositions/8"
+        ),
+        "two_trailing_slashes": f"{valid}//",
+        "zero_id": f"{api_base}/deposit/depositions/0",
+        "leading_zero_id": f"{api_base}/deposit/depositions/08",
+        "missing_id": f"{api_base}/deposit/depositions/",
+    }
+    _NewVersionHandler.source_latest_draft = links[link_case]
+
+    with pytest.raises(ZenodoError, match="latest_draft"):
+        new_version_client.new_version(7)
+
+    assert _NewVersionHandler.new_version_calls == 0
+    assert len(_NewVersionHandler.authorization_headers) == 1
+
+
+def test_exact_existing_error_with_source_self_link_recovers_from_listing(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.source_latest_draft = _NewVersionHandler._draft_link(7)
+    _NewVersionHandler.post_mode = "already_exists"
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files = []
+
+    result = new_version_client.new_version(7)
+
+    assert result.id == 8
+    assert result.linked_version_shape == "current_separate_record"
+    assert _NewVersionHandler.new_version_calls == 1
+    assert _NewVersionHandler.listing_paths == [
+        "/api/deposit/depositions?"
+        "q=conceptrecid%3A6&status=draft&sort=mostrecent&page=1&size=100&all_versions=true"
+    ]
+
+
+@pytest.mark.parametrize(
+    "post_mode",
+    ["unrelated_error", "already_exists_extra", "already_exists_wrong_status"],
+)
+def test_new_version_does_not_swallow_unrelated_or_near_match_http_errors(
+    new_version_client: ZenodoClient,
+    post_mode: str,
+) -> None:
+    _NewVersionHandler.post_mode = post_mode
+
+    with pytest.raises(ZenodoError, match="Zenodo HTTP"):
+        new_version_client.new_version(7)
+
+    assert _NewVersionHandler.new_version_calls == 1
+    assert len(_NewVersionHandler.authorization_headers) == 2
+
+
+def test_http_error_retains_no_echoed_token_or_raw_payload(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.post_mode = "echo_token"
+
+    with pytest.raises(ZenodoError, match="Zenodo HTTP") as caught:
+        new_version_client.new_version(7)
+
+    error = caught.value
+    inspection_surfaces = "\n".join(
+        (
+            repr(error),
+            str(error),
+            repr(error.args),
+            repr(vars(error)),
+            repr(error.__dict__),
+        )
+    )
+    assert "test-token" not in inspection_surfaces
+    assert '"echo": "test-token"' not in inspection_surfaces
+    assert "response_payload" not in error.__dict__
+    assert set(error.__dict__) == {"status", "_exact_already_exists"}
+    assert error.__dict__["_exact_already_exists"] is False
+    assert error.__cause__ is None
+    assert error.__context__ is None
+
+
+@pytest.mark.parametrize(
+    ("listing_mode", "message"),
+    [
+        ("zero", "exactly one distinct"),
+        ("multiple", "exactly one distinct"),
+        ("truncated", "truncated"),
+        ("malformed", "malformed"),
+        ("partial", "partial deposition"),
+        ("wrong_concept", "exactly one distinct"),
+    ],
+)
+def test_existing_draft_listing_recovery_fails_closed(
+    new_version_client: ZenodoClient,
+    listing_mode: str,
+    message: str,
+) -> None:
+    _NewVersionHandler.post_mode = "already_exists"
+    _NewVersionHandler.source_latest_draft = _NewVersionHandler._draft_link(7)
+    _NewVersionHandler.listing_mode = listing_mode
+
+    with pytest.raises(ZenodoError, match=message):
+        new_version_client.new_version(7)
+
+    assert _NewVersionHandler.new_version_calls == 1
+    assert len(_NewVersionHandler.listing_paths) == 1
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("state", "not an unsubmitted draft"),
+        ("lineage", "different concept record"),
+        ("reservation", "reserved DOI"),
+        ("metadata", "purpose metadata"),
+        ("files", "empty file set"),
+    ],
+)
+def test_source_link_recovery_revalidates_every_draft_boundary(
+    new_version_client: ZenodoClient,
+    mutation: str,
+    message: str,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files = []
+    first = new_version_client.new_version(7)
+    assert first.linked_version_shape == "current_separate_record"
+
+    if mutation == "state":
+        _NewVersionHandler.draft_state = "done"
+    elif mutation == "lineage":
+        _NewVersionHandler.draft_concept_record_id = 9
+        _NewVersionHandler.draft_concept_doi = "10.5281/zenodo.9"
+    elif mutation == "reservation":
+        _NewVersionHandler.reserved_doi = "10.5281/zenodo.999"
+    elif mutation == "metadata":
+        _NewVersionHandler.draft_extra_metadata = {"unexpected": True}
+    else:
+        _NewVersionHandler.draft_files = [
+            {
+                "id": "unrelated",
+                "filename": "unrelated.txt",
+                "filesize": 1,
+                "checksum": "md5:unrelated",
+            }
+        ]
+
+    with pytest.raises(ZenodoError, match=message):
+        new_version_client.new_version(7)
+
+    assert _NewVersionHandler.new_version_calls == 1
+
+
 @pytest.mark.parametrize(
     ("changes", "message"),
     [
@@ -679,7 +1330,7 @@ def test_new_version_resolves_latest_draft_link() -> None:
         ),
         ({"reserved_record_id": 9}, "reserved record id"),
         ({"reserved_doi": "10.5281/zenodo.999"}, "reserved DOI"),
-        ({"draft_version": "9.9.9"}, "canonical request"),
+        ({"draft_version": "9.9.9"}, "version"),
     ],
 )
 def test_new_version_binds_concept_reservation_and_inherited_purpose(
@@ -698,6 +1349,7 @@ def test_new_version_binds_concept_reservation_and_inherited_purpose(
     for attribute, value in changes.items():
         setattr(_NewVersionHandler, attribute, value)
     server = ThreadingHTTPServer(("127.0.0.1", 0), _NewVersionHandler)
+    _NewVersionHandler.api_base = f"http://127.0.0.1:{server.server_port}/api"
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
@@ -732,6 +1384,7 @@ def test_new_version_rejects_a_noneditable_or_unreserved_latest_draft(
     _NewVersionHandler.reserved_doi = "10.5281/zenodo.8"
     _NewVersionHandler.draft_version = "1.0.4"
     server = ThreadingHTTPServer(("127.0.0.1", 0), _NewVersionHandler)
+    _NewVersionHandler.api_base = f"http://127.0.0.1:{server.server_port}/api"
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
@@ -924,8 +1577,11 @@ def test_cli_inspects_a_linked_version_over_real_loopback_http(
     _NewVersionHandler.draft_concept_doi = "10.5281/zenodo.6"
     _NewVersionHandler.reserved_record_id = 8
     _NewVersionHandler.reserved_doi = "10.5281/zenodo.8"
-    _NewVersionHandler.draft_version = "1.0.4"
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files = []
     server = ThreadingHTTPServer(("127.0.0.1", 0), _NewVersionHandler)
+    _NewVersionHandler.api_base = f"http://127.0.0.1:{server.server_port}/api"
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
@@ -946,6 +1602,10 @@ def test_cli_inspects_a_linked_version_over_real_loopback_http(
         assert summary["id"] == 8
         assert summary["source_deposition_id"] == 7
         assert summary["token_source"] == "ZENODO_PROD_TOKEN"
+        assert summary["created_utc"] == "2026-08-28T01:30:00Z"
+        assert summary["linked_version_shape"] == "current_separate_record"
+        assert summary["files"] == []
+        assert "version" not in summary["metadata"]
         assert "cli-secret" not in captured.out + captured.err
         assert str(env_file) not in captured.out + captured.err
         assert _NewVersionHandler.new_version_calls == 1

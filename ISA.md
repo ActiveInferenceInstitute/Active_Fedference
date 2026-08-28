@@ -1151,3 +1151,40 @@ dynamic version identity, `py.typed`, and the Torch-free default import graph.
 These are development-candidate engineering receipts: ISC-89 and ISC-242 remain
 open, and no merge, DOI, tag, GitHub release, or Zenodo publication follows from
 them.
+
+### Iteration 49 — linked Zenodo draft service semantics (2026-08-28)
+
+- [x] ISC-272: The authenticated `newversion` inspection boundary accepts only
+  the two documented safe service shapes: exact legacy purpose-metadata/file
+  inheritance, or a current separate-record draft with identical purpose
+  metadata except for an exact UTC creation-date `publication_date`, an
+  omitted-or-unchanged version, and an empty file set. It rejects wrong
+  lineage/state/DOI, arbitrary or unparseable dates, version or other metadata
+  drift, and partial, unrelated, or mixed file sets. A creation timestamp is
+  optional only for exact legacy inheritance; the current shape requires strict
+  RFC 3339 with an explicit offset and at most six fractional digits. Repeated
+  inspection uses a source `latest_draft` only when it names a distinct
+  deposition; a source self-link cannot preempt the POST. Draft links must be
+  absolute, match the configured API scheme/hostname/effective port, and use
+  exactly the configured API path plus `/deposit/depositions/<positive-id>`
+  with at most one trailing slash. Foreign, relative, credentialed, queried,
+  fragmented, port-mismatched, or path-confused links fail before another
+  request, and the link is never followed directly. After Zenodo's exact
+  already-exists response and an unchanged source refetch, an absent or
+  self-linked source field triggers one deterministic, size-100
+  `status=draft`/`all_versions=true` listing. Full objects are locally filtered
+  by exact concept identity, the source is excluded, and exactly one distinct
+  unsubmitted draft is required before identical full revalidation. Zero,
+  multiple, truncated, malformed, partial, and wrong-concept-only results fail.
+  Unrelated or near-match HTTP errors remain failures. HTTP response bodies are
+  reduced to a private exact-response discriminator and never retained on the
+  raised error; an echoed bearer token is absent from its `repr`, `str`,
+  `vars`, and exception dictionary. The token-free CLI
+  summary exposes the canonical creation time and validated shape; former
+  positional and keyword `ZenodoDeposition` constructors remain compatible,
+  and later publication still requires exactly one verified PDF. Probe: no-mock
+  loopback production-shape, legacy-without-created, strict-timestamp matrix,
+  exact-origin/path link matrix, self-link/POST, exact-one listing recovery and
+  negative matrix, token-echo exception inspection,
+  recovery/revalidation, negative HTTP, constructor, CLI-summary, and
+  idempotent-reuse tests in `tests/test_zenodo.py`.
