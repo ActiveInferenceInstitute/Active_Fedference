@@ -1203,11 +1203,10 @@ analysis artifacts and injected into the manuscript by token, so the
 paper, figures, release package, and validation reports remain tied to
 the same execution record.</p>
 <p>The open-source repository is
-ActiveInferenceInstitute/Active_Fedference. The production Zenodo
-release DOI is <a
-href="https://doi.org/10.5281/zenodo.21972644">10.5281/zenodo.21972644</a>,
-and the repository and deposited PDF point to each other through this
-DOI and the repository URL.</p>
+ActiveInferenceInstitute/Active_Fedference. This development manuscript
+has no assigned version DOI; published versions bind their reserved DOI,
+deposited PDF, and repository URL only after the release gates
+close.</p>
 <p><strong>Keywords:</strong> active inference, federated learning,
 generalised variational inference, belief sharing, robustness,
 FedGVI</p>
@@ -3319,11 +3318,11 @@ exercised by 9 studies, including the contaminated-sentinel robustness
 sweep (Study 4). The shared configuration (seed budget, colony size,
 contamination rates, divergences, trial counts, and the statistics
 settings) is read from <code>experiment:</code> in <a
-href="config.yaml"><code>manuscript/config.yaml</code></a>; the
-remaining per-study parameters are tested code defaults in
-<code>src/fedference/experiments/</code>. No value is hard-coded in the
-manuscript, and each token below resolves to the same configuration the
-code executed.</p>
+href="https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/config.yaml">manuscript
+rendering configuration</a>; the remaining per-study parameters are
+tested code defaults in <code>src/fedference/experiments/</code>. No
+value is hard-coded in the manuscript, and each token below resolves to
+the same configuration the code executed.</p>
 <h2 data-number="5.23" id="sec:methods-determinism"><span
 class="header-section-number">5.23</span> Determinism through fixed
 seeds and generated variables</h2>
@@ -3864,11 +3863,11 @@ class="math inline">\(arm64\)</span> machine using Python <span
 class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.89
-(log-linear), 0.95 (iterative robust), 0.82 (variational), 1.59 (naive
-self-excluding sharing), and 1.94 (robust self-excluding sharing);
-state-axis slopes are 0.42, 0.41, and 0.37; the modality-axis inference
-slope is 0.67. The slope fit is a timing diagnostic on this machine, not
+orders, not performance guarantees: agent-axis slopes are 0.96
+(log-linear), 0.93 (iterative robust), 0.78 (variational), 1.64 (naive
+self-excluding sharing), and 1.91 (robust self-excluding sharing);
+state-axis slopes are 0.97, 0.96, and 0.96; the modality-axis inference
+slope is 0.66. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -4429,8 +4428,8 @@ level of the recovery limits is what lets the robustness claims of
 sec. <a href="#sec:results-robustness">7.5</a> and sec. <a
 href="#sec:results-baseline">7.6</a> rest on the per-agent axis without
 leaning on the heuristic.</p>
-<p>257 of 259 acceptance criteria are verified. The pure-NumPy/SciPy
-core carries project test coverage of 90.26% (gate <span
+<p>264 of 266 acceptance criteria are verified. The pure-NumPy/SciPy
+core carries project test coverage of 91.08% (gate <span
 class="math inline">\(\ge 90\%\)</span>), with every stochastic step
 threaded through a single seeded <code>np.random.default_rng(0)</code>.
 sec. <a href="#sec:reproducibility">10</a> records the full environment
@@ -5585,27 +5584,27 @@ per client across 5 clients — and fuses per-test-point softmax
 predictions with <code>robust_aggregate</code> at
 <code>robustness = 0.5</code>
 (<code>fedference.bnn_baseline_torch.run_bnn_torch_experiment</code>,
-run under PyTorch 2.12.1). Every number here is executed, not assumed:
-the consensus is a valid probability simplex (maximum deviation from
-unit mass 2.22e-16 over the test set) and is bit-identical across
-repeated seeded runs (deterministic: Yes). Held-out consensus accuracy
-at contamination 0.40 is 0.558 for the <span
-class="math inline">\(\beta\to 0\)</span> standard client and 0.545 for
-the <span class="math inline">\(\beta = 0.5\)</span> robust client —
-this is the same 0.40-contamination endpoint where the NumPy baseline
-above also loses its separation (a single seed here, versus the 64-seed
-mean above), so the small gap is consistent with, not in tension with,
-that figure’s genuine mid-range margin: both axes show the same
-qualitative collapse-together behavior at the sweep’s most extreme
-point. This run confirms that the server-side aggregation API transfers
-to this neural-network setting and produces a valid, deterministic
-consensus; it does not establish model-class universality or that the
-client-side <span class="math inline">\(\beta\)</span>-loss’s robustness
-margin transfers at this scale; the certified NumPy logistic-regression
-baseline above remains the axis’s rigorous evidence. When PyTorch is not
-installed the pipeline records a skipped status with unavailable-value
-sentinels; a complete certified build therefore installs the
-<code>torch</code> optional extra (sec. <a
+run under PyTorch not installed). Every number here is executed, not
+assumed: the consensus is a valid probability simplex (maximum deviation
+from unit mass N/A over the test set) and is bit-identical across
+repeated seeded runs (deterministic: N/A). Held-out consensus accuracy
+at contamination N/A is N/A (PyTorch not run) for the <span
+class="math inline">\(\beta\to 0\)</span> standard client and N/A
+(PyTorch not run) for the <span class="math inline">\(\beta =
+0.5\)</span> robust client — this is the same 0.40-contamination
+endpoint where the NumPy baseline above also loses its separation (a
+single seed here, versus the 64-seed mean above), so the small gap is
+consistent with, not in tension with, that figure’s genuine mid-range
+margin: both axes show the same qualitative collapse-together behavior
+at the sweep’s most extreme point. This run confirms that the
+server-side aggregation API transfers to this neural-network setting and
+produces a valid, deterministic consensus; it does not establish
+model-class universality or that the client-side <span
+class="math inline">\(\beta\)</span>-loss’s robustness margin transfers
+at this scale; the certified NumPy logistic-regression baseline above
+remains the axis’s rigorous evidence. When PyTorch is not installed, the
+pipeline records unavailable-value sentinels; certified builds install
+the <code>torch</code> optional extra (sec. <a
 href="#sec:reproducibility">10</a>).</p>
 <hr />
 <h1 data-number="8" id="sec:discussion"><span
@@ -6521,14 +6520,18 @@ posterior <span class="citation" data-cites="mildner2025fedgvi">(<a
 href="#ref-mildner2025fedgvi" role="doc-biblioref">Mildner, Hamelijnck,
 et al. 2025</a>)</span>.</p>
 <p>The portable lane preserves the source protocol’s site factors,
-client cavity, and factor-replacement update in natural coordinates. It
-distinguishes a locally budgeted CPU/MPS profile from an exact
+client cavity, factor-replacement update in natural coordinates. A
+synthetic CPU/MPS pilot already exercises the cavity-conditioned local
+optimizer, explicit device and fallback receipts, and checkpoint/resume
+equivalence. It does not establish source-dataset parity. The next local
+campaign distinguishes a locked portable CPU/MPS profile from an exact
 source-scale CUDA profile that remains external until suitable hardware
-is available. FashionMNIST anchors protocol parity, while MNIST and
-KMNIST test portability. A separate source-bound tabular pack will
-report proper-score effects per licensed dataset, with training-only
-preprocessing and byte-, split-, and license-level provenance; nested
-seeds will not be treated as independent datasets.</p>
+is available. FashionMNIST anchors source-dataset protocol parity, while
+MNIST and KMNIST test portability. A separate source-bound tabular pack
+will report proper-score effects per licensed dataset, with
+training-only preprocessing and byte-, split-, and license-level
+provenance; nested seeds will not be treated as independent
+datasets.</p>
 <h2 data-number="8.20" id="sec:future-hierarchical"><span
 class="header-section-number">8.20</span> Extend hierarchical federation
 beyond the current stack</h2>
@@ -6627,11 +6630,14 @@ href="#ref-smith2020active" role="doc-biblioref">Smith et al. 2022</a>;
 robust belief fusion and robust <em>structure</em> fusion compose.</p>
 <p>A minimal executable fixture now gates a discrete dynamics context
 over continuous position and velocity, Gaussian observations, and
-bounded actions. It is a representation and recovery surface, not
-confirmatory task evidence. The full study must add discrete-only,
-continuous-only, and oracle-context controls, singular-covariance and
-outlier checks, and held-out posterior-predictive scoring before
-supporting a hybrid-task claim.</p>
+bounded actions. The bounded pilot now includes matched naive, robust,
+discrete-only, continuous-only, and oracle-context components, a
+singular-covariance rejection, and next-position predictive scoring. It
+is still a representation, recovery, and control surface rather than
+confirmatory task evidence. The full study must freeze calibration and
+budgets, use independently held-out worlds, retain outlier falsifiers,
+and execute the preregistered comparison before supporting a hybrid-task
+claim.</p>
 <hr />
 <h1 data-number="9" id="sec:conclusion"><span
 class="header-section-number">9</span> Conclusion: a recovery-tested
@@ -6893,10 +6899,6 @@ the configuration from which this manuscript was rendered.</p>
 hydrated manuscript. The build epoch is derived from
 <code>SOURCE_DATE_EPOCH</code>; an unreleased build records an explicit
 omitted sentinel rather than wall-clock time.</caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Field</th>
@@ -6918,7 +6920,7 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>PyTorch (MLP complement)</td>
-<td>2.12.1</td>
+<td>not installed</td>
 </tr>
 <tr>
 <td>Platform</td>
@@ -6926,11 +6928,11 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Config hash (SHA-256, first 16)</td>
-<td>72ab9bf43b9f7914</td>
+<td>b187ab01fa98f60e</td>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>omitted (unreleased reproducible build)</td>
+<td>2026-08-28T11:02:22Z</td>
 </tr>
 </tbody>
 </table>
@@ -6955,20 +6957,23 @@ non-empty <code>/Lang</code> and <code>StructTreeRoot</code>, and the
 source-bound language check passes. Some Poppler builds omit the
 language line from <code>pdfinfo</code> even when <code>/Lang</code> is
 present. The separate slide PDFs are checked structurally, textually,
-through retained renderer logs, and by raster inspection, but do not
-inherit the manuscript tagging status. Tagged structure is not PDF/UA
-conformance: a PDF/UA claim requires a dedicated conformance report plus
-screen-reader and reading-order review; <code>qpdf</code> structure
-checks and successful text extraction alone are insufficient.</p>
+through renderer logs during the producing run, and by raster
+inspection, but do not inherit the manuscript tagging status. Renderer
+logs are retained with the external verification evidence rather than
+the public source tree because they contain environment-local timestamps
+and paths. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+requires a dedicated conformance report plus screen-reader and
+reading-order review; <code>qpdf</code> structure checks and successful
+text extraction alone are insufficient.</p>
 <h2 data-number="10.4" id="sec:repro-tests"><span
 class="header-section-number">10.4</span> Test and coverage evidence for
 the claim surface</h2>
 <ul>
-<li>Acceptance criteria: 259 total, 257 passing.</li>
-<li>Project test suite: 1695 collected cases; the bound successful
+<li>Acceptance criteria: 266 total, 264 passing.</li>
+<li>Project test suite: 2262 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.</li>
-<li>Line coverage on <code>src/</code>: 90.26% (achieved by the bound
+<li>Line coverage on <code>src/</code>: 91.08% (achieved by the bound
 full gate; <span class="math inline">\(\ge 90\%\)</span> line coverage
 is enforced in CI, while branch coverage is tracked separately in
 CI).</li>
@@ -7060,7 +7065,7 @@ theorem’s matching assumptions only; the server-side
 recovery limit alone, not for any bounded-influence property (sec. <a
 href="#sec:limitations">8.13</a>).</p>
 <p>All code is authored by Daniel Ari Friedman and licensed under the
-MIT license. This is project version 1.0.4.</p>
+MIT license. This is project version 1.1.0.dev0.</p>
 <hr />
 <h1 data-number="11" id="sec:supp-variational"><span
 class="header-section-number">11</span> Supplement: variational
@@ -9596,13 +9601,13 @@ is not a probability or a global breakdown bound.</figcaption>
 <h1 data-number="15" id="sec:references"><span
 class="header-section-number">15</span> References</h1>
 <p>The bibliography lives in <a
-href="references.bib"><code>manuscript/references.bib</code></a> and is
-read by Pandoc during the PDF render. The build pipeline invokes Pandoc
-with <code>--natbib</code>, so every Pandoc citation marker in the
-manuscript is rewritten to the appropriate LaTeX citation command and
-resolved against the bib file. Titles in the bib file are reproduced
-verbatim, including any British spellings, because they are quotations
-of the original sources.</p>
+href="https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/references.bib">project
+bibliography source</a> and is read by Pandoc during the PDF render. The
+build pipeline invokes Pandoc with <code>--natbib</code>, so every
+Pandoc citation marker in the manuscript is rewritten to the appropriate
+LaTeX citation command and resolved against the bib file. Titles in the
+bib file are reproduced verbatim, including any British spellings,
+because they are quotations of the original sources.</p>
 <p>The standalone checkout provides a local cross-reference gate for
 citation labels and all manuscript references:</p>
 <div class="sourceCode" id="cb3"><pre

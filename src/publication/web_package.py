@@ -4,7 +4,7 @@ import posixpath
 import re
 import shutil
 from dataclasses import dataclass
-from html import escape
+from html import escape, unescape
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -34,7 +34,6 @@ _RAW_CITATION_RE = re.compile(
     r"\[(?P<keys>[A-Za-z][A-Za-z0-9_-]*(?:\s*;\s*[A-Za-z][A-Za-z0-9_-]*)*)\]"
 )
 _SRC_RE = re.compile(r"\bsrc=\"(?P<url>[^\"]+)\"")
-_HREF_RE = re.compile(r"\bhref=\"(?P<url>[^\"]+)\"")
 _LEAKED_FIGURE_RE = re.compile(r"\]\([^)]*figures/[^)]*\)\{#fig:")
 _UNRESOLVED_TOKEN_RE = re.compile(r"\{\{[A-Z][A-Z0-9_]*\}\}")
 _PUBLICATION_TEXT_SUFFIXES = frozenset(
@@ -43,6 +42,7 @@ _PUBLICATION_TEXT_SUFFIXES = frozenset(
 _MACHINE_PATH_RE = re.compile(
     r"(?P<prefix>/private/tmp|/tmp|/Users|/home|/Volumes)/[^/\s\"'<>]+"
 )
+_ALLOWED_EXTERNAL_HREF_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
 
 
 def sanitize_machine_paths(project_root: str | Path | None = None) -> tuple[Path, ...]:
@@ -208,6 +208,31 @@ class _AccessibilityParser(HTMLParser):
             has_image, has_caption = self._figure_stack.pop()
             if has_image and not has_caption:
                 self.figures_missing_captions += 1
+
+
+class _HrefCollector(HTMLParser):
+    """Collect real HTML ``href`` attributes independent of quoting style."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.hrefs: list[str] = []
+
+    def handle_starttag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
+        del tag
+        for name, value in attrs:
+            if name.casefold() == "href" and value is not None:
+                self.hrefs.append(value)
+
+
+def _hrefs_in(text: str) -> tuple[str, ...]:
+    parser = _HrefCollector()
+    parser.feed(text)
+    parser.close()
+    return tuple(parser.hrefs)
 
 
 def _accessibility_issues_in(path: Path, text: str) -> tuple[str, ...]:
@@ -525,6 +550,48 @@ def _asset_path(web_dir: Path, html_path: Path, url: str) -> Path | None:
     return web_dir / relative
 
 
+def _local_href_target(
+    output_dir: Path,
+    html_path: Path,
+    raw_url: str,
+) -> tuple[Path | None, str | None]:
+    """Resolve one link target within the shipped output tree.
+
+    Generated pages live in ``output/web`` while full-resolution figures live
+    in the sibling ``output/figures`` directory, so a confined ``../figures``
+    link is valid. Absolute paths, malformed URL paths, unsupported schemes,
+    missing targets, and symlink/path traversal outside ``output`` fail closed.
+    ``None`` as the target denotes an accepted external link.
+    """
+
+    url = unescape(raw_url)
+    parsed = urlparse(url)
+    scheme = parsed.scheme.casefold()
+    if scheme:
+        if scheme in _ALLOWED_EXTERNAL_HREF_SCHEMES:
+            return None, None
+        return None, f"unsupported href scheme: {scheme}"
+    if parsed.netloc:
+        return None, "protocol-relative href is not allowed"
+
+    decoded_path = unquote(parsed.path)
+    if "\x00" in decoded_path or "\\" in decoded_path:
+        return None, "local href contains an unsafe path"
+    if decoded_path.startswith("/"):
+        return None, "absolute local href is not allowed"
+
+    candidate = html_path if not decoded_path else html_path.parent / decoded_path
+    try:
+        target = candidate.resolve(strict=True)
+    except OSError:
+        return None, "missing local target"
+    try:
+        target.relative_to(output_dir.resolve(strict=True))
+    except (OSError, ValueError):
+        return None, "local href leaves the shipped output tree"
+    return target, None
+
+
 def _raw_xrefs_in(path: Path) -> tuple[str, ...]:
     offenders: list[str] = []
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
@@ -577,22 +644,29 @@ def validate_web_package(project_root: str | Path | None = None) -> WebPackageVa
             assets_checked += 1
             if not asset.exists():
                 missing.append(f"{html_path}: {match.group('url')} -> {asset}")
-        for match in _HREF_RE.finditer(text):
-            url = match.group("url")
-            if url.startswith("#"):
-                target_file = html_path
-                fragment = url[1:]
-            elif "#" in url and not urlparse(url).scheme:
-                file_part, fragment = url.split("#", 1)
-                target_file = html_path.parent / file_part
-            else:
+        for url in _hrefs_in(text):
+            parsed = urlparse(unescape(url))
+            target_file, target_issue = _local_href_target(
+                web_dir.parent,
+                html_path,
+                url,
+            )
+            if target_issue is not None:
+                broken_xrefs.append(f"{html_path}: {url} ({target_issue})")
                 continue
-            if not target_file.exists():
-                broken_xrefs.append(f"{html_path}: {url} (missing target file)")
+            if target_file is None:
                 continue
-            target_text = target_file.read_text(encoding="utf-8")
-            if fragment and f'id="{fragment}"' not in target_text:
-                broken_xrefs.append(f"{html_path}: {url} (missing fragment)")
+            fragment = unquote(parsed.fragment)
+            if fragment:
+                try:
+                    target_text = target_file.read_text(encoding="utf-8")
+                except (OSError, UnicodeError) as exc:
+                    broken_xrefs.append(
+                        f"{html_path}: {url} (fragment target is unreadable: {exc})"
+                    )
+                else:
+                    if f'id="{fragment}"' not in target_text:
+                        broken_xrefs.append(f"{html_path}: {url} (missing fragment)")
 
     return WebPackageValidation(
         html_files=len(html_files),

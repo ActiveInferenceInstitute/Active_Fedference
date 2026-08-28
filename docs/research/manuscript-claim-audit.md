@@ -1,11 +1,12 @@
 # Manuscript-wide claim audit
 
-Updated 2026-08-10. This ledger records the evidence status of the manuscript's
+Updated 2026-08-25. This ledger records the evidence status of the manuscript's
 load-bearing claims after the Research and RedTeam passes. It is intentionally
 claim-level rather than sentence-level: local wording should remain consistent
-with the row that governs it. The v0.1.0 GitHub/Zenodo publication completed on
-2026-08-10 is a release-state fact only; it does not promote any scientific
-claim or close the open research lanes below.
+with the row that governs it. The immutable v1.0.4 GitHub/Zenodo publication is
+a release-state fact only; it does not promote any scientific claim or close
+the open research lanes below. The current `1.1.0.dev0` application line is
+unreleased and carries neither a version DOI nor a release date.
 
 ## Evidence statuses
 
@@ -36,7 +37,7 @@ major research phase.
 | Server heuristic | Repository contract and `src/fedference/aggregation.py` | `robust_aggregate` recovery identity, finite influence diagnostics, and scoped raw-log-pool/normalized-weight no-go witnesses | This is a server-side heuristic with conditional behavior. A formal proposition excludes the declared separable objective class; no client-side FedGVI theorem, universal robustness, unique winner, or universal no-objective claim is made. |
 | Objective-backed server rule | `27_supplement_aggregation_objective.md` | `variational_aggregate`, raw/normalized effective weights, and descent/bound tests | The raw bound and objective descent are executable properties of the declared finite implementation; they do not establish normalized-estimator B-robustness or truth recovery. |
 | Conditional simulation evidence | Declared configuration, seed schedule, and typed report schemas | Sweep, gallery/onset, conditional-world, and `robustness_review_grid` reports | Results are conditional on finite mechanisms and estimands. Seeds are the inferential unit where declared; trials remain nested. Controls and null/reversed cells are retained. |
-| Unresolved research claim | Open phase pages in `docs/todo/` | Leakage-free calibration, portable/external BNN, external data, Friston reconstruction, continuous/hybrid, richer hierarchy, authenticated federation, independent reproducibility, and future release authority | A bounded review grid or green source test does not close a major research phase, an independent-verification gate, or author signoff; the published v0.1.0 DOI is not scientific evidence. |
+| Unresolved research claim | Open phase pages in `docs/todo/` | Leakage-free calibration, portable/external BNN, external data, Friston reconstruction, continuous/hybrid, richer hierarchy, authenticated federation, independent reproducibility, and future release authority | A bounded review grid or green source test does not close a major research phase, an independent-verification gate, or author signoff; the published v1.0.4 DOI is not scientific evidence. |
 
 ## Current source contract — iteration 45
 
@@ -82,8 +83,18 @@ benchmark producer now exposes dataset-level nested-seed summaries and archive,
 split, and recovery controls, but no pinned three-dataset confirmatory result or
 manuscript token is promoted. Source-scale CUDA execution, physical multi-host
 federation, cross-vendor verification, and external scientific release authority
-remain outside this local evidence package. The v0.1.0 GitHub/Zenodo publication
+remain outside this local evidence package. The v1.0.4 GitHub/Zenodo publication
 is complete, but it does not close those scientific or governance boundaries.
+
+## Current source contract — v1.1 application development
+
+The v1.1 application work adds labeled caller-data and solver-health surfaces
+under an unreleased development identity. Application receipts and installed-
+artifact checks establish integrity and reproducibility boundaries only; they
+do not validate caller labels, select a downstream decision, or add evidence to
+the manuscript's scientific comparisons. A feature-branch push, review PR,
+private-main integration, public-main promotion, versioned release, and Zenodo
+publication remain separate states.
 
 ## Load-bearing claims
 
@@ -115,9 +126,9 @@ is complete, but it does not close those scientific or governance boundaries.
 | The hybrid discrete/Gaussian API completes the continuous active-inference extension | Scoped implementation slice only | `src/fedference/hybrid.py` provides a typed Gaussian precision pool and a finite robust fixed-point diagnostic with exact zero-robustness recovery tests. It is not a full continuous/hybrid active-inference task, a variational objective, or evidence for MAJ-3 closure. |
 | The public configuration, registry, CLI, and receipts establish a scientific result | Explicitly denied | `AggregationConfig`, `ExperimentSpec`, `DatasetSpec`, `RunReceipt`, and the installed CLI provide stable execution/provenance contracts. They can make a result auditable; they cannot make its effect positive, independent, or theoretically justified. |
 | The scoped no-go gives `robust_aggregate` an objective certificate | Open / explicitly denied | `server_theory.py` proves only that the declared continuously differentiable separable class cannot have the raw log pool as its q-coordinate minimizer for every interior input. It does not provide an objective, rule out all objectives, or transfer a FedGVI theorem. |
-| The FedGVI BNN source protocol has been replicated | Scoped protocol primitive only | `bnn_fedgvi.py` implements site factors, cavities, factor replacement, and checkpoints; the parity matrix still marks the source loss/divergence and cavity-conditioned client optimizer unresolved. CPU/MPS execution does not make the portable profile exact source-scale CUDA evidence. |
+| The FedGVI BNN source protocol has been replicated | Scoped protocol primitive only | `bnn_fedgvi.py` implements site factors, cavities, factor replacement, and checkpoints, while the synthetic CPU/MPS pilot exercises a cavity-conditioned optimizer. The parity matrix still marks source-dataset loss/divergence parity and the locked portable campaign unresolved; CPU/MPS execution does not make the profile exact source-scale CUDA evidence. |
 | The registered UCI path establishes an external robustness effect | Open / explicitly denied | Three archives have DOI/license/URL/hash/schema/preprocessing/split contracts and an executable benchmark/receipt path. No confirmatory dataset-level evidence pack or manuscript result has been produced; smoke scores carry no scientific claim. |
-| The tracking fixture closes MAJ-3 | Scoped implementation slice only | `hybrid_tracking.py` executes a seeded context-gated closed-loop tracking fixture. Its log score is on-policy, its known-context component is not an oracle controller, and its risk-plus-variance quantity is a predictive-risk surrogate rather than expected free energy. The held-out, discrete-only, continuous-only, oracle, covariance, calibration, and confirmatory comparisons remain open. |
+| The tracking fixture closes MAJ-3 | Scoped implementation slice only | `hybrid_tracking.py` executes a seeded context-gated tracking pilot with matched naive, robust, discrete-only, continuous-only, and oracle-context components plus a singular-covariance rejection. Its log score is on-policy, the known-context component is not an oracle controller, and its risk-plus-variance quantity is a predictive-risk surrogate rather than expected free energy. Frozen budgets, independently held-out worlds, calibration, and confirmatory comparisons remain open. |
 | The Friston source experiments are now exact replications | Not supported | Machine-readable parity matrices make unresolved parameters visible and force the label “paper-constrained reconstruction.” No source-protocol reconstruction has yet earned exact-replication status. |
 | The versioned socket envelope establishes secure multi-host deployment | Explicitly denied | Protocol version, round, worker, configuration hash, payload digest, authentication mode, HMAC compatibility, digest replay validation, enforced loopback binding, and caller-selected in-memory or restart-durable local round-ID guards are single-machine transport facts. The SQLite guard is not a shared multi-host replay domain. Docker/mTLS emulation and physically distinct-host receipts remain separate open lanes; integrity is not confidentiality, privacy, identity-bound authentication, or Byzantine tolerance. |
 

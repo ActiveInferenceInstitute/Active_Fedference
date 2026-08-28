@@ -69,9 +69,12 @@ LuaLaTeX/tagpdf path and is released only when `pdfinfo` reports `Tagged: yes`,
 qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the source-bound
 language check passes. Some Poppler builds omit the language line from
 `pdfinfo` even when `/Lang` is present. The
-separate slide PDFs are checked structurally, textually, through retained
-renderer logs, and by raster inspection, but do not inherit the manuscript
-tagging status. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+separate slide PDFs are checked structurally, textually, through renderer logs
+during the producing run, and by raster inspection, but do not inherit the
+manuscript tagging status. Renderer logs are retained with the external
+verification evidence rather than the public source tree because they contain
+environment-local timestamps and paths. Tagged structure is not PDF/UA
+conformance: a PDF/UA claim
 requires a dedicated conformance report plus screen-reader and reading-order
 review; `qpdf` structure checks and successful text extraction alone are
 insufficient.

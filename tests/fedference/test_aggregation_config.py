@@ -85,16 +85,19 @@ def test_rich_dispatch_matches_each_low_level_method() -> None:
         ).consensus,
     )
     assert naive.iterations == 0
-    assert np.isclose(naive.agent_weights.sum(), 1.0)
+    assert np.isclose(naive.normalized_effective_weights.sum(), 1.0)
 
 
 def test_rich_dispatch_accepts_positional_config_and_weights() -> None:
     config = AggregationConfig(method="naive")
     weights = np.asarray([1.0, 2.0, 3.0])
     positional = aggregate_result(BELIEFS, config, weights)
-    keyword = aggregate_result(BELIEFS, config=config, weights=weights)
+    keyword = aggregate_result(BELIEFS, config=config, base_weights=weights)
     assert np.array_equal(positional.consensus, keyword.consensus)
-    assert np.array_equal(positional.agent_weights, keyword.agent_weights)
+    assert np.array_equal(
+        positional.normalized_effective_weights,
+        keyword.normalized_effective_weights,
+    )
 
 
 def test_zero_entropy_configuration_has_a_deterministic_boundary_solution() -> None:
@@ -139,10 +142,73 @@ def test_share_round_accepts_config_and_rejects_mixed_paths() -> None:
     )
     configured = share_round(BELIEFS, config=config, exclude_self=False)
     direct = aggregate_result(BELIEFS, config=config)
-    assert np.allclose(configured.consensus, direct.consensus, atol=1e-15)
-    assert np.allclose(configured.agent_weights, direct.agent_weights, atol=1e-15)
+    assert np.array_equal(configured.consensus, direct.consensus)
+    assert np.array_equal(
+        configured.normalized_effective_weights,
+        direct.normalized_effective_weights,
+    )
     with pytest.raises(ValueError, match="mutually exclusive"):
         share_round(BELIEFS, method="robust", config=config)
+
+
+@pytest.mark.parametrize(
+    "config",
+    (
+        AggregationConfig(method="naive"),
+        AggregationConfig(method="robust", robustness=1.5),
+        AggregationConfig(method="variational", robustness=1.5),
+    ),
+)
+def test_share_round_global_consensus_is_bit_identical_to_direct_dispatch(
+    config: AggregationConfig,
+) -> None:
+    base_weights = np.asarray([0.5, 1.0, 2.0])
+    shared = share_round(
+        BELIEFS,
+        config=config,
+        base_weights=base_weights,
+        exclude_self=True,
+    )
+    direct = aggregate_result(BELIEFS, config=config, base_weights=base_weights)
+    assert np.array_equal(shared.consensus, direct.consensus)
+    if shared.normalized_effective_weights is not None:
+        assert np.array_equal(
+            shared.normalized_effective_weights,
+            direct.normalized_effective_weights,
+        )
+
+
+@pytest.mark.parametrize(
+    "config",
+    (
+        AggregationConfig(method="naive"),
+        AggregationConfig(method="robust", robustness=1.5),
+        AggregationConfig(method="variational", robustness=1.5),
+    ),
+)
+def test_share_round_generators_preserve_exact_global_and_leave_one_out_dispatch(
+    config: AggregationConfig,
+) -> None:
+    """One-shot iterables must not introduce a second normalization pass."""
+    base_weights = np.asarray([0.5, 1.0, 2.0])
+    shared = share_round(
+        (row for row in BELIEFS),
+        config=config,
+        base_weights=(float(weight) for weight in base_weights),
+        exclude_self=True,
+    )
+    direct = aggregate_result(BELIEFS, config=config, base_weights=base_weights)
+    assert np.array_equal(shared.consensus, direct.consensus)
+
+    all_indices = np.arange(len(BELIEFS))
+    for recipient in all_indices:
+        included = all_indices[all_indices != recipient]
+        expected = aggregate_result(
+            BELIEFS[included],
+            config=config,
+            base_weights=base_weights[included],
+        )
+        assert np.array_equal(shared.shared_posteriors[recipient], expected.consensus)
 
 
 def test_dispatch_rejects_non_configuration_objects() -> None:

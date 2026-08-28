@@ -20,8 +20,16 @@ from fedference.federation.transport import (
     deserialize_belief,
     deserialize_envelope,
     deserialize_result,
+    serialize_belief,
     serialize_envelope,
+    serialize_result,
 )
+
+
+def _replace_envelope_header(wire: bytes, header: bytes) -> bytes:
+    """Replace a fixture envelope header while retaining its payload bytes."""
+    original_length = struct.unpack(">I", wire[:4])[0]
+    return struct.pack(">I", len(header)) + header + wire[4 + original_length :]
 
 
 def test_protocol_envelope_round_trip_and_digest_tamper_detection() -> None:
@@ -71,6 +79,47 @@ def test_protocol_envelope_rejects_unknown_version() -> None:
         )
 
 
+@pytest.mark.parametrize("invalid_version", (True, "1", 1.0))
+def test_protocol_envelope_requires_an_exact_integer_version(
+    invalid_version: object,
+) -> None:
+    config = AggregationConfig()
+    wire = serialize_envelope(
+        b"x",
+        message_type="belief",
+        round_id="round",
+        worker_id=0,
+        aggregation_config_hash=config.fingerprint,
+    )
+    header_length = struct.unpack(">I", wire[:4])[0]
+    header = json.loads(wire[4 : 4 + header_length])
+    header["protocol_version"] = invalid_version
+    changed = json.dumps(header, sort_keys=True, separators=(",", ":")).encode()
+    with pytest.raises(ValueError, match="unsupported protocol_version"):
+        deserialize_envelope(_replace_envelope_header(wire, changed))
+
+
+def test_protocol_envelope_rejects_duplicate_and_nonfinite_json_members() -> None:
+    config = AggregationConfig()
+    wire = serialize_envelope(
+        b"x",
+        message_type="belief",
+        round_id="round",
+        worker_id=0,
+        aggregation_config_hash=config.fingerprint,
+    )
+    header_length = struct.unpack(">I", wire[:4])[0]
+    header = wire[4 : 4 + header_length].decode("utf-8")
+    duplicate = header.replace(
+        '"protocol_version":1',
+        '"protocol_version":1,"protocol_version":1',
+    ).encode()
+    nonfinite = header.replace('"worker_id":0', '"worker_id":NaN').encode()
+    for malformed in (duplicate, nonfinite):
+        with pytest.raises(ValueError, match="header is not valid JSON"):
+            deserialize_envelope(_replace_envelope_header(wire, malformed))
+
+
 def test_result_transport_rejects_malformed_or_non_probability_archives() -> None:
     malformed = BytesIO()
     np.savez(malformed, consensus=np.asarray([0.5, 0.5]), unexpected=np.asarray([1.0]))
@@ -96,17 +145,88 @@ def test_result_transport_rejects_malformed_or_non_probability_archives() -> Non
         deserialize_result(wrong_dtype.getvalue())
 
 
-def test_belief_transport_rejects_non_vector_and_non_probability_payloads() -> None:
+def test_belief_transport_rejects_non_vector_and_invalid_mass_payloads() -> None:
     for value, message in (
         (np.asarray([[0.5, 0.5]]), "non-empty vector"),
         (np.asarray([0.5, 0.5], dtype=np.float32), "float64"),
         (np.asarray([0.5, -0.5]), "finite and non-negative"),
-        (np.asarray([0.5, 0.6]), "sum to one"),
+        (np.asarray([0.0, 0.0]), "positive finite mass"),
     ):
         payload = BytesIO()
         np.save(payload, value)
         with pytest.raises(ValueError, match=message):
             deserialize_belief(payload.getvalue())
+
+
+def test_belief_transport_preserves_positive_nonunit_mass_exactly() -> None:
+    belief = np.asarray([7.0, 2.0, 1.0], dtype=np.float64)
+    assert np.array_equal(deserialize_belief(serialize_belief(belief)), belief)
+
+
+@pytest.mark.parametrize(
+    ("belief", "message"),
+    (
+        (np.asarray([[0.5, 0.5]]), "one-dimensional"),
+        (np.asarray([[0.5], [0.5]]), "one-dimensional"),
+        (np.asarray([[[0.5, 0.5]]]), "one-dimensional"),
+        (np.asarray([True, False]), "numeric non-boolean"),
+        (np.asarray(["0.5", "0.5"]), "numeric non-boolean"),
+        (np.asarray([-0.1, 1.1]), "non-negative"),
+        (np.asarray([0.0, 0.0]), "positive finite mass"),
+    ),
+)
+def test_belief_serializer_rejects_malformed_caller_vectors(
+    belief: np.ndarray,
+    message: str,
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        serialize_belief(belief)
+
+
+@pytest.mark.parametrize(
+    ("value", "message"),
+    (
+        (np.asarray([[0.5, 0.5]]), "one-dimensional"),
+        (np.asarray([[0.5], [0.5]]), "one-dimensional"),
+        (np.asarray([[[0.5, 0.5]]]), "one-dimensional"),
+        (np.asarray([True, False]), "numeric non-boolean"),
+        (np.asarray(["0.5", "0.5"]), "numeric non-boolean"),
+        (np.asarray([-0.1, 1.1]), "non-negative"),
+        (np.asarray([0.0, 0.0]), "positive finite mass"),
+        (np.asarray([0.6, 0.6]), "sum to one"),
+    ),
+)
+def test_result_serializer_rejects_malformed_consensus_and_weights(
+    value: np.ndarray,
+    message: str,
+) -> None:
+    valid = np.asarray([0.5, 0.5])
+    with pytest.raises(ValueError, match=message):
+        serialize_result(value, valid)
+    with pytest.raises(ValueError, match=message):
+        serialize_result(valid, value)
+
+
+@pytest.mark.parametrize(
+    "belief",
+    (
+        np.asarray([[0.5, 0.5]]),
+        np.asarray([[0.5], [0.5]]),
+        np.asarray([[[0.5, 0.5]]]),
+        np.asarray([True, False]),
+        np.asarray(["0.5", "0.5"]),
+        np.asarray([-0.1, 1.1]),
+        np.asarray([0.0, 0.0]),
+    ),
+)
+def test_worker_rejects_malformed_belief_before_queue_write(
+    belief: np.ndarray,
+) -> None:
+    requests: queue.Queue = queue.Queue()
+    worker = FederationWorker(0, requests, queue.Queue())
+    with pytest.raises(ValueError):
+        worker.send_belief(belief)
+    assert requests.empty()
 
 
 def test_queue_server_dispatches_variational_configuration() -> None:

@@ -45,13 +45,13 @@ Profile scope:
 - `quick`: docs contract, caption completeness, and the required Torch smoke.
 - `manuscript`: cross-reference, caption, token-provenance, token-table, and
   manuscript-variable checks.
-- `package`: web-figure mirroring, web cross-reference normalization, and
-  package validation.
+- `package`: web-publication figure mirroring, cross-reference normalization,
+  and prepared-web-package validation; it is not the wheel/sdist build lane.
 - `torch`: explicit required PyTorch lane via `uv run --locked --extra dev`.
 - `freshness`: the standalone successful test/coverage receipt plus the
   content-hashed analysis → hydration → render stage receipts.
-- `source`: Ruff, mypy, invariants, domain-layer grep, and exact-set release
-  build/verify.
+- `source`: Ruff across source, tests, scripts, and runnable examples; mypy;
+  invariants; domain-layer grep; and exact-set release build/verify.
 - `full`: quick + manuscript + package + rendered-surface + freshness + source
   + full coverage gate.
 
@@ -79,31 +79,54 @@ accepts `--template-root PATH` for the optional sibling template renderer.
 ## Public API, registry, and receipt verification
 
 ```bash
+FEDFERENCE_VERIFY_ROOT="$(mktemp -d /tmp/active-fedference-verify.XXXXXX)"
+
+# Primary labeled own-data path and application receipt.
+uv run --locked fedference aggregate \
+  --input examples/data/labeled_aggregation_request.json \
+  --output-dir "$FEDFERENCE_VERIFY_ROOT/application" \
+  --project-root .
+uv run --locked fedference verify \
+  "$FEDFERENCE_VERIFY_ROOT/application/receipt.json" \
+  --require-nominal-solver
+
+# Registered research path and research receipt.
 uv run --locked fedference list --json
 
 uv run --locked fedference run server-theory \
-  --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
+  --profile smoke --seed 0 \
+  --output-dir "$FEDFERENCE_VERIFY_ROOT/server-theory" \
+  --project-root .
 
-uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
+uv run --locked fedference verify \
+  "$FEDFERENCE_VERIFY_ROOT/server-theory/receipt.json"
 ```
 
 Write-producing commands require an explicit empty directory and reject the
-committed `output/` tree. Registry state is a work declaration, not a scientific
-result. Smoke and pilot runs do not support manuscript claims.
+committed `output/` tree. An application receipt proves its declared
+input/output/provenance integrity, not scientific validity or a downstream
+decision. Registry state is a work declaration, not a scientific result. Smoke
+and pilot runs do not support manuscript claims.
 
 The bounded single-machine research pilots use the same receipt contract:
 
 ```bash
+FEDFERENCE_PILOT_ROOT="$(mktemp -d /tmp/active-fedference-pilots.XXXXXX)"
 uv run --locked fedference run robustness-calibration \
-  --profile pilot --seed 0 --output-dir .tmp/calibration-pilot
+  --profile pilot --seed 0 \
+  --output-dir "$FEDFERENCE_PILOT_ROOT/calibration"
 uv run --locked fedference run fedgvi-bnn \
-  --profile pilot --seed 0 --device cpu --output-dir .tmp/fedgvi-bnn-pilot
+  --profile pilot --seed 0 --device cpu \
+  --output-dir "$FEDFERENCE_PILOT_ROOT/fedgvi-bnn"
 uv run --locked fedference run hybrid-tracking \
-  --profile pilot --seed 0 --output-dir .tmp/hybrid-pilot
+  --profile pilot --seed 0 \
+  --output-dir "$FEDFERENCE_PILOT_ROOT/hybrid"
 uv run --locked fedference run hierarchy-tasks \
-  --profile pilot --seed 0 --seed 1 --output-dir .tmp/hierarchy-pilot
+  --profile pilot --seed 0 --seed 1 \
+  --output-dir "$FEDFERENCE_PILOT_ROOT/hierarchy"
 uv run --locked fedference run friston-protocol \
-  --profile pilot --seed 0 --output-dir .tmp/friston-parity-audit
+  --profile pilot --seed 0 \
+  --output-dir "$FEDFERENCE_PILOT_ROOT/friston-parity"
 ```
 
 These reports retain the calibration overlap, BNN checkpoint/device,
@@ -124,26 +147,63 @@ print(c.fingerprint)
 "
 ```
 
+## Executable example ladder
+
+Every numbered example is a real public-surface smoke program. Run the complete
+ladder and its subprocess/output contract with:
+
+```bash
+mkdir -p .tmp
+EXAMPLE_SMOKE=$(mktemp -d .tmp/example-smoke.XXXXXX)
+uv run --locked python examples/01_minimal_aggregation.py
+uv run --locked python examples/02_compare_aggregation_methods.py
+uv run --locked python examples/03_federation_boundaries.py \
+  --output-dir "$EXAMPLE_SMOKE/federation"
+uv run --locked python examples/04_cli_receipt_workflow.py \
+  --output-dir "$EXAMPLE_SMOKE/cli" --project-root .
+uv run --locked python examples/05_labeled_application.py \
+  --input examples/data/labeled_aggregation_request.json \
+  --output-dir "$EXAMPLE_SMOKE/application" --project-root .
+uv run --locked pytest tests/test_examples.py -q
+```
+
+The examples are linted and scanned by the no-placeholder/no-test-double gate.
+They are archival source-distribution and provenance inputs, not wheel runtime
+modules or generated reviewer artifacts.
+
 ## Wheel and source-distribution smoke
 
 ```bash
-DIST_SMOKE=$(mktemp -d .tmp/distribution-smoke.XXXXXX)
+mkdir -p .tmp
+CHECKOUT_ROOT="$(pwd -P)"
+DIST_SMOKE="$(mktemp -d "$CHECKOUT_ROOT/.tmp/distribution-smoke.XXXXXX")"
+INSTALLED_SMOKE="$(mktemp -d /tmp/active-fedference-installed.XXXXXX)"
 export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
 uv build --out-dir "$DIST_SMOKE/dist"
 uv build --out-dir "$DIST_SMOKE/rebuilt"
-shasum -a 256 "$DIST_SMOKE"/dist/* "$DIST_SMOKE"/rebuilt/*
+cmp "$DIST_SMOKE"/dist/*.whl "$DIST_SMOKE"/rebuilt/*.whl
+cmp "$DIST_SMOKE"/dist/*.tar.gz "$DIST_SMOKE"/rebuilt/*.tar.gz
 sdist="$(find "$DIST_SMOKE/dist" -maxdepth 1 -name '*.tar.gz' -print -quit)"
-for member in LICENSE docs/README.md docs/development/modularity.md manuscript/config.yaml scripts/02_run_analysis.py src/fedference_cli/README.md tests/README.md; do
+for member in LICENSE docs/README.md docs/application-guide.md docs/development/modularity.md examples/README.md examples/01_minimal_aggregation.py examples/02_compare_aggregation_methods.py examples/03_federation_boundaries.py examples/04_cli_receipt_workflow.py examples/05_labeled_application.py examples/data/labeled_aggregation_request.json manuscript/config.yaml manuscript/config.yaml.example scripts/02_run_analysis.py src/fedference/py.typed src/fedference_cli/README.md tests/README.md; do
   tar -tzf "$sdist" | grep -Eq "/$member$"
 done
-uv venv "$DIST_SMOKE/wheel"
-uv pip install --python "$DIST_SMOKE/wheel/bin/python" "$DIST_SMOKE"/dist/*.whl
-"$DIST_SMOKE/wheel/bin/fedference" list --json
-"$DIST_SMOKE/wheel/bin/python" -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
-uv venv "$DIST_SMOKE/sdist"
-uv pip install --python "$DIST_SMOKE/sdist/bin/python" "$DIST_SMOKE"/dist/*.tar.gz
-"$DIST_SMOKE/sdist/bin/fedference" list --json
-"$DIST_SMOKE/sdist/bin/python" -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+cp examples/data/labeled_aggregation_request.json "$INSTALLED_SMOKE/request.json"
+uv venv "$DIST_SMOKE/wheel-env"
+uv pip install --python "$DIST_SMOKE/wheel-env/bin/python" "$DIST_SMOKE"/dist/*.whl
+(
+  cd "$INSTALLED_SMOKE"
+  "$DIST_SMOKE/wheel-env/bin/python" -c "import sys; from importlib.metadata import version; from importlib.resources import files; import fedference; assert fedference.__version__ == version('active_fedference'); assert files('fedference').joinpath('py.typed').is_file(); assert 'torch' not in sys.modules"
+  "$DIST_SMOKE/wheel-env/bin/fedference" aggregate --input request.json --output-dir wheel-run
+  "$DIST_SMOKE/wheel-env/bin/fedference" verify wheel-run/receipt.json --require-nominal-solver
+)
+uv venv "$DIST_SMOKE/sdist-env"
+uv pip install --python "$DIST_SMOKE/sdist-env/bin/python" "$DIST_SMOKE"/dist/*.tar.gz
+(
+  cd "$INSTALLED_SMOKE"
+  "$DIST_SMOKE/sdist-env/bin/python" -c "import sys; from importlib.metadata import version; from importlib.resources import files; import fedference; assert fedference.__version__ == version('active_fedference'); assert files('fedference').joinpath('py.typed').is_file(); assert 'torch' not in sys.modules"
+  "$DIST_SMOKE/sdist-env/bin/fedference" aggregate --input request.json --output-dir sdist-run
+  "$DIST_SMOKE/sdist-env/bin/fedference" verify sdist-run/receipt.json --require-nominal-solver
+)
 ```
 
 The default install must import the NumPy/SciPy core without Torch. The optional
@@ -154,19 +214,28 @@ byte-identical wheel and sdist pairs; a differing digest is a release blocker,
 even when both artifacts install successfully.
 
 The source distribution is the archival source package: it includes `LICENSE`,
-the modular `docs/`, `manuscript/`, `scripts/`, and `tests/` trees, plus the
-source-bound metadata and acceptance files. The wheel is the runtime package;
-it includes the importable modules and packaged compatibility inputs, but not
-the committed reviewer snapshot under `output/`.
+the modular `docs/`, `examples/`, `manuscript/`, `scripts/`, and `tests/` trees,
+including the application guide, every numbered example, example data, and the
+copyable `manuscript/config.yaml.example`, plus source-bound metadata and
+acceptance files. The wheel is the typed runtime package; it includes
+`fedference/py.typed`, importable modules, and packaged compatibility inputs,
+but not examples or committed reviewer output. Both installed artifact probes
+run outside the checkout and confirm that the default application import graph
+does not load Torch.
 
 ## Pinned external-data smoke
 
 ```bash
+FEDFERENCE_BENCHMARK_ROOT="$(mktemp -d /tmp/active-fedference-benchmark.XXXXXX)"
 uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
-  --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
-uv run --locked fedference verify .tmp/banknote-smoke/receipt.json
-uv run --locked fedference verify .tmp/banknote-smoke/receipt.json --require-clean-git
+  --cache-dir "$FEDFERENCE_BENCHMARK_ROOT/cache" \
+  --output-dir "$FEDFERENCE_BENCHMARK_ROOT/run"
+uv run --locked fedference verify \
+  "$FEDFERENCE_BENCHMARK_ROOT/run/receipt.json"
+uv run --locked fedference verify \
+  "$FEDFERENCE_BENCHMARK_ROOT/run/receipt.json" \
+  --require-clean-git --project-root .
 ```
 
 The first verification checks archive/member hashes, schema, train-only
@@ -254,9 +323,10 @@ uv run --locked pytest tests/test_runtime_surface.py -q
 ```
 
 The dedicated test scans executable Python under `src/`, `scripts/`, and
-`tests/`, while excluding only its own pattern declarations. A raw recursive
-grep is not the gate because it also matches the forbidden-name documentation
-in `tests/PATTERNS.md` and the detector's own regex.
+`examples/`, plus the test-double APIs under `tests/`, while excluding only its
+own pattern declarations. A raw recursive grep is not the gate because it also
+matches the forbidden-name documentation in `tests/PATTERNS.md` and the
+detector's own regex.
 
 ## Release bundle + provenance fingerprint
 
@@ -266,15 +336,29 @@ uv run --locked python scripts/build_release.py --verify
 ```
 
 Build writes `output/release/` (`manifest.json`, `sha256sums.txt`, a derived
-`README.md`). Verify is exact-set: every listed artifact must exist with its
-recorded byte size and SHA-256, and no unlisted file may appear under the
-release roots. The manifest also records a provenance `fingerprint` — a
-SHA-256 over the declared source, manuscript, documentation, producer-script,
-dependency-lock, and claim-audit inputs — together with the pipeline profile,
-generator version, and individual input digests. `--verify` recomputes these
-from the current tree, so a bundle whose bytes all match but which was built
-from a different producer or evidence state still fails as stale and names
-changed inputs.
+`README.md`). Schema 4 declares an exact
+`publication-payload-v1` scope: every listed payload artifact must exist with
+its recorded byte size and SHA-256, no unlisted payload file may appear under
+the release roots, and a listed downstream-control path is rejected even when
+its own digest is correct. Construction and verification also reject symlinked
+path components and filesystem aliases whose spelling is not an independently
+discovered canonical payload path. The manifest also records a provenance
+`fingerprint` — a
+SHA-256 over the declared source, examples, manuscript, documentation,
+producer-script, dependency-lock, and claim-audit inputs — together with the
+pipeline profile, generator version, and individual input digests. `--verify`
+recomputes these from the current tree, so a bundle whose bytes all match but
+which was built from a different producer or evidence state still fails as
+stale and names changed inputs.
+
+Template-owned artifact/evidence/output-statistics/validation/
+rendered-provenance reports and `output/reports/snapshots/` are downstream of
+the payload manifest and are intentionally excluded from it. Verify those
+after the release bytes exist by refreshing the artifact manifest in the
+pinned Template checkout, running Template stages 04-05, and then running the
+rendered, coverage-receipt, pipeline-freshness, and release `--verify` gates.
+The Git tree, confidentiality evidence manifest, and isolated-clone comparison
+bind both layers together.
 
 The CLI first requires fresh publication-profile analysis, test/coverage,
 hydration, and render receipts. Its success establishes a local source-current
@@ -353,7 +437,9 @@ uv run --locked python scripts/pipeline/stage_05_copy.py --project working/activ
 cd "$AF_REPO"
 uv run --locked --extra dev python scripts/validate_test_coverage.py
 uv run --locked python scripts/z_generate_manuscript_variables.py
-if rg -n '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+# Hydrated Markdown must be token-free. Auxiliary config/preamble/BibTeX files
+# remain source-exact and are validated by their consumer-specific producers.
+if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else
@@ -388,7 +474,7 @@ pass is deliberately unrecorded. The final render receipt is recorded only
 after final stages 03–05 and web preparation, because web preparation rewrites
 `output/web/` and the render receipt must hash the actual reader surface.
 
-Receipt schema 2 omits volatile completion times by default, so recording an
+Receipt schema 3 omits volatile completion times by default, so recording an
 unchanged stage is byte-identical. Use a canonical `--timestamp` or
 `SOURCE_DATE_EPOCH` only when an external event supplies that value.
 
@@ -402,6 +488,11 @@ uv run --locked python scripts/validate_clean_checkout.py
 
 It must be run from a checkout containing the committed required paths; a dirty
 tree is reported as a failure rather than silently promoted to release evidence.
+The probe also requires all five historical top-level release PDFs (v0.1.0
+through v1.0.4) and verifies their bytes against
+[`historical-release-pdfs.json`](historical-release-pdfs.json). The release
+bundle preflight repeats that digest check, so tracking a substituted file does
+not satisfy the immutable-release boundary.
 
 For repeated subprocess smoke checks, the same pipeline accepts an explicit
 bounded real-computation profile:
@@ -439,12 +530,17 @@ uv run --locked python scripts/validate_rendered_surfaces.py
 ```
 
 This gate checks every manuscript and slide PDF with both `qpdf --check` and
-`pdftotext`, requires matching PDF/TeX/log slide triplets, scans every retained
-manuscript and slide log for missing glyphs, undefined references, and material
-layout overflow, and validates the local web package. Every retained log is
-evidence-bearing: obsolete logs may be removed only after a current,
-source-bound render establishes that the producer no longer emits them.
-Warnings in any retained log fail the gate. The manuscript-PDF branch
+`pdftotext`, requires matching PDF/TeX slide pairs, scans every local manuscript
+and slide log for missing glyphs, undefined references, and material layout
+overflow, and validates the local web package. When any slide logs are present,
+the gate requires a complete PDF/TeX/log set and warnings fail the gate.
+Renderer logs are retained in the external verification namespace, not the
+public Git history: XeTeX and LuaLaTeX embed wall-clock and machine-local path
+details even under a deterministic source epoch. A log-free clean checkout is
+therefore valid after the producing run's log inspection is receipted. Other
+LaTeX/Beamer build sidecars (`aux`, `bbl`, `blg`, `lof`, `lot`, `nav`, `out`,
+`snm`, `toc`, and `vrb`) are likewise excluded from the durable public payload.
+The manuscript-PDF branch
 additionally enforces the source-requested tagged structure (`Tagged: yes`,
 qpdf-visible `/Lang`, language, and `StructTreeRoot`). The validator accepts
 the catalog `/Lang` when a Poppler build omits its optional `Language:` line.

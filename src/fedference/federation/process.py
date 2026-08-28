@@ -3,17 +3,51 @@ from __future__ import annotations
 import queue
 import warnings
 from collections.abc import Sequence
+from dataclasses import dataclass
 from multiprocessing import get_context
 from time import monotonic
 from typing import Any
 
 import numpy as np
 
-from fedference.aggregation import AggregationConfig
+from fedference._validation import as_pmf_matrix
+from fedference.aggregation import AggregationConfig, AggregationResult
 from fedference.federation.server import FederationServer
 from fedference.federation.worker import FederationWorker
 
 DEFAULT_STARTUP_TIMEOUT = 15.0
+
+
+@dataclass(frozen=True)
+class MultiprocessRoundResult:
+    """Server diagnostics and ordered worker results from one process round."""
+
+    server_aggregation: AggregationResult
+    worker_consensuses: tuple[np.ndarray, ...]
+    config: AggregationConfig
+    n_workers: int
+    bit_identical: bool
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.config, AggregationConfig):
+            raise ValueError("config must be an AggregationConfig")
+        if self.n_workers != len(self.worker_consensuses) or self.n_workers <= 0:
+            raise ValueError("worker_consensuses must contain one result per worker")
+        if not isinstance(self.bit_identical, bool):
+            raise ValueError("bit_identical must be a boolean")
+        frozen_workers: list[np.ndarray] = []
+        for consensus in self.worker_consensuses:
+            copied = np.asarray(consensus, dtype=np.float64).copy()
+            if copied.ndim != 1 or copied.size == 0 or not np.all(np.isfinite(copied)):
+                raise ValueError("worker consensuses must be non-empty finite vectors")
+            copied.setflags(write=False)
+            frozen_workers.append(copied)
+        object.__setattr__(self, "worker_consensuses", tuple(frozen_workers))
+
+    @property
+    def consensus(self) -> np.ndarray:
+        """Return the server consensus broadcast to every worker."""
+        return self.server_aggregation.consensus
 
 
 def _worker_round(
@@ -41,7 +75,7 @@ def _stop_processes(processes: Sequence[Any], timeout: float) -> None:
             process.join(timeout=max(0.0, deadline - monotonic()))
 
 
-def run_multiprocess_round(
+def run_multiprocess_round_result(
     local_posteriors: Sequence[np.ndarray] | None = None,
     *,
     robustness: float | None = None,
@@ -49,8 +83,8 @@ def run_multiprocess_round(
     timeout: float = 5.0,
     startup_timeout: float | None = None,
     **legacy: object,
-) -> np.ndarray:
-    """Run one real spawned-process federation round and return its consensus.
+) -> MultiprocessRoundResult:
+    """Run one spawned-process round and return complete server diagnostics.
 
     The server and workers exchange serialized beliefs through multiprocessing
     queues. Worker responses are checked against the server result before the
@@ -60,6 +94,12 @@ def run_multiprocess_round(
     one-time wait for all spawned workers to import and announce readiness;
     when omitted it is at least ``DEFAULT_STARTUP_TIMEOUT`` so macOS spawn
     latency cannot consume the transport timeout under normal system load.
+
+    The helper deliberately uses the ``spawn`` start method on every platform.
+    Call it from an importable Python file and protect the invoking entry point
+    with ``if __name__ == "__main__":``. An unguarded module body, ``python -c``
+    snippet, or equivalent non-importable interactive entry point can recursively
+    start children or fail during worker bootstrap.
     """
     if "beliefs" in legacy:
         if local_posteriors is not None:
@@ -76,12 +116,16 @@ def run_multiprocess_round(
         raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
+    raw_local_posteriors = tuple(local_posteriors)
+    if not raw_local_posteriors:
+        raise ValueError("beliefs must be non-empty (local_posteriors is the canonical name)")
+    as_pmf_matrix(raw_local_posteriors, name="local_posteriors")
+    # Preserve caller mass on protocol v1. The server normalizes each received
+    # categorical row exactly once through aggregate_result.
     belief_arrays = tuple(
         np.asarray(local_posterior, dtype=np.float64)
-        for local_posterior in local_posteriors
+        for local_posterior in raw_local_posteriors
     )
-    if not belief_arrays:
-        raise ValueError("beliefs must be non-empty (local_posteriors is the canonical name)")
     if config is not None and not isinstance(config, AggregationConfig):
         raise ValueError("config must be an AggregationConfig or None")
     if config is not None and robustness is not None:
@@ -125,7 +169,7 @@ def run_multiprocess_round(
         for worker_id, belief in enumerate(belief_arrays)
     ]
 
-    worker_consensus: list[np.ndarray] = []
+    worker_consensus_by_id: dict[int, np.ndarray] = {}
     started_processes: list[Any] = []
     try:
         for process in processes:
@@ -158,10 +202,25 @@ def run_multiprocess_round(
             timeout=timeout,
             config=config,
         )
-        consensus = server.run_round(request_queue, response_queues, timeout=timeout)
+        server_result = server.run_round_result(
+            request_queue,
+            response_queues,
+            timeout=timeout,
+        )
         for _ in processes:
-            _, child_consensus = result_queue.get(timeout=timeout)
-            worker_consensus.append(child_consensus)
+            worker_id, child_consensus = result_queue.get(timeout=timeout)
+            if (
+                isinstance(worker_id, bool)
+                or not isinstance(worker_id, (int, np.integer))
+                or int(worker_id) not in range(len(processes))
+            ):
+                raise RuntimeError("multiprocess worker returned an invalid id")
+            worker_id = int(worker_id)
+            if worker_id in worker_consensus_by_id:
+                raise RuntimeError(
+                    f"multiprocess worker returned duplicate id: {worker_id}"
+                )
+            worker_consensus_by_id[worker_id] = child_consensus
     except queue.Empty as exc:
         raise TimeoutError("multiprocess federation round timed out") from exc
     finally:
@@ -178,6 +237,47 @@ def run_multiprocess_round(
     failed = [process.exitcode for process in started_processes if process.exitcode != 0]
     if failed:
         raise RuntimeError(f"worker process exit codes: {failed}")
-    if any(not np.array_equal(consensus, child) for child in worker_consensus):
+    ordered_workers = tuple(
+        worker_consensus_by_id[worker_id]
+        for worker_id in range(len(processes))
+    )
+    bit_identical = all(
+        np.array_equal(server_result.consensus, child)
+        for child in ordered_workers
+    )
+    if not bit_identical:
         raise RuntimeError("worker consensus did not match server consensus")
-    return consensus
+    return MultiprocessRoundResult(
+        server_aggregation=server_result,
+        worker_consensuses=ordered_workers,
+        config=server.config,
+        n_workers=len(processes),
+        bit_identical=bit_identical,
+    )
+
+
+def run_multiprocess_round(
+    local_posteriors: Sequence[np.ndarray] | None = None,
+    *,
+    robustness: float | None = None,
+    config: AggregationConfig | None = None,
+    timeout: float = 5.0,
+    startup_timeout: float | None = None,
+    **legacy: object,
+) -> np.ndarray:
+    """Run one process round and return the legacy consensus array."""
+    return run_multiprocess_round_result(
+        local_posteriors,
+        robustness=robustness,
+        config=config,
+        timeout=timeout,
+        startup_timeout=startup_timeout,
+        **legacy,
+    ).consensus
+
+
+__all__ = [
+    "MultiprocessRoundResult",
+    "run_multiprocess_round",
+    "run_multiprocess_round_result",
+]

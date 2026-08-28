@@ -35,7 +35,7 @@ jobs:
           sudo apt-get install --no-install-recommends -y poppler-utils qpdf
 
       - name: Ruff lint
-        run: uv run --locked ruff check src/ tests/ scripts/ _fedference_build_backend.py
+        run: uv run --locked ruff check src/ tests/ scripts/ examples/ _fedference_build_backend.py
 
       - name: GitHub-compatible Mermaid contract
         run: uv run --locked python scripts/validate_mermaid.py
@@ -55,17 +55,42 @@ jobs:
           cmp .tmp/dist/*.tar.gz .tmp/dist-rebuilt/*.tar.gz
           sdist="$(find .tmp/dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
           test -n "$sdist"
-          for member in LICENSE docs/README.md docs/development/modularity.md manuscript/config.yaml scripts/02_run_analysis.py src/fedference_cli/README.md tests/README.md; do
+          for member in LICENSE docs/README.md docs/application-guide.md docs/development/modularity.md examples/README.md examples/01_minimal_aggregation.py examples/02_compare_aggregation_methods.py examples/03_federation_boundaries.py examples/04_cli_receipt_workflow.py examples/05_labeled_application.py examples/data/labeled_aggregation_request.json manuscript/config.yaml manuscript/config.yaml.example scripts/02_run_analysis.py src/fedference/py.typed src/fedference_cli/README.md tests/README.md; do
             tar -tzf "$sdist" | grep -Eq "/$member$"
           done
+          checkout_root="$(pwd -P)"
+          installed_smoke_root="$(mktemp -d)"
+          cp examples/data/labeled_aggregation_request.json "$installed_smoke_root/request.json"
+          wheel_smoke_env="$checkout_root/.tmp/wheel-smoke"
           uv venv .tmp/wheel-smoke
           uv pip install --python .tmp/wheel-smoke/bin/python .tmp/dist/*.whl
-          .tmp/wheel-smoke/bin/fedference list --json
-          .tmp/wheel-smoke/bin/python -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+          (
+            cd "$installed_smoke_root"
+            "$wheel_smoke_env/bin/fedference" list --json
+            "$wheel_smoke_env/bin/python" -c "import sys; from importlib.metadata import version; from importlib.resources import files; import fedference; assert fedference.__version__ == version('active_fedference'); assert files('fedference').joinpath('py.typed').is_file(); assert 'torch' not in sys.modules"
+            "$wheel_smoke_env/bin/python" -c "import json; from pathlib import Path; from fedference import LabeledAggregationRequest, aggregate_labeled; request = LabeledAggregationRequest.from_json(Path('request.json').read_text()); assert aggregate_labeled(request).aggregation.solver_status == 'nominal'; assert 'torch' not in __import__('sys').modules"
+            "$wheel_smoke_env/bin/python" -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+            "$wheel_smoke_env/bin/fedference" aggregate --input request.json --output-dir wheel-run
+            "$wheel_smoke_env/bin/fedference" verify wheel-run/receipt.json --require-nominal-solver
+            test -s wheel-run/request.json
+            test -s wheel-run/result.json
+            test -s wheel-run/receipt.json
+          )
+          sdist_smoke_env="$checkout_root/.tmp/sdist-smoke"
           uv venv .tmp/sdist-smoke
           uv pip install --python .tmp/sdist-smoke/bin/python .tmp/dist/*.tar.gz
-          .tmp/sdist-smoke/bin/fedference list --json
-          .tmp/sdist-smoke/bin/python -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+          (
+            cd "$installed_smoke_root"
+            "$sdist_smoke_env/bin/fedference" list --json
+            "$sdist_smoke_env/bin/python" -c "import sys; from importlib.metadata import version; from importlib.resources import files; import fedference; assert fedference.__version__ == version('active_fedference'); assert files('fedference').joinpath('py.typed').is_file(); assert 'torch' not in sys.modules"
+            "$sdist_smoke_env/bin/python" -c "import json; from pathlib import Path; from fedference import LabeledAggregationRequest, aggregate_labeled; request = LabeledAggregationRequest.from_json(Path('request.json').read_text()); assert aggregate_labeled(request).aggregation.solver_status == 'nominal'; assert 'torch' not in __import__('sys').modules"
+            "$sdist_smoke_env/bin/python" -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+            "$sdist_smoke_env/bin/fedference" aggregate --input request.json --output-dir sdist-run
+            "$sdist_smoke_env/bin/fedference" verify sdist-run/receipt.json --require-nominal-solver
+            test -s sdist-run/request.json
+            test -s sdist-run/result.json
+            test -s sdist-run/receipt.json
+          )
 
       - name: Metadata surfaces are emitter-consistent
         run: uv run --locked python scripts/emit_metadata.py --check
@@ -128,6 +153,11 @@ jobs:
 
       - name: Sync locked dev dependencies
         run: uv sync --locked --extra dev
+
+      - name: Install PDF fixture validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y poppler-utils qpdf
 
       - name: Non-slow source smoke suite
         # Python 3.10 has no stdlib tomllib; the test suite's TOML probes are

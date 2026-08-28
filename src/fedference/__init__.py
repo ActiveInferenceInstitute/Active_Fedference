@@ -14,6 +14,8 @@ lazily by callers from their submodules to keep the core import light.
 
 from __future__ import annotations
 
+from importlib import metadata
+
 from .aggregation import (
     AggregationConfig,
     AggregationMethod,
@@ -27,8 +29,19 @@ from .aggregation import (
     robust_aggregate,
     variational_aggregate,
 )
+from .application import (
+    AgentPosterior,
+    LabeledAggregationRequest,
+    LabeledAggregationResult,
+    aggregate_labeled,
+)
 from .bayesian_model_reduction import greedy_reduce, hierarchical_reduce
-from .belief_sharing import SharingDiagnostics, share_round
+from .belief_sharing import (
+    SharingDiagnostics,
+    SharingRoundResult,
+    share_round,
+    share_round_result,
+)
 from .continuous_recovery import (
     conjugate_gaussian_posterior,
     recovery_residuals,
@@ -44,7 +57,7 @@ from .divergences import (
     reverse_kl,
     total_variation,
 )
-from .evidence import DatasetSpec, ExperimentSpec, RunReceipt
+from .evidence import ApplicationReceipt, DatasetSpec, ExperimentSpec, RunReceipt
 from .generalized_bayes import (
     cavity,
     generalized_posterior,
@@ -53,6 +66,12 @@ from .generalized_bayes import (
 )
 from .hybrid import HybridAggregationResult, HybridBelief, hybrid_aggregate, hybrid_log_linear_pool
 from .losses import beta_loss, loss_vector, nll, rcce
+from .provenance import (
+    RuntimeProvenance,
+    SourceProvenance,
+    collect_source_provenance,
+    runtime_provenance,
+)
 from .statistics import (
     bh_fdr,
     bootstrap_ci,
@@ -64,7 +83,10 @@ from .statistics import (
     summary_statistics,
 )
 
+__version__ = metadata.version("active_fedference")
+
 __all__ = [
+    "__version__",
     "hierarchical_reduce",
     "conjugate_gaussian_posterior",
     "robust_gaussian_posterior",
@@ -99,13 +121,25 @@ __all__ = [
     "AggregationMethod",
     "AggregationResult",
     "AggregatorProtocol",
+    # labeled application boundary
+    "AgentPosterior",
+    "LabeledAggregationRequest",
+    "LabeledAggregationResult",
+    "aggregate_labeled",
     # belief sharing
     "share_round",
+    "share_round_result",
     "SharingDiagnostics",
+    "SharingRoundResult",
     # evidence contracts
     "DatasetSpec",
     "ExperimentSpec",
     "RunReceipt",
+    "ApplicationReceipt",
+    "RuntimeProvenance",
+    "SourceProvenance",
+    "runtime_provenance",
+    "collect_source_provenance",
     "HybridAggregationResult",
     "HybridBelief",
     "hybrid_aggregate",

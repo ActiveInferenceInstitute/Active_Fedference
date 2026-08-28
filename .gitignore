@@ -1,5 +1,19 @@
 # Generated outputs are regeneratable; and we want to commit them.
 # output/
+# Renderer logs are local validation evidence. They can contain wall-clock and
+# machine-path details, so retain them in external verification receipts rather
+# than in the public source history.
+output/**/*.aux
+output/**/*.bbl
+output/**/*.blg
+output/**/*.lof
+output/**/*.log
+output/**/*.lot
+output/**/*.nav
+output/**/*.out
+output/**/*.snm
+output/**/*.toc
+output/**/*.vrb
 
 # Local agent/editor settings (machine-specific; surfaced after this repo was
 # detached from the projects submodule, which had been masking it).

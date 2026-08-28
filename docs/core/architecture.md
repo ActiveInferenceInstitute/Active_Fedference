@@ -11,7 +11,7 @@ resource, and replay I/O.
 | Layer | Path | Rule |
 | --- | --- | --- |
 | Domain layer | `src/fedference/` | Mathematical modules use NumPy/SciPy and remain side-effect free; named evidence/data/checkpoint/replay adapters own explicit I/O; optional Torch modules stay behind extras; **no** `infrastructure.*` imports (ISC-21) |
-| Installed CLI | `src/fedference_cli/` | Split facade/parser/command/support adapter for registry/run/benchmark/verify/replay; writes only to an explicit caller-owned directory |
+| Installed CLI | `src/fedference_cli/` | Split facade/parser/command/support adapter for labeled aggregation, registry runs, receipt verification, and replay findings; writes only to an explicit caller-owned directory |
 | Orchestration | `src/analysis/`, `src/figures/`, `src/manuscript_variables.py` | Wires experiments, serialises JSON (validated at the write boundary by `analysis/report_schemas.py`), generates figures and tokens; still no `infrastructure.*` in this project |
 | Scripts | `scripts/*.py` | Thin, root-aware entry points; stable subprocess/CI arguments and exit statuses; call into `src/`; format validators may own format parsing but never research math or ad-hoc artifact discovery |
 | Manuscript | `manuscript/` | Markdown + `config.yaml`; numbers are `{{TOKEN}}` only |
@@ -22,6 +22,27 @@ Verify the domain boundary:
 ```bash
 ! grep -rn "import infrastructure" src/fedference/
 ```
+
+## Public interface decision
+
+Aggregation, belief sharing, and federation are related but distinct:
+
+| Caller intent | Boundary | Semantics |
+| --- | --- | --- |
+| Aggregate own-data JSON with labels and provenance | `fedference aggregate` | Strict canonical request/result plus an `ApplicationReceipt`; integrity is not scientific validity or a downstream decision |
+| Aggregate own data in Python with labels | `LabeledAggregationRequest` + `aggregate_labeled` | Pure typed operation retaining ordered state/agent identities and complete solver diagnostics |
+| Fuse one numeric matrix of categorical PMFs | `AggregationConfig` + `aggregate_result` | Smallest pure mathematical path; labels/evidence remain caller-owned |
+| Compute what each recipient receives | `share_round_result` | Rich global and per-recipient results; `share_round` retains its legacy diagnostics return |
+| Exercise OS-process isolation | `run_multiprocess_round_result` | Rich same-rule result over spawned workers; consensus-returning helpers remain |
+| Exercise framing/authentication/replay | `run_socket_round_result` / `inspect_socket_replay` | Rich local server/replay health over loopback TCP; legacy socket dictionary/Boolean validator remain |
+| Execute a registered research profile | installed `fedference run` / `benchmark` | Isolated research files and receipt; not automatic scientific evidence |
+
+Raw `base_weights` on direct aggregation/sharing are log-pooling coefficients,
+not probabilities normalized before aggregation. The process and socket
+convenience adapters currently exercise uniform base weights. Transport adapters
+must not copy aggregation math, and a transport parity check does not turn the
+categorical bridge into the complete Friston message-passing protocol. Run all
+of these boundaries from [`examples/README.md`](../../examples/README.md).
 
 ## Dependency direction
 
@@ -59,8 +80,8 @@ without copying the repository or relying on the caller's current directory.
 
 The installed CLI applies the same rule internally: `__init__.py` is only the
 compatibility facade; `_parser.py` owns the process grammar; `_commands.py`
-owns registry dispatch; and `_support.py` owns output isolation and evidence
-receipts. The package-local map is in
+dispatches labeled aggregation, registry runs, verification, and replay; and
+`_support.py` owns output isolation and evidence receipts. The package-local map is in
 [`src/fedference_cli/README.md`](../../src/fedference_cli/README.md), and the
 cross-layer extension recipe is in
 [`../development/modularity.md`](../development/modularity.md).
@@ -97,12 +118,13 @@ flowchart TB
 
 | Module | Role | Key recovery limit |
 | --- | --- | --- |
-| `_validation.py` | Shared finite-simplex, matrix, and non-negative-weight boundary validation | invalid mass is rejected; valid rows normalize once |
+| `_validation.py` | Shared finite-simplex, matrix, and non-negative-weight boundary validation | each external PMF/weight must already be one-dimensional; no implicit flattening; invalid mass is rejected and valid rows normalize once |
 | `divergences.py` | KL, reverse-KL, standard Rényi, FedGVI Alpha-Rényi, TV; named dispatch (KLD/RKL/AR/TV) | both Rényi forms recover KL as $\alpha\to1$ |
 | `losses.py` | NLL, density-power $\beta$-loss, robust categorical cross-entropy (rcce) | $\beta$-loss $\to$ NLL as $\beta\to0$; rcce $\to$ NLL as $q\to0$ |
 | `generalized_bayes.py` | `generalized_posterior`, exact finite-support Alpha-Rényi solve, `cavity`, `update_factor`, `softmax` | `generalized_posterior(KLD,NLL)` = Bayes; AR minimizes its named objective |
 | `aggregation.py` | `AggregationConfig`, `AggregatorProtocol`, canonical `aggregate_result`, compatibility `aggregate`, log-linear, heuristic, and variational rules | both robust methods recover the project `log_linear_pool` at zero robustness with the default entropy setting; the Eq. 7 comparison is a documented categorical specialization, not a full protocol reconstruction; configuration hashes bind adapters and receipts |
-| `belief_sharing.py` | `share_round` over a colony; sensory-attenuation self-exclusion; shared configuration or mutually exclusive legacy controls | naive round implements the project categorical Eq. 7 bridge, not the full source message-passing protocol |
+| `application.py` | Strict labeled request/result types and `aggregate_labeled`; preserves caller masses, exposes normalized rows separately, and delegates aggregation once | returns no inferred winner, threshold, acceptance Boolean, decision, or scientific interpretation |
+| `belief_sharing.py` | `share_round_result` over a colony with global/per-recipient solver health and immutable arrays; compatibility `share_round` preserves its return and NaN behavior | naive round implements the project categorical Eq. 7 bridge, not the full source message-passing protocol |
 | `complexity.py` | Implementation-derived asymptotic catalog, concrete dense-work proxies, and seeded benchmark configuration | separates analytic orders from machine-specific timing diagnostics; retained histories are included in memory accounting |
 
 ### Active-inference machinery
@@ -136,9 +158,14 @@ proved claims. See the
 | --- | --- |
 | `federation/transport.py` | Lossless `numpy` float64 serialization with exact one-dimensional probability-vector validation, plus strict protocol-v1 envelopes carrying round, worker, configuration hash, payload digest, and authentication mode |
 | `federation/worker.py` | `FederationWorker` — sends belief, receives consensus over `queue.Queue` |
-| `federation/server.py` | `FederationServer` — collects beliefs, dispatches through a typed `AggregatorProtocol`, and broadcasts consensus |
-| `federation/process.py` | `run_multiprocess_round` — one-machine OS-process round using the same server/worker queues and serialization |
-| `federation/socket_transport.py` | `run_socket_round` / `ReplayGuard` / `PersistentReplayGuard` / replay save-load-validate helpers — enforced loopback TCP, HMAC-framed payloads, process-local or restart-durable local round-reuse rejection, strict event schemas/order, and persisted digest-verified replay validation |
+| `federation/server.py` | `FederationServer.run_round_result` returns the canonical server result plus ordered worker consensuses; compatibility methods still return consensus |
+| `federation/process.py` | `run_multiprocess_round_result` — rich one-machine OS-process round using the same queues/serialization; compatibility helper returns consensus |
+| `federation/socket_transport.py` | `run_socket_round_result`, `inspect_socket_replay`, `ReplayValidationResult`/`ReplayFinding`, replay guards, and compatibility wrappers — loopback TCP, protocol-v1 framing, structured integrity/solver findings, and persisted digest verification without changing the wire payload |
+
+Because the process adapter uses the cross-platform `spawn` context, call it
+from an importable Python file guarded by `if __name__ == "__main__":`. The
+federation example supplies that safe structure; an inline `python -c` or an
+unguarded notebook cell is not a supported process-launch recipe.
 
 ### Hierarchical POMDP (V2)
 
@@ -178,7 +205,8 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `contamination.py` | `contaminate` — confident-wrong / label-noise broadcasts |
 | `statistics.py` | `paired_test` (Wilcoxon + rank-biserial), `bh_fdr`, `rank_stability` |
 | `continuous_recovery.py` | Continuous-state (1-D Gaussian) generalized-Bayes recovery limits (MAJ-3 slice): density-power robust update recovers the conjugate Normal-Normal posterior at $\beta=0$; full continuous AIF still open |
-| `evidence.py` | Versioned source, experiment, dataset, artifact, and run-receipt dataclasses; canonical hashing, exact artifact verification, and optional live commit/tree/lock matching for strict publication checks |
+| `evidence.py` | Research `RunReceipt` schema 1.2 with runtime provenance plus exact legacy-1.1 reading, and separate `ApplicationReceipt` schema 1.0 binding exactly request/result artifacts and solver health; a completed receipt is not a scientific claim |
+| `provenance.py` | Runtime distribution/Python/dependency identity and source resolution from explicit Git checkout, installed-archive hash, or unavailable; never retains a machine-local install URL or invents a revision |
 | `publication/identifiers.py` | Shared DOI normalization and resolver URL contract consumed by metadata and manuscript tokens |
 | `publication/zenodo.py` | Typed Zenodo REST boundary for draft reservation, metadata update, PDF upload/checksum verification, and explicitly gated publication |
 | `research_registry.py` | Source revisions, execution profiles, confirmatory design fields, BNN protocol profiles, and three pinned UCI dataset declarations; registry state declares work, not results |
@@ -188,12 +216,12 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `aggregation_comparators.py` | Experimental linear opinion pool and CLR geometric-median control; intentionally outside the stable dispatch and without transferred robust-FL guarantees |
 | `server_theory.py` | Executable orientation, raw-log-pool, and normalized-weight witnesses for the scoped MAJ-1 separable-objective no-go; not a universal no-objective theorem |
 | `protocol_parity.py` | Strict FedGVI and Friston protocol matrices; unresolved rows force a source-constrained implementation label for FedGVI or paper-constrained reconstruction label for Friston |
-| `hybrid_tracking.py` | Minimal discrete-context position/velocity tracking recovery fixture with Gaussian observations and bounded actions; not confirmatory evidence |
+| `hybrid_tracking.py` | Discrete-context position/velocity tracking pilot with Gaussian observations, bounded actions, matched naive/robust/discrete-only/continuous-only/oracle-context controls, and a singular-covariance falsifier; not confirmatory evidence |
 | `experiments/` (subpackage) | JSON-serialisable study and report producers: three reduced categorical source-mechanism analogues related to Friston Figs. 5/7/9, plus robustness sweep, moving world, hierarchical POMDPs, sensitivity, parameter recovery, complexity scaling, and the source-bound all-method review grid; modules: `_common`, `belief_sharing`, `complexity`, `conditional_world`, `cross_study`, `diagnostics`, `gallery`, `heuristic_characterization`, `navigation`, `parameter_recovery`, `report_bundle`, `review_grid`, `robustness`, `sensitivity`, `worlds` |
 | `bnn_baseline.py` | NumPy mean-field FedGVI logistic regression under label contamination |
 | `bnn_baseline_torch.py` | Executed PyTorch point-mass deterministic `torch.nn.Module` complement (`run_bnn_torch_experiment`) |
-| `bnn_variational_torch.py` | Optional mean-field variational MLP with device-aware sampling, closed-form KL, and MC-ELBO; full cavity-conditioned client optimization remains open |
-| `bnn_fedgvi.py` | NumPy diagonal-Gaussian site factors, cavity construction, factor replacement, schedules, and atomic round checkpoints; no moment-matching label |
+| `bnn_variational_torch.py` | Optional mean-field variational MLP with device-aware sampling, closed-form KL, MC-ELBO, cavity export/load, and a cavity-conditioned synthetic optimizer; source-dataset protocol parity remains open |
+| `bnn_fedgvi.py` | NumPy diagonal-Gaussian site factors, cavity construction, factor replacement, schedules, and atomic round checkpoints exercised by a synthetic CPU/MPS pilot; no source-dataset or source-scale claim |
 | `torch_bnn.py` | Optional CPU/MPS determinism and explicit fallback receipts plus defensive access to declared protocol profiles |
 | `bnn_defaults.py` | Torch-free configuration defaults for the PyTorch point-mass MLP complement |
 | `trials.py` | Shared trial kernels for hierarchical-world experiment harnesses |
@@ -213,8 +241,8 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `src/documentation.py` | API doc helpers for `scripts/generate_api_docs.py` |
 | `src/fedference_cli/__init__.py` | Stable installed `fedference` facade; preserves `main` and `_report_fallbacks` |
 | `src/fedference_cli/_parser.py` | `fedference` argument grammar and process-facing error mapping |
-| `src/fedference_cli/_commands.py` | Registry listing/run/benchmark/verify/replay dispatch |
-| `src/fedference_cli/_support.py` | Explicit output isolation, atomic JSON, validation, and receipt construction |
+| `src/fedference_cli/_commands.py` | Labeled aggregate, registry list/run/benchmark, auto-detected receipt verify, and structured replay dispatch |
+| `src/fedference_cli/_support.py` | Destination preflight, atomic JSON writes, runtime/source provenance, and distinct application/research receipt construction |
 
 ## Scripts (pipeline-facing)
 

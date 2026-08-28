@@ -55,8 +55,14 @@ Token groups: provenance (`ISC_*`, `TEST_COUNT`, `COVERAGE_PERCENT`, versions,
 `CONFIG_HASH`); config (`EXPERIMENT_SEED`, per-study parameters); results
 (`BELIEF_SHARING_*`, `LANGUAGE_*`, `EMERGENCE_*`, `SWEEP_*`) with bootstrap CIs,
 raw + BH-adjusted p-values, and standardized effect sizes; recovery residuals
-(`RECOVERY_*`). **Detect unresolved tokens before rendering:**
-`if rg -n '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then echo UNRESOLVED; exit 1; else echo OK; fi`.
+(`RECOVERY_*`). `PUBLICATION_IDENTITY_SENTENCE` is the lifecycle-aware DOI
+sentence shared with metadata emission: it renders neutral development prose
+without `N/A`, and assigned-DOI prose for a final release. **Detect unresolved
+tokens before rendering:**
+`if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then echo UNRESOLVED; exit 1; else echo OK; fi`.
+This probe intentionally covers the hydrated Markdown reader surface only;
+auxiliary config, preamble, and BibTeX files remain source-exact, and their
+consumer-specific producers resolve or validate any supported placeholders.
 
 ## Figure Protocol
 

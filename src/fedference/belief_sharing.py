@@ -27,7 +27,12 @@ from typing import cast
 import numpy as np
 
 from ._validation import as_nonnegative_weights, as_pmf_matrix
-from .aggregation import AggregationConfig, AggregationMethod, aggregate_result
+from .aggregation import (
+    AggregationConfig,
+    AggregationMethod,
+    AggregationResult,
+    aggregate_result,
+)
 
 ArrayF = np.ndarray
 _EPS = 1e-12
@@ -65,6 +70,55 @@ class SharingDiagnostics:
         return self.normalized_effective_weights
 
 
+@dataclass(frozen=True)
+class SharingRoundResult:
+    """Complete diagnostics for one in-process belief-sharing round.
+
+    ``global_aggregation`` records the all-agent server computation, while
+    ``recipient_aggregations`` records the exact configured aggregation used
+    for each recipient (including leave-one-out computations when
+    ``exclude_self`` is enabled).  The compatibility :func:`share_round`
+    adapter intentionally projects this richer result back to the historical
+    :class:`SharingDiagnostics` shape.
+    """
+
+    global_aggregation: AggregationResult
+    recipient_aggregations: tuple[AggregationResult, ...]
+    shared_posteriors: ArrayF
+    exclude_self: bool
+    true_state: int | None
+    mean_surprise: float | None
+    mean_accuracy: float | None
+
+    def __post_init__(self) -> None:
+        shared = np.asarray(self.shared_posteriors, dtype=np.float64).copy()
+        if shared.ndim != 2 or shared.size == 0 or not np.all(np.isfinite(shared)):
+            raise ValueError("shared_posteriors must be a non-empty finite matrix")
+        if len(self.recipient_aggregations) != shared.shape[0]:
+            raise ValueError(
+                "recipient_aggregations must contain one result per shared posterior"
+            )
+        if not isinstance(self.exclude_self, bool):
+            raise ValueError("exclude_self must be a boolean")
+        shared.setflags(write=False)
+        object.__setattr__(self, "shared_posteriors", shared)
+        object.__setattr__(
+            self,
+            "recipient_aggregations",
+            tuple(self.recipient_aggregations),
+        )
+
+    @property
+    def consensus(self) -> ArrayF:
+        """Return the global all-agent consensus."""
+        return self.global_aggregation.consensus
+
+    @property
+    def normalized_effective_weights(self) -> ArrayF:
+        """Return the global normalized influence weights."""
+        return self.global_aggregation.normalized_effective_weights
+
+
 def _surprise(belief: ArrayF, true_state: int) -> float:
     return float(-np.log(max(belief[int(true_state)], _EPS)))
 
@@ -84,7 +138,7 @@ def _validate_true_state(true_state: int, n_states: int) -> int:
     return index
 
 
-def share_round(
+def share_round_result(
     local_posteriors: Iterable[ArrayF] | None = None,
     *,
     method: str | None = None,
@@ -94,7 +148,7 @@ def share_round(
     exclude_self: bool = True,
     true_state: int | None = None,
     **legacy: object,
-) -> SharingDiagnostics:
+) -> SharingRoundResult:
     """Run one federated belief-sharing round over a shared factor.
 
     ``local_posteriors`` : ``(n_agents, n_states)`` array of broadcast pmfs.
@@ -108,7 +162,8 @@ def share_round(
     ``exclude_self``  : if True each agent's consensus omits its own broadcast.
     ``true_state``    : optional ground-truth index for surprise/accuracy.
 
-    Returns :class:`SharingDiagnostics`.
+    Returns :class:`SharingRoundResult` with the complete global and
+    recipient-specific aggregation diagnostics.
     """
     if "agent_beliefs" in legacy:
         if local_posteriors is not None:
@@ -133,7 +188,8 @@ def share_round(
         raise TypeError(f"unexpected keyword argument(s): {names}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
-    posterior_matrix = as_pmf_matrix(local_posteriors, name="local_posteriors")
+    raw_local_posteriors = list(local_posteriors)
+    posterior_matrix = as_pmf_matrix(raw_local_posteriors, name="local_posteriors")
     n_agents, n_states = posterior_matrix.shape
     w = None if base_weights is None else as_nonnegative_weights(base_weights, n_agents)
     if config is not None and not isinstance(config, AggregationConfig):
@@ -149,36 +205,97 @@ def share_round(
             max_iter=64 if resolved_method == "variational" else 32,
         )
 
-    def fuse(idx_set: ArrayF) -> tuple[ArrayF, ArrayF | None]:
-        sub = posterior_matrix[idx_set]
+    def fuse(idx_set: ArrayF) -> AggregationResult:
+        # Pass each original row through the canonical aggregator exactly once.
+        # Reusing ``posterior_matrix`` here would normalize once at this sharing
+        # boundary and again inside ``aggregate_result``, creating avoidable
+        # sub-ULP drift from a direct/process/socket call on the same input.
+        sub = [raw_local_posteriors[int(index)] for index in idx_set]
         sub_w = None if w is None else w[idx_set]
-        result = aggregate_result(sub, config=config, base_weights=sub_w)
-        diagnostics = None if config.method == "naive" else result.normalized_effective_weights
-        return result.consensus, diagnostics
+        return aggregate_result(sub, config=config, base_weights=sub_w)
 
     all_idx = np.arange(n_agents)
-    consensus, global_weights = fuse(all_idx)
+    global_aggregation = fuse(all_idx)
 
     shared = np.empty_like(posterior_matrix)
+    recipient_aggregations: list[AggregationResult] = []
     for n in range(n_agents):
         if exclude_self and n_agents > 1:
             idx = all_idx[all_idx != n]
-            shared[n], _ = fuse(idx)
+            recipient = fuse(idx)
         else:
-            shared[n] = consensus
+            recipient = global_aggregation
+        recipient_aggregations.append(recipient)
+        shared[n] = recipient.consensus
 
     if true_state is None:
-        mean_surprise = float("nan")
-        mean_accuracy = float("nan")
+        resolved_true_state = None
+        mean_surprise = None
+        mean_accuracy = None
     else:
-        state = _validate_true_state(true_state, n_states)
-        mean_surprise = float(np.mean([_surprise(shared[n], state) for n in range(n_agents)]))
-        mean_accuracy = float(np.mean([shared[n, state] for n in range(n_agents)]))
+        resolved_true_state = _validate_true_state(true_state, n_states)
+        mean_surprise = float(
+            np.mean(
+                [
+                    _surprise(shared[n], resolved_true_state)
+                    for n in range(n_agents)
+                ]
+            )
+        )
+        mean_accuracy = float(
+            np.mean([shared[n, resolved_true_state] for n in range(n_agents)])
+        )
 
-    return SharingDiagnostics(
+    return SharingRoundResult(
+        global_aggregation=global_aggregation,
+        recipient_aggregations=tuple(recipient_aggregations),
         shared_posteriors=shared,
-        consensus=consensus,
+        exclude_self=exclude_self,
+        true_state=resolved_true_state,
         mean_surprise=mean_surprise,
         mean_accuracy=mean_accuracy,
+    )
+
+
+def share_round(
+    local_posteriors: Iterable[ArrayF] | None = None,
+    *,
+    method: str | None = None,
+    base_weights: Iterable[float] | None = None,
+    robustness: float | None = None,
+    config: AggregationConfig | None = None,
+    exclude_self: bool = True,
+    true_state: int | None = None,
+    **legacy: object,
+) -> SharingDiagnostics:
+    """Run one round and return the historical compatibility diagnostics."""
+    result = share_round_result(
+        local_posteriors,
+        method=method,
+        base_weights=base_weights,
+        robustness=robustness,
+        config=config,
+        exclude_self=exclude_self,
+        true_state=true_state,
+        **legacy,
+    )
+    global_weights = (
+        None
+        if config is not None and config.method == "naive"
+        else result.normalized_effective_weights
+    )
+    if config is None:
+        resolved_method = "naive" if method is None else method
+        if resolved_method == "naive":
+            global_weights = None
+    return SharingDiagnostics(
+        shared_posteriors=result.shared_posteriors,
+        consensus=result.consensus,
+        mean_surprise=(
+            float("nan") if result.mean_surprise is None else result.mean_surprise
+        ),
+        mean_accuracy=(
+            float("nan") if result.mean_accuracy is None else result.mean_accuracy
+        ),
         normalized_effective_weights=global_weights,
     )

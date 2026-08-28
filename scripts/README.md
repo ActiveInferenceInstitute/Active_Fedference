@@ -124,6 +124,15 @@ same local preflight before re-checking an existing bundle without writing. The
 byte-manifest primitive lives in `src/publication/release_manifest.py`; its
 direct API is not publication authorization.
 
+Schema 4 declares the release artifact scope as
+`publication-payload-v1`. It hashes the upstream scientific and reader payload,
+but excludes Template-owned artifact/evidence/statistics/validation/
+rendered-provenance reports and `output/reports/snapshots/`. Those downstream
+control records bind or summarize the payload and release bytes, so hashing
+them back into the payload manifest would create a circular receipt. They
+remain required under the Template artifact/validation gates, Git tree,
+confidentiality evidence, and isolated-clone comparison.
+
 `--provisional-validation` writes hydrated input only for the pre-test render;
 it never records a hydration receipt and therefore cannot advance the
 release-facing dependency chain.
@@ -136,9 +145,13 @@ also records the pipeline profile, generator version, and individual input
 digests. On `--verify`, per-artifact byte digests and those input digests are
 checked; if the tree drifted since the bundle was built, verification fails
 with an explicit changed-path diagnostic so a stale bundle cannot pass.
-This proves a source-current local reviewer bundle, not clean-clone
-reproducibility, author approval, DOI readiness, or external publication
-authority.
+This proves a source-current local reviewer payload, not downstream-control
+freshness by itself, clean-clone reproducibility, author approval, DOI
+readiness, or external publication authority. Follow the rendering guide's
+acyclic closeout: build the payload, refresh the artifact manifest, run final
+Template validation/copy, then verify both layers without writing. Prove two
+payload builds byte-identical before sealing those downstream controls; never
+rerun the writing build afterward.
 
 The default unreleased build records `generated_at: null`; this deliberately
 omits wall-clock time so two builds of the same evidence tree are byte-identical.
@@ -190,8 +203,36 @@ uv run --locked python scripts/record_pipeline_stage.py render \
   --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
 uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
 uv run --locked python scripts/validate_pipeline_freshness.py
-unset SOURCE_DATE_EPOCH
-uv run --locked python scripts/build_release.py
+
+# Build the reviewer payload twice without injecting a release timestamp and
+# require a byte-identical fixed point before sealing downstream controls.
+env -u SOURCE_DATE_EPOCH uv run --locked python scripts/build_release.py
+RELEASE_HASH_BEFORE="$(
+  shasum -a 256 output/release/README.md output/release/manifest.json \
+    output/release/sha256sums.txt | shasum -a 256 | awk '{print $1}'
+)"
+env -u SOURCE_DATE_EPOCH uv run --locked python scripts/build_release.py
+RELEASE_HASH_AFTER="$(
+  shasum -a 256 output/release/README.md output/release/manifest.json \
+    output/release/sha256sums.txt | shasum -a 256 | awk '{print $1}'
+)"
+test "$RELEASE_HASH_BEFORE" = "$RELEASE_HASH_AFTER"
+
+# Seal Template's downstream controls against those exact release bytes.
+cd "$TEMPLATE_REPO"
+uv run --locked python scripts/maintenance/refresh_artifact_manifests.py \
+  --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py \
+  --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py \
+  --project working/active_fedference
+
+# The final gates are read-only; run no payload producer after this point.
+cd "$AF_REPO"
+uv run --locked python scripts/validate_web_package.py
+uv run --locked python scripts/validate_rendered_surfaces.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
+uv run --locked python scripts/validate_pipeline_freshness.py
 uv run --locked python scripts/build_release.py --verify
 ```
 
@@ -205,7 +246,7 @@ receipt; it refuses to attest a tree edited while pytest was running. The
 clean-checkout probe is intentionally separate: it reports whether the current
 Git tree is clean and clone-correct, and therefore adds no evidence when run in
 a dirty development checkout.
-Schema 2 records `recorded_at: null` by default, making a no-op stage receipt
+Schema 3 records `recorded_at: null` by default, making a no-op stage receipt
 byte-idempotent. A canonical `--timestamp` or `SOURCE_DATE_EPOCH` is optional
 external metadata, not permission to skip content freshness.
 

@@ -26,12 +26,19 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 
 
 def _require_current_metadata(root: Path) -> None:
-    """Reject a bundle when generated publication metadata has drifted."""
-    from publication.metadata import check_metadata
+    """Reject a bundle when publication and packaging identity have drifted."""
+    from publication.metadata import validate_publication_lifecycle
 
-    drifted = check_metadata(root)
-    if drifted:
-        raise ValueError("generated publication metadata is stale: " + ", ".join(drifted))
+    validate_publication_lifecycle(root)
+
+
+def _require_immutable_release_pdfs(root: Path) -> None:
+    """Reject release work if any historical versioned PDF bytes drifted."""
+    from publication.clean_checkout import historical_release_pdf_findings
+
+    findings = historical_release_pdf_findings(root)
+    if findings:
+        raise ValueError("historical release PDF validation failed: " + "; ".join(findings))
 
 
 def _require_current_rendered_surfaces(root: Path) -> None:
@@ -52,6 +59,7 @@ def _require_current_reviewer_snapshot(project_root: Path = _PROJECT_ROOT) -> No
     from publication.validation_receipt import require_fresh_validation_receipt
 
     root = Path(project_root).resolve()
+    _require_immutable_release_pdfs(root)
     _require_current_metadata(root)
     _require_current_rendered_surfaces(root)
     require_fresh_publication_analysis(root)

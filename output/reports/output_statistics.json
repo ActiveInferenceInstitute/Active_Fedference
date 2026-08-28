@@ -3,13 +3,13 @@
     "pdf": {
       "exists": true,
       "file_count": 1,
-      "size_mb": "8.71",
-      "total_size_bytes": 9133435,
+      "size_mb": "11.41",
+      "total_size_bytes": 11960014,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
-          "size_mb": "8.71",
-          "size_bytes": 9133435,
+          "size_mb": "11.41",
+          "size_bytes": 11960014,
           "path": "pdf/active_fedference_combined.pdf"
         }
       ],
@@ -20,8 +20,8 @@
     "web": {
       "exists": true,
       "file_count": 107,
-      "size_mb": "10.00",
-      "total_size_bytes": 10480711,
+      "size_mb": "10.02",
+      "total_size_bytes": 10509828,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -32,13 +32,13 @@
         {
           "name": "index.html",
           "size_mb": "0.52",
-          "size_bytes": 544458,
+          "size_bytes": 544266,
           "path": "web/index.html"
         },
         {
           "name": "complexity_scaling.png",
-          "size_mb": "0.47",
-          "size_bytes": 490795,
+          "size_mb": "0.49",
+          "size_bytes": 511314,
           "path": "web/figures/complexity_scaling.png"
         }
       ],
@@ -54,25 +54,25 @@
     "slides": {
       "exists": true,
       "file_count": 43,
-      "size_mb": "8.89",
-      "total_size_bytes": 9323957,
+      "size_mb": "9.55",
+      "total_size_bytes": 10015588,
       "largest_files": [
         {
           "name": "28_supplement_extended_methods_slides.pdf",
-          "size_mb": "1.27",
-          "size_bytes": 1332375,
+          "size_mb": "1.30",
+          "size_bytes": 1366925,
           "path": "slides/28_supplement_extended_methods_slides.pdf"
         },
         {
           "name": "00_abstract_slides.pdf",
-          "size_mb": "0.96",
-          "size_bytes": 1004655,
+          "size_mb": "0.97",
+          "size_bytes": 1013209,
           "path": "slides/00_abstract_slides.pdf"
         },
         {
           "name": "19_results_robustness_slides.pdf",
-          "size_mb": "0.77",
-          "size_bytes": 808200,
+          "size_mb": "0.80",
+          "size_bytes": 835687,
           "path": "slides/19_results_robustness_slides.pdf"
         }
       ],
@@ -95,8 +95,8 @@
     "figures": {
       "exists": true,
       "file_count": 61,
-      "size_mb": "8.33",
-      "total_size_bytes": 8737596,
+      "size_mb": "8.34",
+      "total_size_bytes": 8744024,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -106,8 +106,8 @@
         },
         {
           "name": "complexity_scaling.png",
-          "size_mb": "0.48",
-          "size_bytes": 504896,
+          "size_mb": "0.49",
+          "size_bytes": 511314,
           "path": "figures/complexity_scaling.png"
         },
         {
@@ -126,25 +126,25 @@
     "data": {
       "exists": true,
       "file_count": 6,
-      "size_mb": "0.30",
-      "total_size_bytes": 318130,
+      "size_mb": "0.29",
+      "total_size_bytes": 298975,
       "largest_files": [
         {
-          "name": "pipeline_provenance.json",
-          "size_mb": "0.13",
-          "size_bytes": 141531,
-          "path": "data/pipeline_provenance.json"
+          "name": "test_coverage_receipt.json",
+          "size_mb": "0.14",
+          "size_bytes": 148693,
+          "path": "data/test_coverage_receipt.json"
         },
         {
-          "name": "test_coverage_receipt.json",
-          "size_mb": "0.13",
-          "size_bytes": 136396,
-          "path": "data/test_coverage_receipt.json"
+          "name": "pipeline_provenance.json",
+          "size_mb": "0.10",
+          "size_bytes": 109580,
+          "path": "data/pipeline_provenance.json"
         },
         {
           "name": "analysis_execution.json",
           "size_mb": "0.02",
-          "size_bytes": 19743,
+          "size_bytes": 20067,
           "path": "data/analysis_execution.json"
         }
       ],
@@ -156,12 +156,12 @@
       "exists": true,
       "file_count": 25,
       "size_mb": "2.91",
-      "total_size_bytes": 3055890,
+      "total_size_bytes": 3054925,
       "largest_files": [
         {
           "name": "robustness_review_grid.json",
           "size_mb": "2.04",
-          "size_bytes": 2141640,
+          "size_bytes": 2141626,
           "path": "reports/robustness_review_grid.json"
         },
         {
@@ -202,19 +202,19 @@
     "docs": {
       "exists": true,
       "file_count": 2,
-      "size_mb": "0.04",
-      "total_size_bytes": 43670,
+      "size_mb": "0.06",
+      "total_size_bytes": 59725,
       "largest_files": [
         {
           "name": "api_glossary.md",
-          "size_mb": "0.04",
-          "size_bytes": 41662,
+          "size_mb": "0.05",
+          "size_bytes": 53188,
           "path": "docs/api_glossary.md"
         },
         {
           "name": "api_reference.md",
-          "size_mb": "0.00",
-          "size_bytes": 2008,
+          "size_mb": "0.01",
+          "size_bytes": 6537,
           "path": "docs/api_reference.md"
         }
       ],
@@ -226,7 +226,7 @@
       "exists": true,
       "file_count": 46,
       "size_mb": "0.37",
-      "total_size_bytes": 384413,
+      "total_size_bytes": 387533,
       "largest_files": [
         {
           "name": "references.bib",
@@ -256,25 +256,25 @@
     "release": {
       "exists": true,
       "file_count": 3,
-      "size_mb": "0.17",
-      "total_size_bytes": 180733,
+      "size_mb": "0.14",
+      "total_size_bytes": 149062,
       "largest_files": [
         {
           "name": "manifest.json",
-          "size_mb": "0.12",
-          "size_bytes": 127082,
+          "size_mb": "0.11",
+          "size_bytes": 110398,
           "path": "release/manifest.json"
         },
         {
           "name": "sha256sums.txt",
-          "size_mb": "0.05",
-          "size_bytes": 52632,
+          "size_mb": "0.04",
+          "size_bytes": 37312,
           "path": "release/sha256sums.txt"
         },
         {
           "name": "README.md",
           "size_mb": "0.00",
-          "size_bytes": 1019,
+          "size_bytes": 1352,
           "path": "release/README.md"
         }
       ],
@@ -287,13 +287,13 @@
     "root": {
       "exists": true,
       "file_count": 1,
-      "size_mb": "8.71",
-      "total_size_bytes": 9133435,
+      "size_mb": "11.41",
+      "total_size_bytes": 11960014,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
-          "size_mb": "8.71",
-          "size_bytes": 9133435,
+          "size_mb": "11.41",
+          "size_bytes": 11960014,
           "path": "active_fedference_combined.pdf"
         }
       ],
@@ -303,40 +303,40 @@
     }
   },
   "total_files": 295,
-  "total_size_mb": 48.43899726867676,
+  "total_size_mb": 54.492652893066406,
   "largest_files": [
     {
       "name": "active_fedference_combined.pdf",
-      "size_mb": "8.71",
-      "size_bytes": 9133435,
+      "size_mb": "11.41",
+      "size_bytes": 11960014,
       "category": "root",
       "path": "active_fedference_combined.pdf"
     },
     {
       "name": "active_fedference_combined.pdf",
-      "size_mb": "8.71",
-      "size_bytes": 9133435,
+      "size_mb": "11.41",
+      "size_bytes": 11960014,
       "category": "pdf",
       "path": "pdf/active_fedference_combined.pdf"
     },
     {
       "name": "robustness_review_grid.json",
       "size_mb": "2.04",
-      "size_bytes": 2141640,
+      "size_bytes": 2141626,
       "category": "reports",
       "path": "reports/robustness_review_grid.json"
     },
     {
       "name": "28_supplement_extended_methods_slides.pdf",
-      "size_mb": "1.27",
-      "size_bytes": 1332375,
+      "size_mb": "1.30",
+      "size_bytes": 1366925,
       "category": "slides",
       "path": "slides/28_supplement_extended_methods_slides.pdf"
     },
     {
       "name": "00_abstract_slides.pdf",
-      "size_mb": "0.96",
-      "size_bytes": 1004655,
+      "size_mb": "0.97",
+      "size_bytes": 1013209,
       "category": "slides",
       "path": "slides/00_abstract_slides.pdf"
     },
@@ -356,38 +356,38 @@
     },
     {
       "name": "19_results_robustness_slides.pdf",
-      "size_mb": "0.77",
-      "size_bytes": 808200,
+      "size_mb": "0.80",
+      "size_bytes": 835687,
       "category": "slides",
       "path": "slides/19_results_robustness_slides.pdf"
     },
     {
       "name": "09_methods_generative_model_slides.pdf",
-      "size_mb": "0.69",
-      "size_bytes": 725991,
+      "size_mb": "0.71",
+      "size_bytes": 744884,
       "category": "slides",
       "path": "slides/09_methods_generative_model_slides.pdf"
     },
     {
       "name": "S13_results_sensitivity_slides.pdf",
-      "size_mb": "0.63",
-      "size_bytes": 664996,
+      "size_mb": "0.64",
+      "size_bytes": 675804,
       "category": "slides",
       "path": "slides/S13_results_sensitivity_slides.pdf"
     }
   ],
   "missing_expected_files": [],
   "sizes_by_category": {
-    "pdf": 8.710322380065918,
-    "web": 9.995184898376465,
-    "slides": 8.89201831817627,
-    "figures": 8.332820892333984,
-    "data": 0.3033924102783203,
-    "reports": 2.9143238067626953,
-    "docs": 0.04164695739746094,
-    "manuscript": 0.3666048049926758,
-    "release": 0.17236042022705078,
-    "root": 8.710322380065918
+    "pdf": 11.40595817565918,
+    "web": 10.022953033447266,
+    "slides": 9.55160903930664,
+    "figures": 8.338951110839844,
+    "data": 0.2851247787475586,
+    "reports": 2.9134035110473633,
+    "docs": 0.05695819854736328,
+    "manuscript": 0.3695802688598633,
+    "release": 0.14215660095214844,
+    "root": 11.40595817565918
   },
   "inventory_mode": "stable-local-output-v1",
   "inventory_scope": "stage5-delivery-mirror",

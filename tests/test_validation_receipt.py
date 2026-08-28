@@ -13,6 +13,7 @@ from typing import Any, Mapping, cast
 import pytest
 
 from manuscript_vars.loaders import _validation_receipt_variables
+from publication.clean_checkout import IMMUTABLE_RELEASE_PDFS
 from publication.pipeline_freshness import (
     ANALYSIS_EXECUTION_PATH,
     ANALYSIS_EXECUTION_SCHEMA_VERSION,
@@ -45,21 +46,36 @@ def _make_validation_tree(root: Path, *, analysis_profile: str = "smoke") -> Non
     for relative, text in (
         ("src/model.py", "VALUE = 1\n"),
         ("src/README.md", "# Source\n"),
+        ("src/fedference/config/hierarchical_layers.yaml", "layers: 3\n"),
+        ("src/fedference/data/README.md", "# Package data\n"),
+        ("src/fedference/data/synthetic_tabular.csv", "feature,label\n0,0\n"),
+        ("src/fedference/py.typed", ""),
         ("tests/test_model.py", "def test_model():\n    assert True\n"),
         ("tests/README.md", "# Tests\n"),
         ("scripts/02_run_analysis.py", "# producer\n"),
         ("scripts/z_generate_manuscript_variables.py", "# hydrator\n"),
         ("scripts/README.md", "# Scripts\n"),
+        ("examples/minimal.py", "print('ok')\n"),
+        ("examples/README.md", "# Runnable examples\n"),
+        (
+            "examples/data/labeled_aggregation_request.json",
+            '{"schema_version":"1.0","state_labels":["clear"],"agents":[]}\n',
+        ),
         ("data/README.md", "# Data\n"),
+        ("data/claim_ledger.yaml", "claims: []\n"),
+        ("data/synthetic_tabular.csv", "feature,label\n0,0\n"),
         ("docs/README.md", "# Documentation\n"),
+        ("docs/reference/historical-release-pdfs.json", '{"releases":[]}\n'),
         (".github/workflows/ci.yml", "name: fixture\n"),
         (
             "manuscript/config.yaml",
             f"paper: {{}}\nexperiment:\n  analysis_profile: {analysis_profile}\n",
         ),
+        ("manuscript/config.yaml.example", "experiment:\n  analysis_profile: smoke\n"),
         ("manuscript/01_intro.md", "# Intro\n"),
         ("manuscript/references.bib", "@misc{fixture, title={Fixture}}\n"),
         ("manuscript/preamble.tex", "% fixture\n"),
+        ("manuscript/cover_image.png", "fixture image bytes\n"),
         ("ISA.md", "- [x] ISC-1: fixture\n"),
         ("AGENTS.md", "# Guidance\n"),
         ("README.md", "# Fixture\n"),
@@ -81,6 +97,8 @@ def _make_validation_tree(root: Path, *, analysis_profile: str = "smoke") -> Non
         ("output/data/stage_timings.json", "{}\n"),
     ):
         _write(root, relative, text)
+    for filename in IMMUTABLE_RELEASE_PDFS:
+        _write(root, filename, f"historical PDF fixture: {filename}\n")
     record_pipeline_stage(root, "analysis")
 
 
@@ -140,6 +158,20 @@ def test_successful_receipt_binds_test_inputs_analysis_and_tokens(tmp_path: Path
     receipt = _write_successful_receipt(tmp_path)
 
     assert receipt["success"] is True
+    input_hashes = receipt["input_hashes"]
+    assert isinstance(input_hashes, dict)
+    assert "examples/minimal.py" in input_hashes
+    assert "examples/README.md" in input_hashes
+    assert "examples/data/labeled_aggregation_request.json" in input_hashes
+    assert "src/fedference/config/hierarchical_layers.yaml" in input_hashes
+    assert "src/fedference/data/README.md" in input_hashes
+    assert "src/fedference/data/synthetic_tabular.csv" in input_hashes
+    assert "src/fedference/py.typed" in input_hashes
+    assert "data/claim_ledger.yaml" in input_hashes
+    assert "data/synthetic_tabular.csv" in input_hashes
+    assert "docs/reference/historical-release-pdfs.json" in input_hashes
+    assert "manuscript/cover_image.png" in input_hashes
+    assert "manuscript/config.yaml.example" in input_hashes
     run_snapshots = receipt["run_snapshots"]
     assert isinstance(run_snapshots, dict)
     assert run_snapshots["pre"] == run_snapshots["post"]
@@ -231,6 +263,70 @@ def test_receipt_fails_when_a_validated_document_changes_after_tests(tmp_path: P
     _make_validation_tree(tmp_path)
     _write_successful_receipt(tmp_path)
     (tmp_path / "docs" / "README.md").write_text("# Corrected documentation\n", encoding="utf-8")
+
+    assert "validation receipt input hashes are stale" in validation_receipt_findings(tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("relative", "replacement"),
+    (
+        ("examples/minimal.py", "print('changed')\n"),
+        ("examples/README.md", "# Revised examples\n"),
+        (
+            "examples/data/labeled_aggregation_request.json",
+            '{"schema_version":"1.0","state_labels":["changed"],"agents":[]}\n',
+        ),
+        ("manuscript/config.yaml.example", "experiment:\n  analysis_profile: publication\n"),
+    ),
+)
+def test_receipt_fails_when_an_example_contract_changes_after_tests(
+    tmp_path: Path,
+    relative: str,
+    replacement: str,
+) -> None:
+    _make_validation_tree(tmp_path)
+    _write_successful_receipt(tmp_path)
+
+    (tmp_path / relative).write_text(replacement, encoding="utf-8")
+
+    assert "validation receipt input hashes are stale" in validation_receipt_findings(tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("relative", "replacement"),
+    (
+        ("src/fedference/data/README.md", "# Revised package data\n"),
+        ("src/fedference/config/hierarchical_layers.yaml", "layers: 4\n"),
+        ("src/fedference/data/synthetic_tabular.csv", "feature,label\n1,1\n"),
+        ("src/fedference/py.typed", "changed\n"),
+        ("data/README.md", "# Revised scientific data\n"),
+        ("data/claim_ledger.yaml", "claims: [changed]\n"),
+        ("data/synthetic_tabular.csv", "feature,label\n1,1\n"),
+        ("docs/reference/historical-release-pdfs.json", '{"releases":["changed"]}\n'),
+        ("manuscript/cover_image.png", "changed image bytes\n"),
+        ("domain_profile.yaml", "profile: changed\n"),
+    ),
+)
+def test_receipt_fails_when_packaged_or_scientific_data_changes_after_tests(
+    tmp_path: Path,
+    relative: str,
+    replacement: str,
+) -> None:
+    _make_validation_tree(tmp_path)
+    _write_successful_receipt(tmp_path)
+
+    (tmp_path / relative).write_text(replacement, encoding="utf-8")
+
+    assert "validation receipt input hashes are stale" in validation_receipt_findings(tmp_path)
+
+
+def test_receipt_fails_when_an_immutable_historical_pdf_changes_after_tests(
+    tmp_path: Path,
+) -> None:
+    _make_validation_tree(tmp_path)
+    _write_successful_receipt(tmp_path)
+
+    (tmp_path / IMMUTABLE_RELEASE_PDFS[-1]).write_bytes(b"substituted historical PDF\n")
 
     assert "validation receipt input hashes are stale" in validation_receipt_findings(tmp_path)
 
@@ -650,12 +746,17 @@ def test_receipt_supports_a_deterministic_omitted_timestamp(tmp_path: Path) -> N
 def test_receipt_canonicalizes_machine_paths_in_command_evidence(tmp_path: Path) -> None:
     """Web-package sanitization must not mutate a freshly written receipt."""
     _make_validation_tree(tmp_path)
+    interpreter = Path(
+        "/", "Users", "test-user", "workspace", "project", ".venv", "bin", "python3"
+    ).as_posix()
+    coverage_report = Path("/", "Volumes", "test-volume", "project", ".tmp", "coverage.json").as_posix()
+    junit_report = Path("/", "tmp", "test-coverage", "pytest-junit.xml").as_posix()
     receipt = write_validation_receipt(
         tmp_path,
         command=(
-            "/Users/mini/Documents/project/.venv/bin/python3",
-            "--junitxml=/tmp/test-coverage/pytest-junit.xml",
-            "--cov-report=json:/Volumes/blue/project/.tmp/coverage.json",
+            interpreter,
+            f"--junitxml={junit_report}",
+            f"--cov-report=json:{coverage_report}",
         ),
         test_summary={"collected": 3, "passed": 3, "failed": 0, "skipped": 0},
         coverage_percent=93.25,
@@ -663,11 +764,62 @@ def test_receipt_canonicalizes_machine_paths_in_command_evidence(tmp_path: Path)
     )
 
     assert receipt["command"] == [
-        "<home>/Documents/project/.venv/bin/python3",
+        "<home>/workspace/project/.venv/bin/python3",
         "--junitxml=<tmp>/pytest-junit.xml",
         "--cov-report=json:<volume>/project/.tmp/coverage.json",
     ]
     assert validation_receipt_findings(tmp_path) == []
+
+
+def test_receipt_command_is_identical_across_project_roots_and_coverage_workdirs(
+    tmp_path: Path,
+) -> None:
+    receipts: list[dict[str, object]] = []
+    for project_name, scratch_name in (
+        ("checkout-a", "test-coverage-receipt-alpha123"),
+        ("checkout-b", "test-coverage-receipt-beta987"),
+    ):
+        root = tmp_path / project_name
+        _make_validation_tree(root)
+        scratch = root / ".tmp" / scratch_name
+        receipt = write_validation_receipt(
+            root,
+            command=(
+                str(root / ".venv" / "bin" / "python3"),
+                "-m",
+                "pytest",
+                f"--junitxml={scratch / 'pytest-junit.xml'}",
+                f"--cov-report=json:{scratch / 'coverage.json'}",
+            ),
+            test_summary={"collected": 3, "passed": 3, "failed": 0, "skipped": 0},
+            coverage_percent=93.25,
+            pre_run_snapshot=capture_validation_snapshot(root),
+            environment=validation_environment(),
+        )
+        receipts.append(receipt)
+
+    expected = [
+        "<project>/.venv/bin/python3",
+        "-m",
+        "pytest",
+        "--junitxml=<coverage-workdir>/pytest-junit.xml",
+        "--cov-report=json:<coverage-workdir>/coverage.json",
+    ]
+    assert receipts[0]["command"] == expected
+    assert receipts[1]["command"] == expected
+    assert receipts[0] == receipts[1]
+
+
+def test_receipt_findings_reject_machine_shaped_persisted_command(tmp_path: Path) -> None:
+    findings = _mutated_receipt_findings(
+        tmp_path,
+        lambda payload: payload.__setitem__(
+            "command",
+            ["<home>/Documents/GitHub/.codex-worktrees/project/.venv/bin/python3"],
+        ),
+    )
+
+    assert "validation receipt command contains a noncanonical machine path" in findings
 
 
 def test_receipt_findings_reject_nonfinite_coverage_and_current_hash_failure(tmp_path: Path) -> None:

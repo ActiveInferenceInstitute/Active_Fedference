@@ -234,6 +234,21 @@ def test_assimilate_rejects_wrong_consensus_length():
         ens.assimilate(np.ones(3))
 
 
+@pytest.mark.parametrize(
+    "reshape",
+    (
+        lambda vector: vector[None, :],
+        lambda vector: vector[:, None],
+        lambda vector: vector[None, None, :],
+    ),
+)
+def test_assimilate_rejects_implicit_consensus_flattening(reshape):
+    ens = SentinelEnsemble.from_world(1, seed=1)
+    consensus = log_linear_pool(ens.broadcast())
+    with pytest.raises(ValueError, match="one-dimensional"):
+        ens.assimilate(reshape(consensus))
+
+
 def test_assimilate_rejects_negative_learning_rate():
     ens = SentinelEnsemble.from_world(1, seed=1)
     consensus = log_linear_pool(ens.broadcast())

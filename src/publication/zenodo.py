@@ -19,7 +19,9 @@ from pathlib import Path
 from typing import Any, Mapping
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
+
+from publication.identifiers import normalize_doi
 
 DEFAULT_ZENODO_API = "https://zenodo.org/api"
 DEFAULT_TOKEN_ENV_NAMES: tuple[str, ...] = (
@@ -27,10 +29,26 @@ DEFAULT_TOKEN_ENV_NAMES: tuple[str, ...] = (
     "ZENODO_TOKEN",
     "ZENODO_API_TOKEN",
 )
+_SERVER_OWNED_METADATA_FIELDS = frozenset({"doi", "prereserve_doi"})
 
 
 class ZenodoError(RuntimeError):
     """Raised when Zenodo rejects or cannot complete a request."""
+
+
+class _RejectRedirects(HTTPRedirectHandler):
+    """Prevent bearer credentials from following any HTTP redirect."""
+
+    def redirect_request(
+        self,
+        _request: Request,
+        _file_pointer: Any,
+        _code: int,
+        _message: str,
+        _headers: Any,
+        _new_url: str,
+    ) -> None:
+        return None
 
 
 @dataclass(frozen=True)
@@ -44,18 +62,88 @@ class ZenodoFile:
 
 
 @dataclass(frozen=True)
+class ZenodoMetadataSnapshot:
+    """Immutable, canonical copy of one deposition's server metadata.
+
+    The legacy deposition API returns the complete editable metadata mapping.
+    Keeping its canonical JSON rather than a mutable ``dict`` lets release
+    receipts bind the exact draft purpose while preserving the frozen result
+    contract. The adapter never adds a bearer token or local env-file path to
+    this server-owned metadata.
+    """
+
+    canonical_json: str
+
+    @classmethod
+    def from_mapping(cls, payload: Mapping[str, Any]) -> ZenodoMetadataSnapshot:
+        """Validate and freeze one JSON-compatible metadata mapping."""
+        try:
+            canonical = json.dumps(
+                dict(payload),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except (TypeError, ValueError) as exc:
+            raise ZenodoError("Zenodo returned non-JSON deposition metadata") from exc
+        return cls(canonical)
+
+    @property
+    def sha256(self) -> str:
+        """SHA-256 of the canonical semantic metadata object."""
+        return hashlib.sha256(self.canonical_json.encode("utf-8")).hexdigest()
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return a fresh JSON-compatible metadata mapping."""
+        payload = json.loads(self.canonical_json)
+        if not isinstance(payload, dict):  # pragma: no cover - constructor guarantees an object
+            raise ZenodoError("canonical Zenodo metadata is not an object")
+        return payload
+
+
+@dataclass(frozen=True)
 class ZenodoDeposition:
     """Stable subset of a Zenodo deposition response."""
 
     id: int
+    record_id: int | None
+    concept_record_id: int | None
+    concept_doi: str | None
     state: str
     doi: str | None
     reserved_doi: str | None
+    reserved_record_id: int | None
     html_url: str | None
     self_url: str | None
     bucket_url: str | None
     publish_url: str | None
+    metadata: ZenodoMetadataSnapshot
     files: tuple[ZenodoFile, ...]
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return a token- and local-path-free inspection summary."""
+        return {
+            "id": self.id,
+            "record_id": self.record_id,
+            "concept_record_id": self.concept_record_id,
+            "concept_doi": self.concept_doi,
+            "state": self.state,
+            "doi": self.doi,
+            "reserved_doi": self.reserved_doi,
+            "reserved_record_id": self.reserved_record_id,
+            "html_url": self.html_url,
+            "metadata_sha256": self.metadata.sha256,
+            "metadata": self.metadata.as_dict(),
+            "files": [
+                {
+                    "filename": file.filename,
+                    "filesize": file.filesize,
+                    "checksum": file.checksum,
+                }
+                for file in self.files
+            ],
+        }
 
 
 def _optional_text(value: object, field: str) -> str | None:
@@ -130,9 +218,13 @@ def token_from_env_file(
     """
     path = Path(env_file)
     if not path.is_file():
-        raise ZenodoError(f"Zenodo env file does not exist: {path}")
+        raise ZenodoError("Zenodo env file does not exist")
     values: dict[str, str] = {}
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeError) as exc:
+        raise ZenodoError("Zenodo env file could not be read") from exc
+    for raw_line in lines:
         line = raw_line.strip()
         if not line or line.startswith("#"):
             continue
@@ -161,10 +253,158 @@ def token_from_environment(
     raise ZenodoError(f"environment has none of: {', '.join(names)}")
 
 
-def _integer_id(value: int) -> int:
+def _integer_id(value: object) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
         raise ZenodoError(f"invalid Zenodo deposition id: {value!r}")
     return value
+
+
+def _optional_integer_id(value: object, field: str) -> int | None:
+    """Normalize optional legacy integer-or-decimal-string identifiers."""
+    if value is None:
+        return None
+    if isinstance(value, str) and value.isdecimal():
+        value = int(value)
+    try:
+        return _integer_id(value)
+    except ZenodoError as exc:
+        raise ZenodoError(f"Zenodo returned an invalid {field}") from exc
+
+
+def _required_doi(value: object, field: str) -> str:
+    """Normalize a required DOI while retaining a boundary-specific error."""
+    try:
+        normalized = normalize_doi(value)
+    except ValueError as exc:
+        raise ZenodoError(f"Zenodo {field} is invalid") from exc
+    if normalized is None:
+        raise ZenodoError(f"Zenodo {field} is required")
+    return normalized
+
+
+def _doi_for_record(value: object, record_id: int, field: str) -> str:
+    """Require one production/sandbox Zenodo DOI to name *record_id*."""
+    normalized = _required_doi(value, field)
+    if not normalized.casefold().endswith(f"/zenodo.{record_id}"):
+        raise ZenodoError(f"Zenodo {field} does not identify record {record_id}")
+    return normalized
+
+
+def _comparable_metadata(payload: Mapping[str, Any]) -> ZenodoMetadataSnapshot:
+    """Canonicalize caller-owned metadata, excluding explicit server fields."""
+    return ZenodoMetadataSnapshot.from_mapping(
+        {
+            key: value
+            for key, value in payload.items()
+            if key not in _SERVER_OWNED_METADATA_FIELDS
+        }
+    )
+
+
+def _require_metadata_match(
+    expected: Mapping[str, Any],
+    actual: ZenodoMetadataSnapshot,
+    *,
+    operation: str,
+) -> None:
+    """Fail when Zenodo did not retain the complete requested metadata."""
+    expected_snapshot = _comparable_metadata(expected)
+    actual_snapshot = _comparable_metadata(actual.as_dict())
+    if expected_snapshot.canonical_json != actual_snapshot.canonical_json:
+        raise ZenodoError(
+            f"Zenodo {operation} metadata does not match the canonical request"
+        )
+
+
+def _file_set_identity(files: tuple[ZenodoFile, ...]) -> tuple[tuple[str, int, str], ...]:
+    """Return an order-independent semantic file identity."""
+    return tuple(
+        sorted(
+            (
+                file.filename,
+                file.filesize,
+                file.checksum.removeprefix("md5:").casefold(),
+            )
+            for file in files
+        )
+    )
+
+
+def _require_same_record_line(
+    expected: ZenodoDeposition,
+    actual: ZenodoDeposition,
+    *,
+    operation: str,
+) -> None:
+    """Bind a response/refetch to the same record and concept lineage."""
+    if actual.id != expected.id or actual.record_id != expected.record_id:
+        raise ZenodoError(f"Zenodo {operation} changed the record identity")
+    if actual.concept_record_id != expected.concept_record_id:
+        raise ZenodoError(f"Zenodo {operation} changed the concept identity")
+    expected_concept_doi = _required_doi(expected.concept_doi, "concept DOI")
+    actual_concept_doi = _required_doi(actual.concept_doi, "concept DOI")
+    if actual_concept_doi != expected_concept_doi:
+        raise ZenodoError(f"Zenodo {operation} changed the concept identity")
+
+
+def _require_linked_version(
+    source: ZenodoDeposition,
+    draft: ZenodoDeposition,
+) -> None:
+    """Prove that *draft* is the inherited next version of *source*."""
+    if source.record_id != source.id or draft.record_id != draft.id:
+        raise ZenodoError("Zenodo linked version has incomplete record identity")
+    if source.concept_record_id is None:
+        raise ZenodoError("Zenodo source record has no concept identity")
+    source_doi = _doi_for_record(source.doi, source.id, "source record DOI")
+    _doi_for_record(
+        source.concept_doi,
+        source.concept_record_id,
+        "source concept DOI",
+    )
+    if draft.concept_record_id != source.concept_record_id:
+        raise ZenodoError("Zenodo linked draft belongs to a different concept record")
+    if _required_doi(draft.concept_doi, "draft concept DOI") != _required_doi(
+        source.concept_doi,
+        "source concept DOI",
+    ):
+        raise ZenodoError("Zenodo linked draft belongs to a different concept DOI")
+    if draft.reserved_record_id != draft.id:
+        raise ZenodoError("Zenodo linked draft reservation does not identify the draft record")
+    reserved_doi = _doi_for_record(draft.reserved_doi, draft.id, "draft reserved DOI")
+    if draft.doi is not None and _required_doi(draft.doi, "draft DOI") != reserved_doi:
+        raise ZenodoError("Zenodo linked draft DOI and reservation disagree")
+    if source_doi == reserved_doi:
+        raise ZenodoError("Zenodo linked draft reused the published source DOI")
+    _require_metadata_match(
+        source.metadata.as_dict(),
+        draft.metadata,
+        operation="linked-version inheritance",
+    )
+    if _file_set_identity(source.files) != _file_set_identity(draft.files):
+        raise ZenodoError("Zenodo linked draft files do not match the published source")
+
+
+def _require_published_snapshot(
+    expected: ZenodoDeposition,
+    actual: ZenodoDeposition,
+    *,
+    expected_doi: str,
+    operation: str,
+) -> None:
+    """Validate one irreversible-action response or immediate refetch."""
+    _require_same_record_line(expected, actual, operation=operation)
+    if actual.state != "done":
+        raise ZenodoError(f"Zenodo {operation} did not return a published record")
+    if _required_doi(actual.doi, "published DOI") != expected_doi:
+        raise ZenodoError(f"Zenodo {operation} changed the published DOI")
+    if _file_set_identity(actual.files) != _file_set_identity(expected.files):
+        raise ZenodoError(f"Zenodo {operation} changed the verified file set")
+    _require_metadata_match(
+        expected.metadata.as_dict(),
+        actual.metadata,
+        operation=operation,
+    )
 
 
 def _file_record(payload: object) -> ZenodoFile:
@@ -213,6 +453,13 @@ def _deposition(payload: object) -> ZenodoDeposition:
         raise ZenodoError("Zenodo returned an invalid deposition state")
     if not isinstance(metadata, Mapping) or not isinstance(links, Mapping):
         raise ZenodoError("Zenodo returned malformed deposition metadata or links")
+    record_id = _optional_integer_id(payload.get("record_id"), "record id")
+    if record_id is not None and record_id != deposition_id:
+        raise ZenodoError("Zenodo deposition id and record id disagree")
+    concept_record_id = _optional_integer_id(
+        payload.get("conceptrecid"),
+        "concept record id",
+    )
     reserved = metadata.get("prereserve_doi")
     if reserved is not None and not isinstance(reserved, Mapping):
         raise ZenodoError("Zenodo returned malformed DOI reservation metadata")
@@ -221,18 +468,38 @@ def _deposition(payload: object) -> ZenodoDeposition:
         if isinstance(reserved, Mapping)
         else None
     )
+    reserved_record_id = (
+        _optional_integer_id(reserved.get("recid"), "reserved record id")
+        if isinstance(reserved, Mapping)
+        else None
+    )
+    if reserved_record_id is not None and reserved_record_id != deposition_id:
+        raise ZenodoError("Zenodo reserved record id and deposition id disagree")
+    if reserved_doi is not None and reserved_record_id is not None:
+        _doi_for_record(reserved_doi, reserved_record_id, "reserved DOI")
+    concept_doi = _optional_text(payload.get("conceptdoi"), "concept DOI")
+    if concept_doi is not None and concept_record_id is not None:
+        _doi_for_record(concept_doi, concept_record_id, "concept DOI")
+    doi = _optional_text(payload.get("doi"), "DOI")
+    if doi is not None and record_id is not None:
+        _doi_for_record(doi, record_id, "record DOI")
     if not isinstance(files_payload, list):
         raise ZenodoError("Zenodo returned malformed deposition files")
     files = tuple(_file_record(item) for item in files_payload)
     return ZenodoDeposition(
         id=deposition_id,
+        record_id=record_id,
+        concept_record_id=concept_record_id,
+        concept_doi=concept_doi,
         state=state,
-        doi=_optional_text(payload.get("doi"), "DOI"),
+        doi=doi,
         reserved_doi=reserved_doi,
+        reserved_record_id=reserved_record_id,
         html_url=_optional_text(links.get("html"), "HTML link"),
         self_url=_optional_text(links.get("self"), "self link"),
         bucket_url=_optional_text(links.get("bucket"), "bucket link"),
         publish_url=_optional_text(links.get("publish"), "publish link"),
+        metadata=ZenodoMetadataSnapshot.from_mapping(metadata),
         files=files,
     )
 
@@ -274,6 +541,11 @@ class ZenodoClient:
         self._token = token.strip()
         self._api_base = _api_base(api_base)
         self._timeout = float(timeout)
+        self._opener = build_opener(_RejectRedirects())
+        self._metadata_edit_identities: dict[
+            int,
+            tuple[int | None, int | None, str | None, str],
+        ] = {}
 
     def _editable_deposition(self, deposition_id: int) -> ZenodoDeposition:
         """Return a draft and fail closed for irreversible/published records."""
@@ -310,13 +582,17 @@ class ZenodoClient:
             method=method.upper(),
         )
         try:
-            with urlopen(request, timeout=self._timeout) as response:  # noqa: S310 - URL is caller-configured
+            with self._opener.open(request, timeout=self._timeout) as response:  # noqa: S310
                 raw = response.read()
         except HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
+            detail = exc.read().decode("utf-8", errors="replace").replace(
+                self._token,
+                "<redacted>",
+            )
             raise ZenodoError(f"Zenodo HTTP {exc.code}: {detail[:500]}") from exc
         except URLError as exc:
-            raise ZenodoError(f"Zenodo request failed: {exc.reason}") from exc
+            reason = str(exc.reason).replace(self._token, "<redacted>")
+            raise ZenodoError(f"Zenodo request failed: {reason}") from exc
         if not raw:
             return {}
         try:
@@ -367,19 +643,51 @@ class ZenodoClient:
             draft_id = int(draft_id_text)
         except ValueError as exc:
             raise ZenodoError("Zenodo latest_draft link has an invalid deposition id") from exc
-        return self.get_deposition(_integer_id(draft_id))
+        draft = self.get_deposition(_integer_id(draft_id))
+        if draft.state != "unsubmitted" or draft.reserved_doi is None:
+            raise ZenodoError(
+                "Zenodo latest_draft is not an unsubmitted draft with a reserved DOI"
+            )
+        _require_linked_version(source, draft)
+        return draft
 
     def update_metadata(self, deposition_id: int, metadata: Mapping[str, Any]) -> ZenodoDeposition:
         """Replace editable deposition metadata without publishing it."""
-        self._editable_deposition(deposition_id)
+        deposition = self._editable_deposition(deposition_id)
         payload_metadata = dict(metadata)
-        payload_metadata.pop("doi", None)
+        requested_doi = payload_metadata.pop("doi", None)
+        normalized_requested_doi = _required_doi(
+            requested_doi,
+            "requested metadata DOI",
+        )
+        normalized_reserved_doi = _required_doi(
+            deposition.reserved_doi,
+            "draft reserved DOI",
+        )
+        if normalized_requested_doi != normalized_reserved_doi:
+            raise ZenodoError(
+                "Zenodo draft reserved DOI does not match the requested metadata DOI"
+            )
+        _comparable_metadata(payload_metadata)
         payload = self._request(
             "PUT",
             f"deposit/depositions/{_integer_id(deposition_id)}",
             payload={"metadata": payload_metadata},
         )
-        return _deposition(payload)
+        updated = _deposition(payload)
+        _require_same_record_line(deposition, updated, operation="metadata update response")
+        refetched = self.get_deposition(deposition.id)
+        _require_same_record_line(deposition, refetched, operation="metadata update refetch")
+        if refetched.state != "unsubmitted":
+            raise ZenodoError("Zenodo metadata update no longer targets an unsubmitted draft")
+        if _required_doi(refetched.reserved_doi, "draft reserved DOI") != normalized_reserved_doi:
+            raise ZenodoError("Zenodo metadata update changed the draft DOI reservation")
+        _require_metadata_match(
+            payload_metadata,
+            refetched.metadata,
+            operation="updated draft",
+        )
+        return refetched
 
     def edit_published_metadata(
         self, deposition_id: int, metadata: Mapping[str, Any]
@@ -393,36 +701,72 @@ class ZenodoClient:
         touched by this operation.
         """
         source = self.get_deposition(deposition_id)
-        if source.state not in {"done", "inprogress", "unsubmitted"}:
+        if source.state not in {"done", "inprogress"}:
             raise ZenodoError(
                 f"Zenodo deposition {source.id} is {source.state!r}; "
                 "published metadata edits require the latest published record"
             )
+        if source.record_id != source.id or source.concept_record_id is None:
+            raise ZenodoError("Zenodo published metadata edit has incomplete record identity")
+        source_doi = _doi_for_record(source.doi, source.id, "published record DOI")
+        source_concept_doi = _doi_for_record(
+            source.concept_doi,
+            source.concept_record_id,
+            "published concept DOI",
+        )
+        payload_metadata = dict(metadata)
+        requested_doi = _required_doi(
+            payload_metadata.pop("doi", None),
+            "requested metadata-edit DOI",
+        )
+        if requested_doi != source_doi:
+            raise ZenodoError(
+                "Zenodo published DOI does not match the requested metadata-edit DOI"
+            )
+        payload_metadata.setdefault("access_right", "open")
+        _comparable_metadata(payload_metadata)
         if source.state == "done":
             payload = self._request(
                 "POST",
                 f"deposit/depositions/{_integer_id(deposition_id)}/actions/edit",
             )
             editable = _deposition(payload)
-            if editable.id != source.id:
-                raise ZenodoError("Zenodo metadata-edit response changed the deposition id")
-            if editable.state == "done":
+            _require_same_record_line(source, editable, operation="metadata-edit response")
+            if editable.state != "inprogress":
                 raise ZenodoError("Zenodo metadata-edit action did not open an editable draft")
         else:
             # Re-running the explicit operation against its already-open edit
             # draft must update the draft rather than attempt a second action.
             editable = source
-        payload_metadata = dict(metadata)
-        # The DOI remains owned by the published record and must not be sent as
-        # a replacement metadata field during an edit.
-        payload_metadata.pop("doi", None)
-        payload_metadata.setdefault("access_right", "open")
-        updated = self._request(
+        if _required_doi(editable.doi, "metadata-edit DOI") != source_doi:
+            raise ZenodoError("Zenodo metadata-edit draft changed the published DOI")
+        payload = self._request(
             "PUT",
             f"deposit/depositions/{_integer_id(deposition_id)}",
             payload={"metadata": payload_metadata},
         )
-        return _deposition(updated)
+        updated = _deposition(payload)
+        _require_same_record_line(editable, updated, operation="metadata-edit update response")
+        refetched = self.get_deposition(editable.id)
+        _require_same_record_line(editable, refetched, operation="metadata-edit update refetch")
+        if refetched.state != "inprogress":
+            raise ZenodoError("Zenodo metadata-edit draft is no longer editable")
+        if _required_doi(refetched.doi, "metadata-edit DOI") != source_doi:
+            raise ZenodoError("Zenodo metadata-edit draft changed the published DOI")
+        if _file_set_identity(refetched.files) != _file_set_identity(source.files):
+            raise ZenodoError("Zenodo metadata-only edit changed the record files")
+        _require_metadata_match(
+            payload_metadata,
+            refetched.metadata,
+            operation="published metadata edit",
+        )
+        self._metadata_edit_identities[refetched.id] = (
+            refetched.record_id,
+            refetched.concept_record_id,
+            source_concept_doi,
+            source_doi,
+        )
+        return refetched
 
     def delete_file(self, deposition_id: int, file_id: str) -> None:
         """Delete one file from an editable deposition."""
@@ -469,12 +813,40 @@ class ZenodoClient:
         )
         return _file_record(payload)
 
+    @staticmethod
+    def _verify_pdf_record(
+        deposition: ZenodoDeposition,
+        pdf_path: str | Path,
+        *,
+        remote_filename: str | None,
+        require_exact_file_set: bool,
+    ) -> ZenodoFile:
+        """Verify local bytes against one already-fetched deposition."""
+        path = _pdf_path(pdf_path)
+        expected_filename = _safe_upload_filename(remote_filename or path.name)
+        if Path(expected_filename).suffix.casefold() != ".pdf":
+            raise ZenodoError("verified Zenodo filename must use a .pdf extension")
+        expected_md5 = hashlib.md5(path.read_bytes()).hexdigest()  # noqa: S324 - Zenodo's file API uses MD5
+        matches = [file for file in deposition.files if file.filename == expected_filename]
+        if len(matches) != 1:
+            raise ZenodoError(f"Zenodo deposition has {len(matches)} files named {expected_filename!r}")
+        if require_exact_file_set and len(deposition.files) != 1:
+            raise ZenodoError(
+                "Zenodo deposition must contain exactly the verified PDF before publication"
+            )
+        record = matches[0]
+        checksums = {expected_md5, f"md5:{expected_md5}"}
+        if record.filesize != path.stat().st_size or record.checksum not in checksums:
+            raise ZenodoError(f"Zenodo PDF checksum or size mismatch for {expected_filename}")
+        return record
+
     def verify_pdf(
         self,
         deposition_id: int,
         pdf_path: str | Path,
         *,
         remote_filename: str | None = None,
+        require_exact_file_set: bool = False,
     ) -> ZenodoFile:
         """Verify PDF bytes, optionally against a distinct server-side filename.
 
@@ -483,17 +855,58 @@ class ZenodoClient:
         checksum cannot silently match an unrelated deposition file.
         """
         path = _pdf_path(pdf_path)
-        expected_filename = _safe_upload_filename(remote_filename or path.name)
-        expected_md5 = hashlib.md5(path.read_bytes()).hexdigest()  # noqa: S324 - Zenodo's file API uses MD5
         deposition = self.get_deposition(deposition_id)
-        matches = [file for file in deposition.files if file.filename == expected_filename]
-        if len(matches) != 1:
-            raise ZenodoError(f"Zenodo deposition has {len(matches)} files named {expected_filename!r}")
-        record = matches[0]
-        checksums = {expected_md5, f"md5:{expected_md5}"}
-        if record.filesize != path.stat().st_size or record.checksum not in checksums:
-            raise ZenodoError(f"Zenodo PDF checksum or size mismatch for {expected_filename}")
-        return record
+        return self._verify_pdf_record(
+            deposition,
+            path,
+            remote_filename=remote_filename,
+            require_exact_file_set=require_exact_file_set,
+        )
+
+    def publish_verified_pdf(
+        self,
+        deposition_id: int,
+        pdf_path: str | Path,
+        *,
+        remote_filename: str | None = None,
+    ) -> ZenodoDeposition:
+        """Verify the exact one-PDF draft and then publish it.
+
+        The ordinary :meth:`publish` operation remains available to explicit
+        lower-level callers.  Release orchestration uses this stricter surface
+        so an inherited or already-present unrelated file blocks the
+        irreversible action. The response and an immediate refetch are also
+        checked; separate GET and POST requests cannot eliminate a concurrent
+        service-level race.
+        """
+        path = _pdf_path(pdf_path)
+        deposition = self._editable_deposition(deposition_id)
+        self._verify_pdf_record(
+            deposition,
+            path,
+            remote_filename=remote_filename,
+            require_exact_file_set=True,
+        )
+        expected_doi = _required_doi(deposition.reserved_doi, "draft reserved DOI")
+        payload = self._request(
+            "POST",
+            f"deposit/depositions/{_integer_id(deposition_id)}/actions/publish",
+        )
+        published = _deposition(payload)
+        _require_published_snapshot(
+            deposition,
+            published,
+            expected_doi=expected_doi,
+            operation="publish response",
+        )
+        refetched = self.get_deposition(deposition.id)
+        _require_published_snapshot(
+            deposition,
+            refetched,
+            expected_doi=expected_doi,
+            operation="post-publish refetch",
+        )
+        return refetched
 
     def publish(self, deposition_id: int) -> ZenodoDeposition:
         """Publish a deposition explicitly; callers must gate this action."""
@@ -503,17 +916,47 @@ class ZenodoClient:
 
     def publish_metadata_edit(self, deposition_id: int) -> ZenodoDeposition:
         """Publish an already-updated metadata-only edit draft."""
-        deposition = self.get_deposition(deposition_id)
-        if deposition.state == "done":
+        expected_identity = self._metadata_edit_identities.get(
+            _integer_id(deposition_id)
+        )
+        if expected_identity is None:
             raise ZenodoError(
-                f"Zenodo deposition {deposition.id} is already published; "
-                "open a metadata edit before publishing"
+                "Zenodo metadata edit must be opened and verified by this client before publication"
             )
+        deposition = self.get_deposition(deposition_id)
+        if deposition.state != "inprogress":
+            raise ZenodoError(
+                f"Zenodo deposition {deposition.id} is {deposition.state!r}; "
+                "only an open metadata edit can be published"
+            )
+        actual_identity = (
+            deposition.record_id,
+            deposition.concept_record_id,
+            _required_doi(deposition.concept_doi, "metadata-edit concept DOI"),
+            _required_doi(deposition.doi, "metadata-edit DOI"),
+        )
+        if actual_identity != expected_identity:
+            raise ZenodoError("Zenodo metadata-edit identity changed before publication")
         payload = self._request(
             "POST",
             f"deposit/depositions/{_integer_id(deposition_id)}/actions/publish",
         )
-        return _deposition(payload)
+        published = _deposition(payload)
+        _require_published_snapshot(
+            deposition,
+            published,
+            expected_doi=expected_identity[3],
+            operation="metadata-edit publish response",
+        )
+        refetched = self.get_deposition(deposition.id)
+        _require_published_snapshot(
+            deposition,
+            refetched,
+            expected_doi=expected_identity[3],
+            operation="metadata-edit post-publish refetch",
+        )
+        del self._metadata_edit_identities[deposition.id]
+        return refetched
 
 
 __all__ = [
@@ -523,6 +966,7 @@ __all__ = [
     "ZenodoDeposition",
     "ZenodoError",
     "ZenodoFile",
+    "ZenodoMetadataSnapshot",
     "token_from_environment",
     "token_from_env_file",
 ]

@@ -9,7 +9,7 @@ rendered surfaces changed without the dependent stage being rerun.
 
 The receipts are release-integrity metadata only. They are not scientific
 evidence and do not establish correctness, generalisation, or performance.
-Schema 2 omits wall-clock completion time by default so recording an unchanged
+Schema 3 omits wall-clock completion time by default so recording an unchanged
 stage is byte-idempotent. A canonical UTC timestamp remains an explicit input
 for an approved, externally anchored build.
 """
@@ -24,7 +24,7 @@ from typing import Any, Iterable, Mapping
 
 from publication.release_manifest import validate_utc_timestamp
 
-PIPELINE_RECEIPT_SCHEMA_VERSION = 2
+PIPELINE_RECEIPT_SCHEMA_VERSION = 3
 PIPELINE_RECEIPT_PATH = Path("output/data/pipeline_provenance.json")
 ANALYSIS_EXECUTION_PATH = Path("output/data/analysis_execution.json")
 ANALYSIS_EXECUTION_SCHEMA_VERSION = 2
@@ -65,6 +65,7 @@ class PipelineStageSpec:
     input_patterns: tuple[str, ...]
     output_patterns: tuple[str, ...]
     dependencies: tuple[str, ...] = ()
+    output_excluded_suffixes: tuple[str, ...] = ()
 
 
 _ANALYSIS_OUTPUTS = tuple(f"output/reports/{name}" for name in _ANALYSIS_REPORT_NAMES) + (
@@ -133,6 +134,22 @@ PIPELINE_STAGES: tuple[PipelineStageSpec, ...] = (
         _RENDER_INPUTS,
         _RENDER_OUTPUTS,
         dependencies=("analysis", "hydration"),
+        # Renderer logs are checked while present, but are local verification
+        # evidence rather than reproducible publication payloads. XeTeX and
+        # LuaLaTeX embed wall-clock and machine-path details in these files.
+        output_excluded_suffixes=(
+            ".aux",
+            ".bbl",
+            ".blg",
+            ".lof",
+            ".log",
+            ".lot",
+            ".nav",
+            ".out",
+            ".snm",
+            ".toc",
+            ".vrb",
+        ),
     ),
 )
 _STAGES_BY_NAME = {stage.name: stage for stage in PIPELINE_STAGES}
@@ -150,12 +167,19 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _resolve_files(root: Path, patterns: Iterable[str], *, role: str) -> dict[str, Path]:
+def _resolve_files(
+    root: Path,
+    patterns: Iterable[str],
+    *,
+    role: str,
+    excluded_suffixes: Iterable[str] = (),
+) -> dict[str, Path]:
     """Resolve glob patterns to a sorted, de-duplicated relative path map."""
+    excluded = {suffix.casefold() for suffix in excluded_suffixes}
     resolved: dict[str, Path] = {}
     for pattern in patterns:
         for path in root.glob(pattern):
-            if not path.is_file():
+            if not path.is_file() or path.suffix.casefold() in excluded:
                 continue
             relative = path.relative_to(root).as_posix()
             resolved[relative] = path
@@ -164,8 +188,22 @@ def _resolve_files(root: Path, patterns: Iterable[str], *, role: str) -> dict[st
     return dict(sorted(resolved.items()))
 
 
-def _hash_files(root: Path, patterns: Iterable[str], *, role: str) -> dict[str, str]:
-    return {relative: _sha256(path) for relative, path in _resolve_files(root, patterns, role=role).items()}
+def _hash_files(
+    root: Path,
+    patterns: Iterable[str],
+    *,
+    role: str,
+    excluded_suffixes: Iterable[str] = (),
+) -> dict[str, str]:
+    return {
+        relative: _sha256(path)
+        for relative, path in _resolve_files(
+            root,
+            patterns,
+            role=role,
+            excluded_suffixes=excluded_suffixes,
+        ).items()
+    }
 
 
 def _map_digest(file_hashes: dict[str, str]) -> str:
@@ -346,6 +384,8 @@ def _validate_stage_record(
         findings.append(f"{stage.name}: input pattern contract drift")
     if record.get("output_patterns") != list(stage.output_patterns):
         findings.append(f"{stage.name}: output pattern contract drift")
+    if record.get("output_excluded_suffixes") != list(stage.output_excluded_suffixes):
+        findings.append(f"{stage.name}: output exclusion contract drift")
     recorded_at_present = "recorded_at" in record
     recorded_at = record.get("recorded_at")
     timestamp_policy = record.get("timestamp_policy")
@@ -365,7 +405,12 @@ def _validate_stage_record(
         findings.append(f"{stage.name}: recorded_at must be a canonical UTC string or null")
     try:
         current_inputs = _hash_files(root, stage.input_patterns, role=f"{stage.name} inputs")
-        current_outputs = _hash_files(root, stage.output_patterns, role=f"{stage.name} outputs")
+        current_outputs = _hash_files(
+            root,
+            stage.output_patterns,
+            role=f"{stage.name} outputs",
+            excluded_suffixes=stage.output_excluded_suffixes,
+        )
     except ValueError as exc:
         return findings + [f"{stage.name}: {exc}"]
     findings.extend(
@@ -425,13 +470,19 @@ def _record_pipeline_stage(
                 "analysis: inputs changed while the producer ran; "
                 "refusing to attest post-run inputs as publication analysis"
             )
-    output_hashes = _hash_files(root, stage.output_patterns, role=f"{stage.name} outputs")
+    output_hashes = _hash_files(
+        root,
+        stage.output_patterns,
+        role=f"{stage.name} outputs",
+        excluded_suffixes=stage.output_excluded_suffixes,
+    )
     stamp = validate_utc_timestamp(timestamp)
     record: dict[str, Any] = {
         "stage": stage.name,
         "dependencies": list(stage.dependencies),
         "input_patterns": list(stage.input_patterns),
         "output_patterns": list(stage.output_patterns),
+        "output_excluded_suffixes": list(stage.output_excluded_suffixes),
         "input_hashes": input_hashes,
         "output_hashes": output_hashes,
         "input_digest": _map_digest(input_hashes),

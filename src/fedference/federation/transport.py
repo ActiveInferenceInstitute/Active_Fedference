@@ -14,8 +14,10 @@ import hashlib
 import json
 import struct
 import warnings
+import zipfile
 from dataclasses import asdict, dataclass
 from io import BytesIO
+from numbers import Real
 from typing import Literal
 
 import numpy as np
@@ -24,6 +26,56 @@ PROTOCOL_VERSION = 1
 _ENVELOPE_HEADER_LENGTH = struct.Struct(">I")
 _MAX_ENVELOPE_HEADER_BYTES = 64 * 1024
 MessageType = Literal["belief", "result"]
+
+
+class _ProtocolV1ZipInfo(zipfile.ZipInfo):
+    """Keep protocol-v1 NPZ headers identical across supported Python versions.
+
+    ``numpy.savez`` requests ZIP64 headers even for small members.  CPython
+    3.10 writes actual 32-bit sizes into those local headers, while 3.11+
+    writes the ZIP64 sentinel values and version 4.5.  Protocol v1 already
+    records the latter bytes, so normalize the 3.10 writer to that existing
+    representation without changing member names, array bytes, or framing.
+    """
+
+    def FileHeader(self, zip64: bool | None = None) -> bytes:  # noqa: N802
+        if zip64:
+            self.extract_version = max(zipfile.ZIP64_VERSION, self.extract_version)
+            self.create_version = max(zipfile.ZIP64_VERSION, self.create_version)
+        header = bytearray(super().FileHeader(zip64))
+        if zip64:
+            struct.pack_into("<H", header, 4, zipfile.ZIP64_VERSION)
+            struct.pack_into("<L", header, 18, 0xFFFFFFFF)
+            struct.pack_into("<L", header, 22, 0xFFFFFFFF)
+        return bytes(header)
+
+
+def _serialize_protocol_v1_npz(
+    consensus: np.ndarray,
+    agent_weights: np.ndarray,
+) -> bytes:
+    """Write the two fixed protocol-v1 NPZ members in canonical order."""
+    buf = BytesIO()
+    with zipfile.ZipFile(
+        buf,
+        mode="w",
+        compression=zipfile.ZIP_STORED,
+        allowZip64=True,
+    ) as archive:
+        for name, values in (
+            ("consensus", consensus),
+            ("agent_weights", agent_weights),
+        ):
+            info = _ProtocolV1ZipInfo(
+                f"{name}.npy",
+                date_time=(1980, 1, 1, 0, 0, 0),
+            )
+            info.create_system = 3
+            info.external_attr = 0o600 << 16
+            info.compress_type = zipfile.ZIP_STORED
+            with archive.open(info, mode="w", force_zip64=True) as member:
+                np.save(member, values, allow_pickle=False)
+    return buf.getvalue()
 
 
 @dataclass(frozen=True)
@@ -47,6 +99,21 @@ def _is_sha256(value: object) -> bool:
     except ValueError:
         return False
     return True
+
+
+def _strict_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """Build a JSON object while rejecting duplicate member names."""
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate protocol envelope field: {key!r}")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_json_constant(value: str) -> object:
+    """Reject the non-standard NaN/Infinity spellings accepted by json.loads."""
+    raise ValueError(f"non-finite protocol envelope JSON constant: {value}")
 
 
 def serialize_envelope(
@@ -97,8 +164,12 @@ def deserialize_envelope(data: bytes) -> tuple[ProtocolEnvelope, bytes]:
     if len(data) < header_end:
         raise ValueError("protocol envelope header is truncated")
     try:
-        raw = json.loads(data[_ENVELOPE_HEADER_LENGTH.size : header_end].decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raw = json.loads(
+            data[_ENVELOPE_HEADER_LENGTH.size : header_end].decode("utf-8"),
+            object_pairs_hook=_strict_json_object,
+            parse_constant=_reject_nonfinite_json_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise ValueError("protocol envelope header is not valid JSON") from exc
     if not isinstance(raw, dict):
         raise ValueError("protocol envelope header must be an object")
@@ -113,7 +184,10 @@ def deserialize_envelope(data: bytes) -> tuple[ProtocolEnvelope, bytes]:
     }
     if set(raw) != required:
         raise ValueError("protocol envelope header fields do not match schema")
-    if raw["protocol_version"] != PROTOCOL_VERSION:
+    if (
+        type(raw["protocol_version"]) is not int
+        or raw["protocol_version"] != PROTOCOL_VERSION
+    ):
         raise ValueError(
             f"unsupported protocol_version {raw['protocol_version']!r}; expected {PROTOCOL_VERSION}"
         )
@@ -147,10 +221,44 @@ def deserialize_envelope(data: bytes) -> tuple[ProtocolEnvelope, bytes]:
     return envelope, payload
 
 
+def _serialization_input_vector(
+    values: object,
+    *,
+    name: str,
+    require_unit_sum: bool,
+) -> np.ndarray:
+    """Validate a caller vector without normalizing or coercing its semantics."""
+    try:
+        raw = np.asarray(values)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be a one-dimensional numeric vector") from exc
+    if raw.ndim != 1 or raw.size == 0:
+        raise ValueError(f"{name} must be a non-empty one-dimensional vector")
+    if any(
+        isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+        for value in np.asarray(values, dtype=object)
+    ):
+        raise ValueError(f"{name} must contain only numeric non-boolean values")
+    result = np.asarray(raw, dtype=np.float64)
+    if not np.all(np.isfinite(result)) or np.any(result < 0.0):
+        raise ValueError(f"{name} must be finite and non-negative")
+    total = float(result.sum())
+    if not np.isfinite(total) or total <= 0.0:
+        raise ValueError(f"{name} must have positive finite mass")
+    if require_unit_sum and not np.isclose(total, 1.0, rtol=0.0, atol=1e-9):
+        raise ValueError(f"{name} must sum to one")
+    return result
+
+
 def serialize_belief(belief: np.ndarray) -> bytes:
     """Lossless numpy float64 serialization of a 1-D pmf belief array."""
+    validated = _serialization_input_vector(
+        belief,
+        name="belief",
+        require_unit_sum=False,
+    )
     buf = BytesIO()
-    np.save(buf, np.asarray(belief, dtype=np.float64))
+    np.save(buf, validated)
     return buf.getvalue()
 
 
@@ -158,8 +266,9 @@ def _transport_probability_vector(
     values: object,
     *,
     name: str,
+    require_unit_sum: bool = True,
 ) -> np.ndarray:
-    """Validate the exact float64 one-dimensional wire probability schema."""
+    """Validate one exact float64 categorical vector on the wire."""
     if not isinstance(values, np.ndarray):
         raise ValueError(f"serialized {name} must be a NumPy array")
     if values.dtype.kind != "f" or values.dtype.itemsize != 8:
@@ -169,7 +278,10 @@ def _transport_probability_vector(
         raise ValueError(f"serialized {name} must be a non-empty vector")
     if not np.all(np.isfinite(result)) or np.any(result < 0.0):
         raise ValueError(f"serialized {name} must be finite and non-negative")
-    if not np.isclose(float(result.sum()), 1.0, rtol=0.0, atol=1e-9):
+    total = float(result.sum())
+    if not np.isfinite(total) or total <= 0.0:
+        raise ValueError(f"serialized {name} must have positive finite mass")
+    if require_unit_sum and not np.isclose(total, 1.0, rtol=0.0, atol=1e-9):
         raise ValueError(f"serialized {name} must sum to one")
     return result
 
@@ -184,7 +296,14 @@ def deserialize_belief(data: bytes) -> np.ndarray:
         if hasattr(loaded, "close"):
             loaded.close()
         raise ValueError("serialized belief must be one NumPy array")
-    return _transport_probability_vector(loaded, name="belief")
+    # Protocol-v1 belief frames preserve caller-supplied positive masses.  The
+    # server's canonical aggregate_result boundary normalizes each row exactly
+    # once; pre-normalizing here can perturb already normalized float64 bytes.
+    return _transport_probability_vector(
+        loaded,
+        name="belief",
+        require_unit_sum=False,
+    )
 
 
 def serialize_result(
@@ -212,14 +331,17 @@ def serialize_result(
         raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if normalized_effective_weights is None:
         raise TypeError("normalized_effective_weights is required")
-    buf = BytesIO()
-    np.savez(
-        buf,
-        consensus=np.asarray(consensus, dtype=np.float64),
-        # Preserve the version-1 federation wire key exactly.
-        agent_weights=np.asarray(normalized_effective_weights, dtype=np.float64),
+    validated_consensus = _serialization_input_vector(
+        consensus,
+        name="result consensus",
+        require_unit_sum=True,
     )
-    return buf.getvalue()
+    validated_weights = _serialization_input_vector(
+        normalized_effective_weights,
+        name="result agent_weights",
+        require_unit_sum=True,
+    )
+    return _serialize_protocol_v1_npz(validated_consensus, validated_weights)
 
 
 def deserialize_result(data: bytes) -> dict[str, np.ndarray]:

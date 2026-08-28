@@ -5,8 +5,9 @@ of [@sec:methods-learning], and the corruption process of
 [@sec:methods-contamination] are exercised by {{N_STUDIES}} studies, including
 the contaminated-sentinel robustness sweep (Study 4). The shared configuration (seed budget, colony size,
 contamination rates, divergences, trial counts, and the statistics settings) is
-read from `experiment:` in [`manuscript/config.yaml`](config.yaml); the
-remaining per-study parameters are tested code defaults in
+read from `experiment:` in
+[manuscript rendering configuration](https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/config.yaml);
+the remaining per-study parameters are tested code defaults in
 `src/fedference/experiments/`. No value is hard-coded in the manuscript, and
 each token below resolves to the same configuration the code executed.
 

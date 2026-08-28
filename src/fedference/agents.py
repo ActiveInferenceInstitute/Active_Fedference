@@ -311,7 +311,10 @@ class SentinelEnsemble:
             )
         if legacy:
             raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
-        vec = np.asarray(consensus, dtype=np.float64).ravel()
+        vec = np.asarray(consensus)
+        if vec.ndim != 1:
+            raise ValueError("consensus must be one-dimensional")
+        vec = np.asarray(vec, dtype=np.float64)
         expected = N_LOCATIONS + N_PROXIMITY + N_POSE
         if vec.shape[0] != expected:
             raise ValueError(f"consensus must have length {expected}, got {vec.shape[0]}")

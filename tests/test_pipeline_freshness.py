@@ -102,7 +102,9 @@ def _make_stage_tree(root: Path) -> None:
         "output/manuscript/config.yaml",
         "output/manuscript/preamble.tex",
         "output/pdf/paper.pdf",
+        "output/pdf/paper.log",
         "output/slides/deck.pdf",
+        "output/slides/deck.log",
         "output/slides/deck.tex",
         "output/web/index.html",
         "output/web/figures/example.png",
@@ -115,6 +117,19 @@ def test_stage_specs_have_dependency_order() -> None:
     assert PIPELINE_STAGES[1].dependencies == ("analysis",)
     assert "output/data/test_coverage_receipt.json" in PIPELINE_STAGES[1].input_patterns
     assert PIPELINE_STAGES[2].dependencies == ("analysis", "hydration")
+    assert PIPELINE_STAGES[2].output_excluded_suffixes == (
+        ".aux",
+        ".bbl",
+        ".blg",
+        ".lof",
+        ".log",
+        ".lot",
+        ".nav",
+        ".out",
+        ".snm",
+        ".toc",
+        ".vrb",
+    )
 
 
 def test_receipt_chain_records_and_validates(tmp_path: Path) -> None:
@@ -128,6 +143,23 @@ def test_receipt_chain_records_and_validates(tmp_path: Path) -> None:
         timestamp="2026-07-27T00:02:00Z",
     )
     assert validate_pipeline_freshness(tmp_path) == []
+
+
+def test_render_receipt_excludes_machine_local_renderer_logs(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+    record = record_pipeline_stage(tmp_path, "render")
+
+    assert record["output_excluded_suffixes"] == list(
+        PIPELINE_STAGES[2].output_excluded_suffixes
+    )
+    assert not any(path.endswith(".log") for path in record["output_hashes"])
+    (tmp_path / "output" / "slides" / "deck.log").write_text(
+        "/Users/local/private renderer path\n",
+        encoding="utf-8",
+    )
+    assert validate_pipeline_freshness(tmp_path, stages=("render",)) == []
 
 
 def test_publication_analysis_receipt_requires_producer_execution_metadata(tmp_path: Path) -> None:
@@ -212,7 +244,7 @@ def test_analysis_regeneration_replaces_legacy_receipt_schema(tmp_path: Path) ->
     )
     record_pipeline_stage(tmp_path, "analysis")
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    assert receipt["schema_version"] == 2
+    assert receipt["schema_version"] == 3
     assert list(receipt["stages"]) == ["analysis"]
     assert validate_pipeline_freshness(tmp_path, stages=("analysis",)) == []
 

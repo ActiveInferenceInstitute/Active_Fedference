@@ -31,16 +31,26 @@ import struct
 import tempfile
 import threading
 import warnings
+from collections.abc import Mapping
 from contextlib import closing
+from copy import deepcopy
+from dataclasses import dataclass
 from os import PathLike
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 import numpy as np
 
-from ..aggregation import AggregationConfig, aggregate_result
+from .._validation import as_pmf_matrix
+from ..aggregation import (
+    AggregationConfig,
+    AggregationMethod,
+    AggregationResult,
+    aggregate_result,
+)
 from .transport import (
     PROTOCOL_VERSION,
+    _serialization_input_vector,
     deserialize_belief,
     deserialize_envelope,
     deserialize_result,
@@ -109,6 +119,18 @@ _REPLAY_FIELDS: dict[str, frozenset[str]] = {
         }
     ),
 }
+
+
+def _is_exact_int(value: object) -> bool:
+    """Return whether *value* has the exact integer type emitted by JSON.
+
+    Replay metadata is a typed protocol surface, so values that merely compare
+    equal to integers (notably booleans and integral floats) must not satisfy
+    integer fields. Requiring ``type(value) is int`` also rejects strings and
+    unhashable containers before worker identifiers reach set construction.
+    """
+
+    return type(value) is int
 
 
 class ReplayGuard:
@@ -345,37 +367,298 @@ def _worker(
         errors[worker_id] = exc
 
 
-def _validate_socket_replay(
+ReplayFindingCategory = Literal["integrity", "solver"]
+
+
+@dataclass(frozen=True)
+class ReplayFinding:
+    """One stable, machine-readable socket replay finding."""
+
+    category: ReplayFindingCategory
+    code: str
+    message: str
+
+    def __post_init__(self) -> None:
+        if self.category not in ("integrity", "solver"):
+            raise ValueError("replay finding category must be 'integrity' or 'solver'")
+        if not isinstance(self.code, str) or not self.code.strip():
+            raise ValueError("replay finding code must be non-empty")
+        if not isinstance(self.message, str) or not self.message.strip():
+            raise ValueError("replay finding message must be non-empty")
+
+    def as_dict(self) -> dict[str, str]:
+        """Return a JSON-compatible finding representation."""
+        return {
+            "category": self.category,
+            "code": self.code,
+            "message": self.message,
+        }
+
+
+@dataclass(frozen=True)
+class ReplayValidationResult:
+    """Integrity and solver-health verdict for a digest-only socket replay."""
+
+    integrity_valid: bool
+    findings: tuple[ReplayFinding, ...]
+    recorded_config: AggregationConfig | None = None
+    aggregation: AggregationResult | None = None
+
+    def __post_init__(self) -> None:
+        findings = tuple(self.findings)
+        if any(not isinstance(finding, ReplayFinding) for finding in findings):
+            raise ValueError("findings must contain ReplayFinding values")
+        expected_valid = not any(
+            finding.category == "integrity" for finding in findings
+        )
+        if self.integrity_valid is not expected_valid:
+            raise ValueError("integrity_valid must agree with integrity findings")
+        object.__setattr__(self, "findings", findings)
+
+    @property
+    def solver_status(self) -> str | None:
+        """Return the recomputed aggregation status, when integrity reached it."""
+        if self.aggregation is None:
+            return None
+        status = getattr(self.aggregation, "solver_status", None)
+        if isinstance(status, str):
+            return status
+        if self.aggregation.converged:
+            return (
+                "converged_with_fallback"
+                if self.aggregation.fallback_events
+                else "nominal"
+            )
+        return (
+            "not_converged_with_fallback"
+            if self.aggregation.fallback_events
+            else "not_converged"
+        )
+
+    @property
+    def nominal_solver(self) -> bool:
+        """Whether replayed aggregation used the nominal converged path."""
+        return self.solver_status == "nominal"
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return the stable JSON-facing replay verdict."""
+        config = self.recorded_config
+        return {
+            "integrity_valid": self.integrity_valid,
+            "solver_status": self.solver_status,
+            "nominal_solver": self.nominal_solver,
+            "aggregation_config": None if config is None else config.as_dict(),
+            "aggregation_config_hash": None if config is None else config.fingerprint,
+            "findings": [finding.as_dict() for finding in self.findings],
+        }
+
+
+def _replay_failure(
+    code: str,
+    message: str,
+    *,
+    recorded_config: AggregationConfig | None = None,
+    aggregation: AggregationResult | None = None,
+) -> ReplayValidationResult:
+    return ReplayValidationResult(
+        integrity_valid=False,
+        findings=(ReplayFinding("integrity", code, message),),
+        recorded_config=recorded_config,
+        aggregation=aggregation,
+    )
+
+
+def aggregation_config_from_replay(
     replay: list[dict[str, Any]],
-    local_posteriors: list[np.ndarray] | np.ndarray | None,
-    consensus: np.ndarray,
+) -> AggregationConfig:
+    """Recover and strictly validate the configuration recorded by a replay."""
+    if not isinstance(replay, list) or not replay:
+        raise ValueError("socket replay must be a non-empty event list")
+    aggregate_events = [
+        event
+        for event in replay
+        if isinstance(event, dict) and event.get("event") == "aggregate"
+    ]
+    if len(aggregate_events) != 1:
+        raise ValueError("socket replay must contain exactly one aggregate event")
+    aggregate_event = aggregate_events[0]
+    if set(aggregate_event) != _REPLAY_FIELDS["aggregate"]:
+        raise ValueError("socket replay aggregate fields do not match schema")
+    raw = aggregate_event.get("aggregation_config")
+    expected_fields = {
+        "method",
+        "robustness",
+        "entropy_weight",
+        "max_iter",
+        "tol",
+        "multistart",
+    }
+    if not isinstance(raw, dict) or set(raw) != expected_fields:
+        raise ValueError("recorded aggregation configuration does not match schema")
+    config = AggregationConfig(
+        method=raw["method"],
+        robustness=raw["robustness"],
+        entropy_weight=raw["entropy_weight"],
+        max_iter=raw["max_iter"],
+        tol=raw["tol"],
+        multistart=raw["multistart"],
+    )
+    recorded_robustness = aggregate_event.get("robustness")
+    if (
+        aggregate_event.get("method") != config.method
+        or isinstance(recorded_robustness, bool)
+        or not isinstance(recorded_robustness, (int, float))
+        or not np.isfinite(recorded_robustness)
+        or float(recorded_robustness) != config.robustness
+        or aggregate_event.get("aggregation_config_hash") != config.fingerprint
+    ):
+        raise ValueError("recorded aggregation configuration bindings disagree")
+    return config
+
+
+def _assert_recorded_config(
+    recorded: AggregationConfig,
+    *,
+    robustness: float | None,
+    config: AggregationConfig | None,
+    config_assertions: Mapping[str, object] | None,
+) -> ReplayValidationResult | None:
+    if config is not None and not isinstance(config, AggregationConfig):
+        raise ValueError("config must be an AggregationConfig or None")
+    supplied_modes = sum(
+        value is not None for value in (robustness, config, config_assertions)
+    )
+    if supplied_modes > 1:
+        raise ValueError(
+            "robustness, config, and config_assertions are mutually exclusive"
+        )
+    expected: AggregationConfig | None = config
+    if robustness is not None:
+        expected = AggregationConfig(
+            method="robust",
+            robustness=robustness,
+            max_iter=32,
+        )
+    if expected is not None and expected.fingerprint != recorded.fingerprint:
+        return _replay_failure(
+            "configuration.mismatch",
+            "supplied aggregation configuration does not match the recorded configuration",
+            recorded_config=recorded,
+        )
+    if config_assertions is not None:
+        if not isinstance(config_assertions, Mapping):
+            raise ValueError("config_assertions must be a mapping or None")
+        unknown = set(config_assertions) - set(recorded.as_dict())
+        if unknown:
+            raise ValueError(
+                "unknown aggregation configuration assertion(s): "
+                + ", ".join(sorted(unknown))
+            )
+        candidate_data: dict[str, object] = dict(recorded.as_dict())
+        candidate_data.update(dict(config_assertions))
+        candidate = AggregationConfig(
+            method=cast(AggregationMethod, candidate_data["method"]),
+            robustness=cast(float, candidate_data["robustness"]),
+            entropy_weight=cast(float, candidate_data["entropy_weight"]),
+            max_iter=cast(int, candidate_data["max_iter"]),
+            tol=cast(float, candidate_data["tol"]),
+            multistart=cast(bool, candidate_data["multistart"]),
+        )
+        mismatched = [
+            name
+            for name in config_assertions
+            if candidate.as_dict()[name] != recorded.as_dict()[name]
+        ]
+        if mismatched:
+            return _replay_failure(
+                "configuration.mismatch",
+                "supplied aggregation assertion(s) do not match the replay: "
+                + ", ".join(sorted(mismatched)),
+                recorded_config=recorded,
+            )
+    return None
+
+
+def inspect_socket_replay(
+    replay: list[dict[str, Any]],
+    local_posteriors: list[np.ndarray] | np.ndarray | None = None,
+    consensus: np.ndarray | None = None,
     *,
     robustness: float | None = None,
     config: AggregationConfig | None = None,
-) -> bool:
-    """Validate that a socket replay log reconstructs the reported consensus.
+    config_assertions: Mapping[str, object] | None = None,
+    **legacy: object,
+) -> ReplayValidationResult:
+    """Inspect replay integrity and report solver health separately.
 
-    The replay log intentionally stores event metadata and payload digests rather
-    than raw beliefs. Validation therefore recomputes the aggregation from the
-    caller-provided beliefs using the worker order captured by the server.
+    With no configuration assertion, the validated configuration embedded in
+    the replay is authoritative.  ``config`` supplies a complete assertion;
+    ``config_assertions`` supplies CLI-friendly partial assertions.  The
+    compatibility ``robustness`` keyword asserts the historical robust socket
+    configuration with ``max_iter=32``.
     """
-    if not isinstance(replay, list) or not replay or any(not isinstance(event, dict) for event in replay):
-        return False
-    if config is not None and not isinstance(config, AggregationConfig):
-        return False
-    if config is not None and robustness is not None:
-        return False
-    resolved_config = config or AggregationConfig(
-        method="robust",
-        robustness=0.0 if robustness is None else robustness,
-        max_iter=32,
-    )
-    if local_posteriors is None:
-        return False
-    belief_list = [
-        np.asarray(posterior, dtype=np.float64)
-        for posterior in local_posteriors
-    ]
+    if "beliefs" in legacy:
+        if local_posteriors is not None:
+            return _replay_failure(
+                "input.malformed",
+                "local_posteriors and deprecated beliefs cannot both be supplied",
+            )
+        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
+        warnings.warn(
+            "beliefs is deprecated; use local_posteriors",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    if legacy:
+        return _replay_failure(
+            "input.malformed",
+            "unexpected replay validation argument(s): "
+            + ", ".join(sorted(legacy)),
+        )
+    if replay == []:
+        return _replay_failure("replay.empty", "socket replay is empty")
+    if not isinstance(replay, list) or any(
+        not isinstance(event, dict) for event in replay
+    ):
+        return _replay_failure(
+            "replay.malformed",
+            "socket replay must be a non-empty list of event objects",
+        )
+    if local_posteriors is None or consensus is None:
+        return _replay_failure(
+            "input.malformed",
+            "local_posteriors and consensus are required",
+        )
+    try:
+        raw_local_posteriors = list(local_posteriors)
+        as_pmf_matrix(raw_local_posteriors, name="local_posteriors")
+        belief_list = [
+            np.asarray(posterior, dtype=np.float64)
+            for posterior in raw_local_posteriors
+        ]
+        reported_consensus = _serialization_input_vector(
+            consensus,
+            name="consensus",
+            require_unit_sum=True,
+        )
+    except (TypeError, ValueError) as exc:
+        return _replay_failure(
+            "input.malformed",
+            f"belief or consensus arrays are invalid: {exc}",
+        )
+    if (
+        not belief_list
+        or any(
+            belief.ndim != 1
+            or belief.size == 0
+            or not np.all(np.isfinite(belief))
+            for belief in belief_list
+        )
+    ):
+        return _replay_failure(
+            "input.malformed",
+            "beliefs and consensus must be non-empty finite vectors",
+        )
     n_workers = len(belief_list)
     expected_event_order = (
         ["server_listen"]
@@ -384,103 +667,252 @@ def _validate_socket_replay(
         + ["consensus_broadcast"] * n_workers
     )
     if [event.get("event") for event in replay] != expected_event_order:
-        return False
+        return _replay_failure(
+            "event.order_mismatch",
+            "socket replay event order or event count does not match the worker count",
+        )
     if any(
         event.get("event") not in _REPLAY_FIELDS
         or set(event) != _REPLAY_FIELDS[str(event.get("event"))]
         for event in replay
     ):
-        return False
-    listen_events = [event for event in replay if event.get("event") == "server_listen"]
-    if len(listen_events) != 1:
-        return False
-    listen = listen_events[0]
+        return _replay_failure(
+            "event.fields_mismatch",
+            "one or more replay event fields do not match the protocol-v1 schema",
+        )
+    try:
+        recorded_config = aggregation_config_from_replay(replay)
+    except (TypeError, ValueError) as exc:
+        return _replay_failure("configuration.mismatch", str(exc))
+    assertion_failure = _assert_recorded_config(
+        recorded_config,
+        robustness=robustness,
+        config=config,
+        config_assertions=config_assertions,
+    )
+    if assertion_failure is not None:
+        return assertion_failure
+
+    listen = replay[0]
+    listen_protocol_version = listen.get("protocol_version")
+    if (
+        not _is_exact_int(listen_protocol_version)
+        or listen_protocol_version != PROTOCOL_VERSION
+    ):
+        return _replay_failure(
+            "protocol.mismatch",
+            f"recorded protocol version is not {PROTOCOL_VERSION}",
+            recorded_config=recorded_config,
+        )
     round_id = listen.get("round_id")
+    if not isinstance(round_id, str) or not round_id.strip():
+        return _replay_failure(
+            "round.mismatch",
+            "recorded round id is invalid",
+            recorded_config=recorded_config,
+        )
     authenticated = listen.get("authenticated")
+    host = listen.get("host")
     port = listen.get("port")
     if (
-        listen.get("protocol_version") != PROTOCOL_VERSION
-        or listen.get("aggregation_config_hash") != resolved_config.fingerprint
-        or listen.get("n_workers") != len(belief_list)
-        or not isinstance(listen.get("host"), str)
-        or not str(listen.get("host")).strip()
+        not _is_exact_int(listen.get("n_workers"))
+        or listen.get("n_workers") != n_workers
+        or not isinstance(host, str)
+        or not host.strip()
         or isinstance(port, bool)
         or not isinstance(port, int)
         or not 0 < port <= 65535
-        or not isinstance(round_id, str)
-        or not round_id.strip()
         or not isinstance(authenticated, bool)
     ):
-        return False
+        return _replay_failure(
+            "event.fields_mismatch",
+            "server_listen metadata is invalid",
+            recorded_config=recorded_config,
+        )
+    try:
+        recorded_host = ipaddress.ip_address(host)
+    except ValueError:
+        return _replay_failure(
+            "event.fields_mismatch",
+            "server_listen host is not a numeric IPv4 loopback address",
+            recorded_config=recorded_config,
+        )
+    if (
+        not isinstance(recorded_host, ipaddress.IPv4Address)
+        or not recorded_host.is_loopback
+        or host != str(recorded_host)
+    ):
+        return _replay_failure(
+            "event.fields_mismatch",
+            "server_listen host is not the canonical IPv4 loopback address",
+            recorded_config=recorded_config,
+        )
     authentication = "hmac-sha256" if authenticated else "none"
     if listen.get("authentication") != authentication:
-        return False
-    aggregate_events = [event for event in replay if event.get("event") == "aggregate"]
-    if len(aggregate_events) != 1:
-        return False
-    worker_order = aggregate_events[0].get("worker_order")
+        return _replay_failure(
+            "event.fields_mismatch",
+            "server authentication metadata is inconsistent",
+            recorded_config=recorded_config,
+        )
+    if listen.get("aggregation_config_hash") != recorded_config.fingerprint:
+        return _replay_failure(
+            "configuration.mismatch",
+            "server configuration fingerprint does not match the recorded configuration",
+            recorded_config=recorded_config,
+        )
+
+    aggregate_event = replay[n_workers + 1]
+    aggregate_protocol_version = aggregate_event.get("protocol_version")
+    if (
+        not _is_exact_int(aggregate_protocol_version)
+        or aggregate_protocol_version != PROTOCOL_VERSION
+    ):
+        return _replay_failure(
+            "protocol.mismatch",
+            "aggregate event protocol version is inconsistent",
+            recorded_config=recorded_config,
+        )
+    if aggregate_event.get("round_id") != round_id:
+        return _replay_failure(
+            "round.mismatch",
+            "aggregate event round id is inconsistent",
+            recorded_config=recorded_config,
+        )
+    if aggregate_event.get("authentication") != authentication:
+        return _replay_failure(
+            "event.fields_mismatch",
+            "aggregate event authentication metadata is inconsistent",
+            recorded_config=recorded_config,
+        )
+    worker_order = aggregate_event.get("worker_order")
     if (
         not isinstance(worker_order, list)
-        or any(isinstance(worker_id, bool) or not isinstance(worker_id, int) for worker_id in worker_order)
-        or sorted(worker_order) != list(range(len(belief_list)))
+        or any(
+            not _is_exact_int(worker_id)
+            for worker_id in worker_order
+        )
+        or worker_order != list(range(n_workers))
     ):
-        return False
-    consensus_digest = aggregate_events[0].get("consensus_sha256")
-    if consensus_digest != _payload_digest(serialize_belief(np.asarray(consensus, dtype=np.float64))):
-        return False
+        return _replay_failure(
+            "worker.order_mismatch",
+            "aggregate worker order is not the exact ordered worker-id set",
+            recorded_config=recorded_config,
+        )
     if (
-        aggregate_events[0].get("aggregation_config_hash") != resolved_config.fingerprint
-        or aggregate_events[0].get("aggregation_config") != resolved_config.as_dict()
-        or aggregate_events[0].get("protocol_version") != PROTOCOL_VERSION
-        or aggregate_events[0].get("round_id") != round_id
-        or aggregate_events[0].get("authentication") != authentication
+        aggregate_event.get("aggregation_config_hash")
+        != recorded_config.fingerprint
+        or aggregate_event.get("aggregation_config") != recorded_config.as_dict()
+        or aggregate_event.get("method") != recorded_config.method
+        or aggregate_event.get("robustness") != recorded_config.robustness
     ):
-        return False
-    received_rows = [event for event in replay if event.get("event") == "belief_received"]
-    broadcast_rows = [event for event in replay if event.get("event") == "consensus_broadcast"]
-    received_ids = {event.get("worker_id") for event in received_rows}
-    broadcast_ids = {event.get("worker_id") for event in broadcast_rows}
-    expected_ids = set(range(len(belief_list)))
+        return _replay_failure(
+            "configuration.mismatch",
+            "aggregate event configuration bindings are inconsistent",
+            recorded_config=recorded_config,
+        )
+    reported_payload = serialize_belief(reported_consensus)
+    if aggregate_event.get("consensus_sha256") != _payload_digest(reported_payload):
+        return _replay_failure(
+            "payload.mismatch",
+            "reported consensus digest does not match the aggregate event",
+            recorded_config=recorded_config,
+        )
+
+    received_rows = replay[1 : n_workers + 1]
+    broadcast_rows = replay[n_workers + 2 :]
+    received_worker_ids = [event.get("worker_id") for event in received_rows]
+    broadcast_worker_ids = [event.get("worker_id") for event in broadcast_rows]
+    expected_ids = set(range(n_workers))
     if (
-        len(received_rows) != len(expected_ids)
-        or len(broadcast_rows) != len(expected_ids)
-        or received_ids != expected_ids
-        or broadcast_ids != expected_ids
+        len(received_rows) != n_workers
+        or len(broadcast_rows) != n_workers
+        or any(not _is_exact_int(worker_id) for worker_id in received_worker_ids)
+        or any(not _is_exact_int(worker_id) for worker_id in broadcast_worker_ids)
     ):
-        return False
+        return _replay_failure(
+            "worker.order_mismatch",
+            "replay worker ids must be exact non-Boolean integers",
+            recorded_config=recorded_config,
+        )
+    received_ids = set(received_worker_ids)
+    broadcast_ids = set(broadcast_worker_ids)
+    if received_ids != expected_ids or broadcast_ids != expected_ids:
+        return _replay_failure(
+            "worker.order_mismatch",
+            "replay does not contain exactly one receive and broadcast per worker",
+            recorded_config=recorded_config,
+        )
     received_events = {
         int(event["worker_id"]): event
-        for event in replay
-        if event.get("event") == "belief_received" and event.get("worker_id") in expected_ids
+        for event in received_rows
+        if event.get("worker_id") in expected_ids
     }
     for worker_id, belief in enumerate(belief_list):
-        event = received_events.get(worker_id)
-        if event is None:
-            return False
+        event = received_events[worker_id]
+        event_protocol_version = event.get("protocol_version")
+        if (
+            not _is_exact_int(event_protocol_version)
+            or event_protocol_version != PROTOCOL_VERSION
+        ):
+            return _replay_failure(
+                "protocol.mismatch",
+                f"belief event for worker {worker_id} has the wrong protocol version",
+                recorded_config=recorded_config,
+            )
+        if event.get("round_id") != round_id:
+            return _replay_failure(
+                "round.mismatch",
+                f"belief event for worker {worker_id} has the wrong round id",
+                recorded_config=recorded_config,
+            )
+        if event.get("aggregation_config_hash") != recorded_config.fingerprint:
+            return _replay_failure(
+                "configuration.mismatch",
+                f"belief event for worker {worker_id} has the wrong configuration hash",
+                recorded_config=recorded_config,
+            )
+        if event.get("authentication") != authentication:
+            return _replay_failure(
+                "event.fields_mismatch",
+                f"belief event for worker {worker_id} has inconsistent authentication metadata",
+                recorded_config=recorded_config,
+            )
         belief_payload = serialize_belief(belief)
+        if event.get("belief_sha256") != _payload_digest(belief_payload):
+            return _replay_failure(
+                "belief.mismatch",
+                f"belief digest mismatch for worker {worker_id}",
+                recorded_config=recorded_config,
+            )
         frame = serialize_envelope(
             belief_payload,
             message_type="belief",
             round_id=round_id,
             worker_id=worker_id,
-            aggregation_config_hash=resolved_config.fingerprint,
+            aggregation_config_hash=recorded_config.fingerprint,
             authentication=authentication,
         )
+        frame_bytes = event.get("frame_bytes")
         if (
-            event.get("protocol_version") != PROTOCOL_VERSION
-            or event.get("round_id") != round_id
-            or event.get("aggregation_config_hash") != resolved_config.fingerprint
-            or event.get("authentication") != authentication
-            or event.get("belief_sha256") != _payload_digest(belief_payload)
+            event.get("frame_sha256") != _payload_digest(frame)
+            or not _is_exact_int(frame_bytes)
+            or frame_bytes != len(frame)
         ):
-            return False
-        if event.get("frame_sha256") != _payload_digest(frame):
-            return False
-        if event.get("frame_bytes") != len(frame):
-            return False
-    ordered = [belief_list[int(worker_id)] for worker_id in worker_order]
-    reference_result = aggregate_result(ordered, config=resolved_config)
-    reference = reference_result.consensus
+            return _replay_failure(
+                "frame.mismatch",
+                f"belief frame digest or size mismatch for worker {worker_id}",
+                recorded_config=recorded_config,
+            )
+
+    ordered = [belief_list[worker_id] for worker_id in worker_order]
+    try:
+        reference_result = aggregate_result(ordered, config=recorded_config)
+    except (IndexError, OverflowError, TypeError, ValueError) as exc:
+        return _replay_failure(
+            "input.malformed",
+            f"beliefs cannot be recomputed under the recorded configuration: {exc}",
+            recorded_config=recorded_config,
+        )
     result_payload = serialize_result(
         reference_result.consensus,
         reference_result.normalized_effective_weights,
@@ -490,22 +922,115 @@ def _validate_socket_replay(
         message_type="result",
         round_id=round_id,
         worker_id=None,
-        aggregation_config_hash=resolved_config.fingerprint,
+        aggregation_config_hash=recorded_config.fingerprint,
         authentication=authentication,
     )
     for event in broadcast_rows:
+        worker_id = int(event["worker_id"])
+        event_protocol_version = event.get("protocol_version")
         if (
-            event.get("protocol_version") != PROTOCOL_VERSION
-            or event.get("round_id") != round_id
-            or event.get("aggregation_config_hash") != resolved_config.fingerprint
-            or event.get("authentication") != authentication
-            or event.get("payload_sha256") != _payload_digest(result_payload)
-            or event.get("payload_bytes") != len(result_payload)
-            or event.get("envelope_sha256") != _payload_digest(result_envelope)
-            or event.get("envelope_bytes") != len(result_envelope)
+            not _is_exact_int(event_protocol_version)
+            or event_protocol_version != PROTOCOL_VERSION
         ):
-            return False
-    return bool(np.array_equal(reference, np.asarray(consensus, dtype=np.float64)))
+            return _replay_failure(
+                "protocol.mismatch",
+                f"broadcast event for worker {worker_id} has the wrong protocol version",
+                recorded_config=recorded_config,
+                aggregation=reference_result,
+            )
+        if event.get("round_id") != round_id:
+            return _replay_failure(
+                "round.mismatch",
+                f"broadcast event for worker {worker_id} has the wrong round id",
+                recorded_config=recorded_config,
+                aggregation=reference_result,
+            )
+        if event.get("aggregation_config_hash") != recorded_config.fingerprint:
+            return _replay_failure(
+                "configuration.mismatch",
+                f"broadcast event for worker {worker_id} has the wrong configuration hash",
+                recorded_config=recorded_config,
+                aggregation=reference_result,
+            )
+        if event.get("authentication") != authentication:
+            return _replay_failure(
+                "event.fields_mismatch",
+                f"broadcast event for worker {worker_id} has inconsistent authentication metadata",
+                recorded_config=recorded_config,
+                aggregation=reference_result,
+            )
+        payload_bytes = event.get("payload_bytes")
+        if (
+            event.get("payload_sha256") != _payload_digest(result_payload)
+            or not _is_exact_int(payload_bytes)
+            or payload_bytes != len(result_payload)
+        ):
+            return _replay_failure(
+                "payload.mismatch",
+                f"result payload digest or size mismatch for worker {worker_id}",
+                recorded_config=recorded_config,
+                aggregation=reference_result,
+            )
+        envelope_bytes = event.get("envelope_bytes")
+        if (
+            event.get("envelope_sha256") != _payload_digest(result_envelope)
+            or not _is_exact_int(envelope_bytes)
+            or envelope_bytes != len(result_envelope)
+        ):
+            return _replay_failure(
+                "envelope.mismatch",
+                f"result envelope digest or size mismatch for worker {worker_id}",
+                recorded_config=recorded_config,
+                aggregation=reference_result,
+            )
+    if not np.array_equal(reference_result.consensus, reported_consensus):
+        return _replay_failure(
+            "consensus.recomputed_mismatch",
+            "reported consensus is not bit-identical to the recomputed consensus",
+            recorded_config=recorded_config,
+            aggregation=reference_result,
+        )
+    findings: list[ReplayFinding] = []
+    if not reference_result.converged:
+        findings.append(
+            ReplayFinding(
+                "solver",
+                "solver.nonconvergence",
+                "recomputed aggregation did not converge within its recorded budget",
+            )
+        )
+    if reference_result.fallback_events:
+        findings.append(
+            ReplayFinding(
+                "solver",
+                "solver.fallback",
+                "recomputed aggregation used one or more numerical fallbacks",
+            )
+        )
+    return ReplayValidationResult(
+        integrity_valid=True,
+        findings=tuple(findings),
+        recorded_config=recorded_config,
+        aggregation=reference_result,
+    )
+
+
+def _validate_socket_replay(
+    replay: list[dict[str, Any]],
+    local_posteriors: list[np.ndarray] | np.ndarray | None,
+    consensus: np.ndarray,
+    *,
+    robustness: float | None = None,
+    config: AggregationConfig | None = None,
+) -> bool:
+    """Internal Boolean compatibility projection of :func:`inspect_socket_replay`."""
+    return inspect_socket_replay(
+        replay,
+        local_posteriors,
+        consensus,
+        robustness=robustness,
+        config=config,
+    ).integrity_valid
 
 
 def validate_socket_replay(
@@ -517,7 +1042,12 @@ def validate_socket_replay(
     config: AggregationConfig | None = None,
     **legacy: object,
 ) -> bool:
-    """Validate a digest-only replay, returning ``False`` for malformed input."""
+    """Validate replay integrity, returning ``False`` for malformed input.
+
+    Solver nonconvergence and fallback are intentionally not integrity
+    failures.  Use :func:`inspect_socket_replay` when numerical health must be
+    enforced or reported.
+    """
     if "beliefs" in legacy:
         if local_posteriors is not None:
             return False
@@ -527,16 +1057,16 @@ def validate_socket_replay(
             DeprecationWarning,
             stacklevel=2,
         )
-    if legacy or local_posteriors is None or consensus is None:
+    if legacy:
         return False
     try:
-        return _validate_socket_replay(
+        return inspect_socket_replay(
             replay,
             local_posteriors,
             consensus,
             robustness=robustness,
             config=config,
-        )
+        ).integrity_valid
     except (
         IndexError,
         KeyError,
@@ -582,10 +1112,19 @@ def load_socket_replay(path: str | PathLike[str]) -> list[dict[str, Any]]:
     def reject_constant(value: str) -> Any:
         raise ValueError(f"non-finite JSON constant is not allowed: {value}")
 
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"duplicate JSON key is not allowed: {key!r}")
+            result[key] = value
+        return result
+
     try:
         loaded = json.loads(
             Path(path).read_text(encoding="utf-8"),
             parse_constant=reject_constant,
+            object_pairs_hook=reject_duplicate_keys,
         )
     except (OSError, ValueError) as exc:
         raise ValueError(f"invalid socket replay file: {path}") from exc
@@ -594,7 +1133,60 @@ def load_socket_replay(path: str | PathLike[str]) -> list[dict[str, Any]]:
     return loaded
 
 
-def run_socket_round(
+@dataclass(frozen=True)
+class SocketRoundResult:
+    """Complete local and transport diagnostics for one loopback round."""
+
+    server_aggregation: AggregationResult
+    in_process_aggregation: AggregationResult
+    worker_consensuses: tuple[np.ndarray, ...]
+    n_workers: int
+    port: int
+    authenticated: bool
+    protocol_version: int
+    round_id: str
+    aggregation_config: AggregationConfig
+    aggregation_config_hash: str
+    replay: tuple[dict[str, Any], ...]
+    replay_path: str | None
+    replay_validation: ReplayValidationResult
+    bit_identical: bool
+
+    def __post_init__(self) -> None:
+        if self.n_workers != len(self.worker_consensuses) or self.n_workers <= 0:
+            raise ValueError("worker_consensuses must contain one result per worker")
+        if not isinstance(self.aggregation_config, AggregationConfig):
+            raise ValueError("aggregation_config must be an AggregationConfig")
+        if self.aggregation_config_hash != self.aggregation_config.fingerprint:
+            raise ValueError("aggregation_config_hash does not match aggregation_config")
+        if self.protocol_version != PROTOCOL_VERSION:
+            raise ValueError("protocol_version does not match protocol v1")
+        if not isinstance(self.authenticated, bool) or not isinstance(
+            self.bit_identical, bool
+        ):
+            raise ValueError("authenticated and bit_identical must be booleans")
+        frozen_workers: list[np.ndarray] = []
+        for consensus in self.worker_consensuses:
+            copied = np.asarray(consensus, dtype=np.float64).copy()
+            if copied.ndim != 1 or copied.size == 0 or not np.all(np.isfinite(copied)):
+                raise ValueError("worker consensuses must be non-empty finite vectors")
+            copied.setflags(write=False)
+            frozen_workers.append(copied)
+        object.__setattr__(self, "worker_consensuses", tuple(frozen_workers))
+        object.__setattr__(self, "replay", tuple(deepcopy(list(self.replay))))
+
+    @property
+    def consensus(self) -> np.ndarray:
+        """Return the consensus broadcast by the socket server."""
+        return self.server_aggregation.consensus
+
+    @property
+    def in_process(self) -> np.ndarray:
+        """Return the matching in-process reference consensus."""
+        return self.in_process_aggregation.consensus
+
+
+def run_socket_round_result(
     local_posteriors: list[np.ndarray] | np.ndarray | None = None,
     *,
     robustness: float | None = None,
@@ -606,7 +1198,7 @@ def run_socket_round(
     replay_path: str | PathLike[str] | None = None,
     replay_guard: ReplayGuard | None = None,
     **legacy: object,
-) -> dict[str, Any]:
+) -> SocketRoundResult:
     """Run one federation round over real loopback TCP sockets.
 
     Spins up a server socket on an ephemeral port, launches one worker thread per
@@ -629,11 +1221,9 @@ def run_socket_round(
     :class:`PersistentReplayGuard` persists it across local process restarts.
     Neither choice establishes a multi-host replay domain.
 
-    Returns ``consensus`` (the fused pmf), ``in_process`` (the reference
-    configured in-process consensus), ``bit_identical`` (``np.array_equal`` of the
-    two), ``n_workers``, each worker's received consensus for a broadcast check,
-    and a digest-only ``replay`` log that can reconstruct and digest-verify the
-    round.
+    Returns complete server and in-process aggregation diagnostics, ordered
+    worker consensuses, transport metadata, and a structured replay verdict.
+    :func:`run_socket_round` retains the historical dictionary projection.
     """
     if "beliefs" in legacy:
         if local_posteriors is not None:
@@ -650,13 +1240,17 @@ def run_socket_round(
         raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
-    belief_list = [
-        np.asarray(posterior, dtype=np.float64)
-        for posterior in local_posteriors
-    ]
-    n = len(belief_list)
+    raw_local_posteriors = list(local_posteriors)
+    n = len(raw_local_posteriors)
     if n == 0:
         raise ValueError("local_posteriors must be non-empty")
+    as_pmf_matrix(raw_local_posteriors, name="local_posteriors")
+    # Preserve caller mass in protocol-v1 belief frames. The receiving server
+    # performs the single canonical normalization through aggregate_result.
+    belief_list = [
+        np.asarray(posterior, dtype=np.float64)
+        for posterior in raw_local_posteriors
+    ]
     if config is not None and not isinstance(config, AggregationConfig):
         raise ValueError("config must be an AggregationConfig or None")
     if config is not None and robustness is not None:
@@ -831,36 +1425,92 @@ def run_socket_round(
         raise RuntimeError(f"socket worker {worker_id} failed: {type(error).__name__}: {error}") from error
     if set(received) != set(range(n)):
         raise RuntimeError("not every socket worker received the consensus")
-    reference = aggregate_result(belief_list, config=resolved_config).consensus
+    reference_result = aggregate_result(belief_list, config=resolved_config)
     replay_file = save_socket_replay(replay_path, replay) if replay_path is not None else None
-    return {
-        "consensus": result.consensus,
-        "in_process": reference,
-        "bit_identical": bool(np.array_equal(result.consensus, reference)),
-        "worker_consensuses": received,
-        "n_workers": n,
-        "port": int(port),
-        "authenticated": key is not None,
-        "protocol_version": PROTOCOL_VERSION,
-        "round_id": round_id,
-        "aggregation_config": resolved_config.as_dict(),
-        "aggregation_config_hash": resolved_config.fingerprint,
-        "replay": replay,
-        "replay_path": str(replay_file) if replay_file is not None else None,
-        "replay_valid": validate_socket_replay(
-            replay,
-            belief_list,
-            result.consensus,
-            config=resolved_config,
+    replay_validation = inspect_socket_replay(
+        replay,
+        belief_list,
+        result.consensus,
+        config=resolved_config,
+    )
+    return SocketRoundResult(
+        server_aggregation=result,
+        in_process_aggregation=reference_result,
+        worker_consensuses=tuple(received[worker_id] for worker_id in range(n)),
+        n_workers=n,
+        port=int(port),
+        authenticated=key is not None,
+        protocol_version=PROTOCOL_VERSION,
+        round_id=round_id,
+        aggregation_config=resolved_config,
+        aggregation_config_hash=resolved_config.fingerprint,
+        replay=tuple(replay),
+        replay_path=str(replay_file) if replay_file is not None else None,
+        replay_validation=replay_validation,
+        bit_identical=bool(
+            np.array_equal(result.consensus, reference_result.consensus)
         ),
+    )
+
+
+def run_socket_round(
+    local_posteriors: list[np.ndarray] | np.ndarray | None = None,
+    *,
+    robustness: float | None = None,
+    config: AggregationConfig | None = None,
+    round_id: str = "round-0",
+    host: str = "127.0.0.1",
+    timeout: float = 10.0,
+    auth_key: bytes | str | None = None,
+    replay_path: str | PathLike[str] | None = None,
+    replay_guard: ReplayGuard | None = None,
+    **legacy: object,
+) -> dict[str, Any]:
+    """Run one loopback round and return the protocol-v1 compatibility mapping."""
+    rich = run_socket_round_result(
+        local_posteriors,
+        robustness=robustness,
+        config=config,
+        round_id=round_id,
+        host=host,
+        timeout=timeout,
+        auth_key=auth_key,
+        replay_path=replay_path,
+        replay_guard=replay_guard,
+        **legacy,
+    )
+    return {
+        "consensus": rich.consensus,
+        "in_process": rich.in_process,
+        "bit_identical": rich.bit_identical,
+        "worker_consensuses": {
+            worker_id: consensus
+            for worker_id, consensus in enumerate(rich.worker_consensuses)
+        },
+        "n_workers": rich.n_workers,
+        "port": rich.port,
+        "authenticated": rich.authenticated,
+        "protocol_version": rich.protocol_version,
+        "round_id": rich.round_id,
+        "aggregation_config": rich.aggregation_config.as_dict(),
+        "aggregation_config_hash": rich.aggregation_config_hash,
+        "replay": deepcopy(list(rich.replay)),
+        "replay_path": rich.replay_path,
+        "replay_valid": rich.replay_validation.integrity_valid,
     }
 
 
 __all__ = [
     "PersistentReplayGuard",
+    "ReplayFinding",
     "ReplayGuard",
+    "ReplayValidationResult",
+    "SocketRoundResult",
+    "aggregation_config_from_replay",
+    "inspect_socket_replay",
     "load_socket_replay",
     "run_socket_round",
+    "run_socket_round_result",
     "save_socket_replay",
     "validate_socket_replay",
 ]

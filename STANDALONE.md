@@ -67,6 +67,16 @@ git rev-parse --show-toplevel
 git remote -v
 ```
 
+Before pushing an exact development history to the public target, refresh
+`public/main` and audit every object newly reachable in
+`public/main..candidate`, including deleted paths and historical blobs. Record
+the public-base and candidate SHAs, scanner/tool versions, commit identities,
+machine-local or confidential content, generated artifacts, and the disposition
+of every finding. Review objects at or above 50 MiB and hard-block objects over
+GitHub's 100 MiB limit. An unresolved publishability concern blocks the public
+push; switching to a compact or sanitized replay is not an automatic fallback
+and requires separate approval plus commit-bound regeneration.
+
 Zenodo publication is a composable release boundary: `src/publication/zenodo.py`
 contains the typed REST client, while `scripts/zenodo_release.py` is the thin
 new-version/update/upload/verify/publish adapter. The v1.0.4 deposition is

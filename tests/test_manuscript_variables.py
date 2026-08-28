@@ -30,6 +30,7 @@ from manuscript_variables import (
     save_variables,
 )
 from manuscript_vars.loaders import _build_timestamp, _coverage_percent
+from publication.identifiers import publication_identity_sentence
 
 # Real project root (three levels up from tests/): the shipped manuscript prose.
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -682,6 +683,9 @@ def test_config_metadata_tokens(tmp_path: Path) -> None:
     assert "fedgvi" in variables["CONFIG_KEYWORDS"]
     assert variables["PUBLICATION_DOI"] == "10.5281/zenodo.12345"
     assert variables["PUBLICATION_DOI_URL"] == "https://doi.org/10.5281/zenodo.12345"
+    assert variables["PUBLICATION_IDENTITY_SENTENCE"] == publication_identity_sentence(
+        "10.5281/zenodo.12345"
+    )
 
 
 def test_assigned_doi_metadata_tokens_are_canonical(tmp_path: Path) -> None:
@@ -693,6 +697,22 @@ def test_assigned_doi_metadata_tokens_are_canonical(tmp_path: Path) -> None:
     variables = generate_variables(tmp_path, allow_draft=True)
     assert variables["PUBLICATION_DOI"] == "10.5281/zenodo.12345"
     assert variables["PUBLICATION_DOI_URL"] == "https://doi.org/10.5281/zenodo.12345"
+    assert "This final-release manuscript" in variables["PUBLICATION_IDENTITY_SENTENCE"]
+
+
+def test_unreleased_identity_token_uses_neutral_prose_without_na(tmp_path: Path) -> None:
+    _make_project(tmp_path)
+    config_path = tmp_path / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["publication"] = {"doi": "", "doi_status": "(forthcoming)"}
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+
+    variables = generate_variables(tmp_path, allow_draft=True)
+
+    sentence = variables["PUBLICATION_IDENTITY_SENTENCE"]
+    assert sentence == publication_identity_sentence(None)
+    assert "no assigned version DOI" in sentence
+    assert "N/A" not in sentence
 
 
 def test_save_variables_round_trip(tmp_path: Path) -> None:
@@ -711,12 +731,20 @@ def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
     (manuscript / "01_intro.md").write_text("Value: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "README.md").write_text("Example: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "refs.bib").write_text("@misc{x, title={X}}\n", encoding="utf-8")
+    config_path = manuscript / "config.yaml"
+    config_path.write_text(
+        config_path.read_text(encoding="utf-8")
+        + "source_only_placeholder: '{{PUBLICATION_DOI}}'\n",
+        encoding="utf-8",
+    )
+    source_config = config_path.read_bytes()
 
     out_dir = render_manuscript_tree(tmp_path, {"VALUE": "42"})
 
     assert (out_dir / "01_intro.md").read_text(encoding="utf-8") == "Value: 42\n"
     assert not (out_dir / "README.md").exists()
-    assert (out_dir / "config.yaml").exists()
+    assert (out_dir / "config.yaml").read_bytes() == source_config
+    assert b"{{PUBLICATION_DOI}}" in source_config
     assert (out_dir / "refs.bib").exists()
     assert "infrastructure" not in inspect.getsource(render_manuscript_tree)
 

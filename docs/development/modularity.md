@@ -141,6 +141,26 @@ leave the boundary with argument handling, sequencing, and status mapping.
 5. Check that every local link resolves and that the page does not introduce
    retired names, stale versions, or unsupported scientific generalizations.
 
+### Add a runnable example
+
+1. Put a small, deterministic program in `examples/` and use public APIs only;
+   never reimplement aggregation or report logic in the example.
+2. Emit machine-checkable, stable output. Exclude timestamps, ephemeral ports,
+   absolute checkout paths, and other environment-specific values from the
+   asserted surface.
+3. Use caller-owned scratch paths for writes and reject non-empty destinations.
+   A spawned-process example must be a real file with an
+   `if __name__ == "__main__":` guard.
+4. Execute the program as a real subprocess from outside the repository working
+   directory in `tests/test_examples.py`, including a failure or negative
+   control. Do not use mocks.
+5. Route it through the source distribution, Ruff, runtime-surface scan,
+   release provenance fingerprint, and validation-receipt inputs. Runnable
+   examples are supported source, even though they do not belong in the wheel
+   or reviewer-artifact payload.
+6. Link it from `examples/README.md` and the nearest reader surface, and state
+   exactly which scientific, transport, or publication claim it does not make.
+
 ## Receipts and write boundaries
 
 There are three distinct boundaries:
@@ -169,18 +189,22 @@ unit test does not prove clean-clone or external-publication state.
 | --- | --- |
 | CLI package split and behavior | `tests/test_fedference_cli.py` plus Ruff/mypy |
 | Script thinness and real process behavior | `tests/test_scripts_smoke.py` |
+| Runnable public-interface ladder | `tests/test_examples.py` |
 | Domain/import isolation | layer gate and `tests/test_runtime_surface.py` |
 | Report and figure contracts | `tests/analysis/`, `tests/figures/`, `tests/test_caption_completeness.py` |
 | Documentation links, stale language, and Mermaid | `tests/test_docs_contract.py` and `scripts/validate_mermaid.py` |
 | Analysis → hydration → render order | `scripts/validate_pipeline_freshness.py` |
-| Release artifact provenance | `scripts/build_release.py --verify` |
+| Release publication-payload provenance | `scripts/build_release.py --verify` |
+| Downstream artifact and validation controls | pinned Template stages 04-05 and artifact-manifest validation |
 | Clean-clone portability | `scripts/validate_clean_checkout.py` and the isolated import probes |
 
 The practical order is: run focused tests after a local change, run the full
 source gate, regenerate producer-owned outputs, run rendered-surface and
-freshness checks, then build and verify the release bundle. Publication is the
-last boundary, after the immutable reviewed commit and the final artifact
-hashes are known.
+freshness checks, build the upstream release payload, then refresh and verify
+the downstream Template artifact/validation controls. Two release builds must
+compare byte-identical before those controls are sealed; final verification is
+read-only. Publication is the last boundary, after the immutable reviewed
+commit and the final artifact hashes are known.
 
 ## Further reading
 

@@ -20,11 +20,24 @@ categorical inputs, zero-robustness server pooling equals the project's
 log-linear pool. In code:
 
 ```python
-from fedference.aggregation import robust_aggregate, log_linear_pool
+import numpy as np
 
-assert (robust_aggregate(local_posteriors, robustness=0.0).consensus
-        == log_linear_pool(local_posteriors)).all()
+from fedference.aggregation import log_linear_pool, robust_aggregate
+
+local_posteriors = np.array(
+    [[0.70, 0.20, 0.10], [0.60, 0.30, 0.10], [0.10, 0.10, 0.80]],
+    dtype=np.float64,
+)
+
+assert np.array_equal(
+    robust_aggregate(local_posteriors, robustness=0.0).consensus,
+    log_linear_pool(local_posteriors),
+)
 ```
+
+Run the same recovery check, method comparison, and invalid-input controls from
+the repository root with the programs indexed in
+[`examples/README.md`](../../examples/README.md).
 
 The comparison with Friston et al. (2024) Eq. 7 is a **categorical
 posterior-log-potential specialization**, not a reconstruction of the complete
@@ -178,22 +191,27 @@ NumPy logistic-regression baseline and point-mass MLP complement (not a paper-sc
 
 Three further items are implementation slices, not closed scientific scope: a
 mean-field variational BNN plus diagonal-Gaussian site/cavity/factor-replacement
-server and explicit CPU/MPS receipts (MAJ-2A; the cavity-conditioned client
-optimizer and confirmatory sweep remain open); Gaussian and hybrid recovery
-paths plus a minimal tracking fixture (MAJ-3; the full controlled benchmark
-remains open); and a hash-, license-, schema-, split-, and receipt-bound
-three-dataset UCI execution path (MAJ-6; the pilot, confirmatory inference, and
-manuscript evidence pack remain open). Out-of-scope discussion and related
+server, a cavity-conditioned synthetic client optimizer, and explicit CPU/MPS
+receipts (MAJ-2A; source-dataset protocol parity, the locked portable campaign,
+and source-scale CUDA remain open); Gaussian and hybrid recovery paths plus a
+tracking pilot with matched naive, robust, discrete-only, continuous-only, and
+oracle-context controls and a singular-covariance falsifier (MAJ-3; the frozen
+controlled benchmark and confirmatory inference remain open); and a hash-,
+license-, schema-, split-, and receipt-bound three-dataset UCI execution path
+(MAJ-6; leakage-free calibration, the confirmatory campaign, and manuscript
+evidence pack remain open). Out-of-scope discussion and related
 work: [`../../manuscript/23_discussion_limitations.md`](../../manuscript/23_discussion_limitations.md)
 and [`../../manuscript/22_discussion_related_work.md`](../../manuscript/22_discussion_related_work.md).
 
 **V3 boundary.** The original ISA listed "real multi-machine federation" as
 out-of-scope. The current `FederationServer` + `FederationWorker` protocol over
-`queue.Queue` transport serialises beliefs losslessly, `run_multiprocess_round`
-runs the same protocol with single-machine OS worker processes, and
-`run_socket_round` exercises real loopback TCP with a versioned configuration-
+`queue.Queue` transport serialises beliefs losslessly;
+`run_multiprocess_round_result` runs the same protocol with single-machine OS
+worker processes while its compatibility wrapper retains the consensus return;
+and `run_socket_round_result` exercises real loopback TCP with a versioned configuration-
 bound envelope, optional HMAC frame integrity, and persisted digest-verified
-replay validation. This retires the
+replay findings while the protocol-v1 dictionary/Boolean compatibility
+surfaces remain. This retires the
 in-process serialization, unauthenticated-loopback, and in-memory-only replay
 caveats. A caller-shared `ReplayGuard` can reject round-id reuse within one
 running process; `PersistentReplayGuard` uses caller-owned SQLite state to

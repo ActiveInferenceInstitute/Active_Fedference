@@ -4,12 +4,29 @@ Operational rulebook for the Active Fedference project.
 Enforcement varies by file — see [`AGENTS.md`](AGENTS.md)'s REQUIRED vs
 AESTHETIC table for what is gate-checked versus convention.
 
+**Apply the software:** [`application-guide.md`](application-guide.md) ·
+[`../examples/README.md`](../examples/README.md)
+
 **Contract & identity:** [`../ISA.md`](../ISA.md) · [`../README.md`](../README.md) · [`../STANDALONE.md`](../STANDALONE.md)
 
 **Current public release v1.0.4:** [DOI `10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
 · [GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
 · [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 · [Zenodo record](https://zenodo.org/records/21972644) · prior [v1.0.3 record](https://zenodo.org/records/21969756) · [v1.0.2 record](https://zenodo.org/records/21934992) · [v1.0.1 record](https://zenodo.org/records/21919307) · [v0.1.0 record](https://zenodo.org/records/21864004)
+
+## Choose a path
+
+| I want to… | Start here |
+| --- | --- |
+| Aggregate my own labeled categorical posteriors | [`application-guide.md`](application-guide.md); [`../examples/README.md`](../examples/README.md), example 05 |
+| Compare the three server rules | [`../examples/README.md`](../examples/README.md), example 02 |
+| Exercise direct, process, socket, and replay boundaries | [`../examples/README.md`](../examples/README.md), example 03 |
+| Produce and verify an application receipt | [`../examples/README.md`](../examples/README.md), example 05; [`../src/fedference_cli/README.md`](../src/fedference_cli/README.md) |
+| Produce and verify a registered research receipt | [`../examples/README.md`](../examples/README.md), example 04; [`../src/fedference_cli/README.md`](../src/fedference_cli/README.md) |
+| Understand the mathematical scope | [`core/conceptual-foundations.md`](core/conceptual-foundations.md) |
+| Contribute software or documentation | [`development/quickstart.md`](development/quickstart.md); [`development/modularity.md`](development/modularity.md) |
+| Reproduce the manuscript surfaces | [`manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) |
+| Audit a release boundary | [`reference/verification-commands.md`](reference/verification-commands.md); [`reference/zenodo-release.md`](reference/zenodo-release.md) |
 
 ## Subfolders
 
@@ -20,9 +37,18 @@ AESTHETIC table for what is gate-checked versus convention.
 | [`manuscript/`](manuscript/README.md) | PDF/web pipeline, accessibility boundary, tokens & labels |
 | [`operations/`](operations/README.md) | Output layout, troubleshooting, FAQ |
 | [`reference/`](reference/README.md) | Verification, API/schema stability, and Zenodo release boundary |
-| [`research/`](research/literature-audit.md) | Source-audited scholarship, claim boundaries, simulation-design rationale, the [dated extended statistical audit](research/extended-statistical-audit-2026-07-14.md), the [first-principles/RedTeam review](research/first-principles-redteam-review-2026-07-16.md), the [runtime-surface/composability follow-up](research/runtime-surface-composability-review-2026-07-17.md), and the [CLI/orchestration modularity review](research/cli-modularity-review-2026-08-15.md) |
+| [`research/`](research/README.md) | Indexed scholarship, claim, statistical, visual, complexity, RedTeam, runtime/composability, and CLI/orchestration audits |
 | [`security/`](security/README.md) | Runtime/development trust boundaries, abuse paths, mitigations, and no-claim constraints |
 | [`todo/`](todo/README.md) | Scoped forward roadmap pages linked from `TODO.md` |
+
+## Read order (new contributors)
+
+1. [`../README.md`](../README.md) — project pitch and run commands
+2. [`application-guide.md`](application-guide.md) — adapt the software to caller-owned posteriors
+3. [`../examples/README.md`](../examples/README.md) — deterministic public-API example ladder
+4. [`development/quickstart.md`](development/quickstart.md) — contributor and reviewer-snapshot reproduction
+5. [`core/conceptual-foundations.md`](core/conceptual-foundations.md) — why this project exists
+6. [`operations/faq.md`](operations/faq.md) — common questions
 
 ## Read order (agents)
 
@@ -36,13 +62,6 @@ AESTHETIC table for what is gate-checked versus convention.
 8. [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md) — before editing manuscript prose
 9. [`reference/zenodo-release.md`](reference/zenodo-release.md) — before reserving, updating, uploading, or publishing a DOI deposition
 
-## Read order (new contributors)
-
-1. [`../README.md`](../README.md) — project pitch and run commands
-2. [`development/quickstart.md`](development/quickstart.md) — first green run
-3. [`core/conceptual-foundations.md`](core/conceptual-foundations.md) — why this project exists
-4. [`operations/faq.md`](operations/faq.md) — common questions
-
 ## Reader paths
 
 - **Active-inference readers:** begin with the Friston belief-sharing mechanism
@@ -55,6 +74,11 @@ AESTHETIC table for what is gate-checked versus convention.
   aggregation rules in [`core/architecture.md`](core/architecture.md), then
   inspect the registry/receipt boundary in
   [`core/experiments-and-artifacts.md`](core/experiments-and-artifacts.md).
+- **Implementation-first readers:** run the numbered programs in
+  [`application-guide.md`](application-guide.md) and
+  [`../examples/README.md`](../examples/README.md), then use
+  [`reference/verification-commands.md`](reference/verification-commands.md)
+  for the example, distribution, and release-boundary probes.
 
 ## Before modifying…
 
@@ -65,14 +89,15 @@ AESTHETIC table for what is gate-checked versus convention.
 | `tests/*` | [`development/testing_philosophy.md`](development/testing_philosophy.md) |
 | `manuscript/*.md` | [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md), [`../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md) |
 | `scripts/*` | [`core/architecture.md`](core/architecture.md), [`../scripts/AGENTS.md`](../scripts/AGENTS.md) |
+| `examples/*` | [`../examples/README.md`](../examples/README.md), [`development/modularity.md`](development/modularity.md) |
 | Federation transport / deployment | [`security/active_fedference-threat-model.md`](security/active_fedference-threat-model.md), [`todo/true-multi-machine-federation.md`](todo/true-multi-machine-federation.md) |
 | Pipeline / `output/` | [`operations/output-layout.md`](operations/output-layout.md) |
 | Roadmap / TODO scope | [`todo/README.md`](todo/README.md), [`../TODO.md`](../TODO.md) |
 
-## Quick verification
+## Contributor verification
 
 ```bash
-uv run --locked pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src --cov-fail-under=90 -q
 ```
 

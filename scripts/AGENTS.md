@@ -88,6 +88,15 @@ byte-identical. Supply `--timestamp` or `SOURCE_DATE_EPOCH` only for an approved
 release. The guarded CLI establishes a local reviewer bundle only; it never
 substitutes for clean-clone evidence, release authority, or approval.
 
+The schema-4 bundle is the upstream `publication-payload-v1` manifest. Build it
+after final web/render freshness and before the final Template artifact and
+validation snapshot. Template-owned artifact, evidence, output-statistics,
+validation, rendered-provenance, and snapshot reports are downstream controls
+and must not be added to the payload hash set: they consume or summarize the
+release bytes. After Template stages 04-05 finalize those controls, release
+verification is read-only. Run and compare the two byte-identical payload
+builds before finalizing those controls; do not write the payload afterward.
+
 The stage receipts in `output/data/pipeline_provenance.json` provide the
 upstream/downstream freshness boundary. The separate
 `output/data/test_coverage_receipt.json` binds a successful full test/coverage
@@ -110,7 +119,7 @@ uv run --locked python scripts/record_pipeline_stage.py render \
 uv run --locked python scripts/validate_pipeline_freshness.py
 ```
 
-Receipt schema 2 omits wall-clock `recorded_at` values by default. Set
+Receipt schema 3 omits wall-clock `recorded_at` values by default. Set
 `SOURCE_DATE_EPOCH` or pass `--timestamp` only when an external release event
 provides that time; content hashes, rather than time, establish freshness.
 

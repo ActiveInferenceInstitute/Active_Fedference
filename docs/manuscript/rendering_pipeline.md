@@ -126,9 +126,37 @@ uv run --locked python scripts/record_pipeline_stage.py render \
 uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
 uv run --locked python scripts/validate_pipeline_freshness.py
 
-# An unreleased reviewer bundle has no release timestamp.
-unset SOURCE_DATE_EPOCH
-uv run --locked python scripts/build_release.py
+# Build the upstream publication payload before Template writes its final
+# artifact/validation control receipts. An unreleased reviewer bundle has no
+# release timestamp; env -u leaves the exported render epoch available below.
+env -u SOURCE_DATE_EPOCH uv run --locked python scripts/build_release.py
+RELEASE_HASH_BEFORE="$(
+  shasum -a 256 output/release/README.md output/release/manifest.json \
+    output/release/sha256sums.txt | shasum -a 256 | awk '{print $1}'
+)"
+env -u SOURCE_DATE_EPOCH uv run --locked python scripts/build_release.py
+RELEASE_HASH_AFTER="$(
+  shasum -a 256 output/release/README.md output/release/manifest.json \
+    output/release/sha256sums.txt | shasum -a 256 | awk '{print $1}'
+)"
+test "$RELEASE_HASH_BEFORE" = "$RELEASE_HASH_AFTER"
+
+# Finalize the downstream control plane against the exact release bytes.
+cd "$TEMPLATE_REPO"
+uv run --locked python scripts/maintenance/refresh_artifact_manifests.py \
+  --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_04_validate.py \
+  --project working/active_fedference
+uv run --locked python scripts/pipeline/stage_05_copy.py \
+  --project working/active_fedference
+
+# These gates are read-only at the fixed point. No payload producer runs after
+# the downstream controls have been sealed.
+cd "$AF_REPO"
+uv run --locked python scripts/validate_web_package.py
+uv run --locked python scripts/validate_rendered_surfaces.py
+uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
+uv run --locked python scripts/validate_pipeline_freshness.py
 uv run --locked python scripts/build_release.py --verify
 ~~~
 
@@ -149,6 +177,17 @@ cross-references under `output/web/`. The final render receipt therefore comes
 only after both have completed and the prepared web/PDF/slide surfaces have
 validated. Its hashes then describe the actual release artifact rather than
 the pre-package renderer output.
+
+The release manifest is schema-versioned as an upstream
+`publication-payload-v1` inventory. It covers the scientific reports, data and
+coverage receipts, hydrated manuscript, figures, PDF, slides, web surfaces,
+metadata, and declared source fingerprint inputs. Template-owned artifact,
+evidence, statistics, validation, rendered-provenance, and snapshot control
+reports are produced after that payload and are deliberately outside its hash
+set. They remain mandatory and are verified by the final Template validation,
+Git-tree, confidentiality, and clean-clone gates. This one-way boundary avoids
+the impossible cycle in which an artifact manifest hashes `output/release/`
+while the release manifest hashes the artifact manifest that names it.
 
 ## Phase 3 — PDF, web, and slides render (pipeline stage 7)
 
@@ -189,13 +228,14 @@ Each section deck is a standalone Beamer build, so a raw-LaTeX `\ref{...}`
 whose `\label` lives in a different section's deck cannot resolve locally. The
 template renderer runs a fail-open pre-pass
 (`infrastructure/rendering/_slides_crossref.py` in the template repository)
-that parses the combined manuscript's retained aux file
+that parses the combined manuscript's transient aux file
 (`output/pdf/_combined_manuscript.aux`) into a label-to-printed-number map and
 substitutes those numbers into cross-deck refs, so slide numbers match the
 combined PDF exactly. Within-deck refs are left alone and numbered natively by
-Beamer. Caveat: the aux map is an artifact of the most recent combined build,
-so on the very first render of a project (no aux yet) cross-deck refs stay as
-"??" until the next render pass.
+Beamer. The aux map is retained inside the producer workspace only for the
+dependent slide pass; it is a renderer sidecar and is not retained in the
+public Git tree or release bundle. On the very first render of a project (no
+aux yet), cross-deck refs stay as "??" until the next render pass.
 
 ### Web theorem rendering
 

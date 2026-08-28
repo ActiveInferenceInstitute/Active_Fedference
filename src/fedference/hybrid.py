@@ -75,7 +75,10 @@ class HybridAggregationResult:
     def __post_init__(self) -> None:
         if not isinstance(self.consensus, HybridBelief):
             raise ValueError("consensus must be a HybridBelief")
-        weights = np.array(self.normalized_effective_weights, dtype=np.float64, copy=True).ravel()
+        weights = np.asarray(self.normalized_effective_weights)
+        if weights.ndim != 1:
+            raise ValueError("normalized_effective_weights must be one-dimensional")
+        weights = np.array(weights, dtype=np.float64, copy=True)
         if (
             weights.size == 0
             or not np.all(np.isfinite(weights))

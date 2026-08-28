@@ -36,9 +36,10 @@ from __future__ import annotations
 import json
 import logging
 import warnings
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from hashlib import sha256
+from numbers import Real
 from typing import Any, Literal, Protocol
 
 import numpy as np
@@ -52,6 +53,12 @@ _EPS = 1e-12
 _BASE_WEIGHT_FALLBACK = "all effective weights collapsed; base weights substituted"
 TEMPERED_ENTROPY_WEIGHT_DEFAULT: float = 1.0
 AggregationMethod = Literal["naive", "robust", "variational"]
+AggregationSolverStatus = Literal[
+    "nominal",
+    "converged_with_fallback",
+    "not_converged",
+    "not_converged_with_fallback",
+]
 
 _log = logging.getLogger(__name__)
 
@@ -123,7 +130,15 @@ def _nonnegative_scalar(value: object, *, name: str) -> float:
 
 def _closed_simplex(values: ArrayF, *, n_states: int, name: str) -> ArrayF:
     """Validate a closed-simplex vector without flooring exact boundary zeros."""
-    result = np.asarray(values, dtype=np.float64).ravel()
+    result = np.asarray(values)
+    if result.ndim != 1:
+        raise ValueError(f"{name} must be one-dimensional")
+    if any(
+        isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+        for value in np.asarray(values, dtype=object)
+    ):
+        raise ValueError(f"{name} must contain only numeric non-boolean values")
+    result = np.asarray(result, dtype=np.float64)
     if result.size != n_states:
         raise ValueError(f"{name} length must match the belief state dimension")
     if not np.all(np.isfinite(result)) or np.any(result < 0.0):
@@ -200,27 +215,180 @@ class AggregationResult:
     fallback_events: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        """Normalize the diagnostic arrays while retaining both weight scales."""
-        normalized = np.asarray(self.normalized_effective_weights, dtype=np.float64).ravel()
+        """Validate and freeze diagnostics while retaining both weight scales."""
+        consensus = np.asarray(self.consensus)
+        if consensus.ndim != 1:
+            raise ValueError("consensus must be one-dimensional")
+        if any(
+            isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+            for value in np.asarray(self.consensus, dtype=object)
+        ):
+            raise ValueError("consensus must contain only numeric non-boolean values")
+        consensus = np.asarray(consensus, dtype=np.float64)
+        if (
+            consensus.size == 0
+            or not np.all(np.isfinite(consensus))
+            or np.any(consensus < 0.0)
+            or not np.isclose(float(consensus.sum()), 1.0, atol=1e-12)
+        ):
+            raise ValueError("consensus must be a finite probability vector")
+        normalized = np.asarray(self.normalized_effective_weights)
+        if normalized.ndim != 1:
+            raise ValueError("normalized_effective_weights must be one-dimensional")
+        if any(
+            isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+            for value in np.asarray(self.normalized_effective_weights, dtype=object)
+        ):
+            raise ValueError(
+                "normalized_effective_weights must contain only numeric non-boolean values"
+            )
+        normalized = np.asarray(normalized, dtype=np.float64)
         if normalized.size == 0 or not np.all(np.isfinite(normalized)):
             raise ValueError("normalized_effective_weights must be finite and non-empty")
         if np.any(normalized < 0.0) or not np.isclose(
             float(normalized.sum()), 1.0, atol=1e-12
         ):
             raise ValueError("normalized_effective_weights must be a probability vector")
-        raw = (
-            normalized.copy()
-            if self.raw_effective_weights is None
-            else np.asarray(self.raw_effective_weights, dtype=np.float64).ravel()
-        )
+        if self.raw_effective_weights is None:
+            raw = normalized.copy()
+        else:
+            raw = np.asarray(self.raw_effective_weights)
+            if raw.ndim != 1:
+                raise ValueError("raw_effective_weights must be one-dimensional")
+            if any(
+                isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+                for value in np.asarray(self.raw_effective_weights, dtype=object)
+            ):
+                raise ValueError(
+                    "raw_effective_weights must contain only numeric non-boolean values"
+                )
+            raw = np.asarray(raw, dtype=np.float64)
         if raw.shape != normalized.shape or not np.all(np.isfinite(raw)) or np.any(raw < 0.0):
             raise ValueError("raw_effective_weights must match normalized_effective_weights")
+        if (
+            isinstance(self.iterations, (bool, np.bool_))
+            or not isinstance(self.iterations, (int, np.integer))
+            or self.iterations < 0
+        ):
+            raise ValueError("iterations must be a non-negative integer")
+        if not isinstance(self.converged, (bool, np.bool_)):
+            raise ValueError("converged must be a boolean")
+        if not isinstance(self.history, (tuple, list)):
+            raise ValueError("history must be a sequence")
+        history: list[ArrayF] = []
+        for index, value in enumerate(self.history):
+            iterate = np.asarray(value)
+            if iterate.ndim != 1 or iterate.shape != consensus.shape:
+                raise ValueError(f"history[{index}] must match consensus shape")
+            if any(
+                isinstance(item, (bool, np.bool_)) or not isinstance(item, Real)
+                for item in np.asarray(value, dtype=object)
+            ):
+                raise ValueError(
+                    f"history[{index}] must contain only numeric non-boolean values"
+                )
+            iterate = np.asarray(iterate, dtype=np.float64)
+            if (
+                not np.all(np.isfinite(iterate))
+                or np.any(iterate < 0.0)
+                or not np.isclose(float(iterate.sum()), 1.0, atol=1e-12)
+            ):
+                raise ValueError(f"history[{index}] must be a finite probability vector")
+            iterate = iterate.copy()
+            iterate.setflags(write=False)
+            history.append(iterate)
+        if not isinstance(self.free_energy_history, (tuple, list)):
+            raise ValueError("free_energy_history must be a sequence")
+        if any(
+            isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+            for value in self.free_energy_history
+        ):
+            raise ValueError("free_energy_history must contain only numeric values")
+        free_energy_history = [float(value) for value in self.free_energy_history]
+        if not np.all(np.isfinite(free_energy_history)):
+            raise ValueError("free_energy_history must contain only finite values")
+        if not isinstance(self.fallback_events, (tuple, list)) or any(
+            not isinstance(event, str) or not event.strip() for event in self.fallback_events
+        ):
+            raise ValueError("fallback_events must contain non-empty strings")
+        consensus = consensus.copy()
         normalized = normalized.copy()
         raw = raw.copy()
+        consensus.setflags(write=False)
         normalized.setflags(write=False)
         raw.setflags(write=False)
+        object.__setattr__(self, "consensus", consensus)
         object.__setattr__(self, "normalized_effective_weights", normalized)
         object.__setattr__(self, "raw_effective_weights", raw)
+        object.__setattr__(self, "iterations", int(self.iterations))
+        object.__setattr__(self, "converged", bool(self.converged))
+        object.__setattr__(self, "history", history)
+        object.__setattr__(self, "free_energy_history", free_energy_history)
+        object.__setattr__(self, "fallback_events", tuple(self.fallback_events))
+
+    @property
+    def solver_status(self) -> AggregationSolverStatus:
+        """Return the fail-visible convergence/fallback classification."""
+        if self.converged:
+            return "converged_with_fallback" if self.fallback_events else "nominal"
+        return "not_converged_with_fallback" if self.fallback_events else "not_converged"
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return all solver diagnostics as finite JSON-compatible values."""
+        raw_weights = self.raw_effective_weights
+        if raw_weights is None:  # normalized to a concrete array in __post_init__
+            raw_weights = self.normalized_effective_weights
+        return {
+            "consensus": self.consensus.tolist(),
+            "raw_effective_weights": raw_weights.tolist(),
+            "normalized_effective_weights": self.normalized_effective_weights.tolist(),
+            "iterations": self.iterations,
+            "converged": self.converged,
+            "fallback_events": list(self.fallback_events),
+            "history": [iterate.tolist() for iterate in self.history],
+            "free_energy_history": list(self.free_energy_history),
+            "solver_status": self.solver_status,
+        }
+
+    @classmethod
+    def from_dict(cls, raw: Mapping[str, Any]) -> AggregationResult:
+        """Decode the exact JSON result contract and recheck solver status."""
+        required = {
+            "consensus",
+            "raw_effective_weights",
+            "normalized_effective_weights",
+            "iterations",
+            "converged",
+            "fallback_events",
+            "history",
+            "free_energy_history",
+            "solver_status",
+        }
+        if not isinstance(raw, Mapping) or set(raw) != required:
+            raise ValueError("aggregation result fields do not match schema")
+        for field_name in (
+            "consensus",
+            "raw_effective_weights",
+            "normalized_effective_weights",
+            "fallback_events",
+            "history",
+            "free_energy_history",
+        ):
+            if not isinstance(raw[field_name], list):
+                raise ValueError(f"aggregation result {field_name} must be a list")
+        result = cls(
+            consensus=np.asarray(raw["consensus"]),
+            raw_effective_weights=np.asarray(raw["raw_effective_weights"]),
+            normalized_effective_weights=np.asarray(raw["normalized_effective_weights"]),
+            iterations=raw["iterations"],
+            converged=raw["converged"],
+            fallback_events=tuple(raw["fallback_events"]),
+            history=[np.asarray(value) for value in raw["history"]],
+            free_energy_history=list(raw["free_energy_history"]),
+        )
+        if raw["solver_status"] != result.solver_status:
+            raise ValueError("aggregation solver_status is inconsistent with diagnostics")
+        return result
 
     @property
     def agent_weights(self) -> ArrayF:
@@ -531,7 +699,17 @@ def aggregation_free_energy(
     )
     mat = _stack(local_posteriors)
     w = _weights(base_weights, mat.shape[0])
-    a = np.asarray(raw_effective_weights, dtype=np.float64).ravel()
+    a = np.asarray(raw_effective_weights)
+    if a.ndim != 1:
+        raise ValueError("raw_effective_weights must be one-dimensional")
+    if any(
+        isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+        for value in np.asarray(raw_effective_weights, dtype=object)
+    ):
+        raise ValueError(
+            "raw_effective_weights must contain only numeric non-boolean values"
+        )
+    a = np.asarray(a, dtype=np.float64)
     if a.shape[0] != mat.shape[0]:
         raise ValueError("raw_effective_weights length must match number of agents")
     if not np.all(np.isfinite(a)):

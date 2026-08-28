@@ -74,7 +74,8 @@ hygiene, still regenerate the publication outputs after source changes that
 alter results, so the committed snapshot stays derived from the declared
 configuration — `tests/test_report_scale_guard.py` verifies its scale. The
 release-grade end-to-end procedure (fresh clone, full ladder, rendered-surface
-count invariants, raster reads, fingerprint verify, cross-vendor verdict) is
+count invariants, raster reads, fingerprint verification, and an eligible
+identified-human or genuinely different-vendor release verdict) is
 scoped in
 [`docs/todo/release-and-verification-ladder.md`](docs/todo/release-and-verification-ladder.md).
 
@@ -138,18 +139,17 @@ research has already succeeded.
 
 | Wave | Target | Required outcome |
 | --- | --- | --- |
-| Public foundation | v0.1 | Stable aggregation configuration, registry, receipts, installed CLI, wheel/sdist smoke, complete local release ladder, two isolated fresh-clone reproductions, and external confidentiality/license/author approval |
-| Server theory | v0.2 | MAJ-1 scoped no-go evidence recorded in ISA/audits, MAJ-8 locked calibration, comparator evidence, negative controls, and a source-bound theory pack |
-| Portable FedGVI | v0.3 | MAJ-2A protocol parity and M4 evidence plus the MAJ-6 three-dataset pack; MAJ-2B remains declarative and external |
-| Protocol and tasks | v0.4 | MAJ-7 reconstruction evidence, a controlled hybrid benchmark, and both hierarchy tasks with recovery and falsifier controls |
-| Stable platform | v1.0 | Stable schemas and deprecation policy, three independently verifiable evidence packs, both documentation paths, MAJ-4A emulator, clean-clone reproduction, and release approval |
-| Research expansion | v1.x | Streaming/nonstationary sharing first, then multimodal missingness; privacy and secure aggregation only after a threat model and leakage protocol |
+| Application development | v1.1 development PR | Labeled own-data API/CLI, application receipts, solver-health propagation, replay findings, strict shape validation, installed-artifact smoke, a confidentiality pass over the approved sanitized public history before the public branch push, and hosted review checks; a green PR is not a release |
+| Application release | v1.1.0 | After development integration, a release-identity-only PR sets the approved DOI/date; once that PR is merged and public `main` is green, two clone ladders certify the exact final-main SHA before an eligible identified-human or genuinely different-vendor verdict, owner approvals, immutable tag, checksummed GitHub assets, and separately approved Zenodo publication; an owner-author verdict is not independent external replication |
+| Calibrated external evidence | post-v1.1 scientific version | MAJ-8 freezes leakage-free robust and variational settings before the MAJ-6 three-dataset confirmatory campaign; null or reversed outcomes remain publishable when integrity gates pass |
+| Protocol and task expansion | later v1.x | MAJ-2A/B, MAJ-7, controlled hybrid/hierarchy tasks, and MAJ-4A/B advance only under their separate evidence and external-resource gates |
+| Longer-horizon research | later v1.x | Streaming/nonstationary sharing first, then multimodal missingness; privacy and secure aggregation only after a threat model and leakage protocol |
 
 ## Minor — Maintenance and Release Integrity
 
 | # | Priority | TODO | Effort | Dependencies |
 |---|----------|------|--------|-------------|
-| MIN-2 | 🔴 Critical | [Clone-correct release and full verification ladder](docs/todo/release-and-verification-ladder.md) — provision safe headroom, verify wheel/sdist installation, run the complete ladder twice from isolated fresh clones, obtain a structured independent verdict, and retain external release authority | 1–3 days after headroom | None (blocks any push/release) |
+| MIN-2 | 🔴 Critical | [Clone-correct integration/release verification ladder](docs/todo/release-and-verification-ladder.md) — run the approved sanitized-history confidentiality gate before any public branch push; after the development and release-identity PRs merge, provision safe headroom, verify wheel/sdist installation twice from isolated clones of exact final public `main`, obtain an eligible structured release verdict, and retain external release authority; owner-author review does not close broader independent reproduction | 1–3 days after headroom | None (hosted checks govern development integration; the history gate blocks public branch exposure, and the two-clone plus verdict gates block tagging and release publication) |
 
 ## Roadmap control
 

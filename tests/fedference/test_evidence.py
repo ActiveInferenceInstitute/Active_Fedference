@@ -8,19 +8,25 @@ from dataclasses import replace
 
 import pytest
 
+from fedference.application import LabeledAggregationRequest, aggregate_labeled
 from fedference.evidence import (
+    ApplicationReceipt,
     ArtifactRecord,
     DatasetSpec,
     ExperimentSpec,
     RunReceipt,
     canonical_sha256,
+    load_application_receipt,
     load_run_receipt,
     make_artifact_record,
     sha256_file,
     validate_evidence_report,
+    verify_application_receipt,
     verify_run_receipt,
+    write_application_receipt,
     write_run_receipt,
 )
+from fedference.provenance import SourceProvenance, runtime_provenance
 
 SHA = "a" * 64
 HERMETIC_GIT = ("git", "-c", "core.fsmonitor=false", "-c", "core.untrackedcache=false")
@@ -109,6 +115,111 @@ def test_run_receipt_round_trip_and_artifact_verification(tmp_path) -> None:
         loaded.dataset_sha256["dataset"] = "0" * 64
     with pytest.raises(ValueError, match="Out of range float values"):
         canonical_sha256({"not_json": float("nan")})
+
+
+def test_legacy_run_receipt_round_trips_exact_fields_with_unavailable_runtime(tmp_path) -> None:
+    raw = _receipt(tmp_path).as_dict()
+    raw["schema_version"] = "1.1"
+    del raw["runtime_provenance"]
+    loaded = RunReceipt.from_dict(raw)
+    assert loaded.as_dict() == raw
+    assert loaded.runtime_provenance.distribution_version == "unavailable"
+    assert "legacy schema 1.1" in loaded.runtime_provenance.warnings[0]
+    direct = replace(_receipt(tmp_path), schema_version="1.1")
+    assert direct.runtime_provenance.distribution_version == "unavailable"
+    assert "runtime_provenance" not in direct.as_dict()
+
+
+def test_application_receipt_round_trip_semantics_and_solver_policy(tmp_path) -> None:
+    request = LabeledAggregationRequest.from_dict(
+        {
+            "schema_version": "1.0",
+            "state_labels": ["no", "yes"],
+            "agents": [
+                {"agent_id": "a", "posterior": [0.8, 0.2]},
+                {"agent_id": "b", "posterior": [0.3, 0.7]},
+            ],
+            "aggregation_config": {
+                "method": "naive",
+                "robustness": 1.0,
+                "entropy_weight": 1.0,
+                "max_iter": 64,
+                "tol": 1e-9,
+                "multistart": True,
+            },
+        }
+    )
+    result = aggregate_labeled(request)
+    request_path = tmp_path / "request.json"
+    result_path = tmp_path / "result.json"
+    request_path.write_text(json.dumps(request.as_dict()), encoding="utf-8")
+    result_path.write_text(json.dumps(result.as_dict()), encoding="utf-8")
+    receipt = ApplicationReceipt(
+        request_sha256=request.request_sha256,
+        config_fingerprint=request.config.fingerprint,
+        solver_status=result.aggregation.solver_status,
+        fallback_events=result.aggregation.fallback_events,
+        outputs=(
+            make_artifact_record("request", request_path, root=tmp_path),
+            make_artifact_record("result", result_path, root=tmp_path),
+        ),
+        runtime_provenance=runtime_provenance(),
+        source_provenance=SourceProvenance(
+            source_kind="unavailable",
+            warnings=("test fixture",),
+        ),
+        started_at_utc="2026-08-25T00:00:00+00:00",
+        completed_at_utc="2026-08-25T00:00:01+00:00",
+    )
+    path = write_application_receipt(tmp_path / "receipt.json", receipt)
+    loaded = load_application_receipt(path)
+    assert loaded.as_dict() == receipt.as_dict()
+    assert verify_application_receipt(loaded, root=tmp_path) == ()
+    nonnominal_findings = verify_application_receipt(
+        replace(loaded, solver_status="not_converged"),
+        root=tmp_path,
+        require_nominal_solver=True,
+    )
+    assert "solver status is 'not_converged', not 'nominal'" in nonnominal_findings
+    assert "result solver status does not match receipt" in nonnominal_findings
+
+    version_payload = result.as_dict()
+    version_payload["software_version"] = "0.0.0"
+    result_path.write_text(json.dumps(version_payload), encoding="utf-8")
+    version_tampered = replace(
+        loaded,
+        outputs=(
+            loaded.outputs[0],
+            make_artifact_record("result", result_path, root=tmp_path),
+        ),
+    )
+    assert (
+        "result software version does not match runtime provenance"
+        in verify_application_receipt(version_tampered, root=tmp_path)
+    )
+
+    semantic_payload = result.as_dict()
+    semantic_payload["normalized_local_posteriors"] = [
+        semantic_payload["normalized_local_posteriors"][1],
+        semantic_payload["normalized_local_posteriors"][0],
+    ]
+    result_path.write_text(json.dumps(semantic_payload), encoding="utf-8")
+    semantically_tampered = replace(
+        loaded,
+        outputs=(
+            loaded.outputs[0],
+            make_artifact_record("result", result_path, root=tmp_path),
+        ),
+    )
+    assert (
+        "result normalized local posteriors do not match the request"
+        in verify_application_receipt(semantically_tampered, root=tmp_path)
+    )
+
+    result_path.write_text("{}\n", encoding="utf-8")
+    findings = verify_application_receipt(loaded, root=tmp_path)
+    assert "artifact digest mismatch: result.json" in findings
+    assert any("result artifact is invalid" in finding for finding in findings)
 
 
 def test_run_receipt_detects_tamper_and_noncompleted_status(tmp_path) -> None:
@@ -318,3 +429,6 @@ def test_strict_receipt_verification_checks_live_commit_tree_and_lock(
         require_clean_git=True,
     )
     assert "live environment lock digest does not match receipt" in findings
+    load_application_receipt,
+    verify_application_receipt,
+    write_application_receipt,
