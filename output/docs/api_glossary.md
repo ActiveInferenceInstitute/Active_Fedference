@@ -1,5 +1,10 @@
+# Active Fedference source API glossary
+
+Generated from top-level public functions and classes under `src/` using AST parsing. Presence in this inventory does not itself make a symbol stable; consult the API stability policy.
+
 | Module | Name | Kind | Summary |
-|---|---|---|---|
+| --- | --- | --- | --- |
+| `analysis.artifacts` | `expected_artifacts` | function | Return the source-declared Stage-02 artifact paths. |
 | `analysis.report_schemas` | `BeliefQualityReport` | class | Top-level payload written to ``belief_quality.json``. |
 | `analysis.report_schemas` | `BeliefSharingReport` | class | Top-level payload written to ``belief_sharing.json``. |
 | `analysis.report_schemas` | `BnnRobustnessReport` | class | Top-level payload written to ``bnn_robustness.json``. |
@@ -35,11 +40,13 @@
 | `analysis.report_schemas` | `validate_report` | function | Validate one report or figure-registry payload before it is written. |
 | `analysis.workflow` | `BnnTorchOptions` | class | Validated optional keyword arguments for the Torch complement. |
 | `analysis.workflow` | `main` | function | Run the analysis pipeline and print every artifact path to stdout. |
+| `analysis.workflow` | `resolve_analysis_profile` | function | Return the effective workflow budget profile for a project root. |
 | `analysis.workflow` | `run_analysis_pipeline` | function | Run every fedference experiment, write reports + figures, return paths. |
-| `documentation` | `build_api_reference_markdown` | function | Return markdown API reference for Active Fedference. |
-| `documentation` | `run_api_doc_generation` | function | Generate the glossary-style API index and the static API reference. |
+| `documentation` | `build_api_reference_markdown` | function | Return the source-owned static API reference. |
+| `documentation` | `run_api_doc_generation` | function | Generate the source-derived glossary and static API reference. |
 | `experiment_config` | `ExperimentConfig` | class | Frozen Active Fedference parameters from ``config.yaml`` -> ``experiment:``. |
-| `experiment_config` | `load_experiment_config` | function | Load Active Fedference parameters from ``manuscript/config.yaml``. |
+| `experiment_config` | `load_experiment_config` | function | Load the canonical publication config, failing closed on malformed YAML. |
+| `experiment_config` | `load_manuscript_config` | function | Load and validate the canonical manuscript YAML structure. |
 | `fedference.agents` | `Observation` | class | One multi-factor observation for a sentinel. |
 | `fedference.agents` | `Sentinel` | class | A single active-inference sentinel with a Markov-blanket partition. |
 | `fedference.agents` | `SentinelEnsemble` | class | A colony of sentinels with private gaze and shared location/proximity/pose. |
@@ -49,19 +56,26 @@
 | `fedference.aggregation` | `aggregate` | function | Convenience dispatch returning just the consensus pmf. |
 | `fedference.aggregation` | `aggregate_result` | function | Canonical aggregation dispatcher returning consensus and diagnostics. |
 | `fedference.aggregation` | `aggregation_free_energy` | function | Variational free energy minimized by :func:`variational_aggregate`. |
-| `fedference.aggregation` | `log_linear_pool` | function | Product-of-experts consensus = Friston (2024) Eq. 7. |
+| `fedference.aggregation` | `log_linear_pool` | function | Return the project's product-of-experts consensus. |
 | `fedference.aggregation` | `robust_aggregate` | function | Robustly fuse agent beliefs by iterative divergence-reweighting. |
 | `fedference.aggregation` | `variational_aggregate` | function | Objective-backed conservative fusion on the stated finite-simplex free energy. |
 | `fedference.aggregation_comparators` | `ComparatorResult` | class | Consensus and convergence diagnostics for an experimental comparator. |
 | `fedference.aggregation_comparators` | `clr_geometric_median_pool` | function | Pool beliefs by a weighted geometric median in CLR coordinates. |
 | `fedference.aggregation_comparators` | `linear_opinion_pool` | function | Weighted arithmetic mixture of categorical beliefs. |
+| `fedference.application` | `AgentPosterior` | class | One identified caller-supplied categorical posterior and base weight. |
+| `fedference.application` | `LabeledAggregationRequest` | class | Validated labeled input envelope for one categorical aggregation. |
+| `fedference.application` | `LabeledAggregationResult` | class | Labeled consensus and complete solver diagnostics; no decision semantics. |
+| `fedference.application` | `aggregate_labeled` | function | Aggregate one labeled request through the canonical domain dispatcher once. |
+| `fedference.application` | `load_labeled_aggregation_request` | function | Load strict labeled-request JSON from an explicit caller-owned path. |
 | `fedference.bayesian_model_reduction` | `greedy_reduce` | function | Greedy multi-hypothesis structure learning by iterated model reduction. |
 | `fedference.bayesian_model_reduction` | `hierarchical_reduce` | function | Score which levels of a hierarchical POMDP earn their structural keep. |
 | `fedference.bayesian_model_reduction` | `log_beta` | function | Return ``lnB(a) = sum_k gammaln(a_k) - gammaln(sum_k a_k)``. |
 | `fedference.bayesian_model_reduction` | `reduce` | function | Score a Dirichlet model reduction via the Beta-function free energy. |
 | `fedference.bayesian_model_reduction` | `reduced_posterior` | function | Closed-form reduced posterior ``post + reduced_prior - prior``. |
 | `fedference.belief_sharing` | `SharingDiagnostics` | class | Per-round outcome of belief sharing. |
-| `fedference.belief_sharing` | `share_round` | function | Run one federated belief-sharing round over a shared factor. |
+| `fedference.belief_sharing` | `SharingRoundResult` | class | Complete diagnostics for one in-process belief-sharing round. |
+| `fedference.belief_sharing` | `share_round` | function | Run one round and return the historical compatibility diagnostics. |
+| `fedference.belief_sharing` | `share_round_result` | function | Run one federated belief-sharing round over a shared factor. |
 | `fedference.belief_updating` | `infer_states` | function | One-step variational posterior over hidden states (Friston Eq. 4). |
 | `fedference.belief_updating` | `vfe` | function | Variational free energy ``F[q]`` for a belief ``qs`` (Friston 2024). |
 | `fedference.benchmark` | `load_tabular_csv` | function | Load a numeric-feature + integer-``label`` CSV into ``(features, labels)``. |
@@ -69,6 +83,7 @@
 | `fedference.benchmark` | `run_external_benchmark_pack` | function | Run the preregistered three-dataset pack without pooling nested seeds. |
 | `fedference.benchmark` | `run_external_dataset_benchmark` | function | Fetch, verify, and run one registered UCI benchmark. |
 | `fedference.benchmark` | `run_tabular_benchmark` | function | Load the bundled synthetic tabular CSV (or a user CSV) and stress it. |
+| `fedference.benchmark` | `summarize_external_benchmark_rows` | function | Summarize seed-level rows without treating seeds as datasets. |
 | `fedference.bnn_baseline` | `contaminate` | function | Flip a ``fraction`` of binary labels, biased toward high-leverage outliers. |
 | `fedference.bnn_baseline` | `fed_gvi_logreg` | function | Run the federated logistic-regression baseline and return its result. |
 | `fedference.bnn_baseline` | `make_blobs` | function | Synthetic 2-D, 2-class Gaussian blobs. |
@@ -83,7 +98,7 @@
 | `fedference.bnn_variational_torch` | `VariationalMLP` | class | Mean-field variational MLP: diagonal-Gaussian ``q(w)`` over every weight. |
 | `fedference.bnn_variational_torch` | `gaussian_kl_reference` | function | One-weight KL via the tested categorical-sibling :func:`gaussian_kl` — the independent reference the module's summed KL is checked against. |
 | `fedference.calibration` | `CalibrationEpisode` | class | One independent world used only for hyperparameter calibration. |
-| `fedference.calibration` | `CalibrationResult` | class | Frozen selected configuration and calibration provenance. |
+| `fedference.calibration` | `CalibrationResult` | class | Frozen selected configuration and self-verifying calibration provenance. |
 | `fedference.calibration` | `CandidateScore` | class | Calibration score for one candidate configuration. |
 | `fedference.calibration` | `calibrate_aggregation` | function | Select and freeze the highest-log-score candidate on calibration data. |
 | `fedference.calibration` | `evaluate_locked_aggregation` | function | Evaluate a frozen configuration and reject calibration/evaluation overlap. |
@@ -104,22 +119,28 @@
 | `fedference.divergences` | `alpha_renyi_divergence` | function | Return FedGVI's Alpha-Rényi divergence. |
 | `fedference.divergences` | `divergence` | function | Dispatch a named categorical divergence (``KLD``, ``RKL``, ``AR``, ``TV``). |
 | `fedference.divergences` | `gaussian_alpha_renyi` | function | Return the Gaussian Alpha-Rényi divergence used by FedGVI. |
-| `fedference.divergences` | `gaussian_kl` | function | Closed-form ``KL(N(mu_q, var_q) || N(mu_p, var_p))`` for 1-D Gaussians. |
+| `fedference.divergences` | `gaussian_kl` | function | Closed-form ``KL(N(mu_q, var_q) \|\| N(mu_p, var_p))`` for 1-D Gaussians. |
 | `fedference.divergences` | `gaussian_renyi` | function | Closed-form standard Rényi divergence between two 1-D Gaussians. |
-| `fedference.divergences` | `kl_divergence` | function | Return ``KL(q || p) = sum_k q_k log(q_k / p_k)`` in nats (>= 0). |
-| `fedference.divergences` | `renyi_divergence` | function | Return the standard Rényi divergence ``D_alpha(q || p)``. |
-| `fedference.divergences` | `reverse_kl` | function | Return the reverse KL ``KL(p || q)`` — FedGVI's ``RKL`` client divergence. |
-| `fedference.divergences` | `total_variation` | function | Return total-variation distance ``0.5 * sum_k |q_k - p_k|`` in [0, 1]. |
+| `fedference.divergences` | `kl_divergence` | function | Return ``KL(q \|\| p) = sum_k q_k log(q_k / p_k)`` in nats (>= 0). |
+| `fedference.divergences` | `renyi_divergence` | function | Return the standard Rényi divergence ``D_alpha(q \|\| p)``. |
+| `fedference.divergences` | `reverse_kl` | function | Return the reverse KL ``KL(p \|\| q)`` — FedGVI's ``RKL`` client divergence. |
+| `fedference.divergences` | `total_variation` | function | Return total-variation distance ``0.5 * sum_k \|q_k - p_k\|`` in [0, 1]. |
+| `fedference.evidence` | `ApplicationReceipt` | class | Integrity receipt for one labeled categorical aggregation operation. |
 | `fedference.evidence` | `ArtifactRecord` | class | One output file bound into a run receipt. |
 | `fedference.evidence` | `DatasetSpec` | class | Legally and byte-level reproducible external dataset declaration. |
 | `fedference.evidence` | `ExperimentSpec` | class | Decision-complete declaration for one research experiment family. |
 | `fedference.evidence` | `RunReceipt` | class | Content-bound receipt for one executed experiment profile. |
 | `fedference.evidence` | `SourceReference` | class | Pinned scholarly or implementation source used by an experiment. |
 | `fedference.evidence` | `canonical_sha256` | function | Hash a JSON-compatible value using canonical key and separator order. |
+| `fedference.evidence` | `load_application_receipt` | function | Load and validate one strict application receipt. |
+| `fedference.evidence` | `load_receipt` | function | Auto-detect and load a research or application receipt. |
 | `fedference.evidence` | `load_run_receipt` | function | Load and validate a JSON run receipt. |
 | `fedference.evidence` | `make_artifact_record` | function | Create a receipt record for an existing file below ``root``. |
 | `fedference.evidence` | `sha256_file` | function | Return the SHA-256 digest of ``path`` without loading it all into memory. |
+| `fedference.evidence` | `validate_evidence_report` | function | Validate the typed top-level contract for an executable run report. |
+| `fedference.evidence` | `verify_application_receipt` | function | Verify artifact/envelope bindings, source, and the requested solver policy. |
 | `fedference.evidence` | `verify_run_receipt` | function | Return exact provenance/artifact findings; empty means verified. |
+| `fedference.evidence` | `write_application_receipt` | function | Atomically persist one canonical application receipt. |
 | `fedference.evidence` | `write_run_receipt` | function | Atomically persist a canonical run receipt. |
 | `fedference.expected_free_energy` | `EFETerms` | class | The four EFE terms for one policy, summed over its horizon. |
 | `fedference.expected_free_energy` | `decompose` | function | Closed-form EFE decomposition for one policy over a categorical POMDP. |
@@ -138,8 +159,8 @@
 | `fedference.experiments.diagnostics` | `run_efe_decomposition_report` | function | Closed-form EFE decomposition of one sentinel policy. |
 | `fedference.experiments.diagnostics` | `run_influence_weights_report` | function | Server-side robust pooling influence weights on a contaminated colony. |
 | `fedference.experiments.diagnostics` | `run_variational_aggregation_report` | function | Diagnostics for the objective-backed variational aggregator. |
-| `fedference.experiments.gallery` | `run_contamination_gallery` | function | Seed-robust robustness verdict under each contamination *mechanism*. |
-| `fedference.experiments.gallery` | `run_robustness_onset` | function | Per-mechanism robustness *onset*: the rate at which a pooled display robust member exceeds naive. |
+| `fedference.experiments.gallery` | `run_contamination_gallery` | function | Descriptive pooled-method summary under each contamination mechanism. |
+| `fedference.experiments.gallery` | `run_robustness_onset` | function | Per-mechanism descriptive onset for a pooled display robust member. |
 | `fedference.experiments.heuristic_characterization` | `characterization_grid` | function | Run a small declared MAJ-1 scenario grid. |
 | `fedference.experiments.heuristic_characterization` | `empirical_breakdown` | function | Measure the breakdown point of both server aggregators on the same colony. |
 | `fedference.experiments.heuristic_characterization` | `numerical_influence_function` | function | Finite-difference empirical influence of one agent under ``robust_aggregate``. |
@@ -163,14 +184,22 @@
 | `fedference.external_data` | `ExternalDataset` | class | Parsed external dataset plus byte-level provenance. |
 | `fedference.external_data` | `fetch_external_dataset` | function | Download-if-needed, verify, and parse a registered external dataset. |
 | `fedference.external_data` | `load_dataset_archive` | function | Verify and parse one archive according to its declared registry spec. |
-| `fedference.federation.process` | `run_multiprocess_round` | function | Run one real spawned-process federation round and return its consensus. |
+| `fedference.federation.process` | `MultiprocessRoundResult` | class | Server diagnostics and ordered worker results from one process round. |
+| `fedference.federation.process` | `run_multiprocess_round` | function | Run one process round and return the legacy consensus array. |
+| `fedference.federation.process` | `run_multiprocess_round_result` | function | Run one spawned-process round and return complete server diagnostics. |
 | `fedference.federation.server` | `FederationServer` | class | Collects beliefs from n_workers, aggregates, broadcasts consensus. |
 | `fedference.federation.socket_transport` | `PersistentReplayGuard` | class | SQLite-backed round-id guard that survives process restarts. |
+| `fedference.federation.socket_transport` | `ReplayFinding` | class | One stable, machine-readable socket replay finding. |
 | `fedference.federation.socket_transport` | `ReplayGuard` | class | In-memory guard against round-id reuse within one running process. |
+| `fedference.federation.socket_transport` | `ReplayValidationResult` | class | Integrity and solver-health verdict for a digest-only socket replay. |
+| `fedference.federation.socket_transport` | `SocketRoundResult` | class | Complete local and transport diagnostics for one loopback round. |
+| `fedference.federation.socket_transport` | `aggregation_config_from_replay` | function | Recover and strictly validate the configuration recorded by a replay. |
+| `fedference.federation.socket_transport` | `inspect_socket_replay` | function | Inspect replay integrity and report solver health separately. |
 | `fedference.federation.socket_transport` | `load_socket_replay` | function | Load a persisted digest-only socket replay log. |
-| `fedference.federation.socket_transport` | `run_socket_round` | function | Run one federation round over real loopback TCP sockets. |
+| `fedference.federation.socket_transport` | `run_socket_round` | function | Run one loopback round and return the protocol-v1 compatibility mapping. |
+| `fedference.federation.socket_transport` | `run_socket_round_result` | function | Run one federation round over real loopback TCP sockets. |
 | `fedference.federation.socket_transport` | `save_socket_replay` | function | Persist a digest-only socket replay log as deterministic JSON. |
-| `fedference.federation.socket_transport` | `validate_socket_replay` | function | Validate a digest-only replay, returning ``False`` for malformed input. |
+| `fedference.federation.socket_transport` | `validate_socket_replay` | function | Validate replay integrity, returning ``False`` for malformed input. |
 | `fedference.federation.transport` | `ProtocolEnvelope` | class | Versioned metadata binding for a serialized federation payload. |
 | `fedference.federation.transport` | `deserialize_belief` | function | Deserialize and validate one exact float64 categorical belief. |
 | `fedference.federation.transport` | `deserialize_envelope` | function | Validate and unpack bytes produced by :func:`serialize_envelope`. |
@@ -183,15 +212,19 @@
 | `fedference.generalized_bayes` | `generalized_posterior` | function | Closed-form generalized posterior over hidden states. |
 | `fedference.generalized_bayes` | `softmax` | function | Numerically stable softmax returning a categorical pmf. |
 | `fedference.generalized_bayes` | `update_factor` | function | Return the refreshed local factor ``t_i`` after a client update. |
+| `fedference.hierarchy_tasks` | `HierarchyTask` | class | Grid task with an optional key-gated door. |
+| `fedference.hierarchy_tasks` | `run_hierarchy_task_pilot` | function | Run both task units and all matched hierarchy controls. |
+| `fedference.hierarchy_tasks` | `simulate_hierarchy_task` | function | Simulate one seeded episode under one declared hierarchy control. |
 | `fedference.hybrid` | `HybridAggregationResult` | class | Consensus and reweighting diagnostics for a hybrid aggregation round. |
 | `fedference.hybrid` | `HybridBelief` | class | A categorical mixture with a Gaussian conditional per component. |
 | `fedference.hybrid` | `hybrid_aggregate` | function | Aggregate hybrid beliefs with exact zero-robustness recovery. |
 | `fedference.hybrid` | `hybrid_log_linear_pool` | function | Combine hybrid beliefs by a categorical log pool and Gaussian precision pool. |
 | `fedference.hybrid_tracking` | `HybridTrackingConfig` | class | Deterministic task and observation settings. |
 | `fedference.hybrid_tracking` | `run_hybrid_tracking` | function | Run one seeded closed-loop hybrid tracking episode. |
+| `fedference.hybrid_tracking` | `run_hybrid_tracking_comparison` | function | Run the matched hybrid-control family for one seeded tracking world. |
 | `fedference.losses` | `beta_loss` | function | Density-power (beta) loss for a categorical likelihood. |
-| `fedference.losses` | `loss_vector` | function | Return the per-state loss vector ``L(p(o|s), o)`` over hidden states ``s``. |
-| `fedference.losses` | `nll` | function | Standard negative log-likelihood loss ``-log p(o | s)``. |
+| `fedference.losses` | `loss_vector` | function | Return the per-state loss vector ``L(p(o\|s), o)`` over hidden states ``s``. |
+| `fedference.losses` | `nll` | function | Standard negative log-likelihood loss ``-log p(o \| s)``. |
 | `fedference.losses` | `rcce` | function | Robust categorical cross-entropy (generalized cross-entropy, GCE). |
 | `fedference.pomdp` | `LayerSpec` | class | Specification for one level of an N-level hierarchical POMDP. |
 | `fedference.pomdp` | `build_3level_world` | function | Construct a 3-level hierarchical POMDP (L3=meta-context → L2=context → L1=location). |
@@ -207,6 +240,12 @@
 | `fedference.protocol_parity` | `ProtocolParityMatrix` | class | Versioned comparison for one named source protocol. |
 | `fedference.protocol_parity` | `fedgvi_bnn_parity_matrix` | function | Current parity disposition for the portable FedGVI BNN lane. |
 | `fedference.protocol_parity` | `friston_protocol_parity_matrices` | function | Current explicit unknowns for Eq. 2 and source Figures 5, 7, and 9. |
+| `fedference.protocol_parity` | `run_friston_protocol_audit` | function | Emit the paper-constrained reconstruction audit and its negative control. |
+| `fedference.provenance` | `RuntimeProvenance` | class | Installed distribution, interpreter, and declared dependency versions. |
+| `fedference.provenance` | `SourceProvenance` | class | Caller-selected Git source or installed-archive provenance. |
+| `fedference.provenance` | `active_fedference_checkout_version` | function | Return the declared version for a positively identified source checkout. |
+| `fedference.provenance` | `collect_source_provenance` | function | Collect explicit Git provenance, then archive provenance, else unavailable. |
+| `fedference.provenance` | `runtime_provenance` | function | Collect installed runtime versions without retaining local source URLs. |
 | `fedference.research_registry` | `get_dataset_spec` | function | Return one declared dataset or raise a stable lookup error. |
 | `fedference.research_registry` | `get_experiment_spec` | function | Return one declared experiment or raise a stable lookup error. |
 | `fedference.research_registry` | `registry_fingerprint` | function | Return the canonical SHA-256 of :func:`registry_manifest`. |
@@ -218,10 +257,16 @@
 | `fedference.scoring` | `reliability_curve` | function | Return equal-width confidence/reliability bins for multiclass beliefs. |
 | `fedference.scoring` | `summarize_scores` | function | Return mean primary/secondary scores and their declared sample count. |
 | `fedference.scoring` | `validate_score_summary` | function | Fail closed if a serialized score summary loses its core fields. |
+| `fedference.server_theory` | `NormalizedWeightNoGoWitness` | class | Companion witness for a normalized-weight reparameterization. |
 | `fedference.server_theory` | `ObjectiveOrientationWitness` | class | Forward-objective and reverse-heuristic weight blocks at one consensus. |
+| `fedference.server_theory` | `RawLogPoolNoGoWitness` | class | Exact witness for the declared raw-log-pool ``q``-block no-go. |
+| `fedference.server_theory` | `construct_normalized_weight_no_go_witness` | function | Construct the normalized-weight companion to the raw-block no-go. |
 | `fedference.server_theory` | `construct_orientation_witness` | function | Construct the finite-simplex witness used by theory tests and reports. |
+| `fedference.server_theory` | `construct_raw_log_pool_no_go_witness` | function | Construct the exact witness for the scoped separable-class no-go. |
 | `fedference.server_theory` | `heuristic_weight_block` | function | Reverse-KL weight update used by ``robust_aggregate``. |
 | `fedference.server_theory` | `objective_weight_block` | function | Exact ``a`` update for the declared forward-KL block objective. |
+| `fedference.single_machine` | `run_calibration_pilot` | function | Run leakage-free calibration and a disjoint locked evaluation. |
+| `fedference.single_machine` | `run_fedgvi_bnn_pilot` | function | Run a portable CPU/MPS FedGVI-vs-PVI proper-score pilot. |
 | `fedference.statistics` | `bh_fdr` | function | Benjamini-Hochberg (1995) step-up FDR control over a family of p-values. |
 | `fedference.statistics` | `bootstrap_ci` | function | Percentile bootstrap confidence interval for the mean of ``samples``. |
 | `fedference.statistics` | `cohens_d_from_rank_biserial` | function | Deprecated compatibility alias for :func:`d_equivalent_from_rank_biserial`. |
@@ -241,7 +286,6 @@
 | `fedference.torch_bnn` | `resolve_torch_device` | function | Resolve ``cpu``, ``mps``, or ``auto`` without a silent fallback. |
 | `fedference.trials` | `FlatVsNlevelMetrics` | class | Per-trial flat vs hierarchical location accuracy and free energy. |
 | `fedference.trials` | `compare_flat_vs_nlevel` | function | Compare flat log-linear pooling against an N-level infer + pool path. |
-| `fedference_cli` | `main` | function | CLI entry point; return a process-compatible status code. |
 | `figures.aggregation_descent` | `generate_aggregation_descent` | function | Render the variational free energy ``F`` against descent iteration. |
 | `figures.belief_heatmap` | `generate_belief_heatmap` | function | Render a colony's per-agent beliefs plus consensus as a heatmap. |
 | `figures.belief_quality` | `generate_belief_quality` | function | Render control log scores and reliability curves from the score report. |
@@ -269,7 +313,7 @@
 | `figures.pomdp_loop` | `generate_pomdp_loop` | function | Generate the sentinel-world and active-inference loop schematic. |
 | `figures.robust_influence_weights` | `generate_robust_influence_weights` | function | Render per-agent robust influence weights with saboteurs highlighted. |
 | `figures.robustness_onset` | `generate_robustness_onset` | function | Render naive vs robust accuracy-vs-rate panels with onset markers. |
-| `figures.robustness_review_grid` | `generate_robustness_review_grid` | function | Render conditional-cell contrasts and pooled rate-profile contrasts. |
+| `figures.robustness_review_grid` | `generate_robustness_review_grid` | function | Render conditional cells and every predeclared directional method curve. |
 | `figures.robustness_sweep` | `generate_robustness_sweep` | function | Render consensus-accuracy curves over the contamination-rate sweep. |
 | `figures.sensitivity_heatmap` | `generate_sensitivity_heatmap` | function | 2-panel heatmap of federation accuracy gain over acuity x colony size. |
 | `figures.system_overview` | `SystemOverviewData` | class | Numerical arrays drawn by the system-overview and cover figures. |
@@ -283,24 +327,50 @@
 | `invariants` | `InvariantResult` | class | Witness record for one numerical invariant. |
 | `invariants` | `all_invariants` | function | Every fedference invariant the analysis report should display. |
 | `invariants` | `check_efe_identity` | function | EFE decomposition identity: ``(risk+ambiguity)+(pragmatic+epistemic)==0``. |
-| `invariants` | `check_kl_monotonicity` | function | KL(true A || learned A) declines monotonically as Dirichlet counts accrue. |
+| `invariants` | `check_kl_monotonicity` | function | KL(true A \|\| learned A) declines monotonically as Dirichlet counts accrue. |
 | `invariants` | `check_pmf_normalization` | function | Every fused consensus is a valid categorical pmf (non-negative, sums to 1). |
 | `invariants` | `check_robust_recovers_naive` | function | ``robust_aggregate(robustness=0)`` is bit-identical to ``log_linear_pool``. |
 | `invariants` | `write_invariants_report` | function | Run :func:`all_invariants` and serialise the witnesses to JSON. |
 | `manuscript_vars.generate` | `generate_variables` | function | Resolve every manuscript token placeholder to a string value. |
 | `manuscript_vars.render` | `render_manuscript_tree` | function | Hydrate manuscript tokens into a guarded ``output/manuscript`` tree. |
-| `manuscript_vars.render` | `save_variables` | function | Persist *variables* as JSON for downstream rendering and debugging. |
+| `manuscript_vars.render` | `save_variables` | function | Atomically persist *variables* as JSON for rendering and debugging. |
 | `project_paths` | `project_output_dirs` | function | Return common output directories for Active Fedference. |
 | `project_paths` | `resolve_env_project_root` | function | Return the effective project root, honoring ``ACTIVE_FEDFERENCE_PROJECT_ROOT``. |
 | `project_paths` | `resolve_project_root` | function | Resolve the project root directory from a loaded package or default to parent. |
+| `project_paths` | `resolve_script_project_root` | function | Resolve a script's effective checkout root. |
 | `publication.clean_checkout` | `CleanCheckoutReport` | class | Results of the clean-checkout tracking and import probe. |
+| `publication.clean_checkout` | `historical_release_pdf_findings` | function | Validate the checked-in ledger and bytes of every immutable release PDF. |
 | `publication.clean_checkout` | `inspect_clean_checkout` | function | Inspect Git cleanliness, required tracking, and package imports. |
+| `publication.identifiers` | `doi_url` | function | Return the canonical resolver URL for a DOI value. |
+| `publication.identifiers` | `manuscript_pdf_filename` | function | Return the canonical informative top-level manuscript PDF filename. |
+| `publication.identifiers` | `normalize_doi` | function | Return a bare DOI or ``None`` for an explicit unreleased placeholder. |
+| `publication.identifiers` | `publication_identity_sentence` | function | Return lifecycle-aware manuscript prose for an assigned or future DOI. |
+| `publication.metadata` | `PublicationLifecycle` | class | Validated identity shared by packaging and publication surfaces. |
 | `publication.metadata` | `build_metadata` | function | Return ``{relative_path: exact_file_content}`` for every surface. |
 | `publication.metadata` | `check_metadata` | function | Read-only drift check: return the surfaces whose on-disk content differs. |
+| `publication.metadata` | `package_version` | function | Software version from pyproject.toml (the packaging source of truth). |
+| `publication.metadata` | `validate_publication_identity` | function | Validate and return the release date and DOI for one lifecycle state. |
+| `publication.metadata` | `validate_publication_lifecycle` | function | Validate one complete development or final publication identity. |
 | `publication.metadata` | `write_metadata` | function | Write every generated surface; return the paths written (explicit only). |
 | `publication.pipeline_freshness` | `PipelineStageSpec` | class | Declared content boundary for one pipeline stage. |
-| `publication.pipeline_freshness` | `record_pipeline_stage` | function | Record one successful stage after its inputs and outputs exist. |
+| `publication.pipeline_freshness` | `capture_analysis_input_snapshot` | function | Capture the exact analysis-input boundary immediately before a run. |
+| `publication.pipeline_freshness` | `pipeline_stage_record` | function | Return a recorded stage mapping or fail closed when it is absent. |
+| `publication.pipeline_freshness` | `record_pipeline_stage` | function | Record a generic stage receipt for internal fixtures or external rendering. |
+| `publication.pipeline_freshness` | `record_publication_analysis_stage` | function | Record the analysis stage only after a publication-profile producer run. |
+| `publication.pipeline_freshness` | `require_fresh_pipeline_stages` | function | Raise when any requested content-bound pipeline stage is stale. |
+| `publication.pipeline_freshness` | `require_fresh_publication_analysis` | function | Require a fresh analysis receipt bound to a publication-profile run. |
 | `publication.pipeline_freshness` | `validate_pipeline_freshness` | function | Return fail-closed freshness findings for the requested stage closure. |
+| `publication.pipeline_freshness` | `validate_publication_pipeline_freshness` | function | Validate stage hashes plus the publication-profile analysis boundary. |
+| `publication.release_assets` | `GitHubReleaseAsset` | class | The integrity fields exposed by one GitHub release-asset API record. |
+| `publication.release_assets` | `GitHubReleaseVerification` | class | Verified downloaded bytes for one exact GitHub release asset set. |
+| `publication.release_assets` | `ReleaseAssetError` | class | Raised when release staging or downloaded verification fails closed. |
+| `publication.release_assets` | `ReleaseAssetInput` | class | One explicitly named, project-root-relative release input. |
+| `publication.release_assets` | `ReleaseAssetRecord` | class | Byte identity of one staged or downloaded release asset. |
+| `publication.release_assets` | `StagedReleaseAssets` | class | Canonical external asset set written to one new directory. |
+| `publication.release_assets` | `expected_release_asset_names` | function | Return the exact four filenames accepted by the staging boundary. |
+| `publication.release_assets` | `load_github_release_assets` | function | Load release assets from a saved GitHub API response without network I/O. |
+| `publication.release_assets` | `stage_release_assets` | function | Stage the exact external release set into a new destination. |
+| `publication.release_assets` | `verify_github_release_downloads` | function | Verify GitHub API digests and downloaded bytes against the staged set. |
 | `publication.release_manifest` | `build_release` | function | Write ``output/release/`` and return the manifest mapping. |
 | `publication.release_manifest` | `compute_fingerprint` | function | SHA-256 over the sorted ``(path, content-sha256)`` set of the inputs. |
 | `publication.release_manifest` | `timestamp_from_source_date_epoch` | function | Convert ``SOURCE_DATE_EPOCH`` seconds to the canonical UTC timestamp. |
@@ -308,7 +378,23 @@
 | `publication.release_manifest` | `verify_release` | function | Verify the exact artifact set and every digest in ``manifest.json``. |
 | `publication.surface_validation` | `SurfaceValidation` | class | Aggregate result for generated reviewer-facing surfaces. |
 | `publication.surface_validation` | `validate_rendered_surfaces` | function | Validate the combined manuscript, slide PDFs, logs, and HTML package. |
+| `publication.validation_receipt` | `ValidationReceiptError` | class | Raised when a validation receipt is absent, malformed, or stale. |
+| `publication.validation_receipt` | `capture_validation_snapshot` | function | Capture a coherent source and analysis boundary immediately around a test run. |
+| `publication.validation_receipt` | `require_fresh_validation_receipt` | function | Return the receipt only when its test, source, and analysis evidence is fresh. |
+| `publication.validation_receipt` | `validation_environment` | function | Return the execution-environment fields surfaced in the manuscript. |
+| `publication.validation_receipt` | `validation_input_hashes` | function | Hash every declared test/producer/dependency-lock input, fail closed. |
+| `publication.validation_receipt` | `validation_receipt_findings` | function | Return fail-closed findings for the standalone validation receipt. |
+| `publication.validation_receipt` | `validation_receipt_tokens` | function | Load final manuscript provenance tokens from a fresh successful receipt. |
+| `publication.validation_receipt` | `write_validation_receipt` | function | Atomically write a receipt for a successful, fresh full validation gate. |
 | `publication.web_package` | `WebPackageValidation` | class | Asset, reference, markup, and accessibility result for generated HTML. |
 | `publication.web_package` | `mirror_web_figures` | function | Mirror every generated figure into the web package, removing stale files. |
 | `publication.web_package` | `normalize_web_xrefs` | function | Replace raw citation/cross-reference markup with self-contained HTML links. |
+| `publication.web_package` | `sanitize_machine_paths` | function | Replace local home, temporary, and volume prefixes in text artifacts. |
 | `publication.web_package` | `validate_web_package` | function | Check generated HTML assets, links, markup, and accessibility structure. |
+| `publication.zenodo` | `ZenodoClient` | class | Small standard-library Zenodo REST client for release boundaries. |
+| `publication.zenodo` | `ZenodoDeposition` | class | Stable subset of a Zenodo deposition response. |
+| `publication.zenodo` | `ZenodoError` | class | Raised when Zenodo rejects or cannot complete a request. |
+| `publication.zenodo` | `ZenodoFile` | class | The server-side identity and checksum of one deposition file. |
+| `publication.zenodo` | `ZenodoMetadataSnapshot` | class | Immutable, canonical copy of one deposition's server metadata. |
+| `publication.zenodo` | `token_from_env_file` | function | Read the first configured Zenodo token from a dotenv-style file. |
+| `publication.zenodo` | `token_from_environment` | function | Read the first configured Zenodo token from process environment. |

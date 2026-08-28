@@ -1,11 +1,11 @@
 # Active Fedference — release bundle provenance
 
 Generated at: omitted for a byte-reproducible unreleased build.
-(invoked via `uv run python scripts/build_release.py`).
+(invoked via `uv run --locked python scripts/build_release.py`).
 
-Pipeline profile: `publication`; generator version: `4`.
+Pipeline profile: `publication`; generator version: `5`.
 
-Artifacts: 476 files, 43366287 bytes, over:
+Artifacts: 476 files, 46942359 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)
@@ -24,7 +24,7 @@ Verify integrity from the project root:
 
 ```bash
 shasum -a 256 -c output/release/sha256sums.txt
-# or: uv run python scripts/build_release.py --verify
+# or: uv run --locked python scripts/build_release.py --verify
 ```
 
 Scientific reports are regenerated under the seeds in

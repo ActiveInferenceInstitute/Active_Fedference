@@ -75,12 +75,12 @@ density-power $\beta$-loss at $\beta = 0.5$, trained for 200
 Adam steps per client across 5 clients — and fuses per-test-point
 softmax predictions with `robust_aggregate` at `robustness = 0.5`
 (`fedference.bnn_baseline_torch.run_bnn_torch_experiment`, run under PyTorch
-2.12.1). Every number here is executed, not assumed: the consensus
+not installed). Every number here is executed, not assumed: the consensus
 is a valid probability simplex (maximum deviation from unit mass
-2.22e-16 over the test set) and is bit-identical across repeated
-seeded runs (deterministic: Yes). Held-out consensus accuracy
-at contamination 0.40 is 0.558 for the
-$\beta\to 0$ standard client and 0.545 for the
+N/A over the test set) and is bit-identical across repeated
+seeded runs (deterministic: N/A). Held-out consensus accuracy
+at contamination N/A is N/A (PyTorch not run) for the
+$\beta\to 0$ standard client and N/A (PyTorch not run) for the
 $\beta = 0.5$ robust client — this is the same
 0.40-contamination endpoint where the NumPy baseline
 above also loses its separation (a single seed here, versus the
