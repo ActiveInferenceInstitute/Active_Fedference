@@ -12,6 +12,7 @@ never repaired by clipping.
 from __future__ import annotations
 
 from collections.abc import Iterable
+from numbers import Real
 
 import numpy as np
 
@@ -26,7 +27,15 @@ def as_pmf(values: ArrayF, *, name: str = "probability vector") -> ArrayF:
     formulas.  Negative values are not numerical zeros: they violate the
     simplex and raise ``ValueError`` instead of being silently clipped.
     """
-    arr: ArrayF = np.asarray(values, dtype=np.float64).ravel()
+    arr = np.asarray(values)
+    if arr.ndim != 1:
+        raise ValueError(f"{name} must be one-dimensional")
+    if any(
+        isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+        for value in np.asarray(values, dtype=object)
+    ):
+        raise ValueError(f"{name} must contain only numeric non-boolean values")
+    arr = np.asarray(arr, dtype=np.float64)
     if arr.size == 0:
         raise ValueError(f"{name} must be non-empty")
     if not np.all(np.isfinite(arr)):
@@ -71,14 +80,23 @@ def as_nonnegative_weights(
     if values is None:
         return np.ones(n_items, dtype=np.float64)
     raw = values if isinstance(values, np.ndarray) else list(values)
-    weights = np.asarray(raw, dtype=np.float64).ravel()
+    weights = np.asarray(raw)
+    if weights.ndim != 1:
+        raise ValueError(f"{name} must be one-dimensional")
+    if any(
+        isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
+        for value in np.asarray(raw, dtype=object)
+    ):
+        raise ValueError(f"{name} must contain only numeric non-boolean values")
+    weights = np.asarray(weights, dtype=np.float64)
     if weights.size != n_items:
         raise ValueError(f"{name} length must match number of agents")
     if not np.all(np.isfinite(weights)):
         raise ValueError(f"{name} must contain only finite values")
     if np.any(weights < 0.0):
         raise ValueError(f"{name} must be non-negative")
-    if float(weights.sum()) <= _EPS:
+    total = float(weights.sum())
+    if not np.isfinite(total) or total <= 0.0:
         raise ValueError(f"{name} must contain at least one positive value")
     return weights
 

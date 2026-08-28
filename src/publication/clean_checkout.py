@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -10,8 +13,19 @@ from pathlib import Path
 import yaml
 
 from publication.identifiers import manuscript_pdf_filename
+from publication.metadata import package_version, validate_publication_identity
+
+IMMUTABLE_RELEASE_PDFS: tuple[str, ...] = (
+    "Active_Fedference_Research_Manuscript_v0.1.0_Zenodo_10.5281-zenodo.21864004.pdf",
+    "Active_Fedference_Research_Manuscript_v1.0.1_Zenodo_10.5281-zenodo.21919307.pdf",
+    "Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf",
+    "Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf",
+    "Active_Fedference_Research_Manuscript_v1.0.4_Zenodo_10.5281-zenodo.21972644.pdf",
+)
+HISTORICAL_RELEASE_PDF_LEDGER_PATH = "docs/reference/historical-release-pdfs.json"
 
 REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
+    *IMMUTABLE_RELEASE_PDFS,
     "AGENTS.md",
     "ISA.md",
     "README.md",
@@ -21,6 +35,8 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "_fedference_build_backend.py",
     "pyproject.toml",
     "uv.lock",
+    "manuscript/config.yaml",
+    "manuscript/config.yaml.example",
     ".github/workflows/ci.yml",
     "src/analysis/report_schemas.py",
     "src/analysis/workflow.py",
@@ -49,6 +65,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "src/fedference/single_machine.py",
     "src/fedference/server_theory.py",
     "src/fedference/torch_bnn.py",
+    "src/fedference/py.typed",
     "src/fedference_cli/__init__.py",
     "src/fedference_cli/__main__.py",
     "src/fedference_cli/AGENTS.md",
@@ -95,6 +112,9 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "scripts/validate_test_coverage.py",
     "scripts/validate_web_package.py",
     "tests/test_clean_checkout.py",
+    "docs/application-guide.md",
+    "examples/05_labeled_application.py",
+    "examples/data/labeled_aggregation_request.json",
     "tests/test_build_backend.py",
     "tests/test_release_preflight.py",
     "tests/test_publication_metadata.py",
@@ -136,6 +156,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "docs/research/visual-claim-audit.md",
     "docs/manuscript/accessibility.md",
     "docs/reference/api-stability.md",
+    HISTORICAL_RELEASE_PDF_LEDGER_PATH,
     "docs/reference/zenodo-release.md",
     "manuscript/30_supplement_notation.md",
     "docs/security/README.md",
@@ -143,6 +164,77 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "docs/todo/adaptive-robustness-calibration.md",
     "docs/todo/release-and-verification-ladder.md",
 )
+
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
+def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """Construct a JSON object while rejecting ambiguous duplicate keys."""
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def historical_release_pdf_findings(project_root: Path) -> tuple[str, ...]:
+    """Validate the checked-in ledger and bytes of every immutable release PDF."""
+    root = Path(project_root).resolve()
+    ledger_path = root / HISTORICAL_RELEASE_PDF_LEDGER_PATH
+    if not ledger_path.is_file() or ledger_path.is_symlink():
+        return (f"historical release PDF ledger is missing: {ledger_path}",)
+    try:
+        raw = json.loads(
+            ledger_path.read_text(encoding="utf-8"),
+            object_pairs_hook=_unique_json_object,
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+        return (f"historical release PDF ledger is malformed: {exc}",)
+    if not isinstance(raw, dict) or set(raw) != {"schema_version", "sha256"}:
+        return (
+            "historical release PDF ledger must contain exactly schema_version and sha256",
+        )
+    if raw["schema_version"] != "1.0" or not isinstance(raw["sha256"], dict):
+        return ("historical release PDF ledger schema is invalid",)
+
+    expected_names = set(IMMUTABLE_RELEASE_PDFS)
+    ledger = raw["sha256"]
+    assert isinstance(ledger, dict)  # narrowed above
+    ledger_names = set(ledger)
+    findings: list[str] = []
+    missing_names = sorted(expected_names - ledger_names)
+    unknown_names = sorted(ledger_names - expected_names)
+    if missing_names:
+        findings.append("historical release PDF ledger is missing: " + ", ".join(missing_names))
+    if unknown_names:
+        findings.append(
+            "historical release PDF ledger has unknown files: " + ", ".join(unknown_names)
+        )
+    for filename in IMMUTABLE_RELEASE_PDFS:
+        expected_digest = ledger.get(filename)
+        if not isinstance(expected_digest, str) or not _SHA256_RE.fullmatch(expected_digest):
+            findings.append(f"historical release PDF digest is invalid: {filename}")
+            continue
+        artifact = root / filename
+        if not artifact.is_file() or artifact.is_symlink():
+            findings.append(f"historical release PDF is missing: {filename}")
+            continue
+        actual_digest = _sha256_file(artifact)
+        if actual_digest != expected_digest:
+            findings.append(
+                "historical release PDF SHA-256 mismatch: "
+                f"{filename} ({actual_digest} != {expected_digest})"
+            )
+    return tuple(findings)
 
 
 @dataclass(frozen=True)
@@ -215,15 +307,22 @@ def _import_probe(root: Path) -> str | None:
 
 
 def _expected_manuscript_pdf(root: Path) -> str | None:
-    """Return the configured top-level manuscript PDF name when available."""
+    """Return the release PDF name, or ``None`` for an unreleased revision."""
     config_path = root / "manuscript" / "config.yaml"
     if not config_path.is_file():
-        return None
+        raise ValueError(f"invalid manuscript PDF identity: missing {config_path}")
     try:
         config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
         paper = config["paper"]
         publication = config["publication"]
-        return manuscript_pdf_filename(paper["version"], publication["doi"])
+        _, doi = validate_publication_identity(
+            package_version(root),
+            paper,
+            publication,
+        )
+        if doi is None:
+            return None
+        return manuscript_pdf_filename(paper["version"], doi)
     except (KeyError, TypeError, ValueError, yaml.YAMLError) as exc:
         raise ValueError(f"invalid manuscript PDF identity in {config_path}: {exc}") from exc
 
@@ -266,6 +365,8 @@ def inspect_clean_checkout(
         if expected_pdf is not None and expected_pdf not in tracked_paths:
             findings.append(f"configured manuscript PDF is not tracked: {expected_pdf}")
 
+    findings.extend(historical_release_pdf_findings(root))
+
     if check_imports:
         import_failure = _import_probe(root)
         if import_failure is not None:
@@ -275,6 +376,9 @@ def inspect_clean_checkout(
 
 __all__ = [
     "CleanCheckoutReport",
+    "HISTORICAL_RELEASE_PDF_LEDGER_PATH",
+    "IMMUTABLE_RELEASE_PDFS",
     "REQUIRED_TRACKED_PATHS",
+    "historical_release_pdf_findings",
     "inspect_clean_checkout",
 ]

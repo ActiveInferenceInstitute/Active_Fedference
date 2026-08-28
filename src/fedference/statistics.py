@@ -441,8 +441,9 @@ def d_equivalent_from_rank_biserial(r: float) -> float:
 def cohens_d_from_rank_biserial(r: float) -> float:
     """Deprecated compatibility alias for :func:`d_equivalent_from_rank_biserial`.
 
-    The old name is retained for additive v0.x compatibility, but the returned
-    value must not be described as an independently estimated Cohen's ``d``.
+    The old name is retained for additive current-major compatibility, but the
+    returned value must not be described as an independently estimated Cohen's
+    ``d``.
     """
     warnings.warn(
         "cohens_d_from_rank_biserial is deprecated; use "

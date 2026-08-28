@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from publication.identifiers import doi_url, manuscript_pdf_filename, normalize_doi
+from publication.identifiers import (
+    doi_url,
+    manuscript_pdf_filename,
+    normalize_doi,
+    publication_identity_sentence,
+)
 
 
 def test_normalize_doi_accepts_common_resolver_forms() -> None:
@@ -23,6 +28,18 @@ def test_normalize_doi_rejects_malformed_identifiers() -> None:
     for value in ("https://example.com/paper", "10.12", "not-a-doi"):
         with pytest.raises(ValueError, match="invalid DOI"):
             normalize_doi(value)
+
+
+def test_publication_identity_sentence_is_lifecycle_aware() -> None:
+    development = publication_identity_sentence("(forthcoming)")
+    assert development.startswith("This development manuscript has no assigned version DOI")
+    assert "N/A" not in development
+    assert "10.5281" not in development
+
+    final = publication_identity_sentence("https://doi.org/10.5281/zenodo.12345")
+    assert "This final-release manuscript" in final
+    assert "[10.5281/zenodo.12345](https://doi.org/10.5281/zenodo.12345)" in final
+    assert "no assigned version DOI" not in final
 
 
 def test_manuscript_pdf_filename_is_version_and_doi_bound() -> None:

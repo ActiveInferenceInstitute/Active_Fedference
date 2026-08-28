@@ -99,6 +99,24 @@ def test_hybrid_values_and_result_weights_are_owned_and_read_only() -> None:
 
 
 @pytest.mark.parametrize(
+    "weights",
+    (
+        np.asarray([[0.5, 0.5]]),
+        np.asarray([[0.5], [0.5]]),
+        np.asarray([[[0.5, 0.5]]]),
+    ),
+)
+def test_hybrid_result_rejects_implicit_weight_flattening(weights) -> None:
+    with pytest.raises(ValueError, match="one-dimensional"):
+        HybridAggregationResult(
+            consensus=_beliefs()[0],
+            normalized_effective_weights=weights,
+            iterations=0,
+            converged=True,
+        )
+
+
+@pytest.mark.parametrize(
     ("kwargs", "message"),
     (
         ({"robustness": True}, "robustness"),

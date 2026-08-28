@@ -185,6 +185,21 @@ def test_decompose_rejects_prior_length_mismatch():
         decompose(a, b, np.array([1.0, 0.0]), np.array([0.3, 0.3, 0.4]), policy=[0])
 
 
+@pytest.mark.parametrize(
+    "prior",
+    (
+        np.asarray([[0.5, 0.5]]),
+        np.asarray([[0.5], [0.5]]),
+        np.asarray([[[0.5, 0.5]]]),
+    ),
+)
+def test_decompose_rejects_implicit_prior_flattening(prior):
+    a = np.array([[0.7, 0.3], [0.3, 0.7]])
+    b = _identity_transition(2)
+    with pytest.raises(ValueError, match="one-dimensional"):
+        decompose(a, b, np.array([1.0, 0.0]), prior, policy=[0])
+
+
 def test_decompose_rejects_out_of_range_action():
     a = np.array([[0.7, 0.3], [0.3, 0.7]])
     b = _identity_transition(2)  # only action 0 exists

@@ -29,10 +29,18 @@ from typing import Any
 import yaml
 
 from experiment_config import load_manuscript_config
-from publication.identifiers import doi_url, normalize_doi
+from publication.identifiers import (
+    doi_url,
+    normalize_doi,
+    publication_identity_sentence,
+)
 
 #: The generated surfaces, relative to the project root.
 GENERATED_SURFACES: tuple[str, ...] = ("CITATION.cff", ".zenodo.json", "codemeta.json")
+
+_PROJECT_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){2}(?:\.dev[0-9]+)?$")
+_DEVELOPMENT_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){2}\.dev[0-9]+$")
+_DEVELOPMENT_DOI_STATUS = "(forthcoming)"
 
 
 def _project_root(project_root: Path | None) -> Path:
@@ -67,7 +75,7 @@ def _load_config(root: Path) -> dict[str, Any]:
     return data
 
 
-def _package_version(root: Path) -> str:
+def package_version(root: Path) -> str:
     """Software version from pyproject.toml (the packaging source of truth)."""
     text = (root / "pyproject.toml").read_text(encoding="utf-8")
     match = re.search(r'^version\s*=\s*"([^"]+)"', text, flags=re.MULTILINE)
@@ -98,6 +106,7 @@ def _publication_abstract(value: object, doi: str | None) -> str:
     """
     text = str(value)
     replacements = {
+        "{{PUBLICATION_IDENTITY_SENTENCE}}": publication_identity_sentence(doi),
         "{{PUBLICATION_DOI}}": doi or "N/A",
         "{{PUBLICATION_DOI_URL}}": doi_url(doi) or "N/A",
     }
@@ -150,6 +159,67 @@ def _release_date(value: object) -> str | None:
     return normalized
 
 
+def validate_publication_identity(
+    package_version: str,
+    paper: dict[str, Any],
+    publication: dict[str, Any],
+) -> tuple[str | None, str | None]:
+    """Validate and return the release date and DOI for one lifecycle state.
+
+    Active Fedference metadata has two fail-closed states. Development versions
+    use a canonical ``X.Y.Z.devN`` identity, an exact empty DOI field, the plain
+    ``(forthcoming)`` display status, and a null release date. Keeping status out
+    of the DOI field prevents a renderer from fabricating a resolver link for an
+    unassigned identifier. Final ``X.Y.Z`` versions have an assigned DOI/date
+    and no development status. The manuscript and package versions must agree
+    so a generated citation cannot describe different code.
+    """
+    paper_version = str(paper.get("version", "")).strip()
+    if paper_version != package_version:
+        raise ValueError(
+            "paper.version must exactly match the pyproject.toml package version "
+            f"({paper_version!r} != {package_version!r})"
+        )
+    if not _PROJECT_VERSION_RE.fullmatch(package_version):
+        raise ValueError(
+            "project version must be X.Y.Z or an unreleased X.Y.Z.devN version"
+        )
+
+    raw_doi = publication.get("doi")
+    raw_doi_status = publication.get("doi_status")
+    raw_date_released = publication.get("date_released")
+    date_released = _release_date(raw_date_released)
+    doi = normalize_doi(raw_doi, allow_placeholder=True)
+    is_development = _DEVELOPMENT_VERSION_RE.fullmatch(package_version) is not None
+    if is_development:
+        if raw_doi != "":
+            raise ValueError(
+                "unreleased development metadata requires publication.doi to be "
+                "the empty string; put (forthcoming) in publication.doi_status"
+            )
+        if raw_doi_status != _DEVELOPMENT_DOI_STATUS:
+            raise ValueError(
+                "unreleased development metadata requires publication.doi_status "
+                f"to be exactly {_DEVELOPMENT_DOI_STATUS!r}"
+            )
+        if raw_date_released is not None:
+            raise ValueError(
+                "unreleased development metadata requires publication.date_released "
+                "to be null"
+            )
+        assert doi is None and date_released is None
+    elif doi is None or date_released is None:
+        raise ValueError(
+            "final release metadata requires an assigned DOI and date_released"
+        )
+    elif raw_doi_status not in (None, ""):
+        raise ValueError(
+            "final release metadata must remove publication.doi_status after "
+            "assigning the DOI"
+        )
+    return date_released, doi
+
+
 def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     """Return ``{relative_path: exact_file_content}`` for every surface."""
     root = _project_root(project_root)
@@ -161,14 +231,13 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     metadata_cfg = cfg.get("metadata", {})
     license_id = str(metadata_cfg.get("license", "MIT"))
     access_right = str(metadata_cfg.get("access_right", "open"))
-    version = _package_version(root)
+    version = package_version(root)
     name = _one_line(pub["software_name"])
     description = _one_line(pub["description"])
     zenodo_title = _full_paper_title(paper)
     repo = str(pub["github_repository"])
     date_created = str(pub["date_created"])
-    date_released = _release_date(pub.get("date_released"))
-    doi = normalize_doi(pub.get("doi"), allow_placeholder=True)
+    date_released, doi = validate_publication_identity(version, paper, pub)
     doi_resolver = doi_url(doi)
     abstract = _publication_abstract(pub["abstract"], doi)
     related = [

@@ -16,8 +16,10 @@ DOC_CONTRACT_FILES = (
     "README.md",
     "STANDALONE.md",
     "TODO.md",
+    "examples/README.md",
     "docs/AGENTS.md",
     "docs/README.md",
+    "docs/application-guide.md",
     "docs/core/architecture.md",
     "docs/core/experiments-and-artifacts.md",
     "docs/development/agent_instructions.md",
@@ -33,8 +35,12 @@ DOC_CONTRACT_FILES = (
     "docs/operations/troubleshooting.md",
     "docs/reference/verification-commands.md",
     "docs/reference/zenodo-release.md",
+    "docs/research/README.md",
     "docs/research/literature-audit.md",
     "docs/research/manuscript-claim-audit.md",
+    "docs/research/computational-complexity-audit-2026-07-28.md",
+    "docs/research/extended-statistical-audit-2026-07-14.md",
+    "docs/research/first-principles-redteam-review-2026-07-16.md",
     "docs/research/cli-modularity-review-2026-08-15.md",
     "docs/research/runtime-surface-composability-review-2026-07-17.md",
     "docs/research/visual-claim-audit.md",
@@ -65,6 +71,61 @@ DOC_CONTRACT_FILES = (
 
 def _read(relative_path: str) -> str:
     return (ROOT / relative_path).read_text(encoding="utf-8")
+
+
+def test_application_guide_has_no_duplicate_table_separator_rows() -> None:
+    guide = _read("docs/application-guide.md")
+    assert "| --- | --- | --- |\n| --- | --- | --- |" not in guide
+
+
+def test_open_scientific_waves_are_not_preassigned_obsolete_versions() -> None:
+    plan = _read("docs/todo/scholarship-and-phase-plan.md")
+    for stale_label in (
+        "Calibration / v0.2",
+        "Portable FedGVI / v0.3",
+        "External data / v0.3",
+        "Friston reconstruction / v0.4",
+        "Hybrid tracking / v0.4",
+        "Hierarchy tasks / v0.4",
+        "Local emulator / v1.0",
+    ):
+        assert stale_label not in plan
+    assert "codex/maj8-external-calibration" in plan
+    assert "exact frozen maj-8 design" in plan.casefold()
+    assert "chosen only after the observed result" in plan
+
+
+def test_readme_distinguishes_completed_bnn_pilot_from_open_parity() -> None:
+    readme = _read("README.md")
+    assert "future cavity-conditioned client wiring" not in readme
+    assert "completed synthetic-pilot cavity wiring" in readme
+    assert "source-data/CUDA parity future" in readme
+
+
+_MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+
+
+def _local_markdown_targets(relative_path: str) -> set[str]:
+    """Resolve existing local Markdown targets for one repository page."""
+    source = ROOT / relative_path
+    targets: set[str] = set()
+    for match in _MARKDOWN_LINK_PATTERN.finditer(_read(relative_path)):
+        target = match.group(1).strip()
+        if not target or target.startswith(("#", "http://", "https://", "mailto:")):
+            continue
+        if target.startswith("<") and target.endswith(">"):
+            target = target[1:-1]
+        target_path = urllib.parse.unquote(target.split("#", 1)[0])
+        if not target_path or Path(target_path).suffix.lower() != ".md":
+            continue
+        resolved = (source.parent / target_path).resolve()
+        try:
+            relative = resolved.relative_to(ROOT)
+        except ValueError:
+            continue
+        if resolved.is_file():
+            targets.add(relative.as_posix())
+    return targets
 
 
 def _todo_doc_files() -> tuple[str, ...]:
@@ -177,7 +238,6 @@ def test_script_quick_reference_covers_every_entrypoint() -> None:
 
 def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> None:
     """Prevent docs from linking back to absent template-repo guides."""
-    link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
     allowed_placeholder_targets = {
         "../output/figures/name.png",
         "../output/figures/NAME.png",
@@ -186,7 +246,7 @@ def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> Non
     for path in _contract_files():
         source = ROOT / path
         for line_number, line in enumerate(_read(path).splitlines(), start=1):
-            for match in link_pattern.finditer(line):
+            for match in _MARKDOWN_LINK_PATTERN.finditer(line):
                 target = match.group(1).strip()
                 if (
                     not target
@@ -208,6 +268,75 @@ def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> Non
                 if not resolved.exists():
                     offenders.append(f"{path}:{line_number}: {target} missing")
     assert offenders == []
+
+
+def test_documentation_hub_and_section_indexes_reach_every_page() -> None:
+    """A new docs page must be linked from its section index and the main hub."""
+    docs_root = ROOT / "docs"
+    hub_links = _local_markdown_targets("docs/README.md")
+
+    top_level_pages = {
+        path.relative_to(ROOT).as_posix()
+        for path in docs_root.glob("*.md")
+        if path.name != "README.md"
+    }
+    section_indexes = {
+        path.relative_to(ROOT).as_posix()
+        for path in docs_root.glob("*/README.md")
+    }
+    assert sorted(top_level_pages - hub_links) == []
+    assert sorted(section_indexes - hub_links) == []
+
+    missing_by_section: dict[str, list[str]] = {}
+    for index in sorted(section_indexes):
+        index_path = ROOT / index
+        sibling_pages = {
+            path.relative_to(ROOT).as_posix()
+            for path in index_path.parent.glob("*.md")
+            if path != index_path
+        }
+        missing = sorted(sibling_pages - _local_markdown_targets(index))
+        if missing:
+            missing_by_section[index] = missing
+    assert missing_by_section == {}
+
+
+def test_application_guide_is_the_lightweight_canonical_user_path() -> None:
+    """Keep first use distinct from contributor and generated-output surfaces."""
+    guide = _read("docs/application-guide.md")
+    root_readme = _read("README.md")
+    docs_hub = _read("docs/README.md")
+    examples = _read("examples/README.md")
+    verification = _read("docs/reference/verification-commands.md")
+    examples_before_tests = examples.split("## Regression tests", maxsplit=1)[0]
+
+    assert "docs/application-guide.md" in root_readme
+    assert "application-guide.md" in docs_hub
+    assert "uv sync --locked --extra dev" not in examples_before_tests
+    assert "uv sync --locked" in examples_before_tests
+    assert "examples/05_labeled_application.py" in guide
+    assert "examples/data/labeled_aggregation_request.json" in guide
+    assert "fedference aggregate" in guide
+    assert "aggregate_labeled" in guide
+    assert "LabeledAggregationRequest" in guide
+    assert "from fedference import AggregationConfig, aggregate_result" in guide
+    assert "run_multiprocess_round_result" in guide
+    assert "solver_status" in guide
+    assert "fallback_events" in guide
+    assert "same ordered labels" in guide
+    assert "one-dimensional" in guide
+    assert "does **not** prove" in guide
+    assert "scientific validity" in guide
+    assert "downstream decision" in guide
+    assert "py.typed" in guide
+    assert "'torch' not in sys.modules" in guide
+    assert "examples/05_labeled_application.py" in verification
+    assert "src/fedference/py.typed" in verification
+    assert "--require-nominal-solver" in verification
+    assert "does not load Torch" in verification
+    assert "../output/docs/" not in guide
+    assert "predates" in root_readme
+    assert "git checkout v1.0.4" not in f"{root_readme}\n{guide}"
 
 
 def test_local_review_artifacts_are_ignored_and_test_profiles_are_declared() -> None:
@@ -267,9 +396,10 @@ def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> N
     assert offenders == []
 
 
-def test_release_metadata_matches_public_project_identity() -> None:
+def test_development_metadata_and_latest_release_identity_are_separated() -> None:
     config = yaml.safe_load(_read("manuscript/config.yaml"))
     expected_doi = config["publication"]["doi"]
+    expected_doi_status = config["publication"]["doi_status"]
     expected_date = config["publication"]["date_released"]
     expected_version = config["paper"]["version"]
     metadata = "\n".join(
@@ -288,14 +418,18 @@ def test_release_metadata_matches_public_project_identity() -> None:
     assert "template_code_project" not in metadata
     assert "Convergence Analysis of Gradient Descent Optimization" not in metadata
     assert "10.5281/zenodo.20417136" not in metadata
-    assert expected_doi in metadata
+    assert expected_doi_status in metadata
+    assert "10.5281/zenodo.21972644" in metadata
+    assert "https://doi.org/(forthcoming)" not in metadata
 
     assert ":" not in config["paper"]["title"]
     assert config["paper"]["subtitle"]
     assert ":" not in config["paper"]["subtitle"]
     assert config["publication"]["github_repository"] == "https://github.com/ActiveInferenceInstitute/Active_Fedference"
-    assert expected_doi.startswith("10.")
-    assert expected_date
+    assert expected_version.endswith(".dev0")
+    assert expected_doi == ""
+    assert expected_doi_status == "(forthcoming)"
+    assert expected_date is None
     assert config["metadata"]["license"] == "MIT"
     assert "active inference" in config["keywords"]
     assert "FedGVI" in config["keywords"]
@@ -303,16 +437,17 @@ def test_release_metadata_matches_public_project_identity() -> None:
     zenodo = json.loads(_read(".zenodo.json"))
     codemeta = json.loads(_read("codemeta.json"))
     package_metadata = tomllib.loads(_read("pyproject.toml"))
-    assert citation["identifiers"] == [{"type": "doi", "value": expected_doi}]
-    assert citation["date-released"] == expected_date
+    assert "identifiers" not in citation
+    assert "date-released" not in citation
     assert citation["version"] == expected_version
-    assert zenodo["doi"] == expected_doi
-    assert zenodo["publication_date"] == expected_date
+    assert "doi" not in zenodo
+    assert "publication_date" not in zenodo
     assert zenodo["version"] == expected_version
-    assert codemeta["identifier"] == f"https://doi.org/{expected_doi}"
-    assert codemeta["dateModified"] == expected_date
+    assert "identifier" not in codemeta
+    assert "dateModified" not in codemeta
     assert codemeta["version"] == expected_version
     assert package_metadata["project"]["version"] == expected_version
+    assert "DOI" not in package_metadata["project"]["urls"]
 
 
 def test_docs_do_not_reintroduce_stale_claim_language() -> None:

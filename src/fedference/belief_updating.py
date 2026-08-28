@@ -38,6 +38,7 @@ from collections.abc import Sequence
 
 import numpy as np
 
+from ._validation import as_pmf
 from .generalized_bayes import softmax
 
 ArrayF = np.ndarray
@@ -115,7 +116,10 @@ def infer_states(
     """
     mats = _likelihoods(A)
     idx = _observations(obs, len(mats))
-    lp = np.asarray(log_prior, dtype=np.float64).ravel()
+    lp = np.asarray(log_prior)
+    if lp.ndim != 1:
+        raise ValueError("log_prior must be one-dimensional")
+    lp = np.asarray(lp, dtype=np.float64)
     if lp.shape[0] != mats[0].shape[1]:
         raise ValueError("log_prior length must equal n_s (likelihood columns)")
     message = _log_likelihood_message(mats, idx)
@@ -136,9 +140,11 @@ def vfe(
     """
     mats = _likelihoods(A)
     idx = _observations(obs, len(mats))
-    q = np.clip(np.asarray(qs, dtype=np.float64).ravel(), _EPS, None)
-    q = q / q.sum()
-    lp = np.asarray(log_prior, dtype=np.float64).ravel()
+    q = as_pmf(qs, name="qs")
+    lp = np.asarray(log_prior)
+    if lp.ndim != 1:
+        raise ValueError("log_prior must be one-dimensional")
+    lp = np.asarray(lp, dtype=np.float64)
     if lp.shape[0] != mats[0].shape[1] or q.shape[0] != mats[0].shape[1]:
         raise ValueError("qs and log_prior length must equal n_s")
     # Normalize the prior so the cross-entropy term uses a genuine ln D.

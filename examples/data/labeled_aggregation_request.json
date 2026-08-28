@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "state_labels": [
+    "clear",
+    "warning",
+    "critical"
+  ],
+  "agents": [
+    {
+      "agent_id": "agent-0",
+      "posterior": [
+        7.0,
+        2.0,
+        1.0
+      ],
+      "base_weight": 1.0
+    },
+    {
+      "agent_id": "agent-1",
+      "posterior": [
+        0.6,
+        0.3,
+        0.1
+      ]
+    },
+    {
+      "agent_id": "agent-2",
+      "posterior": [
+        0.1,
+        0.1,
+        0.8
+      ],
+      "base_weight": 0.75
+    }
+  ],
+  "aggregation_config": {
+    "method": "robust",
+    "robustness": 1.5,
+    "entropy_weight": 1.0,
+    "max_iter": 64,
+    "tol": 1e-09,
+    "multistart": true
+  }
+}

@@ -24,6 +24,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from publication.clean_checkout import IMMUTABLE_RELEASE_PDFS
 from publication.pipeline_freshness import (
     pipeline_stage_record,
     validate_pipeline_freshness,
@@ -33,14 +34,24 @@ from publication.release_manifest import validate_utc_timestamp
 VALIDATION_RECEIPT_SCHEMA_VERSION = 2
 VALIDATION_RECEIPT_PATH = Path("output/data/test_coverage_receipt.json")
 VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
+    *IMMUTABLE_RELEASE_PDFS,
     "src/**/*.py",
     "src/**/*.md",
+    "src/**/*.yaml",
+    "src/**/*.csv",
+    "src/**/py.typed",
     "tests/**/*.py",
     "tests/**/*.md",
     "scripts/**/*.py",
     "scripts/**/*.md",
+    "examples/**/*.py",
+    "examples/**/*.md",
+    "examples/**/*.json",
     "data/**/*.md",
+    "data/**/*.yaml",
+    "data/**/*.csv",
     "docs/**/*.md",
+    "docs/**/*.json",
     ".github/workflows/*.yml",
     # Final hydration consumes every manuscript source format below.  Binding
     # them here prevents a post-test caption, formalism, bibliography, or
@@ -48,7 +59,9 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
     "manuscript/**/*.md",
     "manuscript/**/*.bib",
     "manuscript/**/*.yaml",
+    "manuscript/**/*.yaml.example",
     "manuscript/**/*.tex",
+    "manuscript/**/*.png",
     # Source-owned documentation and release/packaging metadata are validated
     # by the full suite too.  Bind them here so the receipt honestly describes
     # the tree whose documentation checks passed, without pulling generated

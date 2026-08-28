@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # Scan the complete executable surface.  Keeping this at selected package
 # directories would allow retired APIs to survive in root-level helpers or
 # future source packages without tripping the policy gate.
-RUNTIME_DIRS = (ROOT / "src", ROOT / "scripts")
+RUNTIME_DIRS = (ROOT / "src", ROOT / "scripts", ROOT / "examples")
 TEST_DIR = ROOT / "tests"
 # Compatibility adapters and deprecation warnings are part of the supported
 # runtime surface; this gate only rejects placeholder implementations. The

@@ -21,15 +21,32 @@ import os
 import subprocess
 import tempfile
 from dataclasses import asdict, dataclass
+from dataclasses import field as dataclass_field
 from datetime import datetime, timezone
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Literal, Mapping
 
-EVIDENCE_SCHEMA_VERSION = "1.1"
+from .provenance import (
+    RuntimeProvenance,
+    SourceProvenance,
+    collect_source_provenance,
+    runtime_provenance,
+)
+
+EVIDENCE_SCHEMA_VERSION = "1.2"
+LEGACY_EVIDENCE_SCHEMA_VERSION = "1.1"
+APPLICATION_RECEIPT_SCHEMA_VERSION = "1.0"
 ExperimentState = Literal["planned", "active", "complete", "external"]
 RunStatus = Literal["completed", "failed", "partial"]
 GitTreeState = Literal["clean", "dirty", "unavailable"]
+SolverStatus = Literal[
+    "nominal",
+    "converged_with_fallback",
+    "not_converged",
+    "not_converged_with_fallback",
+]
+ApplicationVerificationScope = Literal["all", "artifacts", "source", "solver"]
 
 
 def validate_evidence_report(payload: Mapping[str, object]) -> None:
@@ -93,7 +110,19 @@ def _reject_json_constant(value: str) -> Any:
 
 def _loads_json_strict(value: str) -> Any:
     """Decode standards-compliant JSON without Python's NaN extensions."""
-    return json.loads(value, parse_constant=_reject_json_constant)
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in result:
+                raise ValueError(f"duplicate JSON key is not allowed: {key!r}")
+            result[key] = item
+        return result
+
+    return json.loads(
+        value,
+        parse_constant=_reject_json_constant,
+        object_pairs_hook=reject_duplicate_keys,
+    )
 
 
 def canonical_sha256(value: object) -> str:
@@ -305,6 +334,9 @@ class RunReceipt:
     status: RunStatus
     started_at_utc: str
     completed_at_utc: str
+    runtime_provenance: RuntimeProvenance = dataclass_field(
+        default_factory=runtime_provenance
+    )
     schema_version: str = EVIDENCE_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -340,8 +372,24 @@ class RunReceipt:
             raise ValueError("git_tree_state is not recognized")
         if self.git_commit == "unavailable" and self.git_tree_state != "unavailable":
             raise ValueError("an unavailable git commit requires git_tree_state='unavailable'")
-        if self.schema_version != EVIDENCE_SCHEMA_VERSION:
-            raise ValueError(f"schema_version must be {EVIDENCE_SCHEMA_VERSION!r}")
+        if self.schema_version not in (
+            LEGACY_EVIDENCE_SCHEMA_VERSION,
+            EVIDENCE_SCHEMA_VERSION,
+        ):
+            raise ValueError(
+                "schema_version must be "
+                f"{LEGACY_EVIDENCE_SCHEMA_VERSION!r} or {EVIDENCE_SCHEMA_VERSION!r}"
+            )
+        if not isinstance(self.runtime_provenance, RuntimeProvenance):
+            raise ValueError("runtime_provenance must be a RuntimeProvenance")
+        if self.schema_version == LEGACY_EVIDENCE_SCHEMA_VERSION:
+            object.__setattr__(
+                self,
+                "runtime_provenance",
+                RuntimeProvenance.unavailable(
+                    warning="runtime provenance is unavailable in legacy schema 1.1"
+                ),
+            )
         _require_sha256(self.environment_lock_sha256, "environment_lock_sha256")
         _require_sha256(self.config_sha256, "config_sha256")
         for dataset_id, digest in self.dataset_sha256.items():
@@ -378,7 +426,7 @@ class RunReceipt:
 
     def as_dict(self) -> dict[str, Any]:
         """Return a deterministic JSON-compatible representation."""
-        return {
+        payload = {
             "run_id": self.run_id,
             "experiment_id": self.experiment_id,
             "experiment_version": self.experiment_version,
@@ -399,6 +447,9 @@ class RunReceipt:
             "completed_at_utc": self.completed_at_utc,
             "schema_version": self.schema_version,
         }
+        if self.schema_version == EVIDENCE_SCHEMA_VERSION:
+            payload["runtime_provenance"] = self.runtime_provenance.as_dict()
+        return payload
 
     @classmethod
     def from_dict(cls, raw: Mapping[str, Any]) -> RunReceipt:
@@ -424,6 +475,11 @@ class RunReceipt:
             "completed_at_utc",
             "schema_version",
         }
+        schema_version = raw.get("schema_version")
+        if schema_version == EVIDENCE_SCHEMA_VERSION:
+            required.add("runtime_provenance")
+        elif schema_version != LEGACY_EVIDENCE_SCHEMA_VERSION:
+            raise ValueError("run receipt schema_version is not supported")
         if set(raw) != required:
             missing = sorted(required - set(raw))
             extra = sorted(set(raw) - required)
@@ -439,6 +495,13 @@ class RunReceipt:
         try:
             outputs = tuple(ArtifactRecord(**item) for item in outputs_raw)
             datasets = dict(raw["dataset_sha256"])
+            provenance = (
+                RuntimeProvenance.from_dict(raw["runtime_provenance"])
+                if schema_version == EVIDENCE_SCHEMA_VERSION
+                else RuntimeProvenance.unavailable(
+                    warning="runtime provenance is unavailable in legacy schema 1.1"
+                )
+            )
             return cls(
                 run_id=raw["run_id"],
                 experiment_id=raw["experiment_id"],
@@ -458,10 +521,165 @@ class RunReceipt:
                 status=raw["status"],
                 started_at_utc=raw["started_at_utc"],
                 completed_at_utc=raw["completed_at_utc"],
+                runtime_provenance=provenance,
                 schema_version=raw["schema_version"],
             )
         except (TypeError, ValueError) as exc:
             raise ValueError(f"invalid run receipt: {exc}") from exc
+
+
+@dataclass(frozen=True)
+class ApplicationReceipt:
+    """Integrity receipt for one labeled categorical aggregation operation.
+
+    ``status='completed'`` means that execution and artifact writing completed;
+    solver health remains a separate, mandatory field and is not a scientific
+    validity or downstream-decision claim.
+    """
+
+    request_sha256: str
+    config_fingerprint: str
+    solver_status: SolverStatus
+    fallback_events: tuple[str, ...]
+    outputs: tuple[ArtifactRecord, ...]
+    runtime_provenance: RuntimeProvenance
+    source_provenance: SourceProvenance
+    started_at_utc: str
+    completed_at_utc: str
+    status: Literal["completed"] = "completed"
+    receipt_type: Literal["application"] = "application"
+    operation: Literal["labeled_categorical_aggregation"] = (
+        "labeled_categorical_aggregation"
+    )
+    schema_version: str = APPLICATION_RECEIPT_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        if self.schema_version != APPLICATION_RECEIPT_SCHEMA_VERSION:
+            raise ValueError(
+                f"schema_version must be {APPLICATION_RECEIPT_SCHEMA_VERSION!r}"
+            )
+        if self.receipt_type != "application":
+            raise ValueError("receipt_type must be 'application'")
+        if self.operation != "labeled_categorical_aggregation":
+            raise ValueError("operation is not recognized")
+        if self.status != "completed":
+            raise ValueError("application receipt status must be 'completed'")
+        _require_sha256(self.request_sha256, "request_sha256")
+        _require_sha256(self.config_fingerprint, "config_fingerprint")
+        if self.solver_status not in (
+            "nominal",
+            "converged_with_fallback",
+            "not_converged",
+            "not_converged_with_fallback",
+        ):
+            raise ValueError("solver_status is not recognized")
+        if not isinstance(self.fallback_events, (tuple, list)) or any(
+            not isinstance(event, str) or not event.strip()
+            for event in self.fallback_events
+        ):
+            raise ValueError("fallback_events must contain non-empty strings")
+        fallbacks = tuple(self.fallback_events)
+        status_has_fallback = self.solver_status in (
+            "converged_with_fallback",
+            "not_converged_with_fallback",
+        )
+        if status_has_fallback != bool(fallbacks):
+            raise ValueError("solver_status and fallback_events are inconsistent")
+        if not isinstance(self.outputs, (tuple, list)) or any(
+            not isinstance(record, ArtifactRecord) for record in self.outputs
+        ):
+            raise ValueError("outputs must contain ArtifactRecord values")
+        outputs = tuple(self.outputs)
+        if tuple(record.name for record in outputs) != ("request", "result"):
+            raise ValueError(
+                "application receipts must bind exactly request and result artifacts"
+            )
+        if len({record.path for record in outputs}) != 2:
+            raise ValueError("application receipt artifact paths must be unique")
+        if tuple(record.path for record in outputs) != ("request.json", "result.json"):
+            raise ValueError(
+                "application receipt artifacts must be request.json and result.json"
+            )
+        if not isinstance(self.runtime_provenance, RuntimeProvenance):
+            raise ValueError("runtime_provenance must be a RuntimeProvenance")
+        if not isinstance(self.source_provenance, SourceProvenance):
+            raise ValueError("source_provenance must be a SourceProvenance")
+        started = _parse_utc_timestamp(self.started_at_utc, "started_at_utc")
+        completed = _parse_utc_timestamp(self.completed_at_utc, "completed_at_utc")
+        if completed < started:
+            raise ValueError("completed_at_utc must not precede started_at_utc")
+        object.__setattr__(self, "request_sha256", self.request_sha256.lower())
+        object.__setattr__(self, "config_fingerprint", self.config_fingerprint.lower())
+        object.__setattr__(self, "fallback_events", fallbacks)
+        object.__setattr__(self, "outputs", outputs)
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return the complete strict application-receipt representation."""
+        return {
+            "receipt_type": self.receipt_type,
+            "schema_version": self.schema_version,
+            "operation": self.operation,
+            "status": self.status,
+            "runtime_provenance": self.runtime_provenance.as_dict(),
+            "source_provenance": self.source_provenance.as_dict(),
+            "request_sha256": self.request_sha256,
+            "config_fingerprint": self.config_fingerprint,
+            "solver_status": self.solver_status,
+            "fallback_events": list(self.fallback_events),
+            "outputs": [asdict(record) for record in self.outputs],
+            "started_at_utc": self.started_at_utc,
+            "completed_at_utc": self.completed_at_utc,
+        }
+
+    @classmethod
+    def from_dict(cls, raw: Mapping[str, Any]) -> ApplicationReceipt:
+        """Decode a fail-closed application receipt."""
+        required = {
+            "receipt_type",
+            "schema_version",
+            "operation",
+            "status",
+            "runtime_provenance",
+            "source_provenance",
+            "request_sha256",
+            "config_fingerprint",
+            "solver_status",
+            "fallback_events",
+            "outputs",
+            "started_at_utc",
+            "completed_at_utc",
+        }
+        if not isinstance(raw, Mapping) or set(raw) != required:
+            raise ValueError("application receipt fields do not match schema")
+        if not isinstance(raw["fallback_events"], list):
+            raise ValueError("fallback_events must be a list")
+        outputs_raw = raw["outputs"]
+        if not isinstance(outputs_raw, list) or any(
+            not isinstance(item, dict) for item in outputs_raw
+        ):
+            raise ValueError("outputs must be a list")
+        try:
+            return cls(
+                receipt_type=raw["receipt_type"],
+                schema_version=raw["schema_version"],
+                operation=raw["operation"],
+                status=raw["status"],
+                runtime_provenance=RuntimeProvenance.from_dict(
+                    raw["runtime_provenance"]
+                ),
+                source_provenance=SourceProvenance.from_dict(
+                    raw["source_provenance"]
+                ),
+                request_sha256=raw["request_sha256"],
+                config_fingerprint=raw["config_fingerprint"],
+                solver_status=raw["solver_status"],
+                fallback_events=tuple(raw["fallback_events"]),
+                outputs=tuple(ArtifactRecord(**item) for item in outputs_raw),
+                started_at_utc=raw["started_at_utc"],
+                completed_at_utc=raw["completed_at_utc"],
+            )
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"invalid application receipt: {exc}") from exc
 
 
 def make_artifact_record(
@@ -517,6 +735,41 @@ def write_run_receipt(path: str | Path, receipt: RunReceipt) -> Path:
     return receipt_path
 
 
+def write_application_receipt(
+    path: str | Path,
+    receipt: ApplicationReceipt,
+) -> Path:
+    """Atomically persist one canonical application receipt."""
+    if not isinstance(receipt, ApplicationReceipt):
+        raise ValueError("receipt must be an ApplicationReceipt")
+    receipt_path = Path(path)
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            dir=receipt_path.parent,
+            prefix=f".{receipt_path.name}.",
+            suffix=".tmp",
+            encoding="utf-8",
+            delete=False,
+        ) as handle:
+            json.dump(
+                receipt.as_dict(),
+                handle,
+                indent=2,
+                sort_keys=True,
+                allow_nan=False,
+            )
+            handle.write("\n")
+            temporary = Path(handle.name)
+        os.replace(temporary, receipt_path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    return receipt_path
+
+
 def load_run_receipt(path: str | Path) -> RunReceipt:
     """Load and validate a JSON run receipt."""
     try:
@@ -525,6 +778,30 @@ def load_run_receipt(path: str | Path) -> RunReceipt:
         raise ValueError(f"invalid run receipt file: {path}") from exc
     if not isinstance(raw, dict):
         raise ValueError("run receipt must be a JSON object")
+    return RunReceipt.from_dict(raw)
+
+
+def load_application_receipt(path: str | Path) -> ApplicationReceipt:
+    """Load and validate one strict application receipt."""
+    try:
+        raw = _loads_json_strict(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"invalid application receipt file: {path}") from exc
+    if not isinstance(raw, dict):
+        raise ValueError("application receipt must be a JSON object")
+    return ApplicationReceipt.from_dict(raw)
+
+
+def load_receipt(path: str | Path) -> RunReceipt | ApplicationReceipt:
+    """Auto-detect and load a research or application receipt."""
+    try:
+        raw = _loads_json_strict(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"invalid receipt file: {path}") from exc
+    if not isinstance(raw, dict):
+        raise ValueError("receipt must be a JSON object")
+    if raw.get("receipt_type") == "application":
+        return ApplicationReceipt.from_dict(raw)
     return RunReceipt.from_dict(raw)
 
 
@@ -656,21 +933,204 @@ def verify_run_receipt(
     return tuple(findings)
 
 
+def _application_source_findings(
+    receipt: ApplicationReceipt,
+    *,
+    require_clean_git: bool,
+    project_root: str | Path | None,
+) -> tuple[str, ...]:
+    """Return only checkout/source-equivalence findings."""
+    findings: list[str] = []
+    if require_clean_git and receipt.source_provenance.source_kind != "git_checkout":
+        findings.append("application receipt is not bound to an explicit Git checkout")
+    if require_clean_git and receipt.source_provenance.git_tree_state != "clean":
+        findings.append(
+            "receipt Git tree state is "
+            f"{receipt.source_provenance.git_tree_state!r}, not 'clean'"
+        )
+    if project_root is not None:
+        live = collect_source_provenance(project_root)
+        recorded = receipt.source_provenance
+        if live.source_kind != "git_checkout":
+            findings.append(
+                f"live Git source is unavailable: {Path(project_root).resolve()}"
+            )
+        elif recorded.source_kind != "git_checkout":
+            findings.append("receipt does not bind an explicit Git checkout")
+        else:
+            if live.git_commit != recorded.git_commit:
+                findings.append(
+                    "live Git commit does not match receipt: "
+                    f"{live.git_commit} != {recorded.git_commit}"
+                )
+            if live.git_tree_state != recorded.git_tree_state:
+                findings.append(
+                    "live Git tree state does not match receipt: "
+                    f"{live.git_tree_state!r} != {recorded.git_tree_state!r}"
+                )
+            if live.uv_lock_sha256 != recorded.uv_lock_sha256:
+                findings.append("live uv.lock digest does not match receipt")
+            if require_clean_git and live.git_tree_state != "clean":
+                findings.append(
+                    f"live Git tree state is {live.git_tree_state!r}, not 'clean'"
+                )
+            if recorded.git_tree_state != "clean":
+                findings.append(
+                    "receipt binds an unhashed dirty tree; live source equivalence "
+                    "cannot be verified"
+                )
+    return tuple(dict.fromkeys(findings))
+
+
+def verify_application_receipt(
+    receipt: ApplicationReceipt,
+    *,
+    root: str | Path,
+    require_clean_git: bool = False,
+    project_root: str | Path | None = None,
+    require_nominal_solver: bool = False,
+    scope: ApplicationVerificationScope = "all",
+) -> tuple[str, ...]:
+    """Verify artifact/envelope bindings, source, and the requested solver policy.
+
+    Verification intentionally does not rerun aggregation, so a receipt remains
+    an artifact-integrity check across compatible software versions. The result
+    bytes and solver diagnostics are hash-bound, while normalized caller rows
+    are recomputed because their semantics are part of the stable input schema.
+    """
+    from ._validation import as_pmf_matrix
+    from .application import LabeledAggregationRequest, LabeledAggregationResult
+
+    if not isinstance(receipt, ApplicationReceipt):
+        raise ValueError("receipt must be an ApplicationReceipt")
+    if scope not in ("all", "artifacts", "source", "solver"):
+        raise ValueError("scope must be 'all', 'artifacts', 'source', or 'solver'")
+    if scope == "source":
+        return _application_source_findings(
+            receipt,
+            require_clean_git=require_clean_git,
+            project_root=project_root,
+        )
+    if scope == "solver":
+        if require_nominal_solver and receipt.solver_status != "nominal":
+            return (f"solver status is {receipt.solver_status!r}, not 'nominal'",)
+        return ()
+    findings: list[str] = []
+    if receipt.status != "completed":  # defensive against non-dataclass decoders
+        findings.append(f"application status is {receipt.status!r}, not 'completed'")
+    if (
+        scope == "all"
+        and require_nominal_solver
+        and receipt.solver_status != "nominal"
+    ):
+        findings.append(
+            f"solver status is {receipt.solver_status!r}, not 'nominal'"
+        )
+    root_path = Path(root).resolve()
+    artifact_paths: dict[str, Path] = {}
+    for artifact in receipt.outputs:
+        path = (root_path / artifact.path).resolve()
+        try:
+            path.relative_to(root_path)
+        except ValueError:
+            findings.append(f"artifact escapes receipt root: {artifact.path}")
+            continue
+        artifact_paths[artifact.name] = path
+        if not path.is_file():
+            findings.append(f"missing artifact: {artifact.path}")
+            continue
+        if path.stat().st_size != artifact.bytes:
+            findings.append(f"artifact byte-size mismatch: {artifact.path}")
+        if sha256_file(path) != artifact.sha256:
+            findings.append(f"artifact digest mismatch: {artifact.path}")
+
+    request: LabeledAggregationRequest | None = None
+    result: LabeledAggregationResult | None = None
+    request_path = artifact_paths.get("request")
+    if request_path is not None and request_path.is_file():
+        try:
+            request = LabeledAggregationRequest.from_json(
+                request_path.read_text(encoding="utf-8")
+            )
+        except (OSError, TypeError, ValueError) as exc:
+            findings.append(f"request artifact is invalid: {exc}")
+    result_path = artifact_paths.get("result")
+    if result_path is not None and result_path.is_file():
+        try:
+            result = LabeledAggregationResult.from_json(
+                result_path.read_text(encoding="utf-8")
+            )
+        except (OSError, TypeError, ValueError) as exc:
+            findings.append(f"result artifact is invalid: {exc}")
+    if request is not None:
+        if request.request_sha256 != receipt.request_sha256:
+            findings.append("request semantic hash does not match receipt")
+        if request.config.fingerprint != receipt.config_fingerprint:
+            findings.append("request configuration fingerprint does not match receipt")
+    if result is not None:
+        if (
+            result.software_version
+            != receipt.runtime_provenance.distribution_version
+        ):
+            findings.append(
+                "result software version does not match runtime provenance"
+            )
+        if result.request_sha256 != receipt.request_sha256:
+            findings.append("result request hash does not match receipt")
+        if result.config.fingerprint != receipt.config_fingerprint:
+            findings.append("result configuration fingerprint does not match receipt")
+        if result.aggregation.solver_status != receipt.solver_status:
+            findings.append("result solver status does not match receipt")
+        if result.aggregation.fallback_events != receipt.fallback_events:
+            findings.append("result fallback events do not match receipt")
+    if request is not None and result is not None:
+        if request.state_labels != result.state_labels:
+            findings.append("request and result state-label order do not match")
+        if tuple(agent.agent_id for agent in request.agents) != result.agent_ids:
+            findings.append("request and result agent order do not match")
+        expected_rows = as_pmf_matrix(
+            (agent.posterior for agent in request.agents),
+            name="agents.posterior",
+        )
+        if expected_rows.tolist() != result.normalized_local_posteriors.tolist():
+            findings.append(
+                "result normalized local posteriors do not match the request"
+            )
+
+    if scope == "all":
+        findings.extend(
+            _application_source_findings(
+                receipt,
+                require_clean_git=require_clean_git,
+                project_root=project_root,
+            )
+        )
+    return tuple(dict.fromkeys(findings))
+
+
 __all__ = [
+    "APPLICATION_RECEIPT_SCHEMA_VERSION",
+    "ApplicationReceipt",
     "ArtifactRecord",
     "DatasetSpec",
     "EVIDENCE_SCHEMA_VERSION",
     "ExperimentSpec",
     "ExperimentState",
     "GitTreeState",
+    "LEGACY_EVIDENCE_SCHEMA_VERSION",
     "RunReceipt",
     "RunStatus",
+    "SolverStatus",
     "SourceReference",
     "canonical_sha256",
+    "load_application_receipt",
+    "load_receipt",
     "load_run_receipt",
     "make_artifact_record",
     "sha256_file",
     "validate_evidence_report",
+    "verify_application_receipt",
     "verify_run_receipt",
+    "write_application_receipt",
     "write_run_receipt",
 ]

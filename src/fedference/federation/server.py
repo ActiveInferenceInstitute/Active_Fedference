@@ -10,6 +10,7 @@ import numpy as np
 
 from fedference.aggregation import (
     AggregationConfig,
+    AggregationResult,
     AggregatorProtocol,
     aggregate_result,
 )
@@ -56,19 +57,21 @@ class FederationServer:
         self.timeout = timeout
         self.aggregator = aggregator
 
-    def run_round(
+    def run_round_result(
         self,
         request_queue: Any,
         response_queues: dict,
         timeout: float | None = None,
-    ) -> np.ndarray:
-        """Run one federation round: collect, fuse, broadcast; return consensus.
+    ) -> AggregationResult:
+        """Run one federation round and retain the server solver diagnostics.
 
         Blocks until ``n_workers`` serialized beliefs have arrived on
         ``request_queue``, fuses them through the configured
         :class:`~fedference.aggregation.AggregatorProtocol`, serializes the result, and pushes it to
-        each contributing worker's response queue. The returned consensus is
-        bit-identical to the same configured in-process aggregation call.
+        each contributing worker's response queue. The returned aggregation
+        result contains the exact consensus serialized to protocol-v1 workers
+        plus the server-side convergence and fallback diagnostics.  Those
+        diagnostics remain local and do not alter the wire payload.
 
         Args:
             request_queue: Queue from which worker (id, belief_data) tuples are
@@ -133,4 +136,17 @@ class FederationServer:
         )
         for wid in worker_ids:
             response_queues[wid].put(serialised)
-        return result.consensus
+        return result
+
+    def run_round(
+        self,
+        request_queue: Any,
+        response_queues: dict,
+        timeout: float | None = None,
+    ) -> np.ndarray:
+        """Run one federation round and return the legacy consensus array."""
+        return self.run_round_result(
+            request_queue,
+            response_queues,
+            timeout=timeout,
+        ).consensus

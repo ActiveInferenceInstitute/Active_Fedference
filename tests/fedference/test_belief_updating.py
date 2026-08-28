@@ -168,6 +168,23 @@ def test_log_prior_wrong_length_raises():
         infer_states(A, 0, np.log(np.array([0.3, 0.3, 0.4])))
 
 
+@pytest.mark.parametrize(
+    "reshape",
+    (
+        lambda vector: vector[None, :],
+        lambda vector: vector[:, None],
+        lambda vector: vector[None, None, :],
+    ),
+)
+def test_log_prior_rejects_implicit_flattening(reshape):
+    A = np.array([[0.8, 0.2], [0.2, 0.8]])
+    log_prior = np.log(np.array([0.5, 0.5]))
+    with pytest.raises(ValueError, match="one-dimensional"):
+        infer_states(A, 0, reshape(log_prior))
+    with pytest.raises(ValueError, match="one-dimensional"):
+        vfe(np.array([0.5, 0.5]), A, 0, reshape(log_prior))
+
+
 def test_observation_index_out_of_range_raises():
     A = np.array([[0.8, 0.2], [0.2, 0.8]])
     with pytest.raises(ValueError, match="out of range"):
@@ -178,6 +195,20 @@ def test_vfe_wrong_length_raises():
     A = np.array([[0.8, 0.2], [0.2, 0.8]])
     qs = np.array([0.5, 0.3, 0.2])
     with pytest.raises(ValueError, match="must equal n_s"):
+        vfe(qs, A, 0, np.log(np.array([0.5, 0.5])))
+
+
+@pytest.mark.parametrize(
+    "qs",
+    (
+        np.asarray([[0.5, 0.5]]),
+        np.asarray([[0.5], [0.5]]),
+        np.asarray([[[0.5, 0.5]]]),
+    ),
+)
+def test_vfe_rejects_implicit_posterior_flattening(qs):
+    A = np.array([[0.8, 0.2], [0.2, 0.8]])
+    with pytest.raises(ValueError, match="one-dimensional"):
         vfe(qs, A, 0, np.log(np.array([0.5, 0.5])))
 
 

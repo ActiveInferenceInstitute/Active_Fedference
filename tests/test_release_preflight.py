@@ -8,13 +8,19 @@ doubles for the publication validators.
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import json
 from pathlib import Path
 from types import ModuleType
 
 import pytest
 import yaml
 
+from publication.clean_checkout import (
+    HISTORICAL_RELEASE_PDF_LEDGER_PATH,
+    IMMUTABLE_RELEASE_PDFS,
+)
 from publication.metadata import write_metadata
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -37,6 +43,7 @@ def _metadata_project(root: Path) -> Path:
                 "paper": {
                     "title": "Preflight Fixture Paper",
                     "subtitle": "A Complete Fixture Subtitle",
+                    "version": "0.0.1.dev0",
                 },
                 "authors": [
                     {
@@ -46,9 +53,12 @@ def _metadata_project(root: Path) -> Path:
                     }
                 ],
                 "publication": {
+                    "doi": "",
+                    "doi_status": "(forthcoming)",
                     "software_name": "Preflight fixture",
                     "github_repository": "https://example.invalid/repository",
                     "date_created": "2026-08-02",
+                    "date_released": None,
                     "abstract": "Fixture abstract.",
                     "description": "Fixture description.",
                 },
@@ -57,9 +67,25 @@ def _metadata_project(root: Path) -> Path:
         encoding="utf-8",
     )
     (root / "pyproject.toml").write_text(
-        '[project]\nname = "preflight-fixture"\nversion = "0.0.1"\n', encoding="utf-8"
+        '[project]\nname = "preflight-fixture"\nversion = "0.0.1.dev0"\n', encoding="utf-8"
     )
     write_metadata(root)
+    return root
+
+
+def _historical_pdf_project(root: Path) -> Path:
+    digests: dict[str, str] = {}
+    for filename in IMMUTABLE_RELEASE_PDFS:
+        payload = f"historical release PDF preflight fixture: {filename}\n".encode()
+        (root / filename).write_bytes(payload)
+        digests[filename] = hashlib.sha256(payload).hexdigest()
+    ledger_path = root / HISTORICAL_RELEASE_PDF_LEDGER_PATH
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    ledger_path.write_text(
+        json.dumps({"schema_version": "1.0", "sha256": digests}, indent=2, sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+    )
     return root
 
 
@@ -71,6 +97,20 @@ def test_release_preflight_rejects_stale_generated_metadata(tmp_path: Path) -> N
 
     with pytest.raises(ValueError, match="generated publication metadata is stale: CITATION.cff"):
         build_release._require_current_metadata(root)
+
+
+def test_release_preflight_rejects_historical_pdf_substitution(tmp_path: Path) -> None:
+    root = _historical_pdf_project(tmp_path)
+    build_release = _load_script("build_release.py")
+    build_release._require_immutable_release_pdfs(root)
+    mutated = IMMUTABLE_RELEASE_PDFS[0]
+    (root / mutated).write_bytes(b"substituted historical PDF bytes\n")
+
+    with pytest.raises(
+        ValueError,
+        match=f"historical release PDF validation failed:.*{mutated}",
+    ):
+        build_release._require_immutable_release_pdfs(root)
 
 
 def test_release_preflight_rejects_unvalidated_rendered_surfaces(tmp_path: Path) -> None:

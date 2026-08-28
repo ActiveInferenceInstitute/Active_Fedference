@@ -21,13 +21,23 @@ cross-host receipts.
 
 from __future__ import annotations
 
-from fedference.federation.process import run_multiprocess_round
+from fedference.federation.process import (
+    MultiprocessRoundResult,
+    run_multiprocess_round,
+    run_multiprocess_round_result,
+)
 from fedference.federation.server import FederationServer
 from fedference.federation.socket_transport import (
     PersistentReplayGuard,
+    ReplayFinding,
     ReplayGuard,
+    ReplayValidationResult,
+    SocketRoundResult,
+    aggregation_config_from_replay,
+    inspect_socket_replay,
     load_socket_replay,
     run_socket_round,
+    run_socket_round_result,
     save_socket_replay,
     validate_socket_replay,
 )
@@ -46,14 +56,22 @@ from fedference.federation.worker import FederationWorker
 __all__ = [
     "FederationServer",
     "FederationWorker",
+    "MultiprocessRoundResult",
     "PROTOCOL_VERSION",
     "PersistentReplayGuard",
     "ProtocolEnvelope",
     "ReplayGuard",
+    "ReplayFinding",
+    "ReplayValidationResult",
+    "SocketRoundResult",
+    "aggregation_config_from_replay",
     "deserialize_envelope",
     "load_socket_replay",
+    "inspect_socket_replay",
     "run_multiprocess_round",
+    "run_multiprocess_round_result",
     "run_socket_round",
+    "run_socket_round_result",
     "save_socket_replay",
     "validate_socket_replay",
     "serialize_belief",

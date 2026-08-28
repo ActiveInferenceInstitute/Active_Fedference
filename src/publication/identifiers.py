@@ -49,6 +49,29 @@ def doi_url(value: object, *, allow_placeholder: bool = False) -> str | None:
     return f"https://doi.org/{normalized}" if normalized is not None else None
 
 
+def publication_identity_sentence(value: object) -> str:
+    """Return lifecycle-aware manuscript prose for an assigned or future DOI.
+
+    The same sentence is consumed by manuscript hydration and publication
+    metadata emission.  Keeping it here prevents a development-only sentence
+    from surviving the final-version DOI/date transition, while avoiding the
+    awkward ``DOI: N/A`` rendering for an unreleased manuscript.
+    """
+    normalized = normalize_doi(value, allow_placeholder=True)
+    if normalized is None:
+        return (
+            "This development manuscript has no assigned version DOI; published "
+            "versions bind their reserved DOI, deposited PDF, and repository URL "
+            "only after the release gates close."
+        )
+    resolver = doi_url(normalized)
+    return (
+        "This final-release manuscript uses assigned version DOI "
+        f"[{normalized}]({resolver}); the bound deposited PDF and repository "
+        "release are controlled by separate publication gates."
+    )
+
+
 def manuscript_pdf_filename(version: object, doi: object) -> str:
     """Return the canonical informative top-level manuscript PDF filename.
 
@@ -67,4 +90,9 @@ def manuscript_pdf_filename(version: object, doi: object) -> str:
     return f"Active_Fedference_Research_Manuscript_v{normalized_version}_Zenodo_{doi_slug}.pdf"
 
 
-__all__ = ["doi_url", "manuscript_pdf_filename", "normalize_doi"]
+__all__ = [
+    "doi_url",
+    "manuscript_pdf_filename",
+    "normalize_doi",
+    "publication_identity_sentence",
+]
