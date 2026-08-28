@@ -45,9 +45,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-The production Zenodo release DOI is [10.5281/zenodo.21972644](https://doi.org/10.5281/zenodo.21972644),
-and the repository and deposited PDF point to each other through this DOI and
-the repository URL.
+This development manuscript has no assigned version DOI; published versions bind their reserved DOI, deposited PDF, and repository URL only after the release gates close.
 
 **Keywords:** active inference, federated learning, generalised variational inference, belief sharing, robustness, FedGVI
 
@@ -1523,8 +1521,9 @@ of [@sec:methods-learning], and the corruption process of
 [@sec:methods-contamination] are exercised by 9 studies, including
 the contaminated-sentinel robustness sweep (Study 4). The shared configuration (seed budget, colony size,
 contamination rates, divergences, trial counts, and the statistics settings) is
-read from `experiment:` in [`manuscript/config.yaml`](config.yaml); the
-remaining per-study parameters are tested code defaults in
+read from `experiment:` in
+[manuscript rendering configuration](https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/config.yaml);
+the remaining per-study parameters are tested code defaults in
 `src/fedference/experiments/`. No value is hard-coded in the manuscript, and
 each token below resolves to the same configuration the code executed.
 
@@ -1896,14 +1895,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.89
-(log-linear), 0.95 (iterative robust),
-0.82 (variational), 1.59
-(naive self-excluding sharing), and 1.94
+performance guarantees: agent-axis slopes are 0.96
+(log-linear), 0.93 (iterative robust),
+0.78 (variational), 1.64
+(naive self-excluding sharing), and 1.91
 (robust self-excluding sharing); state-axis slopes
-are 0.42, 0.41, and
-0.37; the modality-axis inference slope is
-0.67. The slope fit is a timing diagnostic on this
+are 0.97, 0.96, and
+0.96; the modality-axis inference slope is
+0.66. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -2299,9 +2298,9 @@ at the level of the recovery limits is what lets the robustness claims of
 [@sec:results-robustness] and [@sec:results-baseline] rest on the per-agent axis
 without leaning on the heuristic.
 
-257 of 259 acceptance criteria are verified. The
+264 of 266 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-90.26% (gate $\ge 90\%$), with every stochastic step threaded
+91.08% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -2743,12 +2742,12 @@ density-power $\beta$-loss at $\beta = 0.5$, trained for 200
 Adam steps per client across 5 clients — and fuses per-test-point
 softmax predictions with `robust_aggregate` at `robustness = 0.5`
 (`fedference.bnn_baseline_torch.run_bnn_torch_experiment`, run under PyTorch
-2.12.1). Every number here is executed, not assumed: the consensus
+not installed). Every number here is executed, not assumed: the consensus
 is a valid probability simplex (maximum deviation from unit mass
-2.22e-16 over the test set) and is bit-identical across repeated
-seeded runs (deterministic: Yes). Held-out consensus accuracy
-at contamination 0.40 is 0.558 for the
-$\beta\to 0$ standard client and 0.545 for the
+N/A over the test set) and is bit-identical across repeated
+seeded runs (deterministic: N/A). Held-out consensus accuracy
+at contamination N/A is N/A (PyTorch not run) for the
+$\beta\to 0$ standard client and N/A (PyTorch not run) for the
 $\beta = 0.5$ robust client — this is the same
 0.40-contamination endpoint where the NumPy baseline
 above also loses its separation (a single seed here, versus the
@@ -2760,9 +2759,8 @@ to this neural-network setting and produces a valid, deterministic consensus; it
 does not establish model-class universality or that the client-side $\beta$-loss's robustness
 margin transfers at this scale; the certified NumPy logistic-regression
 baseline above remains the axis's rigorous evidence. When PyTorch is not
-installed the pipeline records a skipped status with unavailable-value sentinels;
-a complete certified build therefore installs the `torch` optional extra
-([@sec:reproducibility]).
+installed, the pipeline records unavailable-value sentinels; certified builds
+install the `torch` optional extra ([@sec:reproducibility]).
 
 
 # Discussion: what the evidence supports {#sec:discussion}
@@ -3399,9 +3397,12 @@ neural-network work, rather than treating the current deterministic point-mass
 MLP as a posterior [@mildner2025fedgvi].
 
 The portable lane preserves the source protocol's site factors, client cavity,
-and factor-replacement update in natural coordinates. It distinguishes a
-locally budgeted CPU/MPS profile from an exact source-scale CUDA profile that
-remains external until suitable hardware is available. FashionMNIST anchors
+factor-replacement update in natural coordinates. A synthetic CPU/MPS pilot
+already exercises the cavity-conditioned local optimizer, explicit device and
+fallback receipts, and checkpoint/resume equivalence. It does not establish
+source-dataset parity. The next local campaign distinguishes a locked portable
+CPU/MPS profile from an exact source-scale CUDA profile that remains external
+until suitable hardware is available. FashionMNIST anchors source-dataset
 protocol parity, while MNIST and KMNIST test portability. A separate
 source-bound tabular pack will report proper-score effects per licensed dataset,
 with training-only preprocessing and byte-, split-, and license-level
@@ -3484,10 +3485,13 @@ robust *structure* fusion compose.
 
 A minimal executable fixture now gates a discrete dynamics context over
 continuous position and velocity, Gaussian observations, and bounded actions.
-It is a representation and recovery surface, not confirmatory task evidence.
-The full study must add discrete-only, continuous-only, and oracle-context
-controls, singular-covariance and outlier checks, and held-out
-posterior-predictive scoring before supporting a hybrid-task claim.
+The bounded pilot now includes matched naive, robust, discrete-only,
+continuous-only, and oracle-context components, a singular-covariance
+rejection, and next-position predictive scoring. It is still a representation,
+recovery, and control surface rather than confirmatory task evidence. The full
+study must freeze calibration and budgets, use independently held-out worlds,
+retain outlier falsifiers, and execute the preregistered comparison before
+supporting a hybrid-task claim.
 
 
 # Conclusion: a recovery-tested bridge with bounded claims {#sec:conclusion}
@@ -3701,10 +3705,10 @@ rendered.
 | Python | 3.13.11 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | 2.12.1 |
+| PyTorch (MLP complement) | not installed |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 72ab9bf43b9f7914 |
-| Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
+| Config hash (SHA-256, first 16) | b187ab01fa98f60e |
+| Reproducible build epoch (UTC) | 2026-08-28T11:02:22Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -3726,20 +3730,23 @@ LuaLaTeX/tagpdf path and is released only when `pdfinfo` reports `Tagged: yes`,
 qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the source-bound
 language check passes. Some Poppler builds omit the language line from
 `pdfinfo` even when `/Lang` is present. The
-separate slide PDFs are checked structurally, textually, through retained
-renderer logs, and by raster inspection, but do not inherit the manuscript
-tagging status. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+separate slide PDFs are checked structurally, textually, through renderer logs
+during the producing run, and by raster inspection, but do not inherit the
+manuscript tagging status. Renderer logs are retained with the external
+verification evidence rather than the public source tree because they contain
+environment-local timestamps and paths. Tagged structure is not PDF/UA
+conformance: a PDF/UA claim
 requires a dedicated conformance report plus screen-reader and reading-order
 review; `qpdf` structure checks and successful text extraction alone are
 insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
-- Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1695 collected cases; the bound successful
+- Acceptance criteria: 266 total, 264 passing.
+- Project test suite: 2262 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 90.26% (achieved by the bound full
+- Line coverage on `src/`: 91.08% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 
@@ -3809,7 +3816,7 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.0.4.
+This is project version 1.1.0.dev0.
 
 
 # Supplement: variational aggregation objective and weight control {#sec:supp-variational}
@@ -5420,8 +5427,10 @@ it is not a probability or a global breakdown bound.](../figures/heuristic_break
 
 # References {#sec:references}
 
-The bibliography lives in [`manuscript/references.bib`](references.bib) and is
-read by Pandoc during the PDF render. The build pipeline invokes Pandoc with
+The bibliography lives in
+[project bibliography source](https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/references.bib)
+and is read by Pandoc during the PDF render. The build pipeline invokes Pandoc
+with
 `--natbib`, so every Pandoc citation marker in the manuscript is rewritten to
 the appropriate LaTeX citation command and resolved against the bib file. Titles
 in the bib file are reproduced verbatim, including any British spellings,

@@ -44,10 +44,10 @@ rendered.
 | Python | 3.13.11 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | 2.12.1 |
+| PyTorch (MLP complement) | not installed |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | 72ab9bf43b9f7914 |
-| Reproducible build epoch (UTC) | omitted (unreleased reproducible build) |
+| Config hash (SHA-256, first 16) | b187ab01fa98f60e |
+| Reproducible build epoch (UTC) | 2026-08-28T11:02:22Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -69,20 +69,23 @@ LuaLaTeX/tagpdf path and is released only when `pdfinfo` reports `Tagged: yes`,
 qpdf exposes a non-empty `/Lang` and `StructTreeRoot`, and the source-bound
 language check passes. Some Poppler builds omit the language line from
 `pdfinfo` even when `/Lang` is present. The
-separate slide PDFs are checked structurally, textually, through retained
-renderer logs, and by raster inspection, but do not inherit the manuscript
-tagging status. Tagged structure is not PDF/UA conformance: a PDF/UA claim
+separate slide PDFs are checked structurally, textually, through renderer logs
+during the producing run, and by raster inspection, but do not inherit the
+manuscript tagging status. Renderer logs are retained with the external
+verification evidence rather than the public source tree because they contain
+environment-local timestamps and paths. Tagged structure is not PDF/UA
+conformance: a PDF/UA claim
 requires a dedicated conformance report plus screen-reader and reading-order
 review; `qpdf` structure checks and successful text extraction alone are
 insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
-- Acceptance criteria: 259 total, 257 passing.
-- Project test suite: 1695 collected cases; the bound successful
+- Acceptance criteria: 266 total, 264 passing.
+- Project test suite: 2262 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 90.26% (achieved by the bound full
+- Line coverage on `src/`: 91.08% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 
@@ -152,4 +155,4 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.0.4.
+This is project version 1.1.0.dev0.

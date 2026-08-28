@@ -1,7 +1,0 @@
-\frametitle{References}
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{uv}\NormalTok{ run python }\AttributeTok{{-}m}\NormalTok{ infrastructure.reference.citation.cli validate }\DataTypeTok{\textbackslash{}}
-\NormalTok{    projects/working/active\_fedference/manuscript/references.bib }\AttributeTok{{-}{-}strict}
-\end{Highlighting}
-\end{Shaded}
