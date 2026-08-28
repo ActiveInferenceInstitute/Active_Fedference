@@ -9,6 +9,7 @@ Technical index for `docs/`. Navigation hub:
 | --- | --- |
 | **Hub** | |
 | `README.md` | Navigation, read order, task routing |
+| `application-guide.md` | Install, input contract, method/interface selection, diagnostics, local federation, and CLI receipts |
 | `AGENTS.md` | This index; REQUIRED vs AESTHETIC |
 | **core/** | |
 | `core/README.md` | Core-document index and routing to science, architecture, and artifact contracts |
@@ -38,7 +39,15 @@ Technical index for `docs/`. Navigation hub:
 | `reference/zenodo-release.md` | Published v1.0.4 metadata and safe next-version/update/upload/verify/publish boundary |
 | `reference/README.md` | Reference-document index and metadata/release boundary signposts |
 | **research/** | |
-| `research/*.md` | Source-audited literature, statistical, complexity, claim, visual, and composability reviews |
+| `research/README.md` | Research-audit index, read order, and source-currentness boundary |
+| `research/literature-audit.md` | Primary-source scholarship and evidence-transfer boundaries |
+| `research/manuscript-claim-audit.md` | Manuscript-wide claim-status ledger |
+| `research/visual-claim-audit.md` | Figure, caption, uncertainty, and accessibility claim audit |
+| `research/extended-statistical-audit-2026-07-14.md` | Dated statistical and numerical audit |
+| `research/first-principles-redteam-review-2026-07-16.md` | First-principles and adversarial boundary review |
+| `research/runtime-surface-composability-review-2026-07-17.md` | Runtime-surface and composition review |
+| `research/computational-complexity-audit-2026-07-28.md` | Symbolic complexity and timing-diagnostic boundary |
+| `research/cli-modularity-review-2026-08-15.md` | Installed CLI, orchestration, and documentation follow-up |
 | **source package docs** | |
 | `../src/fedference_cli/README.md` | Installed CLI module map, stable facade, and extension recipe |
 | `../src/fedference_cli/AGENTS.md` | Package-local CLI boundary and testing rules |
@@ -64,6 +73,7 @@ Technical index for `docs/`. Navigation hub:
 | `src/experiment_config.py` | REQUIRED | `tests/test_experiment_config.py` |
 | `src/fedference/config/hierarchical_layers.yaml` | REFERENCE | Human-readable mirror of the defaults in `build_3level_world`; `tests/fedference/test_hierarchical_layers_yaml.py` gates acuity, goal bonus, and canonical prior drift |
 | `tests/` (all `test_*.py`) | REQUIRED | Coverage gate |
+| `../examples/*.py`, `../examples/README.md` | REQUIRED | Real subprocess smoke in `tests/test_examples.py`; Ruff and runtime-surface gates; source-distribution membership |
 | `tests/conftest.py` | REQUIRED | `MPLBACKEND=Agg` + `sys.path` |
 | `scripts/02_run_analysis.py` | REQUIRED | Pipeline stage 4 entry |
 | `scripts/z_generate_manuscript_variables.py` | REQUIRED | Token hydration before PDF |
@@ -76,7 +86,7 @@ Technical index for `docs/`. Navigation hub:
 | `manuscript/preamble.md` | REQUIRED | LaTeX preamble |
 | `manuscript/SYNTAX.md` | AESTHETIC (partly gated) | Authoritative label registry (humans/agents); `tests/test_docs_contract.py::test_manuscript_syntax_registry_references_live_files` gates referenced-file existence and one stale-string check |
 | `docs/todo/**` | REQUIRED | `tests/test_docs_contract.py` link and scope checks |
-| `docs/**` | AESTHETIC (partly gated) | Docs contract catches critical drift; still update docs when behavior changes |
+| `docs/**` | AESTHETIC (partly gated) | Docs contract catches critical drift, requires hub/section-index reachability, and validates local links; `application-guide.md` is the canonical caller path |
 | `../ISA.md` | REQUIRED (contract) | Acceptance criteria |
 | `../README.md`, `../AGENTS.md` | AESTHETIC (load-bearing) | Onboarding |
 

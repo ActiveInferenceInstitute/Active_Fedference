@@ -4,15 +4,20 @@ The analysis pipeline is implemented in
 [`src/analysis/workflow.py`](../../src/analysis/workflow.py). Pipeline stage 4
 invokes it via [`scripts/02_run_analysis.py`](../../scripts/02_run_analysis.py).
 
-## Source contract and artifact status — 2026-08-02
+## Source contract versus generated artifact status
 
-The checked-out source has changed after the dated reviewer snapshot in
-`output/`: its publication budgets are enlarged and its review-grid producer is
-now selection-free. The report and figure names below describe the current
-producer contract; an existing file with one of those names is not evidence
-that the contract has run. A source-current artifact requires fresh analysis,
-the test-and-coverage receipt, final hydration, rendering, and freshness/surface
-validation in dependency order.
+The report and figure names below describe the checked-out producer contract;
+an existing file with one of those names is not evidence that the current
+contract has run. `scripts/validate_pipeline_freshness.py` is the authority for
+the live source-versus-artifact state and names changed inputs when a stage is
+stale. A source-current artifact requires fresh analysis, the test-and-coverage
+receipt, final hydration, rendering, and freshness/surface validation in
+dependency order. Do not copy a dated freshness diagnosis into this page.
+
+For small, source-only API and transport executions that do not write the
+reviewer snapshot, use [`examples/README.md`](../../examples/README.md). Those
+programs demonstrate mechanics and recovery controls; they do not replace the
+analysis-to-render producer chain described here.
 
 The configured publication request is 480 primary seeds, 128
 structural-extension seeds, 960 matched robustness-sweep trials, 64 seeds × 24
@@ -102,20 +107,27 @@ preprocessing, and split policy. An `active` registry row means implementation
 work is active; it is not a positive result.
 
 The installed CLI writes experiment artifacts only into an explicit empty
-directory outside committed `output/`. It then writes a versioned `RunReceipt`
-binding the full commit, clean/dirty/unavailable tree state, lock file,
+directory outside committed `output/`. It then writes research `RunReceipt`
+schema 1.2 binding the full commit, clean/dirty/unavailable tree state, lock
+file, required runtime provenance,
 configuration, dataset bytes, seeds, device/backend, fallbacks, checkpoints,
-and completion status. `config.json` and `report.json` are both byte-bound
+and completion status. Exact schema-1.1 receipts remain readable with missing
+runtime provenance represented as unavailable. `config.json` and `report.json` are both byte-bound
 outputs, and verification independently recomputes the canonical configuration
 hash:
 
 ```bash
+FEDFERENCE_EVIDENCE_ROOT="$(mktemp -d /tmp/active-fedference-evidence.XXXXXX)"
 uv run --locked fedference list --json
 uv run --locked fedference run server-theory \
-  --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
-uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
+  --profile smoke --seed 0 \
+  --output-dir "$FEDFERENCE_EVIDENCE_ROOT/server-theory" \
+  --project-root .
 uv run --locked fedference verify \
-  .tmp/server-theory-smoke/receipt.json --require-clean-git
+  "$FEDFERENCE_EVIDENCE_ROOT/server-theory/receipt.json"
+uv run --locked fedference verify \
+  "$FEDFERENCE_EVIDENCE_ROOT/server-theory/receipt.json" \
+  --require-clean-git --project-root .
 ```
 
 The first verifier accepts an explicitly recorded dirty development tree while
@@ -134,9 +146,11 @@ The external-data runner additionally verifies the declared UCI archive before
 parsing. Its smoke output is a mechanics check, not a publication report:
 
 ```bash
+FEDFERENCE_BENCHMARK_ROOT="$(mktemp -d /tmp/active-fedference-benchmark.XXXXXX)"
 uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
-  --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
+  --cache-dir "$FEDFERENCE_BENCHMARK_ROOT/cache" \
+  --output-dir "$FEDFERENCE_BENCHMARK_ROOT/run"
 ```
 
 Smoke and pilot rows never enter confirmatory intervals or manuscript headline
@@ -279,8 +293,12 @@ the control ordering required to pass before any method contrast is discussed.
 
 Detect unresolved tokens:
 
+This check covers the hydrated Markdown reader surface. Auxiliary config,
+preamble, and BibTeX files remain source-exact and are validated by their
+consumer-specific producers.
+
 ```bash
-if rg -n '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else

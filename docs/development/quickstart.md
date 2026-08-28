@@ -1,20 +1,45 @@
-# Quickstart
+# Contributor and reviewer-snapshot quickstart
 
 Runnable-in-order recipe from a fresh checkout to a green baseline, generated
 reports and figures, hydrated manuscript tokens, and (optionally) a rendered
-PDF. Steps 4-6 depend on their predecessors; do not reorder them.
+PDF. This is the maintainer/reproduction path, not a prerequisite for using the
+aggregation library. Application users should start with
+[`../application-guide.md`](../application-guide.md). Steps 4-6 depend on their
+predecessors; do not reorder them.
 
 ## Prerequisites
 
 From this repository root:
 
 ```bash
-uv sync --locked --extra dev
+uv sync --locked
 ```
+
+This default non-Torch environment is sufficient for the public example and
+CLI ladder. Install the development extra only at the test gate below.
+
+## 0. Run the supported example ladder
+
+Start with one deterministic API operation before running repository-wide
+validation:
+
+```bash
+uv run --locked python examples/01_minimal_aggregation.py
+uv run --locked python examples/02_compare_aggregation_methods.py
+```
+
+Continue through direct sharing, spawned-process federation, loopback replay,
+and CLI receipts using the commands in
+[`../../examples/README.md`](../../examples/README.md). The example programs
+emit stable JSON and are executed as real subprocesses by
+`tests/test_examples.py`; the process program has the required macOS-safe main
+guard. Examples establish API mechanics only, not confirmatory findings or
+publication readiness.
 
 ## 1. Run tests with coverage gate
 
 ```bash
+uv sync --locked --extra dev
 uv run --locked --extra dev pytest tests/ \
   --cov=src \
   --cov-fail-under=90 \
@@ -54,13 +79,20 @@ structure, or message schedule.
 ### Inspect the installed research registry
 
 ```bash
-uv run --locked fedference list --json
+FEDFERENCE_QUICKSTART_ROOT="$(mktemp -d /tmp/active-fedference-quickstart.XXXXXX)"
+uv run --locked fedference list
 uv run --locked fedference run server-theory \
-  --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
-uv run --locked fedference verify .tmp/server-theory-smoke/receipt.json
+  --profile smoke --seed 0 \
+  --output-dir "$FEDFERENCE_QUICKSTART_ROOT/server-theory" \
+  --project-root .
+uv run --locked fedference verify \
+  "$FEDFERENCE_QUICKSTART_ROOT/server-theory/receipt.json"
 ```
 
-The explicit output directory protects the committed reviewer snapshot.
+The fresh, explicit output directory protects the committed reviewer snapshot
+and makes the recipe rerunnable. The CLI refuses a non-empty directory instead
+of overwriting evidence. Add `--json` to `fedference list` when automation needs
+the complete registry.
 Confirmatory profiles remain blocked until their pilot design is frozen.
 
 ### Install the built package
@@ -70,17 +102,20 @@ wheel/source-distribution smoke. It checks that the installed CLI and core
 imports work without relying on the repository's `src/` path:
 
 ```bash
-uv build --out-dir .tmp/dist
-uv venv .tmp/package-env
-uv pip install --python .tmp/package-env/bin/python .tmp/dist/*.whl
-.tmp/package-env/bin/fedference list --json
-.tmp/package-env/bin/python -c "from fedference import aggregate_result; print(aggregate_result([[.7, .3], [.6, .4]]).consensus)"
+FEDFERENCE_PACKAGE_ROOT="$(mktemp -d /tmp/active-fedference-package.XXXXXX)"
+uv build --out-dir "$FEDFERENCE_PACKAGE_ROOT/dist"
+uv venv "$FEDFERENCE_PACKAGE_ROOT/env"
+uv pip install --python "$FEDFERENCE_PACKAGE_ROOT/env/bin/python" \
+  "$FEDFERENCE_PACKAGE_ROOT"/dist/*.whl
+"$FEDFERENCE_PACKAGE_ROOT/env/bin/fedference" list
+"$FEDFERENCE_PACKAGE_ROOT/env/bin/python" -c "from fedference import aggregate_result; print(aggregate_result([[.7, .3], [.6, .4]]).consensus)"
 ```
 
 The source distribution retains the repository's documentation, manuscript,
-scripts, and tests for archival reproduction. The wheel carries only runtime
-modules and packaged compatibility data; it does not silently include the
-committed reviewer snapshot under `output/`.
+scripts, tests, runnable examples, and manuscript configuration template for
+archival reproduction. The wheel carries only runtime modules and packaged
+compatibility data; it does not silently include the committed reviewer
+snapshot under `output/` or the repository-level example scripts.
 
 ## 3. Run core experiments
 
@@ -185,6 +220,7 @@ the source-current two-pass sequence.
 
 ## Next steps
 
+- Application guide: [`../application-guide.md`](../application-guide.md)
 - Architecture: [`../core/architecture.md`](../core/architecture.md)
 - Agent rules: [`agent_instructions.md`](agent_instructions.md)
 - Full doc hub: [`../README.md`](../README.md)

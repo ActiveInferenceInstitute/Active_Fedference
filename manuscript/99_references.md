@@ -1,7 +1,9 @@
 # References {#sec:references}
 
-The bibliography lives in [`manuscript/references.bib`](references.bib) and is
-read by Pandoc during the PDF render. The build pipeline invokes Pandoc with
+The bibliography lives in
+[project bibliography source](https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/references.bib)
+and is read by Pandoc during the PDF render. The build pipeline invokes Pandoc
+with
 `--natbib`, so every Pandoc citation marker in the manuscript is rewritten to
 the appropriate LaTeX citation command and resolved against the bib file. Titles
 in the bib file are reproduced verbatim, including any British spellings,

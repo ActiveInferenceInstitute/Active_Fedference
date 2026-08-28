@@ -14,7 +14,8 @@
 explicit controls, selection-free payloads, and disjoint component seed ranges.
 The current source increases that budget and requires a fresh run before it can
 support a source-current claim. Neither record completes or reclassifies any
-MAJ phase. The v0.1.0 GitHub/Zenodo publication completed on 2026-08-10, while
+MAJ phase. The latest immutable GitHub/Zenodo release is v1.0.4; the current
+v1.1 line is development-only, while
 sharp server-heuristic characterization, calibration, portable/external BNN,
 external data, source-protocol reconstruction, continuous/hybrid, richer
 hierarchy, authenticated federation, and independent reproducibility gates
@@ -83,39 +84,51 @@ guarantee, a universal attack taxonomy, or a general hierarchy advantage.
 
 ### Ordered phases
 
+The wave labels below express evidence dependencies, not promised package
+versions. No open scientific lane is preassigned a semantic version. After the
+v1.1.0 application release, the MAJ-8 calibration freeze and dependent MAJ-6
+campaign run only on the separate `codex/maj8-external-calibration` scientific
+lineage. MAJ-6 cannot open sealed final-test rows until the accepted MAJ-8
+policy has produced a source-bound frozen design; any eventual scientific
+release version is chosen only after the observed result and integrity review.
+
 | Wave / target | Primary question | Prerequisite | Primary estimand / unit | Required falsifier or boundary |
 | --- | --- | --- | --- | --- |
-| Foundation / v0.1 | Can a clean installation enumerate and execute registered research without mutating the reviewer snapshot? | Safe headroom and release authority | Exact schema/receipt/artifact verification; unit is one isolated repository build | Stale source chain, untracked load-bearing file, dirty output overwrite, failed wheel/sdist install, or clone divergence blocks release |
-| Server theory / v0.2 (MAJ-1, scoped closure) | Does the declared separable objective class produce `robust_aggregate`'s raw log-pool block? | Interior-simplex domain and positive raw weights | Completed: numbered scoped no-go proposition, executable raw and normalized witnesses, typed report metadata | An in-class objective with the stated all-interior q-block would refute the proposition; broader coupled or fixed-point-only constructions remain outside its scope |
-| Calibration / v0.2 (MAJ-8) | Which robustness settings maximize calibration-world proper score without evaluation leakage? | Versioned configuration and receipts | Mean held-out log score per independent calibration world | Episode identifier/content overlap, changed frozen config, or reversed confirmatory effect blocks the intended claim |
-| Portable FedGVI / v0.3 (MAJ-2A) | Does the source-protocol-matched mean-field BNN show a proper-score effect under a locked M4 budget? | Source-revision parity matrix and pilot | Paired held-out log-score difference per seeded end-to-end run | Null/reversed proper-score result remains visible and prohibits the uncertainty-robustness claim |
-| Source-scale FedGVI / external (MAJ-2B) | Does the exact CUDA configuration reproduce the source-scale result? | MAJ-2A plus external CUDA | Same source-defined estimand and seed unit | Declarative configuration is never presented as executed evidence |
-| External data / v0.3 (MAJ-6) | Does the effect replicate across the three pinned UCI datasets? | Hash/license/schema/split contracts and calibration | Per-dataset paired held-out log-score difference; dataset is higher-level unit | Source, leakage, corrupted-cache, permutation, null, and reversal controls |
-| Friston reconstruction / v0.4 (MAJ-7) | Can Eq. 2 and Figures 5, 7, and 9 be reconstructed with complete parameter and estimand parity? | Source-protocol extraction | Source-defined quantity in native units and source-defined unit | Any unresolved parity row forces “paper-constrained reconstruction” |
-| Hybrid tracking / v0.4 (MAJ-3) | Does robust hybrid fusion improve held-out prediction under explicit context/outlier controls? | Categorical, Gaussian, zero-robustness, and covariance recovery gates | Posterior-predictive log score per seeded tracking world | Failed recovery gate or null/reversed locked effect blocks broad language |
-| Hierarchy tasks / v0.4 (MAJ-5) | Does learned hierarchy improve fixed-horizon success across Four Rooms and Key-Door? | Hybrid recovery gates | Episode success; task is higher-level unit, seeds nested | Flat, oracle, shuffled, and non-gating controls; one-task effects stay task-specific |
-| Local emulator / v1.0 (MAJ-4A) | Does an mTLS-default Docker federation preserve consensus and fail closed under declared faults? | Stable versioned envelope | Consensus identity and fault disposition per container round | Drop, duplicate, delay, replay, tamper, timeout, restart, out-of-order, or wrong-key mismatch |
-| Physical hosts / external v1.x (MAJ-4B) | Do physically distinct hosts reproduce the emulator contract? | MAJ-4A and external hosts | One distinct-host deployment run | Local containers cannot satisfy this unit |
+| Historical engineering foundation | Can a clean installation enumerate and execute registered research without mutating the reviewer snapshot? | Safe headroom and release authority | Exact schema/receipt/artifact verification; unit is one isolated repository build | Stale source chain, untracked load-bearing file, dirty output overwrite, failed wheel/sdist install, or clone divergence blocks release |
+| Historical server-theory closure (MAJ-1) | Does the declared separable objective class produce `robust_aggregate`'s raw log-pool block? | Interior-simplex domain and positive raw weights | Completed: numbered scoped no-go proposition, executable raw and normalized witnesses, typed report metadata | An in-class objective with the stated all-interior q-block would refute the proposition; broader coupled or fixed-point-only constructions remain outside its scope |
+| Post-v1.1 scientific Wave A — calibration freeze (MAJ-8) | Which robustness settings maximize calibration-world proper score without evaluation leakage? | Released v1.1 application base, preregistered policy, versioned configuration, and receipts on the separate scientific branch | Mean held-out log score per independent calibration world | Episode identifier/content overlap, changed frozen config, unstable selection, or a required confirmatory budget above the cap blocks design freeze |
+| Post-v1.1 portable-FedGVI evidence (MAJ-2A) | Does the source-protocol-matched mean-field BNN show a proper-score effect under a locked M4 budget? | Source-revision parity matrix and pilot | Paired held-out log-score difference per seeded end-to-end run | Null/reversed proper-score result remains visible and prohibits the uncertainty-robustness claim |
+| External source-scale evidence (MAJ-2B) | Does the exact CUDA configuration reproduce the source-scale result? | MAJ-2A plus external CUDA | Same source-defined estimand and seed unit | Declarative configuration is never presented as executed evidence |
+| Post-v1.1 scientific Wave B — three-dataset confirmation (MAJ-6) | Does the effect replicate across the three pinned UCI datasets? | Exact frozen MAJ-8 design on the separate scientific lineage plus hash/license/schema/split contracts; no tuning after the freeze | Per-dataset paired held-out log-score difference; dataset is higher-level unit | Source, leakage, corrupted-cache, permutation, null, reversal, fallback, nonconvergence, or design-digest mismatch controls |
+| Post-v1.1 source-parity evidence (MAJ-7) | Can Eq. 2 and Figures 5, 7, and 9 be reconstructed with complete parameter and estimand parity? | Source-protocol extraction | Source-defined quantity in native units and source-defined unit | Any unresolved parity row forces “paper-constrained reconstruction” |
+| Post-v1.1 hybrid evidence (MAJ-3) | Does robust hybrid fusion improve held-out prediction under explicit context/outlier controls? | Categorical, Gaussian, zero-robustness, and covariance recovery gates | Posterior-predictive log score per seeded tracking world | Failed recovery gate or null/reversed locked effect blocks broad language |
+| Post-v1.1 hierarchy evidence (MAJ-5) | Does learned hierarchy improve fixed-horizon success across Four Rooms and Key-Door? | Hybrid recovery gates | Episode success; task is higher-level unit, seeds nested | Flat, oracle, shuffled, and non-gating controls; one-task effects stay task-specific |
+| Post-v1.1 local-emulator evidence (MAJ-4A) | Does an mTLS-default Docker federation preserve consensus and fail closed under declared faults? | Stable versioned envelope | Consensus identity and fault disposition per container round | Drop, duplicate, delay, replay, tamper, timeout, restart, out-of-order, or wrong-key mismatch |
+| External distinct-host evidence (MAJ-4B) | Do physically distinct hosts reproduce the emulator contract? | MAJ-4A and external hosts | One distinct-host deployment run | Local containers cannot satisfy this unit |
 
 ### Release evidence contract
 
-The v0.1.0 public artifact is published, but this roadmap retains the stricter
+The v1.0.4 public artifact is published, but this roadmap retains the stricter
 release-wave criteria for the next independently reviewed version. Publication
 does not close a scientific phase or substitute for clean-clone, cross-vendor,
 licence, attribution, or author-authority evidence.
 
-- **v0.1:** two isolated fresh-clone passes, wheel and source-distribution
-  installation, installed CLI smoke, confidentiality/attribution/license review,
-  and author approval.
-- **Each v0.x:** one new source-bound evidence pack. A negative scientific
-  result may ship; malformed reports, failed controls, stale receipts, or
-  unresolved source discrepancies may not.
-- **v1.0:** three independently verifiable evidence packs, stable public
-  schemas, both reader documentation paths, MAJ-4A, clean-clone reproduction,
-  and external release approval.
-- **v1.x:** prioritize streaming/nonstationary belief sharing, then multimodal
-  missingness. Privacy or secure-aggregation claims require a threat model and
-  leakage-measurement protocol first.
+- **v1.1 development PR:** labeled own-data interfaces, strict validation,
+  solver-health and replay findings, application receipts, installed-artifact
+  smoke, and hosted checks. A green PR is not a release.
+- **v1.1.0:** two isolated exact-commit clone passes, wheel and source-
+  distribution installation, installed CLI/application smoke, independent
+  verdict, confidentiality/attribution/license review, author approval, final
+  DOI metadata, and separately approved GitHub/Zenodo publication.
+- **Post-v1.1 scientific evidence waves:** source-bound evidence packs may
+  publish negative results; malformed reports, failed controls, stale receipts,
+  or unresolved source discrepancies may not. The separate scientific branch
+  freezes MAJ-8 before MAJ-6 can inspect sealed confirmatory rows. No scientific
+  version is reserved in advance; choose it only after the observed report and
+  its claim boundary have passed review.
+- **Later v1.x:** prioritize streaming/nonstationary belief sharing, then
+  multimodal missingness. Privacy or secure-aggregation claims require a threat
+  model and leakage-measurement protocol first.
 
 ### Parked tracks
 
@@ -227,9 +240,12 @@ Prohibited claims (no-claim boundary):
 The current identity tests, public configuration, registry, receipt verifier,
 claim ledger, figure registry, token provenance checks, and template-rendering
 pipeline are prerequisites for every phase. The MAJ-1 scoped no-go controls the
-server-rule vocabulary; MAJ-8 controls tuning/evaluation separation. MAJ-2A controls the
-portable/source-scale label, while MAJ-2B remains external. MAJ-3 recovery gates
-block the large MAJ-5 task family. MAJ-4A may proceed after the envelope schema
-stabilizes; only MAJ-4B can support a physical multi-host statement. MAJ-6 has
-pinned source metadata but remains open until its pilot, confirmatory inference,
-manuscript artifacts, and release receipt exist.
+server-rule vocabulary. After v1.1.0, MAJ-8 controls tuning/evaluation
+separation on the dedicated scientific branch; only its exact frozen-design
+digest may unlock MAJ-6 confirmatory execution, and neither wave is part of the
+v1.1 application claim surface. MAJ-2A controls the portable/source-scale label,
+while MAJ-2B remains external. MAJ-3 recovery gates block the large MAJ-5 task
+family. MAJ-4A may proceed after the envelope schema stabilizes; only MAJ-4B can
+support a physical multi-host statement. MAJ-6 has pinned source metadata but
+remains open until the frozen MAJ-8 design, confirmatory inference, manuscript
+artifacts, and source-bound receipt exist.

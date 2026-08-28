@@ -50,10 +50,13 @@ Full module map, experiments, and artifacts:
 ## Composable public boundaries
 
 - Pure domain operations are importable from `fedference`; use
-  `AggregationConfig` + `aggregate_result` for new integrations and retain
-  `aggregate`, `log_linear_pool`, and `robust_aggregate` for compatibility.
+  `AgentPosterior` + `LabeledAggregationRequest` + `aggregate_labeled` for
+  caller-labeled application data, or `AggregationConfig` + `aggregate_result`
+  for the smallest numeric integration. Retain `aggregate`,
+  `log_linear_pool`, and `robust_aggregate` for compatibility.
 - Direct belief sharing, one-machine process federation, and loopback sockets
-  consume the same validated configuration and transport envelopes; transport
+  consume the same validated configuration and expose additive rich-result
+  adapters; legacy return types and protocol-v1 envelopes remain. Transport
   adapters must not duplicate aggregation math.
 - Evidence, checkpoint, external-data, replay, DOI, and report-writing code is
   explicit boundary code. Reports cross the typed `_write_json` boundary only;
@@ -61,7 +64,10 @@ Full module map, experiments, and artifacts:
 - The installed `fedference_cli` is a composable adapter, not a second domain
   implementation: `__init__.py` is the compatibility facade, `_parser.py`
   owns process grammar, `_commands.py` owns registry dispatch, and `_support.py`
-  owns output isolation and receipt construction. Its package contract is
+  owns output isolation and receipt construction. `fedference aggregate` is the
+  receipt-writing labeled own-data path; its receipt proves declared
+  input/output/provenance integrity, not scientific validity or a downstream
+  decision. Its package contract is
   [`src/fedference_cli/README.md`](src/fedference_cli/README.md).
 - Figures are generated through `src/figures/`, whose metadata registry,
   manuscript captions, report payloads, and output filenames must agree.
@@ -103,6 +109,9 @@ uv run --locked --extra dev pytest tests/ \
 uv run --locked pytest tests/ -m "not slow" -q
 uv run --locked pytest tests/ -m integration -q
 uv run --locked pytest tests/ -m publication -q
+
+# Real-subprocess public API, federation, replay, and CLI examples
+uv run --locked pytest tests/test_examples.py -q
 
 rg -n "import infrastructure" src/fedference/ && \
   { echo "Layer leak"; exit 1; } || echo "Clean"
@@ -152,6 +161,7 @@ and [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
 ## See also
 
 - [`README.md`](README.md) — pitch and quick run
+- [`docs/application-guide.md`](docs/application-guide.md) — install-to-result application path
 - [`STANDALONE.md`](STANDALONE.md) — confidentiality and standalone core
 - [`manuscript/AGENTS.md`](manuscript/AGENTS.md) — manuscript editing
 - Scope and related work: [`manuscript/22_discussion_related_work.md`](manuscript/22_discussion_related_work.md)

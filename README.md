@@ -9,6 +9,81 @@ the federated **belief-sharing** scenario of Friston et al.
 (2024), *Federated inference and belief sharing* (Neurosci. Biobehav. Rev.
 156:105500).
 
+## Start here
+
+The complete path for applying the software to your own categorical beliefs is
+the [`application guide`](docs/application-guide.md). It covers installation,
+the shared-state input contract, method selection, result diagnostics,
+recipient-specific sharing, local process/socket boundaries, CLI receipts, and
+troubleshooting.
+
+The default runtime requires Python 3.10 or newer and
+[`uv`](https://docs.astral.sh/uv/getting-started/installation/); it does not
+require Torch or a GPU. These commands use a POSIX shell. To validate the
+included labeled request, aggregate it, and verify its application receipt from
+the root of the source revision containing this guide:
+
+```bash
+uv sync --locked
+FEDFERENCE_APP_ROOT="$(mktemp -d /tmp/active-fedference-app.XXXXXX)"
+uv run --locked fedference aggregate \
+  --input examples/data/labeled_aggregation_request.json \
+  --output-dir "$FEDFERENCE_APP_ROOT/run" \
+  --project-root .
+uv run --locked fedference verify \
+  "$FEDFERENCE_APP_ROOT/run/receipt.json" \
+  --require-nominal-solver
+```
+
+This checkout is the unreleased `1.1.0.dev0` development line: it has no
+assigned version DOI or release date. The immutable v1.0.4 tag remains the
+latest published archival snapshot and predates this application interface.
+Use the exact reviewed revision or package artifact approved for your
+application; the v1.0.4 DOI applies only to the v1.0.4 release and PDF.
+
+The same labeled envelope is available as a pure Python operation:
+
+```python
+from fedference import LabeledAggregationRequest, aggregate_labeled
+from pathlib import Path
+
+request = LabeledAggregationRequest.from_json(
+    Path("examples/data/labeled_aggregation_request.json").read_text()
+)
+result = aggregate_labeled(request)
+print(result.state_labels, result.aggregation.consensus)
+print(result.aggregation.solver_status)
+```
+
+Every posterior must be a one-dimensional, finite, non-negative categorical
+mass vector over the same ordered state labels. Caller masses are preserved in
+the canonical request and exposed separately as normalized rows in the result.
+For iterative rules, accept a result only under your application's explicit
+policy for `solver_status` and `fallback_events`; see the
+[`input and result contract`](docs/application-guide.md#the-labeled-request).
+
+Choose the narrowest interface that matches the job:
+
+| Need | Use | Boundary |
+| --- | --- | --- |
+| Fuse labeled caller data and retain evidence | `fedference aggregate` | Strict JSON plus request/result/application receipt |
+| Fuse labeled caller data in Python | `aggregate_labeled` | Pure typed operation; no file I/O |
+| Use the smallest numeric operation | `aggregate_result` | Labels/provenance remain caller-owned |
+| Give each agent a shared belief | `share_round_result` | In-process; optionally excludes the recipient's own belief |
+| Exercise process isolation | `fedference.federation.run_multiprocess_round_result` | Spawned worker processes on one machine |
+| Exercise transport and replay | `fedference.federation.run_socket_round_result` | Loopback TCP, optional HMAC, digest-checked replay |
+| Run a registered research profile | `fedference run` / `verify` | Isolated outputs plus a content-bound receipt |
+| Use the BNN complement | install the `bnn` extra | Optional Torch path, outside the default import graph |
+
+The complete five-example ladder is in [`examples/README.md`](examples/README.md),
+and the source-owned application guide explains how to adapt each boundary.
+It compares all three aggregation rules, distinguishes aggregation from belief
+sharing and federation, and demonstrates application/research receipts and
+replay. An application receipt proves declared input/output/provenance
+integrity, not scientific validity or a downstream decision. These are
+usage examples, not a complete Friston protocol reconstruction, a universal
+robustness result, a production multi-host network, or confirmatory evidence.
+
 ## v1.0.4 public release
 
 The source-bound v1.0.4 reviewer snapshot is published and its release metadata
@@ -36,11 +111,20 @@ inputs, the zero-robustness server path is bit-identical to the project's
 log-linear pool. In code:
 
 ```python
-from fedference.aggregation import robust_aggregate, log_linear_pool
+import numpy as np
+
+from fedference.aggregation import log_linear_pool, robust_aggregate
+
+local_posteriors = np.array(
+    [[0.70, 0.20, 0.10], [0.60, 0.30, 0.10], [0.10, 0.10, 0.80]],
+    dtype=np.float64,
+)
 
 # Exact project identity: zero-robustness robust pooling == log-linear pooling.
-assert (robust_aggregate(local_posteriors, robustness=0.0).consensus
-        == log_linear_pool(local_posteriors)).all()
+assert np.array_equal(
+    robust_aggregate(local_posteriors, robustness=0.0).consensus,
+    log_linear_pool(local_posteriors),
+)
 ```
 
 The comparison with Friston et al. (2024) Eq. 7 is a **categorical
@@ -149,7 +233,7 @@ flowchart TD
     BS --> EX
     BNN --> EX
     BNNV --> EX
-    BNNP -. "future cavity-conditioned client wiring" .-> BNNV
+    BNNP -. "completed synthetic-pilot cavity wiring; source-data/CUDA parity future" .-> BNNV
     FP --> FS
     FS --> FW
     RR --> CLIC
@@ -227,6 +311,11 @@ federation, and loopback sockets:
 ```python
 from fedference import AggregationConfig, aggregate_result
 
+local_posteriors = [
+    [0.70, 0.20, 0.10],
+    [0.60, 0.30, 0.10],
+    [0.10, 0.10, 0.80],
+]
 config = AggregationConfig(
     method="variational",
     robustness=1.5,
@@ -237,7 +326,7 @@ config = AggregationConfig(
 result = aggregate_result(local_posteriors, config=config)
 print(
     result.consensus,
-    result.converged,
+    result.solver_status,
     result.fallback_events,
     config.fingerprint,
 )
@@ -258,13 +347,18 @@ The package is deliberately assembled from small, typed boundaries:
 
 - `fedference.aggregation` provides pure categorical pooling and the rich
   `aggregate_result(..., config=AggregationConfig(...))` contract.
+- `fedference.application` adds ordered state labels, stable agent identities,
+  canonical semantic hashing, and `aggregate_labeled` without duplicating the
+  aggregation mathematics.
 - `fedference.belief_sharing` reuses the same aggregation protocol for direct
-  rounds; `fedference.federation.process` and
+  rounds and exposes `share_round_result`; `fedference.federation.process` and
   `fedference.federation.socket_transport` provide one-machine process and
-  loopback transport adapters without duplicating the math.
+  loopback rich-result adapters without duplicating the math. Existing
+  consensus/diagnostic compatibility returns remain unchanged.
 - `fedference.evidence`, `external_data`, checkpoint helpers, and replay
-  guards own explicit caller-authorized I/O and produce verifiable receipts.
-- `fedference_cli` is a thin registry/run/benchmark/verify/replay boundary;
+  guards own explicit caller-authorized I/O and produce verifiable application
+  and research receipts.
+- `fedference_cli` is a thin aggregate/registry/run/benchmark/verify/replay boundary;
   optional Torch/BNN modules are imported only when the corresponding extra is
   selected.
 - `src/figures` consumes validated reports, while `_metadata.py`, manuscript
@@ -320,15 +414,39 @@ the resulting artifact into an isolated environment:
 
 ```bash
 export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
-uv build --out-dir .tmp/dist
-uv venv .tmp/package-env
-uv pip install --python .tmp/package-env/bin/python .tmp/dist/*.whl
-.tmp/package-env/bin/fedference list --json
+FEDFERENCE_PACKAGE_ROOT="$(mktemp -d /tmp/active-fedference-package.XXXXXX)"
+uv build --out-dir "$FEDFERENCE_PACKAGE_ROOT/dist"
+uv venv "$FEDFERENCE_PACKAGE_ROOT/env"
+uv pip install --python "$FEDFERENCE_PACKAGE_ROOT/env/bin/python" \
+  "$FEDFERENCE_PACKAGE_ROOT"/dist/*.whl
+cd "$FEDFERENCE_PACKAGE_ROOT"
+"$FEDFERENCE_PACKAGE_ROOT/env/bin/python" -c \
+  "import sys, fedference; assert 'torch' not in sys.modules; print(fedference.__version__)"
+"$FEDFERENCE_PACKAGE_ROOT/env/bin/fedference" aggregate \
+  --input /path/to/labeled_aggregation_request.json \
+  --output-dir "$FEDFERENCE_PACKAGE_ROOT/wheel-run"
+"$FEDFERENCE_PACKAGE_ROOT/env/bin/fedference" verify \
+  "$FEDFERENCE_PACKAGE_ROOT/wheel-run/receipt.json" --require-nominal-solver
+
+# Exercise the supported source-distribution surface independently.
+uv venv "$FEDFERENCE_PACKAGE_ROOT/sdist-env"
+uv pip install --python "$FEDFERENCE_PACKAGE_ROOT/sdist-env/bin/python" \
+  "$FEDFERENCE_PACKAGE_ROOT"/dist/*.tar.gz
+"$FEDFERENCE_PACKAGE_ROOT/sdist-env/bin/python" -c \
+  "import sys, fedference; assert 'torch' not in sys.modules; print(fedference.__version__)"
+"$FEDFERENCE_PACKAGE_ROOT/sdist-env/bin/fedference" aggregate \
+  --input /path/to/labeled_aggregation_request.json \
+  --output-dir "$FEDFERENCE_PACKAGE_ROOT/sdist-run"
+"$FEDFERENCE_PACKAGE_ROOT/sdist-env/bin/fedference" verify \
+  "$FEDFERENCE_PACKAGE_ROOT/sdist-run/receipt.json" --require-nominal-solver
 ```
 
-The wheel contains the importable runtime and packaged compatibility inputs;
+The wheel contains the typed importable runtime, `fedference/py.typed`, CLI,
+and packaged compatibility inputs;
 the source distribution additionally carries the modular `docs/`, `manuscript/`,
-`scripts/`, and `tests/` trees for archival and source-level reproduction.
+`scripts/`, `tests/`, and runnable `examples/` trees, including the application
+guide, all numbered examples, example data, and manuscript configuration
+template, for archival and source-level reproduction.
 The exact wheel/source-distribution installation and byte-reproducibility
 probes are maintained in
 [`docs/reference/verification-commands.md`](docs/reference/verification-commands.md).
@@ -341,50 +459,96 @@ keyword arguments of the `fedference.experiments` study functions exactly.
 
 ## Installed CLI and evidence contracts
 
-The package installs `fedference` with five commands:
+The package installs `fedference` with six commands:
 
 ```bash
-# Inspect source-bound experiments, profiles, datasets, and source revisions
-uv run --locked fedference list --json
+# Give every write-producing example a fresh caller-owned root.
+FEDFERENCE_RUN_ROOT="$(mktemp -d /tmp/active-fedference-runs.XXXXXX)"
+FEDFERENCE_TRANSPORT_ROOT="$(mktemp -d /tmp/active-fedference-transport.XXXXXX)"
+
+# Primary own-data path: configuration comes only from the labeled request.
+uv run --locked fedference aggregate \
+  --input examples/data/labeled_aggregation_request.json \
+  --output-dir "$FEDFERENCE_RUN_ROOT/application" \
+  --project-root .
+uv run --locked fedference verify \
+  "$FEDFERENCE_RUN_ROOT/application/receipt.json" \
+  --require-nominal-solver
+
+# Inspect source-bound experiments, profiles, datasets, and source revisions.
+# Add --json for the complete machine-readable registry.
+uv run --locked fedference list
 
 # Correctness-only registered run; output must be explicit and outside output/
 uv run --locked fedference run server-theory \
-  --profile smoke --seed 0 --output-dir .tmp/server-theory-smoke
+  --profile smoke --seed 0 \
+  --output-dir "$FEDFERENCE_RUN_ROOT/server-theory" \
+  --project-root .
+
+# Verify config/report bytes, configuration hash, and completion status
+uv run --locked fedference verify \
+  "$FEDFERENCE_RUN_ROOT/server-theory/receipt.json"
 
 # Hash-checked UCI benchmark smoke
 uv run --locked fedference benchmark \
   --dataset-id uci-banknote --profile smoke --seed 42 \
-  --cache-dir .tmp/uci-cache --output-dir .tmp/banknote-smoke
+  --cache-dir "$FEDFERENCE_RUN_ROOT/uci-cache" \
+  --output-dir "$FEDFERENCE_RUN_ROOT/banknote"
 
-# Verify config/report bytes, configuration hash, and completion status
-uv run --locked fedference verify .tmp/banknote-smoke/receipt.json
+# Produce a loopback replay plus the caller-retained numeric inputs.
+uv run --locked python examples/03_federation_boundaries.py \
+  --output-dir "$FEDFERENCE_TRANSPORT_ROOT/round"
+
+# Replay uses the recorded configuration by default and reports finding codes.
+uv run --locked fedference replay \
+  --replay "$FEDFERENCE_TRANSPORT_ROOT/round/replay.json" \
+  --beliefs "$FEDFERENCE_TRANSPORT_ROOT/round/beliefs.json" \
+  --consensus "$FEDFERENCE_TRANSPORT_ROOT/round/consensus.json" \
+  --require-nominal-solver
 
 # Publication mode also matches the live commit, tree, and uv.lock.
 # It passes only when the receipt was created from this same clean checkout.
-uv run --locked fedference verify .tmp/banknote-smoke/receipt.json --require-clean-git
+uv run --locked fedference verify \
+  "$FEDFERENCE_RUN_ROOT/server-theory/receipt.json" \
+  --require-clean-git --project-root .
 ```
 
-`ExperimentSpec`, `DatasetSpec`, and `RunReceipt` are versioned public
-contracts. The registry records source bundles, primary estimands, independent
+`AgentPosterior`, `LabeledAggregationRequest`, `LabeledAggregationResult`, and
+`ApplicationReceipt` are versioned application contracts. An application
+receipt binds exactly canonical `request.json` and `result.json`, runtime/source
+provenance, configuration and request hashes, and complete solver health.
+`status="completed"` means execution completed, not that solver health is
+nominal or a scientific/downstream decision is valid.
+
+`ExperimentSpec`, `DatasetSpec`, and `RunReceipt` are separately versioned
+research contracts. The registry records source bundles, primary estimands, independent
 units, falsifiers, no-claim outcomes, smallest effects, MCSE targets, budgets,
-comparison families, and execution profiles. A schema-1.1 receipt records the
+comparison families, and execution profiles. A schema-1.2 receipt records the
 full Git commit plus clean/dirty/unavailable tree state, environment lock,
-configuration and dataset hashes, seeds, backend/device, fallbacks,
+runtime provenance, configuration and dataset hashes, seeds, backend/device, fallbacks,
 checkpoints, outputs, and status. `config.json` is itself receipt-bound so the
 configuration hash can be recomputed. Registry entries declare intended
-evidence; they do not imply that an open experiment has succeeded.
+evidence; they do not imply that an open experiment has succeeded. Exact
+schema-1.1 research receipts remain readable with unavailable runtime
+provenance rather than invented metadata.
 Tabular benchmark rows additionally record per-method fallback and
 non-convergence counts at held-out-prediction grain plus the maximum iteration
 count. The receipt summarizes affected dataset/seed/method cells; those counts
 are diagnostics, not independent scientific units.
 
-Strict verification resolves the current checkout by default and compares its
-full commit, clean tree state, and `uv.lock` digest with the receipt. When
-verifying from elsewhere, pass `--project-root /path/to/checkout` explicitly.
+Application verification is artifact-only unless source equivalence is
+explicitly requested with `--project-root /path/to/checkout`; human output says
+whether source equivalence was verified, not requested, or unavailable.
+Research publication verification compares the full commit, clean tree state,
+and `uv.lock` digest when strict Git mode is requested.
 
 Write-producing commands require `--output-dir`, reject non-empty targets, and
 refuse the committed `output/` reviewer snapshot. Smoke and pilot results are
-never manuscript evidence.
+never manuscript evidence. An application receipt proves integrity, not
+scientific validity or a downstream decision. Command grammar, output files, exit behavior, and
+copy-pasteable workflows are documented in
+[`src/fedference_cli/README.md`](src/fedference_cli/README.md) and
+[`examples/README.md`](examples/README.md).
 
 ## Manuscript
 
@@ -486,13 +650,19 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 
 | Entry | Purpose |
 | --- | --- |
+| [`docs/application-guide.md`](docs/application-guide.md) | Install, adapt, diagnose, and retain categorical aggregation results |
 | [`docs/README.md`](docs/README.md) | Modular documentation hub (architecture, testing, pipeline, ops) |
+| [`examples/README.md`](examples/README.md) | Runnable API, method, federation, replay, and CLI ladder |
 | [`docs/development/modularity.md`](docs/development/modularity.md) | Software, orchestration, report, figure, and documentation extension contract |
 | [`AGENTS.md`](AGENTS.md) | Slim technical reference and validation commands |
 | [`ISA.md`](ISA.md) | Live acceptance-criteria contract |
 | [`STANDALONE.md`](STANDALONE.md) | Confidentiality and standalone/fork notes |
 | [`docs/reference/api-stability.md`](docs/reference/api-stability.md) | Public API/schema compatibility and deprecation policy |
+| [`docs/research/README.md`](docs/research/README.md) | Research audits, evidence ladders, and claim boundaries |
 | [`docs/security/active_fedference-threat-model.md`](docs/security/active_fedference-threat-model.md) | Federation trust boundaries, abuse paths, and security no-claim rules |
 | [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md) | HTML accessibility contract and tagged-PDF boundary |
 
-Start with [`docs/development/quickstart.md`](docs/development/quickstart.md) for a first green run.
+Start with the [`application guide`](docs/application-guide.md), continue with
+[`examples/README.md`](examples/README.md) for every supported boundary, then
+[`docs/development/quickstart.md`](docs/development/quickstart.md) for the full
+source-to-publication validation sequence.

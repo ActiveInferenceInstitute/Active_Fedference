@@ -18,12 +18,21 @@ documented in the [Zenodo REST API documentation](https://developers.zenodo.org/
 
 ## Source of truth
 
-`manuscript/config.yaml` owns the DOI, manuscript title, subtitle, and the
-reader-facing paper abstract. That abstract must remain synchronized with
+`manuscript/config.yaml` owns the current development/release identity,
+manuscript title, subtitle, and reader-facing paper abstract. A development
+version such as `1.1.0.dev0` uses an empty `publication.doi`, the exact plain-text
+status `publication.doi_status: "(forthcoming)"`, and a null release date. This
+prevents a renderer from fabricating a resolver link for an unassigned
+identifier and generates no version DOI. A final version requires its reserved
+DOI and approved date and removes the development-only status. That abstract
+must remain synchronized with
 `manuscript/00_abstract.md`; a short package description is not an acceptable
-Zenodo abstract. The metadata emitter propagates the DOI to
-`CITATION.cff`, `.zenodo.json`, `codemeta.json`, and the manuscript token
-`{{PUBLICATION_DOI}}`. It emits the software name to the citation surfaces,
+Zenodo abstract. The abstract terminates with
+`{{PUBLICATION_IDENTITY_SENTENCE}}`, which hydrates to neutral no-DOI prose in
+development and to the assigned version DOI in the final state. In a final
+release, the metadata emitter also propagates the DOI to `CITATION.cff`,
+`.zenodo.json`, and `codemeta.json`; in development, those generated surfaces
+omit DOI/date fields entirely. It emits the software name to the citation surfaces,
 but emits the complete paper title (`paper.title` plus `paper.subtitle`) to
 Zenodo. Zenodo's API calls the record's abstract field `description`, so the
 Zenodo `description` must equal the normalized paper abstract after DOI
@@ -35,38 +44,16 @@ standard-library client; and `scripts/zenodo_release.py` is the thin CLI
 boundary. The token is read from an ignored dotenv file or process environment
 and is never committed, printed, or included in the release manifest.
 
-## Correcting published metadata on the current DOI
+## Immutable v1.0.4 record
 
-Zenodo permits metadata-only corrections to a published record without
-changing its DOI. The explicit project adapter supports this path for a
-description/abstract correction and never uploads, deletes, or replaces a
-published file. The operation creates an editable metadata draft; inspect the
-returned state and publish it only after the corrected description has been
-reviewed:
-
-```bash
-ENV_FILE="/path/to/ignored/zenodo.env"
-PUBLISHED_ID="21972644"
-
-uv run --locked python scripts/zenodo_release.py \
-  --env-file "$ENV_FILE" \
-  --deposition-id "$PUBLISHED_ID" \
-  --edit-published-metadata
-
-uv run --locked python scripts/zenodo_release.py \
-  --env-file "$ENV_FILE" \
-  --deposition-id "$PUBLISHED_ID" \
-  --edit-published-metadata \
-  --verify output/pdf/active_fedference_combined.pdf \
-  --publish --confirm-publish
-```
-
-The second command is idempotent with respect to an already-open metadata edit
-draft: it updates the draft from the generated `.zenodo.json`, verifies that
-the unchanged PDF still matches the published file, and then publishes the
-metadata correction. The DOI remains the same. See [Zenodo's published-record
-editing guidance](https://help.zenodo.org/docs/deposit/manage-records/#edit)
-for the repository's upstream metadata-edit contract.
+Deposition `21972644`, DOI `10.5281/zenodo.21972644`, its metadata, and its PDF
+are immutable inputs to the v1.1 workflow. Do not run published-record edit,
+file replacement, or publish commands against that deposition. The repository
+adapter retains a separately authorizable metadata-repair capability for an
+exceptional correction, but that capability is not part of the v1.1 release
+plan and must not be inferred from this guide. Any future repair to the
+published v1.0.4 record requires its own explicit owner authorization and
+verification record.
 
 ## Creating the next version
 
@@ -76,9 +63,14 @@ unpublished draft, preserves the concept record, and inherits the prior
 metadata and files. The CLI resolves Zenodo's
 `latest_draft` link and exposes inherited-file replacement explicitly:
 
+Creating the v1.1 draft begins only after the development PR is merged, public
+`main` is green, and separate release-start approval fixes the authors,
+title/abstract, license, attribution, confidentiality disposition, repository
+destination, target date, and authority to create the linked Zenodo draft.
+
 ```bash
 ENV_FILE="/path/to/ignored/zenodo.env"
-SOURCE_ID="21969756"  # latest published deposition, not the global concept id
+SOURCE_ID="21972644"  # latest published deposition, not the global concept id
 
 uv run --locked python scripts/zenodo_release.py \
   --env-file "$ENV_FILE" \
@@ -86,8 +78,10 @@ uv run --locked python scripts/zenodo_release.py \
 ```
 
 Record the returned draft id and reserved DOI before changing
-`manuscript/config.yaml`. Then emit metadata, regenerate the complete
-source-bound analysis/hydration/render chain, and run the release checks.
+`manuscript/config.yaml` from the empty-DOI/forthcoming-status development state
+to the assigned DOI/date final release identity and removing `doi_status`. Then
+emit metadata, regenerate the complete source-bound analysis/hydration/render
+chain, and run the release checks.
 
 ## Metadata and upload verification
 
@@ -160,9 +154,19 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
 
 ## Invariants
 
-- The published v1.0.4 DOI in `manuscript/config.yaml`, generated metadata,
-  manuscript token, rendered PDF, README, live Zenodo record, and public
-  GitHub release must agree.
+- The immutable v1.0.4 DOI, released PDF, README latest-published-release
+  section, live Zenodo record, and public GitHub release must agree. The current
+  post-v1.0.4 development config and generated metadata must not claim that DOI.
+- Development identity requires matching PEP 440 development package/manuscript
+  versions, no assigned DOI, and no release date. Final identity requires a
+  matching final version, assigned DOI/date, and a new exact version/DOI-named
+  top-level PDF. Clean-checkout validation always requires all five immutable
+  top-level PDFs from v0.1.0 through v1.0.4 to remain tracked; a development
+  revision does not require a new v1.1 PDF, while a final v1.1.0 revision adds
+  its exact new PDF without replacing any historical file. The checked-in
+  [`historical-release-pdfs.json`](historical-release-pdfs.json) ledger binds
+  each historical filename to its SHA-256; both clean-checkout validation and
+  release-bundle preflight reject deleted, substituted, or modified bytes.
 - The Zenodo record title must be the complete paper title plus subtitle, and
   its `description` field must be the full source-controlled abstract. A
   short package description is not an acceptable Zenodo abstract.

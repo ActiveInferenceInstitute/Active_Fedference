@@ -75,9 +75,12 @@ neural-network work, rather than treating the current deterministic point-mass
 MLP as a posterior [@mildner2025fedgvi].
 
 The portable lane preserves the source protocol's site factors, client cavity,
-and factor-replacement update in natural coordinates. It distinguishes a
-locally budgeted CPU/MPS profile from an exact source-scale CUDA profile that
-remains external until suitable hardware is available. FashionMNIST anchors
+factor-replacement update in natural coordinates. A synthetic CPU/MPS pilot
+already exercises the cavity-conditioned local optimizer, explicit device and
+fallback receipts, and checkpoint/resume equivalence. It does not establish
+source-dataset parity. The next local campaign distinguishes a locked portable
+CPU/MPS profile from an exact source-scale CUDA profile that remains external
+until suitable hardware is available. FashionMNIST anchors source-dataset
 protocol parity, while MNIST and KMNIST test portability. A separate
 source-bound tabular pack will report proper-score effects per licensed dataset,
 with training-only preprocessing and byte-, split-, and license-level
@@ -160,7 +163,10 @@ robust *structure* fusion compose.
 
 A minimal executable fixture now gates a discrete dynamics context over
 continuous position and velocity, Gaussian observations, and bounded actions.
-It is a representation and recovery surface, not confirmatory task evidence.
-The full study must add discrete-only, continuous-only, and oracle-context
-controls, singular-covariance and outlier checks, and held-out
-posterior-predictive scoring before supporting a hybrid-task claim.
+The bounded pilot now includes matched naive, robust, discrete-only,
+continuous-only, and oracle-context components, a singular-covariance
+rejection, and next-position predictive scoring. It is still a representation,
+recovery, and control surface rather than confirmatory task evidence. The full
+study must freeze calibration and budgets, use independently held-out worlds,
+retain outlier falsifiers, and execute the preregistered comparison before
+supporting a hybrid-task claim.
