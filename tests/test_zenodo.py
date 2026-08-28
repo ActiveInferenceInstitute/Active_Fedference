@@ -1244,6 +1244,28 @@ def test_http_error_retains_no_echoed_token_or_raw_payload(
     assert error.__cause__ is None
     assert error.__context__ is None
 
+    adapter_path = Path(__file__).resolve().parents[1] / "src" / "publication" / "zenodo.py"
+    adapter_frames = []
+    traceback = error.__traceback__
+    while traceback is not None:
+        frame = traceback.tb_frame
+        if Path(frame.f_code.co_filename).resolve() == adapter_path:
+            adapter_frames.append((frame.f_code.co_name, dict(frame.f_locals)))
+        traceback = traceback.tb_next
+
+    assert adapter_frames
+    forbidden_local_names = {
+        "decoded_error",
+        "detail",
+        "error_bytes",
+        "headers",
+        "parsed_error",
+        "request",
+    }
+    for _frame_name, frame_locals in adapter_frames:
+        assert forbidden_local_names.isdisjoint(frame_locals)
+        assert all("test-token" not in repr(value) for value in frame_locals.values())
+
 
 @pytest.mark.parametrize(
     ("listing_mode", "message"),

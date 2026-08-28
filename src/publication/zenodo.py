@@ -62,6 +62,36 @@ class _ZenodoHTTPError(ZenodoError):
         self._exact_already_exists = exact_already_exists
 
 
+def _http_error_without_response_body(error: HTTPError, token: str) -> _ZenodoHTTPError:
+    """Reduce an untrusted HTTP response to one safe, body-free exception.
+
+    This helper returns normally, so its frame (including the response bytes)
+    is not attached to the traceback when the caller later raises the returned
+    exception.  The caller separately removes request/header locals before
+    raising so an echoed bearer credential is absent from direct traceback
+    inspection surfaces.
+    """
+    error_bytes = error.read()
+    decoded_error = error_bytes.decode("utf-8", errors="replace")
+    detail = decoded_error.replace(token, "<redacted>")
+    exact_already_exists = False
+    try:
+        parsed_error = json.loads(decoded_error)
+    except json.JSONDecodeError:
+        pass
+    else:
+        exact_already_exists = (
+            error.code == 400
+            and isinstance(parsed_error, Mapping)
+            and dict(parsed_error) == _ALREADY_EXISTS_RESPONSE
+        )
+    return _ZenodoHTTPError(
+        f"Zenodo HTTP {error.code}: {detail[:500]}",
+        status=error.code,
+        exact_already_exists=exact_already_exists,
+    )
+
+
 class _RejectRedirects(HTTPRedirectHandler):
     """Prevent bearer credentials from following any HTTP redirect."""
 
@@ -727,28 +757,7 @@ class ZenodoClient:
             with self._opener.open(request, timeout=self._timeout) as response:  # noqa: S310
                 raw = response.read()
         except HTTPError as exc:
-            error_bytes = exc.read()
-            decoded_error = error_bytes.decode("utf-8", errors="replace")
-            detail = decoded_error.replace(
-                self._token,
-                "<redacted>",
-            )
-            exact_already_exists = False
-            try:
-                parsed_error = json.loads(decoded_error)
-            except json.JSONDecodeError:
-                pass
-            else:
-                exact_already_exists = (
-                    exc.code == 400
-                    and isinstance(parsed_error, Mapping)
-                    and dict(parsed_error) == _ALREADY_EXISTS_RESPONSE
-                )
-            sanitized_http_error = _ZenodoHTTPError(
-                f"Zenodo HTTP {exc.code}: {detail[:500]}",
-                status=exc.code,
-                exact_already_exists=exact_already_exists,
-            )
+            sanitized_http_error = _http_error_without_response_body(exc, self._token)
         except URLError as exc:
             reason = str(exc.reason).replace(self._token, "<redacted>")
             raise ZenodoError(f"Zenodo request failed: {reason}") from exc
@@ -756,7 +765,9 @@ class ZenodoClient:
             # Raise only after leaving the HTTPError handler.  Raising inside
             # that block—even with ``from None``—would retain the original
             # response object through ``__context__`` and could preserve a
-            # credential echoed by an untrusted server.
+            # credential echoed by an untrusted server.  Remove direct request
+            # locals as well: exception tracebacks retain the raising frame.
+            del request, request_body, body, payload, headers, content_type
             raise sanitized_http_error
         if not raw:
             return {}
