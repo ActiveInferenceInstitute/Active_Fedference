@@ -2,12 +2,12 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 264/266
-iteration: 48-v1.1-application-development
-updated_by: iteration-48-2026-08-25
+progress: 265/267
+iteration: 49-linked-zenodo-draft-semantics
+updated_by: iteration-49-2026-08-28
 mode: ALGORITHM
 started: 2026-06-24
-updated: 2026-08-25
+updated: 2026-08-28
 algorithm_config:
   forge_not_applicable: "direct local Codex review; external cross-vendor verification was not rerun and ISC-89 remains deferred"
   cato_truncates_after_background_launch: true
