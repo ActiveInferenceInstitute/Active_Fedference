@@ -38,6 +38,8 @@ _RFC3339_TIMESTAMP_RE = re.compile(
 )
 _ALREADY_EXISTS_RESPONSE = {"status": 400, "message": "A draft already exists."}
 _DEPOSITION_LIST_PAGE_SIZE = 100
+_HTTP_ERROR_BODY_LIMIT = 64 * 1024
+_JSON_RESPONSE_BODY_LIMIT = 16 * 1024 * 1024
 _FULL_DEPOSITION_FIELDS = frozenset(
     {"id", "record_id", "conceptrecid", "conceptdoi", "state", "metadata", "links", "files"}
 )
@@ -62,34 +64,87 @@ class _ZenodoHTTPError(ZenodoError):
         self._exact_already_exists = exact_already_exists
 
 
-def _http_error_without_response_body(error: HTTPError, token: str) -> _ZenodoHTTPError:
+def _http_error_without_response_body(error: HTTPError) -> _ZenodoHTTPError:
     """Reduce an untrusted HTTP response to one safe, body-free exception.
 
-    This helper returns normally, so its frame (including the response bytes)
-    is not attached to the traceback when the caller later raises the returned
-    exception.  The caller separately removes request/header locals before
-    raising so an echoed bearer credential is absent from direct traceback
-    inspection surfaces.
+    Reads are bounded and every ordinary read/parse failure degrades to a
+    generic status-only error.  The helper returns normally, so its frame is
+    absent from the traceback when the caller raises the returned exception;
+    its ``finally`` block also scrubs untrusted bytes if a process-level
+    interruption escapes.  No server-supplied diagnostic text is retained.
     """
-    error_bytes = error.read()
-    decoded_error = error_bytes.decode("utf-8", errors="replace")
-    detail = decoded_error.replace(token, "<redacted>")
+    status = int(error.code)
+    error_bytes = b""
+    parsed_error: object | None = None
     exact_already_exists = False
     try:
-        parsed_error = json.loads(decoded_error)
-    except json.JSONDecodeError:
-        pass
-    else:
-        exact_already_exists = (
-            error.code == 400
-            and isinstance(parsed_error, Mapping)
-            and dict(parsed_error) == _ALREADY_EXISTS_RESPONSE
-        )
+        error_bytes = error.read(_HTTP_ERROR_BODY_LIMIT + 1)
+        if len(error_bytes) <= _HTTP_ERROR_BODY_LIMIT:
+            parsed_error = json.loads(error_bytes)
+            exact_already_exists = (
+                status == 400
+                and isinstance(parsed_error, Mapping)
+                and dict(parsed_error) == _ALREADY_EXISTS_RESPONSE
+            )
+    except Exception:
+        exact_already_exists = False
+    finally:
+        try:
+            try:
+                error.close()
+            except Exception:
+                pass
+        finally:
+            del error, error_bytes, parsed_error
     return _ZenodoHTTPError(
-        f"Zenodo HTTP {error.code}: {detail[:500]}",
-        status=error.code,
+        f"Zenodo HTTP {status}",
+        status=status,
         exact_already_exists=exact_already_exists,
     )
+
+
+def _json_contains_token_echo(value: object, token: str) -> bool:
+    """Return whether a JSON key or value contains the bearer token."""
+    if isinstance(value, str):
+        return token in value
+    if isinstance(value, list):
+        return any(_json_contains_token_echo(item, token) for item in value)
+    if isinstance(value, dict):
+        return any(
+            (isinstance(key, str) and token in key)
+            or _json_contains_token_echo(item, token)
+            for key, item in value.items()
+        )
+    return False
+
+
+def _json_response_without_response_body(
+    response: Any,
+    token: str,
+) -> tuple[object | None, ZenodoError | None]:
+    """Return parsed bounded JSON or a generic body-free failure.
+
+    All server-controlled reads and parsing occur in a helper that returns
+    normally.  Consequently, malformed, truncated, invalid-encoding, deeply
+    nested, and oversized responses cannot attach their bytes to the later
+    public exception traceback.
+    """
+    raw = b""
+    parsed: object | None = None
+    try:
+        raw = response.read(_JSON_RESPONSE_BODY_LIMIT + 1)
+        if not isinstance(raw, bytes) or len(raw) > _JSON_RESPONSE_BODY_LIMIT:
+            return None, ZenodoError("Zenodo returned malformed or oversized JSON content")
+        if not raw:
+            return {}, None
+        parsed = json.loads(raw)
+        if _json_contains_token_echo(parsed, token):
+            return None, ZenodoError("Zenodo response echoed bearer credential")
+        return parsed, None
+    except Exception:
+        return None, ZenodoError("Zenodo returned malformed or oversized JSON content")
+    finally:
+        del response, raw, parsed, token
 
 
 class _RejectRedirects(HTTPRedirectHandler):
@@ -753,28 +808,47 @@ class ZenodoClient:
             method=method.upper(),
         )
         sanitized_http_error: _ZenodoHTTPError | None = None
+        sanitized_transport_error: ZenodoError | None = None
+        response_payload: object | None = None
+        response_error: ZenodoError | None = None
+        response: Any | None = None
         try:
             with self._opener.open(request, timeout=self._timeout) as response:  # noqa: S310
-                raw = response.read()
+                response_payload, response_error = _json_response_without_response_body(
+                    response,
+                    self._token,
+                )
         except HTTPError as exc:
-            sanitized_http_error = _http_error_without_response_body(exc, self._token)
-        except URLError as exc:
-            reason = str(exc.reason).replace(self._token, "<redacted>")
-            raise ZenodoError(f"Zenodo request failed: {reason}") from exc
+            try:
+                sanitized_http_error = _http_error_without_response_body(exc)
+            finally:
+                headers.clear()
+                del request, request_body, body, payload, headers, content_type
+        except URLError:
+            try:
+                sanitized_transport_error = ZenodoError("Zenodo request failed")
+            finally:
+                headers.clear()
+                del request, request_body, body, payload, headers, content_type
         if sanitized_http_error is not None:
             # Raise only after leaving the HTTPError handler.  Raising inside
             # that block—even with ``from None``—would retain the original
             # response object through ``__context__`` and could preserve a
-            # credential echoed by an untrusted server.  Remove direct request
-            # locals as well: exception tracebacks retain the raising frame.
-            del request, request_body, body, payload, headers, content_type
+            # credential echoed by an untrusted server.  Request/header/body
+            # locals were removed unconditionally in the handler because
+            # exception tracebacks retain the raising frame.
             raise sanitized_http_error
-        if not raw:
-            return {}
-        try:
-            return json.loads(raw.decode("utf-8"))
-        except json.JSONDecodeError as exc:
-            raise ZenodoError("Zenodo returned non-JSON content") from exc
+        if sanitized_transport_error is not None:
+            raise sanitized_transport_error
+        if response_error is not None or response_payload is None:
+            safe_response_error = response_error or ZenodoError(
+                "Zenodo returned malformed or oversized JSON content"
+            )
+            headers.clear()
+            del request, request_body, body, payload, headers, content_type
+            del response, response_payload
+            raise safe_response_error
+        return response_payload
 
     def _get_deposition_response(
         self,

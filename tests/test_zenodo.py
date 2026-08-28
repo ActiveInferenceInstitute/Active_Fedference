@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import re
 import threading
@@ -13,12 +14,14 @@ from urllib.parse import urlsplit
 import pytest
 
 from publication.zenodo import (
+    _JSON_RESPONSE_BODY_LIMIT,
     ZenodoClient,
     ZenodoDeposition,
     ZenodoError,
     ZenodoFile,
     ZenodoMetadataSnapshot,
     _deposition,
+    _json_response_without_response_body,
     _multipart_body,
     token_from_env_file,
     token_from_environment,
@@ -236,11 +239,24 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
 
     def _write_json(self, payload: object, status: int = 200) -> None:
         body = json.dumps(payload).encode("utf-8")
+        self._write_raw_json(body, status=status)
+
+    def _write_raw_json(self, body: bytes, status: int = 200) -> None:
+        """Write exact JSON bytes so malformed-service shapes need no encoder."""
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def _write_truncated_json(self, body: bytes, status: int = 400) -> None:
+        """Advertise more bytes than sent to exercise a real failed body read."""
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body) + 100))
+        self.end_headers()
+        self.wfile.write(body)
+        self.close_connection = True
 
     @classmethod
     def _published_source(cls) -> dict[str, Any]:
@@ -377,6 +393,62 @@ class _NewVersionHandler(BaseHTTPRequestHandler):
                 self._write_json(
                     {"status": 400, "message": authorization.removeprefix("Bearer ")},
                     status=400,
+                )
+                return
+            if type(self).post_mode == "deeply_nested_echo":
+                authorization = self.headers.get("Authorization", "")
+                token_json = json.dumps(
+                    authorization.removeprefix("Bearer ")
+                ).encode("utf-8")
+                body = (
+                    b'{"status":400,"message":'
+                    + (b"[" * 10_000)
+                    + token_json
+                    + (b"]" * 10_000)
+                    + b"}"
+                )
+                self._write_raw_json(body, status=400)
+                return
+            if type(self).post_mode == "truncated_echo":
+                authorization = self.headers.get("Authorization", "")
+                token_json = json.dumps(
+                    authorization.removeprefix("Bearer ")
+                ).encode("utf-8")
+                self._write_truncated_json(
+                    b'{"status":400,"message":' + token_json,
+                )
+                return
+            if type(self).post_mode == "deeply_nested_success":
+                authorization = self.headers.get("Authorization", "")
+                token_json = json.dumps(
+                    authorization.removeprefix("Bearer ")
+                ).encode("utf-8")
+                body = (b"[" * 10_000) + token_json + (b"]" * 10_000)
+                self._write_raw_json(body, status=201)
+                return
+            if type(self).post_mode == "truncated_success":
+                authorization = self.headers.get("Authorization", "")
+                token_json = json.dumps(
+                    authorization.removeprefix("Bearer ")
+                ).encode("utf-8")
+                self._write_truncated_json(
+                    b'{"message":' + token_json,
+                    status=201,
+                )
+                return
+            if type(self).post_mode == "invalid_utf8_success":
+                self._write_raw_json(b'{"message":"test-token-\xff"}', status=201)
+                return
+            if type(self).post_mode == "semantic_echo_success":
+                authorization = self.headers.get("Authorization", "")
+                token = authorization.removeprefix("Bearer ")
+                self._write_json(
+                    {
+                        f"unexpected-{token}": {
+                            "nested": [f"prefix-{token}-suffix"],
+                        },
+                    },
+                    status=201,
                 )
                 return
             if type(self).post_mode == "already_exists" or type(self).draft_exists:
@@ -1218,10 +1290,15 @@ def test_new_version_does_not_swallow_unrelated_or_near_match_http_errors(
     assert len(_NewVersionHandler.authorization_headers) == 2
 
 
+@pytest.mark.parametrize(
+    "post_mode",
+    ["echo_token", "deeply_nested_echo", "truncated_echo"],
+)
 def test_http_error_retains_no_echoed_token_or_raw_payload(
     new_version_client: ZenodoClient,
+    post_mode: str,
 ) -> None:
-    _NewVersionHandler.post_mode = "echo_token"
+    _NewVersionHandler.post_mode = post_mode
 
     with pytest.raises(ZenodoError, match="Zenodo HTTP") as caught:
         new_version_client.new_version(7)
@@ -1255,16 +1332,125 @@ def test_http_error_retains_no_echoed_token_or_raw_payload(
 
     assert adapter_frames
     forbidden_local_names = {
+        "body",
+        "content_type",
         "decoded_error",
         "detail",
         "error_bytes",
         "headers",
         "parsed_error",
+        "payload",
         "request",
+        "request_body",
     }
     for _frame_name, frame_locals in adapter_frames:
         assert forbidden_local_names.isdisjoint(frame_locals)
         assert all("test-token" not in repr(value) for value in frame_locals.values())
+
+
+@pytest.mark.parametrize(
+    "post_mode",
+    ["deeply_nested_success", "truncated_success", "invalid_utf8_success"],
+)
+def test_malformed_success_response_retains_no_raw_payload(
+    new_version_client: ZenodoClient,
+    post_mode: str,
+) -> None:
+    _NewVersionHandler.post_mode = post_mode
+
+    with pytest.raises(ZenodoError, match="malformed or oversized JSON") as caught:
+        new_version_client.new_version(7)
+
+    error = caught.value
+    assert error.__cause__ is None
+    assert error.__context__ is None
+    adapter_path = Path(__file__).resolve().parents[1] / "src" / "publication" / "zenodo.py"
+    adapter_frames = []
+    traceback = error.__traceback__
+    while traceback is not None:
+        frame = traceback.tb_frame
+        if Path(frame.f_code.co_filename).resolve() == adapter_path:
+            adapter_frames.append((frame.f_code.co_name, dict(frame.f_locals)))
+        traceback = traceback.tb_next
+
+    assert adapter_frames
+    forbidden_local_names = {
+        "body",
+        "content_type",
+        "headers",
+        "payload",
+        "raw",
+        "request",
+        "request_body",
+        "response",
+        "response_payload",
+    }
+    for _frame_name, frame_locals in adapter_frames:
+        assert forbidden_local_names.isdisjoint(frame_locals)
+        assert all("test-token" not in repr(value) for value in frame_locals.values())
+
+
+def test_semantically_malformed_success_with_token_echo_fails_closed(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.post_mode = "semantic_echo_success"
+
+    with pytest.raises(ZenodoError, match="echoed bearer credential") as caught:
+        new_version_client.new_version(7)
+
+    error = caught.value
+    assert error.__cause__ is None
+    assert error.__context__ is None
+    adapter_path = Path(__file__).resolve().parents[1] / "src" / "publication" / "zenodo.py"
+    adapter_frames = []
+    traceback = error.__traceback__
+    while traceback is not None:
+        frame = traceback.tb_frame
+        if Path(frame.f_code.co_filename).resolve() == adapter_path:
+            adapter_frames.append((frame.f_code.co_name, dict(frame.f_locals)))
+        traceback = traceback.tb_next
+
+    assert adapter_frames
+    assert all(
+        "test-token" not in repr(value)
+        for _frame_name, frame_locals in adapter_frames
+        for value in frame_locals.values()
+    )
+
+
+@pytest.mark.parametrize(
+    ("token", "payload"),
+    [
+        ("id", {"id": 7, "record_id": 7}),
+        ("1.0.4", {"metadata": {"version": "1.0.4"}}),
+        ("secret", {"secret-key": {"nested": ["prefix-secret-suffix"]}}),
+        ("<redacted>", {"value": "<redacted>"}),
+    ],
+)
+def test_success_response_token_echo_is_rejected_without_semantic_rewrite(
+    token: str,
+    payload: object,
+) -> None:
+    canonical_before = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    response = io.BytesIO(canonical_before.encode("utf-8"))
+
+    parsed, error = _json_response_without_response_body(response, token)
+
+    assert parsed is None
+    assert isinstance(error, ZenodoError)
+    assert str(error) == "Zenodo response echoed bearer credential"
+    assert json.dumps(payload, sort_keys=True, separators=(",", ":")) == canonical_before
+
+
+def test_oversized_success_response_read_is_bounded_and_fails_closed() -> None:
+    response = io.BytesIO(b"x" * (_JSON_RESPONSE_BODY_LIMIT + 2))
+
+    payload, error = _json_response_without_response_body(response, "test-token")
+
+    assert payload is None
+    assert isinstance(error, ZenodoError)
+    assert str(error) == "Zenodo returned malformed or oversized JSON content"
+    assert response.tell() == _JSON_RESPONSE_BODY_LIMIT + 1
 
 
 @pytest.mark.parametrize(

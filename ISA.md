@@ -1177,14 +1177,23 @@ them.
   unsubmitted draft is required before identical full revalidation. Zero,
   multiple, truncated, malformed, partial, and wrong-concept-only results fail.
   Unrelated or near-match HTTP errors remain failures. HTTP response bodies are
-  reduced to a private exact-response discriminator and never retained on the
-  raised error; an echoed bearer token is absent from its `repr`, `str`,
-  `vars`, and exception dictionary. The token-free CLI
+  read only to a fixed limit, reduced to a private exact-response discriminator,
+  and never retained on the raised error or its direct adapter traceback locals;
+  an echoed bearer token is absent from its `repr`, `str`, `vars`, exception
+  dictionary, and direct adapter traceback-local representations. Deeply nested
+  JSON and truncated-body failures degrade to the same generic status-only
+  `ZenodoError`. Successful JSON responses are independently size-bounded and
+  fail closed without body retention for malformed, truncated, invalid-encoding,
+  deeply nested, or oversized content. Successfully parsed JSON containing the
+  bearer token in any string key or value fails closed before semantic validation;
+  the client never rewrites server semantics and treats the result as remote
+  truth. The token-free CLI
   summary exposes the canonical creation time and validated shape; former
   positional and keyword `ZenodoDeposition` constructors remain compatible,
   and later publication still requires exactly one verified PDF. Probe: no-mock
   loopback production-shape, legacy-without-created, strict-timestamp matrix,
   exact-origin/path link matrix, self-link/POST, exact-one listing recovery and
-  negative matrix, token-echo exception inspection,
+  negative matrix, token-echo/deep-nesting/truncated-body exception inspection,
+  malformed-success and semantic-echo response inspection,
   recovery/revalidation, negative HTTP, constructor, CLI-summary, and
   idempotent-reuse tests in `tests/test_zenodo.py`.

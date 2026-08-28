@@ -113,9 +113,16 @@ truncated page, malformed or partial entries, wrong-concept-only results, other
 HTTP failures, near-match payloads, changed source snapshots, and any invalid
 recovered draft remain hard failures. The client never treats a generic error
 message or a source self-link as evidence that a safe draft exists. HTTP error
-bodies are parsed only long enough to derive the private exact-response
-discriminator and are not retained on the exception; diagnostic text redacts
-the bearer token even when a server echoes it.
+bodies are read only to a fixed limit and parsed only long enough to derive the
+private exact-response discriminator. All successful JSON responses are also
+size-bounded and fail closed on malformed, truncated, invalid-encoding, deeply
+nested, or oversized content. Raw transport bodies from those failure paths are
+not retained on public exceptions or their direct adapter traceback locals, and
+diagnostic text omits untrusted server content entirely. Before successfully
+parsed JSON crosses into semantic validation, any occurrence of the configured
+bearer token in a string key or value causes a generic fail-closed error. The
+client never rewrites server semantics and then treats the rewritten object as
+remote truth.
 
 Creating the v1.1 draft begins only after the development PR is merged, public
 `main` is green, and separate release-start approval fixes the authors,
