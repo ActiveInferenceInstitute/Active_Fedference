@@ -631,6 +631,7 @@ def test_recovery_offswitch_residuals_are_nonzero_and_tiny(tmp_path: Path) -> No
         assert val < 1e-3, f"{key} should still be a small convergence residual"
     assert variables["RECOVERY_OFFSWITCH_Q"] == "1e-06"
     assert variables["RECOVERY_OFFSWITCH_BETA"] == "1e-06"
+    assert variables["RECOVERY_OFFSWITCH_BETA_MATH"] == "1.00 \\times 10^{-6}"
     assert variables["RECOVERY_OFFSWITCH_ALPHA"] == "1.00001"
 
 
@@ -850,6 +851,18 @@ def test_math_sibling_tokens_resolve_alongside_their_prose_twins(
         )
         # A resolved sibling never leaks the raw .2e exponent marker.
         assert not re.search(r"\de[+-]\d", value), f"{token} leaked .2e: {value!r}"
+
+
+def test_math_sibling_tokens_are_authored_inside_math_spans() -> None:
+    """Prevent valid LaTeX token values from being escaped as literal prose."""
+    for filename in _FEDFERENCE_SECTIONS:
+        source = (_PROJECT_ROOT / "manuscript" / filename).read_text(encoding="utf-8")
+        for match in re.finditer(r"\{\{[A-Z0-9_]+_MATH\}\}", source):
+            prefix = re.sub(r"\\\$", "", source[: match.start()])
+            assert prefix.count("$") % 2 == 1, (
+                f"{filename}:{source.count(chr(10), 0, match.start()) + 1}: "
+                f"{match.group()} must be inside a Markdown math span"
+            )
 
 
 @pytest.fixture
