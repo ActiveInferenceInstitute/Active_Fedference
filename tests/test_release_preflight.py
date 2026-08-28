@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import shutil
 from pathlib import Path
 from types import ModuleType
 
@@ -67,7 +68,17 @@ def _metadata_project(root: Path) -> Path:
         encoding="utf-8",
     )
     (root / "pyproject.toml").write_text(
-        '[project]\nname = "preflight-fixture"\nversion = "0.0.1.dev0"\n', encoding="utf-8"
+        '[project]\nname = "preflight-fixture"\nversion = "0.0.1.dev0"\n'
+        "[project.urls]\n",
+        encoding="utf-8",
+    )
+    (root / "uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "preflight-fixture"\n'
+        'version = "0.0.1.dev0"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
     )
     write_metadata(root)
     return root
@@ -125,3 +136,24 @@ def test_render_receipt_cli_refuses_an_unvalidated_render_tree(tmp_path: Path) -
 
     with pytest.raises(ValueError, match="cannot record render before rendered-surface validation passes"):
         recorder.main(["render", "--project-root", str(tmp_path)])
+
+
+def test_render_receipt_cli_requires_producer_logs(tmp_path: Path) -> None:
+    recorder = _load_script("record_pipeline_stage.py")
+    root = tmp_path / "producer-log-fixture"
+    pdf_dir = root / "output" / "pdf"
+    slides_dir = root / "output" / "slides"
+    pdf_dir.mkdir(parents=True)
+    slides_dir.mkdir(parents=True)
+
+    for filename in ("active_fedference_combined.pdf", "_combined_manuscript.tex"):
+        shutil.copy2(_PROJECT_ROOT / "output" / "pdf" / filename, pdf_dir / filename)
+    for filename in ("00_abstract_slides.pdf", "00_abstract_slides.tex"):
+        shutil.copy2(_PROJECT_ROOT / "output" / "slides" / filename, slides_dir / filename)
+    shutil.copytree(_PROJECT_ROOT / "output" / "web", root / "output" / "web")
+
+    with pytest.raises(ValueError) as exc_info:
+        recorder.main(["render", "--project-root", str(root)])
+    detail = str(exc_info.value)
+    assert "missing combined manuscript logs" in detail
+    assert "missing generated slide logs" in detail

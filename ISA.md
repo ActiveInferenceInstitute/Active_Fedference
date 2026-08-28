@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 263/265
+progress: 264/266
 iteration: 48-v1.1-application-development
 updated_by: iteration-48-2026-08-25
 mode: ALGORITHM
@@ -1129,6 +1129,15 @@ Dispositions for Daniel (wave-5, not unilaterally decided):
   entering the default import graph. Probe: repeated byte-identical builds,
   archive membership checks, installed application smoke, and example
   subprocess tests.
+- [x] ISC-271: Release-manifest schema 4 declares the upstream
+  `publication-payload-v1` scope and excludes only the Template-owned control
+  reports that consume or summarize the payload and release bytes. Exact-set
+  verification rejects forged out-of-scope entries, while the final artifact,
+  validation, rendered-provenance, Git-tree, confidentiality, and clean-clone
+  gates bind the downstream controls without a circular checksum dependency.
+  Probe: release-scope drift, downstream-control mutation, case and symlink
+  alias rejection, scientific-payload tamper, repeated-build byte identity,
+  and final two-layer freshness checks.
 
 Focused implementation verification closed ISC-266 through ISC-269 with a
 459-test application/domain/federation regression slice, followed by dedicated

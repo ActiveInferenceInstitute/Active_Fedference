@@ -92,6 +92,5 @@ to this neural-network setting and produces a valid, deterministic consensus; it
 does not establish model-class universality or that the client-side $\beta$-loss's robustness
 margin transfers at this scale; the certified NumPy logistic-regression
 baseline above remains the axis's rigorous evidence. When PyTorch is not
-installed the pipeline records a skipped status with unavailable-value sentinels;
-a complete certified build therefore installs the `torch` optional extra
-([@sec:reproducibility]).
+installed, the pipeline records unavailable-value sentinels; certified builds
+install the `torch` optional extra ([@sec:reproducibility]).

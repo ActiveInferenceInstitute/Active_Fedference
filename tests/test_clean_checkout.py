@@ -17,9 +17,11 @@ from publication.clean_checkout import (
     historical_release_pdf_findings,
     inspect_clean_checkout,
 )
+from publication.metadata import write_metadata
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _HERMETIC_GIT = ("git", "-c", "core.fsmonitor=false", "-c", "core.untrackedcache=false")
+GENERATED_METADATA_PATHS = ("CITATION.cff", ".zenodo.json", "codemeta.json")
 
 
 def test_validation_receipt_chain_is_required_for_clean_checkout() -> None:
@@ -79,20 +81,43 @@ def _init_clean_repo(root: Path) -> None:
     (root / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump(
             {
-                "paper": {"version": "0.0.0.dev0"},
+                "paper": {"title": "Fixture paper", "version": "0.0.0.dev0"},
+                "authors": [
+                    {
+                        "name": "Ada Lovelace",
+                        "orcid": "0000-0000-0000-0001",
+                        "affiliation": "Analytical Engine Society",
+                    }
+                ],
                 "publication": {
                     "doi": "",
                     "doi_status": "(forthcoming)",
                     "date_released": None,
+                    "software_name": "Clean-checkout fixture",
+                    "github_repository": "https://example.invalid/repository",
+                    "date_created": "2026-08-01",
+                    "abstract": "Fixture abstract.",
+                    "description": "Fixture description.",
                 },
+                "metadata": {"license": "MIT"},
             }
         ),
         encoding="utf-8",
     )
     (root / "pyproject.toml").write_text(
-        '[project]\nname = "active-fedference"\nversion = "0.0.0.dev0"\n',
+        '[project]\nname = "active-fedference"\nversion = "0.0.0.dev0"\n'
+        "[project.urls]\n",
         encoding="utf-8",
     )
+    (root / "uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "active-fedference"\n'
+        'version = "0.0.0.dev0"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
+    )
+    write_metadata(root)
     subprocess.run([*_HERMETIC_GIT, "-C", str(root), "add", "."], check=True, capture_output=True, text=True)
     subprocess.run(
         [
@@ -124,27 +149,51 @@ def _commit_publication_identity(
     """Install and commit the minimum lifecycle sources for the checkout probe."""
     config_path = root / "manuscript" / "config.yaml"
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    publication: dict[str, object] = {
-        "doi": doi,
-        "date_released": date_released,
-    }
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["paper"]["version"] = version
+    publication = config["publication"]
+    publication["doi"] = doi
+    publication["date_released"] = date_released
+    publication.pop("doi_status", None)
     if doi_status is not None:
         publication["doi_status"] = doi_status
-    config_path.write_text(
-        yaml.safe_dump(
-            {
-                "paper": {"version": version},
-                "publication": publication,
-            }
-        ),
-        encoding="utf-8",
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    final_doi_url = (
+        f'DOI = "https://doi.org/{doi}"\n'
+        if ".dev" not in version and doi
+        else ""
     )
     (root / "pyproject.toml").write_text(
-        f'[project]\nname = "active-fedference"\nversion = "{version}"\n',
+        f'[project]\nname = "active-fedference"\nversion = "{version}"\n'
+        "[project.urls]\n"
+        f"{final_doi_url}",
         encoding="utf-8",
     )
+    (root / "uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "active-fedference"\n'
+        f'version = "{version}"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
+    )
+    try:
+        write_metadata(root)
+    except ValueError:
+        # Invalid lifecycle cases deliberately retain the prior generated
+        # bytes so the real checkout validator can report the source error.
+        pass
     subprocess.run(
-        [*_HERMETIC_GIT, "-C", str(root), "add", "manuscript/config.yaml", "pyproject.toml"],
+        [
+            *_HERMETIC_GIT,
+            "-C",
+            str(root),
+            "add",
+            "manuscript/config.yaml",
+            "pyproject.toml",
+            "uv.lock",
+            *GENERATED_METADATA_PATHS,
+        ],
         check=True,
         capture_output=True,
         text=True,

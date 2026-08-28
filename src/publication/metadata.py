@@ -22,15 +22,22 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
+
+try:  # Python 3.11+
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - exercised by the Python 3.10 CI lane
+    import tomli as tomllib  # type: ignore[no-redef]
 
 import yaml
 
 from experiment_config import load_manuscript_config
 from publication.identifiers import (
     doi_url,
+    manuscript_pdf_filename,
     normalize_doi,
     publication_identity_sentence,
 )
@@ -40,7 +47,19 @@ GENERATED_SURFACES: tuple[str, ...] = ("CITATION.cff", ".zenodo.json", "codemeta
 
 _PROJECT_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){2}(?:\.dev[0-9]+)?$")
 _DEVELOPMENT_VERSION_RE = re.compile(r"^[0-9]+(?:\.[0-9]+){2}\.dev[0-9]+$")
+_ISO_RELEASE_DATE_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 _DEVELOPMENT_DOI_STATUS = "(forthcoming)"
+
+
+@dataclass(frozen=True)
+class PublicationLifecycle:
+    """Validated identity shared by packaging and publication surfaces."""
+
+    state: Literal["development", "final"]
+    version: str
+    doi: str | None
+    date_released: str | None
+    canonical_pdf: str | None
 
 
 def _project_root(project_root: Path | None) -> Path:
@@ -75,13 +94,103 @@ def _load_config(root: Path) -> dict[str, Any]:
     return data
 
 
+def _toml_document(path: Path) -> dict[str, Any]:
+    """Load a TOML document with one stable error boundary."""
+    if not path.is_file() or path.is_symlink():
+        raise ValueError(f"required TOML file is missing or unsafe: {path}")
+    try:
+        document = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, tomllib.TOMLDecodeError) as exc:
+        raise ValueError(f"invalid TOML file {path}: {exc}") from exc
+    if not isinstance(document, dict):  # pragma: no cover - tomllib always returns a dict
+        raise ValueError(f"TOML root must be a mapping: {path}")
+    return document
+
+
+def _project_metadata(root: Path) -> dict[str, Any]:
+    document = _toml_document(root / "pyproject.toml")
+    project = document.get("project")
+    if not isinstance(project, dict):
+        raise ValueError("pyproject.toml must contain a [project] table")
+    return project
+
+
 def package_version(root: Path) -> str:
     """Software version from pyproject.toml (the packaging source of truth)."""
-    text = (root / "pyproject.toml").read_text(encoding="utf-8")
-    match = re.search(r'^version\s*=\s*"([^"]+)"', text, flags=re.MULTILINE)
-    if not match:
-        raise ValueError("pyproject.toml has no version field")
-    return match.group(1)
+    value = _project_metadata(root).get("version")
+    if not isinstance(value, str) or not value:
+        raise ValueError("pyproject.toml [project] has no version field")
+    return value
+
+
+def _normalized_distribution_name(value: str) -> str:
+    return re.sub(r"[-_.]+", "-", value).casefold()
+
+
+def _validate_locked_version(root: Path, project: dict[str, Any], version: str) -> None:
+    """Require the editable root entry in uv.lock to use the package version."""
+    raw_name = project.get("name")
+    if not isinstance(raw_name, str) or not raw_name.strip():
+        raise ValueError("pyproject.toml [project] has no name field")
+    expected_name = _normalized_distribution_name(raw_name)
+    lock = _toml_document(root / "uv.lock")
+    packages = lock.get("package")
+    if not isinstance(packages, list):
+        raise ValueError("uv.lock must contain package entries")
+    editable_matches: list[dict[str, Any]] = []
+    for item in packages:
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        source = item.get("source")
+        if (
+            isinstance(name, str)
+            and _normalized_distribution_name(name) == expected_name
+            and isinstance(source, dict)
+            and source.get("editable") == "."
+        ):
+            editable_matches.append(item)
+    if len(editable_matches) != 1:
+        raise ValueError(
+            "uv.lock must contain exactly one editable root package entry for "
+            f"{raw_name!r}"
+        )
+    locked_version = editable_matches[0].get("version")
+    if locked_version != version:
+        raise ValueError(
+            "uv.lock root package version must exactly match pyproject.toml "
+            f"({locked_version!r} != {version!r})"
+        )
+
+
+def _validate_project_doi_url(
+    project: dict[str, Any],
+    *,
+    is_development: bool,
+    doi: str | None,
+) -> None:
+    urls = project.get("urls", {})
+    if not isinstance(urls, dict):
+        raise ValueError("pyproject.toml [project.urls] must be a mapping")
+    doi_keys = [key for key in urls if isinstance(key, str) and key.casefold() == "doi"]
+    if is_development:
+        if doi_keys:
+            raise ValueError(
+                "unreleased development metadata must not define a DOI project URL"
+            )
+        return
+    if doi is None:  # validate_publication_identity reports this first
+        raise ValueError("final release metadata requires an assigned DOI")
+    if doi_keys != ["DOI"]:
+        raise ValueError(
+            "final release metadata requires exactly one [project.urls].DOI entry"
+        )
+    expected = doi_url(doi)
+    if urls["DOI"] != expected:
+        raise ValueError(
+            "[project.urls].DOI must exactly match the assigned publication DOI "
+            f"({urls['DOI']!r} != {expected!r})"
+        )
 
 
 def _one_line(text: str) -> str:
@@ -152,6 +261,8 @@ def _release_date(value: object) -> str | None:
     normalized = str(value).strip()
     if not normalized:
         return None
+    if not _ISO_RELEASE_DATE_RE.fullmatch(normalized):
+        raise ValueError("publication.date_released must be YYYY-MM-DD or null")
     try:
         date.fromisoformat(normalized)
     except ValueError as exc:
@@ -212,7 +323,7 @@ def validate_publication_identity(
         raise ValueError(
             "final release metadata requires an assigned DOI and date_released"
         )
-    elif raw_doi_status not in (None, ""):
+    elif "doi_status" in publication:
         raise ValueError(
             "final release metadata must remove publication.doi_status after "
             "assigning the DOI"
@@ -231,13 +342,20 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     metadata_cfg = cfg.get("metadata", {})
     license_id = str(metadata_cfg.get("license", "MIT"))
     access_right = str(metadata_cfg.get("access_right", "open"))
-    version = package_version(root)
+    project = _project_metadata(root)
+    version_value = project.get("version")
+    if not isinstance(version_value, str) or not version_value:
+        raise ValueError("pyproject.toml [project] has no version field")
+    version = version_value
     name = _one_line(pub["software_name"])
     description = _one_line(pub["description"])
     zenodo_title = _full_paper_title(paper)
     repo = str(pub["github_repository"])
     date_created = str(pub["date_created"])
     date_released, doi = validate_publication_identity(version, paper, pub)
+    is_development = _DEVELOPMENT_VERSION_RE.fullmatch(version) is not None
+    _validate_project_doi_url(project, is_development=is_development, doi=doi)
+    _validate_locked_version(root, project, version)
     doi_resolver = doi_url(doi)
     abstract = _publication_abstract(pub["abstract"], doi)
     related = [
@@ -334,6 +452,64 @@ def build_metadata(project_root: Path | None = None) -> dict[str, str]:
     }
 
 
+def validate_publication_lifecycle(
+    project_root: Path | None = None,
+    *,
+    require_generated_metadata: bool = True,
+    require_canonical_pdf: bool = True,
+) -> PublicationLifecycle:
+    """Validate one complete development or final publication identity.
+
+    The check reads real project/config/lock files.  In both states it binds
+    ``pyproject.toml``, ``manuscript/config.yaml``, ``uv.lock``, and the three
+    generated metadata surfaces.  A development identity intentionally has no
+    canonical DOI-named PDF requirement; a final identity requires the exact
+    version/DOI-derived top-level PDF.
+    """
+    root = _project_root(project_root).resolve()
+    cfg = _load_config(root)
+    paper = cfg["paper"]
+    publication = cfg["publication"]
+    project = _project_metadata(root)
+    version_value = project.get("version")
+    if not isinstance(version_value, str) or not version_value:
+        raise ValueError("pyproject.toml [project] has no version field")
+    version = version_value
+    date_released, doi = validate_publication_identity(version, paper, publication)
+    is_development = _DEVELOPMENT_VERSION_RE.fullmatch(version) is not None
+    _validate_project_doi_url(project, is_development=is_development, doi=doi)
+    _validate_locked_version(root, project, version)
+
+    canonical_pdf = None if doi is None else manuscript_pdf_filename(version, doi)
+    if require_generated_metadata:
+        expected = build_metadata(root)
+        drifted = [
+            relative
+            for relative, content in expected.items()
+            if (
+                not (path := root / relative).is_file()
+                or path.is_symlink()
+                or path.read_text(encoding="utf-8") != content
+            )
+        ]
+        if drifted:
+            raise ValueError(
+                "generated publication metadata is stale: " + ", ".join(drifted)
+            )
+    if require_canonical_pdf and canonical_pdf is not None:
+        pdf_path = root / canonical_pdf
+        if not pdf_path.is_file() or pdf_path.is_symlink():
+            raise ValueError(f"configured manuscript PDF is missing or unsafe: {canonical_pdf}")
+
+    return PublicationLifecycle(
+        state="development" if is_development else "final",
+        version=version,
+        doi=doi,
+        date_released=date_released,
+        canonical_pdf=canonical_pdf,
+    )
+
+
 def check_metadata(project_root: Path | None = None) -> list[str]:
     """Read-only drift check: return the surfaces whose on-disk content differs.
 
@@ -359,3 +535,15 @@ def write_metadata(project_root: Path | None = None) -> list[str]:
         (root / rel).write_text(content, encoding="utf-8")
         written.append(rel)
     return written
+
+
+__all__ = [
+    "GENERATED_SURFACES",
+    "PublicationLifecycle",
+    "build_metadata",
+    "check_metadata",
+    "package_version",
+    "validate_publication_identity",
+    "validate_publication_lifecycle",
+    "write_metadata",
+]

@@ -74,7 +74,7 @@ into the reviewer snapshot.
 | `figures/parameter_recovery.png` | `src/figures/parameter_recovery.py` | Study 9 parameter recovery |
 | `figures/complexity_scaling.png` / `.pdf` | `src/figures/complexity_scaling.py` | Complexity orders and machine-scaling diagnostic |
 | `data/manuscript_variables.json` | `z_generate_manuscript_variables.py` | Debugging token map |
-| `data/pipeline_provenance.json` | `02_run_analysis.py`, `z_generate_manuscript_variables.py`, `record_pipeline_stage.py` | Schema-2 content-hashed, byte-idempotent stage freshness validation |
+| `data/pipeline_provenance.json` | `02_run_analysis.py`, `z_generate_manuscript_variables.py`, `record_pipeline_stage.py` | Schema-3 content-hashed, byte-idempotent stage freshness validation |
 | `manuscript/*.md` | Token substitution | PDF render (stage 5) |
 | `pdf/*` | `scripts/pipeline/stage_03_render.py` | Validation, copy stage |
 | `slides/*` | Template render stage (per-section Beamer decks) | Release bundle |
@@ -105,17 +105,20 @@ $TEMPLATE_REPO/output/working/active_fedference/
 ## Regeneration rules
 
 1. **Never hand-edit** generated JSON/PNG/PDF to pass a gate — fix the producer
-   in `src/fedference/` or `src/analysis/workflow.py`. Hand edits are also
-   caught mechanically: the release manifest records per-artifact SHA-256
-   digests plus a source/manuscript/documentation/producer provenance
-   fingerprint, pipeline profile, generator version, and individual input
-   digests, so
+   in `src/fedference/` or `src/analysis/workflow.py`. Hand edits to the
+   publication payload are caught mechanically: the release manifest records
+   per-artifact SHA-256 digests plus a
+   source/manuscript/documentation/producer provenance fingerprint, pipeline
+   profile, generator version, and individual input digests, so
    `scripts/build_release.py --verify` first requires fresh publication-profile
    analysis, test/coverage, hydration, and render receipts, then fails on any
    altered artifact or on a
    bundle built from a different evidence or producer state; changed input
-   paths are included in the failure diagnostic. This is a local reviewer-bundle
-   gate, not external publication authorization.
+   paths are included in the failure diagnostic. Downstream artifact,
+   evidence, statistics, validation, rendered-provenance, and snapshot control
+   reports are outside that acyclic payload scope and are checked by the
+   pinned Template, Git-tree, confidentiality, and clean-clone gates. This is a
+   local reviewer-bundle gate, not external publication authorization.
 2. After changing `manuscript/config.yaml` experiment block, re-run analysis
    **before** variable hydration and PDF render.
 3. Adding a new artifact requires updating `manuscript_variables.py` (if cited
@@ -127,11 +130,14 @@ $TEMPLATE_REPO/output/working/active_fedference/
    recording so local figures and normalized crossrefs are present.
    `scripts/validate_web_package.py` then enforces the semantic HTML subset defined in
    [`../manuscript/accessibility.md`](../manuscript/accessibility.md).
-5. After regenerating outputs, rebuild the release bundle
-   (`uv run --locked python scripts/build_release.py`) so the manifest and fingerprint
-   track the new state. The default unreleased bundle deliberately records no
-   wall-clock timestamp, and a second no-op build must be byte-identical. Use
-   `--timestamp` or `SOURCE_DATE_EPOCH` only after release approval.
+5. After final web/render freshness, build the upstream release payload
+   (`uv run --locked python scripts/build_release.py`) so the manifest and
+   fingerprint track the new state. Then refresh the Template artifact
+   manifest and final validation/copy controls against those release bytes.
+   The default unreleased bundle deliberately records no wall-clock timestamp,
+   and two no-op builds must compare byte-identical before the downstream
+   controls are sealed. Final verification is read-only. Use `--timestamp` or
+   `SOURCE_DATE_EPOCH` only after release approval.
 6. Record the external template render boundary only after the final stages
    03–05, web preparation, and rendered-surface validation finish; then run
    `uv run --locked python scripts/validate_pipeline_freshness.py` before the release

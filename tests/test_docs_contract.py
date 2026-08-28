@@ -9,6 +9,8 @@ from pathlib import Path
 import tomllib
 import yaml
 
+from publication.metadata import validate_publication_lifecycle
+
 ROOT = Path(__file__).resolve().parent.parent
 
 DOC_CONTRACT_FILES = (
@@ -93,6 +95,44 @@ def test_open_scientific_waves_are_not_preassigned_obsolete_versions() -> None:
     assert "codex/maj8-external-calibration" in plan
     assert "exact frozen maj-8 design" in plan.casefold()
     assert "chosen only after the observed result" in plan
+
+
+def test_release_reviewer_policy_distinguishes_eligibility_from_independence() -> None:
+    ladder = _read("docs/todo/release-and-verification-ladder.md")
+    isa = _read("ISA.md")
+    normalized_ladder = re.sub(r"\s+", " ", ladder)
+
+    assert "either an identified human or a genuinely different-vendor" in normalized_ladder
+    assert "A local subagent does not qualify" in ladder
+    assert "identified owner-author human review" in ladder
+    assert "not as independent external replication or cross-vendor review" in normalized_ladder
+    assert "does not close ISC-89" in ladder
+    assert "[DEFERRED-VERIFY] ISC-89" in isa
+    assert "- [ ] ISC-242" in isa
+    assert "does not close ISC-89 or the broader independent-reproduction lane" in isa
+
+
+def test_public_release_policy_omits_personal_and_internal_workspace_paths() -> None:
+    public_policy = "\n".join(
+        _read(path)
+        for path in (
+            "ISA.md",
+            "TODO.md",
+            "docs/todo/release-and-verification-ladder.md",
+            "docs/todo/scholarship-and-phase-plan.md",
+        )
+    )
+    forbidden_paths = (
+        f"{Path('/', 'Users')}/",
+        f".{''.join(('clau', 'de'))}/",
+        f"{''.join(('scratch', 'pad'))}/",
+        f"{Path('/', 'private', 'tmp')}/",
+        f"{Path('/', 'tmp')}/",
+    )
+    for forbidden in forbidden_paths:
+        assert forbidden not in public_policy
+    assert public_policy.count("/Volumes/blue/active_fedference-verification/") == 1
+    assert "approved, non-confidential operational example" in re.sub(r"\s+", " ", public_policy)
 
 
 def test_readme_distinguishes_completed_bnn_pilot_from_open_parity() -> None:
@@ -207,6 +247,7 @@ def test_documented_local_commands_reference_existing_scripts() -> None:
                 "scripts/pipeline/stage_03_render.py",
                 "scripts/pipeline/stage_04_validate.py",
                 "scripts/pipeline/stage_05_copy.py",
+                "scripts/maintenance/refresh_artifact_manifests.py",
                 "scripts/runner/execute_pipeline.py",
             }:
                 continue
@@ -396,12 +437,13 @@ def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> N
     assert offenders == []
 
 
-def test_development_metadata_and_latest_release_identity_are_separated() -> None:
+def test_publication_lifecycle_and_historical_release_identity_are_separated() -> None:
     config = yaml.safe_load(_read("manuscript/config.yaml"))
     expected_doi = config["publication"]["doi"]
-    expected_doi_status = config["publication"]["doi_status"]
+    expected_doi_status = config["publication"].get("doi_status")
     expected_date = config["publication"]["date_released"]
     expected_version = config["paper"]["version"]
+    lifecycle = validate_publication_lifecycle(ROOT, require_canonical_pdf=False)
     metadata = "\n".join(
         _read(path)
         for path in (
@@ -418,7 +460,6 @@ def test_development_metadata_and_latest_release_identity_are_separated() -> Non
     assert "template_code_project" not in metadata
     assert "Convergence Analysis of Gradient Descent Optimization" not in metadata
     assert "10.5281/zenodo.20417136" not in metadata
-    assert expected_doi_status in metadata
     assert "10.5281/zenodo.21972644" in metadata
     assert "https://doi.org/(forthcoming)" not in metadata
 
@@ -426,10 +467,6 @@ def test_development_metadata_and_latest_release_identity_are_separated() -> Non
     assert config["paper"]["subtitle"]
     assert ":" not in config["paper"]["subtitle"]
     assert config["publication"]["github_repository"] == "https://github.com/ActiveInferenceInstitute/Active_Fedference"
-    assert expected_version.endswith(".dev0")
-    assert expected_doi == ""
-    assert expected_doi_status == "(forthcoming)"
-    assert expected_date is None
     assert config["metadata"]["license"] == "MIT"
     assert "active inference" in config["keywords"]
     assert "FedGVI" in config["keywords"]
@@ -437,17 +474,44 @@ def test_development_metadata_and_latest_release_identity_are_separated() -> Non
     zenodo = json.loads(_read(".zenodo.json"))
     codemeta = json.loads(_read("codemeta.json"))
     package_metadata = tomllib.loads(_read("pyproject.toml"))
-    assert "identifiers" not in citation
-    assert "date-released" not in citation
     assert citation["version"] == expected_version
-    assert "doi" not in zenodo
-    assert "publication_date" not in zenodo
     assert zenodo["version"] == expected_version
-    assert "identifier" not in codemeta
-    assert "dateModified" not in codemeta
     assert codemeta["version"] == expected_version
     assert package_metadata["project"]["version"] == expected_version
-    assert "DOI" not in package_metadata["project"]["urls"]
+    assert lifecycle.version == expected_version
+
+    if lifecycle.state == "development":
+        assert expected_version.endswith(".dev0")
+        assert expected_doi == ""
+        assert expected_doi_status == "(forthcoming)"
+        assert expected_doi_status in metadata
+        assert expected_date is None
+        assert "identifiers" not in citation
+        assert "date-released" not in citation
+        assert "doi" not in zenodo
+        assert "publication_date" not in zenodo
+        assert "identifier" not in codemeta
+        assert "dateModified" not in codemeta
+        assert "DOI" not in package_metadata["project"]["urls"]
+    else:
+        assert re.fullmatch(r"[0-9]+(?:\.[0-9]+){2}", expected_version)
+        assert lifecycle.doi == expected_doi
+        assert lifecycle.date_released == str(expected_date)
+        assert expected_doi_status is None
+        assert citation["identifiers"] == [{"type": "doi", "value": expected_doi}]
+        citation_date = citation["date-released"]
+        assert (
+            citation_date.isoformat()
+            if hasattr(citation_date, "isoformat")
+            else str(citation_date)
+        ) == lifecycle.date_released
+        assert zenodo["doi"] == expected_doi
+        assert zenodo["publication_date"] == lifecycle.date_released
+        assert codemeta["identifier"] == f"https://doi.org/{expected_doi}"
+        assert codemeta["dateModified"] == lifecycle.date_released
+        assert package_metadata["project"]["urls"]["DOI"] == (
+            f"https://doi.org/{expected_doi}"
+        )
 
 
 def test_docs_do_not_reintroduce_stale_claim_language() -> None:

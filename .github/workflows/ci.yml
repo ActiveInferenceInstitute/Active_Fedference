@@ -154,6 +154,11 @@ jobs:
       - name: Sync locked dev dependencies
         run: uv sync --locked --extra dev
 
+      - name: Install PDF fixture validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y poppler-utils qpdf
+
       - name: Non-slow source smoke suite
         # Python 3.10 has no stdlib tomllib; the test suite's TOML probes are
         # intentionally kept stdlib-first, so alias the locked tomli fallback

@@ -111,6 +111,9 @@ _MACHINE_PATH_REPLACEMENTS = {
     "/home": "<home>",
     "/Volumes": "<volume>",
 }
+_COVERAGE_WORKDIR_RE = re.compile(
+    r"<project>/\.tmp/test-coverage-receipt-[^/\s\"'<>]+"
+)
 
 
 class ValidationReceiptError(ValueError):
@@ -132,7 +135,11 @@ def _map_digest(file_hashes: Mapping[str, str]) -> str:
     return digest.hexdigest()
 
 
-def _canonicalize_command(command: Iterable[str]) -> list[str]:
+def _canonicalize_command(
+    command: Iterable[str],
+    *,
+    project_root: Path,
+) -> list[str]:
     """Remove machine-specific prefixes from the durable command evidence.
 
     A receipt is committed and later passed through the web-package sanitizer.
@@ -146,7 +153,14 @@ def _canonicalize_command(command: Iterable[str]) -> list[str]:
     def replace(match: re.Match[str]) -> str:
         return _MACHINE_PATH_REPLACEMENTS[match.group("prefix")]
 
-    return [_MACHINE_PATH_RE.sub(replace, part) for part in command]
+    resolved_root = project_root.resolve().as_posix().rstrip("/")
+    project_root_re = re.compile(re.escape(resolved_root) + r"(?=/|$)")
+    canonical: list[str] = []
+    for part in command:
+        normalized = project_root_re.sub("<project>", part)
+        normalized = _COVERAGE_WORKDIR_RE.sub("<coverage-workdir>", normalized)
+        canonical.append(_MACHINE_PATH_RE.sub(replace, normalized))
+    return canonical
 
 
 def validation_input_hashes(project_root: Path) -> dict[str, str]:
@@ -311,7 +325,7 @@ def write_validation_receipt(
     changed source/analysis boundary while the test suite was running.
     """
     root = Path(project_root).resolve()
-    command_parts = _canonicalize_command(command)
+    command_parts = _canonicalize_command(command, project_root=root)
     if not command_parts or any(not isinstance(part, str) or not part for part in command_parts):
         raise ValidationReceiptError("validation receipt command must be non-empty strings")
     summary: dict[str, Any] = dict(test_summary)
@@ -418,6 +432,13 @@ def validation_receipt_findings(project_root: Path) -> list[str]:
         or any(not isinstance(part, str) or not part for part in command)
     ):
         findings.append("validation receipt command is invalid")
+    elif any(
+        _MACHINE_PATH_RE.search(part)
+        or ".codex-worktrees/" in part
+        or "test-coverage-receipt-" in part
+        for part in command
+    ):
+        findings.append("validation receipt command contains a noncanonical machine path")
     if receipt.get("input_patterns") != list(VALIDATION_INPUT_PATTERNS):
         findings.append("validation receipt input pattern contract drift")
     snapshots = receipt.get("run_snapshots")

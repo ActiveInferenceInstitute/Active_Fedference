@@ -21,10 +21,34 @@ from publication.metadata import (
     GENERATED_SURFACES,
     build_metadata,
     check_metadata,
+    validate_publication_lifecycle,
     write_metadata,
 )
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _write_packaging_identity(
+    root: Path,
+    *,
+    version: str,
+    doi: str | None,
+) -> None:
+    doi_url = f'\nDOI = "https://doi.org/{doi}"' if doi is not None else ""
+    (root / "pyproject.toml").write_text(
+        '[project]\nname = "proj"\n'
+        f'version = "{version}"\n'
+        f"[project.urls]{doi_url}\n",
+        encoding="utf-8",
+    )
+    (root / "uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "proj"\n'
+        f'version = "{version}"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
+    )
 
 
 def _make_project(tmp_path: Path) -> Path:
@@ -55,8 +79,10 @@ def _make_project(tmp_path: Path) -> Path:
         "metadata": {"license": "MIT"},
     }
     (tmp_path / "manuscript" / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
-    (tmp_path / "pyproject.toml").write_text(
-        '[project]\nname = "proj"\nversion = "9.9.9"\n', encoding="utf-8"
+    _write_packaging_identity(
+        tmp_path,
+        version="9.9.9",
+        doi="10.5281/zenodo.12345",
     )
     return tmp_path
 
@@ -101,9 +127,7 @@ def test_unreleased_metadata_omits_release_date_claims(tmp_path: Path) -> None:
     config["publication"]["date_released"] = None
     config["publication"]["abstract"] = "Lead. {{PUBLICATION_IDENTITY_SENTENCE}}"
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
-    (root / "pyproject.toml").write_text(
-        '[project]\nname = "proj"\nversion = "9.9.9.dev0"\n', encoding="utf-8"
-    )
+    _write_packaging_identity(root, version="9.9.9.dev0", doi=None)
     out = build_metadata(root)
     cff = yaml.safe_load(out["CITATION.cff"])
     zen = json.loads(out[".zenodo.json"])
@@ -119,6 +143,109 @@ def test_unreleased_metadata_omits_release_date_claims(tmp_path: Path) -> None:
     assert zen["description"] == codemeta["abstract"] == cff["abstract"]
 
 
+def test_complete_development_lifecycle_uses_real_emitted_surfaces(tmp_path: Path) -> None:
+    root = _make_project(tmp_path)
+    config_path = root / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["paper"]["version"] = "9.9.9.dev0"
+    config["publication"].update(
+        {"doi": "", "doi_status": "(forthcoming)", "date_released": None}
+    )
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    _write_packaging_identity(root, version="9.9.9.dev0", doi=None)
+
+    assert write_metadata(root) == list(GENERATED_SURFACES)
+    lifecycle = validate_publication_lifecycle(root)
+
+    assert lifecycle.state == "development"
+    assert lifecycle.version == "9.9.9.dev0"
+    assert lifecycle.doi is None
+    assert lifecycle.date_released is None
+    assert lifecycle.canonical_pdf is None
+
+
+def test_complete_final_lifecycle_uses_real_emitted_surfaces_and_pdf(
+    tmp_path: Path,
+) -> None:
+    root = _make_project(tmp_path)
+    assert write_metadata(root) == list(GENERATED_SURFACES)
+    expected_pdf = (
+        root
+        / "Active_Fedference_Research_Manuscript_v9.9.9_"
+        "Zenodo_10.5281-zenodo.12345.pdf"
+    )
+    expected_pdf.write_bytes(b"final lifecycle PDF fixture\n")
+
+    lifecycle = validate_publication_lifecycle(root)
+
+    assert lifecycle.state == "final"
+    assert lifecycle.version == "9.9.9"
+    assert lifecycle.doi == "10.5281/zenodo.12345"
+    assert lifecycle.date_released == "2026-02-02"
+    assert lifecycle.canonical_pdf == expected_pdf.name
+
+
+def test_development_and_final_project_doi_url_rules_are_fail_closed(
+    tmp_path: Path,
+) -> None:
+    root = _make_project(tmp_path)
+    config_path = root / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["paper"]["version"] = "9.9.9.dev0"
+    config["publication"].update(
+        {"doi": "", "doi_status": "(forthcoming)", "date_released": None}
+    )
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    _write_packaging_identity(
+        root,
+        version="9.9.9.dev0",
+        doi="10.5281/zenodo.12345",
+    )
+    with pytest.raises(ValueError, match="must not define a DOI project URL"):
+        build_metadata(root)
+
+    config["paper"]["version"] = "9.9.9"
+    config["publication"].update(
+        {"doi": "10.5281/zenodo.12345", "date_released": "2026-02-02"}
+    )
+    config["publication"].pop("doi_status", None)
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    _write_packaging_identity(root, version="9.9.9", doi=None)
+    with pytest.raises(ValueError, match=r"requires exactly one \[project.urls\]\.DOI"):
+        build_metadata(root)
+
+
+def test_lifecycle_rejects_lock_project_url_surface_and_pdf_drift(
+    tmp_path: Path,
+) -> None:
+    root = _make_project(tmp_path)
+    write_metadata(root)
+
+    (root / "uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "proj"\n'
+        'version = "9.9.8"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="uv.lock root package version"):
+        validate_publication_lifecycle(root)
+
+    _write_packaging_identity(root, version="9.9.9", doi="10.5281/zenodo.99999")
+    with pytest.raises(ValueError, match=r"\[project.urls\]\.DOI"):
+        validate_publication_lifecycle(root)
+
+    _write_packaging_identity(root, version="9.9.9", doi="10.5281/zenodo.12345")
+    (root / "CITATION.cff").write_text("tampered\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="generated publication metadata is stale"):
+        validate_publication_lifecycle(root)
+
+    write_metadata(root)
+    with pytest.raises(ValueError, match="configured manuscript PDF is missing"):
+        validate_publication_lifecycle(root)
+
+
 def test_unreleased_metadata_rejects_placeholder_in_doi_field(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
     config_path = root / "manuscript" / "config.yaml"
@@ -128,9 +255,7 @@ def test_unreleased_metadata_rejects_placeholder_in_doi_field(tmp_path: Path) ->
     config["publication"]["doi_status"] = "(forthcoming)"
     config["publication"]["date_released"] = None
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
-    (root / "pyproject.toml").write_text(
-        '[project]\nname = "proj"\nversion = "9.9.9.dev0"\n', encoding="utf-8"
-    )
+    _write_packaging_identity(root, version="9.9.9.dev0", doi=None)
 
     with pytest.raises(ValueError, match="publication.doi to be the empty string"):
         build_metadata(root)
@@ -149,9 +274,7 @@ def test_unreleased_metadata_requires_exact_plain_doi_status(
     config["publication"]["doi_status"] = doi_status
     config["publication"]["date_released"] = None
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
-    (root / "pyproject.toml").write_text(
-        '[project]\nname = "proj"\nversion = "9.9.9.dev0"\n', encoding="utf-8"
-    )
+    _write_packaging_identity(root, version="9.9.9.dev0", doi=None)
 
     with pytest.raises(ValueError, match="doi_status to be exactly"):
         build_metadata(root)
@@ -166,9 +289,7 @@ def test_unreleased_metadata_requires_literal_null_release_date(tmp_path: Path) 
     config["publication"]["doi_status"] = "(forthcoming)"
     config["publication"]["date_released"] = ""
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
-    (root / "pyproject.toml").write_text(
-        '[project]\nname = "proj"\nversion = "9.9.9.dev0"\n', encoding="utf-8"
-    )
+    _write_packaging_identity(root, version="9.9.9.dev0", doi=None)
 
     with pytest.raises(ValueError, match="date_released to be null"):
         build_metadata(root)
@@ -180,9 +301,7 @@ def test_development_metadata_rejects_release_identity(tmp_path: Path) -> None:
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
-    (root / "pyproject.toml").write_text(
-        '[project]\nname = "proj"\nversion = "9.9.9.dev0"\n', encoding="utf-8"
-    )
+    _write_packaging_identity(root, version="9.9.9.dev0", doi=None)
 
     try:
         build_metadata(root)
@@ -207,11 +326,15 @@ def test_final_metadata_rejects_missing_release_identity(tmp_path: Path) -> None
         assert "final release metadata" in str(exc)
 
 
-def test_final_metadata_rejects_stale_development_doi_status(tmp_path: Path) -> None:
+@pytest.mark.parametrize("doi_status", (None, "", "(forthcoming)"))
+def test_final_metadata_requires_doi_status_key_to_be_absent(
+    tmp_path: Path,
+    doi_status: str | None,
+) -> None:
     root = _make_project(tmp_path)
     config_path = root / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    config["publication"]["doi_status"] = "(forthcoming)"
+    config["publication"]["doi_status"] = doi_status
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
 
     with pytest.raises(ValueError, match="must remove publication.doi_status"):
@@ -254,11 +377,24 @@ def test_assigned_doi_is_emitted_on_all_surfaces(tmp_path: Path) -> None:
     assert "development manuscript" not in cff["abstract"]
 
 
-def test_invalid_release_date_fails_loudly(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    "invalid_date",
+    (
+        "not-a-date",
+        "20260202",
+        "2026-W35-4",
+        "２０２６-０８-２７",
+        "2026-2-2",
+    ),
+)
+def test_invalid_release_date_fails_loudly(
+    tmp_path: Path,
+    invalid_date: str,
+) -> None:
     root = _make_project(tmp_path)
     config_path = root / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    config["publication"]["date_released"] = "not-a-date"
+    config["publication"]["date_released"] = invalid_date
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
     try:
         build_metadata(root)
@@ -386,9 +522,10 @@ def test_real_abstract_hypothetical_final_identity_never_retains_development_pro
         yaml.safe_dump(config, sort_keys=False),
         encoding="utf-8",
     )
-    (tmp_path / "pyproject.toml").write_text(
-        '[project]\nname = "active-fedference"\nversion = "1.1.0"\n',
-        encoding="utf-8",
+    _write_packaging_identity(
+        tmp_path,
+        version="1.1.0",
+        doi=doi,
     )
 
     final_metadata = json.loads(build_metadata(tmp_path)[".zenodo.json"])

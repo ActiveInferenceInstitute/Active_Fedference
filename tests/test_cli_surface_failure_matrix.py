@@ -972,6 +972,15 @@ def test_surface_validation_ok_requires_each_reader_surface() -> None:
         web=valid_web,
     )
     assert valid.ok
+    assert SurfaceValidation(
+        manuscript_pdf=True,
+        manuscript_logs=0,
+        slide_pdfs=1,
+        slide_tex=1,
+        slide_logs=0,
+        findings=(),
+        web=valid_web,
+    ).ok
     assert not SurfaceValidation(
         manuscript_pdf=True,
         manuscript_logs=1,

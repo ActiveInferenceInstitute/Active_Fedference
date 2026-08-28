@@ -194,14 +194,17 @@ unit test does not prove clean-clone or external-publication state.
 | Report and figure contracts | `tests/analysis/`, `tests/figures/`, `tests/test_caption_completeness.py` |
 | Documentation links, stale language, and Mermaid | `tests/test_docs_contract.py` and `scripts/validate_mermaid.py` |
 | Analysis → hydration → render order | `scripts/validate_pipeline_freshness.py` |
-| Release artifact provenance | `scripts/build_release.py --verify` |
+| Release publication-payload provenance | `scripts/build_release.py --verify` |
+| Downstream artifact and validation controls | pinned Template stages 04-05 and artifact-manifest validation |
 | Clean-clone portability | `scripts/validate_clean_checkout.py` and the isolated import probes |
 
 The practical order is: run focused tests after a local change, run the full
 source gate, regenerate producer-owned outputs, run rendered-surface and
-freshness checks, then build and verify the release bundle. Publication is the
-last boundary, after the immutable reviewed commit and the final artifact
-hashes are known.
+freshness checks, build the upstream release payload, then refresh and verify
+the downstream Template artifact/validation controls. Two release builds must
+compare byte-identical before those controls are sealed; final verification is
+read-only. Publication is the last boundary, after the immutable reviewed
+commit and the final artifact hashes are known.
 
 ## Further reading
 

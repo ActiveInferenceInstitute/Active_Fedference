@@ -11,7 +11,10 @@ import pytest
 
 from publication.clean_checkout import IMMUTABLE_RELEASE_PDFS
 from publication.release_manifest import (
+    DOWNSTREAM_CONTROL_ARTIFACTS,
+    DOWNSTREAM_CONTROL_PREFIXES,
     FINGERPRINT_INPUTS,
+    RELEASE_ARTIFACT_SCOPE,
     build_release,
     compute_fingerprint,
     timestamp_from_source_date_epoch,
@@ -23,12 +26,28 @@ _PDF_FIXTURE = b"%PDF-1.4 minimal"
 _PNG_FIXTURE = b"\x89PNG minimal"
 
 
+def _write_artifact(root: Path, relative: str, content: bytes) -> Path:
+    path = root / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
+    return path
+
+
+def _symlink_or_skip(link: Path, target: Path, *, target_is_directory: bool = False) -> None:
+    try:
+        link.symlink_to(target, target_is_directory=target_is_directory)
+    except (NotImplementedError, OSError) as exc:
+        pytest.skip(f"symlinks are unavailable on this filesystem: {exc}")
+
+
 def _make_artifacts(tmp_path: Path) -> None:
     (tmp_path / "output" / "pdf").mkdir(parents=True)
     (tmp_path / "output" / "figures").mkdir(parents=True)
     (tmp_path / "output" / "pdf" / "paper.pdf").write_bytes(_PDF_FIXTURE)
     (tmp_path / "output" / "figures" / "fig.png").write_bytes(_PNG_FIXTURE)
     (tmp_path / "output" / "figures" / "junk.log").write_text("excluded")
+    for suffix in ("aux", "bbl", "blg", "lof", "lot", "nav", "out", "snm", "toc", "vrb"):
+        (tmp_path / "output" / "pdf" / f"renderer.{suffix}").write_text("excluded")
     (tmp_path / "CITATION.cff").write_text("cff-version: 1.2.0\n")
 
 
@@ -104,10 +123,17 @@ def test_build_writes_bundle_with_true_digests(tmp_path: Path) -> None:
     assert (release / "README.md").exists()
     paths = {e["path"] for e in manifest["artifacts"]}
     assert paths == {"output/pdf/paper.pdf", "output/figures/fig.png", "CITATION.cff"}
-    # .log excluded; digests are the REAL sha256 of the bytes on disk.
+    # Renderer logs/sidecars are excluded; digests are the REAL sha256 of the bytes on disk.
     entry = next(e for e in manifest["artifacts"] if e["path"].endswith("paper.pdf"))
     assert entry["sha256"] == hashlib.sha256(_PDF_FIXTURE).hexdigest()
     assert manifest["n_artifacts"] == 3
+    assert manifest["manifest_schema_version"] == 4
+    assert manifest["generator_version"] == "6"
+    assert manifest["artifact_scope"] == RELEASE_ARTIFACT_SCOPE
+    assert manifest["downstream_control_exclusions"] == {
+        "paths": list(DOWNSTREAM_CONTROL_ARTIFACTS),
+        "prefixes": list(DOWNSTREAM_CONTROL_PREFIXES),
+    }
     assert manifest["generated_at"] == "2026-07-06T00:00:00Z"
     assert manifest["timestamp_policy"] == "recorded"
     # README counts are derived from the walk, not hand-typed.
@@ -115,6 +141,8 @@ def test_build_writes_bundle_with_true_digests(tmp_path: Path) -> None:
     assert "3 files" in release_readme
     assert "uv run --locked python scripts/build_release.py" in release_readme
     assert "uv run python scripts/build_release.py" not in release_readme
+    assert RELEASE_ARTIFACT_SCOPE in release_readme
+    assert "without a checksum cycle" in release_readme
 
 
 def test_release_bundle_carries_the_declared_license(tmp_path: Path) -> None:
@@ -137,6 +165,190 @@ def test_bundle_excludes_its_own_directory_on_rebuild(tmp_path: Path) -> None:
     assert not any("output/release" in e["path"] for e in second["artifacts"])
     assert second["n_artifacts"] == 3
     assert verify_release(tmp_path) == []
+
+
+def test_bundle_excludes_only_declared_downstream_controls(tmp_path: Path) -> None:
+    _make_artifacts(tmp_path)
+    scientific = _write_artifact(
+        tmp_path,
+        "output/reports/scientific_result.json",
+        b'{"mean": 0.25}\n',
+    )
+    for relative in DOWNSTREAM_CONTROL_ARTIFACTS:
+        _write_artifact(tmp_path, relative, f"control: {relative}\n".encode())
+    snapshot = _write_artifact(
+        tmp_path,
+        DOWNSTREAM_CONTROL_PREFIXES[0] + "stage-99-regression.json",
+        b'{"control": true}\n',
+    )
+
+    manifest = build_release(tmp_path)
+    paths = {entry["path"] for entry in manifest["artifacts"]}
+
+    assert scientific.relative_to(tmp_path).as_posix() in paths
+    assert not set(DOWNSTREAM_CONTROL_ARTIFACTS) & paths
+    assert snapshot.relative_to(tmp_path).as_posix() not in paths
+    assert verify_release(tmp_path) == []
+
+
+def test_release_payload_and_downstream_controls_form_a_dag(tmp_path: Path) -> None:
+    """Control receipts may bind payload bytes without feeding back into them."""
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    scientific = _write_artifact(
+        tmp_path,
+        "output/reports/scientific_result.json",
+        b'{"paired_difference": 0.125}\n',
+    )
+
+    first = build_release(tmp_path)
+    release_dir = tmp_path / "output" / "release"
+    first_release_bytes = {
+        path.name: path.read_bytes() for path in sorted(release_dir.iterdir()) if path.is_file()
+    }
+    release_hashes = {
+        path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(release_dir.iterdir())
+        if path.is_file()
+    }
+
+    artifact_manifest = _write_artifact(
+        tmp_path,
+        "output/reports/artifact_manifest.json",
+        (json.dumps({"release_hashes": release_hashes}, sort_keys=True) + "\n").encode(),
+    )
+    artifact_hash = hashlib.sha256(artifact_manifest.read_bytes()).hexdigest()
+    evidence = _write_artifact(
+        tmp_path,
+        "output/reports/evidence_registry.json",
+        (json.dumps({"payload_manifest": release_hashes["manifest.json"]}) + "\n").encode(),
+    )
+    statistics = _write_artifact(
+        tmp_path,
+        "output/reports/output_statistics.json",
+        (
+            json.dumps(
+                {"release_bytes": sum(len(value) for value in first_release_bytes.values())}
+            )
+            + "\n"
+        ).encode(),
+    )
+    validation = _write_artifact(
+        tmp_path,
+        "output/reports/validation_report.json",
+        (json.dumps({"artifact_manifest_sha256": artifact_hash}) + "\n").encode(),
+    )
+    rendered = _write_artifact(
+        tmp_path,
+        "output/reports/rendered_provenance.json",
+        (
+            json.dumps(
+                {
+                    "artifact_manifest_sha256": artifact_hash,
+                    "validation_report_sha256": hashlib.sha256(
+                        validation.read_bytes()
+                    ).hexdigest(),
+                },
+                sort_keys=True,
+            )
+            + "\n"
+        ).encode(),
+    )
+    snapshot = _write_artifact(
+        tmp_path,
+        DOWNSTREAM_CONTROL_PREFIXES[0] + "stage-04-validation.json",
+        (json.dumps({"artifact_manifest_sha256": artifact_hash}) + "\n").encode(),
+    )
+
+    second = build_release(tmp_path)
+    second_release_bytes = {
+        path.name: path.read_bytes() for path in sorted(release_dir.iterdir()) if path.is_file()
+    }
+    assert second == first
+    assert second_release_bytes == first_release_bytes
+    assert verify_release(tmp_path) == []
+
+    for control in (artifact_manifest, evidence, statistics, validation, rendered, snapshot):
+        control.write_bytes(control.read_bytes() + b"downstream refresh\n")
+    third = build_release(tmp_path)
+    third_release_bytes = {
+        path.name: path.read_bytes() for path in sorted(release_dir.iterdir()) if path.is_file()
+    }
+    assert third == first
+    assert third_release_bytes == first_release_bytes
+    assert verify_release(tmp_path) == []
+
+    scientific.write_bytes(b'{"paired_difference": 0.5}\n')
+    assert verify_release(tmp_path) == ["output/reports/scientific_result.json"]
+
+
+def test_build_rejects_symlink_alias_to_excluded_downstream_control(
+    tmp_path: Path,
+) -> None:
+    _make_artifacts(tmp_path)
+    control = _write_artifact(
+        tmp_path,
+        "output/reports/artifact_manifest.json",
+        b'{"control": true}\n',
+    )
+    alias = tmp_path / "output" / "reports" / "control-alias.json"
+    _symlink_or_skip(alias, Path(control.name))
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "release artifact path must not contain symlinks: "
+            "output/reports/control-alias.json"
+        ),
+    ):
+        build_release(tmp_path)
+
+
+def test_verify_rejects_out_of_root_symlink_ancestor(tmp_path: Path) -> None:
+    _make_artifacts(tmp_path)
+    build_release(tmp_path)
+    outside = tmp_path.parent / f"{tmp_path.name}-outside"
+    outside.mkdir()
+    (outside / "private.pdf").write_bytes(b"outside checkout\n")
+    alias = tmp_path / "output" / "figures" / "escaped"
+    _symlink_or_skip(alias, outside, target_is_directory=True)
+
+    assert verify_release(tmp_path) == [
+        "manifest: release artifact path must not contain symlinks: "
+        "output/figures/escaped"
+    ]
+
+
+def test_verify_rejects_case_alias_for_excluded_control_when_applicable(
+    tmp_path: Path,
+) -> None:
+    """Case-insensitive filesystems must not alias controls into payload scope."""
+    _make_artifacts(tmp_path)
+    control = _write_artifact(
+        tmp_path,
+        "output/reports/artifact_manifest.json",
+        b'{"control": true}\n',
+    )
+    build_release(tmp_path)
+    alias = "output/reports/Artifact_Manifest.json"
+    alias_path = tmp_path / alias
+    if not alias_path.is_file() or not alias_path.samefile(control):
+        pytest.skip("filesystem is case-sensitive")
+
+    manifest_path = tmp_path / "output" / "release" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["artifacts"].append(
+        {
+            "path": alias,
+            "bytes": control.stat().st_size,
+            "sha256": hashlib.sha256(control.read_bytes()).hexdigest(),
+        }
+    )
+    manifest["n_artifacts"] += 1
+    manifest["total_bytes"] += control.stat().st_size
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert f"manifest: non-canonical artifact path {alias}" in verify_release(tmp_path)
 
 
 def test_default_build_is_byte_idempotent_and_omits_release_time(
@@ -309,7 +521,7 @@ def test_manifest_carries_fingerprint_stable_across_rebuild(tmp_path: Path) -> N
     assert first["fingerprint"] == compute_fingerprint(tmp_path)
     assert first["fingerprint_inputs"] == list(FINGERPRINT_INPUTS)
     assert first["pipeline_profile"] == "publication"
-    assert first["generator_version"] == "5"
+    assert first["generator_version"] == "6"
     assert first["package_version"] == "0.0.1"
     assert first["fingerprint_files"]["scripts/producer.py"]
     assert first["fingerprint_files"]["examples/minimal.py"]
@@ -526,6 +738,21 @@ def test_manifest_json_is_sha256sum_c_compatible(tmp_path: Path) -> None:
         (lambda payload: payload.__setitem__("pipeline_profile", ""), "pipeline_profile"),
         (lambda payload: payload.__setitem__("generator", "other"), "generator identity"),
         (lambda payload: payload.__setitem__("generator_version", "old"), "generator_version"),
+        (lambda payload: payload.pop("artifact_scope"), "artifact_scope drift"),
+        (
+            lambda payload: payload.__setitem__("artifact_scope", "whole-output-v0"),
+            "artifact_scope drift",
+        ),
+        (
+            lambda payload: payload.pop("downstream_control_exclusions"),
+            "downstream_control_exclusions drift",
+        ),
+        (
+            lambda payload: payload["downstream_control_exclusions"]["paths"].append(
+                "output/reports/unreviewed-control.json"
+            ),
+            "downstream_control_exclusions drift",
+        ),
         (lambda payload: payload.pop("fingerprint"), "fingerprint missing"),
         (lambda payload: payload.__setitem__("fingerprint_files", []), "fingerprint_files missing"),
         (lambda payload: payload.__setitem__("fingerprint_inputs", []), "fingerprint_inputs drift"),
@@ -560,6 +787,40 @@ def test_verify_rejects_unsafe_artifact_paths(tmp_path: Path, path_value: str, e
     path.write_text(json.dumps(payload), encoding="utf-8")
 
     assert any(expected in finding for finding in verify_release(tmp_path))
+
+
+@pytest.mark.parametrize(
+    "relative",
+    (
+        "outside-declared-roots.txt",
+        "output/reports/artifact_manifest.json",
+        "output/reports/snapshots/stage-99.json",
+    ),
+)
+def test_verify_rejects_manifest_entries_outside_declared_payload_scope(
+    tmp_path: Path,
+    relative: str,
+) -> None:
+    _make_artifacts(tmp_path)
+    target = _write_artifact(tmp_path, relative, b"out-of-scope fixture\n")
+    build_release(tmp_path)
+    path = tmp_path / "output" / "release" / "manifest.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["artifacts"].append(
+        {
+            "path": relative,
+            "bytes": target.stat().st_size,
+            "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+        }
+    )
+    payload["n_artifacts"] += 1
+    payload["total_bytes"] += target.stat().st_size
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert (
+        f"manifest: artifact outside declared {RELEASE_ARTIFACT_SCOPE} scope: {relative}"
+        in verify_release(tmp_path)
+    )
 
 
 @pytest.mark.parametrize(

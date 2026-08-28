@@ -26,12 +26,10 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 
 
 def _require_current_metadata(root: Path) -> None:
-    """Reject a bundle when generated publication metadata has drifted."""
-    from publication.metadata import check_metadata
+    """Reject a bundle when publication and packaging identity have drifted."""
+    from publication.metadata import validate_publication_lifecycle
 
-    drifted = check_metadata(root)
-    if drifted:
-        raise ValueError("generated publication metadata is stale: " + ", ".join(drifted))
+    validate_publication_lifecycle(root)
 
 
 def _require_immutable_release_pdfs(root: Path) -> None:

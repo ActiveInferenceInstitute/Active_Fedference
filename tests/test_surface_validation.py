@@ -88,7 +88,7 @@ def test_validate_rendered_surfaces_fails_when_outputs_are_absent(tmp_path: Path
     assert any("missing combined manuscript PDF" in finding for finding in result.findings)
     assert any("missing generated slide PDFs" in finding for finding in result.findings)
     assert any("missing generated slide TeX" in finding for finding in result.findings)
-    assert any("missing generated slide logs" in finding for finding in result.findings)
+    assert not any("missing generated slide logs" in finding for finding in result.findings)
 
 
 def test_validate_rendered_surfaces_propagates_web_accessibility_findings(
@@ -119,6 +119,26 @@ def test_slide_inventory_requires_matching_pdf_tex_log_triplets(tmp_path: Path) 
         f"missing slide LaTeX log: {tmp_path / 'section_slides.log'}",
         f"orphan slide LaTeX log without PDF: {orphan_log}",
     ]
+
+
+def test_slide_inventory_accepts_log_free_publication_snapshot(tmp_path: Path) -> None:
+    pdf = tmp_path / "section_slides.pdf"
+    tex = tmp_path / "section_slides.tex"
+
+    assert _slide_inventory_findings(tmp_path, [pdf], [tex], []) == []
+
+
+def test_slide_inventory_producer_mode_requires_renderer_logs(tmp_path: Path) -> None:
+    pdf = tmp_path / "section_slides.pdf"
+    tex = tmp_path / "section_slides.tex"
+
+    assert _slide_inventory_findings(
+        tmp_path,
+        [pdf],
+        [tex],
+        [],
+        require_logs=True,
+    ) == [f"missing slide LaTeX log: {tmp_path / 'section_slides.log'}"]
 
 
 @pytest.mark.skipif(shutil.which("pdftotext") is None, reason="pdftotext not installed")

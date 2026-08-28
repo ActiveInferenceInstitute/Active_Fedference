@@ -14,6 +14,7 @@ import hashlib
 import json
 import struct
 import warnings
+import zipfile
 from dataclasses import asdict, dataclass
 from io import BytesIO
 from numbers import Real
@@ -25,6 +26,56 @@ PROTOCOL_VERSION = 1
 _ENVELOPE_HEADER_LENGTH = struct.Struct(">I")
 _MAX_ENVELOPE_HEADER_BYTES = 64 * 1024
 MessageType = Literal["belief", "result"]
+
+
+class _ProtocolV1ZipInfo(zipfile.ZipInfo):
+    """Keep protocol-v1 NPZ headers identical across supported Python versions.
+
+    ``numpy.savez`` requests ZIP64 headers even for small members.  CPython
+    3.10 writes actual 32-bit sizes into those local headers, while 3.11+
+    writes the ZIP64 sentinel values and version 4.5.  Protocol v1 already
+    records the latter bytes, so normalize the 3.10 writer to that existing
+    representation without changing member names, array bytes, or framing.
+    """
+
+    def FileHeader(self, zip64: bool | None = None) -> bytes:  # noqa: N802
+        if zip64:
+            self.extract_version = max(zipfile.ZIP64_VERSION, self.extract_version)
+            self.create_version = max(zipfile.ZIP64_VERSION, self.create_version)
+        header = bytearray(super().FileHeader(zip64))
+        if zip64:
+            struct.pack_into("<H", header, 4, zipfile.ZIP64_VERSION)
+            struct.pack_into("<L", header, 18, 0xFFFFFFFF)
+            struct.pack_into("<L", header, 22, 0xFFFFFFFF)
+        return bytes(header)
+
+
+def _serialize_protocol_v1_npz(
+    consensus: np.ndarray,
+    agent_weights: np.ndarray,
+) -> bytes:
+    """Write the two fixed protocol-v1 NPZ members in canonical order."""
+    buf = BytesIO()
+    with zipfile.ZipFile(
+        buf,
+        mode="w",
+        compression=zipfile.ZIP_STORED,
+        allowZip64=True,
+    ) as archive:
+        for name, values in (
+            ("consensus", consensus),
+            ("agent_weights", agent_weights),
+        ):
+            info = _ProtocolV1ZipInfo(
+                f"{name}.npy",
+                date_time=(1980, 1, 1, 0, 0, 0),
+            )
+            info.create_system = 3
+            info.external_attr = 0o600 << 16
+            info.compress_type = zipfile.ZIP_STORED
+            with archive.open(info, mode="w", force_zip64=True) as member:
+                np.save(member, values, allow_pickle=False)
+    return buf.getvalue()
 
 
 @dataclass(frozen=True)
@@ -290,14 +341,7 @@ def serialize_result(
         name="result agent_weights",
         require_unit_sum=True,
     )
-    buf = BytesIO()
-    np.savez(
-        buf,
-        consensus=validated_consensus,
-        # Preserve the version-1 federation wire key exactly.
-        agent_weights=validated_weights,
-    )
-    return buf.getvalue()
+    return _serialize_protocol_v1_npz(validated_consensus, validated_weights)
 
 
 def deserialize_result(data: bytes) -> dict[str, np.ndarray]:

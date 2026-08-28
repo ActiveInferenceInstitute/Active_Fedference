@@ -771,6 +771,57 @@ def test_receipt_canonicalizes_machine_paths_in_command_evidence(tmp_path: Path)
     assert validation_receipt_findings(tmp_path) == []
 
 
+def test_receipt_command_is_identical_across_project_roots_and_coverage_workdirs(
+    tmp_path: Path,
+) -> None:
+    receipts: list[dict[str, object]] = []
+    for project_name, scratch_name in (
+        ("checkout-a", "test-coverage-receipt-alpha123"),
+        ("checkout-b", "test-coverage-receipt-beta987"),
+    ):
+        root = tmp_path / project_name
+        _make_validation_tree(root)
+        scratch = root / ".tmp" / scratch_name
+        receipt = write_validation_receipt(
+            root,
+            command=(
+                str(root / ".venv" / "bin" / "python3"),
+                "-m",
+                "pytest",
+                f"--junitxml={scratch / 'pytest-junit.xml'}",
+                f"--cov-report=json:{scratch / 'coverage.json'}",
+            ),
+            test_summary={"collected": 3, "passed": 3, "failed": 0, "skipped": 0},
+            coverage_percent=93.25,
+            pre_run_snapshot=capture_validation_snapshot(root),
+            environment=validation_environment(),
+        )
+        receipts.append(receipt)
+
+    expected = [
+        "<project>/.venv/bin/python3",
+        "-m",
+        "pytest",
+        "--junitxml=<coverage-workdir>/pytest-junit.xml",
+        "--cov-report=json:<coverage-workdir>/coverage.json",
+    ]
+    assert receipts[0]["command"] == expected
+    assert receipts[1]["command"] == expected
+    assert receipts[0] == receipts[1]
+
+
+def test_receipt_findings_reject_machine_shaped_persisted_command(tmp_path: Path) -> None:
+    findings = _mutated_receipt_findings(
+        tmp_path,
+        lambda payload: payload.__setitem__(
+            "command",
+            ["<home>/Documents/GitHub/.codex-worktrees/project/.venv/bin/python3"],
+        ),
+    )
+
+    assert "validation receipt command contains a noncanonical machine path" in findings
+
+
 def test_receipt_findings_reject_nonfinite_coverage_and_current_hash_failure(tmp_path: Path) -> None:
     """Live receipt verification must reject nonfinite values and unreadable input boundaries."""
     findings = _mutated_receipt_findings(

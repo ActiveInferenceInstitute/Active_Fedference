@@ -2,7 +2,7 @@
 
 Source tests can prove that a renderer was called, but they cannot prove that
 the shipped surface is readable. This module checks the combined manuscript,
-the generated Beamer source/log/PDF triplets, and the web package. It
+the generated Beamer source/PDF pairs, any local renderer logs, and the web package. It
 intentionally treats structural PDF failures, unresolved references, raw
 Pandoc markers, missing characters, and material overfull boxes as release
 findings. The web branch also enforces the deterministic HTML accessibility
@@ -58,7 +58,6 @@ class SurfaceValidation:
             not self.findings
             and self.web.ok
             and self.manuscript_pdf
-            and self.manuscript_logs > 0
             and self.slide_pdfs > 0
         )
 
@@ -249,18 +248,20 @@ def _slide_inventory_findings(
     slide_pdfs: list[Path],
     slide_tex: list[Path],
     slide_logs: list[Path],
+    *,
+    require_logs: bool = False,
 ) -> list[str]:
-    """Require one PDF/TeX/log triplet for every generated slide deck."""
+    """Require PDF/TeX pairs and complete logs whenever local logs are present."""
 
     def stems(paths: list[Path]) -> set[str]:
         return {path.stem.removesuffix("_slides") for path in paths}
 
     pdf_stems = stems(slide_pdfs)
     findings: list[str] = []
-    for label, suffix, artifact_stems in (
-        ("TeX source", ".tex", stems(slide_tex)),
-        ("LaTeX log", ".log", stems(slide_logs)),
-    ):
+    artifacts = [("TeX source", ".tex", stems(slide_tex))]
+    if require_logs or slide_logs:
+        artifacts.append(("LaTeX log", ".log", stems(slide_logs)))
+    for label, suffix, artifact_stems in artifacts:
         for stem in sorted(pdf_stems - artifact_stems):
             findings.append(f"missing slide {label}: {slides_dir / f'{stem}_slides{suffix}'}")
         for stem in sorted(artifact_stems - pdf_stems):
@@ -268,8 +269,17 @@ def _slide_inventory_findings(
     return findings
 
 
-def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
-    """Validate the combined manuscript, slide PDFs, logs, and HTML package."""
+def validate_rendered_surfaces(
+    project_root: str | Path,
+    *,
+    require_logs: bool = False,
+) -> SurfaceValidation:
+    """Validate manuscript, slides, optional local logs, and the HTML package.
+
+    ``require_logs`` is reserved for the producer-side render recorder. Public
+    snapshots intentionally omit environment-bearing renderer logs, while the
+    producing run must prove that the complete emitted log set was inspected.
+    """
     root = Path(project_root)
     manuscript_dir = root / "output" / "pdf"
     manuscript_pdf = manuscript_dir / "active_fedference_combined.pdf"
@@ -293,8 +303,6 @@ def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
             _pdf_tagging_findings(manuscript_pdf, required=_tagged_pdf_requested(root))
         )
         findings.extend(_pdf_text_findings(manuscript_pdf))
-    if not manuscript_logs:
-        findings.append(f"missing combined manuscript logs: {manuscript_dir}")
     if not manuscript_tex.exists():
         findings.append(f"missing required manuscript TeX source: {manuscript_tex}")
     else:
@@ -304,10 +312,13 @@ def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
                 manuscript_tex.read_text(encoding="utf-8", errors="replace"),
             )
         )
-    for required_log in ("_combined_manuscript.log", "_latex_stdout.log"):
-        required_path = manuscript_dir / required_log
-        if not required_path.exists():
-            findings.append(f"missing required manuscript log: {required_path}")
+    if require_logs and not manuscript_logs:
+        findings.append(f"missing combined manuscript logs: {manuscript_dir}")
+    if require_logs or manuscript_logs:
+        for required_log in ("_combined_manuscript.log", "_latex_stdout.log"):
+            required_path = manuscript_dir / required_log
+            if not required_path.exists():
+                findings.append(f"missing required manuscript log: {required_path}")
     for log in manuscript_logs:
         findings.extend(_log_findings(log))
 
@@ -315,9 +326,17 @@ def validate_rendered_surfaces(project_root: str | Path) -> SurfaceValidation:
         findings.append(f"missing generated slide PDFs: {slides_dir}")
     if not slide_tex:
         findings.append(f"missing generated slide TeX sources: {slides_dir}")
-    if not slide_logs:
+    if require_logs and not slide_logs:
         findings.append(f"missing generated slide logs: {slides_dir}")
-    findings.extend(_slide_inventory_findings(slides_dir, slide_pdfs, slide_tex, slide_logs))
+    findings.extend(
+        _slide_inventory_findings(
+            slides_dir,
+            slide_pdfs,
+            slide_tex,
+            slide_logs,
+            require_logs=require_logs,
+        )
+    )
     for pdf in slide_pdfs:
         if pdf.stat().st_size < 5_000:
             findings.append(f"{pdf}: suspiciously small PDF ({pdf.stat().st_size} bytes)")

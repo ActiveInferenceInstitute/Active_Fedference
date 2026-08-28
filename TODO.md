@@ -74,7 +74,8 @@ hygiene, still regenerate the publication outputs after source changes that
 alter results, so the committed snapshot stays derived from the declared
 configuration — `tests/test_report_scale_guard.py` verifies its scale. The
 release-grade end-to-end procedure (fresh clone, full ladder, rendered-surface
-count invariants, raster reads, fingerprint verify, cross-vendor verdict) is
+count invariants, raster reads, fingerprint verification, and an eligible
+identified-human or genuinely different-vendor release verdict) is
 scoped in
 [`docs/todo/release-and-verification-ladder.md`](docs/todo/release-and-verification-ladder.md).
 
@@ -138,8 +139,8 @@ research has already succeeded.
 
 | Wave | Target | Required outcome |
 | --- | --- | --- |
-| Application development | v1.1 development PR | Labeled own-data API/CLI, application receipts, solver-health propagation, replay findings, strict shape validation, installed-artifact smoke, an exact-history confidentiality pass before the public branch push, and hosted review checks; a green PR is not a release |
-| Application release | v1.1.0 | After development integration, a release-identity-only PR sets the approved DOI/date; once that PR is merged and public `main` is green, two clone ladders certify the exact final-main SHA before independent verdict, owner approvals, immutable tag, checksummed GitHub assets, and separately approved Zenodo publication |
+| Application development | v1.1 development PR | Labeled own-data API/CLI, application receipts, solver-health propagation, replay findings, strict shape validation, installed-artifact smoke, a confidentiality pass over the approved sanitized public history before the public branch push, and hosted review checks; a green PR is not a release |
+| Application release | v1.1.0 | After development integration, a release-identity-only PR sets the approved DOI/date; once that PR is merged and public `main` is green, two clone ladders certify the exact final-main SHA before an eligible identified-human or genuinely different-vendor verdict, owner approvals, immutable tag, checksummed GitHub assets, and separately approved Zenodo publication; an owner-author verdict is not independent external replication |
 | Calibrated external evidence | post-v1.1 scientific version | MAJ-8 freezes leakage-free robust and variational settings before the MAJ-6 three-dataset confirmatory campaign; null or reversed outcomes remain publishable when integrity gates pass |
 | Protocol and task expansion | later v1.x | MAJ-2A/B, MAJ-7, controlled hybrid/hierarchy tasks, and MAJ-4A/B advance only under their separate evidence and external-resource gates |
 | Longer-horizon research | later v1.x | Streaming/nonstationary sharing first, then multimodal missingness; privacy and secure aggregation only after a threat model and leakage protocol |
@@ -148,7 +149,7 @@ research has already succeeded.
 
 | # | Priority | TODO | Effort | Dependencies |
 |---|----------|------|--------|-------------|
-| MIN-2 | 🔴 Critical | [Clone-correct integration/release verification ladder](docs/todo/release-and-verification-ladder.md) — run an exact-history confidentiality gate before any public branch push; after the development and release-identity PRs merge, provision safe headroom, verify wheel/sdist installation twice from isolated clones of exact final public `main`, obtain a structured independent verdict, and retain external release authority | 1–3 days after headroom | None (hosted checks govern development integration; the exact-history gate blocks public branch exposure, and the two-clone gate blocks tagging and release publication) |
+| MIN-2 | 🔴 Critical | [Clone-correct integration/release verification ladder](docs/todo/release-and-verification-ladder.md) — run the approved sanitized-history confidentiality gate before any public branch push; after the development and release-identity PRs merge, provision safe headroom, verify wheel/sdist installation twice from isolated clones of exact final public `main`, obtain an eligible structured release verdict, and retain external release authority; owner-author review does not close broader independent reproduction | 1–3 days after headroom | None (hosted checks govern development integration; the history gate blocks public branch exposure, and the two-clone plus verdict gates block tagging and release publication) |
 
 ## Roadmap control
 

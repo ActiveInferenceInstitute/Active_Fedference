@@ -5,6 +5,8 @@ from __future__ import annotations
 import gzip
 import importlib.util
 import io
+import os
+import subprocess
 import tarfile
 import zipfile
 from pathlib import Path
@@ -12,6 +14,8 @@ from pathlib import Path
 import pytest
 import tomllib
 import yaml
+
+from publication.metadata import validate_publication_lifecycle, write_metadata
 
 _ROOT = Path(__file__).resolve().parent.parent
 _BACKEND_PATH = _ROOT / "_fedference_build_backend.py"
@@ -49,6 +53,157 @@ def _write_wheel(path: Path, *, timestamp: tuple[int, int, int, int, int, int], 
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             archive.writestr(info, payload)
+
+
+def _make_lifecycle_build_project(
+    root: Path,
+    *,
+    version: str,
+    doi: str | None,
+    date_released: str | None,
+) -> Path:
+    """Create a real, isolated PEP 517 project for one lifecycle state."""
+    root.mkdir()
+    (root / "manuscript").mkdir()
+    package = root / "src" / "lifecycle_fixture"
+    package.mkdir(parents=True)
+    package.joinpath("__init__.py").write_text("VALUE = 1\n", encoding="utf-8")
+    root.joinpath("README.md").write_text("# Lifecycle fixture\n", encoding="utf-8")
+    root.joinpath("LICENSE").write_text("MIT fixture\n", encoding="utf-8")
+    root.joinpath("_fedference_build_backend.py").write_bytes(_BACKEND_PATH.read_bytes())
+    root.joinpath("MANIFEST.in").write_text(
+        "include _fedference_build_backend.py\n"
+        "include LICENSE README.md CITATION.cff .zenodo.json codemeta.json uv.lock\n"
+        "recursive-include manuscript *.yaml\n",
+        encoding="utf-8",
+    )
+    doi_url_line = f'DOI = "https://doi.org/{doi}"\n' if doi is not None else ""
+    root.joinpath("pyproject.toml").write_text(
+        "[build-system]\n"
+        'requires = ["setuptools==81.0.0"]\n'
+        'build-backend = "_fedference_build_backend"\n'
+        'backend-path = ["."]\n'
+        "[project]\n"
+        'name = "lifecycle-fixture"\n'
+        f'version = "{version}"\n'
+        'description = "Lifecycle fixture"\n'
+        'readme = {file = "README.md", content-type = "text/markdown"}\n'
+        'license = "MIT"\n'
+        'license-files = ["LICENSE"]\n'
+        'requires-python = ">=3.10"\n'
+        "[project.urls]\n"
+        f"{doi_url_line}"
+        "[tool.setuptools.packages.find]\n"
+        'where = ["src"]\n',
+        encoding="utf-8",
+    )
+    root.joinpath("uv.lock").write_text(
+        "version = 1\n"
+        "[[package]]\n"
+        'name = "lifecycle-fixture"\n'
+        f'version = "{version}"\n'
+        'source = { editable = "." }\n',
+        encoding="utf-8",
+    )
+    publication: dict[str, object] = {
+        "doi": doi or "",
+        "software_name": "Lifecycle fixture",
+        "github_repository": "https://example.invalid/lifecycle-fixture",
+        "date_created": "2026-08-01",
+        "date_released": date_released,
+        "abstract": "Lifecycle fixture abstract.",
+        "description": "Lifecycle fixture description.",
+    }
+    if doi is None:
+        publication["doi_status"] = "(forthcoming)"
+    root.joinpath("manuscript", "config.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "paper": {"title": "Lifecycle fixture", "version": version},
+                "authors": [
+                    {
+                        "name": "Ada Lovelace",
+                        "orcid": "0000-0000-0000-0001",
+                        "affiliation": "Analytical Engine Society",
+                    }
+                ],
+                "publication": publication,
+                "metadata": {"license": "MIT"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    write_metadata(root)
+    lifecycle = validate_publication_lifecycle(
+        root,
+        require_generated_metadata=True,
+        require_canonical_pdf=False,
+    )
+    if lifecycle.canonical_pdf is not None:
+        root.joinpath(lifecycle.canonical_pdf).write_bytes(b"canonical PDF fixture\n")
+    validate_publication_lifecycle(root)
+    return root
+
+
+@pytest.mark.publication
+@pytest.mark.parametrize(
+    ("version", "doi", "date_released"),
+    (
+        ("3.2.1.dev0", None, None),
+        ("3.2.1", "10.5281/zenodo.12345", "2026-08-27"),
+    ),
+)
+def test_real_temporary_build_is_lifecycle_aware(
+    tmp_path: Path,
+    version: str,
+    doi: str | None,
+    date_released: str | None,
+) -> None:
+    project = _make_lifecycle_build_project(
+        tmp_path / "project",
+        version=version,
+        doi=doi,
+        date_released=date_released,
+    )
+    distribution = tmp_path / "dist"
+    environment = dict(os.environ)
+    environment.update({"SOURCE_DATE_EPOCH": "1785205200", "UV_NO_PROGRESS": "1"})
+    completed = subprocess.run(
+        [
+            "uv",
+            "build",
+            "--force-pep517",
+            "--no-build-isolation",
+            "--out-dir",
+            str(distribution),
+            str(project),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=environment,
+    )
+    assert completed.returncode == 0, completed.stderr or completed.stdout
+
+    wheel = next(distribution.glob("*.whl"))
+    sdist = next(distribution.glob("*.tar.gz"))
+    with zipfile.ZipFile(wheel) as archive:
+        metadata_name = next(
+            name for name in archive.namelist() if name.endswith(".dist-info/METADATA")
+        )
+        wheel_metadata = archive.read(metadata_name).decode("utf-8")
+    with tarfile.open(sdist, mode="r:gz") as archive:
+        pkg_info_name = next(name for name in archive.getnames() if name.endswith("/PKG-INFO"))
+        extracted = archive.extractfile(pkg_info_name)
+        assert extracted is not None
+        sdist_metadata = extracted.read().decode("utf-8")
+
+    for metadata in (wheel_metadata, sdist_metadata):
+        assert f"Version: {version}\n" in metadata
+        if doi is None:
+            assert "Project-URL: DOI" not in metadata
+        else:
+            assert f"Project-URL: DOI, https://doi.org/{doi}\n" in metadata
 
 
 @pytest.mark.parametrize("value", ("", "-1", "1.5", "tomorrow", "９", "9" * 21))
@@ -118,11 +273,26 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
     assert 'Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"' in pyproject
     config = yaml.safe_load((_ROOT / "manuscript/config.yaml").read_text(encoding="utf-8"))
     package_metadata = tomllib.loads(pyproject)["project"]
-    assert package_metadata["version"].endswith(".dev0")
-    assert config["publication"]["doi"] == ""
-    assert config["publication"]["doi_status"] == "(forthcoming)"
-    assert config["publication"]["date_released"] is None
-    assert "DOI" not in package_metadata["urls"]
+    lifecycle = validate_publication_lifecycle(
+        _ROOT,
+        require_generated_metadata=False,
+        require_canonical_pdf=False,
+    )
+    assert package_metadata["version"] == config["paper"]["version"] == lifecycle.version
+    if lifecycle.state == "development":
+        assert lifecycle.version.endswith(".dev0")
+        assert config["publication"]["doi"] == ""
+        assert config["publication"]["doi_status"] == "(forthcoming)"
+        assert config["publication"]["date_released"] is None
+        assert lifecycle.canonical_pdf is None
+        assert "DOI" not in package_metadata["urls"]
+    else:
+        assert ".dev" not in lifecycle.version
+        assert lifecycle.doi is not None
+        assert lifecycle.date_released is not None
+        assert "doi_status" not in config["publication"]
+        assert package_metadata["urls"]["DOI"] == f"https://doi.org/{lifecycle.doi}"
+        assert lifecycle.canonical_pdf is not None
     assert (_ROOT / "manuscript" / "config.yaml.example").is_file()
     assert "recursive-include docs *.md" in manifest
     assert "recursive-include examples *.json *.md *.py" in manifest

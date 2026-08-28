@@ -202,14 +202,22 @@ Every payload above is checked against a typed schema
 wrong-typed top-level field, and each figure generator's consumed report fields
 are validated by the matching `FIGURE_DEPENDENCY_CONTRACTS` entry before it draws.
 
-Ancillary artifacts also written under `output/reports/` include `artifact_manifest.json`,
-`evidence_registry.json`, `invariants.json`, `output_statistics.json`,
-`validation_report.json`, `output_statistics.txt`, and `validation_report.md`
-(manifest / provenance / invariant / validation metadata rather than study
-results), plus a `snapshots/` subdirectory of per-pipeline-stage JSON snapshots.
+Ancillary artifacts also written under `output/reports/` include
+`artifact_manifest.json`, `evidence_registry.json`, `invariants.json`,
+`output_statistics.json`, `validation_report.json`, `rendered_provenance.json`,
+`output_statistics.txt`, and `validation_report.md`, plus a `snapshots/`
+subdirectory of per-pipeline-stage JSON snapshots. The artifact, evidence,
+statistics, validation, rendered-provenance, and snapshot files are downstream
+control-plane metadata rather than study payload. `invariants.json` remains a
+normal producer result.
+
 Treat a fresh `output/reports/artifact_manifest.json` as the generated
-inventory of the complete output tree; derive live counts from that file or
-from the filesystem verification command rather than copying counts into prose.
+inventory of the stable output tree, including `output/release/`. The schema-4
+release manifest deliberately stops at the upstream
+`publication-payload-v1` boundary and therefore excludes the downstream
+control-plane files that bind or summarize it. Derive live counts from the
+artifact manifest or from the filesystem verification command rather than
+copying volatile counts into prose.
 
 ## Figures (`output/figures/`)
 

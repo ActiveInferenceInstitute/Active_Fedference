@@ -63,10 +63,13 @@ claims* of the project's surfaces:
   reintroduced unbounded claim phrases; `tests/test_token_provenance.py` and
   `tests/test_token_sourcing.py` guarantee manuscript numbers are derived
   tokens, never hardcoded or green-by-construction literals.
-- **Release integrity** — `tests/test_release_manifest.py` covers the release
-  bundle's per-file digests and its source/manuscript/documentation/producer
-  provenance fingerprint, metadata, and changed-input diagnostics, including
-  `--verify` rejecting a stale or tampered bundle.
+- **Release integrity** — `tests/test_release_manifest.py` covers the upstream
+  `publication-payload-v1` bundle's per-file digests, declared acyclic scope,
+  source/manuscript/documentation/producer provenance fingerprint, metadata,
+  and changed-input diagnostics, including `--verify` rejecting stale,
+  tampered, or out-of-scope entries. The pinned Template separately verifies
+  downstream artifact/evidence/statistics/validation/rendered-provenance
+  controls after the release bytes exist.
 
 ## Proof of detection
 

@@ -10,10 +10,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-import yaml
-
-from publication.identifiers import manuscript_pdf_filename
-from publication.metadata import package_version, validate_publication_identity
+from publication.metadata import validate_publication_lifecycle
 
 IMMUTABLE_RELEASE_PDFS: tuple[str, ...] = (
     "Active_Fedference_Research_Manuscript_v0.1.0_Zenodo_10.5281-zenodo.21864004.pdf",
@@ -32,6 +29,9 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "TODO.md",
     "LICENSE",
     "MANIFEST.in",
+    "CITATION.cff",
+    ".zenodo.json",
+    "codemeta.json",
     "_fedference_build_backend.py",
     "pyproject.toml",
     "uv.lock",
@@ -79,6 +79,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "src/publication/metadata.py",
     "src/publication/zenodo.py",
     "src/publication/pipeline_freshness.py",
+    "src/publication/release_assets.py",
     "src/publication/release_manifest.py",
     "src/publication/surface_validation.py",
     "src/publication/validation_receipt.py",
@@ -117,6 +118,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "examples/data/labeled_aggregation_request.json",
     "tests/test_build_backend.py",
     "tests/test_release_preflight.py",
+    "tests/test_release_assets.py",
     "tests/test_publication_metadata.py",
     "tests/test_publication_identifiers.py",
     "tests/test_zenodo.py",
@@ -308,23 +310,15 @@ def _import_probe(root: Path) -> str | None:
 
 def _expected_manuscript_pdf(root: Path) -> str | None:
     """Return the release PDF name, or ``None`` for an unreleased revision."""
-    config_path = root / "manuscript" / "config.yaml"
-    if not config_path.is_file():
-        raise ValueError(f"invalid manuscript PDF identity: missing {config_path}")
     try:
-        config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-        paper = config["paper"]
-        publication = config["publication"]
-        _, doi = validate_publication_identity(
-            package_version(root),
-            paper,
-            publication,
+        lifecycle = validate_publication_lifecycle(
+            root,
+            require_generated_metadata=True,
+            require_canonical_pdf=False,
         )
-        if doi is None:
-            return None
-        return manuscript_pdf_filename(paper["version"], doi)
-    except (KeyError, TypeError, ValueError, yaml.YAMLError) as exc:
-        raise ValueError(f"invalid manuscript PDF identity in {config_path}: {exc}") from exc
+        return lifecycle.canonical_pdf
+    except (OSError, UnicodeError, ValueError) as exc:
+        raise ValueError(f"invalid publication lifecycle: {exc}") from exc
 
 
 def inspect_clean_checkout(
@@ -362,8 +356,14 @@ def inspect_clean_checkout(
     except ValueError as exc:
         findings.append(str(exc))
     else:
-        if expected_pdf is not None and expected_pdf not in tracked_paths:
-            findings.append(f"configured manuscript PDF is not tracked: {expected_pdf}")
+        if expected_pdf is not None:
+            expected_path = root / expected_pdf
+            if expected_pdf not in tracked_paths:
+                findings.append(f"configured manuscript PDF is not tracked: {expected_pdf}")
+            elif not expected_path.is_file() or expected_path.is_symlink():
+                findings.append(
+                    f"configured manuscript PDF is missing or unsafe: {expected_pdf}"
+                )
 
     findings.extend(historical_release_pdf_findings(root))
 

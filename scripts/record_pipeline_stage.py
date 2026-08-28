@@ -60,7 +60,7 @@ def main(argv: list[str] | None = None) -> int:
         if source_date_epoch is not None
         else args.timestamp
     )
-    surfaces = validate_rendered_surfaces(root)
+    surfaces = validate_rendered_surfaces(root, require_logs=True)
     if not surfaces.ok:
         detail = "; ".join(surfaces.findings)
         raise ValueError(f"cannot record render before rendered-surface validation passes: {detail}")

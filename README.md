@@ -573,9 +573,13 @@ and release manifest with the documented scripts before committing the refreshed
 artifacts. Analysis report payloads are validated against typed schemas at the
 write boundary (`src/analysis/report_schemas.py` — `TypedDict` shapes plus
 per-figure dependency contracts), so a malformed or renamed field fails when it
-is written, not when a figure later consumes it. The release bundle carries a
-provenance fingerprint (a SHA-256 over the declared source, manuscript,
-documentation, producer-script, dependency-lock, and claim-audit inputs).
+is written, not when a figure later consumes it. The schema-4 release bundle
+carries an acyclic `publication-payload-v1` manifest and a provenance
+fingerprint (a SHA-256 over the declared source, manuscript, documentation,
+producer-script, dependency-lock, and claim-audit inputs). Template-owned
+artifact, evidence, statistics, validation, rendered-provenance, and snapshot
+controls are finalized and verified after the payload rather than hashed back
+into it.
 The manifest also records the pipeline profile and generator version;
 `uv run --locked python scripts/build_release.py --verify` recomputes the fingerprint
 and names changed inputs when a bundle is stale. The guarded CLI also requires

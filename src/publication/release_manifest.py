@@ -7,10 +7,18 @@ Builds a reproducible release bundle at ``output/release/``:
 * ``README.md`` — a provenance one-pager whose counts are derived from the
   walk itself (never hand-typed).
 
-The artifact set is every file under the release roots below, excluding the
-bundle's own directory and log files. :func:`verify_release` recomputes every
-digest against the shipped manifest, so a tampered or stale artifact fails
-loudly (``sha256sum -c`` compatible).
+The artifact set is the upstream publication payload under the release roots
+below, excluding the bundle's own directory, transient files, and downstream
+publication-control reports.  The latter include the Template artifact
+manifest, evidence/statistics summaries, validation reports, and rendered
+provenance: those reports consume or summarize the release payload and are
+therefore produced *after* this manifest.  Keeping them outside the payload
+manifest yields a real producer DAG instead of an impossible checksum cycle.
+:func:`verify_release` recomputes every in-scope digest against the shipped
+manifest, so a tampered or stale payload artifact fails loudly
+(``sha256sum -c`` compatible).  The downstream controls remain mandatory and
+are verified by their own artifact, validation, provenance, Git-tree, and
+clean-clone gates.
 
 Provenance fingerprint (MIN-1): the manifest additionally records a
 ``fingerprint`` — a SHA-256 over the sorted ``(path, content-sha256)`` set of
@@ -45,8 +53,9 @@ from typing import Any
 from publication.clean_checkout import IMMUTABLE_RELEASE_PDFS
 
 # Increment when the manifest metadata contract changes incompatibly.
-RELEASE_MANIFEST_SCHEMA_VERSION = 3
-RELEASE_GENERATOR_VERSION = "5"
+RELEASE_MANIFEST_SCHEMA_VERSION = 4
+RELEASE_GENERATOR_VERSION = "6"
+RELEASE_ARTIFACT_SCOPE = "publication-payload-v1"
 
 _UTC_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -72,7 +81,45 @@ RELEASE_FILES: tuple[str, ...] = (
 )
 
 #: File suffixes excluded from the bundle (transient/log noise).
-_EXCLUDED_SUFFIXES: tuple[str, ...] = (".log", ".aux", ".bbl", ".blg", ".out", ".toc")
+_EXCLUDED_SUFFIXES: tuple[str, ...] = (
+    ".aux",
+    ".bbl",
+    ".blg",
+    ".lof",
+    ".log",
+    ".lot",
+    ".nav",
+    ".out",
+    ".snm",
+    ".toc",
+    ".vrb",
+)
+
+#: Template-owned control reports produced from or after the publication
+#: payload.  Exact paths keep the exclusion narrow: neighboring scientific
+#: reports remain release payload and retain byte-level verification.
+DOWNSTREAM_CONTROL_ARTIFACTS: tuple[str, ...] = (
+    "output/reports/artifact_manifest.json",
+    "output/reports/autoresearch_readiness.json",
+    "output/reports/autoresearch_readiness.md",
+    "output/reports/diagnostics.json",
+    "output/reports/evidence_registry.json",
+    "output/reports/evidence_registry_full.json",
+    "output/reports/output_statistics.json",
+    "output/reports/output_statistics.txt",
+    "output/reports/rendered_provenance.json",
+    "output/reports/snapshot_compare.json",
+    "output/reports/snapshot_compare.md",
+    "output/reports/validation_report.json",
+    "output/reports/validation_report.md",
+)
+
+#: Template pipeline snapshots bind artifact-manifest state and are likewise a
+#: downstream control plane rather than release payload.  A prefix is required
+#: because stage-specific snapshot filenames are intentionally open-ended.
+DOWNSTREAM_CONTROL_PREFIXES: tuple[str, ...] = (
+    "output/reports/snapshots/",
+)
 
 #: Declared source/config/producer inputs of the provenance fingerprint, as glob
 #: patterns relative to the project root. Recorded verbatim in the manifest as
@@ -135,23 +182,76 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _path_has_symlink_component(path: Path) -> bool:
+    """Return whether *path* or any existing lexical ancestor is a symlink.
+
+    ``Path.resolve()`` is intentionally not used here because it would erase the
+    evidence this check is meant to reject.  Walking the absolute lexical path
+    also catches a symlinked project root or release-root directory before an
+    artifact is opened.
+    """
+    absolute = path.absolute()
+    current = Path(absolute.anchor)
+    for part in absolute.parts[1:]:
+        current /= part
+        if current.is_symlink():
+            return True
+    return False
+
+
+def _require_non_symlink_artifact(path: Path, relative: Path) -> None:
+    """Reject artifact paths whose file or any ancestor is a symlink."""
+    if _path_has_symlink_component(path):
+        raise ValueError(
+            "release artifact path must not contain symlinks: "
+            f"{relative.as_posix()}"
+        )
+
+
+def _is_release_payload_path(relative: Path) -> bool:
+    """Return whether a safe relative path belongs to the declared payload.
+
+    This predicate is shared by construction and verification so the two sides
+    cannot silently disagree about exact-set scope.
+    """
+    if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+        return False
+    raw = relative.as_posix()
+    if raw in RELEASE_FILES:
+        return True
+    in_release_root = any(
+        relative.parts[: len(Path(root).parts)] == Path(root).parts
+        and len(relative.parts) > len(Path(root).parts)
+        for root in RELEASE_ROOTS
+    )
+    if not in_release_root:
+        return False
+    if relative.suffix in _EXCLUDED_SUFFIXES or "release" in relative.parts:
+        return False
+    if raw in DOWNSTREAM_CONTROL_ARTIFACTS:
+        return False
+    return not any(raw.startswith(prefix) for prefix in DOWNSTREAM_CONTROL_PREFIXES)
+
+
 def _iter_artifacts(root: Path) -> list[Path]:
     files: list[Path] = []
     for rel in RELEASE_ROOTS:
         base = root / rel
+        _require_non_symlink_artifact(base, Path(rel))
         if not base.exists():
             continue
         for path in sorted(base.rglob("*")):
+            relative = path.relative_to(root)
+            _require_non_symlink_artifact(path, relative)
             if not path.is_file():
                 continue
-            if path.suffix in _EXCLUDED_SUFFIXES:
-                continue
-            if "release" in path.relative_to(root).parts:
+            if not _is_release_payload_path(relative):
                 continue
             files.append(path)
     for rel in RELEASE_FILES:
         path = root / rel
-        if path.exists():
+        _require_non_symlink_artifact(path, Path(rel))
+        if path.exists() and _is_release_payload_path(Path(rel)):
             files.append(path)
     return files
 
@@ -272,6 +372,11 @@ def build_release(
     fingerprint_files = _fingerprint_file_digests(root)
     manifest: dict[str, Any] = {
         "manifest_schema_version": RELEASE_MANIFEST_SCHEMA_VERSION,
+        "artifact_scope": RELEASE_ARTIFACT_SCOPE,
+        "downstream_control_exclusions": {
+            "paths": list(DOWNSTREAM_CONTROL_ARTIFACTS),
+            "prefixes": list(DOWNSTREAM_CONTROL_PREFIXES),
+        },
         "generated_at": stamp,
         "timestamp_policy": "recorded" if stamp is not None else "omitted",
         "pipeline_profile": profile,
@@ -309,6 +414,8 @@ def build_release(
         "",
         f"Pipeline profile: `{profile}`; generator version: `{RELEASE_GENERATOR_VERSION}`.",
         "",
+        f"Artifact scope: `{RELEASE_ARTIFACT_SCOPE}`.",
+        "",
         f"Artifacts: {len(entries)} files, {manifest['total_bytes']} bytes, over:",
         "",
     ]
@@ -326,6 +433,11 @@ def build_release(
         "`manuscript/config.yaml`; rendered containers are rebuilt by the pinned",
         "publication toolchain. The manifest is re-derived on each build and",
         "records the actual bytes; it is never hand-edited.",
+        "",
+        "Downstream artifact-manifest, evidence/statistics, validation, and",
+        "rendered-provenance controls are intentionally outside this payload",
+        "manifest so they can bind these release bytes without a checksum cycle.",
+        "They remain mandatory and are verified by their dedicated gates.",
         "",
     ]
     (release_dir / "README.md").write_text("\n".join(lines), encoding="utf-8")
@@ -359,6 +471,14 @@ def verify_release(project_root: Path | None = None) -> list[str]:
 
     if manifest.get("manifest_schema_version") != RELEASE_MANIFEST_SCHEMA_VERSION:
         bad.append("manifest: unsupported or missing manifest_schema_version")
+    if manifest.get("artifact_scope") != RELEASE_ARTIFACT_SCOPE:
+        bad.append("manifest: artifact_scope drift")
+    expected_exclusions = {
+        "paths": list(DOWNSTREAM_CONTROL_ARTIFACTS),
+        "prefixes": list(DOWNSTREAM_CONTROL_PREFIXES),
+    }
+    if manifest.get("downstream_control_exclusions") != expected_exclusions:
+        bad.append("manifest: downstream_control_exclusions drift")
     generated_at_present = "generated_at" in manifest
     generated_at = manifest.get("generated_at")
     timestamp_policy = manifest.get("timestamp_policy")
@@ -383,6 +503,11 @@ def verify_release(project_root: Path | None = None) -> list[str]:
     if manifest.get("generator_version") != RELEASE_GENERATOR_VERSION:
         bad.append("manifest: generator_version drift")
 
+    try:
+        actual = {path.relative_to(root).as_posix() for path in _iter_artifacts(root)}
+    except ValueError as exc:
+        return [f"manifest: {exc}"]
+
     listed: set[str] = set()
     for entry in entries:
         if not isinstance(entry, dict):
@@ -396,7 +521,16 @@ def verify_release(project_root: Path | None = None) -> list[str]:
         if not raw_path or relative.is_absolute() or ".." in relative.parts:
             bad.append(f"manifest: unsafe artifact path {raw_path}")
             continue
+        if not _is_release_payload_path(relative):
+            bad.append(
+                f"manifest: artifact outside declared {RELEASE_ARTIFACT_SCOPE} scope: "
+                f"{raw_path}"
+            )
+            continue
         path = root / relative
+        if path.is_file() and raw_path not in actual:
+            bad.append(f"manifest: non-canonical artifact path {raw_path}")
+            continue
         raw_bytes = entry.get("bytes")
         expected_bytes = (
             raw_bytes
@@ -413,7 +547,6 @@ def verify_release(project_root: Path | None = None) -> list[str]:
         ):
             bad.append(raw_path)
 
-    actual = {path.relative_to(root).as_posix() for path in _iter_artifacts(root)}
     for unexpected in sorted(actual - listed):
         bad.append(f"manifest: unexpected artifact {unexpected}")
     if manifest.get("n_artifacts") != len(entries):

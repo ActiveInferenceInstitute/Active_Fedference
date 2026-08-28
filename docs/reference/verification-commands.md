@@ -336,15 +336,29 @@ uv run --locked python scripts/build_release.py --verify
 ```
 
 Build writes `output/release/` (`manifest.json`, `sha256sums.txt`, a derived
-`README.md`). Verify is exact-set: every listed artifact must exist with its
-recorded byte size and SHA-256, and no unlisted file may appear under the
-release roots. The manifest also records a provenance `fingerprint` — a
+`README.md`). Schema 4 declares an exact
+`publication-payload-v1` scope: every listed payload artifact must exist with
+its recorded byte size and SHA-256, no unlisted payload file may appear under
+the release roots, and a listed downstream-control path is rejected even when
+its own digest is correct. Construction and verification also reject symlinked
+path components and filesystem aliases whose spelling is not an independently
+discovered canonical payload path. The manifest also records a provenance
+`fingerprint` — a
 SHA-256 over the declared source, examples, manuscript, documentation,
 producer-script, dependency-lock, and claim-audit inputs — together with the
 pipeline profile, generator version, and individual input digests. `--verify`
 recomputes these from the current tree, so a bundle whose bytes all match but
 which was built from a different producer or evidence state still fails as
 stale and names changed inputs.
+
+Template-owned artifact/evidence/output-statistics/validation/
+rendered-provenance reports and `output/reports/snapshots/` are downstream of
+the payload manifest and are intentionally excluded from it. Verify those
+after the release bytes exist by refreshing the artifact manifest in the
+pinned Template checkout, running Template stages 04-05, and then running the
+rendered, coverage-receipt, pipeline-freshness, and release `--verify` gates.
+The Git tree, confidentiality evidence manifest, and isolated-clone comparison
+bind both layers together.
 
 The CLI first requires fresh publication-profile analysis, test/coverage,
 hydration, and render receipts. Its success establishes a local source-current
@@ -460,7 +474,7 @@ pass is deliberately unrecorded. The final render receipt is recorded only
 after final stages 03–05 and web preparation, because web preparation rewrites
 `output/web/` and the render receipt must hash the actual reader surface.
 
-Receipt schema 2 omits volatile completion times by default, so recording an
+Receipt schema 3 omits volatile completion times by default, so recording an
 unchanged stage is byte-identical. Use a canonical `--timestamp` or
 `SOURCE_DATE_EPOCH` only when an external event supplies that value.
 
@@ -516,12 +530,17 @@ uv run --locked python scripts/validate_rendered_surfaces.py
 ```
 
 This gate checks every manuscript and slide PDF with both `qpdf --check` and
-`pdftotext`, requires matching PDF/TeX/log slide triplets, scans every retained
-manuscript and slide log for missing glyphs, undefined references, and material
-layout overflow, and validates the local web package. Every retained log is
-evidence-bearing: obsolete logs may be removed only after a current,
-source-bound render establishes that the producer no longer emits them.
-Warnings in any retained log fail the gate. The manuscript-PDF branch
+`pdftotext`, requires matching PDF/TeX slide pairs, scans every local manuscript
+and slide log for missing glyphs, undefined references, and material layout
+overflow, and validates the local web package. When any slide logs are present,
+the gate requires a complete PDF/TeX/log set and warnings fail the gate.
+Renderer logs are retained in the external verification namespace, not the
+public Git history: XeTeX and LuaLaTeX embed wall-clock and machine-local path
+details even under a deterministic source epoch. A log-free clean checkout is
+therefore valid after the producing run's log inspection is receipted. Other
+LaTeX/Beamer build sidecars (`aux`, `bbl`, `blg`, `lof`, `lot`, `nav`, `out`,
+`snm`, `toc`, and `vrb`) are likewise excluded from the durable public payload.
+The manuscript-PDF branch
 additionally enforces the source-requested tagged structure (`Tagged: yes`,
 qpdf-visible `/Lang`, language, and `StructTreeRoot`). The validator accepts
 the catalog `/Lang` when a Poppler build omits its optional `Language:` line.
