@@ -20,6 +20,13 @@ output/**/*.vrb
 .claude/
 .playwright-cli/
 
+# Local credential files. Release tooling reports only the selected variable
+# name and supports an absolute caller-managed path outside the checkout.
+.env
+.env.*
+*.env
+!*.env.example
+
 # Test artifacts
 .coverage
 .coverage.*

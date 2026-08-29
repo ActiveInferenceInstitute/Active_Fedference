@@ -555,7 +555,9 @@ def _require_current_separate_record_metadata(
 def _require_linked_version(
     source: ZenodoDeposition,
     draft: ZenodoDeposition,
-) -> _ZenodoLinkedVersionShape:
+    *,
+    created: object,
+) -> tuple[_ZenodoLinkedVersionShape, str | None]:
     """Prove that *draft* is one of the two safe linked-version shapes."""
     if source.record_id != source.id or draft.record_id != draft.id:
         raise ZenodoError("Zenodo linked version has incomplete record identity")
@@ -587,7 +589,18 @@ def _require_linked_version(
     metadata_is_inherited = source_metadata.canonical_json == draft_metadata.canonical_json
     files_are_inherited = _file_set_identity(source.files) == _file_set_identity(draft.files)
     if metadata_is_inherited and files_are_inherited:
-        return "legacy_inherited"
+        try:
+            created_utc = _optional_utc_timestamp(created, "creation timestamp")
+        except ZenodoError:
+            # The legacy shape is proven by exact metadata and file inheritance;
+            # its optional creation timestamp is informative rather than part of
+            # that proof. Preserve a parseable value without making unrelated
+            # legacy wire spelling a compatibility gate.
+            created_utc = None
+        return "legacy_inherited", created_utc
+
+    created_utc = _optional_utc_timestamp(created, "creation timestamp")
+    draft = replace(draft, created_utc=created_utc)
 
     current_shape_error: ZenodoError | None = None
     try:
@@ -599,7 +612,7 @@ def _require_linked_version(
             raise ZenodoError(
                 "Zenodo separate-record linked draft must have an empty file set"
             )
-        return "current_separate_record"
+        return "current_separate_record", created_utc
 
     if metadata_is_inherited:
         raise ZenodoError(
@@ -724,7 +737,6 @@ def _deposition(payload: object) -> ZenodoDeposition:
         self_url=_optional_text(links.get("self"), "self link"),
         bucket_url=_optional_text(links.get("bucket"), "bucket link"),
         publish_url=_optional_text(links.get("publish"), "publish link"),
-        created_utc=_optional_utc_timestamp(payload.get("created"), "creation timestamp"),
         metadata=ZenodoMetadataSnapshot.from_mapping(metadata),
         files=files,
     )
@@ -922,14 +934,24 @@ class ZenodoClient:
     def _validate_linked_draft_object(
         source: ZenodoDeposition,
         draft: ZenodoDeposition,
+        *,
+        created: object,
     ) -> ZenodoDeposition:
         """Apply the complete linked-draft contract to one full object."""
         if draft.state != "unsubmitted" or draft.reserved_doi is None:
             raise ZenodoError(
                 "Zenodo latest_draft is not an unsubmitted draft with a reserved DOI"
             )
-        linked_version_shape = _require_linked_version(source, draft)
-        return replace(draft, linked_version_shape=linked_version_shape)
+        linked_version_shape, created_utc = _require_linked_version(
+            source,
+            draft,
+            created=created,
+        )
+        return replace(
+            draft,
+            created_utc=created_utc,
+            linked_version_shape=linked_version_shape,
+        )
 
     def _validated_linked_draft_id(
         self,
@@ -937,9 +959,11 @@ class ZenodoClient:
         draft_id: int,
     ) -> ZenodoDeposition:
         """Fetch and fully validate one distinct draft deposition id."""
+        draft, payload = self._get_deposition_response(draft_id)
         return self._validate_linked_draft_object(
             source,
-            self.get_deposition(draft_id),
+            draft,
+            created=payload.get("created"),
         )
 
     def _validated_linked_draft(
@@ -973,7 +997,7 @@ class ZenodoClient:
         if len(payload) >= _DEPOSITION_LIST_PAGE_SIZE:
             raise ZenodoError("Zenodo draft listing may be truncated")
 
-        candidates: list[ZenodoDeposition] = []
+        candidates: list[tuple[ZenodoDeposition, Mapping[Any, Any]]] = []
         for item in payload:
             if not isinstance(item, Mapping) or not _FULL_DEPOSITION_FIELDS.issubset(
                 item.keys()
@@ -988,14 +1012,19 @@ class ZenodoClient:
                 raise ZenodoError(
                     "Zenodo concept-linked listing candidate is not unsubmitted"
                 )
-            candidates.append(deposition)
+            candidates.append((deposition, item))
 
         if len(candidates) != 1:
             raise ZenodoError(
                 "Zenodo draft listing did not return exactly one distinct "
                 "concept-linked draft"
             )
-        listed = self._validate_linked_draft_object(source, candidates[0])
+        listed_deposition, listed_payload = candidates[0]
+        listed = self._validate_linked_draft_object(
+            source,
+            listed_deposition,
+            created=listed_payload.get("created"),
+        )
         refetched = self._validated_linked_draft_id(source, listed.id)
         if (
             listed.metadata.canonical_json != refetched.metadata.canonical_json

@@ -128,8 +128,9 @@ def main(
             )
         ):
             parser.error(
-                "--new-version-of is inspection-only; use the returned --deposition-id "
-                "for metadata, file, verification, or publication operations"
+                "--new-version-of is limited to linked-draft creation or recovery; "
+                "use the returned --deposition-id for metadata, file, verification, "
+                "or publication operations"
             )
         if args.update_metadata and args.reserve:
             parser.error("--update-metadata requires an existing --deposition-id")

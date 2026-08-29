@@ -101,6 +101,10 @@ class _ZenodoHandler(BaseHTTPRequestHandler):
             "conceptrecid": "6",
             "conceptdoi": "10.5281/zenodo.6",
             "state": state,
+            # Ordinary deposition operations do not depend on creation time.
+            # This deliberately non-profile spelling proves that only linked
+            # separate-record validation applies the strict RFC 3339 parser.
+            "created": "2026-08-28 01:30:00Z",
             **({"doi": "10.5281/zenodo.7"} if state == "done" else {}),
             "metadata": metadata,
             "links": {
@@ -828,6 +832,7 @@ def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
         assert reserved.record_id == 7
         assert reserved.concept_record_id == 6
         assert reserved.concept_doi == "10.5281/zenodo.6"
+        assert reserved.created_utc is None
         summary = reserved.as_dict()
         assert summary["metadata"]["title"] == "Release draft"
         assert summary["metadata_sha256"] == reserved.metadata.sha256
@@ -850,6 +855,7 @@ def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
             {"title": "Updated", "doi": "10.5281/zenodo.7"},
         )
         assert updated.state == "unsubmitted"
+        assert updated.created_utc is None
         assert updated.metadata.as_dict()["title"] == "Updated"
         assert _ZenodoHandler.put_payloads == [{"metadata": {"title": "Updated"}}]
 
@@ -862,6 +868,7 @@ def test_client_round_trip_uses_typed_draft_boundary(tmp_path: Path) -> None:
         published = client.publish_verified_pdf(7, pdf)
         assert published.state == "done"
         assert published.doi == "10.5281/zenodo.7"
+        assert published.created_utc is None
         assert _ZenodoHandler.publish_calls == 1
         assert _ZenodoHandler.authorization_headers
         assert set(_ZenodoHandler.authorization_headers) == {"Bearer test-token"}
@@ -960,6 +967,17 @@ def test_legacy_linked_version_does_not_require_a_creation_timestamp(
     new_version_client: ZenodoClient,
 ) -> None:
     _NewVersionHandler.draft_created = None
+
+    result = new_version_client.new_version(7)
+
+    assert result.linked_version_shape == "legacy_inherited"
+    assert result.created_utc is None
+
+
+def test_legacy_linked_version_ignores_an_unneeded_creation_timestamp_spelling(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.draft_created = "2026-08-28 01:30:00Z"
 
     result = new_version_client.new_version(7)
 
@@ -1892,7 +1910,7 @@ def test_cli_combines_exact_pdf_verification_and_publication_over_loopback(
         ["--verify", "paper.pdf", "--publish", "--confirm-publish"],
     ],
 )
-def test_cli_new_version_operation_is_inspection_only(
+def test_cli_new_version_operation_rejects_follow_on_draft_mutation(
     mutation_flags: list[str],
 ) -> None:
     with pytest.raises(SystemExit) as exc_info:

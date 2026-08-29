@@ -43,8 +43,10 @@ shorter software `publication.description`. `codemeta.json` carries both
 fields explicitly. `src/publication/identifiers.py` provides the shared
 normalization contract; `src/publication/zenodo.py` provides the typed,
 standard-library client; and `scripts/zenodo_release.py` is the thin CLI
-boundary. The token is read from an ignored dotenv file or process environment
-and is never committed, printed, or included in the release manifest.
+boundary. The token is read from a caller-selected ignored dotenv file or the
+process environment and is never committed, printed, or included in the
+release manifest. Prefer an absolute path outside the checkout; if a token file
+is placed at the repository root, `.env`, `.env.*`, and `*.env` are ignored.
 
 ## Immutable v1.0.4 record
 
@@ -132,7 +134,7 @@ title/abstract, license, attribution, confidentiality disposition, repository
 destination, target date, and authority to create the linked Zenodo draft.
 
 ```bash
-ENV_FILE="/path/to/ignored/zenodo.env"
+ENV_FILE="/absolute/path/outside/the/checkout/zenodo.env"
 SOURCE_ID="21972644"  # latest published deposition, not the global concept id
 
 uv run --locked python scripts/zenodo_release.py \
@@ -155,7 +157,8 @@ development state to the assigned DOI/date final release identity and removing
 `doi_status`. Then emit metadata, regenerate the complete source-bound
 analysis/hydration/render chain, and run the release checks.
 
-`--new-version-of` is deliberately inspection-only. It cannot be combined with
+`--new-version-of` is deliberately limited to linked-draft creation or recovery.
+It may create persistent remote draft state, but it cannot be combined with
 metadata updates, file operations, verification, or publication; every later
 operation must select the inspected draft explicitly with `--deposition-id`.
 The client also rejects HTTP redirects rather than forwarding the bearer token
