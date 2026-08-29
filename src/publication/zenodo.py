@@ -34,7 +34,8 @@ DEFAULT_TOKEN_ENV_NAMES: tuple[str, ...] = (
 _SERVER_OWNED_METADATA_FIELDS = frozenset({"doi", "prereserve_doi"})
 _ZenodoLinkedVersionShape = Literal["legacy_inherited", "current_separate_record"]
 _RFC3339_TIMESTAMP_RE = re.compile(
-    r"\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})\Z"
+    r"\A(?P<date_time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})"
+    r"(?P<fraction>\.\d{1,6})?(?P<offset>Z|[+-]\d{2}:\d{2})\Z"
 )
 _ALREADY_EXISTS_RESPONSE = {"status": 400, "message": "A draft already exists."}
 _DEPOSITION_LIST_PAGE_SIZE = 100
@@ -274,13 +275,25 @@ def _optional_utc_timestamp(value: object, field: str) -> str | None:
     """Parse one optional strict RFC 3339 wire timestamp and canonicalize UTC."""
     if value is None:
         return None
-    if not isinstance(value, str) or _RFC3339_TIMESTAMP_RE.fullmatch(value) is None:
+    if not isinstance(value, str):
         raise ZenodoError(f"Zenodo returned an invalid {field}")
-    if not value.endswith("Z"):
-        offset = value[-6:]
+    match = _RFC3339_TIMESTAMP_RE.fullmatch(value)
+    if match is None:
+        raise ZenodoError(f"Zenodo returned an invalid {field}")
+    offset = match.group("offset")
+    if offset != "Z":
         if int(offset[1:3]) > 23 or int(offset[4:6]) > 59:
             raise ZenodoError(f"Zenodo returned an invalid {field}")
-    iso_value = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+    fraction = match.group("fraction")
+    # Python 3.10 accepts only three or six fractional digits here, while the
+    # validated RFC 3339 boundary permits every precision from one through six.
+    normalized_fraction = (
+        f".{fraction[1:].ljust(6, '0')}" if fraction is not None else ""
+    )
+    normalized_offset = "+00:00" if offset == "Z" else offset
+    iso_value = (
+        f"{match.group('date_time')}{normalized_fraction}{normalized_offset}"
+    )
     try:
         parsed = datetime.fromisoformat(iso_value)
     except ValueError as exc:
