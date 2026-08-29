@@ -1,6 +1,6 @@
 {
   "analysis_input_snapshot": {
-    "input_digest": "c819a9f891a6122a1334d124ff3ceb55c3fbbe00128975baa3bf4b1a5e643d59",
+    "input_digest": "7728aeb482f348f2834389f4a41c1aa8370f3ded52cf29746cd9aef566378d6e",
     "input_hashes": {
       "experiment_plan.yaml": "9c3f279e61fc31da6dd40b5f49061cf3db9d9ba8ba228d817ac8fdf14ee7b76f",
       "manuscript/00_abstract.md": "d1582ba54dee5dcf47da12bddcfc82ddef985847ed603a994815a85377154b44",
@@ -17,7 +17,7 @@
       "manuscript/11_methods_contamination.md": "3f4b90367006abdc11daf55a81a2c390e86e9abff834d36c94d5db32170a6ff8",
       "manuscript/12_methods_experimental_design.md": "e3d9507f701918b95e899a863d2e11bccdbb692ed49da0d7c9264e4ac99f697b",
       "manuscript/13_methods_statistics.md": "fd5c3d8d6dad38516bb196edd4834fa5e8d54180a4b70764d91de9ba29b12f67",
-      "manuscript/14_formalism.md": "71e0cbd9d9b91247e414d7c4e90c588176fc333f20ae29f45748aa8f1a06a691",
+      "manuscript/14_formalism.md": "c3d4dda7f87f472888b9241fdda94469b1a208656ce42d4fce5be81804cdbd38",
       "manuscript/15_results_recovery.md": "ced1e3188af14c44b1c7ba0b75790a2cbf81709010c780a9b851b36d2dafeb47",
       "manuscript/16_results_belief_sharing.md": "d74ca7ee8fa632f4fb903bdd021396c428882f61412591f4be11e5b85069ef4c",
       "manuscript/17_results_language.md": "8ae27944f93f878136612871f9ad5148afb701855e268ac1f676f640e1f21d20",
@@ -49,7 +49,7 @@
       "manuscript/S16_results_hierarchical_bmr.md": "8ea6a09844f5062c0db78b082e7b2de687aefc46cf68bb3fd4abb20700279aea",
       "manuscript/S17_results_heuristic_characterization.md": "d90caf0f6b791e80d2d30f38661600bf1bfe5faa3b9d8d4e15c311e59707e6da",
       "manuscript/SYNTAX.md": "ad1399893c8ef8a67a871ce8c42e6e4d5bbbb2167187c03a74300091e0258a81",
-      "manuscript/config.yaml": "b187ab01fa98f60e09ab94cf0b5a5c9647da52ed93c6bebd46da2db94a2bb0d1",
+      "manuscript/config.yaml": "85a54abc8cf831a02a6ed914c37dafb731cc0f06598bac48a58b7163f3f3144a",
       "manuscript/preamble.md": "e75ada000c3ceeb452e9a840d5469d747ebd616747864a08df3b94ba51a9942d",
       "pyproject.toml": "15f92f85ef77fe280db45ad3596cd22b550f768a9a1fad3870b88cc672386ae3",
       "scripts/02_run_analysis.py": "45feb30f7b36933d1b942eacf7ad4ac16b15fbb44b614af1f581384c772734cd",
@@ -164,7 +164,7 @@
       "src/invariants.py": "694b9eb85b548ec62be6a5966bbdfe55236bae432873f81d0399e3d0a5da3a20",
       "src/manuscript_variables.py": "89fa4ef0cf39cf522777cb2f9017ef871f08d3ed93c6aa2259f0347d41cc9e17",
       "src/manuscript_vars/__init__.py": "0a574c069fc4e5645a50fa8bf9c7de0dbb59b7fd104104b41eb4c21ffd977d34",
-      "src/manuscript_vars/generate.py": "b05e7454b474e0301d5d872d16d5d68f8eb399221f801f842fd61b7168fad8f9",
+      "src/manuscript_vars/generate.py": "d8ff66cad19a65a5a288c9d196b601068e17e8a2c9ca1add4b565cd31e976ef8",
       "src/manuscript_vars/loaders.py": "b107891ef7bc27e6ddef44ff5cae4ddfab1365f0866201e3fcbda37cd7e6f086",
       "src/manuscript_vars/render.py": "e7da6761a9262899867e403ccef950b9b05f36a253c7ac12e7bae50ec3d9d03a",
       "src/manuscript_vars/tokens.py": "2d7efeb46aefad5501e9838a901c489f0928bd144d19e0fa107f86b4bccb4c2c",
@@ -172,14 +172,14 @@
       "src/publication/__init__.py": "96f053b1a089d320354c4316d15e44dce3de5b0ff921edfcc21227503b3e49ff",
       "src/publication/clean_checkout.py": "b85b678a9e6cbadaa62d7e072a196209f2a70b1041f07c64e4e80fda64f3b8b9",
       "src/publication/identifiers.py": "416ae23be367c5a10c9f03c235f4d5a221ea70a75e54b75a89afdd05affafaef",
-      "src/publication/metadata.py": "12b416e867596f732828a38165f2258bfeeb2b13dda1843857a69a3d8fa297c2",
+      "src/publication/metadata.py": "3ea539a9fea30cb45e46157be3648aec078068918b55cef56e4fd82550d2f4e4",
       "src/publication/pipeline_freshness.py": "211763a46e8475146b2cf951797d2a7b1ced675d62c91b963901ad9210796c0e",
       "src/publication/release_assets.py": "1711c2a671b158b33b46790167997e71d42223d0205186bfec4050d6300fdd4d",
       "src/publication/release_manifest.py": "02d35b1818c97bc34546bd50ec6054f6db1411ad67ecd76e53abb0eb824199a8",
       "src/publication/surface_validation.py": "0e21e260b0a4cdd12c437b0cfdaf1dedad8ae17c0d03d95b49e3eaa01248b204",
       "src/publication/validation_receipt.py": "fb0fe50a435b2a16956297a8e2b81677e031da7f2671f3e7c508e158c79a7a7e",
       "src/publication/web_package.py": "acf85772291fab6175d86475ca90417095608bd87fc955e1a82c00fb98089bfc",
-      "src/publication/zenodo.py": "f1bf91ed253fd8a805418d6e04f4442410962a1862e3d62aa82bc4fca065dc52",
+      "src/publication/zenodo.py": "867fb017563f59baa2fb8e054e0285c8e44480e64552b75b39a37e273f667390",
       "uv.lock": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254"
     }
   },

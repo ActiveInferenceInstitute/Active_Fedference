@@ -1,9 +1,9 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "e52338819688ea7785285d6c41d6510427515f677f335b9d610c299a2fc04370",
+  "binding_sha256": "f2721b04638b104f0bfa84dce05789b1ab021c41a3aac8af9c17ad59bb571b68",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "b0bfa22163e312747d16e854740925fde1d57c0513216ac2666219f8cf50449a",
-  "combined_size_bytes": 346856,
+  "combined_sha256": "fd8c1dbad8375f71feb6bd197bfd66298609270082d90a4d5ccf9131c5c8940d",
+  "combined_size_bytes": 346836,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
@@ -87,19 +87,19 @@
     {
       "ordinal": 14,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "b59f69831140ae37019853b4bbc9ade6a01d60b5ac69abffff4a3b2848dd875b",
+      "sha256": "634f032b5671c4d2e9c086ec390175be1896b7bdd181251cfd4fe9a73527c2f6",
       "size_bytes": 13715
     },
     {
       "ordinal": 15,
       "path": "output/manuscript/14_formalism.md",
-      "sha256": "0aa1ab05e8d2995e0c5118494713ec72888071acf8c152f7ac6247d2774cceab",
-      "size_bytes": 18621
+      "sha256": "8b205601ab318a604e3af4103fb764bba07bcc39ccc7c5fdcd7cd681867d238d",
+      "size_bytes": 18641
     },
     {
       "ordinal": 16,
       "path": "output/manuscript/15_results_recovery.md",
-      "sha256": "1415dd3566f52f9d607e4afaa9dbc6a9caaff3bc69b67d1544d7b86a92e94223",
+      "sha256": "455871d73f5d6ecd49c85c8eb12ff57a6f639362d10600b0244358f780006583",
       "size_bytes": 5931
     },
     {
@@ -129,8 +129,8 @@
     {
       "ordinal": 21,
       "path": "output/manuscript/20_results_baseline.md",
-      "sha256": "20f16b1129896d41f61d6c6d65b6c7c18645713d2a06807a3868c7d5873622a8",
-      "size_bytes": 7791
+      "sha256": "18c4a122f376d059fcfd0853106607abb7b94a8977fe9710f07d22930e49d638",
+      "size_bytes": 7758
     },
     {
       "ordinal": 22,
@@ -165,8 +165,8 @@
     {
       "ordinal": 27,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "59869056226806630e063ec25bb13af7b178c78c7fabb415b9ced00f16a579ab",
-      "size_bytes": 7690
+      "sha256": "c595f3a8789b923059d55f83def3399cf0220a51da25edaf7d89bb0d75400d59",
+      "size_bytes": 7683
     },
     {
       "ordinal": 28,
@@ -265,7 +265,7 @@
       "size_bytes": 1247
     }
   ],
-  "ordered_inputs_sha256": "9919967c87f5ab3dc7bcc80a9c8c3f332f5c47bef261d462fa18f7bfa5ee03e0",
+  "ordered_inputs_sha256": "697aee5c941ed3956eb60b5ddbf9db831d91870742ace0ca1edbcbbdb91de44b",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }

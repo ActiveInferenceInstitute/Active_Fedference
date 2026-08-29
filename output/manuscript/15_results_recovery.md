@@ -87,9 +87,9 @@ at the level of the recovery limits is what lets the robustness claims of
 [@sec:results-robustness] and [@sec:results-baseline] rest on the per-agent axis
 without leaning on the heuristic.
 
-264 of 266 acceptance criteria are verified. The
+265 of 267 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-91.08% (gate $\ge 90\%$), with every stochastic step threaded
+91.13% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is

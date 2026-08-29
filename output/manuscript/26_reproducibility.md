@@ -44,10 +44,10 @@ rendered.
 | Python | 3.13.11 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | not installed |
+| PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | b187ab01fa98f60e |
-| Reproducible build epoch (UTC) | 2026-08-28T11:02:22Z |
+| Config hash (SHA-256, first 16) | 85a54abc8cf831a0 |
+| Reproducible build epoch (UTC) | 2026-08-29T03:13:07Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -81,11 +81,11 @@ insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
-- Acceptance criteria: 266 total, 264 passing.
-- Project test suite: 2262 collected cases; the bound successful
+- Acceptance criteria: 267 total, 265 passing.
+- Project test suite: 2351 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 91.08% (achieved by the bound full
+- Line coverage on `src/`: 91.13% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 

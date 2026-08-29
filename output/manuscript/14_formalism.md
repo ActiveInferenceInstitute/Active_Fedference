@@ -40,12 +40,12 @@ implementation's closed-form switch band, so their zeros are exact branch
 identities — guaranteed by construction, not measurements that could have come
 out otherwise. Their genuine falsifiers are the *off-switch* convergence
 residuals, evaluated just outside the band (at
-$\alpha = 1.00001$, $\beta = 1e-06$,
+$\alpha = 1.00001$, $\beta = 1.00 \times 10^{-6}$,
 $q_{\rm loss} = 1.00 \times 10^{-6}$) where the general formulas run
 and a nonzero gap is possible: those residuals are
-1.66 \times 10^{-5},
-1.24 \times 10^{-5}, and
-1.12 \times 10^{-5} respectively, and any failure of
+$1.66 \times 10^{-5}$,
+$1.24 \times 10^{-5}$, and
+$1.12 \times 10^{-5}$ respectively, and any failure of
 those quantities to shrink toward the limit would falsify the containment
 claim. The posterior row is a measured identity on the general code path, so
 its near-zero residual is itself the falsification surface. The aggregate

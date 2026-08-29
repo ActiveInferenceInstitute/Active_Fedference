@@ -1,4 +1,4 @@
-\DocumentMetadata{pdfversion=2.0,lang=en,tagging=on,pdfstandard=ua-2}
+\DocumentMetadata{pdfversion=2.0,lang=en,tagging=on}
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
@@ -166,14 +166,14 @@
   pdfcreator={LaTeX via pandoc}}
 
 \ifXeTeX
-\special{pdf:trailerid [ <2c7e3b87a56deafdf0329ef56f8b4f49> <2c7e3b87a56deafdf0329ef56f8b4f49> ]}
+\special{pdf:trailerid [ <94b0559ef36458bc078a44efe106669c> <94b0559ef36458bc078a44efe106669c> ]}
 \fi
 \ifPDFTeX
 \pdftrailerid{}
-\pdftrailer{/ID [ <2c7e3b87a56deafdf0329ef56f8b4f49> <2c7e3b87a56deafdf0329ef56f8b4f49> ]}
+\pdftrailer{/ID [ <94b0559ef36458bc078a44efe106669c> <94b0559ef36458bc078a44efe106669c> ]}
 \fi
 \ifLuaTeX
-\pdfvariable trailerid {[ <2c7e3b87a56deafdf0329ef56f8b4f49> <2c7e3b87a56deafdf0329ef56f8b4f49> ]}
+\pdfvariable trailerid {[ <94b0559ef36458bc078a44efe106669c> <94b0559ef36458bc078a44efe106669c> ]}
 \fi
 
 \title{Robust Belief Sharing in Federated Active Inference}
@@ -2630,10 +2630,10 @@ range shown as a min--max bar. The fixed input seed is \(20260728\) on
 the \(arm64\) machine using Python \(3.13.11\) and NumPy \(2.4.2\).
 
 The measured log--log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.96
-(log-linear), 0.93 (iterative robust), 0.78 (variational), 1.64 (naive
+orders, not performance guarantees: agent-axis slopes are 0.97
+(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.64 (naive
 self-excluding sharing), and 1.91 (robust self-excluding sharing);
-state-axis slopes are 0.97, 0.96, and 0.96; the modality-axis inference
+state-axis slopes are 0.97, 0.95, and 0.95; the modality-axis inference
 slope is 0.66. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
@@ -2713,18 +2713,18 @@ implementation's closed-form switch band, so their zeros are exact
 branch identities --- guaranteed by construction, not measurements that
 could have come out otherwise. Their genuine falsifiers are the
 \emph{off-switch} convergence residuals, evaluated just outside the band
-(at \(\alpha = 1.00001\), \(\beta = 1e-06\),
+(at \(\alpha = 1.00001\), \(\beta = 1.00 \times 10^{-6}\),
 \(q_{\rm loss} = 1.00 \times 10^{-6}\)) where the general formulas run
-and a nonzero gap is possible: those residuals are 1.66
-\times 10\^{}\{-5\}, 1.24 \times 10\^{}\{-5\}, and 1.12
-\times 10\^{}\{-5\} respectively, and any failure of those quantities to
-shrink toward the limit would falsify the containment claim. The
-posterior row is a measured identity on the general code path, so its
-near-zero residual is itself the falsification surface. The aggregate
-row's zero at exactly \(c=0\) is likewise branch-exact; the identity is
-additionally exercised on the iterative code path at near-zero
-robustness, where the consensus must still land on the log-linear pool
-to tight tolerance.
+and a nonzero gap is possible: those residuals are
+\(1.66 \times 10^{-5}\), \(1.24 \times 10^{-5}\), and
+\(1.12 \times 10^{-5}\) respectively, and any failure of those
+quantities to shrink toward the limit would falsify the containment
+claim. The posterior row is a measured identity on the general code
+path, so its near-zero residual is itself the falsification surface. The
+aggregate row's zero at exactly \(c=0\) is likewise branch-exact; the
+identity is additionally exercised on the iterative code path at
+near-zero robustness, where the consensus must still land on the
+log-linear pool to tight tolerance.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
@@ -3139,8 +3139,8 @@ of the recovery limits is what lets the robustness claims of
 sec.~\ref{sec:results-robustness} and sec.~\ref{sec:results-baseline}
 rest on the per-agent axis without leaning on the heuristic.
 
-264 of 266 acceptance criteria are verified. The pure-NumPy/SciPy core
-carries project test coverage of 91.08\% (gate \(\ge 90\%\)), with every
+265 of 267 acceptance criteria are verified. The pure-NumPy/SciPy core
+carries project test coverage of 91.13\% (gate \(\ge 90\%\)), with every
 stochastic step threaded through a single seeded
 \breaktt{np.random.default\_rng(0)}. sec.~\ref{sec:reproducibility}
 records the full environment fingerprint, and the expected-free-energy
@@ -4021,25 +4021,25 @@ Linear\texorpdfstring{\ensuremath{\to}}{->}ReLU\texorpdfstring{\ensuremath{\to}}
 across 5 clients --- and fuses per-test-point softmax predictions with
 \breaktt{robust\_aggregate} at \breaktt{robustness\ =\ 0.5}
 (\breaktt{fedference.bnn\_baseline\_torch.run\_bnn\_torch\_experiment},
-run under PyTorch not installed). Every number here is executed, not
-assumed: the consensus is a valid probability simplex (maximum deviation
-from unit mass N/A over the test set) and is bit-identical across
-repeated seeded runs (deterministic: N/A). Held-out consensus accuracy
-at contamination N/A is N/A (PyTorch not run) for the \(\beta\to 0\)
-standard client and N/A (PyTorch not run) for the \(\beta = 0.5\) robust
-client --- this is the same 0.40-contamination endpoint where the NumPy
-baseline above also loses its separation (a single seed here, versus the
-64-seed mean above), so the small gap is consistent with, not in tension
-with, that figure's genuine mid-range margin: both axes show the same
-qualitative collapse-together behavior at the sweep's most extreme
-point. This run confirms that the server-side aggregation API transfers
-to this neural-network setting and produces a valid, deterministic
-consensus; it does not establish model-class universality or that the
-client-side \(\beta\)-loss's robustness margin transfers at this scale;
-the certified NumPy logistic-regression baseline above remains the
-axis's rigorous evidence. When PyTorch is not installed, the pipeline
-records unavailable-value sentinels; certified builds install the
-\texttt{torch} optional extra (sec.~\ref{sec:reproducibility}).
+run under PyTorch 2.12.1). Every number here is executed, not assumed:
+the consensus is a valid probability simplex (maximum deviation from
+unit mass 2.22e-16 over the test set) and is bit-identical across
+repeated seeded runs (deterministic: Yes). Held-out consensus accuracy
+at contamination 0.40 is 0.558 for the \(\beta\to 0\) standard client
+and 0.545 for the \(\beta = 0.5\) robust client --- this is the same
+0.40-contamination endpoint where the NumPy baseline above also loses
+its separation (a single seed here, versus the 64-seed mean above), so
+the small gap is consistent with, not in tension with, that figure's
+genuine mid-range margin: both axes show the same qualitative
+collapse-together behavior at the sweep's most extreme point. This run
+confirms that the server-side aggregation API transfers to this
+neural-network setting and produces a valid, deterministic consensus; it
+does not establish model-class universality or that the client-side
+\(\beta\)-loss's robustness margin transfers at this scale; the
+certified NumPy logistic-regression baseline above remains the axis's
+rigorous evidence. When PyTorch is not installed, the pipeline records
+unavailable-value sentinels; certified builds install the \texttt{torch}
+optional extra (sec.~\ref{sec:reproducibility}).
 
 \section{Discussion: what the evidence supports}\label{sec:discussion}
 
@@ -5154,10 +5154,10 @@ Field & Value \\
 Python & 3.13.11 \\
 NumPy & 2.4.2 \\
 SciPy & 1.18.0 \\
-PyTorch (MLP complement) & not installed \\
+PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
-Config hash (SHA-256, first 16) & b187ab01fa98f60e \\
-Reproducible build epoch (UTC) & 2026-08-28T11:02:22Z \\
+Config hash (SHA-256, first 16) & 85a54abc8cf831a0 \\
+Reproducible build epoch (UTC) & 2026-08-29T03:13:07Z \\
 \end{longtable}
 
 The exact environment used for the reported run is recorded in
@@ -5197,13 +5197,13 @@ surface}\label{sec:repro-tests}
 \begin{itemize}
 \tightlist
 \item
-  Acceptance criteria: 266 total, 264 passing.
+  Acceptance criteria: 267 total, 265 passing.
 \item
-  Project test suite: 2262 collected cases; the bound successful receipt
+  Project test suite: 2351 collected cases; the bound successful receipt
   records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 \item
-  Line coverage on \texttt{src/}: 91.08\% (achieved by the bound full
+  Line coverage on \texttt{src/}: 91.13\% (achieved by the bound full
   gate; \(\ge 90\%\) line coverage is enforced in CI, while branch
   coverage is tracked separately in CI).
 \end{itemize}
