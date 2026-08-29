@@ -13,12 +13,14 @@ import hashlib
 import json
 import math
 import os
+import re
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Literal, Mapping
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote, urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from publication.identifiers import normalize_doi
@@ -30,10 +32,120 @@ DEFAULT_TOKEN_ENV_NAMES: tuple[str, ...] = (
     "ZENODO_API_TOKEN",
 )
 _SERVER_OWNED_METADATA_FIELDS = frozenset({"doi", "prereserve_doi"})
+_ZenodoLinkedVersionShape = Literal["legacy_inherited", "current_separate_record"]
+_RFC3339_TIMESTAMP_RE = re.compile(
+    r"\A(?P<date_time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})"
+    r"(?P<fraction>\.\d{1,6})?(?P<offset>Z|[+-]\d{2}:\d{2})\Z"
+)
+_ALREADY_EXISTS_RESPONSE = {"status": 400, "message": "A draft already exists."}
+_DEPOSITION_LIST_PAGE_SIZE = 100
+_HTTP_ERROR_BODY_LIMIT = 64 * 1024
+_JSON_RESPONSE_BODY_LIMIT = 16 * 1024 * 1024
+_FULL_DEPOSITION_FIELDS = frozenset(
+    {"id", "record_id", "conceptrecid", "conceptdoi", "state", "metadata", "links", "files"}
+)
 
 
 class ZenodoError(RuntimeError):
     """Raised when Zenodo rejects or cannot complete a request."""
+
+
+class _ZenodoHTTPError(ZenodoError):
+    """Typed HTTP failure with no retained response body or credential echo."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        status: int,
+        exact_already_exists: bool,
+    ) -> None:
+        super().__init__(message)
+        self.status = status
+        self._exact_already_exists = exact_already_exists
+
+
+def _http_error_without_response_body(error: HTTPError) -> _ZenodoHTTPError:
+    """Reduce an untrusted HTTP response to one safe, body-free exception.
+
+    Reads are bounded and every ordinary read/parse failure degrades to a
+    generic status-only error.  The helper returns normally, so its frame is
+    absent from the traceback when the caller raises the returned exception;
+    its ``finally`` block also scrubs untrusted bytes if a process-level
+    interruption escapes.  No server-supplied diagnostic text is retained.
+    """
+    status = int(error.code)
+    error_bytes = b""
+    parsed_error: object | None = None
+    exact_already_exists = False
+    try:
+        error_bytes = error.read(_HTTP_ERROR_BODY_LIMIT + 1)
+        if len(error_bytes) <= _HTTP_ERROR_BODY_LIMIT:
+            parsed_error = json.loads(error_bytes)
+            exact_already_exists = (
+                status == 400
+                and isinstance(parsed_error, Mapping)
+                and dict(parsed_error) == _ALREADY_EXISTS_RESPONSE
+            )
+    except Exception:
+        exact_already_exists = False
+    finally:
+        try:
+            try:
+                error.close()
+            except Exception:
+                pass
+        finally:
+            del error, error_bytes, parsed_error
+    return _ZenodoHTTPError(
+        f"Zenodo HTTP {status}",
+        status=status,
+        exact_already_exists=exact_already_exists,
+    )
+
+
+def _json_contains_token_echo(value: object, token: str) -> bool:
+    """Return whether a JSON key or value contains the bearer token."""
+    if isinstance(value, str):
+        return token in value
+    if isinstance(value, list):
+        return any(_json_contains_token_echo(item, token) for item in value)
+    if isinstance(value, dict):
+        return any(
+            (isinstance(key, str) and token in key)
+            or _json_contains_token_echo(item, token)
+            for key, item in value.items()
+        )
+    return False
+
+
+def _json_response_without_response_body(
+    response: Any,
+    token: str,
+) -> tuple[object | None, ZenodoError | None]:
+    """Return parsed bounded JSON or a generic body-free failure.
+
+    All server-controlled reads and parsing occur in a helper that returns
+    normally.  Consequently, malformed, truncated, invalid-encoding, deeply
+    nested, and oversized responses cannot attach their bytes to the later
+    public exception traceback.
+    """
+    raw = b""
+    parsed: object | None = None
+    try:
+        raw = response.read(_JSON_RESPONSE_BODY_LIMIT + 1)
+        if not isinstance(raw, bytes) or len(raw) > _JSON_RESPONSE_BODY_LIMIT:
+            return None, ZenodoError("Zenodo returned malformed or oversized JSON content")
+        if not raw:
+            return {}, None
+        parsed = json.loads(raw)
+        if _json_contains_token_echo(parsed, token):
+            return None, ZenodoError("Zenodo response echoed bearer credential")
+        return parsed, None
+    except Exception:
+        return None, ZenodoError("Zenodo returned malformed or oversized JSON content")
+    finally:
+        del response, raw, parsed, token
 
 
 class _RejectRedirects(HTTPRedirectHandler):
@@ -120,6 +232,8 @@ class ZenodoDeposition:
     publish_url: str | None
     metadata: ZenodoMetadataSnapshot
     files: tuple[ZenodoFile, ...]
+    created_utc: str | None = None
+    linked_version_shape: _ZenodoLinkedVersionShape | None = None
 
     def as_dict(self) -> dict[str, Any]:
         """Return a token- and local-path-free inspection summary."""
@@ -133,6 +247,8 @@ class ZenodoDeposition:
             "reserved_doi": self.reserved_doi,
             "reserved_record_id": self.reserved_record_id,
             "html_url": self.html_url,
+            "created_utc": self.created_utc,
+            "linked_version_shape": self.linked_version_shape,
             "metadata_sha256": self.metadata.sha256,
             "metadata": self.metadata.as_dict(),
             "files": [
@@ -155,6 +271,65 @@ def _optional_text(value: object, field: str) -> str | None:
     return value
 
 
+def _optional_utc_timestamp(value: object, field: str) -> str | None:
+    """Parse one optional strict RFC 3339 wire timestamp and canonicalize UTC."""
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise ZenodoError(f"Zenodo returned an invalid {field}")
+    match = _RFC3339_TIMESTAMP_RE.fullmatch(value)
+    if match is None:
+        raise ZenodoError(f"Zenodo returned an invalid {field}")
+    offset = match.group("offset")
+    if offset != "Z":
+        if int(offset[1:3]) > 23 or int(offset[4:6]) > 59:
+            raise ZenodoError(f"Zenodo returned an invalid {field}")
+    fraction = match.group("fraction")
+    # Python 3.10 accepts only three or six fractional digits here, while the
+    # validated RFC 3339 boundary permits every precision from one through six.
+    normalized_fraction = (
+        f".{fraction[1:].ljust(6, '0')}" if fraction is not None else ""
+    )
+    normalized_offset = "+00:00" if offset == "Z" else offset
+    iso_value = (
+        f"{match.group('date_time')}{normalized_fraction}{normalized_offset}"
+    )
+    try:
+        parsed = datetime.fromisoformat(iso_value)
+    except ValueError as exc:
+        raise ZenodoError(f"Zenodo returned an invalid {field}") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ZenodoError(f"Zenodo returned an invalid {field}")
+    return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _is_existing_draft_response(error: _ZenodoHTTPError) -> bool:
+    """Recognize only Zenodo's exact production already-exists response."""
+    return error.status == 400 and error._exact_already_exists
+
+
+def _latest_draft_link(
+    payload: Mapping[Any, Any],
+    *,
+    operation: str,
+    required: bool,
+) -> str | None:
+    """Read one authoritative ``latest_draft`` link without following it."""
+    links = payload.get("links")
+    if not isinstance(links, Mapping):
+        raise ZenodoError(f"Zenodo {operation} has malformed links")
+    latest_draft = links.get("latest_draft")
+    if latest_draft is None and not required:
+        return None
+    if (
+        not isinstance(latest_draft, str)
+        or not latest_draft
+        or latest_draft != latest_draft.strip()
+    ):
+        raise ZenodoError(f"Zenodo {operation} has no valid latest_draft link")
+    return latest_draft
+
+
 def _api_base(value: str) -> str:
     """Validate an API endpoint before a bearer token can be sent to it."""
     if not isinstance(value, str) or not value.strip():
@@ -163,6 +338,7 @@ def _api_base(value: str) -> str:
     try:
         parsed = urlsplit(normalized)
         hostname = parsed.hostname
+        parsed.port
     except ValueError as exc:
         raise ZenodoError("Zenodo API base is not a valid URL") from exc
     if parsed.scheme not in {"https", "http"} or not parsed.netloc or hostname is None:
@@ -347,11 +523,55 @@ def _require_same_record_line(
         raise ZenodoError(f"Zenodo {operation} changed the concept identity")
 
 
-def _require_linked_version(
+def _require_current_separate_record_metadata(
     source: ZenodoDeposition,
     draft: ZenodoDeposition,
 ) -> None:
-    """Prove that *draft* is the inherited next version of *source*."""
+    """Validate the current Zenodo new-version metadata normalization.
+
+    Current Zenodo creates a separate empty draft. It retains caller-purpose
+    metadata, resets ``publication_date`` to the draft's UTC creation date,
+    and may omit the source version. No other purpose-metadata drift is safe.
+    """
+    if draft.created_utc is None:
+        raise ZenodoError(
+            "Zenodo separate-record linked draft has no parseable creation timestamp"
+        )
+    expected = _comparable_metadata(source.metadata.as_dict()).as_dict()
+    actual = _comparable_metadata(draft.metadata.as_dict()).as_dict()
+
+    missing = object()
+    expected_version = expected.pop("version", missing)
+    actual_has_version = "version" in actual
+    actual_version = actual.pop("version", None)
+    if actual_has_version and (
+        expected_version is missing or actual_version != expected_version
+    ):
+        raise ZenodoError("Zenodo linked draft version does not match the published source")
+
+    expected.pop("publication_date", None)
+    actual_publication_date = actual.pop("publication_date", None)
+    creation_date = draft.created_utc[:10]
+    if actual_publication_date != creation_date:
+        raise ZenodoError(
+            "Zenodo linked draft publication_date does not match its UTC creation date"
+        )
+
+    expected_snapshot = ZenodoMetadataSnapshot.from_mapping(expected)
+    actual_snapshot = ZenodoMetadataSnapshot.from_mapping(actual)
+    if expected_snapshot.canonical_json != actual_snapshot.canonical_json:
+        raise ZenodoError(
+            "Zenodo linked draft purpose metadata differs from the published source"
+        )
+
+
+def _require_linked_version(
+    source: ZenodoDeposition,
+    draft: ZenodoDeposition,
+    *,
+    created: object,
+) -> tuple[_ZenodoLinkedVersionShape, str | None]:
+    """Prove that *draft* is one of the two safe linked-version shapes."""
     if source.record_id != source.id or draft.record_id != draft.id:
         raise ZenodoError("Zenodo linked version has incomplete record identity")
     if source.concept_record_id is None:
@@ -376,13 +596,44 @@ def _require_linked_version(
         raise ZenodoError("Zenodo linked draft DOI and reservation disagree")
     if source_doi == reserved_doi:
         raise ZenodoError("Zenodo linked draft reused the published source DOI")
-    _require_metadata_match(
-        source.metadata.as_dict(),
-        draft.metadata,
-        operation="linked-version inheritance",
-    )
-    if _file_set_identity(source.files) != _file_set_identity(draft.files):
-        raise ZenodoError("Zenodo linked draft files do not match the published source")
+
+    source_metadata = _comparable_metadata(source.metadata.as_dict())
+    draft_metadata = _comparable_metadata(draft.metadata.as_dict())
+    metadata_is_inherited = source_metadata.canonical_json == draft_metadata.canonical_json
+    files_are_inherited = _file_set_identity(source.files) == _file_set_identity(draft.files)
+    if metadata_is_inherited and files_are_inherited:
+        try:
+            created_utc = _optional_utc_timestamp(created, "creation timestamp")
+        except ZenodoError:
+            # The legacy shape is proven by exact metadata and file inheritance;
+            # its optional creation timestamp is informative rather than part of
+            # that proof. Preserve a parseable value without making unrelated
+            # legacy wire spelling a compatibility gate.
+            created_utc = None
+        return "legacy_inherited", created_utc
+
+    created_utc = _optional_utc_timestamp(created, "creation timestamp")
+    draft = replace(draft, created_utc=created_utc)
+
+    current_shape_error: ZenodoError | None = None
+    try:
+        _require_current_separate_record_metadata(source, draft)
+    except ZenodoError as exc:
+        current_shape_error = exc
+    else:
+        if draft.files:
+            raise ZenodoError(
+                "Zenodo separate-record linked draft must have an empty file set"
+            )
+        return "current_separate_record", created_utc
+
+    if metadata_is_inherited:
+        raise ZenodoError(
+            "Zenodo linked draft file set is neither the exact inherited set nor "
+            "the empty separate-record set"
+        )
+    assert current_shape_error is not None  # guarded by the successful-shape return
+    raise current_shape_error
 
 
 def _require_published_snapshot(
@@ -581,28 +832,222 @@ class ZenodoClient:
             headers=headers,
             method=method.upper(),
         )
+        sanitized_http_error: _ZenodoHTTPError | None = None
+        sanitized_transport_error: ZenodoError | None = None
+        response_payload: object | None = None
+        response_error: ZenodoError | None = None
+        response: Any | None = None
         try:
             with self._opener.open(request, timeout=self._timeout) as response:  # noqa: S310
-                raw = response.read()
+                response_payload, response_error = _json_response_without_response_body(
+                    response,
+                    self._token,
+                )
         except HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace").replace(
-                self._token,
-                "<redacted>",
+            try:
+                sanitized_http_error = _http_error_without_response_body(exc)
+            finally:
+                headers.clear()
+                del request, request_body, body, payload, headers, content_type
+        except URLError:
+            try:
+                sanitized_transport_error = ZenodoError("Zenodo request failed")
+            finally:
+                headers.clear()
+                del request, request_body, body, payload, headers, content_type
+        if sanitized_http_error is not None:
+            # Raise only after leaving the HTTPError handler.  Raising inside
+            # that block—even with ``from None``—would retain the original
+            # response object through ``__context__`` and could preserve a
+            # credential echoed by an untrusted server.  Request/header/body
+            # locals were removed unconditionally in the handler because
+            # exception tracebacks retain the raising frame.
+            raise sanitized_http_error
+        if sanitized_transport_error is not None:
+            raise sanitized_transport_error
+        if response_error is not None or response_payload is None:
+            safe_response_error = response_error or ZenodoError(
+                "Zenodo returned malformed or oversized JSON content"
             )
-            raise ZenodoError(f"Zenodo HTTP {exc.code}: {detail[:500]}") from exc
-        except URLError as exc:
-            reason = str(exc.reason).replace(self._token, "<redacted>")
-            raise ZenodoError(f"Zenodo request failed: {reason}") from exc
-        if not raw:
-            return {}
+            headers.clear()
+            del request, request_body, body, payload, headers, content_type
+            del response, response_payload
+            raise safe_response_error
+        return response_payload
+
+    def _get_deposition_response(
+        self,
+        deposition_id: int,
+    ) -> tuple[ZenodoDeposition, Mapping[Any, Any]]:
+        """Retrieve both the typed deposition and its server response mapping."""
+        payload = self._request(
+            "GET",
+            f"deposit/depositions/{_integer_id(deposition_id)}",
+        )
+        deposition = _deposition(payload)
+        if not isinstance(payload, Mapping):  # pragma: no cover - _deposition rejects it
+            raise ZenodoError("Zenodo returned a malformed deposition")
+        return deposition, payload
+
+    def _latest_draft_id(self, latest_draft: str) -> int:
+        """Extract an id only from this client's exact API origin and path."""
         try:
-            return json.loads(raw.decode("utf-8"))
-        except json.JSONDecodeError as exc:
-            raise ZenodoError("Zenodo returned non-JSON content") from exc
+            parsed = urlsplit(latest_draft)
+            api = urlsplit(self._api_base)
+            parsed_port = parsed.port
+            api_port = api.port
+        except ValueError as exc:
+            raise ZenodoError("Zenodo latest_draft link is invalid") from exc
+
+        parsed_scheme = parsed.scheme.casefold()
+        api_scheme = api.scheme.casefold()
+        if (
+            parsed_scheme not in {"http", "https"}
+            or not parsed.netloc
+            or parsed.hostname is None
+            or api.hostname is None
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ZenodoError("Zenodo latest_draft link is invalid")
+
+        def effective_port(scheme: str, port: int | None) -> int:
+            return port if port is not None else (443 if scheme == "https" else 80)
+
+        if (
+            parsed_scheme != api_scheme
+            or parsed.hostname.casefold() != api.hostname.casefold()
+            or effective_port(parsed_scheme, parsed_port)
+            != effective_port(api_scheme, api_port)
+        ):
+            raise ZenodoError(
+                "Zenodo latest_draft link is outside the configured API origin"
+            )
+
+        api_path = api.path.rstrip("/")
+        expected_prefix = f"{api_path}/deposit/depositions/"
+        match = re.fullmatch(
+            rf"{re.escape(expected_prefix)}([1-9]\d*)/?",
+            parsed.path,
+        )
+        if match is None:
+            raise ZenodoError(
+                "Zenodo latest_draft link is outside the configured API path"
+            )
+        return _integer_id(int(match.group(1)))
 
     def get_deposition(self, deposition_id: int) -> ZenodoDeposition:
         """Retrieve one deposition and normalize its public fields."""
-        return _deposition(self._request("GET", f"deposit/depositions/{_integer_id(deposition_id)}"))
+        deposition, _payload = self._get_deposition_response(deposition_id)
+        return deposition
+
+    @staticmethod
+    def _validate_linked_draft_object(
+        source: ZenodoDeposition,
+        draft: ZenodoDeposition,
+        *,
+        created: object,
+    ) -> ZenodoDeposition:
+        """Apply the complete linked-draft contract to one full object."""
+        if draft.state != "unsubmitted" or draft.reserved_doi is None:
+            raise ZenodoError(
+                "Zenodo latest_draft is not an unsubmitted draft with a reserved DOI"
+            )
+        linked_version_shape, created_utc = _require_linked_version(
+            source,
+            draft,
+            created=created,
+        )
+        return replace(
+            draft,
+            created_utc=created_utc,
+            linked_version_shape=linked_version_shape,
+        )
+
+    def _validated_linked_draft_id(
+        self,
+        source: ZenodoDeposition,
+        draft_id: int,
+    ) -> ZenodoDeposition:
+        """Fetch and fully validate one distinct draft deposition id."""
+        draft, payload = self._get_deposition_response(draft_id)
+        return self._validate_linked_draft_object(
+            source,
+            draft,
+            created=payload.get("created"),
+        )
+
+    def _validated_linked_draft(
+        self,
+        source: ZenodoDeposition,
+        latest_draft: str,
+    ) -> ZenodoDeposition:
+        """Resolve and fully revalidate one authoritative latest-draft link."""
+        return self._validated_linked_draft_id(
+            source,
+            self._latest_draft_id(latest_draft),
+        )
+
+    def _listed_existing_draft(self, source: ZenodoDeposition) -> ZenodoDeposition:
+        """Recover exactly one full concept-linked draft from a bounded listing."""
+        if source.concept_record_id is None:
+            raise ZenodoError("Zenodo source record has no concept identity")
+        query = urlencode(
+            (
+                ("q", f"conceptrecid:{source.concept_record_id}"),
+                ("status", "draft"),
+                ("sort", "mostrecent"),
+                ("page", "1"),
+                ("size", str(_DEPOSITION_LIST_PAGE_SIZE)),
+                ("all_versions", "true"),
+            )
+        )
+        payload = self._request("GET", f"deposit/depositions?{query}")
+        if not isinstance(payload, list):
+            raise ZenodoError("Zenodo draft listing response is malformed")
+        if len(payload) >= _DEPOSITION_LIST_PAGE_SIZE:
+            raise ZenodoError("Zenodo draft listing may be truncated")
+
+        candidates: list[tuple[ZenodoDeposition, Mapping[Any, Any]]] = []
+        for item in payload:
+            if not isinstance(item, Mapping) or not _FULL_DEPOSITION_FIELDS.issubset(
+                item.keys()
+            ):
+                raise ZenodoError("Zenodo draft listing contains a partial deposition")
+            deposition = _deposition(item)
+            if deposition.id == source.id:
+                continue
+            if deposition.concept_record_id != source.concept_record_id:
+                continue
+            if deposition.state != "unsubmitted":
+                raise ZenodoError(
+                    "Zenodo concept-linked listing candidate is not unsubmitted"
+                )
+            candidates.append((deposition, item))
+
+        if len(candidates) != 1:
+            raise ZenodoError(
+                "Zenodo draft listing did not return exactly one distinct "
+                "concept-linked draft"
+            )
+        listed_deposition, listed_payload = candidates[0]
+        listed = self._validate_linked_draft_object(
+            source,
+            listed_deposition,
+            created=listed_payload.get("created"),
+        )
+        refetched = self._validated_linked_draft_id(source, listed.id)
+        if (
+            listed.metadata.canonical_json != refetched.metadata.canonical_json
+            or _file_set_identity(listed.files) != _file_set_identity(refetched.files)
+            or listed.created_utc != refetched.created_utc
+            or listed.reserved_doi != refetched.reserved_doi
+            or listed.reserved_record_id != refetched.reserved_record_id
+        ):
+            raise ZenodoError("Zenodo listed draft changed during validation")
+        return refetched
 
     def reserve_doi(self, metadata: Mapping[str, Any]) -> ZenodoDeposition:
         """Create an unsubmitted draft and reserve a DOI without publishing."""
@@ -616,40 +1061,76 @@ class ZenodoClient:
     def new_version(self, deposition_id: int) -> ZenodoDeposition:
         """Create or retrieve the unpublished next version of a published record.
 
-        Zenodo returns the original record from the ``newversion`` action and
-        exposes the draft only through ``links.latest_draft``.  Resolve that
-        link explicitly so the caller cannot accidentally edit the immutable
-        published record or create an unrelated deposition.
+        A published source may already expose its authoritative
+        ``links.latest_draft``. Otherwise the ``newversion`` action supplies
+        that link. After Zenodo's exact already-exists response, recovery
+        requires a fresh, unchanged source and either its distinct draft link
+        or exactly one full concept-linked draft from a bounded listing.
+        Every path resolves and fully validates the draft before returning it.
         """
-        source = self.get_deposition(deposition_id)
+        source, source_payload = self._get_deposition_response(deposition_id)
         if source.state != "done":
             raise ZenodoError(
                 f"Zenodo deposition {source.id} is {source.state!r}; "
                 "new versions require the latest published record"
             )
-        payload = self._request(
-            "POST",
-            f"deposit/depositions/{_integer_id(deposition_id)}/actions/newversion",
+        latest_draft = _latest_draft_link(
+            source_payload,
+            operation="published source",
+            required=False,
         )
-        if not isinstance(payload, Mapping):
-            raise ZenodoError("Zenodo new-version response is malformed")
-        links = payload.get("links")
-        latest_draft = links.get("latest_draft") if isinstance(links, Mapping) else None
-        if not isinstance(latest_draft, str) or not latest_draft.strip():
-            raise ZenodoError("Zenodo new-version response has no latest_draft link")
-        draft_path = urlsplit(latest_draft).path.rstrip("/")
-        draft_id_text = draft_path.rsplit("/", 1)[-1]
+        if latest_draft is not None:
+            latest_draft_id = self._latest_draft_id(latest_draft)
+            if latest_draft_id != source.id:
+                return self._validated_linked_draft_id(source, latest_draft_id)
+
         try:
-            draft_id = int(draft_id_text)
-        except ValueError as exc:
-            raise ZenodoError("Zenodo latest_draft link has an invalid deposition id") from exc
-        draft = self.get_deposition(_integer_id(draft_id))
-        if draft.state != "unsubmitted" or draft.reserved_doi is None:
-            raise ZenodoError(
-                "Zenodo latest_draft is not an unsubmitted draft with a reserved DOI"
+            action_payload = self._request(
+                "POST",
+                f"deposit/depositions/{_integer_id(deposition_id)}/actions/newversion",
             )
-        _require_linked_version(source, draft)
-        return draft
+        except _ZenodoHTTPError as exc:
+            if not _is_existing_draft_response(exc):
+                raise
+            recovered_source, recovered_payload = self._get_deposition_response(
+                deposition_id
+            )
+            _require_published_snapshot(
+                source,
+                recovered_source,
+                expected_doi=_doi_for_record(source.doi, source.id, "source record DOI"),
+                operation="existing-draft source refetch",
+            )
+            latest_draft = _latest_draft_link(
+                recovered_payload,
+                operation="existing-draft source refetch",
+                required=False,
+            )
+            source = recovered_source
+            if latest_draft is not None:
+                latest_draft_id = self._latest_draft_id(latest_draft)
+                if latest_draft_id != source.id:
+                    return self._validated_linked_draft_id(
+                        source,
+                        latest_draft_id,
+                    )
+            return self._listed_existing_draft(source)
+        else:
+            if not isinstance(action_payload, Mapping):
+                raise ZenodoError("Zenodo new-version response is malformed")
+            latest_draft = _latest_draft_link(
+                action_payload,
+                operation="new-version response",
+                required=True,
+            )
+            assert latest_draft is not None  # required=True guarantees a string
+            latest_draft_id = self._latest_draft_id(latest_draft)
+            if latest_draft_id == source.id:
+                raise ZenodoError(
+                    "Zenodo new-version response linked the published source "
+                    "instead of a distinct draft"
+                )
+            return self._validated_linked_draft_id(source, latest_draft_id)
 
     def update_metadata(self, deposition_id: int, metadata: Mapping[str, Any]) -> ZenodoDeposition:
         """Replace editable deposition metadata without publishing it."""

@@ -24,7 +24,9 @@ version such as `1.1.0.dev0` uses an empty `publication.doi`, the exact plain-te
 status `publication.doi_status: "(forthcoming)"`, and a null release date. This
 prevents a renderer from fabricating a resolver link for an unassigned
 identifier and generates no version DOI. A final version requires its reserved
-DOI and approved date and removes the development-only status. That abstract
+DOI and approved date, sets `paper.date` to that same exact UTC `YYYY-MM-DD`,
+and removes the development-only status. This equality is validated before
+rendering so a final PDF cannot fall back to a machine-local current date. That abstract
 must remain synchronized with
 `manuscript/00_abstract.md`; a short package description is not an acceptable
 Zenodo abstract. The abstract terminates with
@@ -41,8 +43,10 @@ shorter software `publication.description`. `codemeta.json` carries both
 fields explicitly. `src/publication/identifiers.py` provides the shared
 normalization contract; `src/publication/zenodo.py` provides the typed,
 standard-library client; and `scripts/zenodo_release.py` is the thin CLI
-boundary. The token is read from an ignored dotenv file or process environment
-and is never committed, printed, or included in the release manifest.
+boundary. The token is read from a caller-selected ignored dotenv file or the
+process environment and is never committed, printed, or included in the
+release manifest. Prefer an absolute path outside the checkout; if a token file
+is placed at the repository root, `.env`, `.env.*`, and `*.env` are ignored.
 
 ## Immutable v1.0.4 record
 
@@ -59,9 +63,70 @@ verification record.
 
 Never upload or replace files against a published deposition. When the paper
 or released files change, Zenodo's `newversion` action creates a linked
-unpublished draft, preserves the concept record, and inherits the prior
-metadata and files. The CLI resolves Zenodo's
-`latest_draft` link and exposes inherited-file replacement explicitly:
+unpublished draft and preserves the concept record. Two official Zenodo
+surfaces currently describe different safe service shapes. The current
+[version-management help](https://help.zenodo.org/docs/deposit/manage-versions/)
+describes a new version as a separate record into which files are imported
+explicitly, while the legacy REST
+[new-version action](https://developers.zenodo.org/#new-version) describes a
+snapshot that inherits metadata and files. The current
+[publication-date help](https://help.zenodo.org/docs/deposit/describe-records/publication-date/)
+also states that the publication date defaults to the record's creation date.
+The CLI resolves Zenodo's `latest_draft` link and validates the returned draft
+against exactly those two documented combinations:
+
+1. `legacy_inherited`: all caller-purpose metadata and the complete semantic
+   file set exactly match the published source; the legacy response may omit a
+   creation timestamp because that shape does not use date normalization;
+2. `current_separate_record`: all caller-purpose metadata match except that
+   `publication_date` is exactly the draft creation date in UTC and `version`
+   is either omitted or unchanged, while the draft file set is empty. This
+   shape requires a server creation timestamp in strict RFC 3339 form: calendar
+   date, uppercase `T`, hours/minutes/seconds, at most six fractional digits,
+   and a required `Z` or `±HH:MM` offset.
+
+A mixed, partial, or unrelated file set; any other metadata drift; an arbitrary
+publication date; a changed version; or a missing/unparseable server creation
+timestamp fails closed. An empty current-service draft is expected, not proof
+that the source record lacked a PDF. Files are added later only through the
+explicit inspected-draft upload step.
+
+Repeated inspection is recoverable without creating another version. A source
+`latest_draft` link is usable only when its extracted deposition id differs
+from the published source id; Zenodo may self-link that field to the source, and
+a self-link must not preempt the `newversion` action. A distinct link is
+resolved and revalidated without repeating the action. Before extracting an
+identifier, the client requires an absolute URL whose scheme, hostname, and
+effective port exactly match the configured Zenodo API base and whose path is
+exactly that API base path plus `/deposit/depositions/<positive-id>`; one
+trailing slash is allowed. Relative or protocol-relative URLs, foreign origins,
+credentials, query strings, fragments, port changes, arbitrary path prefixes,
+and malformed identifiers fail before another request. The link itself is
+never followed: after validation, the client retrieves the identifier through
+its configured API base. If the action returns
+Zenodo's exact production `400`/`A draft already exists.` JSON shape, the client
+freshly refetches and proves the published source unchanged. It uses a distinct
+refetched source link when present. When the link is missing or still
+self-linked, it performs one deterministic authenticated read-only listing for
+`status=draft`, `all_versions=true`, page 1, and the maximum page size 100,
+with a concept-record query. The client requires full deposition objects,
+excludes the published source, locally filters exact concept-record identity,
+and accepts exactly one distinct `unsubmitted` candidate before refetching and
+fully revalidating it. Zero or multiple candidates, a full potentially
+truncated page, malformed or partial entries, wrong-concept-only results, other
+HTTP failures, near-match payloads, changed source snapshots, and any invalid
+recovered draft remain hard failures. The client never treats a generic error
+message or a source self-link as evidence that a safe draft exists. HTTP error
+bodies are read only to a fixed limit and parsed only long enough to derive the
+private exact-response discriminator. All successful JSON responses are also
+size-bounded and fail closed on malformed, truncated, invalid-encoding, deeply
+nested, or oversized content. Raw transport bodies from those failure paths are
+not retained on public exceptions or their direct adapter traceback locals, and
+diagnostic text omits untrusted server content entirely. Before successfully
+parsed JSON crosses into semantic validation, any occurrence of the configured
+bearer token in a string key or value causes a generic fail-closed error. The
+client never rewrites server semantics and then treats the rewritten object as
+remote truth.
 
 Creating the v1.1 draft begins only after the development PR is merged, public
 `main` is green, and separate release-start approval fixes the authors,
@@ -69,7 +134,7 @@ title/abstract, license, attribution, confidentiality disposition, repository
 destination, target date, and authority to create the linked Zenodo draft.
 
 ```bash
-ENV_FILE="/path/to/ignored/zenodo.env"
+ENV_FILE="/absolute/path/outside/the/checkout/zenodo.env"
 SOURCE_ID="21972644"  # latest published deposition, not the global concept id
 
 uv run --locked python scripts/zenodo_release.py \
@@ -78,22 +143,27 @@ uv run --locked python scripts/zenodo_release.py \
 ```
 
 The returned JSON is an inspection record: it binds the source deposition id,
-draft/record/concept identifiers, complete inherited metadata and its canonical
-SHA-256, file names/sizes/checksums, and the credential-variable name only. It
-never includes the bearer token or local env-file path. Confirm that the draft
-is `unsubmitted`, its purpose and inherited metadata are expected, and its file
-set is exactly the inherited v1.0.4 PDF. Then record the returned draft id and
-reserved DOI before changing
-`manuscript/config.yaml` from the empty-DOI/forthcoming-status development state
-to the assigned DOI/date final release identity and removing `doi_status`. Then
-emit metadata, regenerate the complete source-bound analysis/hydration/render
-chain, and run the release checks.
+draft/record/concept identifiers, normalized UTC creation timestamp, validated
+`linked_version_shape`, complete returned metadata and its canonical SHA-256,
+file names/sizes/checksums, and the credential-variable name only. It never
+includes the bearer token or local env-file path. Confirm that the draft is
+`unsubmitted`, its purpose metadata are expected, and its file set agrees with
+the reported shape: exactly the inherited v1.0.4 PDF for `legacy_inherited`, or
+empty for `current_separate_record`. Any partial or unrelated file set blocks
+the operation. `created_utc` may be null only for `legacy_inherited`; it is
+mandatory for `current_separate_record`. Then record the returned draft id and reserved DOI before
+changing `manuscript/config.yaml` from the empty-DOI/forthcoming-status
+development state to the assigned DOI/date final release identity and removing
+`doi_status`. Then emit metadata, regenerate the complete source-bound
+analysis/hydration/render chain, and run the release checks.
 
-`--new-version-of` is deliberately inspection-only. It cannot be combined with
+`--new-version-of` is deliberately limited to linked-draft creation or recovery.
+It may create persistent remote draft state, but it cannot be combined with
 metadata updates, file operations, verification, or publication; every later
 operation must select the inspected draft explicitly with `--deposition-id`.
 The client also rejects HTTP redirects rather than forwarding the bearer token
-to another origin or protocol.
+to another origin or protocol, and it rejects any `latest_draft` URL outside
+the exact configured API origin/path boundary.
 
 ## Stage and verify the GitHub release assets
 
@@ -207,9 +277,11 @@ uv run --locked python scripts/zenodo_release.py \
   --verify output/pdf/active_fedference_combined.pdf
 ```
 
-`--replace-existing` is required only when a new-version draft inherited a
-same-named prior file whose checksum differs. The adapter refuses that case by
-default, and it never deletes or replaces a file on a published deposition.
+`--replace-existing` is required only when a `legacy_inherited` new-version
+draft contains a same-named prior file whose checksum differs. A
+`current_separate_record` draft starts empty and does not need replacement. The
+adapter refuses a same-name conflict by default, and it never deletes or
+replaces a file on a published deposition.
 Metadata update requires the DOI in final `.zenodo.json` and compares it with
 the selected draft's reserved DOI before removing that server-owned field from
 the PUT payload; missing release identity or a wrong draft therefore fails
@@ -278,8 +350,9 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
   post-v1.0.4 development config and generated metadata must not claim that DOI.
 - Development identity requires matching PEP 440 development package/manuscript
   versions, no assigned DOI, and no release date. Final identity requires a
-  matching final version, assigned DOI/date, and a new exact version/DOI-named
-  top-level PDF. Clean-checkout validation always requires all five immutable
+  matching final version, assigned DOI/date, an exactly equal manuscript date,
+  and a new exact version/DOI-named top-level PDF. Clean-checkout validation
+  always requires all five immutable
   top-level PDFs from v0.1.0 through v1.0.4 to remain tracked; a development
   revision does not require a new v1.1 PDF, while a final v1.1.0 revision adds
   its exact new PDF without replacing any historical file. The checked-in

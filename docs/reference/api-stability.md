@@ -71,7 +71,8 @@ Active Fedference uses additive evolution throughout the current release line.
   version-and-DOI-bound top-level manuscript filename helper; clean-checkout
   and release tooling use it instead of embedding a historical release name.
 - Publication identity has two valid states: an `X.Y.Z.devN` development build
-  has no DOI or release date, while a final `X.Y.Z` build has both. Package and
+  has no DOI or release date, while a final `X.Y.Z` build has both and requires
+  `paper.date` to exactly match `publication.date_released`. Package and
   manuscript versions must match. Historical version-named PDFs remain
   tracked; a development state does not require a new PDF, while a final state
   requires the exact version/DOI-derived file.

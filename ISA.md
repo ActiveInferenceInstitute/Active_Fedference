@@ -2,12 +2,12 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 264/266
-iteration: 48-v1.1-application-development
-updated_by: iteration-48-2026-08-25
+progress: 265/267
+iteration: 49-linked-zenodo-draft-semantics
+updated_by: iteration-49-2026-08-28
 mode: ALGORITHM
 started: 2026-06-24
-updated: 2026-08-25
+updated: 2026-08-28
 algorithm_config:
   forge_not_applicable: "direct local Codex review; external cross-vendor verification was not rerun and ISC-89 remains deferred"
   cato_truncates_after_background_launch: true
@@ -1092,8 +1092,9 @@ Dispositions for Daniel (wave-5, not unilaterally decided):
 - [x] ISC-265: Metadata has two fail-closed lifecycle states: an exact
   package/manuscript `X.Y.Z.devN` development version with an empty DOI field,
   exact plain-text `(forthcoming)` DOI status, and null release date, or a final
-  `X.Y.Z` version with an assigned DOI and release date and no stale development
-  status. Development citation surfaces omit DOI/date claims, the package URL
+  `X.Y.Z` version with an assigned DOI and release date, an exact matching
+  `paper.date`, and no stale development status. Development citation surfaces
+  omit DOI/date claims, the package URL
   set omits a version DOI, the renderer cannot fabricate a placeholder resolver
   link, and one lifecycle-aware abstract token renders neutral development
   prose or the assigned final DOI without stale wording.
@@ -1151,3 +1152,49 @@ dynamic version identity, `py.typed`, and the Torch-free default import graph.
 These are development-candidate engineering receipts: ISC-89 and ISC-242 remain
 open, and no merge, DOI, tag, GitHub release, or Zenodo publication follows from
 them.
+
+### Iteration 49 — linked Zenodo draft service semantics (2026-08-28)
+
+- [x] ISC-272: The authenticated `newversion` inspection boundary accepts only
+  the two documented safe service shapes: exact legacy purpose-metadata/file
+  inheritance, or a current separate-record draft with identical purpose
+  metadata except for an exact UTC creation-date `publication_date`, an
+  omitted-or-unchanged version, and an empty file set. It rejects wrong
+  lineage/state/DOI, arbitrary or unparseable dates, version or other metadata
+  drift, and partial, unrelated, or mixed file sets. A creation timestamp is
+  optional only for exact legacy inheritance; the current shape requires strict
+  RFC 3339 with an explicit offset and at most six fractional digits. Repeated
+  inspection uses a source `latest_draft` only when it names a distinct
+  deposition; a source self-link cannot preempt the POST. Draft links must be
+  absolute, match the configured API scheme/hostname/effective port, and use
+  exactly the configured API path plus `/deposit/depositions/<positive-id>`
+  with at most one trailing slash. Foreign, relative, credentialed, queried,
+  fragmented, port-mismatched, or path-confused links fail before another
+  request, and the link is never followed directly. After Zenodo's exact
+  already-exists response and an unchanged source refetch, an absent or
+  self-linked source field triggers one deterministic, size-100
+  `status=draft`/`all_versions=true` listing. Full objects are locally filtered
+  by exact concept identity, the source is excluded, and exactly one distinct
+  unsubmitted draft is required before identical full revalidation. Zero,
+  multiple, truncated, malformed, partial, and wrong-concept-only results fail.
+  Unrelated or near-match HTTP errors remain failures. HTTP response bodies are
+  read only to a fixed limit, reduced to a private exact-response discriminator,
+  and never retained on the raised error or its direct adapter traceback locals;
+  an echoed bearer token is absent from its `repr`, `str`, `vars`, exception
+  dictionary, and direct adapter traceback-local representations. Deeply nested
+  JSON and truncated-body failures degrade to the same generic status-only
+  `ZenodoError`. Successful JSON responses are independently size-bounded and
+  fail closed without body retention for malformed, truncated, invalid-encoding,
+  deeply nested, or oversized content. Successfully parsed JSON containing the
+  bearer token in any string key or value fails closed before semantic validation;
+  the client never rewrites server semantics and treats the result as remote
+  truth. The token-free CLI
+  summary exposes the canonical creation time and validated shape; former
+  positional and keyword `ZenodoDeposition` constructors remain compatible,
+  and later publication still requires exactly one verified PDF. Probe: no-mock
+  loopback production-shape, legacy-without-created, strict-timestamp matrix,
+  exact-origin/path link matrix, self-link/POST, exact-one listing recovery and
+  negative matrix, token-echo/deep-nesting/truncated-body exception inspection,
+  malformed-success and semantic-echo response inspection,
+  recovery/revalidation, negative HTTP, constructor, CLI-summary, and
+  idempotent-reuse tests in `tests/test_zenodo.py`.

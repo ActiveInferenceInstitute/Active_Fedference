@@ -328,6 +328,45 @@ own pattern declarations. A raw recursive grep is not the gate because it also
 matches the forbidden-name documentation in `tests/PATTERNS.md` and the
 detector's own regex.
 
+## Zenodo linked-version boundary
+
+Exercise both documented new-version service shapes through the real
+standard-library HTTP client against loopback handlers; this probe uses no
+production token and makes no request to Zenodo:
+
+```bash
+uv run --locked pytest tests/test_zenodo.py -q
+uv run ruff check src/publication/zenodo.py scripts/zenodo_release.py \
+  tests/test_zenodo.py
+uv run mypy src/publication/zenodo.py scripts/zenodo_release.py
+```
+
+The acceptance matrix requires either exact legacy metadata/file inheritance
+or current-service purpose-metadata parity with creation-date normalization,
+an omitted-or-unchanged version, and an empty file set. Wrong lineage or DOI,
+an arbitrary date, other metadata drift, and partial, inherited/mixed, or
+unrelated files in the current-service shape must fail before any later draft
+mutation or publication operation. The legacy shape may omit `created`; the
+current shape requires strict RFC 3339 with an explicit offset and no more than
+six fractional digits. Loopback recovery treats a source `latest_draft`
+self-link as the published source rather than a draft, so it cannot preempt the
+POST. Every draft link must be an absolute exact-origin URL on the configured
+API base, including matching scheme, hostname, and effective port, with the
+exact `/deposit/depositions/<positive-id>` suffix and at most one trailing
+slash. The loopback negative matrix covers foreign/changed origins, relative
+and protocol-relative forms, missing netloc, malformed schemes, credentials,
+queries, fragments, wrong ports, arbitrary prefixes, extra slashes, and invalid
+identifiers; the link is never followed directly. Recovery uses a distinct
+source link when available; after the exact
+already-exists HTTP shape, a self-link or absent link falls back to one bounded
+`status=draft`/`all_versions=true` listing. Tests require full objects, local
+exact concept filtering, exactly one distinct unsubmitted draft, identical full
+revalidation, deterministic query encoding, and failures for zero, multiple,
+truncated, malformed, partial, and wrong-concept-only results. Unrelated HTTP
+failures remain failures. An echoed-token error probe inspects `repr`, `str`,
+`vars`, and the exception dictionary and requires that neither the bearer token
+nor a raw response payload is retained.
+
 ## Release bundle + provenance fingerprint
 
 ```bash

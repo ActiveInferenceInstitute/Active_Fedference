@@ -23,7 +23,10 @@ paper:
   # Must exactly match pyproject.toml. Development uses X.Y.Z.devN;
   # release identity changes both sources to the final X.Y.Z together.
   version: "1.0.0.dev0"
-  date: ""  # Auto-generated at render time if empty
+  # Development may leave this empty. A final release must use the same exact
+  # YYYY-MM-DD value as publication.date_released; lifecycle validation rejects
+  # a missing or drifting final manuscript date.
+  date: ""
 
 authors:
   - name: "Your Name"

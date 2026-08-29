@@ -151,6 +151,7 @@ def _commit_publication_identity(
     config_path.parent.mkdir(parents=True, exist_ok=True)
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = version
+    config["paper"]["date"] = date_released or ""
     publication = config["publication"]
     publication["doi"] = doi
     publication["date_released"] = date_released

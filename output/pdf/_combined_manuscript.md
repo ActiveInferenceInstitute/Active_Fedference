@@ -1895,14 +1895,14 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.96
-(log-linear), 0.93 (iterative robust),
+performance guarantees: agent-axis slopes are 0.97
+(log-linear), 0.94 (iterative robust),
 0.78 (variational), 1.64
 (naive self-excluding sharing), and 1.91
 (robust self-excluding sharing); state-axis slopes
-are 0.97, 0.96, and
+are 0.96, 0.96, and
 0.96; the modality-axis inference slope is
-0.66. The slope fit is a timing diagnostic on this
+0.65. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -1957,12 +1957,12 @@ implementation's closed-form switch band, so their zeros are exact branch
 identities — guaranteed by construction, not measurements that could have come
 out otherwise. Their genuine falsifiers are the *off-switch* convergence
 residuals, evaluated just outside the band (at
-$\alpha = 1.00001$, $\beta = 1e-06$,
+$\alpha = 1.00001$, $\beta = 1.00 \times 10^{-6}$,
 $q_{\rm loss} = 1.00 \times 10^{-6}$) where the general formulas run
 and a nonzero gap is possible: those residuals are
-1.66 \times 10^{-5},
-1.24 \times 10^{-5}, and
-1.12 \times 10^{-5} respectively, and any failure of
+$1.66 \times 10^{-5}$,
+$1.24 \times 10^{-5}$, and
+$1.12 \times 10^{-5}$ respectively, and any failure of
 those quantities to shrink toward the limit would falsify the containment
 claim. The posterior row is a measured identity on the general code path, so
 its near-zero residual is itself the falsification surface. The aggregate
@@ -2298,9 +2298,9 @@ at the level of the recovery limits is what lets the robustness claims of
 [@sec:results-robustness] and [@sec:results-baseline] rest on the per-agent axis
 without leaning on the heuristic.
 
-264 of 266 acceptance criteria are verified. The
+265 of 267 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-91.08% (gate $\ge 90\%$), with every stochastic step threaded
+91.13% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -2742,12 +2742,12 @@ density-power $\beta$-loss at $\beta = 0.5$, trained for 200
 Adam steps per client across 5 clients — and fuses per-test-point
 softmax predictions with `robust_aggregate` at `robustness = 0.5`
 (`fedference.bnn_baseline_torch.run_bnn_torch_experiment`, run under PyTorch
-not installed). Every number here is executed, not assumed: the consensus
+2.12.1). Every number here is executed, not assumed: the consensus
 is a valid probability simplex (maximum deviation from unit mass
-N/A over the test set) and is bit-identical across repeated
-seeded runs (deterministic: N/A). Held-out consensus accuracy
-at contamination N/A is N/A (PyTorch not run) for the
-$\beta\to 0$ standard client and N/A (PyTorch not run) for the
+2.22e-16 over the test set) and is bit-identical across repeated
+seeded runs (deterministic: Yes). Held-out consensus accuracy
+at contamination 0.40 is 0.558 for the
+$\beta\to 0$ standard client and 0.545 for the
 $\beta = 0.5$ robust client — this is the same
 0.40-contamination endpoint where the NumPy baseline
 above also loses its separation (a single seed here, versus the
@@ -3705,10 +3705,10 @@ rendered.
 | Python | 3.13.11 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | not installed |
+| PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | b187ab01fa98f60e |
-| Reproducible build epoch (UTC) | 2026-08-28T11:02:22Z |
+| Config hash (SHA-256, first 16) | 85a54abc8cf831a0 |
+| Reproducible build epoch (UTC) | 2026-08-29T13:33:20Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -3742,11 +3742,11 @@ insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
-- Acceptance criteria: 266 total, 264 passing.
-- Project test suite: 2262 collected cases; the bound successful
+- Acceptance criteria: 267 total, 265 passing.
+- Project test suite: 2355 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
-- Line coverage on `src/`: 91.08% (achieved by the bound full
+- Line coverage on `src/`: 91.13% (achieved by the bound full
   gate; $\ge 90\%$ line coverage is enforced in CI, while branch coverage is
   tracked separately in CI).
 

@@ -93,6 +93,51 @@
 \usepackage{unicode-math}
 \setmathfont{latinmodern-math.otf}
 
+% Manuscript macro/package fallbacks (newcommand -> providecommand).
+% Core mathematics
+\usepackage{amsmath}
+\usepackage{amssymb}
+% Document layout
+% Tables
+\usepackage{booktabs}
+% Caption styling (booktabs already loaded above). Small caption font with a
+% bold label ("Figure 1", "Table 2") gives the math/figure-heavy layout a
+% consistent, journal-like caption rhythm without fighting pandoc-crossref —
+% pandoc emits standard \caption{}, and caption/captionsetup only restyle it.
+% ── Theorem environments ─────────────────────────────────────────────────
+% amsthm is loaded above. The FedGVI<->Friston bridge is stated as a small
+% number of theorems/definitions/lemmas/propositions/corollaries; sharing one
+% counter (definition/lemma/proposition/corollary all step the `theorem`
+% counter) gives a single monotone numbering 1, 2, 3, ... across all kinds, so
+% authors can reference them as Theorem 1, Definition 2, Corollary 3 without a
+% per-kind counter drifting out of order. Plain style for theorem-like results,
+% definition style (upright body) for definitions.
+% (algorithm2e intentionally not loaded: this manuscript states results as
+% numbered amsthm Theorems/Definitions, not algorithm2e pseudocode.)
+% Code listings
+\usepackage{listings}
+% Typography and formatting
+% (siunitx intentionally not loaded: no \SI/\num units appear in this manuscript.)
+% Cross-references and citations
+% (cleveref and titlesec intentionally not loaded: unavailable in this TeX tree
+% and not required. Cross-references resolve through pandoc-crossref's own
+% \ref-style names — no \cref appears — and section heading styling falls back
+% to the pandoc/LaTeX defaults.)
+% ── TeX Live Basic-compatible mono font for code listings ────────────
+% Latin Modern Mono is bundled with TeX Live Basic and keeps the manuscript
+% renderable on minimal TeX installations. Mathematical Unicode coverage is
+% provided separately by Latin Modern Math below, so the code font does not
+% need a private JuliaMono installation.
+%
+% Use the TeX font filename rather than the system-family name: the minimal
+% TeX Live fontconfig database may not register the OpenType family even though
+% kpsewhich can resolve the bundled files.
+% Math font for unicode-math: Latin Modern Math (TeX Live) has full BMP
+% coverage including U+2223 (\mid), U+226A/226B (\ll/\gg), and the Greek/
+% blackboard letters used in equations. Without an explicit \setmathfont,
+% unicode-math falls back to lmroman text font which lacks several glyphs
+% and emits "Missing character" warnings on every \mid in math mode.
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
@@ -147,9 +192,15 @@
 \providecommand{\citeyear}[1]{#1}
 \providecommand{\cref}[1]{\texttt{\detokenize{#1}}}
 \providecommand{\Cref}[1]{\texttt{\detokenize{#1}}}
+\providecommand{\crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
+\providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
+\providecommand{\paragraph}[1]{\textbf{#1}\ }
 
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{axiom}{Axiom}
+\newtheorem{property}{Property}
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}

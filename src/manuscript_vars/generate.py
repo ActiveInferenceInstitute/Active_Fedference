@@ -411,6 +411,7 @@ def generate_variables(
     v["RECOVERY_OFFSWITCH_Q"] = str(_OFFSWITCH_Q)
     v["RECOVERY_OFFSWITCH_Q_MATH"] = _format_residual_math(_OFFSWITCH_Q)
     v["RECOVERY_OFFSWITCH_BETA"] = str(_OFFSWITCH_BETA)
+    v["RECOVERY_OFFSWITCH_BETA_MATH"] = _format_residual_math(_OFFSWITCH_BETA)
     v["RECOVERY_OFFSWITCH_ALPHA"] = str(_OFFSWITCH_ALPHA)
 
     # ---- Parameter recovery (generative-model identifiability) ----
