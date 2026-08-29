@@ -166,14 +166,14 @@
   pdfcreator={LaTeX via pandoc}}
 
 \ifXeTeX
-\special{pdf:trailerid [ <94b0559ef36458bc078a44efe106669c> <94b0559ef36458bc078a44efe106669c> ]}
+\special{pdf:trailerid [ <ce3023567a20df4bfcb17882952ee3cc> <ce3023567a20df4bfcb17882952ee3cc> ]}
 \fi
 \ifPDFTeX
 \pdftrailerid{}
-\pdftrailer{/ID [ <94b0559ef36458bc078a44efe106669c> <94b0559ef36458bc078a44efe106669c> ]}
+\pdftrailer{/ID [ <ce3023567a20df4bfcb17882952ee3cc> <ce3023567a20df4bfcb17882952ee3cc> ]}
 \fi
 \ifLuaTeX
-\pdfvariable trailerid {[ <94b0559ef36458bc078a44efe106669c> <94b0559ef36458bc078a44efe106669c> ]}
+\pdfvariable trailerid {[ <ce3023567a20df4bfcb17882952ee3cc> <ce3023567a20df4bfcb17882952ee3cc> ]}
 \fi
 
 \title{Robust Belief Sharing in Federated Active Inference}
@@ -2631,10 +2631,10 @@ the \(arm64\) machine using Python \(3.13.11\) and NumPy \(2.4.2\).
 
 The measured log--log slopes are descriptive checks of the expected
 orders, not performance guarantees: agent-axis slopes are 0.97
-(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.64 (naive
+(log-linear), 0.94 (iterative robust), 0.78 (variational), 1.64 (naive
 self-excluding sharing), and 1.91 (robust self-excluding sharing);
-state-axis slopes are 0.97, 0.95, and 0.95; the modality-axis inference
-slope is 0.66. The slope fit is a timing diagnostic on this machine, not
+state-axis slopes are 0.96, 0.96, and 0.96; the modality-axis inference
+slope is 0.65. The slope fit is a timing diagnostic on this machine, not
 an inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation,
@@ -5157,7 +5157,7 @@ SciPy & 1.18.0 \\
 PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
 Config hash (SHA-256, first 16) & 85a54abc8cf831a0 \\
-Reproducible build epoch (UTC) & 2026-08-29T03:13:07Z \\
+Reproducible build epoch (UTC) & 2026-08-29T13:33:20Z \\
 \end{longtable}
 
 The exact environment used for the reported run is recorded in
@@ -5199,7 +5199,7 @@ surface}\label{sec:repro-tests}
 \item
   Acceptance criteria: 267 total, 265 passing.
 \item
-  Project test suite: 2351 collected cases; the bound successful receipt
+  Project test suite: 2355 collected cases; the bound successful receipt
   records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 \item

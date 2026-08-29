@@ -47,7 +47,7 @@ rendered.
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
 | Config hash (SHA-256, first 16) | 85a54abc8cf831a0 |
-| Reproducible build epoch (UTC) | 2026-08-29T03:13:07Z |
+| Reproducible build epoch (UTC) | 2026-08-29T13:33:20Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -82,7 +82,7 @@ insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 267 total, 265 passing.
-- Project test suite: 2351 collected cases; the bound successful
+- Project test suite: 2355 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 - Line coverage on `src/`: 91.13% (achieved by the bound full

@@ -7,7 +7,7 @@ Pipeline profile: `publication`; generator version: `6`.
 
 Artifact scope: `publication-payload-v1`.
 
-Artifacts: 342 files, 46667957 bytes, over:
+Artifacts: 342 files, 46648233 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)

@@ -1986,12 +1986,12 @@ machine using Python $3.13.11$ and NumPy $2.4.2$.
 The measured log--log slopes are descriptive checks of the expected orders, not
 performance guarantees: agent-axis slopes are 0.97
 (log-linear), 0.94 (iterative robust),
-0.79 (variational), 1.64
+0.78 (variational), 1.64
 (naive self-excluding sharing), and 1.91
 (robust self-excluding sharing); state-axis slopes
-are 0.97, 0.95, and
-0.95; the modality-axis inference slope is
-0.66. The slope fit is a timing diagnostic on this
+are 0.96, 0.96, and
+0.96; the modality-axis inference slope is
+0.65. The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
 under another BLAS, accelerator, process topology, or distributed network. A
 finite grid can also yield a sublinear fitted slope when validation, allocation,
@@ -3870,7 +3870,7 @@ rendered.
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
 | Config hash (SHA-256, first 16) | 85a54abc8cf831a0 |
-| Reproducible build epoch (UTC) | 2026-08-29T03:13:07Z |
+| Reproducible build epoch (UTC) | 2026-08-29T13:33:20Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -3905,7 +3905,7 @@ insufficient.
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
 - Acceptance criteria: 267 total, 265 passing.
-- Project test suite: 2351 collected cases; the bound successful
+- Project test suite: 2355 collected cases; the bound successful
   receipt records zero failed cases. The project no-mocks policy remains a
   separately executable source contract.
 - Line coverage on `src/`: 91.13% (achieved by the bound full

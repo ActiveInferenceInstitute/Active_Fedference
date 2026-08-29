@@ -4,12 +4,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "11.40",
-      "total_size_bytes": 11956718,
+      "total_size_bytes": 11955732,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "11.40",
-          "size_bytes": 11956718,
+          "size_bytes": 11955732,
           "path": "pdf/active_fedference_combined.pdf"
         }
       ],
@@ -21,7 +21,7 @@
       "exists": true,
       "file_count": 107,
       "size_mb": "10.02",
-      "total_size_bytes": 10511806,
+      "total_size_bytes": 10504821,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -37,8 +37,8 @@
         },
         {
           "name": "complexity_scaling.png",
-          "size_mb": "0.49",
-          "size_bytes": 513041,
+          "size_mb": "0.48",
+          "size_bytes": 506399,
           "path": "web/figures/complexity_scaling.png"
         }
       ],
@@ -54,8 +54,8 @@
     "slides": {
       "exists": true,
       "file_count": 43,
-      "size_mb": "9.55",
-      "total_size_bytes": 10012053,
+      "size_mb": "9.54",
+      "total_size_bytes": 10007269,
       "largest_files": [
         {
           "name": "28_supplement_extended_methods_slides.pdf",
@@ -95,8 +95,8 @@
     "figures": {
       "exists": true,
       "file_count": 61,
-      "size_mb": "8.34",
-      "total_size_bytes": 8745735,
+      "size_mb": "8.33",
+      "total_size_bytes": 8738750,
       "largest_files": [
         {
           "name": "graphical_abstract.png",
@@ -106,8 +106,8 @@
         },
         {
           "name": "complexity_scaling.png",
-          "size_mb": "0.49",
-          "size_bytes": 513041,
+          "size_mb": "0.48",
+          "size_bytes": 506399,
           "path": "figures/complexity_scaling.png"
         },
         {
@@ -156,7 +156,7 @@
       "exists": true,
       "file_count": 25,
       "size_mb": "2.91",
-      "total_size_bytes": 3055639,
+      "total_size_bytes": 3055655,
       "largest_files": [
         {
           "name": "robustness_review_grid.json",
@@ -288,12 +288,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "11.40",
-      "total_size_bytes": 11956718,
+      "total_size_bytes": 11955732,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "11.40",
-          "size_bytes": 11956718,
+          "size_bytes": 11955732,
           "path": "active_fedference_combined.pdf"
         }
       ],
@@ -303,19 +303,19 @@
     }
   },
   "total_files": 295,
-  "total_size_mb": 54.4873161315918,
+  "total_size_mb": 54.46756553649902,
   "largest_files": [
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "11.40",
-      "size_bytes": 11956718,
+      "size_bytes": 11955732,
       "category": "root",
       "path": "active_fedference_combined.pdf"
     },
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "11.40",
-      "size_bytes": 11956718,
+      "size_bytes": 11955732,
       "category": "pdf",
       "path": "pdf/active_fedference_combined.pdf"
     },
@@ -378,16 +378,16 @@
   ],
   "missing_expected_files": [],
   "sizes_by_category": {
-    "pdf": 11.402814865112305,
-    "web": 10.024839401245117,
-    "slides": 9.548237800598145,
-    "figures": 8.340582847595215,
+    "pdf": 11.401874542236328,
+    "web": 10.01817798614502,
+    "slides": 9.543675422668457,
+    "figures": 8.333921432495117,
     "data": 0.28514957427978516,
-    "reports": 2.9140844345092773,
+    "reports": 2.91409969329834,
     "docs": 0.05695819854736328,
     "manuscript": 0.3696708679199219,
     "release": 0.14216327667236328,
-    "root": 11.402814865112305
+    "root": 11.401874542236328
   },
   "inventory_mode": "stable-local-output-v1",
   "inventory_scope": "stage5-delivery-mirror",

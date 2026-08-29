@@ -1,7 +1,7 @@
 {
   "analysis_stage": {
-    "input_digest": "7728aeb482f348f2834389f4a41c1aa8370f3ded52cf29746cd9aef566378d6e",
-    "output_digest": "64f77f29ca1a7f364bd420a794d26c4dbfa9e9005a20ee9d7f7ac534ba71aa53"
+    "input_digest": "3dd6c2a8ff78e5007ae7ad1fbe6c06f612ab16327ccc6b1f66a9f312e0c3be1f",
+    "output_digest": "c2a9b07f1b282d3a7ad12355bce6e9ac442617a718ba9464108e3d3517733a32"
   },
   "command": [
     "<project>/.venv/bin/python3",
@@ -14,7 +14,7 @@
     "--cov-report=json:<coverage-workdir>/coverage.json"
   ],
   "coverage": {
-    "percent": 91.12631141100891,
+    "percent": 91.12959112959113,
     "threshold": 90.0
   },
   "environment": {
@@ -25,7 +25,7 @@
     "python_version": "3.13.11",
     "scipy_version": "1.18.0"
   },
-  "input_digest": "a7a2a4e882bda3fc32008285df0b2edf961a3f4436579088b255cb5c34b1dbbd",
+  "input_digest": "5fd76c96450e7ed4536c9adf811b8eef9c58a619dc63ed2663aeb92ff82b36a3",
   "input_hashes": {
     ".github/workflows/ci.yml": "a89c4063f71ae49c411e9e3e9719ec266051ab1b0f2d4df97769d461f1e38ce1",
     ".gitignore": "f41f33e7ad423825635757a1e6670d4960852352955fc1a6936d2812faddccdd",
@@ -322,7 +322,7 @@
     "src/publication/surface_validation.py": "0e21e260b0a4cdd12c437b0cfdaf1dedad8ae17c0d03d95b49e3eaa01248b204",
     "src/publication/validation_receipt.py": "fb0fe50a435b2a16956297a8e2b81677e031da7f2671f3e7c508e158c79a7a7e",
     "src/publication/web_package.py": "acf85772291fab6175d86475ca90417095608bd87fc955e1a82c00fb98089bfc",
-    "src/publication/zenodo.py": "867fb017563f59baa2fb8e054e0285c8e44480e64552b75b39a37e273f667390",
+    "src/publication/zenodo.py": "a048f2e3449867ac2f1e781f1a01c49bf12357388a72107e287252b939dfd826",
     "tests/AGENTS.md": "ee3883d984c7f0d8994e258faa4f1112c5efc18a5766b7a34490ff2c3d1d4fa7",
     "tests/PATTERNS.md": "4d898078bbaa0e952b0178b8eb1e9be6dbf35c8f21e066321cadbcf5796239df",
     "tests/README.md": "bdd719c86d9bf366b86f9fa1597a06cdd1e71d494db5ad9eee2c05ea6a6f195b",
@@ -458,7 +458,7 @@
     "tests/test_validation_receipt.py": "4d377af1ce601caaac5cb9bdaf0a894828354bed997b5f3121ed2cc137573287",
     "tests/test_web_publication_contract.py": "20dd68479f0d2daa3d9d2dca927ae39cc8f792913f10951cefcac1df5148ed94",
     "tests/test_xref_integrity.py": "87f9fa081c93182fae962f360425a9f8d6f03ffa82214087ef779938036cda97",
-    "tests/test_zenodo.py": "7d79f374f1fdb8418fc9b8853c254f9ac1e6188f1119f95efe6786b04c275eff",
+    "tests/test_zenodo.py": "24442eadebd57ae610c6964350e95fad0f8f49309334059ff9d2f29616b789bb",
     "uv.lock": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254"
   },
   "input_patterns": [
@@ -510,14 +510,14 @@
     "uv.lock"
   ],
   "receipt_type": "test_coverage",
-  "recorded_at": "2026-08-29T03:13:07Z",
+  "recorded_at": "2026-08-29T13:33:20Z",
   "run_snapshots": {
     "post": {
       "analysis_stage": {
-        "input_digest": "7728aeb482f348f2834389f4a41c1aa8370f3ded52cf29746cd9aef566378d6e",
-        "output_digest": "64f77f29ca1a7f364bd420a794d26c4dbfa9e9005a20ee9d7f7ac534ba71aa53"
+        "input_digest": "3dd6c2a8ff78e5007ae7ad1fbe6c06f612ab16327ccc6b1f66a9f312e0c3be1f",
+        "output_digest": "c2a9b07f1b282d3a7ad12355bce6e9ac442617a718ba9464108e3d3517733a32"
       },
-      "input_digest": "a7a2a4e882bda3fc32008285df0b2edf961a3f4436579088b255cb5c34b1dbbd",
+      "input_digest": "5fd76c96450e7ed4536c9adf811b8eef9c58a619dc63ed2663aeb92ff82b36a3",
       "input_hashes": {
         ".github/workflows/ci.yml": "a89c4063f71ae49c411e9e3e9719ec266051ab1b0f2d4df97769d461f1e38ce1",
         ".gitignore": "f41f33e7ad423825635757a1e6670d4960852352955fc1a6936d2812faddccdd",
@@ -814,7 +814,7 @@
         "src/publication/surface_validation.py": "0e21e260b0a4cdd12c437b0cfdaf1dedad8ae17c0d03d95b49e3eaa01248b204",
         "src/publication/validation_receipt.py": "fb0fe50a435b2a16956297a8e2b81677e031da7f2671f3e7c508e158c79a7a7e",
         "src/publication/web_package.py": "acf85772291fab6175d86475ca90417095608bd87fc955e1a82c00fb98089bfc",
-        "src/publication/zenodo.py": "867fb017563f59baa2fb8e054e0285c8e44480e64552b75b39a37e273f667390",
+        "src/publication/zenodo.py": "a048f2e3449867ac2f1e781f1a01c49bf12357388a72107e287252b939dfd826",
         "tests/AGENTS.md": "ee3883d984c7f0d8994e258faa4f1112c5efc18a5766b7a34490ff2c3d1d4fa7",
         "tests/PATTERNS.md": "4d898078bbaa0e952b0178b8eb1e9be6dbf35c8f21e066321cadbcf5796239df",
         "tests/README.md": "bdd719c86d9bf366b86f9fa1597a06cdd1e71d494db5ad9eee2c05ea6a6f195b",
@@ -950,16 +950,16 @@
         "tests/test_validation_receipt.py": "4d377af1ce601caaac5cb9bdaf0a894828354bed997b5f3121ed2cc137573287",
         "tests/test_web_publication_contract.py": "20dd68479f0d2daa3d9d2dca927ae39cc8f792913f10951cefcac1df5148ed94",
         "tests/test_xref_integrity.py": "87f9fa081c93182fae962f360425a9f8d6f03ffa82214087ef779938036cda97",
-        "tests/test_zenodo.py": "7d79f374f1fdb8418fc9b8853c254f9ac1e6188f1119f95efe6786b04c275eff",
+        "tests/test_zenodo.py": "24442eadebd57ae610c6964350e95fad0f8f49309334059ff9d2f29616b789bb",
         "uv.lock": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254"
       }
     },
     "pre": {
       "analysis_stage": {
-        "input_digest": "7728aeb482f348f2834389f4a41c1aa8370f3ded52cf29746cd9aef566378d6e",
-        "output_digest": "64f77f29ca1a7f364bd420a794d26c4dbfa9e9005a20ee9d7f7ac534ba71aa53"
+        "input_digest": "3dd6c2a8ff78e5007ae7ad1fbe6c06f612ab16327ccc6b1f66a9f312e0c3be1f",
+        "output_digest": "c2a9b07f1b282d3a7ad12355bce6e9ac442617a718ba9464108e3d3517733a32"
       },
-      "input_digest": "a7a2a4e882bda3fc32008285df0b2edf961a3f4436579088b255cb5c34b1dbbd",
+      "input_digest": "5fd76c96450e7ed4536c9adf811b8eef9c58a619dc63ed2663aeb92ff82b36a3",
       "input_hashes": {
         ".github/workflows/ci.yml": "a89c4063f71ae49c411e9e3e9719ec266051ab1b0f2d4df97769d461f1e38ce1",
         ".gitignore": "f41f33e7ad423825635757a1e6670d4960852352955fc1a6936d2812faddccdd",
@@ -1256,7 +1256,7 @@
         "src/publication/surface_validation.py": "0e21e260b0a4cdd12c437b0cfdaf1dedad8ae17c0d03d95b49e3eaa01248b204",
         "src/publication/validation_receipt.py": "fb0fe50a435b2a16956297a8e2b81677e031da7f2671f3e7c508e158c79a7a7e",
         "src/publication/web_package.py": "acf85772291fab6175d86475ca90417095608bd87fc955e1a82c00fb98089bfc",
-        "src/publication/zenodo.py": "867fb017563f59baa2fb8e054e0285c8e44480e64552b75b39a37e273f667390",
+        "src/publication/zenodo.py": "a048f2e3449867ac2f1e781f1a01c49bf12357388a72107e287252b939dfd826",
         "tests/AGENTS.md": "ee3883d984c7f0d8994e258faa4f1112c5efc18a5766b7a34490ff2c3d1d4fa7",
         "tests/PATTERNS.md": "4d898078bbaa0e952b0178b8eb1e9be6dbf35c8f21e066321cadbcf5796239df",
         "tests/README.md": "bdd719c86d9bf366b86f9fa1597a06cdd1e71d494db5ad9eee2c05ea6a6f195b",
@@ -1392,7 +1392,7 @@
         "tests/test_validation_receipt.py": "4d377af1ce601caaac5cb9bdaf0a894828354bed997b5f3121ed2cc137573287",
         "tests/test_web_publication_contract.py": "20dd68479f0d2daa3d9d2dca927ae39cc8f792913f10951cefcac1df5148ed94",
         "tests/test_xref_integrity.py": "87f9fa081c93182fae962f360425a9f8d6f03ffa82214087ef779938036cda97",
-        "tests/test_zenodo.py": "7d79f374f1fdb8418fc9b8853c254f9ac1e6188f1119f95efe6786b04c275eff",
+        "tests/test_zenodo.py": "24442eadebd57ae610c6964350e95fad0f8f49309334059ff9d2f29616b789bb",
         "uv.lock": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254"
       }
     }
@@ -1401,9 +1401,9 @@
   "source_lock_sha256": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254",
   "success": true,
   "test_summary": {
-    "collected": 2351,
+    "collected": 2355,
     "failed": 0,
-    "passed": 2351,
+    "passed": 2355,
     "skipped": 0
   },
   "timestamp_policy": "recorded"
