@@ -119,7 +119,11 @@ def _make_lifecycle_build_project(
     root.joinpath("manuscript", "config.yaml").write_text(
         yaml.safe_dump(
             {
-                "paper": {"title": "Lifecycle fixture", "version": version},
+                "paper": {
+                    "title": "Lifecycle fixture",
+                    "version": version,
+                    "date": date_released or "",
+                },
                 "authors": [
                     {
                         "name": "Ada Lovelace",

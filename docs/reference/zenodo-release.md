@@ -24,7 +24,9 @@ version such as `1.1.0.dev0` uses an empty `publication.doi`, the exact plain-te
 status `publication.doi_status: "(forthcoming)"`, and a null release date. This
 prevents a renderer from fabricating a resolver link for an unassigned
 identifier and generates no version DOI. A final version requires its reserved
-DOI and approved date and removes the development-only status. That abstract
+DOI and approved date, sets `paper.date` to that same exact UTC `YYYY-MM-DD`,
+and removes the development-only status. This equality is validated before
+rendering so a final PDF cannot fall back to a machine-local current date. That abstract
 must remain synchronized with
 `manuscript/00_abstract.md`; a short package description is not an acceptable
 Zenodo abstract. The abstract terminates with
@@ -345,8 +347,9 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
   post-v1.0.4 development config and generated metadata must not claim that DOI.
 - Development identity requires matching PEP 440 development package/manuscript
   versions, no assigned DOI, and no release date. Final identity requires a
-  matching final version, assigned DOI/date, and a new exact version/DOI-named
-  top-level PDF. Clean-checkout validation always requires all five immutable
+  matching final version, assigned DOI/date, an exactly equal manuscript date,
+  and a new exact version/DOI-named top-level PDF. Clean-checkout validation
+  always requires all five immutable
   top-level PDFs from v0.1.0 through v1.0.4 to remain tracked; a development
   revision does not require a new v1.1 PDF, while a final v1.1.0 revision adds
   its exact new PDF without replacing any historical file. The checked-in

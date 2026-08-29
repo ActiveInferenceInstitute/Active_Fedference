@@ -1092,8 +1092,9 @@ Dispositions for Daniel (wave-5, not unilaterally decided):
 - [x] ISC-265: Metadata has two fail-closed lifecycle states: an exact
   package/manuscript `X.Y.Z.devN` development version with an empty DOI field,
   exact plain-text `(forthcoming)` DOI status, and null release date, or a final
-  `X.Y.Z` version with an assigned DOI and release date and no stale development
-  status. Development citation surfaces omit DOI/date claims, the package URL
+  `X.Y.Z` version with an assigned DOI and release date, an exact matching
+  `paper.date`, and no stale development status. Development citation surfaces
+  omit DOI/date claims, the package URL
   set omits a version DOI, the renderer cannot fabricate a placeholder resolver
   link, and one lifecycle-aware abstract token renders neutral development
   prose or the assigned final DOI without stale wording.

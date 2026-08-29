@@ -270,6 +270,22 @@ def _release_date(value: object) -> str | None:
     return normalized
 
 
+def _paper_date(value: object) -> str | None:
+    """Return an ISO manuscript date, or ``None`` when it is intentionally unset."""
+    if value is None:
+        return None
+    normalized = str(value).strip()
+    if not normalized:
+        return None
+    if not _ISO_RELEASE_DATE_RE.fullmatch(normalized):
+        raise ValueError("paper.date must be YYYY-MM-DD or empty")
+    try:
+        date.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError("paper.date must be YYYY-MM-DD or empty") from exc
+    return normalized
+
+
 def validate_publication_identity(
     package_version: str,
     paper: dict[str, Any],
@@ -282,8 +298,10 @@ def validate_publication_identity(
     ``(forthcoming)`` display status, and a null release date. Keeping status out
     of the DOI field prevents a renderer from fabricating a resolver link for an
     unassigned identifier. Final ``X.Y.Z`` versions have an assigned DOI/date
-    and no development status. The manuscript and package versions must agree
-    so a generated citation cannot describe different code.
+    and no development status. A final manuscript date must exactly match the
+    release date so the renderer cannot silently substitute its local current
+    date. The manuscript and package versions must agree so a generated citation
+    cannot describe different code.
     """
     paper_version = str(paper.get("version", "")).strip()
     if paper_version != package_version:
@@ -300,6 +318,7 @@ def validate_publication_identity(
     raw_doi_status = publication.get("doi_status")
     raw_date_released = publication.get("date_released")
     date_released = _release_date(raw_date_released)
+    paper_date = _paper_date(paper.get("date"))
     doi = normalize_doi(raw_doi, allow_placeholder=True)
     is_development = _DEVELOPMENT_VERSION_RE.fullmatch(package_version) is not None
     if is_development:
@@ -327,6 +346,11 @@ def validate_publication_identity(
         raise ValueError(
             "final release metadata must remove publication.doi_status after "
             "assigning the DOI"
+        )
+    elif paper_date != date_released:
+        raise ValueError(
+            "final release metadata requires paper.date to exactly match "
+            "publication.date_released"
         )
     return date_released, doi
 

@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from publication.identifiers import publication_identity_sentence
+from publication.identifiers import normalize_doi, publication_identity_sentence
 from publication.metadata import (
     GENERATED_SURFACES,
     build_metadata,
@@ -54,7 +54,12 @@ def _write_packaging_identity(
 def _make_project(tmp_path: Path) -> Path:
     (tmp_path / "manuscript").mkdir()
     config = {
-        "paper": {"title": "T", "subtitle": "A complete subtitle", "version": "9.9.9"},
+        "paper": {
+            "title": "T",
+            "subtitle": "A complete subtitle",
+            "version": "9.9.9",
+            "date": "2026-02-02",
+        },
         "authors": [
             {
                 "name": "Ada Q Lovelace",
@@ -183,6 +188,29 @@ def test_complete_final_lifecycle_uses_real_emitted_surfaces_and_pdf(
     assert lifecycle.doi == "10.5281/zenodo.12345"
     assert lifecycle.date_released == "2026-02-02"
     assert lifecycle.canonical_pdf == expected_pdf.name
+
+
+@pytest.mark.parametrize("paper_date", [None, "", "2026-02-01", "2026-02-30"])
+def test_final_lifecycle_requires_exact_manuscript_release_date(
+    tmp_path: Path,
+    paper_date: str | None,
+) -> None:
+    root = _make_project(tmp_path)
+    config_path = root / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    if paper_date is None:
+        config["paper"].pop("date")
+    else:
+        config["paper"]["date"] = paper_date
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+
+    expected = (
+        "paper.date must be YYYY-MM-DD or empty"
+        if paper_date == "2026-02-30"
+        else "paper.date to exactly match publication.date_released"
+    )
+    with pytest.raises(ValueError, match=expected):
+        validate_publication_lifecycle(root, require_canonical_pdf=False)
 
 
 def test_development_and_final_project_doi_url_rules_are_fail_closed(
@@ -484,16 +512,26 @@ def test_real_repository_surfaces_are_emitter_consistent() -> None:
 
 def test_zenodo_description_is_the_hydrated_manuscript_abstract() -> None:
     """The deposited description must be the paper abstract, not a package blurb."""
+    config = yaml.safe_load(
+        (_PROJECT_ROOT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+    )
+    assigned_doi = normalize_doi(
+        config["publication"].get("doi"),
+        allow_placeholder=True,
+    )
+    doi_token = assigned_doi or "N/A"
     source = (_PROJECT_ROOT / "manuscript" / "00_abstract.md").read_text(encoding="utf-8")
     abstract = source.split("# Abstract", 1)[1].split("**Keywords:**", 1)[0]
     abstract = re.sub(r"\s*\{#[^}]+\}", "", abstract, count=1)
-    doi = "N/A"
     abstract = abstract.replace(
         "{{PUBLICATION_IDENTITY_SENTENCE}}",
-        publication_identity_sentence(None),
+        publication_identity_sentence(assigned_doi),
     )
-    abstract = abstract.replace("{{PUBLICATION_DOI}}", doi)
-    abstract = abstract.replace("{{PUBLICATION_DOI_URL}}", f"https://doi.org/{doi}")
+    abstract = abstract.replace("{{PUBLICATION_DOI}}", doi_token)
+    abstract = abstract.replace(
+        "{{PUBLICATION_DOI_URL}}",
+        f"https://doi.org/{doi_token}",
+    )
     abstract = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", abstract)
     abstract = re.sub(r"`([^`]+)`", r"\1", abstract)
     expected = " ".join(abstract.split())
@@ -514,6 +552,7 @@ def test_real_abstract_hypothetical_final_identity_never_retains_development_pro
         (_PROJECT_ROOT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     )
     config["paper"]["version"] = "1.1.0"
+    config["paper"]["date"] = "2026-09-01"
     config["publication"]["doi"] = doi
     config["publication"].pop("doi_status", None)
     config["publication"]["date_released"] = "2026-09-01"
