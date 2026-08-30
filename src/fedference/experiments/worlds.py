@@ -54,6 +54,7 @@ def run_nlevel_world(
             N_CONTEXTS,
             N_LOCATIONS,
         )
+
         # Build a canonical depth-level stack.
         # Leaf layer: 9-location sentinel world.
         center_idx = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
@@ -85,8 +86,8 @@ def run_nlevel_world(
         l2_high = np.array([0.2, 0.8], dtype=np.float64)
         layers = [ctx, leaf]
         for level_above in range(depth - 2):
-            labels = L3_META_LABELS if level_above == 0 else (
-                f"meta{level_above}_low", f"meta{level_above}_high"
+            labels = (
+                L3_META_LABELS if level_above == 0 else (f"meta{level_above}_low", f"meta{level_above}_high")
             )
             meta = LayerSpec(
                 n_states=2,
@@ -122,17 +123,14 @@ def run_nlevel_world(
         # ---- flat condition ----
         flat_log_prior = np.log(np.full(N_LOCATIONS, 1.0 / N_LOCATIONS))
         from ..belief_updating import infer_states  # noqa: F811
-        flat_local_posteriors = [
-            infer_states(A_base, o, flat_log_prior) for o in per_agent_obs
-        ]
+
+        flat_local_posteriors = [infer_states(A_base, o, flat_log_prior) for o in per_agent_obs]
         flat_consensus = log_linear_pool(flat_local_posteriors)
         loc_acc["flat"] += float(np.argmax(flat_consensus) == true_state) / n_trials
         fe_sum["flat"] += float(-np.log(np.clip(flat_consensus[true_state], _EPS, None))) / n_trials
 
         # ---- N-level condition ----
-        nlevel_results = [
-            nlevel_infer(A_base, o, world, n_iters=n_iters) for o in per_agent_obs
-        ]
+        nlevel_results = [nlevel_infer(A_base, o, world, n_iters=n_iters) for o in per_agent_obs]
         l1_local_posteriors = [r["q_levels"][-1] for r in nlevel_results]
         nlevel_l1_consensus = log_linear_pool(l1_local_posteriors)
         top_local_posteriors = [r["q_levels"][0] for r in nlevel_results]
@@ -248,8 +246,9 @@ def run_hierarchical_bmr(
     acuity: float = 0.85,
     n_iters: int = 8,
     obs: int = 4,
+    surprise_tol: float = 1e-3,
 ) -> dict[str, Any]:
-    """Hierarchical structure learning by Bayesian model reduction (companion to the N-level study).
+    """Run a configured hierarchical surprise-threshold control.
 
     Builds two 3-level worlds that differ ONLY in the top (meta-context) level's
     conditioned priors — a *degenerate* world whose meta-context is non-gating
@@ -257,20 +256,35 @@ def run_hierarchical_bmr(
     world whose meta-context sharply distinguishes the two contexts — and runs
     :func:`fedference.bayesian_model_reduction.hierarchical_reduce` on each.
 
-    The verdict is directional: on the degenerate world the top level earns
-    ~zero Bayesian surprise and is flagged prunable (BMR recovers the 2-level
-    structure); on the informative world it earns strictly positive surprise and
-    is kept. The two worlds share every other parameter, so the difference in
-    prune verdict is attributable to the meta-context's information alone.
+    The configured decision rule is directional: a non-leaf level is marked
+    prunable exactly when its Bayesian surprise is below ``surprise_tol``. On
+    the degenerate world the top level earns approximately zero surprise and is
+    flagged prunable; on the informative world it earns surprise above the
+    threshold and is kept. The worlds share every other parameter, so this is a
+    deterministic sign/threshold control for the implementation. The nested
+    ``redundancy_delta_F`` values are secondary diagnostics and do not determine
+    the reported prune recommendation.
+
+    This configured control does not establish universal hierarchical
+    structure emergence, consistency of model selection, or performance on an
+    unconfigured world. The legacy function and report stem retain ``bmr`` for
+    compatibility with existing artifacts.
 
     Returns a JSON-serialisable dict with ``degenerate`` and ``informative``
     (each the ``hierarchical_reduce`` output, arrays elided) plus the headline
     ``degenerate_top_surprise`` / ``informative_top_surprise`` /
-    ``degenerate_recommends_prune_top`` / ``informative_keeps_top`` scalars.
+    ``degenerate_recommends_prune_top`` / ``informative_keeps_top`` scalars,
+    together with the threshold, decision rule, diagnostic ownership, and
+    explicit claim boundary.
     """
     from ..bayesian_model_reduction import hierarchical_reduce
 
-    del seed  # deterministic: the schematic worlds carry no RNG draw
+    if isinstance(n_iters, bool) or not isinstance(n_iters, int) or n_iters < 1:
+        raise ValueError("n_iters must be a positive integer")
+    if isinstance(obs, bool) or not isinstance(obs, int) or obs < 0:
+        raise ValueError("obs must be a non-negative integer")
+    if isinstance(surprise_tol, bool) or not np.isfinite(float(surprise_tol)) or float(surprise_tol) <= 0.0:
+        raise ValueError("surprise_tol must be a finite positive number")
 
     leaf_A = np.asarray(
         build_sentinel_world(np.random.default_rng(0), acuity=acuity)["A"][0],
@@ -294,9 +308,7 @@ def run_hierarchical_bmr(
             default_prior=np.array([0.5, 0.5]),
             conditioned_priors=[loc_a, loc_b],
         )
-        leaf = LayerSpec(
-            n_states=N_LOCATIONS, labels=tuple(str(i) for i in range(N_LOCATIONS))
-        )
+        leaf = LayerSpec(n_states=N_LOCATIONS, labels=tuple(str(i) for i in range(N_LOCATIONS)))
         return build_nlevel_world([l3, l2, leaf], acuity=acuity)
 
     degenerate = hierarchical_reduce(
@@ -304,25 +316,50 @@ def run_hierarchical_bmr(
         leaf_A,
         obs=obs,
         n_iters=n_iters,
+        surprise_tol=float(surprise_tol),
     )
     informative = hierarchical_reduce(
         _world([np.array([0.9, 0.1]), np.array([0.1, 0.9])]),
         leaf_A,
         obs=obs,
         n_iters=n_iters,
+        surprise_tol=float(surprise_tol),
     )
     deg_top = next(lv for lv in degenerate["levels"] if lv["level"] == 0)
     inf_top = next(lv for lv in informative["levels"] if lv["level"] == 0)
+    degenerate_prunes = bool(degenerate["recommended_prune"] == 0)
+    informative_keeps = bool(informative["recommended_prune"] != 0)
     return {
+        "schema_version": "1.0",
         "degenerate": degenerate,
         "informative": informative,
         "degenerate_top_surprise": float(deg_top["bayesian_surprise"]),
         "informative_top_surprise": float(inf_top["bayesian_surprise"]),
-        "degenerate_recommends_prune_top": bool(degenerate["recommended_prune"] == 0),
-        "informative_keeps_top": bool(informative["recommended_prune"] != 0),
+        "degenerate_recommends_prune_top": degenerate_prunes,
+        "informative_keeps_top": informative_keeps,
+        "configured_control_passed": bool(degenerate_prunes and informative_keeps),
+        "surprise_tol": float(surprise_tol),
+        "decision_rule": (
+            "prunable iff bayesian_surprise < surprise_tol; recommend the deepest prunable non-leaf level"
+        ),
+        "study_status": "configured_deterministic_control",
+        "primary_control": (
+            "degenerate non-gating top level below threshold; informative top level at or above threshold"
+        ),
+        "secondary_diagnostic": (
+            "within-level redundancy_delta_F is descriptive and does not determine "
+            "the surprise-threshold prune recommendation"
+        ),
+        "claim_boundary": (
+            "configured implementation control only; no universal structure-emergence, "
+            "model-selection-consistency, or unconfigured-world claim"
+        ),
         "n_levels": int(degenerate["n_levels"]),
         "acuity": float(acuity),
+        "n_iters": int(n_iters),
         "obs": int(obs),
+        "seed": int(seed),
+        "seed_role": "compatibility provenance only; configured control has no RNG draw",
     }
 
 
@@ -373,8 +410,7 @@ def run_moving_world(
         B = np.asarray(world["B"], dtype=np.float64)
 
         local_posteriors_by_condition = {
-            c: [np.full(n_states, 1.0 / n_states) for _ in range(n_agents)]
-            for c in conditions
+            c: [np.full(n_states, 1.0 / n_states) for _ in range(n_agents)] for c in conditions
         }
         positions_by_cond = {c: list(world["agent_positions"]) for c in conditions}
 
@@ -415,24 +451,15 @@ def run_moving_world(
                 # --- communicate ---
                 if c in ("communicating", "efe_guided"):
                     consensus = log_linear_pool(local_posteriors)
-                    local_posteriors_by_condition[c] = [
-                        consensus.copy() for _ in range(n_agents)
-                    ]
+                    local_posteriors_by_condition[c] = [consensus.copy() for _ in range(n_agents)]
 
         # --- score ---
         for c in conditions:
             local_posteriors = local_posteriors_by_condition[c]
             consensus = log_linear_pool(local_posteriors)
             accuracy[c] += float(np.argmax(consensus) == true_state) / n_trials
-            fe_sum[c] += float(
-                -np.log(np.clip(consensus[true_state], 1e-12, None))
-            ) / n_trials
-            ent = float(
-                -np.sum(
-                    np.clip(consensus, 1e-12, None)
-                    * np.log(np.clip(consensus, 1e-12, None))
-                )
-            )
+            fe_sum[c] += float(-np.log(np.clip(consensus[true_state], 1e-12, None))) / n_trials
+            ent = float(-np.sum(np.clip(consensus, 1e-12, None) * np.log(np.clip(consensus, 1e-12, None))))
             steps_sum[c] += float(n_steps if ent > 0.5 else max(1, n_steps - 1)) / n_trials
 
     isolated_fe = fe_sum["isolated"]
@@ -506,9 +533,7 @@ def run_hierarchical_world(
         true_state = int(rng.choice(n_s, p=l1_priors_ctx[true_ctx]))
 
         # Each agent gets an independent noisy observation from its own sensor.
-        per_agent_obs = [
-            _sample_observation(A_base, true_state, rng) for _ in range(n_agents)
-        ]
+        per_agent_obs = [_sample_observation(A_base, true_state, rng) for _ in range(n_agents)]
 
         metrics = compare_flat_vs_nlevel(
             A_base=A_base,
@@ -523,10 +548,7 @@ def run_hierarchical_world(
         fe_sum["flat"] += metrics.flat_fe / n_trials
         fe_sum["hierarchical"] += metrics.nlevel_fe / n_trials
 
-        hier_results = [
-            hierarchical_infer(A_base, o, hier_world, n_iters=n_iters)
-            for o in per_agent_obs
-        ]
+        hier_results = [hierarchical_infer(A_base, o, hier_world, n_iters=n_iters) for o in per_agent_obs]
         l2_local_posteriors = [r["q_ctx"] for r in hier_results]
         hier_l2_consensus = log_linear_pool(l2_local_posteriors)
         ctx_acc_hier += float(np.argmax(hier_l2_consensus) == true_ctx) / n_trials

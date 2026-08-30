@@ -1,4 +1,4 @@
-"""Emergence figure: structure emerges via Bayesian model reduction.
+"""Configured Bayesian-model-reduction sign-control figure.
 
 Draws the two free-energy differences recorded by
 :func:`fedference.experiments.run_emergence` (ISC-25): pruning the *redundant*
@@ -17,15 +17,13 @@ from pathlib import Path
 import numpy as np
 
 from ._common import (
-    COLOR_ACCENT,
-    COLOR_AXIS,
     COLOR_MUTED,
-    COLOR_ROBUST,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 
@@ -42,7 +40,8 @@ def generate_emergence_bmr(
     Args:
         delta_F_redundant: ``delta_F`` for pruning the redundant column (>0 wins).
         delta_F_supported: ``delta_F`` for pruning a supported column (<0 rejected).
-        convergence: Optional emergence verdict (``df_redundant > 0 > df_supported``).
+        convergence: Optional configured sign-control result
+            (``df_redundant > 0 > df_supported``).
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -58,18 +57,34 @@ def generate_emergence_bmr(
         raise ValueError("both delta_F values must be finite")
 
     apply_style()
-    labels = ["prune redundant\n(should win)", "prune supported\n(should be rejected)"]
+    labels = ["prune redundant\n(configured control)", "prune supported\n(configured control)"]
     values = [df_red, df_sup]
-    colors = [COLOR_ROBUST, COLOR_MUTED]
+    favored = semantic_style("heuristic_robust")
+    rejected = semantic_style("reference")
 
     fig, ax = plt.subplots(figsize=(7.2, 5.3), facecolor="white")
     fig.subplots_adjust(left=0.19, right=0.97, top=0.78, bottom=0.22)
     x = np.arange(2)
     # Full-opacity bars: the positive redundant-column bar is small relative to
     # the supported-column bar and must stay clearly visible.
-    bars = ax.bar(x, values, color=colors, alpha=1.0, width=0.55,
-                  edgecolor=[COLOR_ACCENT, COLOR_AXIS], linewidth=1.2, zorder=3)
-    ax.axhline(0.0, color=COLOR_AXIS, linewidth=1.2)
+    bars = ax.bar(
+        x,
+        values,
+        color=[favored.color, COLOR_MUTED],
+        hatch=[favored.hatch, rejected.hatch],
+        alpha=1.0,
+        width=0.55,
+        edgecolor=[favored.keyline, rejected.keyline],
+        linewidth=1.2,
+        zorder=3,
+    )
+    reference = semantic_style("reference_rule")
+    ax.axhline(
+        0.0,
+        color=reference.color,
+        linewidth=reference.linewidth,
+        linestyle=reference.dash,
+    )
 
     # Head/foot room so the bar-value labels never clip the axes edges or
     # collide with the tick labels (values stay computed from the data).
@@ -93,17 +108,23 @@ def generate_emergence_bmr(
     ax.set_xlabel("Model-reduction target", labelpad=6)
     ax.set_ylabel("model-reduction free-energy gain  $\\Delta F$ (nats)", labelpad=6)
     ax.set_title(
-        "Emergence via Bayesian model reduction\n"
-        "categorical protocol analogue (Friston et al., Fig. 9)",
+        "Configured BMR sign control\nfixed-posterior categorical diagnostic",
         pad=10,
     )
 
     if convergence is not None:
-        verdict = "emergence confirmed" if convergence else "no emergence"
+        verdict = (
+            "Configured BMR sign control passed"
+            if convergence
+            else "Configured BMR sign control did not pass"
+        )
         # Upper right is empty (the supported-column bar hangs below zero
         # there), so the verdict box never occludes the positive bar.
-        annotate_stats_box(ax, f"Verdict: {verdict}\ndFred = {df_red:.3g} nats\ndFsup = {df_sup:.3g} nats",  # noqa: E501
-                           loc="upper right")
+        annotate_stats_box(
+            ax,
+            f"{verdict}\ndFred = {df_red:.3g} nats\ndFsup = {df_sup:.3g} nats",  # noqa: E501
+            loc="upper right",
+        )
 
     return save_figure(fig, figures_dir(project_root) / filename)
 

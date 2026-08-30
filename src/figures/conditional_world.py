@@ -69,7 +69,16 @@ def generate_conditional_world(
         for col in range(heatmap.shape[1]):
             value = heatmap[row, col]
             if np.isfinite(value):
-                axes[0].text(col, row, f"{value:+.3f}", ha="center", va="center", fontsize=9.5)
+                axes[0].text(
+                    col,
+                    row,
+                    f"{value:+.3f}",
+                    ha="center",
+                    va="center",
+                    fontsize=9.5,
+                    color=COLOR_ACCENT,
+                    bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.6},
+                )
     axes[0].axhline(-0.5, color="white", linewidth=0.8)
     fig.colorbar(image, ax=axes[0], fraction=0.046, pad=0.04, label="naive error − robust error")
 

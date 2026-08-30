@@ -126,26 +126,37 @@ def generate_cross_study_summary(
     for study in studies:
         unit = str(study.get("unit", ""))
         if unit not in grouped:
-            raise ValueError(
-                f"cross-study figure requires a known native unit; got {unit!r}"
-            )
+            raise ValueError(f"cross-study figure requires a known native unit; got {unit!r}")
         grouped[unit].append(study)
     if any(not entries for entries in grouped.values()):
         missing = [unit for unit, entries in grouped.items() if not entries]
         raise ValueError(f"cross-study report is missing native-unit facet(s): {missing}")
 
-    max_rows = max(len(entries) for entries in grouped.values())
-    fig, axes = plt.subplots(
-        len(_UNIT_ORDER),
-        1,
-        figsize=(11.5, 2.15 * max_rows + 4.1),
-        gridspec_kw={"height_ratios": [len(grouped[unit]) for unit in _UNIT_ORDER]},
+    # Page-compatible 2x2 composition: the accuracy family receives the full
+    # left column; the smaller native-unit families occupy the right column.
+    fig = plt.figure(figsize=(12.8, 7.4), facecolor="white")
+    fig.set_layout_engine("none")
+    grid = fig.add_gridspec(
+        2,
+        2,
+        width_ratios=(1.45, 1.0),
+        height_ratios=(1.0, 1.0),
+        left=0.20,
+        right=0.98,
+        top=0.84,
+        bottom=0.16,
+        wspace=0.38,
+        hspace=0.46,
     )
-    axes = np.atleast_1d(axes)
-    fig.subplots_adjust(left=0.28, right=0.97, top=0.88, bottom=0.12, hspace=0.48)
+    axes_by_unit = {
+        "fraction": fig.add_subplot(grid[:, 0]),
+        "nats": fig.add_subplot(grid[0, 1]),
+        "R-sq": fig.add_subplot(grid[1, 1]),
+    }
 
     threshold = 1e-3
-    for ax, unit in zip(axes, _UNIT_ORDER, strict=True):
+    for panel_index, unit in enumerate(_UNIT_ORDER):
+        ax = axes_by_unit[unit]
         entries = grouped[unit]
         means = np.asarray([float(s["mean"]) for s in entries], dtype=np.float64)
         ci_lo = np.asarray([float(s["ci_lo"]) for s in entries], dtype=np.float64)
@@ -157,8 +168,7 @@ def generate_cross_study_summary(
 
         y = np.arange(len(entries))
         colors = [
-            COLOR_ROBUST if value > threshold else
-            (COLOR_NAIVE if value < -threshold else COLOR_MUTED)
+            COLOR_ROBUST if value > threshold else (COLOR_NAIVE if value < -threshold else COLOR_MUTED)
             for value in means
         ]
         ax.barh(
@@ -167,6 +177,8 @@ def generate_cross_study_summary(
             xerr=[means - ci_lo, ci_hi - means],
             color=colors,
             alpha=0.88,
+            edgecolor=COLOR_AXIS,
+            linewidth=0.8,
             error_kw={
                 "elinewidth": 2.0,
                 "capsize": 5,
@@ -174,7 +186,7 @@ def generate_cross_study_summary(
                 "ecolor": COLOR_AXIS,
             },
         )
-        ax.axvline(0.0, color=COLOR_GRID, linewidth=0.9, linestyle="--")
+        ax.axvline(0.0, color=COLOR_GRID, linewidth=1.0, linestyle=":")
 
         x_lo = min(0.0, float(ci_lo.min()))
         x_hi = max(0.0, float(ci_hi.max()))
@@ -194,9 +206,18 @@ def generate_cross_study_summary(
                 bbox=bbox,
             )
         ax.set_yticks(y)
-        ax.set_yticklabels([str(entry["label"]) for entry in entries], fontsize=10.5)
+        display_labels = [
+            str(entry["label"]).replace("Emergence (BMR)", "Configured BMR sign control") for entry in entries
+        ]
+        ax.set_yticklabels(display_labels, fontsize=10.5)
         ax.set_xlabel(_UNIT_TITLES[unit], labelpad=7, fontsize=12)
-        ax.set_title(_UNIT_TITLES[unit], loc="left", pad=7, fontsize=14)
+        panel_letter = chr(ord("A") + panel_index)
+        ax.set_title(
+            f"{panel_letter}  {_UNIT_TITLES[unit]}",
+            loc="left",
+            pad=7,
+            fontsize=14,
+        )
         ax.invert_yaxis()
         ax.tick_params(axis="x", labelsize=10.5)
         ax.text(
@@ -208,13 +229,25 @@ def generate_cross_study_summary(
             va="bottom",
             fontsize=9.5,
             color=COLOR_AXIS,
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.88, "pad": 0.5},
         )
 
     fig.suptitle(
-        "Cross-study metrics grouped by native unit\n"
-        "Panels are not directly comparable; intervals resample independent seeds",
+        "Cross-study summary by native estimand and unit\nPanel scales are intentionally separate",
         fontsize=16,
         fontweight="bold",
+    )
+    fig.text(
+        0.5,
+        0.055,
+        "Intervals come from the separate harmonized seed-level rerun, including "
+        "studies whose primary figure is a deterministic single-posterior diagnostic. "
+        "Whiskers are 95% seed-bootstrap intervals; seed is the independent unit.",
+        ha="center",
+        va="bottom",
+        fontsize=9.5,
+        color=COLOR_AXIS,
+        wrap=True,
     )
 
     out = figures_dir(Path(project_root) if project_root is not None else None)

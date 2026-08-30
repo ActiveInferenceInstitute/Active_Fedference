@@ -1,15 +1,10 @@
-"""Free-energy comparison figure: communicating vs incommunicado colonies.
+"""Paired communicating-versus-incommunicado free-energy estimation plot.
 
-Renders a categorical source-mechanism analogue to Friston et al. (2024),
-*Federated inference and belief sharing* (Neurosci. Biobehav. Rev. 156:105500),
-Fig. 5 — "two heads are better than one" under the declared reduced protocol.
-A colony that *communicates* (federated
-belief sharing through the project's categorical Eq. 7 specialization) carries
-a lower mean variational free energy than the same colony held
-incommunicado. This does not reconstruct the complete source protocol. This
-module draws the paired free-energy bars (and an optional per-seed scatter);
-the values come from
-:func:`fedference.experiments.run_belief_sharing` via the analysis workflow.
+The values are produced by the declared reduced categorical protocol. This
+module preserves seed pairing, displays the signed paired contrast
+``incommunicado - communicating``, and consumes the report-owned paired mean
+interval when supplied. It does not reconstruct the complete source protocol
+or infer a communication-rate effect.
 """
 
 from __future__ import annotations
@@ -23,13 +18,11 @@ from ._common import (
     COLOR_AXIS,
     COLOR_GRID,
     COLOR_MUTED,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
-    annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 
@@ -37,22 +30,19 @@ def generate_free_energy_comparison(
     incommunicado: Sequence[float],
     communicating: Sequence[float],
     *,
+    paired_difference_mean: float | None = None,
+    paired_difference_ci: Sequence[float] | None = None,
+    difference_definition: str = "incommunicado_minus_communicating",
+    analysis_unit: str = "seed-level paired colony mean",
+    replication_unit: str = "seed",
     project_root: Path | None = None,
     filename: str = "free_energy_comparison.png",
 ) -> Path:
-    """Render the free-energy gap between incommunicado and communicating colonies.
+    """Render paired free energies and their signed seed-level differences.
 
-    Args:
-        incommunicado: Per-seed mean free energy with no belief sharing.
-        communicating: Per-seed mean free energy with federated sharing.
-        project_root: Project root override.
-        filename: Output PNG name under ``output/figures``.
-
-    Returns:
-        Path to the written PNG.
-
-    Raises:
-        ValueError: If the two sequences are empty or differ in length.
+    ``paired_difference_ci`` is optional for compatibility with older report
+    snapshots. When absent, the figure shows the paired values and their mean
+    without manufacturing an interval inside the plotter.
     """
     incom = np.asarray(incommunicado, dtype=np.float64).ravel()
     comm = np.asarray(communicating, dtype=np.float64).ravel()
@@ -60,65 +50,191 @@ def generate_free_energy_comparison(
         raise ValueError("both free-energy sequences must be non-empty")
     if incom.shape != comm.shape:
         raise ValueError("incommunicado and communicating must have equal length")
+    if not (np.all(np.isfinite(incom)) and np.all(np.isfinite(comm))):
+        raise ValueError("free-energy sequences must contain only finite values")
+    if difference_definition != "incommunicado_minus_communicating":
+        raise ValueError("difference_definition must be 'incommunicado_minus_communicating'")
+
+    differences = incom - comm
+    observed_mean = float(np.mean(differences))
+    mean_difference = observed_mean if paired_difference_mean is None else float(paired_difference_mean)
+    if not np.isfinite(mean_difference):
+        raise ValueError("paired_difference_mean must be finite")
+    if not np.isclose(mean_difference, observed_mean, rtol=1e-10, atol=1e-12):
+        raise ValueError("paired_difference_mean disagrees with the paired values")
+
+    interval: tuple[float, float] | None = None
+    if paired_difference_ci is not None:
+        if len(paired_difference_ci) != 2:
+            raise ValueError("paired_difference_ci must contain [lo, hi]")
+        lo, hi = (float(value) for value in paired_difference_ci)
+        if not (np.isfinite(lo) and np.isfinite(hi) and lo <= mean_difference <= hi):
+            raise ValueError("paired_difference_ci must be finite, ordered, and contain the mean")
+        interval = (lo, hi)
 
     apply_style()
-    means = [float(incom.mean()), float(comm.mean())]
-    errs = [float(incom.std(ddof=0)), float(comm.std(ddof=0))]
-    labels = ["incommunicado", "communicating"]
-    colors = [COLOR_NAIVE, COLOR_ROBUST]
+    naive = semantic_style("naive")
+    robust = semantic_style("heuristic_robust")
+    reference = semantic_style("reference_rule")
+    fig, (ax_pairs, ax_difference) = plt.subplots(
+        1,
+        2,
+        figsize=(10.8, 5.4),
+        facecolor="white",
+        gridspec_kw={"width_ratios": (1.2, 1.0)},
+    )
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.80, bottom=0.21, wspace=0.29)
 
-    fig, ax = plt.subplots(figsize=(7.2, 5.4), facecolor="white")
-    fig.subplots_adjust(left=0.19, right=0.97, top=0.78, bottom=0.18)
-    x = np.arange(2)
-    bars = ax.bar(x, means, yerr=errs, color=colors, capsize=6, alpha=0.85, width=0.55,
-                  error_kw={"elinewidth": 1.4, "ecolor": COLOR_AXIS})
-    # Overlay the per-seed points so the within-colony gap is visible.
-    rng = np.random.default_rng(0)
-    for i, data in enumerate((incom, comm)):
-        jitter = rng.uniform(-0.08, 0.08, size=data.shape[0])
-        ax.scatter(
-            np.full_like(data, i) + jitter,
-            data,
+    seed_alpha = max(0.08, min(0.34, 22.0 / incom.size))
+    seed_size = max(14.0, min(34.0, 6000.0 / incom.size))
+    for before, after in zip(incom, comm, strict=True):
+        ax_pairs.plot(
+            (0.0, 1.0),
+            (before, after),
             color=COLOR_MUTED,
-            s=22,
-            zorder=3,
-            alpha=0.75,
-            label="per-seed value" if i == 0 else None,
+            linewidth=0.9,
+            alpha=seed_alpha,
+            zorder=1,
         )
-    # Value labels above each bar.
-    for bar, mean in zip(bars, means, strict=True):
-        ax.annotate(
-            f"{mean:.3g} nats",
-            xy=(bar.get_x() + bar.get_width() / 2.0, mean),
-            xytext=(0, 8),
-            textcoords="offset points",
-            ha="center",
-            fontsize=9.5,
-            fontweight="bold",
-        )
-    gap = means[0] - means[1]
-    ax.annotate(
-        rf"$\Delta F$ = {gap:.3g} nats",
-        xy=(0.5, 0.93),
-        xycoords="axes fraction",
-        ha="center",
-        va="top",
-        fontsize=9.5,
-        bbox={"boxstyle": "round,pad=0.3", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
+    ax_pairs.scatter(
+        np.zeros(incom.size),
+        incom,
+        color=naive.color,
+        edgecolor=naive.keyline,
+        marker=naive.marker,
+        s=seed_size,
+        linewidth=0.8,
+        alpha=0.78,
+        label="incommunicado",
+        zorder=2,
     )
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=10)
-    ax.set_xlabel("Colony communication condition", labelpad=6)
-    ax.set_ylabel("mean variational free energy (nats)", labelpad=6)
-    ax.set_title(
-        "Belief sharing lowers colony free energy\n"
-        "categorical protocol analogue (Friston et al., Fig. 5)",
-        pad=10,
+    ax_pairs.scatter(
+        np.ones(comm.size),
+        comm,
+        facecolor="white",
+        edgecolor=robust.keyline,
+        marker=robust.marker,
+        s=seed_size,
+        linewidth=1.2,
+        label="communicating",
+        zorder=3,
     )
-    ax.legend(fontsize=9.5, loc="upper right")
-    annotate_stats_box(ax, f"lower F = better\nn = {len(incom)} seeds",
-                       loc="lower right")
+    pair_means = (float(incom.mean()), float(comm.mean()))
+    ax_pairs.plot(
+        (0.0, 1.0),
+        pair_means,
+        color=COLOR_AXIS,
+        linewidth=2.5,
+        marker="D",
+        markersize=7,
+        markerfacecolor="white",
+        markeredgewidth=1.4,
+        label="paired-condition means",
+        zorder=4,
+    )
+    ax_pairs.set_xticks((0.0, 1.0), ("incommunicado", "communicating"))
+    ax_pairs.set_xlim(-0.28, 1.28)
+    ax_pairs.set_ylabel("Seed-level colony mean free energy (nats)")
+    ax_pairs.set_title("A  Matched conditions", loc="left")
+    ax_pairs.legend(loc="best", fontsize=9.5)
 
+    violin = ax_difference.violinplot(
+        differences,
+        positions=[0.0],
+        orientation="horizontal",
+        widths=0.30,
+        showmeans=False,
+        showmedians=False,
+        showextrema=False,
+    )
+    for body in violin["bodies"]:
+        body.set_facecolor(robust.color)
+        body.set_edgecolor(robust.keyline)
+        body.set_alpha(0.16)
+        body.set_linewidth(1.0)
+    jitter = np.random.default_rng(0).uniform(-0.12, 0.12, size=differences.size)
+    ax_difference.scatter(
+        differences,
+        jitter,
+        marker=robust.marker,
+        facecolor="white",
+        edgecolor=robust.keyline,
+        linewidth=1.1,
+        s=max(12.0, min(30.0, 4200.0 / differences.size)),
+        alpha=max(0.22, min(0.75, 36.0 / differences.size)),
+        label="one paired difference per seed",
+        zorder=3,
+    )
+    ax_difference.axvline(
+        0.0,
+        color=reference.color,
+        linestyle=reference.dash,
+        linewidth=reference.linewidth,
+        label="zero difference",
+        zorder=1,
+    )
+    if interval is None:
+        ax_difference.scatter(
+            [mean_difference],
+            [-0.26],
+            marker="D",
+            s=72,
+            color=COLOR_AXIS,
+            label="paired mean; interval unavailable",
+            zorder=4,
+        )
+    else:
+        lo, hi = interval
+        ax_difference.errorbar(
+            [mean_difference],
+            [-0.26],
+            xerr=[[mean_difference - lo], [hi - mean_difference]],
+            fmt="D",
+            markersize=7,
+            markerfacecolor="white",
+            markeredgecolor=COLOR_AXIS,
+            color=COLOR_AXIS,
+            linewidth=2.0,
+            capsize=5,
+            label="paired mean with 95% interval",
+            zorder=4,
+        )
+    ax_difference.set_ylim(-0.38, 0.21)
+    ax_difference.set_yticks(())
+    ax_difference.set_xlabel("$\\Delta F$ (nats)\nincommunicado − communicating")
+    ax_difference.set_title("B  Seed-level paired differences", loc="left")
+    ax_difference.legend(loc="upper left", fontsize=9.5)
+    ax_difference.text(
+        0.02,
+        0.03,
+        rf"mean $\Delta F$ = {mean_difference:+.3g} nats"
+        "\n"
+        f"n = {differences.size} {replication_unit}s\n"
+        "positive = lower F with communication",
+        transform=ax_difference.transAxes,
+        ha="left",
+        va="bottom",
+        fontsize=9.5,
+        bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID},
+    )
+
+    fig.suptitle(
+        "Paired colony free-energy comparison",
+        y=0.985,
+        fontsize=15,
+        fontweight="bold",
+    )
+    ax_difference.text(
+        0.02,
+        0.23,
+        f"{analysis_unit}; {replication_unit} is independent",
+        transform=ax_difference.transAxes,
+        ha="left",
+        va="bottom",
+        fontsize=9.5,
+        color=COLOR_MUTED,
+    )
     return save_figure(fig, figures_dir(project_root) / filename)
 
 

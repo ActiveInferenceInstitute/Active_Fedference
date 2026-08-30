@@ -25,6 +25,7 @@ import numpy as np
 
 from figures._common import (
     COLOR_GRID,
+    COLOR_HONEST_EDGE,
     COLOR_NAIVE,
     COLOR_ROBUST,
     COLOR_VARIATE,
@@ -250,7 +251,10 @@ def generate_hierarchical_pomdp(
         peak = int(np.argmax(series))
         ax.text(
             peak + xoff, float(series[peak]) + yoff, f"{float(series[peak]):.2f}",
-            ha="center", va="bottom", fontsize=_FS_ANN - 1, color=color,
+            ha="center",
+            va="bottom",
+            fontsize=_FS_ANN - 1,
+            color=COLOR_HONEST_EDGE if color == COLOR_ROBUST else color,
         )
     ax.set_ylim(0, 1.3)
     ax.legend(fontsize=_FS_LEGEND, loc="center left")

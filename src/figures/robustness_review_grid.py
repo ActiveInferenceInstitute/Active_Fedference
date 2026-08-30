@@ -6,18 +6,51 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
+from matplotlib.colors import to_hex
 
 from ._common import (
-    COLOR_ACCENT,
     COLOR_MUTED,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
     MIN_QUANTITATIVE_FONT_SIZE,
+    SemanticStyle,
     apply_style,
+    contrasting_text_color,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
+    signed_difference_colormap,
 )
+
+_PRESET_STYLE_ROLES = (
+    "heuristic_robust",
+    "operating_point_1",
+    "operating_point_2",
+    "operating_point_3",
+    "operating_point_4",
+)
+
+
+def _spread_endpoint_labels(
+    values: list[float],
+    *,
+    minimum_separation: float,
+    lower: float,
+    upper: float,
+) -> list[float]:
+    """Return ordered endpoint-label lanes without changing curve endpoints."""
+    if not values:
+        return []
+    order = sorted(range(len(values)), key=values.__getitem__)
+    positions = list(values)
+    for previous, current in zip(order, order[1:]):
+        positions[current] = max(positions[current], positions[previous] + minimum_separation)
+    overflow = positions[order[-1]] - upper
+    if overflow > 0.0:
+        positions = [position - overflow for position in positions]
+    underflow = lower - positions[order[0]]
+    if underflow > 0.0:
+        positions = [position + underflow for position in positions]
+    return positions
 
 
 def _as_mapping(value: object, *, label: str) -> Mapping[str, object]:
@@ -138,15 +171,30 @@ def generate_robustness_review_grid(
     rate_axes = [fig.add_subplot(grid[index, 1]) for index in range(len(directional_kinds))]
 
     vmax = max(float(np.nanmax(np.abs(matrix))), 1e-6)
-    image = heatmap_axis.imshow(matrix, cmap="RdBu", vmin=-vmax, vmax=vmax, aspect="auto")
+    image = heatmap_axis.imshow(
+        matrix,
+        cmap=signed_difference_colormap(),
+        vmin=-vmax,
+        vmax=vmax,
+        aspect="auto",
+    )
     heatmap_axis.set_xticks(range(len(weights)), ["half adversary\nweight", "full adversary\nweight"])
     heatmap_axis.set_yticks(range(len(attacks)), [attack.replace("_", " ") for attack in attacks])
     heatmap_axis.set_xlabel("Declared conditional cell")
     heatmap_axis.set_ylabel("Attack mechanism")
-    heatmap_axis.set_title("Conditional robust-minus-naive mean")
+    heatmap_axis.set_title("A  Conditional preset-minus-reference means", loc="left")
     for row in range(matrix.shape[0]):
         for col in range(matrix.shape[1]):
             if np.isfinite(matrix[row, col]):
+                mapped = np.asarray(image.cmap(image.norm(matrix[row, col])), dtype=np.float64).reshape(4)
+                background = to_hex(
+                    (
+                        float(mapped[0]),
+                        float(mapped[1]),
+                        float(mapped[2]),
+                        float(mapped[3]),
+                    )
+                )
                 heatmap_axis.text(
                     col,
                     row,
@@ -154,6 +202,8 @@ def generate_robustness_review_grid(
                     ha="center",
                     va="center",
                     fontsize=9.5,
+                    color=contrasting_text_color(background),
+                    bbox={"facecolor": background, "edgecolor": "none", "pad": 0.0},
                 )
     fig.colorbar(
         image,
@@ -171,12 +221,11 @@ def generate_robustness_review_grid(
         color=COLOR_MUTED,
     )
 
-    colors = (COLOR_ROBUST, COLOR_ACCENT, COLOR_NAIVE, COLOR_MUTED)
-    markers = ("o", "s", "^", "D")
-    line_styles = ("-", "--", "-.", ":")
     for kind_index, (kind, axis) in enumerate(zip(directional_kinds, rate_axes)):
         kind_statistics = _as_mapping(statistics_by_kind[kind], label=f"statistics for {kind!r}")
         by_rate = _as_mapping(kind_statistics["by_rate"], label=f"rate rows for {kind!r}")
+        endpoint_rows: list[tuple[float, str, SemanticStyle]] = []
+        interval_values: list[float] = [0.0]
         for method_index, method in enumerate(robust_methods):
             means: list[float] = []
             ci_lo: list[float] = []
@@ -199,38 +248,109 @@ def generate_robustness_review_grid(
                 means.append(_as_finite_number(summary["mean"], label=f"mean {method!r}"))
                 ci_lo.append(ci_lower)
                 ci_hi.append(ci_upper)
-            color = colors[method_index % len(colors)]
-            axis.fill_between(rates, ci_lo, ci_hi, color=color, alpha=0.13, linewidth=0)
+            interval_values.extend(ci_lo)
+            interval_values.extend(ci_hi)
+            style = semantic_style(_PRESET_STYLE_ROLES[method_index % len(_PRESET_STYLE_ROLES)])
+            label = f"server preset {method_index + 1}"
+            axis.fill_between(
+                rates,
+                ci_lo,
+                ci_hi,
+                color=style.color,
+                alpha=0.13,
+                linewidth=0,
+            )
             axis.plot(
                 rates,
                 means,
-                marker=markers[method_index % len(markers)],
-                linestyle=line_styles[method_index % len(line_styles)],
-                linewidth=1.65,
-                markersize=4.0,
-                color=color,
-                label=method,
+                marker=style.marker,
+                markerfacecolor="white",
+                markeredgecolor=style.keyline,
+                linestyle=style.dash,
+                linewidth=style.linewidth,
+                markersize=5.0,
+                color=style.color,
+                label=label,
             )
-        axis.axhline(0.0, color=COLOR_NAIVE, linestyle="--", linewidth=1.0)
-        axis.set_title(f"{kind.replace('_', ' ')}: all predeclared methods", loc="left")
-        axis.set_ylabel("Robust − KLD\ntrue-state mass")
+            endpoint_rows.append((float(means[-1]), label, style))
+        series_lower = min(interval_values)
+        series_upper = max(interval_values)
+        series_span = max(series_upper - series_lower, 0.10)
+        label_lower = series_lower - 0.04 * series_span
+        label_upper = series_upper + 0.04 * series_span
+        label_positions = _spread_endpoint_labels(
+            [row[0] for row in endpoint_rows],
+            minimum_separation=max(0.018, 0.055 * series_span),
+            lower=label_lower,
+            upper=label_upper,
+        )
+        label_x = float(rates[-1]) + 0.025
+        for (endpoint, label, style), label_y in zip(
+            endpoint_rows,
+            label_positions,
+            strict=True,
+        ):
+            axis.plot(
+                [float(rates[-1]), label_x],
+                [endpoint, label_y],
+                color=style.keyline,
+                linewidth=0.8,
+                clip_on=False,
+            )
+            axis.text(
+                label_x,
+                label_y,
+                label,
+                fontsize=MIN_QUANTITATIVE_FONT_SIZE,
+                color=style.keyline,
+                ha="left",
+                va="center",
+                clip_on=False,
+            )
+        axis.set_ylim(label_lower, label_upper)
+        reference = semantic_style("reference_rule")
+        axis.axhline(
+            0.0,
+            color=reference.color,
+            linestyle=reference.dash,
+            linewidth=reference.linewidth,
+        )
+        panel_letter = chr(ord("B") + kind_index)
+        axis.set_title(
+            f"{panel_letter}  {kind.replace('_', ' ')}: all predeclared presets",
+            loc="left",
+        )
+        axis.set_ylabel("Preset − reference\ntrue-state mass")
+        axis.set_xlim(float(rates.min()), float(rates.max()) + 0.24)
         axis.grid(axis="y", alpha=0.20)
         if kind_index + 1 == len(rate_axes):
             axis.set_xlabel("Contamination rate $\\epsilon$")
         else:
             axis.tick_params(labelbottom=False)
         if kind_index == 0:
-            axis.legend(
-                title="method (shading: 95% seed bootstrap CI)",
+            axis.text(
+                0.02,
+                0.04,
+                "bands: 95% seed-bootstrap intervals",
+                transform=axis.transAxes,
                 fontsize=MIN_QUANTITATIVE_FONT_SIZE,
-                title_fontsize=MIN_QUANTITATIVE_FONT_SIZE,
-                loc="best",
-                ncol=2,
+                color=COLOR_MUTED,
+                ha="left",
+                va="bottom",
             )
 
     fig.suptitle(
-        "Expanded source-bound robustness review grid: signed, selection-free contrasts",
+        "Source-bound robustness review grid: signed, selection-free server contrasts",
         fontweight="bold",
+    )
+    fig.text(
+        0.52,
+        0.025,
+        "Mixed signs are retained; no universal winning server preset is inferred.",
+        ha="center",
+        va="bottom",
+        fontsize=MIN_QUANTITATIVE_FONT_SIZE,
+        color=COLOR_MUTED,
     )
     return save_figure(fig, figures_dir(project_root) / filename)
 

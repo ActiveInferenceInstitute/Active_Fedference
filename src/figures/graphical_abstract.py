@@ -2,7 +2,7 @@
 
 Two-panel publication-quality figure:
   LEFT  — Network diagram: metadata-backed honest and adversarial agents
-           sharing beliefs with a central robust-aggregation server.
+           sharing beliefs with a central fusion server.
   RIGHT — Schematic outcome cards comparing token-backed naive and robust
            consensus states, with the variational objective kept separate.
 
@@ -26,6 +26,7 @@ from figures._common import (
     COLOR_EDGE_LIGHT,
     COLOR_EDGE_PANEL,
     COLOR_HONEST_EDGE,
+    COLOR_MULTI_2,
     COLOR_NAIVE,
     COLOR_NAIVE_LIGHT,
     COLOR_PANEL_BG,
@@ -34,8 +35,11 @@ from figures._common import (
     COLOR_SERVER,
     COLOR_SERVER_EDGE,
     COLOR_VARIATE,
+    MIN_SCHEMATIC_FONT_SIZE,
     PROJECT_ROOT,
     apply_style,
+    contrasting_text_color,
+    validate_figure_text,
 )
 from figures.system_overview import SYSTEM_OVERVIEW_METADATA, build_data
 
@@ -92,8 +96,7 @@ def _rewrite_as_rgb_png(path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Helper: tiny bar-chart glyph drawn inside an agent node
 # ---------------------------------------------------------------------------
-def _draw_mini_bars(ax: plt.Axes, cx: float, cy: float, r: float,
-                    heights: list[float], color: str) -> None:
+def _draw_mini_bars(ax: plt.Axes, cx: float, cy: float, r: float, heights: list[float], color: str) -> None:
     """Draw a tiny 4-bar histogram inside a circle of radius r centred on (cx, cy)."""
     n = len(heights)
     bar_w = r * 0.28
@@ -144,7 +147,9 @@ def _draw_network_panel(ax: plt.Axes) -> None:
 
     # Panel background
     bg = mpatches.FancyBboxPatch(
-        (-2.8, -3.2), 5.6, 6.2,
+        (-2.8, -3.2),
+        5.6,
+        6.2,
         boxstyle="round,pad=0.05",
         linewidth=1.2,
         edgecolor=COLOR_EDGE_PANEL,
@@ -162,19 +167,28 @@ def _draw_network_panel(ax: plt.Axes) -> None:
     ax.fill(hex_x, hex_y, color=SERVER_COLOR, zorder=4, alpha=0.92)
     ax.plot(hex_x, hex_y, color=COLOR_SERVER_EDGE, linewidth=1.5, zorder=4)
     ax.text(
-        0, 0.17, "Robust", ha="center", va="center",
-        fontsize=8.8, fontweight="bold", color=AXIS_COLOR,
-        fontfamily=FONT_FAMILY, zorder=5,
+        0,
+        0.10,
+        "Fusion",
+        ha="center",
+        va="center",
+        fontsize=9.2,
+        fontweight="bold",
+        color=AXIS_COLOR,
+        fontfamily=FONT_FAMILY,
+        zorder=5,
     )
     ax.text(
-        0, -0.03, "aggregation", ha="center", va="center",
-        fontsize=8.5, fontweight="bold", color=AXIS_COLOR,
-        fontfamily=FONT_FAMILY, zorder=5,
-    )
-    ax.text(
-        0, -0.23, "server", ha="center", va="center",
-        fontsize=8.5, fontweight="bold", color=AXIS_COLOR,
-        fontfamily=FONT_FAMILY, zorder=5,
+        0,
+        -0.14,
+        "server",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        fontweight="bold",
+        color=AXIS_COLOR,
+        fontfamily=FONT_FAMILY,
+        zorder=5,
     )
 
     ring_r = 2.05
@@ -184,13 +198,13 @@ def _draw_network_panel(ax: plt.Axes) -> None:
         for idx in range(COVER_NETWORK_N_ADVERSARIAL)
     }
 
-    honest_beliefs = [0.1, 0.15, 0.65, 0.1]    # peaked at state 3
+    honest_beliefs = [0.1, 0.15, 0.65, 0.1]  # peaked at state 3
 
     node_r = 0.42
     agent_positions: list[tuple[float, float]] = []
 
     for i in range(n_agents):
-        angle = math.pi / 2 + i * 2 * math.pi / n_agents   # start from top
+        angle = math.pi / 2 + i * 2 * math.pi / n_agents  # start from top
         px = ring_r * math.cos(angle)
         py = ring_r * math.sin(angle)
         agent_positions.append((px, py))
@@ -201,9 +215,13 @@ def _draw_network_panel(ax: plt.Axes) -> None:
 
         # Circle fill
         circle = mpatches.Circle(
-            (px, py), node_r,
-            facecolor=color, edgecolor=edge_color,
-            linewidth=1.8, zorder=4, alpha=0.93,
+            (px, py),
+            node_r,
+            facecolor=color,
+            edgecolor=edge_color,
+            linewidth=1.8,
+            zorder=4,
+            alpha=0.93,
         )
         ax.add_patch(circle)
 
@@ -218,16 +236,18 @@ def _draw_network_panel(ax: plt.Axes) -> None:
         if is_adv:
             label = "Adversary"
         else:
-            honest_seen = sum(
-                1 for j in range(i + 1) if j not in adversary_idx
-            )
+            honest_seen = sum(1 for j in range(i + 1) if j not in adversary_idx)
             label = f"Agent {honest_seen}"
         ax.text(
-            px, py - node_r - 0.18,
+            px,
+            py - node_r - 0.18,
             label,
-            ha="center", va="top",
-            fontsize=8.5, color=AXIS_COLOR,
-            fontfamily=FONT_FAMILY, zorder=5,
+            ha="center",
+            va="top",
+            fontsize=8.5,
+            color=AXIS_COLOR,
+            fontfamily=FONT_FAMILY,
+            zorder=5,
         )
 
     # ---------- Arrows: agents → server ----------
@@ -301,11 +321,16 @@ def _draw_network_panel(ax: plt.Axes) -> None:
         ax.add_patch(rect)
 
     ax.text(
-        consensus_x, consensus_y - 0.24,
+        consensus_x,
+        consensus_y - 0.24,
         "Consensus Belief",
-        ha="center", va="top",
-        fontsize=8.5, fontweight="bold", color=AXIS_COLOR,
-        fontfamily=FONT_FAMILY, zorder=5,
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        fontweight="bold",
+        color=AXIS_COLOR,
+        fontfamily=FONT_FAMILY,
+        zorder=5,
     )
 
     # Short arrow from server to consensus panel
@@ -324,18 +349,23 @@ def _draw_network_panel(ax: plt.Axes) -> None:
 
     # ---------- Title ----------
     ax.text(
-        0, 2.82,
+        0,
+        2.82,
         "Federated Belief Sharing Under Contamination",
-        ha="center", va="top",
-        fontsize=9.5, fontweight="bold", color=AXIS_COLOR,
-        fontfamily=FONT_FAMILY, zorder=5,
+        ha="center",
+        va="top",
+        fontsize=9.5,
+        fontweight="bold",
+        color=AXIS_COLOR,
+        fontfamily=FONT_FAMILY,
+        zorder=5,
     )
 
     # ---------- Legend ----------
     legend_items = [
         mpatches.Patch(facecolor=HONEST_COLOR, edgecolor=COLOR_HONEST_EDGE, label="Honest agent"),
         mpatches.Patch(facecolor=ADVERSARY_COLOR, edgecolor=COLOR_ADVERSARY_EDGE, label="Adversarial agent"),
-        mpatches.Patch(facecolor=SERVER_COLOR, edgecolor=COLOR_SERVER_EDGE, label="Robust server"),
+        mpatches.Patch(facecolor=SERVER_COLOR, edgecolor=COLOR_SERVER_EDGE, label="Fusion server"),
     ]
     leg = ax.legend(
         handles=legend_items,
@@ -429,7 +459,7 @@ def _draw_distribution_card(
         va="center",
         fontsize=10.5,
         fontweight="bold",
-        color="white",
+        color=contrasting_text_color(accent),
         fontfamily=FONT_FAMILY,
         zorder=5,
     )
@@ -459,6 +489,7 @@ def _draw_distribution_card(
             zorder=3,
         )
         ax.add_patch(rect)
+
 
 def _draw_performance_panel(ax: plt.Axes) -> None:
     ax.set_facecolor(PANEL_BG)
@@ -508,9 +539,7 @@ def _draw_performance_panel(ax: plt.Axes) -> None:
     naive_acc = SYSTEM_OVERVIEW_METADATA["naive_acc_pct"]
     robust_acc = SYSTEM_OVERVIEW_METADATA["robust_acc_pct"]
     schematic = build_data()
-    gain_pp = (
-        SYSTEM_OVERVIEW_METADATA["robust_acc_pct"] - SYSTEM_OVERVIEW_METADATA["naive_acc_pct"]
-    )
+    gain_pp = SYSTEM_OVERVIEW_METADATA["robust_acc_pct"] - SYSTEM_OVERVIEW_METADATA["naive_acc_pct"]
     _draw_distribution_card(
         ax,
         x=0.06,
@@ -531,7 +560,7 @@ def _draw_performance_panel(ax: plt.Axes) -> None:
         w=0.88,
         h=0.25,
         title=METHOD_LABELS[1],
-        subtitle="server suppresses outlying beliefs before fusion",
+        subtitle="configured divergence reweighting before fusion",
         values=list(schematic["robust"]),
         accent=COLOR_ROBUST,
         edge=COLOR_HONEST_EDGE,
@@ -650,6 +679,11 @@ def _draw_guarantee_strip(ax: plt.Axes) -> None:
         ),
     )
     for x, y, w, title, body, color in cards:
+        title_color = (
+            COLOR_HONEST_EDGE
+            if color == HONEST_COLOR
+            else (COLOR_MULTI_2 if color == VARIATE_COLOR else color)
+        )
         ax.add_patch(
             mpatches.FancyBboxPatch(
                 (x, y),
@@ -671,7 +705,7 @@ def _draw_guarantee_strip(ax: plt.Axes) -> None:
             va="center",
             fontsize=8.5,
             fontweight="bold",
-            color=color,
+            color=title_color,
         )
         ax.text(
             x + 0.025,
@@ -704,18 +738,20 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
     out_dir = root / "output" / "figures"
     cover_path = root / "manuscript" / "cover_image.png"
     apply_style()
-    plt.rcParams.update({
-        "font.family": FONT_FAMILY,
-        "axes.titlesize": 10,
-        "axes.labelsize": 9,
-        "xtick.labelsize": 8,
-        "ytick.labelsize": 8,
-        "figure.facecolor": "white",
-        "axes.facecolor": PANEL_BG,
-        # Disable global autolayout for this figure — explicit gridspec
-        # positioning is used so tight_layout would conflict.
-        "figure.autolayout": False,
-    })
+    plt.rcParams.update(
+        {
+            "font.family": FONT_FAMILY,
+            "axes.titlesize": 10,
+            "axes.labelsize": 9,
+            "xtick.labelsize": 8,
+            "ytick.labelsize": 8,
+            "figure.facecolor": "white",
+            "axes.facecolor": PANEL_BG,
+            # Disable global autolayout for this figure — explicit gridspec
+            # positioning is used so tight_layout would conflict.
+            "figure.autolayout": False,
+        }
+    )
 
     fig = plt.figure(figsize=(15.0, 8.5), dpi=220)
 
@@ -725,8 +761,10 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
         2,
         height_ratios=[4.45, 1.25],
         width_ratios=[5.8, 4.2],
-        left=0.03, right=0.97,
-        top=0.80, bottom=0.13,
+        left=0.03,
+        right=0.97,
+        top=0.80,
+        bottom=0.13,
         wspace=0.08,
         hspace=0.12,
     )
@@ -740,18 +778,22 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
     _draw_guarantee_strip(ax_axes)
 
     fig.text(
-        0.5, 0.965,
-        "Federated belief sharing: from generative model to robust consensus",
-        ha="center", va="top",
+        0.5,
+        0.965,
+        "Federated belief sharing: from generative model to claim-bounded consensus",
+        ha="center",
+        va="top",
         fontsize=18,
         fontweight="bold",
         color=AXIS_COLOR,
         fontfamily=FONT_FAMILY,
     )
     fig.text(
-        0.5, 0.915,
+        0.5,
+        0.915,
         "A categorical, recovery-tested bridge between active inference and generalized Bayes",
-        ha="center", va="top",
+        ha="center",
+        va="top",
         fontsize=10.5,
         color=COLOR_ARROW,
         fontfamily=FONT_FAMILY,
@@ -759,10 +801,13 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
 
     # Footer text bar
     fig.text(
-        0.5, 0.875,
-        "Recovery anchor: robust_aggregate(0) = log_linear_pool = standard belief sharing",
-        ha="center", va="center",
-        fontsize=9.0, color=AXIS_COLOR,
+        0.5,
+        0.880,
+        "Project identity: robust_aggregate(c=0) ≡ log_linear_pool",
+        ha="center",
+        va="center",
+        fontsize=9.5,
+        color=AXIS_COLOR,
         fontfamily=FONT_FAMILY,
         bbox={
             "boxstyle": "round,pad=0.42",
@@ -772,22 +817,29 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
         },
     )
     fig.text(
-        0.5, 0.025,
-        "belief broadcasts → fusion rule → claim-bounded consensus schematic",
-        ha="center", va="bottom",
-        fontsize=9.5, color=COLOR_ARROW,
+        0.5,
+        0.840,
+        "Friston Eq. 7 relation: categorical message-combination specialization under "
+        "shared support, posterior-log potentials, and fixed weights",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_ARROW,
         fontfamily=FONT_FAMILY,
-        style="italic",
     )
 
-    # Panel labels A / B
-    for letter, ax in zip(["A", "B"], [ax_net, ax_bar]):
+    # Numbered reading order: network, outcome cards, then claim ownership.
+    for letter, ax in zip(["1", "2", "3"], [ax_net, ax_bar, ax_axes]):
         x_pos = ax.get_position().x0 + 0.005
         y_pos = ax.get_position().y1 + 0.015
         fig.text(
-            x_pos, y_pos, letter,
-            fontsize=14, fontweight="bold",
-            color=AXIS_COLOR, fontfamily=FONT_FAMILY,
+            x_pos,
+            y_pos,
+            letter,
+            fontsize=14,
+            fontweight="bold",
+            color=AXIS_COLOR,
+            fontfamily=FONT_FAMILY,
         )
 
     # Save
@@ -796,6 +848,7 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
     png_path = out_dir / "graphical_abstract.png"
     pdf_path = out_dir / "graphical_abstract.pdf"
 
+    validate_figure_text(fig, minimum_font_size=MIN_SCHEMATIC_FONT_SIZE)
     fig.savefig(png_path, dpi=300, bbox_inches="tight", facecolor="white")
     fig.savefig(cover_path, dpi=300, bbox_inches="tight", facecolor="white")
     _rewrite_as_rgb_png(png_path)

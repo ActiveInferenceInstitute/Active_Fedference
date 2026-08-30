@@ -22,6 +22,7 @@ from ._common import (
     COLOR_ADVERSARY,
     COLOR_CORRECT,
     COLOR_DARK,
+    COLOR_HONEST_EDGE,
     COLOR_NAIVE,
     COLOR_ROBUST,
     COLOR_VARIATE,
@@ -152,7 +153,7 @@ def generate_bounded_influence(
         textcoords="offset points",
         arrowprops={"arrowstyle": "->", "color": COLOR_ROBUST, "lw": 1.0},
         fontsize=9.5,
-        color=COLOR_ROBUST,
+        color=COLOR_HONEST_EDGE,
         ha="right",
     )
     # Label the flat naive line mid-axis, in the robustness gap below it,

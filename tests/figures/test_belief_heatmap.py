@@ -35,6 +35,23 @@ def test_belief_heatmap_happy_path(tmp_path: Path) -> None:
     assert path.read_bytes()[:8] == _PNG_MAGIC
 
 
+def test_belief_heatmap_midrange_peak_annotations_pass_contrast_gate(
+    tmp_path: Path,
+) -> None:
+    beliefs = np.array(
+        [
+            [0.63, 0.20, 0.17],
+            [0.48, 0.32, 0.20],
+        ],
+        dtype=np.float64,
+    )
+    consensus = np.array([0.55, 0.27, 0.18], dtype=np.float64)
+
+    path = generate_belief_heatmap(beliefs, consensus, project_root=tmp_path)
+
+    assert path.read_bytes()[:8] == _PNG_MAGIC
+
+
 def test_belief_heatmap_rejects_1d_beliefs(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         generate_belief_heatmap(np.ones(9), np.ones(9), project_root=tmp_path)

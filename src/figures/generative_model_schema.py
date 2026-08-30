@@ -26,9 +26,23 @@ from figures._common import (
     COLOR_ROBUST,
     COLOR_VARIATE,
     apply_style,
+    contrasting_text_color,
     figures_dir,
     save_figure_pair,
+    semantic_style,
 )
+
+_ACCENT_TEXT_COLORS = {
+    COLOR_ROBUST: semantic_style("heuristic_robust").keyline,
+    COLOR_VARIATE: semantic_style("variational").keyline,
+    COLOR_MULTI_1: semantic_style("operating_point_3").keyline,
+    COLOR_MULTI_2: semantic_style("operating_point_4").keyline,
+}
+
+
+def _accent_text_color(accent: str) -> str:
+    """Return the contrast-safe keyline associated with an accent fill."""
+    return _ACCENT_TEXT_COLORS.get(accent, COLOR_DEEP)
 
 
 def _panel(ax: plt.Axes, title: str, subtitle: str) -> None:
@@ -113,7 +127,15 @@ def _node(
             linewidth=1.0,
         )
     )
-    ax.text(x, y, label, ha="center", va="center", fontsize=fontsize, color=COLOR_DARK)
+    ax.text(
+        x,
+        y,
+        label,
+        ha="center",
+        va="center",
+        fontsize=fontsize,
+        color=contrasting_text_color(fill),
+    )
 
 
 def _grid(
@@ -181,7 +203,15 @@ def _factor_card(
             facecolor="white",
         )
     )
-    ax.text(x + 0.095, y + 0.115, label, ha="center", va="center", fontsize=12, color=color)
+    ax.text(
+        x + 0.095,
+        y + 0.115,
+        label,
+        ha="center",
+        va="center",
+        fontsize=12,
+        color=_accent_text_color(color),
+    )
     ax.text(
         x + 0.095,
         y + 0.045,
@@ -204,7 +234,15 @@ def _draw_sensor(ax: plt.Axes) -> None:
     ax.text(0.245, 0.30, "hidden location s", ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
     ax.text(0.755, 0.30, "one outcome o", ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
     _arrow(ax, (0.41, 0.47), (0.59, 0.47), color=COLOR_ROBUST)
-    ax.text(0.50, 0.54, r"$A[o,s]=P(o\mid s)$", ha="center", va="center", fontsize=9.0, color=COLOR_ROBUST)
+    ax.text(
+        0.50,
+        0.54,
+        r"$A[o,s]=P(o\mid s)$",
+        ha="center",
+        va="center",
+        fontsize=9.0,
+        color=_accent_text_color(COLOR_ROBUST),
+    )
     ax.text(
         0.50,
         0.14,
@@ -260,12 +298,28 @@ def _draw_temporal(ax: plt.Axes) -> None:
     descriptions = ("hidden location", "private report", "posterior", "control")
     for x, label, fill, description in zip(xs, labels, fills, descriptions):
         _node(ax, x, 0.57, label, fill=fill, edge=COLOR_ACCENT)
-        ax.text(x, 0.43, description, ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
+        ax.text(
+            x,
+            0.43,
+            description,
+            ha="center",
+            va="top",
+            fontsize=8.5,
+            color=COLOR_DEEP,
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.3},
+        )
     for start, end in zip(xs[:-1], xs[1:]):
         _arrow(ax, (start + 0.045, 0.57), (end - 0.045, 0.57))
     _node(ax, 0.30, 0.25, r"$s_{t+1}$", fill=COLOR_ROBUST, edge=COLOR_ACCENT)
     _arrow(ax, (0.82, 0.52), (0.34, 0.30), color=COLOR_VARIATE)
-    ax.text(0.58, 0.36, r"$B=P(s'\mid s,u)$", fontsize=8.5, color=COLOR_VARIATE, ha="center")
+    ax.text(
+        0.58,
+        0.36,
+        r"$B=P(s'\mid s,u)$",
+        fontsize=8.5,
+        color=_accent_text_color(COLOR_VARIATE),
+        ha="center",
+    )
     ax.text(
         0.50, 0.12,
         "Flat studies stop after posterior sharing; moving-world studies execute "
@@ -279,7 +333,16 @@ def _draw_hierarchy(ax: plt.Axes) -> None:
     levels = ((0.78, r"$s^L$", "meta-context"), (0.56, r"$s^2$", "context"), (0.34, r"$s^1$", "location"))
     for y, label, name in levels:
         _node(ax, 0.25, y, label, fill=COLOR_MULTI_2 if y > 0.4 else COLOR_ROBUST, edge=COLOR_ACCENT)
-        ax.text(0.36, y, name, fontsize=8.5, color=COLOR_DARK, va="center", ha="left")
+        ax.text(
+            0.36,
+            y,
+            name,
+            fontsize=8.5,
+            color=COLOR_DEEP,
+            va="center",
+            ha="left",
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.3},
+        )
     for upper, lower in zip(levels[:-1], levels[1:]):
         _arrow(ax, (0.25, upper[0] - 0.05), (0.25, lower[0] + 0.05), color=COLOR_MULTI_2)
     _node(ax, 0.76, 0.56, r"$q_1(s)$", fill="white", edge=COLOR_ROBUST)

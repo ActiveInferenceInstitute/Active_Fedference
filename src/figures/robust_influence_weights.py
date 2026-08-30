@@ -27,15 +27,14 @@ from pathlib import Path
 import numpy as np
 
 from ._common import (
-    COLOR_ADVERSARY,
     COLOR_DARK,
     COLOR_MUTED,
-    COLOR_ROBUST,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 
@@ -65,8 +64,7 @@ def generate_robust_influence_weights(
     if "agent_weights" in legacy:
         if normalized_effective_weights is not None:
             raise TypeError(
-                "normalized_effective_weights and deprecated agent_weights "
-                "cannot both be supplied"
+                "normalized_effective_weights and deprecated agent_weights cannot both be supplied"
             )
         normalized_effective_weights = legacy.pop("agent_weights")  # type: ignore[assignment]
         warnings.warn(
@@ -78,22 +76,13 @@ def generate_robust_influence_weights(
         names = ", ".join(sorted(legacy))
         raise TypeError(f"unexpected keyword argument(s): {names}")
     if normalized_effective_weights is None or contaminated_indices is None:
-        raise TypeError(
-            "normalized_effective_weights and contaminated_indices are required"
-        )
-    normalized_effective_weights_array = np.asarray(
-        normalized_effective_weights, dtype=np.float64
-    ).ravel()
+        raise TypeError("normalized_effective_weights and contaminated_indices are required")
+    normalized_effective_weights_array = np.asarray(normalized_effective_weights, dtype=np.float64).ravel()
     if normalized_effective_weights_array.size == 0:
         raise ValueError("normalized_effective_weights must be non-empty")
     contaminated = {int(i) for i in contaminated_indices}
-    if any(
-        not 0 <= i < normalized_effective_weights_array.size
-        for i in contaminated
-    ):
-        raise ValueError(
-            "contaminated_indices out of range for normalized_effective_weights"
-        )
+    if any(not 0 <= i < normalized_effective_weights_array.size for i in contaminated):
+        raise ValueError("contaminated_indices out of range for normalized_effective_weights")
 
     apply_style()
     fig, ax = plt.subplots(figsize=(9.2, 5.2), facecolor="white")
@@ -103,8 +92,18 @@ def generate_robust_influence_weights(
     # Semantic palette: healthy agents in COLOR_ROBUST (sky blue), contaminated
     # saboteurs in COLOR_ADVERSARY (red). No special-casing of the top healthy
     # weight — with a tied healthy majority it would recolor every healthy bar.
+    adversarial_style = semantic_style("adversarial")
+    honest_style = semantic_style("honest")
     colors = [
-        COLOR_ADVERSARY if i in contaminated else COLOR_ROBUST
+        adversarial_style.color if i in contaminated else "white"
+        for i in range(normalized_effective_weights_array.size)
+    ]
+    hatches = [
+        adversarial_style.hatch if i in contaminated else honest_style.hatch
+        for i in range(normalized_effective_weights_array.size)
+    ]
+    edges = [
+        adversarial_style.keyline if i in contaminated else honest_style.keyline
         for i in range(normalized_effective_weights_array.size)
     ]
 
@@ -113,9 +112,11 @@ def generate_robust_influence_weights(
         normalized_effective_weights_array,
         color=colors,
         alpha=0.88,
-        edgecolor="white",
-        linewidth=0.8,
+        edgecolor=edges,
+        linewidth=1.2,
     )
+    for bar, hatch in zip(bars, hatches, strict=True):
+        bar.set_hatch(hatch)
 
     equal_weight = 1.0 / normalized_effective_weights_array.size
     ax.axhline(
@@ -141,7 +142,7 @@ def generate_robust_influence_weights(
                 xytext=(float(x[i]) + 0.28, equal_weight - 0.002),
                 arrowprops={
                     "arrowstyle": "-|>",
-                    "color": COLOR_ADVERSARY,
+                    "color": adversarial_style.keyline,
                     "lw": 1.2,
                 },
             )
@@ -149,8 +150,7 @@ def generate_robust_influence_weights(
     for bar, weight in zip(bars, normalized_effective_weights_array):
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            weight
-            + max(normalized_effective_weights_array.max() * 0.025, 0.003),
+            weight + max(normalized_effective_weights_array.max() * 0.025, 0.003),
             f"{weight:.3f}",
             ha="center",
             va="bottom",
@@ -161,7 +161,13 @@ def generate_robust_influence_weights(
     if contaminated:
         first = min(contaminated)
         last = max(contaminated)
-        ax.axvspan(first - 0.45, last + 0.45, color=COLOR_ADVERSARY, alpha=0.07, zorder=0)
+        ax.axvspan(
+            first - 0.45,
+            last + 0.45,
+            color=adversarial_style.color,
+            alpha=0.07,
+            zorder=0,
+        )
 
     ax.set_xticks(x)
     ax.set_xticklabels(
@@ -174,7 +180,7 @@ def generate_robust_influence_weights(
     ax.set_xlabel("Agent  (role shown below label)", labelpad=6, color=COLOR_DARK)
     ax.set_ylabel("Normalized server weight", labelpad=6, color=COLOR_DARK)
     ax.set_title(
-        "Heuristic server weights suppress adversarial broadcasts",
+        "Normalized heuristic server weights by declared agent role",
         pad=8,
         color=COLOR_DARK,
     )
@@ -184,10 +190,23 @@ def generate_robust_influence_weights(
     from matplotlib.patches import Patch
 
     legend_handles = [
-        Patch(color=COLOR_ROBUST, alpha=0.85, label="Healthy agent"),
-        Patch(color=COLOR_ADVERSARY, alpha=0.85, label="Contaminated agent"),
+        Patch(
+            facecolor="white",
+            edgecolor=honest_style.keyline,
+            label="Honest agent (open fill)",
+        ),
+        Patch(
+            facecolor=adversarial_style.color,
+            edgecolor=adversarial_style.keyline,
+            hatch=adversarial_style.hatch,
+            label="Contaminated agent (cross-hatched)",
+        ),
         Line2D(
-            [0], [0], color=COLOR_MUTED, linestyle=":", linewidth=1.4,
+            [0],
+            [0],
+            color=COLOR_MUTED,
+            linestyle=":",
+            linewidth=1.4,
             label=f"equal-weight pool (1/n = {equal_weight:.3g})",
         ),
     ]
@@ -204,21 +223,13 @@ def generate_robust_influence_weights(
     contam_pct = 100.0 * n_contam / n_total if n_total else 0.0
     healthy_mean = (
         float(
-            np.mean(
-                [
-                    normalized_effective_weights_array[i]
-                    for i in range(n_total)
-                    if i not in contaminated
-                ]
-            )
+            np.mean([normalized_effective_weights_array[i] for i in range(n_total) if i not in contaminated])
         )
         if n_total > n_contam
         else 0.0
     )
     contam_mean = (
-        float(np.mean([normalized_effective_weights_array[i] for i in contaminated]))
-        if contaminated
-        else 0.0
+        float(np.mean([normalized_effective_weights_array[i] for i in contaminated])) if contaminated else 0.0
     )
     weight_gap = healthy_mean - contam_mean
 
@@ -227,7 +238,7 @@ def generate_robust_influence_weights(
         f"Weight sum: {float(normalized_effective_weights_array.sum()):.3f}\n"
         f"Healthy mean weight: {healthy_mean:.3f}\n"
         f"Adversary mean weight: {contam_mean:.3f}\n"
-        f"Suppression gap: {weight_gap:.3f}"
+        f"Observed role-weight gap: {weight_gap:.3f}"
     )
     annotate_stats_box(ax, stats_text, loc="upper left", fontsize=10)
 

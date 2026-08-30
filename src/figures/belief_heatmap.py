@@ -15,11 +15,13 @@ import warnings
 from pathlib import Path
 
 import numpy as np
+from matplotlib.colors import to_hex
 
 from ._common import (
     COLOR_ACCENT,
     annotate_stats_box,
     apply_style,
+    contrasting_text_color,
     figures_dir,
     plt,
     save_figure,
@@ -96,6 +98,7 @@ def generate_belief_heatmap(
     for row in range(n_rows):
         peak = int(np.argmax(matrix[row]))
         val = matrix[row, peak]
+        cell_background = to_hex(im.cmap(im.norm(val)), keep_alpha=False)
         ax.text(
             peak,
             row,
@@ -103,8 +106,13 @@ def generate_belief_heatmap(
             ha="center",
             va="center",
             fontsize=9.5,
-            color="white" if val < 0.6 else "black",
+            color=contrasting_text_color(cell_background),
             fontweight="bold",
+            bbox={
+                "facecolor": cell_background,
+                "edgecolor": "none",
+                "pad": 0.0,
+            },
         )
     # Separate the consensus row with a divider line.
     ax.axhline(

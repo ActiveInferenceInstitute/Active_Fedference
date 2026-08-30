@@ -73,13 +73,9 @@ def run_influence_weights_report(
     true_state = int(rng.integers(0, n_s))
     wrong_state = int((true_state + n_s // 2) % n_s)
 
-    colony = healthy_colony(
-        true_state, n_agents, n_s, colony_confidence, rng=rng, jitter=0.0
-    )
+    colony = healthy_colony(true_state, n_agents, n_s, colony_confidence, rng=rng, jitter=0.0)
     for k in range(n_contaminated):
-        colony[k] = contaminate(
-            colony[k], kind="confident_wrong", rate=0.8, rng=rng, wrong_state=wrong_state
-        )
+        colony[k] = contaminate(colony[k], kind="confident_wrong", rate=0.8, rng=rng, wrong_state=wrong_state)
 
     diag = share_round(
         colony, method="robust", robustness=robustness, exclude_self=False, true_state=true_state
@@ -90,14 +86,10 @@ def run_influence_weights_report(
     ).ravel()
     return {
         "schema_version": "2.0",
-        "normalized_effective_weights": [
-            float(weight) for weight in normalized_effective_weights
-        ],
+        "normalized_effective_weights": [float(weight) for weight in normalized_effective_weights],
         # Federation transport retains the agent_weights wire-level
         # compatibility key. This report alias is not a new interpretation.
-        "agent_weights": [
-            float(weight) for weight in normalized_effective_weights
-        ],
+        "agent_weights": [float(weight) for weight in normalized_effective_weights],
         "contaminated_indices": list(range(n_contaminated)),
         "n_agents": int(n_agents),
         "n_contaminated": int(n_contaminated),
@@ -121,15 +113,11 @@ def run_variational_aggregation_report(
     wrong_state = int((true_state + n_s // 2) % n_s)
 
     def _healthy() -> np.ndarray:
-        return healthy_colony(
-            true_state, n_agents, n_s, colony_confidence, rng=rng, jitter=0.0
-        )
+        return healthy_colony(true_state, n_agents, n_s, colony_confidence, rng=rng, jitter=0.0)
 
     colony = _healthy()
     for k in range(n_contaminated):
-        colony[k] = contaminate(
-            colony[k], kind="confident_wrong", rate=0.8, rng=rng, wrong_state=wrong_state
-        )
+        colony[k] = contaminate(colony[k], kind="confident_wrong", rate=0.8, rng=rng, wrong_state=wrong_state)
     res = variational_aggregate(colony, robustness=robustness, multistart=False)
 
     influence: list[float] = []
@@ -158,12 +146,8 @@ def run_variational_aggregation_report(
         rng=rng,
         wrong_state=wrong_state,
     )
-    single = variational_aggregate(
-        capture, robustness=robustness, multistart=False, max_iter=128
-    )
-    multi = variational_aggregate(
-        capture, robustness=robustness, multistart=True, max_iter=128
-    )
+    single = variational_aggregate(capture, robustness=robustness, multistart=False, max_iter=128)
+    multi = variational_aggregate(capture, robustness=robustness, multistart=True, max_iter=128)
 
     return {
         "free_energy_history": [float(v) for v in res.free_energy_history],
@@ -192,7 +176,35 @@ def run_bnn_robustness_report(
     robust_loss_param: float = _BNN_ROBUST_LOSS_PARAM,
     contamination_levels: tuple[float, ...] = _BNN_CONTAMINATION_LEVELS,
 ) -> dict[str, Any]:
-    """BNN held-out accuracy vs label contamination for standard vs robust clients."""
+    """Exploratory generalized-Bayes logistic baseline under contamination.
+
+    Despite the legacy report stem, :func:`fed_gvi_logreg` fits point-estimate
+    logistic regressions. It does not estimate a posterior over network weights
+    and this report is not a posterior-uncertainty BNN result. The complete
+    synthetic contamination sweep is returned; ``peak_margin_contamination``
+    is selected within that evaluated sweep for display and is not a
+    preregistered or leakage-free operating point.
+    """
+    if isinstance(n_seeds, bool) or not isinstance(n_seeds, int) or n_seeds < 2:
+        raise ValueError("n_seeds must be an integer >= 2")
+    if isinstance(n_per, bool) or not isinstance(n_per, int) or n_per < 1:
+        raise ValueError("n_per must be a positive integer")
+    if (
+        isinstance(robust_loss_param, bool)
+        or not np.isfinite(float(robust_loss_param))
+        or float(robust_loss_param) < 0.0
+    ):
+        raise ValueError("robust_loss_param must be a finite non-negative number")
+    if not contamination_levels:
+        raise ValueError("contamination_levels must be non-empty")
+    if any(
+        isinstance(value, bool) or not np.isfinite(float(value)) or not 0.0 <= float(value) <= 1.0
+        for value in contamination_levels
+    ):
+        raise ValueError("contamination_levels must contain finite values in [0, 1]")
+    if len(set(float(value) for value in contamination_levels)) != len(contamination_levels):
+        raise ValueError("contamination_levels must not contain duplicates")
+
     levels = list(contamination_levels)
     # The public seed is the base of the independent replicate stream.  The
     # previous range(n_seeds) construction made ``seed`` affect only bootstrap
@@ -231,15 +243,28 @@ def run_bnn_robustness_report(
             values_by_level.append(values)
         return means, intervals, values_by_level
 
-    standard, standard_ci, standard_seed_values = _seeded_curve(
-        loss="nll", divergence="KLD", loss_param=0.0
-    )
+    standard, standard_ci, standard_seed_values = _seeded_curve(loss="nll", divergence="KLD", loss_param=0.0)
     robust, robust_ci, robust_seed_values = _seeded_curve(
         loss="rcce", divergence="AR", loss_param=robust_loss_param
     )
     gaps = [float(r - s) for r, s in zip(robust, standard)]
     peak_idx = int(max(range(len(gaps)), key=lambda i: gaps[i]))
     return {
+        "schema_version": "1.0",
+        "model_family": "point_estimate_logistic_regression",
+        "study_status": "exploratory_conditional_synthetic_sweep",
+        "selection_disclosure": (
+            "peak_margin_contamination is selected within the evaluated synthetic "
+            "sweep by maximum robust-minus-standard held-out accuracy margin"
+        ),
+        "analysis_unit": "synthetic-data seed within contamination operating point",
+        "replication_unit": "synthetic-data seed",
+        "interval_method": "percentile bootstrap across synthetic-data seeds",
+        "claim_boundary": (
+            "exploratory conditional point-estimate baseline; no posterior-uncertainty "
+            "BNN, leakage-free calibration, universal robustness, or source-protocol "
+            "BNN replication claim"
+        ),
         "contamination_levels": levels,
         "accuracy_by_config": {
             "nll / KLD (standard)": standard,

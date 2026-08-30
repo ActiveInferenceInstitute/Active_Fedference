@@ -25,9 +25,23 @@ from figures._common import (
     COLOR_ROBUST,
     COLOR_VARIATE,
     apply_style,
+    contrasting_text_color,
     figures_dir,
     save_figure_pair,
+    semantic_style,
 )
+
+_ACCENT_TEXT_COLORS = {
+    COLOR_ROBUST: semantic_style("heuristic_robust").keyline,
+    COLOR_VARIATE: semantic_style("variational").keyline,
+    COLOR_MULTI_1: semantic_style("operating_point_3").keyline,
+    COLOR_ACCENT: COLOR_ACCENT,
+}
+
+
+def _accent_text_color(accent: str) -> str:
+    """Return the contrast-safe keyline associated with an accent fill."""
+    return _ACCENT_TEXT_COLORS.get(accent, COLOR_DEEP)
 
 
 def _panel(
@@ -92,7 +106,17 @@ def _world_grid(ax: plt.Axes, x: float, y: float, size: float, highlighted: int 
 def _agent(ax: plt.Axes, x: float, y: float, label: str, color: str) -> None:
     """Draw a sentinel agent and its visual field line."""
     ax.add_patch(mpatches.Circle((x, y), 0.027, facecolor=color, edgecolor=COLOR_DEEP, linewidth=0.9))
-    ax.text(x, y, label, ha="center", va="center", fontsize=8.5, color="white", fontweight="bold")
+    ax.text(
+        x,
+        y,
+        label,
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=contrasting_text_color(color),
+        fontweight="bold",
+        bbox={"facecolor": color, "edgecolor": "none", "pad": 0.0},
+    )
 
 
 def _arrow(
@@ -137,7 +161,9 @@ def _posterior_card(ax: plt.Axes, x: float, y: float, label: str, color: str, hi
     )
     ax.text(
         x + 0.016, y + h - 0.021, label, ha="left", va="top", fontsize=8.5,
-        color=color, fontweight="bold",
+        color=_accent_text_color(color),
+        fontweight="bold",
+        bbox={"facecolor": COLOR_PANEL_BG, "edgecolor": "none", "pad": 0.2},
     )
     cell = 0.012
     gx, gy = x + 0.016, y + 0.015
@@ -155,14 +181,41 @@ def _posterior_card(ax: plt.Axes, x: float, y: float, label: str, color: str, hi
                     linewidth=0.35,
                 )
             )
-    ax.text(x + 0.065, y + 0.020, "q(s)", ha="left", va="bottom", fontsize=8.5, color=COLOR_DARK)
+    ax.text(
+        x + 0.065,
+        y + 0.020,
+        "q(s)",
+        ha="left",
+        va="bottom",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        bbox={"facecolor": COLOR_PANEL_BG, "edgecolor": "none", "pad": 0.25},
+    )
 
 
 def _node(ax: plt.Axes, x: float, y: float, label: str, description: str, *, fill: str, edge: str) -> None:
     """Draw a node in the lower temporal loop."""
     ax.add_patch(mpatches.Circle((x, y), 0.043, facecolor=fill, edgecolor=edge, linewidth=1.1))
-    ax.text(x, y + 0.004, label, ha="center", va="center", fontsize=9.2, color=COLOR_DEEP)
-    ax.text(x, y - 0.060, description, ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
+    ax.text(
+        x,
+        y + 0.004,
+        label,
+        ha="center",
+        va="center",
+        fontsize=9.2,
+        color=contrasting_text_color(fill),
+        bbox={"facecolor": fill, "edgecolor": "none", "pad": 0.0},
+    )
+    ax.text(
+        x,
+        y - 0.060,
+        description,
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.3},
+    )
 
 
 def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
@@ -285,9 +338,30 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
     _arrow(ax, (0.59, 0.275), (0.71, 0.255), color=COLOR_VARIATE)
     _arrow(ax, (0.73, 0.205), (0.59, 0.170), color=COLOR_VARIATE)
     _arrow(ax, (0.51, 0.165), (0.21, 0.215), color=COLOR_ROBUST, connectionstyle="arc3,rad=0.25")
-    ax.text(0.26, 0.235, "$A=P(o|s)$", fontsize=8.5, color=COLOR_MULTI_1, ha="center")
-    ax.text(0.65, 0.235, "$C$ preferences / EFE", fontsize=8.5, color=COLOR_VARIATE, ha="center")
-    ax.text(0.43, 0.165, "$B=P(s'|s,u)$", fontsize=8.5, color=COLOR_ROBUST, ha="center")
+    ax.text(
+        0.26,
+        0.235,
+        "$A=P(o|s)$",
+        fontsize=8.5,
+        color=_accent_text_color(COLOR_MULTI_1),
+        ha="center",
+    )
+    ax.text(
+        0.65,
+        0.235,
+        "$C$ preferences / EFE",
+        fontsize=8.5,
+        color=_accent_text_color(COLOR_VARIATE),
+        ha="center",
+    )
+    ax.text(
+        0.43,
+        0.165,
+        "$B=P(s'|s,u)$",
+        fontsize=8.5,
+        color=_accent_text_color(COLOR_ROBUST),
+        ha="center",
+    )
     ax.text(
         0.50, 0.075,
         "Inference and federation are the executed bridge; action selection is "

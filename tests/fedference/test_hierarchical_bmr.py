@@ -1,18 +1,20 @@
-"""Hierarchical Bayesian model reduction (MAJ-7) — no mocks, real inference.
+"""Hierarchical surprise-threshold control (legacy BMR stem), with real inference.
 
-Structure learning at the LEVEL granularity: on a known-degenerate N=3 world
-whose top meta-context is non-gating (its states predict identical children),
-``hierarchical_reduce`` must flag that level prunable and recommend removing it,
-recovering the 2-level structure; on an informative world it must keep every
-level. Both directions are pinned (proof-of-detection: the degenerate and
-informative worlds differ only in the top level's conditioned priors).
+On a configured degenerate N=3 world whose top meta-context is non-gating,
+``hierarchical_reduce`` must flag that level below the declared surprise
+threshold; on its configured informative control it must keep every level.
+Both directions are pinned as implementation controls because the worlds differ
+only in the top-level conditioned priors. They are not a universal structure-
+emergence or model-selection-consistency result.
 """
 
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from fedference.bayesian_model_reduction import hierarchical_reduce
+from fedference.experiments import run_hierarchical_bmr
 from fedference.pomdp import (
     N_LOCATIONS,
     LayerSpec,
@@ -62,7 +64,7 @@ def test_degenerate_meta_context_level_is_prunable() -> None:
     # The non-gating meta-context earns ~zero Bayesian surprise and is flagged.
     assert top["bayesian_surprise"] < 1e-6
     assert top["prunable"] is True
-    # Pruning the topmost redundant level recovers the 2-level structure.
+    # The configured rule recommends the topmost redundant level.
     assert out["recommended_prune"] == 0
 
 
@@ -79,7 +81,7 @@ def test_informative_meta_context_level_is_kept() -> None:
 
 def test_prune_flag_separates_the_two_worlds() -> None:
     """The SAME machinery, differing only in L3's conditioned priors, must give
-    opposite prune verdicts — the discriminating power, not a constant."""
+    opposite threshold verdicts, showing this configured output is not constant."""
     degen = hierarchical_reduce(_three_level_world(_DEGENERATE_L3), _leaf_A(), obs=4)
     inform = hierarchical_reduce(_three_level_world(_INFORMATIVE_L3), _leaf_A(), obs=4)
     degen_top = next(lv for lv in degen["levels"] if lv["level"] == 0)
@@ -100,9 +102,7 @@ def test_deterministic_under_repeat() -> None:
     world = _three_level_world(_INFORMATIVE_L3)
     a = hierarchical_reduce(world, _leaf_A(), obs=4)
     b = hierarchical_reduce(world, _leaf_A(), obs=4)
-    assert [lv["bayesian_surprise"] for lv in a["levels"]] == [
-        lv["bayesian_surprise"] for lv in b["levels"]
-    ]
+    assert [lv["bayesian_surprise"] for lv in a["levels"]] == [lv["bayesian_surprise"] for lv in b["levels"]]
 
 
 def test_rejects_degenerate_world_shape() -> None:
@@ -111,3 +111,47 @@ def test_rejects_degenerate_world_shape() -> None:
         raise AssertionError("expected ValueError")
     except ValueError as exc:
         assert "n_levels" in str(exc)
+
+
+def test_report_identifies_surprise_threshold_as_primary_control() -> None:
+    report = run_hierarchical_bmr(surprise_tol=1e-3)
+    assert report["schema_version"] == "1.0"
+    assert report["study_status"] == "configured_deterministic_control"
+    assert report["configured_control_passed"] is True
+    assert report["surprise_tol"] == 1e-3
+    assert report["degenerate_top_surprise"] < report["surprise_tol"]
+    assert report["informative_top_surprise"] >= report["surprise_tol"]
+    assert "bayesian_surprise < surprise_tol" in report["decision_rule"]
+    assert "does not determine" in report["secondary_diagnostic"]
+    assert "no universal structure-emergence" in report["claim_boundary"]
+
+
+def test_report_threshold_controls_nested_prunable_flags() -> None:
+    report = run_hierarchical_bmr(surprise_tol=5e-2)
+    for world_name in ("degenerate", "informative"):
+        for level in report[world_name]["levels"]:
+            assert level["prunable"] is (level["bayesian_surprise"] < report["surprise_tol"])
+
+
+def test_report_seed_is_compatibility_provenance_not_replication() -> None:
+    first = run_hierarchical_bmr(seed=1)
+    second = run_hierarchical_bmr(seed=99)
+    assert first["degenerate"] == second["degenerate"]
+    assert first["informative"] == second["informative"]
+    assert first["seed"] == 1
+    assert second["seed"] == 99
+    assert "no RNG draw" in first["seed_role"]
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    (
+        ({"surprise_tol": 0.0}, "surprise_tol"),
+        ({"surprise_tol": float("nan")}, "surprise_tol"),
+        ({"n_iters": 0}, "n_iters"),
+        ({"obs": -1}, "obs"),
+    ),
+)
+def test_report_rejects_invalid_control_configuration(kwargs, message) -> None:
+    with pytest.raises(ValueError, match=message):
+        run_hierarchical_bmr(**kwargs)

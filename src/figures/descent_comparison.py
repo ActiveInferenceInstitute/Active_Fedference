@@ -17,6 +17,7 @@ import numpy as np
 
 from ._common import (
     COLOR_ADVERSARY,
+    COLOR_ADVERSARY_EDGE,
     COLOR_CORRECT,
     COLOR_DARK,
     COLOR_MUTED,
@@ -139,7 +140,7 @@ def generate_descent_comparison(
             f"ΔF={gap:.3g}",
             va="center",
             fontsize=9.5,
-            color=COLOR_ADVERSARY,
+            color=COLOR_ADVERSARY_EDGE,
         )
 
     ax.set_xlabel("Block-coordinate iteration", labelpad=6, color=COLOR_DARK)

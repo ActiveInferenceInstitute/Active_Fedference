@@ -23,16 +23,14 @@ from pathlib import Path
 import numpy as np
 
 from figures._common import (
-    COLOR_AXIS,
     COLOR_GRID,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
-    COLOR_VARIATE,
+    COLOR_MUTED,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 __all__ = ["generate_parameter_recovery"]
@@ -102,8 +100,7 @@ def generate_parameter_recovery(
     ):
         if len(seq) != n:
             raise ValueError(
-                f"Length mismatch: true_acuity has {n} elements but "
-                f"{name} has {len(seq)} elements."
+                f"Length mismatch: true_acuity has {n} elements but {name} has {len(seq)} elements."
             )
 
     # --- numpy arrays -------------------------------------------------------
@@ -113,16 +110,18 @@ def generate_parameter_recovery(
     ci_hi = np.asarray(recovered_acuity_ci_hi, dtype=np.float64)
     ae = np.asarray(abs_error, dtype=np.float64)
 
-    lo_err = ra - ci_lo   # downward error bar lengths (non-negative)
-    hi_err = ci_hi - ra   # upward error bar lengths (non-negative)
+    lo_err = ra - ci_lo  # downward error bar lengths (non-negative)
+    hi_err = ci_hi - ra  # upward error bar lengths (non-negative)
 
     # --- style --------------------------------------------------------------
     apply_style()
+    recovery_style = semantic_style("heuristic_robust")
+    reference_style = semantic_style("reference_rule")
+    error_style = semantic_style("operating_point_1")
 
-    fig, (ax_scatter, ax_error) = plt.subplots(
-        1, 2, figsize=(11.2, 5.3), facecolor="white"
-    )
-    fig.subplots_adjust(left=0.13, right=0.98, top=0.80, bottom=0.18, wspace=0.30)
+    fig, (ax_scatter, ax_error) = plt.subplots(1, 2, figsize=(11.2, 5.7), facecolor="white")
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.80, bottom=0.24, wspace=0.30)
 
     # ========================================================================
     # LEFT PANEL — scatter: recovered vs true
@@ -131,8 +130,10 @@ def generate_parameter_recovery(
         ta,
         ra,
         yerr=[lo_err, hi_err],
-        fmt="o",
-        color=COLOR_ROBUST,
+        fmt=recovery_style.marker,
+        color=recovery_style.color,
+        markerfacecolor="white",
+        markeredgecolor=recovery_style.keyline,
         ecolor=COLOR_GRID,
         elinewidth=1.2,
         capsize=3,
@@ -149,11 +150,11 @@ def generate_parameter_recovery(
     ax_scatter.plot(
         id_range,
         id_range,
-        color=COLOR_AXIS,
-        linewidth=1.2,
-        linestyle="--",
+        color=reference_style.color,
+        linewidth=reference_style.linewidth,
+        linestyle=reference_style.dash,
         zorder=2,
-        label="identity",
+        label="identity reference",
     )
 
     ax_scatter.set_xlabel("True acuity $\\alpha$", labelpad=5)
@@ -169,9 +170,9 @@ def generate_parameter_recovery(
     # Stats text box — upper left
     stats_lines: list[str] = []
     if n_trials is not None:
-        stats_lines.append(f"trials = {n_trials}")
+        stats_lines.append(f"independent trials/acuity = {n_trials}")
     if n_observations is not None:
-        stats_lines.append(f"observations = {n_observations}")
+        stats_lines.append(f"observations/trial = {n_observations}")
     if mean_abs_error is not None:
         stats_lines.append(f"MAE = {mean_abs_error:.4f}")
     if r_squared is not None:
@@ -189,7 +190,10 @@ def generate_parameter_recovery(
         ta,
         ae,
         width=bar_width,
-        color=COLOR_NAIVE,
+        color="white",
+        edgecolor=error_style.keyline,
+        hatch=error_style.hatch,
+        linewidth=1.1,
         alpha=0.80,
         zorder=3,
         label="|recovered − true|",
@@ -198,9 +202,9 @@ def generate_parameter_recovery(
     if mean_abs_error is not None:
         ax_error.axhline(
             mean_abs_error,
-            color=COLOR_VARIATE,
-            linewidth=1.4,
-            linestyle="--",
+            color=reference_style.color,
+            linewidth=reference_style.linewidth,
+            linestyle=reference_style.dash,
             zorder=4,
             label=f"mean MAE = {mean_abs_error:.4f}",
         )
@@ -210,6 +214,16 @@ def generate_parameter_recovery(
     ax_error.set_ylabel("|recovered − true| (mean absolute error)", labelpad=5)
     ax_error.set_title("Absolute recovery error\nper acuity level", pad=8)
     fig.suptitle("Parameter recovery: sensor acuity", fontsize=15, fontweight="bold", y=0.98)
+    fig.text(
+        0.5,
+        0.035,
+        "Intervals vary independent simulation trials within each acuity condition;\n"
+        "observations are nested within trial.",
+        ha="center",
+        va="bottom",
+        fontsize=9.5,
+        color=COLOR_MUTED,
+    )
 
     # ========================================================================
     # Save

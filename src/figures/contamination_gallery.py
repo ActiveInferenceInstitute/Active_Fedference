@@ -20,12 +20,11 @@ import numpy as np
 from ._common import (
     COLOR_ACCENT,
     COLOR_MUTED,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 
@@ -61,9 +60,7 @@ def generate_contamination_gallery(
     reliable = [bool(by_kind[k].get("reliably_beats", False)) for k in kinds]
     wins = [float(by_kind[k].get("win_fraction", float("nan"))) for k in kinds]
     methods = [str(by_kind[k].get("best_robust_method", "robust")) for k in kinds]
-    have_ci = all(
-        "naive_ci" in by_kind[k] and "robust_ci" in by_kind[k] for k in kinds
-    )
+    have_ci = all("naive_ci" in by_kind[k] and "robust_ci" in by_kind[k] for k in kinds)
     if have_ci:
         naive_ci = np.asarray([by_kind[k]["naive_ci"] for k in kinds], dtype=np.float64)
         robust_ci = np.asarray([by_kind[k]["robust_ci"] for k in kinds], dtype=np.float64)
@@ -72,30 +69,33 @@ def generate_contamination_gallery(
 
     apply_style()
     fig, ax = plt.subplots(figsize=(11.2, 5.8))
+    fig.set_layout_engine("none")
     fig.subplots_adjust(left=0.09, right=0.98, top=0.86, bottom=0.34)
     x = np.arange(len(kinds))
     w = 0.36
+    naive_style = semantic_style("naive")
+    robust_style = semantic_style("heuristic_robust")
     ax.bar(
         x - w / 2,
         naive,
         w,
-        color=COLOR_NAIVE,
+        color="white",
         alpha=0.85,
-        edgecolor="white",
-        linewidth=0.8,
-        label="naive (log-linear pool)",
+        edgecolor=naive_style.keyline,
+        linewidth=1.2,
+        hatch=naive_style.hatch,
+        label="reference log pool (open fill)",
     )
-    # robust bar in full colour only where the advantage is seed-reliable; muted otherwise.
-    robust_colors = [COLOR_ROBUST if r else COLOR_MUTED for r in reliable]
     ax.bar(
         x + w / 2,
         robust,
         w,
-        color=robust_colors,
+        color=robust_style.color,
         alpha=0.9,
-        edgecolor=[COLOR_ACCENT if r else "white" for r in reliable],
-        linewidth=[1.4 if r else 0.8 for r in reliable],
-        label="pooled display robust member",
+        edgecolor=robust_style.keyline,
+        linewidth=1.2,
+        hatch=robust_style.hatch,
+        label="pooled display server preset (hatched)",
     )
     if have_ci:
         ax.errorbar(
@@ -140,7 +140,7 @@ def generate_contamination_gallery(
     ax.set_xlabel("Contamination mechanism", labelpad=6)
     ax.set_ylabel("Mean consensus accuracy $q(\\mathrm{true})$", labelpad=6)
     ax.set_ylim(0.0, 1.16)
-    ax.set_title("Robust vs naive across contamination mechanisms (seed-aggregated)", pad=8)
+    ax.set_title("Server-preset accuracy across contamination mechanisms", pad=8)
     ax.legend(fontsize=10, loc="upper center", bbox_to_anchor=(0.5, -0.20), ncol=2)
     # --- stats box: n mechanisms, reliable wins. Placed above the shortest
     # bar group so it never overlaps any bar (the lower-right corner sits on
@@ -153,23 +153,20 @@ def generate_contamination_gallery(
     ax.text(
         float(x[i_min]),
         float(tops[i_min]) + 0.19,
-        f"reliable wins = {n_reliable}/{len(kinds)}\n"
-        "bars: mean ± 95 % seed bootstrap interval",
+        f"declared reliable contrasts = {n_reliable}/{len(kinds)}\n"
+        "bars: means with 95% seed-bootstrap intervals",
         ha="center",
         va="bottom",
         fontsize=9.5,
-        bbox={"boxstyle": "round,pad=0.35", "fc": "white",
-              "ec": COLOR_ACCENT, "alpha": 0.85},
+        bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_ACCENT, "alpha": 0.85},
     )
-    ax.text(
+    fig.text(
         0.5,
-        -0.32,
-        "Robust RELIABLY beats naive only where the across-seed win fraction is high "
-        "(confident-wrong, drift).\nByzantine escalates to a veto cliff and entropy "
-        "attacks leave the naive pool intact.",
-        transform=ax.transAxes,
+        0.025,
+        "Mixed positive, near-zero, and negative contrasts are retained; the finite "
+        "configured mechanism grid does not establish a universal winner.",
         ha="center",
-        va="top",
+        va="bottom",
         fontsize=9.5,
         color=COLOR_ACCENT,
         style="italic",

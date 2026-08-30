@@ -26,13 +26,13 @@ from pathlib import Path
 import matplotlib.ticker as _ticker
 
 from ._common import (
-    COLOR_NAIVE,
-    COLOR_ROBUST,
+    COLOR_MUTED,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 
@@ -41,6 +41,10 @@ def generate_bnn_robustness(
     contamination_levels: Sequence[float],
     *,
     accuracy_ci_by_config: Mapping[str, Sequence[Sequence[float]]] | None = None,
+    selection_disclosure: str = (
+        "Displayed operating point selected within the evaluated synthetic sweep "
+        "to expose the mid-contamination margin"
+    ),
     project_root: Path | None = None,
     filename: str = "bnn_robustness.png",
 ) -> Path:
@@ -53,6 +57,8 @@ def generate_bnn_robustness(
         contamination_levels: Per-client label-flip fractions, in order.
         accuracy_ci_by_config: Optional ``{config_label: [[lo, hi], ...]}``
             intervals for shaded uncertainty bands.
+        selection_disclosure: Source-owned description of how the displayed
+            operating point was chosen within the exploratory sweep.
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -69,26 +75,33 @@ def generate_bnn_robustness(
         raise ValueError("contamination_levels must be non-empty")
     for label, curve in accuracy_by_config.items():
         if len(curve) != len(levels):
-            raise ValueError(
-                f"curve for {label!r} has length {len(curve)}, expected {len(levels)}"
-            )
+            raise ValueError(f"curve for {label!r} has length {len(curve)}, expected {len(levels)}")
     if accuracy_ci_by_config is not None:
         for label, intervals in accuracy_ci_by_config.items():
             if label not in accuracy_by_config:
                 raise ValueError(f"CI supplied for unknown curve {label!r}")
             if len(intervals) != len(levels):
-                raise ValueError(
-                    f"CI for {label!r} has length {len(intervals)}, expected {len(levels)}"
-                )
+                raise ValueError(f"CI for {label!r} has length {len(intervals)}, expected {len(levels)}")
             if any(len(pair) != 2 for pair in intervals):
                 raise ValueError(f"CI for {label!r} must contain [lo, hi] pairs")
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(6.0, 4.2))
+    fig, ax = plt.subplots(figsize=(8.3, 5.8))
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.13, right=0.78, top=0.76, bottom=0.30)
+    robust_index = 0
+    style_by_label = {}
     for label, curve in accuracy_by_config.items():
         is_naive = "nll" in label.lower() or "standard" in label.lower()
-        # Robust curve drawn on top so it stays visible where the curves coincide.
-        color = COLOR_NAIVE if is_naive else COLOR_ROBUST
+        role = (
+            "naive"
+            if is_naive
+            else ("heuristic_robust" if robust_index == 0 else f"operating_point_{robust_index}")
+        )
+        style = semantic_style(role)
+        style_by_label[label] = style
+        if not is_naive:
+            robust_index += 1
         if accuracy_ci_by_config is not None and label in accuracy_ci_by_config:
             intervals = accuracy_ci_by_config[label]
             lo = [float(pair[0]) for pair in intervals]
@@ -97,7 +110,7 @@ def generate_bnn_robustness(
                 levels,
                 lo,
                 hi,
-                color=color,
+                color=style.color,
                 alpha=0.14,
                 linewidth=0.0,
                 zorder=1,
@@ -105,9 +118,12 @@ def generate_bnn_robustness(
         ax.plot(
             levels,
             [float(v) for v in curve],
-            marker="o",
-            linewidth=2.4 if is_naive else 1.8,
-            color=color,
+            marker=style.marker,
+            linestyle=style.dash,
+            linewidth=style.linewidth,
+            color=style.color,
+            markeredgecolor=style.keyline,
+            markerfacecolor=style.color if is_naive else "white",
             label=label,
             zorder=2 if is_naive else 3,
         )
@@ -117,8 +133,23 @@ def generate_bnn_robustness(
     ax.set_ylim(0.0, 1.05)
     # This is the NumPy logistic-regression anchor, not the optional PyTorch
     # BNN complement — the title must not claim otherwise.
-    ax.set_title("FedGVI client loss resists label contamination", pad=8)
-    ax.legend(fontsize=9.5, loc="lower left")
+    ax.legend(fontsize=9.5, loc="upper left", bbox_to_anchor=(1.01, 1.0))
+
+    # Direct endpoint labels preserve identity when the figure is printed in
+    # grayscale or the legend is cropped into a smaller reader surface.
+    for endpoint_index, (label, curve) in enumerate(accuracy_by_config.items()):
+        style = style_by_label[label]
+        ax.annotate(
+            label,
+            xy=(levels[-1], float(curve[-1])),
+            xytext=(7, 7 if endpoint_index % 2 == 0 else -7),
+            textcoords="offset points",
+            ha="left",
+            va="center",
+            fontsize=9.5,
+            color=style.keyline,
+            clip_on=False,
+        )
 
     # Peak gap annotation: find contamination level with largest robust-standard
     # margin. The margin is reported in the stats box only — a between-curve
@@ -133,9 +164,37 @@ def generate_bnn_robustness(
         peak_gap = gaps[peak_idx]
         annotate_stats_box(
             ax,
-            f"Peak margin: {peak_gap:.1%}\nat {levels[peak_idx]:.0%} contamination",
+            f"Largest displayed margin: {peak_gap:.1%}\nat {levels[peak_idx]:.0%} contamination",
             loc="upper right",
         )
+
+    fig.suptitle(
+        "Client-loss comparison under label contamination",
+        y=0.985,
+        fontsize=15,
+        fontweight="bold",
+    )
+    fig.text(
+        0.5,
+        0.91,
+        "Exploratory generalized-Bayes point-estimate logistic-regression baseline",
+        ha="center",
+        va="center",
+        fontsize=10,
+        color=COLOR_MUTED,
+    )
+    fig.text(
+        0.5,
+        0.035,
+        selection_disclosure
+        + ".\nNo leakage-free calibration, universal robustness, or source-protocol "
+        "BNN replication is established.",
+        ha="center",
+        va="bottom",
+        fontsize=9.5,
+        color=COLOR_MUTED,
+        wrap=True,
+    )
 
     return save_figure(fig, figures_dir(project_root) / filename)
 

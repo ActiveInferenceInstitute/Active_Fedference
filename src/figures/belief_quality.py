@@ -8,16 +8,20 @@ from pathlib import Path
 import numpy as np
 
 from ._common import (
-    COLOR_ACCENT,
     COLOR_MUTED,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
     MIN_QUANTITATIVE_FONT_SIZE,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+
+_CONTROL_ROLES = {
+    "oracle": "honest",
+    "uniform": "operating_point_1",
+    "confident_wrong": "adversarial",
+}
 
 
 def generate_belief_quality(
@@ -41,17 +45,28 @@ def generate_belief_quality(
     fig, axes = plt.subplots(1, 2, figsize=(11.0, 5.4))
     fig.subplots_adjust(left=0.09, right=0.98, top=0.83, bottom=0.22, wspace=0.30)
     x = np.arange(len(names))
-    axes[0].errorbar(
-        x,
-        values,
-        yerr=yerr,
-        fmt="o",
-        color=COLOR_ACCENT,
-        ecolor=COLOR_MUTED,
-        capsize=4,
-        linewidth=1.7,
+    for index, name in enumerate(names):
+        style = semantic_style(_CONTROL_ROLES[name])
+        axes[0].errorbar(
+            [x[index]],
+            [values[index]],
+            yerr=[[yerr[0, index]], [yerr[1, index]]],
+            fmt=style.marker,
+            color=style.color,
+            markerfacecolor="white" if name != "confident_wrong" else style.color,
+            markeredgecolor=style.keyline,
+            ecolor=style.keyline,
+            capsize=4,
+            linewidth=style.linewidth,
+            markersize=7,
+        )
+    rule = semantic_style("reference_rule")
+    axes[0].axhline(
+        0.0,
+        color=rule.color,
+        linewidth=rule.linewidth,
+        linestyle=rule.dash,
     )
-    axes[0].axhline(0.0, color=COLOR_MUTED, linewidth=0.8, linestyle=":")
     axes[0].set_xticks(x, [name.replace("_", "\n") for name in names])
     axes[0].set_ylabel("Mean categorical log score (nats)")
     axes[0].set_title("Primary score: higher is better")
@@ -65,8 +80,8 @@ def generate_belief_quality(
         va="bottom",
     )
 
-    colors = {"oracle": COLOR_ROBUST, "uniform": COLOR_MUTED, "confident_wrong": COLOR_NAIVE}
     for name in names:
+        style = semantic_style(_CONTROL_ROLES[name])
         curve = raw_controls[name]["reliability"]
         confidence = np.asarray(curve["mean_confidence"], dtype=np.float64)
         accuracy = np.asarray(curve["accuracy"], dtype=np.float64)
@@ -74,17 +89,32 @@ def generate_belief_quality(
         axes[1].plot(
             confidence[mask],
             accuracy[mask],
-            marker="o",
-            linewidth=1.7,
-            color=colors[name],
+            marker=style.marker,
+            linestyle=style.dash,
+            linewidth=style.linewidth,
+            color=style.color,
+            markerfacecolor="white" if name != "confident_wrong" else style.color,
+            markeredgecolor=style.keyline,
             label=name.replace("_", " "),
         )
+        if np.any(mask):
+            axes[1].annotate(
+                name.replace("_", " "),
+                xy=(float(confidence[mask][-1]), float(accuracy[mask][-1])),
+                xytext=(5, 0),
+                textcoords="offset points",
+                fontsize=9.5,
+                color=style.keyline,
+                ha="left",
+                va="center",
+                clip_on=False,
+            )
     axes[1].plot(
         [0.0, 1.0],
         [0.0, 1.0],
-        color=COLOR_ACCENT,
-        linestyle="--",
-        linewidth=1.0,
+        color=rule.color,
+        linestyle=rule.dash,
+        linewidth=rule.linewidth,
         label="perfect calibration",
     )
     axes[1].set_xlim(0.0, 1.02)
