@@ -1,6 +1,6 @@
 # Scholarly audit and evidence boundary
 
-Updated 2026-08-13. This page records the literature pass used to tighten the
+Updated 2026-08-30. This page records the literature pass used to tighten the
 claims and simulation design of Active Fedference. It is a claim map, not a
 literature review pretending that results in a neighboring field automatically
 transfer to this repository.
@@ -25,6 +25,27 @@ open research claims separately in the current claim ledger.
 The companion [manuscript-wide claim audit](manuscript-claim-audit.md) maps the
 load-bearing manuscript claims to their evidence status and records the
 retitling/refactor decisions made after the adversarial review.
+
+## Visual-scholarship source-current addendum — 2026-08-30
+
+The visual-scholarship pass re-opened the primary Friston belief-sharing record,
+the final PMLR FedGVI record, and the publisher record for loss-based general
+Bayesian updating before revising figure captions and related-work prose. Those
+records support, respectively, full-belief-distribution communication in the
+source protocol; FedGVI's cavity/fixed-point and misspecification-robustness
+lane; and coherent posterior updating through a declared loss with ordinary
+likelihood Bayes as a special case. The revisions therefore keep the Eq. 7
+connection explicitly at the categorical message-combination term, retain
+FedGVI theorem ownership at the client/source-assumption lane, and describe the
+project server rules only through their own executable, objective-backed, or
+conditional evidence.
+
+This recheck did not locate or assert a field-wide absence result. Every
+negative positioning statement remains bounded to the sources reviewed here.
+The opinion-pooling genealogy remains attribution and context, not evidence of
+contamination resistance. No search snippet, secondary summary, or neighboring
+paper is promoted into a repository-specific theorem, numeric result, or
+protocol-parity claim.
 
 The current MAJ-1 scoped no-go proposition is a repository-derived
 finite-simplex formal result. It is not attributed to Friston, Mildner, or the
@@ -67,18 +88,18 @@ implementation.
 | [Mildner et al. (2025), arXiv version](https://arxiv.org/abs/2502.00846) | The accessible preprint record and version history for the same primary work. | A substitute for a repository-specific proof; the code must keep theorem-backed client updates distinct from heuristic server pooling. |
 | [Dhasade et al. (2025), *Robust Federated Inference*](https://arxiv.org/abs/2510.00310) | Current adjacent robustness context: averaging error depends on honest-response dissimilarity/margin, while nonlinear aggregation is framed as an adversarial-learning problem. | Evidence for this repository's categorical server heuristic, a Byzantine guarantee, or transfer of its benchmark results. |
 | [FedGVI public implementation](https://github.com/Terje-M/FedGVI), pinned by full revision in `research_registry.py` | The implementation-level protocol authority for variational family, site factors, cavity construction, factor replacement, data splits, rounds, stopping, predictive sampling, and ELBO sampling. | Evidence that an unresolved parity row is matched, or that the local M4 profile is exact source-scale CUDA replication. |
-
-The pinned FashionMNIST shell uses run indices 1--5 against a six-value seed
-table. Consequently, the executable source seeds are
-`[676, 93, 215, 318, 242]`; the registry records the table, indices, and
-effective sequence separately. This resolves the earlier roadmap copy of the
-first five table entries without pretending the discrepancy was absent.
 | [Mildner, Giampouras & Damoulas (2025), *Rates of Convergence of Generalised Variational Inference Posteriors under Prior Misspecification*](https://arxiv.org/abs/2510.03109) | Current theoretical context for bounded-divergence GVI and prior misspecification. | Evidence that the finite categorical implementation inherits the theorem's assumptions or rates. |
 | [Koehler, Brown & Haneuse (2009), *On the Assessment of Monte Carlo Error in Simulation-Based Statistical Analyses*](https://pmc.ncbi.nlm.nih.gov/articles/PMC3337209/) | The reason to report Monte Carlo error/precision separately from a confidence interval or p-value. | A universal sample-size number; the correct number depends on the estimand and observed simulation variance. |
 | [Morris, White & Crowther (2019), *Using simulation studies to evaluate statistical methods*](https://pmc.ncbi.nlm.nih.gov/articles/PMC6492164/) | Simulation-design/reporting discipline: declare estimands, distinguish Monte Carlo error from the data-generating variance, and budget replication for precision. | Validation of this repository's particular number of seeds, bootstrap coverage, or contamination conclusions. |
 | [Loy & Korobova (2021), *Bootstrapping Clustered Data in R using lmeresampler*](https://arxiv.org/abs/2106.06568) | The resampling-unit question: nested or clustered data require a resampling scheme that respects the declared dependence structure. | Evidence that the current trials are exchangeable across hidden worlds, or that a cluster bootstrap is required for every report here. |
 | [Genest & Zidek (1986), *Combining Probability Distributions*](https://doi.org/10.1214/ss/1177013825) | The log-linear pool's established aggregation genealogy. | Contamination resistance or Byzantine tolerance of the ordinary pool. |
 | [Efron & Tibshirani (1993), *An Introduction to the Bootstrap*](https://link.springer.com/book/10.1007/978-1-4899-4541-9) | Resampling as the basis for the deterministic percentile intervals in the reports. | Guaranteed interval coverage under every bounded, dependent, or nested simulation design. |
+
+The pinned FashionMNIST shell uses run indices 1--5 against a six-value seed
+table. Consequently, the executable source seeds are
+`[676, 93, 215, 318, 242]`; the registry records the table, indices, and
+effective sequence separately. This resolves the earlier roadmap copy of the
+first five table entries without pretending the discrepancy was absent.
 
 ## Sources governing the next phases
 
@@ -88,7 +109,7 @@ that an open extension has already been completed.
 | Future phase | Source bridge | Constraint carried into the plan |
 | --- | --- | --- |
 | Generative-model and hierarchy extensions | [Friston et al. (2017), *Deep temporal models and active inference*](https://pmc.ncbi.nlm.nih.gov/articles/PMC5461873/); [de Vries & Friston (2017), *The role of generative models in perception*](https://www.frontiersin.org/journals/computational-neuroscience/articles/10.3389/fncom.2017.00095/full) | $A/B/C/D$ notation, temporal dependencies, and top-down message semantics must be declared before deeper hierarchies are compared. |
-| Continuous/hybrid state spaces | [Bissiri et al. (2016), *Generalized Bayesian inference*](https://doi.org/10.1111/rssb.12158); [Futami et al. (2018), *Robust variational inference with gamma-divergence*](https://proceedings.mlr.press/v80/futami18a.html) | A Gaussian or hybrid implementation must restate the loss, divergence, normalization, and limiting argument; the categorical identity cannot be presumed to transfer. |
+| Continuous/hybrid state spaces | [Bissiri et al. (2016), *Generalized Bayesian inference*](https://doi.org/10.1111/rssb.12158); [Futami et al. (2018), *Variational Inference based on Robust Divergences*](https://proceedings.mlr.press/v84/futami18a.html) | A Gaussian or hybrid implementation must restate the loss, divergence, normalization, and limiting argument; the categorical identity cannot be presumed to transfer. |
 | POMDP semantics | [Kaelbling, Littman & Cassandra (1998), *Planning and acting in partially observable stochastic domains*](https://people.csail.mit.edu/lpk/papers/aij98-pomdp.pdf) | A diagram of a hidden-state/action loop is conceptual unless transitions, observations, policy selection, and execution are present in the experiment. |
 | BNN scaling | [Blundell et al. (2015), *Weight uncertainty in neural networks*](https://proceedings.mlr.press/v37/blundell15.html); [Izmailov et al. (2021), *What are Bayesian neural network posteriors really like?*](https://proceedings.mlr.press/v139/izmailov21a.html) | A deterministic point-mass MLP is not a mean-field posterior; a faithful lane must expose posterior parameterization, objective, sampling, and source-protocol parity. |
 | Server-objective theory | [Nguyen et al. (2026), *Closed-form solutions for generalized variational inference*](https://arxiv.org/abs/2606.25492) | Design input for candidate objective classes only. As a preprint, it does not prove that this repository's reverse-KL heuristic has an objective. |

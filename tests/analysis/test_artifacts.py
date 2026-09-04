@@ -30,6 +30,7 @@ def test_expected_artifacts_are_root_relative_and_complete() -> None:
     )
     assert artifacts["report:belief_sharing.json"] == root / "output/reports/belief_sharing.json"
     assert artifacts["figure:graphical_abstract.png"] == root / "output/figures/graphical_abstract.png"
+    assert artifacts["figure:system_overview.png"] == root / "output/figures/system_overview.png"
     assert artifacts["figure-vector:graphical_abstract.pdf"] == (
         root / "output/figures/graphical_abstract.pdf"
     )

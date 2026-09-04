@@ -6,6 +6,8 @@
 
 - Priority class: Major
 - State: Open
+- Queue position: post-v1.1 scientific lane that may proceed independently of
+  MAJ-8/MAJ-6 once its own parity and resource gates are fixed
 - Owner surface: `VariationalMLP`, required PyTorch lanes, manuscript baseline section
 
 ## Rationale
@@ -19,17 +21,7 @@ parameters.
 
 ## Scope
 
-Current capability: `bnn_fedgvi.py` implements the model-agnostic diagonal-
-Gaussian site table, cavity, factor replacement, round counter, and atomic
-checkpoint round trip. `VariationalMLP` provides the mean-field variational
-family, including export/load of diagonal-Gaussian cavities and a
-cavity-conditioned local optimizer. `torch_bnn.py` supplies explicit CPU/MPS
-device selection, determinism, and fallback receipts, and the executable
-synthetic pilot records held-out log score plus checkpoint/resume equivalence.
-The parity matrix is pinned to FedGVI source revision
-`5440352890037a81218285b8f4de81090861e9df`.
-
-Residual scope is split:
+The open scope is split:
 
 - **MAJ-2A, local portable replication:** extend the verified synthetic CPU/MPS
   protocol to the source loss/divergence and cavity-conditioned client
@@ -41,16 +33,20 @@ Residual scope is split:
   declarative and non-blocking for the local release.
 
 The named profiles are `smoke`, `m4_confirmatory`, and `source_5090`. Smoke is
-correctness-only. Source audit of the pinned FashionMNIST shell found an
-important indexing detail: it executes run indices `[1, 2, 3, 4, 5]` against
-the six-entry table `[42, 676, 93, 215, 318, 242]`, so the effective split seeds
-are `[676, 93, 215, 318, 242]`. The registry preserves all three fields rather
-than silently copying the table's first five entries. The portable profile
-retains those effective seeds, three clients, contamination rates
-`[0, 0.1, 0.2, 0.4, 0.6]`, and 25 server rounds, while its local training budget
-must be frozen by pilot. The external profile preserves the source ceiling of
-2,500 local epochs with ELBO early-stopping patience 10, 200
-posterior-predictive samples, and 10 ELBO samples.
+correctness-only. The portable and source-scale profiles must preserve the
+pinned source revision, effective split-seed indexing, three-client setup,
+contamination schedule, server rounds, early-stopping semantics, and predictive
+sampling contract recorded by the protocol-parity artifact. Pilot only the
+local training budget; never reinterpret a declarative source profile as an
+executed result.
+
+Outcome-bearing MAJ-2A implementation remains blocked until a versioned pilot
+design freezes the numeric smallest effect of interest in held-out log-score
+units, the seed-level MCSE stopping target, the complete primary/secondary
+multiplicity family and adjustment rule, and the maximum rounds, local epochs,
+posterior samples, seeds, wall time, and device compute budget. “Pilot-frozen”
+placeholders in the registry are stop markers, not authority to choose those
+values while inspecting confirmatory outcomes.
 
 ## Implementation Notes
 
@@ -68,6 +64,9 @@ claim. Never describe the cavity/site-factor server as moment matching.
 - Independent replication unit: an independently seeded end-to-end BNN run
   (data split, initialization, and training trajectory), not a per-batch or
   per-epoch measurement within one run.
+- The tracked MAJ-2A design records the numeric SOEI and MCSE target, exact
+  comparison family/correction, seed schedule, compute ceiling, and a stop
+  disposition before `m4_confirmatory` can execute.
 - Falsifier: if the paired proper-score interval includes zero, or its sign
   reverses versus the preregistered direction, at the declared contamination
   levels, the robustness claim for the BNN lane fails and is not published.
@@ -92,6 +91,12 @@ claim. Never describe the cavity/site-factor server as moment matching.
 - Documentation changes: update the manuscript baseline section and this lane's
   Claim-Boundary Constraints to state the BNN result and its estimand once the
   sweep lands.
+- Required acceptance evidence: source-parity matrix, pilot budget receipt,
+  complete paired run table, device/fallback and checkpoint chains, locked
+  statistics, source-bound figures/exact-value tables, public PR checks, and
+  merged public-main SHA.
+- Negative controls reject a confirmatory run whose design retains a placeholder
+  threshold/budget or whose runtime exceeds or mutates the frozen compute plan.
 
 ## Claim-Boundary Constraints
 
@@ -106,6 +111,11 @@ claim. Never describe the cavity/site-factor server as moment matching.
 ## Dependencies
 
 - MAJ-2A requires PyTorch availability and explicit required-lane validation.
+- MAJ-2A confirmatory execution remains blocked until the pilot-derived numeric
+  design-freeze artifact passes schema, digest, and no-outcome-peeking checks.
+- Existing cavity, factor-replacement, variational-family, determinism, and
+  checkpoint primitives are prerequisite contracts recorded in source tests
+  and `ISA.md`; they are not active TODO subitems.
 - MAJ-2B additionally requires external CUDA resources and never blocks the
   M4-portable release.
 - Primary estimand, unit, falsifier, and no-claim boundary trace to the

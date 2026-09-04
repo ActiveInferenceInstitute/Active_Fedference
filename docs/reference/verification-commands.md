@@ -463,6 +463,7 @@ TEMPLATE_REPO=/path/to/template
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
+uv run --locked python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
 uv run --locked python scripts/02_run_analysis.py
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
@@ -486,6 +487,8 @@ else
 fi
 
 # Final renderer pass: receipt-backed hydration has already happened above.
+cd "$AF_REPO"
+uv run --locked python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
 cd "$TEMPLATE_REPO"
 uv run --locked python scripts/pipeline/stage_03_render.py \
   --project working/active_fedference --skip-manuscript-hydration
@@ -496,10 +499,8 @@ cd "$AF_REPO"
 uv run --locked python scripts/prepare_web_package.py
 uv run --locked python scripts/validate_web_package.py
 uv run --locked python scripts/validate_rendered_surfaces.py
-TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
-TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
 uv run --locked python scripts/record_pipeline_stage.py render \
-  --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
+  --template-root "$TEMPLATE_REPO"
 uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
 uv run --locked python scripts/validate_pipeline_freshness.py
 ~~~
@@ -513,13 +514,16 @@ pass is deliberately unrecorded. The final render receipt is recorded only
 after final stages 03–05 and web preparation, because web preparation rewrites
 `output/web/` and the render receipt must hash the actual reader surface.
 
-Receipt schema 3 omits volatile completion times by default, so recording an
+Receipt schema 4 omits volatile completion times by default, so recording an
 unchanged stage is byte-identical. Use a canonical `--timestamp` or
 `SOURCE_DATE_EPOCH` only when an external event supplies that value.
 
-The renderer label is provenance metadata for an external producer; the receipt
-still hashes every declared render input and output. A fresh-clone evidence
-probe is separate from the local dirty development workflow:
+The renderer identity is accepted only from the explicit clean Template
+checkout named by `--template-root`. Its canonical repository and exact commit
+must match the source-owned lock in `manuscript/config.yaml`; the receipt stores
+that structured identity without retaining a machine-local path or raw remote
+URL. A fresh-clone evidence probe is separate from the local dirty development
+workflow:
 
 ```bash
 uv run --locked python scripts/validate_clean_checkout.py
@@ -561,6 +565,16 @@ navigation, image alternatives, figure captions, full-size-link labels, or
 duplicate identifiers. This is the automated subset of
 [`../manuscript/accessibility.md`](../manuscript/accessibility.md), not a WCAG
 conformance declaration.
+
+The publication validator intentionally accepts a smaller HTML language than a
+general-purpose browser. It rejects every `<base>`, CDATA, and `<noscript>`
+element because those constructs can change resource or parsing semantics that
+the static publication contract does not model. External scripts require an
+explicit HTTPS URL, syntactically valid SHA-256/384/512 integrity metadata, and
+anonymous CORS mode; every integrity token must be supported and valid. This is
+a fail-closed packaging policy. It validates metadata shape and browser-
+effective attributes, but it does not fetch the remote response, prove that the
+declared digest matches its bytes, or establish server-side CORS behavior.
 
 ## Rendered manuscript and slide surfaces
 

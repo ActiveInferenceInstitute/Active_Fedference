@@ -169,6 +169,7 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
         "belief_quality",
         "evidence_replication_map",
         "source_render_provenance",
+        "system_overview",
         "sensitivity_heatmap",
         # accessibility support
         "figure_exact_values",

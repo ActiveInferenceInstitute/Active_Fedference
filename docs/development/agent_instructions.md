@@ -134,8 +134,12 @@ Mermaid is a source format, not a screenshot substitute. Keep diagrams in
 fenced `mermaid` blocks so GitHub, the documentation pipeline, and a local
 renderer consume the same source. Quote node labels containing parentheses,
 brackets, colons, or other Mermaid syntax; prefer plain text and explicit
-edges over renderer-specific HTML or embedded external images. Run both passes
-before release review:
+edges over renderer-specific HTML or embedded external images. Give every
+diagram exactly one non-empty `accTitle` and `accDescr`, then place a
+`**Text equivalent.**` table or ordered description immediately after its
+fence. The equivalent must carry the same nodes, relationships, optional or
+future edge labels, and no-claim boundaries without depending on color or
+geometry. Run both passes before release review:
 
 ```bash
 uv run --locked python scripts/validate_mermaid.py

@@ -73,8 +73,13 @@ into the reviewer snapshot.
 | `figures/cross_study_summary.png` | `src/figures/cross_study_summary.py` | Cross-study summary |
 | `figures/parameter_recovery.png` | `src/figures/parameter_recovery.py` | Study 9 parameter recovery |
 | `figures/complexity_scaling.png` / `.pdf` | `src/figures/complexity_scaling.py` | Complexity orders and machine-scaling diagnostic |
+| `figures/application_integrity_flow.png` / `.pdf` | `src/figures/application_integrity_flow.py` | Labeled request, solver-health, receipt, and verification boundary |
+| `figures/evidence_replication_map.png` / `.pdf` | `src/figures/evidence_replication_map.py` | Evidence-class, estimand, nesting, and no-transfer boundary |
+| `figures/source_render_provenance.png` / `.pdf` | `src/figures/source_render_provenance.py` | Producer order, reverse invalidation, and publication authorization boundary |
+| `figures/figure_exact_values.json` / `.md` | `analysis.figure_exact_values` | Machine-readable and reader-facing exact plotted values keyed by `fig-values:*` identifiers |
+| `figures/figure_registry.json` | `analysis.workflow._write_figure_registry` | Caption/alternative/long-description metadata and exact-value fallback bindings |
 | `data/manuscript_variables.json` | `z_generate_manuscript_variables.py` | Debugging token map |
-| `data/pipeline_provenance.json` | `02_run_analysis.py`, `z_generate_manuscript_variables.py`, `record_pipeline_stage.py` | Schema-3 content-hashed, byte-idempotent stage freshness validation |
+| `data/pipeline_provenance.json` | `02_run_analysis.py`, `z_generate_manuscript_variables.py`, `record_pipeline_stage.py` | Schema-4 content-hashed, byte-idempotent freshness validation with a source-locked, path-free Template identity |
 | `manuscript/*.md` | Token substitution | PDF render (stage 5) |
 | `pdf/*` | `scripts/pipeline/stage_03_render.py` | Validation, copy stage |
 | `slides/*` | Template render stage (per-section Beamer decks) | Release bundle |

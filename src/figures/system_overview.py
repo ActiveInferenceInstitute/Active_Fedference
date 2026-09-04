@@ -340,7 +340,7 @@ def _draw_weight_dots(
 # Main figure
 # ---------------------------------------------------------------------------
 
-def generate_system_overview(*, project_root: Path | None = None) -> None:
+def generate_system_overview(*, project_root: Path | None = None) -> Path:
     """Generate the three-panel system-overview figure (beliefs, weights, recovery).
 
     Panel 1: honest vs adversarial belief vectors.
@@ -552,6 +552,7 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
 
     print(str(png_path))
     print(str(pdf_path))
+    return png_path
 
 
 if __name__ == "__main__":

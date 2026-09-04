@@ -1,7 +1,7 @@
 # Conceptual foundations
 
-Active Fedference connects two federated inference traditions that, to our
-knowledge, had not been formally linked before this project.
+Active Fedference evaluates a categorical connection between two federated
+inference traditions that was not explicit among the sources reviewed here.
 
 ## Primary sources
 
@@ -95,8 +95,12 @@ them explicitly.
 Robust per-agent `generalized_posterior` with a bounded loss (`rcce`, $\beta$-loss).
 Derived from a stated objective; provably limits to NLL/Bayes; inherits FedGVI's
 bounded-influence result only under the source theorem's stated loss, model, and
-contamination assumptions. Exemplified by the logistic-regression baseline
-(`fedference.bnn_baseline.fed_gvi_logreg` with `rcce`/`AR`).
+contamination assumptions. The separate
+`fedference.bnn_baseline.fed_gvi_logreg` figure is only an exploratory
+generalized-Bayes point-estimate logistic-regression baseline. It compares
+joint NLL/L2 and RCCE/L2 configurations; its legacy `AR` argument selects a
+larger L2 coefficient and does not implement the Alpha-Rényi objective. The
+finite contrast therefore cannot identify an RCCE-only effect.
 
 ### 2. Server-side, heuristic (complementary, sharp)
 
@@ -105,7 +109,8 @@ rounds. Only the **project-local recovery limit** (robustness 0 =
 `log_linear_pool`) is proven. Under the stated bridge it is a categorical Eq. 7
 specialization, not a full source-protocol identity. Do not attribute FedGVI's
 per-client bounded-influence bound to this pooling heuristic. It is the
-empirically sharp rule that wins the configured robustness verdict.
+empirically sharp rule with the highest point accuracy in the configured
+verdict cell; the broader review grid retains reversals and no universal winner.
 
 ### 3. Server-side, objective-backed (complementary, conservative)
 
@@ -128,9 +133,9 @@ It complements, never replaces, axis 2.
 
 The triangle: axis 1 is source-theorem-backed under stated assumptions; axis 2
 has conditional empirical wins and reversals *without* a server objective;
-axis 3 is objective-backed *but* conservative. The
-influence-weights and logistic-regression robustness figures exercise axes 2 and
-1; the descent and legacy-named `bounded_influence` redescending-weight figure
+axis 3 is objective-backed *but* conservative. The influence-weights figure
+exercises axis 2. The exploratory logistic-regression client-loss figure
+separately exercises axis 1; the descent and legacy-named `bounded_influence` redescending-weight figure
 exercise axis 3 without asserting estimator-level B-robustness. See
 [`experiments-and-artifacts.md`](experiments-and-artifacts.md).
 

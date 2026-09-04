@@ -24,7 +24,7 @@ Active Fedference uses two registries. **Do not duplicate full tables in
 | Robustness sweep | `SWEEP_BEST_QVALUE`, `SWEEP_ANY_ROBUST_WINS`, `SWEEP_HEADLINE_POWER`, per-rate p/q tokens | `output/reports/robustness_sweep.json` |
 | Recovery residuals | `RECOVERY_*` (each with a `*_MATH` sibling — see below) | Deterministic checks in `src/manuscript_vars/` |
 | Variational diagnostics | `VARIATIONAL_F_INITIAL`, `VARIATIONAL_DELTA_F`, `VARIATIONAL_INFLUENCE_DROP_FACTOR`, `VARIATIONAL_CAPTURE_GAP` | `output/reports/variational_aggregation.json` |
-| Contamination gallery | `GALLERY_RATE`, `GALLERY_RELIABLE_KINDS`, `GALLERY_TABLE_ROWS` | `output/reports/contamination_gallery.json` |
+| Contamination gallery | `GALLERY_RATE`, `GALLERY_RELIABLE_KINDS`, `GALLERY_OPERATING_POINT_TABLE_ROWS`, `GALLERY_CONTRAST_DISPLAY_TABLE_ROWS`; legacy `GALLERY_TABLE_ROWS` remains available | `output/reports/contamination_gallery.json` |
 | Robustness onset | `ONSET_WIN_FRACTION`, `ONSET_TABLE_ROWS` | `output/reports/robustness_onset.json` |
 | Tempered aggregation (V1) | `TEMPERED_LAMBDA_STAR`, `TEMPERED_HONEST_EXIT_SENTENCE`, `TEMPERED_ENTROPY_WEIGHT_DEFAULT` | Computed at token-generation time |
 | Federation transport (V3) | `FEDERATION_N_WORKERS`, `FEDERATION_BIT_IDENTICAL`, `FEDERATION_TRANSPORT` | Compile-time constants |
@@ -39,6 +39,13 @@ The robustness verdict tokens (`SWEEP_*`) reflect **computed** Wilcoxon + BH-FDR
 results — never hand-authored (ISC-30). Power tokens are observed-effect
 design-planning quantities for the server-side heuristic contrast; they do not
 certify the per-client beta/rcce FedGVI guarantee.
+
+The paired-rate table tokens split the source row into effect and inference
+projections keyed by `(server preset, rate)`; the legacy
+`SWEEP_PAIRED_BY_RATE_TABLE_ROWS` token remains available and is reconstructed
+exactly by joining those projections. The gallery table tokens similarly split
+operating-point and contrast/display fields on the mechanism key while retaining
+the legacy `GALLERY_TABLE_ROWS` row.
 
 The variational tokens (`VARIATIONAL_*`) report objective descent and the
 redescending-weight diagnostic; `VARIATIONAL_CAPTURE_GAP` is the headline multi-start

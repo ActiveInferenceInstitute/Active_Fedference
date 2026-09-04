@@ -1,96 +1,85 @@
-## Client-side robustness complement: categorical FedGVI baseline {#sec:results-baseline}
+## Exploratory generalized-Bayes logistic-regression baseline {#sec:results-baseline}
 
-The sweep of [@sec:results-robustness] characterizes the *server-side heuristic*.
-This baseline characterizes the *per-client* axis — the one that carries the
-provable robustness — on the setting where the robust-Bayes and federated-learning
-communities established their guarantees [@mcmahan2017communication;
-@ashman2022partitioned; @bui2018partitioned], so that the active-inference colony
-and the federated-learning benchmark are measured by the same robust objective.
+The sweep of [@sec:results-robustness] characterizes the heuristic server axis.
+This exploratory baseline instead probes the client-side axis in a synthetic
+point-estimate logistic-regression setting. The cited robust-Bayes and federated-
+learning results provide the source context [@mcmahan2017communication;
+@ashman2022partitioned; @bui2018partitioned]; this finite experiment does not
+reproduce their source protocol or inherit their conclusions unconditionally.
 
-A federated Bayesian logistic-regression colony is trained under per-client label
-contamination. Standard clients run the NLL / KL objective (`nll`/`KLD`); robust
-clients run the FedGVI-faithful per-agent generalized-Bayes objective with the
-robust cross-entropy and $\alpha$-Rényi client losses (`rcce`/`AR`,
-[@eq:rcce-loss]). This is the per-client generalized-Bayes update that recovers
-standard Bayes in the trusting limit (Corollary \ref{cor:closed-form-bayes} +
-Proposition \ref{prop:robust-loss-recovery}, the {{RECOVERY_RCCE_MAXDIFF}} and
-{{RECOVERY_BETA_MAXDIFF}} residuals of [@sec:results-recovery]) and that inherits
-the FedGVI bounded-influence robustness [@mildner2025fedgvi]. The robust loss is
-the density-power / $\beta$-divergence line [@basu1998robust] and the
-generalized-cross-entropy line [@zhang2018generalized], folded into the
+An exploratory federated logistic-regression point-estimate proxy is trained
+under client label contamination. Standard clients use the NLL gradient with
+L2 coefficient $0.05$; the comparison uses the RCCE gradient at
+$q={{BNN_ROBUSTNESS_LOSS_PARAM}}$ with L2 coefficient $0.10$. The legacy
+`divergence="KLD"` and `divergence="AR"` arguments select those coefficients
+for compatibility; this module does not evaluate KL or Alpha-Rényi divergence
+between weight distributions, represent posterior covariance, or implement a
+FedGVI generalized-posterior objective. The estimand is therefore a composite
+contrast between two joint loss-and-shrinkage configurations, not an isolated
+RCCE effect. RCCE's $q\to0$ gradient limit recovers the NLL gradient, while the
+separate categorical recovery identities remain in [@sec:results-recovery].
+
+The corresponding bounded-influence claim remains source-conditional on
+FedGVI's assumptions [@mildner2025fedgvi]; this finite curve does not test that
+theorem. The losses connect the density-power line
+[@basu1998robust], generalized cross-entropy [@zhang2018generalized], and the
 generalized-Bayes objective [@bissiri2016general; @knoblauch2022generalized].
 
-The robust client's operating point ($q = {{BNN_ROBUSTNESS_LOSS_PARAM}}$,
-{{BNN_ROBUSTNESS_N_PER}} points per client) was chosen, among the values
-tested, to make this margin visible rather than derived from theory; the
-sensitivity check below shows the qualitative result does not depend on that
-specific choice, which is what makes the operating point a defensible one
-rather than a cherry-picked one.
+The displayed configuration uses $q = {{BNN_ROBUSTNESS_LOSS_PARAM}}$ and
+{{BNN_ROBUSTNESS_N_PER}} points per class per client. Those are configured
+inputs, not parameters selected by this report. Only the peak-margin
+contamination level is selected within the displayed contamination sweep, by
+the maximum composite-configuration accuracy difference. The neighboring-$q$
+sensitivity check is descriptive stability evidence, not leakage-free
+calibration or confirmatory model selection.
 
-As the per-client contamination fraction
-rises, the robust-client curve tracks the standard curve closely at
-low-to-moderate contamination, then opens a genuine margin in the
-moderate-to-high range that peaks at {{BNN_ROBUSTNESS_PEAK_CONTAM}}
-contamination (margin {{BNN_ROBUSTNESS_PEAK_GAP}}) — a margin that holds
-above a minimum threshold across a neighborhood of the robust loss parameter
-at more than one contamination level (`tests/fedference/test_bnn_baseline.py::
-test_rcce_separation_is_not_a_knife_edge_in_loss_param`), not only at the
-single value plotted, and is reproducible across independent seeds rather
-than a single-run artifact; the plotted bands show the seed-level
-{{CI_PERCENT}}% bootstrap intervals around those means. At the most extreme
-{{BNN_ROBUSTNESS_MAX_CONTAM}} contamination level swept, both configurations
-decline sharply and converge again, with no reliable ordering between them;
-we report that point rather than omitting it, since there is no principled
-basis (e.g. a known breakdown point for this synthetic contamination
-mechanism) for excluding the one part of the sweep that does not favor the
-robust client.
+As contamination rises, the two configuration curves remain close at lower
+rates and separate over part of the moderate-to-high range. The largest
+displayed composite-configuration mean difference occurs at
+{{BNN_ROBUSTNESS_PEAK_CONTAM}} contamination, with margin
+{{BNN_ROBUSTNESS_PEAK_GAP}}. Neighboring tested loss parameters retain a
+thresholded separation at more than one contamination level, and the plotted
+bands are seed-level {{CI_PERCENT}}% bootstrap intervals.
 
-The separation in this small logistic-regression setting is
-nonetheless modest and does not by itself establish a large bounded-influence
-effect. The recovery identities ([@sec:results-recovery]) establish
-implementation compatibility at the named limit; the bounded-influence result
-comes from the FedGVI theorem only under its matching assumptions
-[@mildner2025fedgvi], not from the size of the gap in this figure. A larger,
-higher-capacity model is needed to exhibit the effect at the scale reported
-by the source paper ([@sec:future-scale]).
+At the highest swept rate, {{BNN_ROBUSTNESS_MAX_CONTAM}}, both configurations
+decline and no reliable ordering remains. Retaining that endpoint is necessary
+for the finite-sweep interpretation. Together with the within-sweep
+peak-contamination selection, it makes this an exploratory conditional pattern
+rather than a precalibrated or confirmatory robustness result.
 
-![Held-out classification accuracy of the federated Bayesian baseline. Source relation: original project FedGVI complement; estimand: clean held-out accuracy fraction; uncertainty: seed-level bootstrap interval. The *logistic-regression* baseline ({{BNN_N_CLIENTS}} clients, {{BNN_ROBUSTNESS_N_PER}} points per class per client, gradient-descent point-estimate weights — no posterior covariance is computed for this anchor) as a function of per-client label-contamination fraction. x-axis: contamination fraction (fraction of each client's labels flipped); y-axis: held-out classification accuracy on a clean test set, averaged over {{BNN_ROBUSTNESS_N_SEEDS}} independent seeds. The standard configuration (`nll` loss / `KLD` regularizer) and the robust FedGVI configuration (`rcce` loss / `AR` regularizer, $q={{BNN_ROBUSTNESS_LOSS_PARAM}}$) are shown as separate curves; shaded bands show seed-level {{CI_PERCENT}}% bootstrap intervals. The two curves are close at low-to-moderate contamination, separate over the moderate-to-high range (peak margin at {{BNN_ROBUSTNESS_PEAK_CONTAM}} contamination), then reconverge at the highest swept level, where both decline sharply and neither curve reliably leads — that level is included rather than omitted, since it is the one part of the sweep that does not favor the robust client. Note: this figure plots the NumPy logistic-regression anchor, **not** the separate PyTorch deterministic MLP of the final paragraph (whose {{BNN_HIDDEN_DIM}}-hidden-unit, $\beta={{BNN_BETA}}$ configuration is an executed point-mass-family complement). The recovery identities establish compatibility at the named limit; the per-client bounded-influence result belongs to the cited FedGVI theorem under its matching assumptions, distinct from the server-side heuristic reweighting shown in the robustness results. Each point and interval is computed across {{BNN_ROBUSTNESS_N_SEEDS}} independent seeds.](../output/figures/bnn_robustness.png){#fig:bnn-robustness width=80%}
+The separation in this small logistic-regression setting is modest. The recovery
+identities establish implementation compatibility at the named limit
+([@sec:results-recovery]); the bounded-influence result comes from the cited
+FedGVI theorem under its assumptions [@mildner2025fedgvi], not from this curve's
+gap. Source-dataset parity, leakage-free calibration, and posterior-uncertainty
+experiments remain open ([@sec:future-scale]).
 
-[@fig:bnn-robustness] is per-client empirical evidence. Its recovery identity
-and the source FedGVI theorem have separate roles; neither comes from the
-aggregation-level statistics of [@sec:results-verdict]. The three robustness
-axes — the source-conditional per-client update here, the complementary
-sharp server-side heuristic of [@sec:results-robustness], and the conservative
-variational server rule of [@sec:supp-variational] — remain distinct throughout.
-Only the per-client axis carries a source-conditional bounded-influence result; the
-variational server axis carries a raw effective-weight bound
-([@sec:supp-theorem]), not an estimator-level guarantee.
+![Client-loss comparison under label contamination. Source relation: exploratory original-project point-estimate logistic-regression proxy; estimand: clean held-out accuracy for two joint loss-and-L2 configurations; uncertainty: seed-level percentile-bootstrap interval. The model uses one point-estimate weight vector for each of {{BNN_N_CLIENTS}} clients with {{BNN_ROBUSTNESS_N_PER}} points per class per client; no posterior covariance is computed. The x-axis is each client's label-contamination fraction. The y-axis is held-out accuracy on a clean synthetic test set, averaged over {{BNN_ROBUSTNESS_N_SEEDS}} independent seeds. Distinct markers and line styles identify NLL with L2 coefficient $0.05$ and RCCE with L2 coefficient $0.10$ at configured $q={{BNN_ROBUSTNESS_LOSS_PARAM}}$; bands show {{CI_PERCENT}}% seed-bootstrap intervals. Only the peak contamination is selected within the displayed grid. Because loss and shrinkage change together, the contrast cannot identify an RCCE-only effect. It does not establish leakage-free calibration, universal robustness, posterior uncertainty, an Alpha-Rényi result, or source-protocol replication.](../output/figures/bnn_robustness.png){#fig:bnn-robustness width=80%}
 
-**PyTorch deterministic-MLP complement (executed).** As a generative-model-free
-complement, the analysis pipeline instantiates FedGVI in a deterministic
-point-estimate MLP — generalized variational inference with a point-mass
-variational family:
-Linear→ReLU→Linear→softmax with {{BNN_HIDDEN_DIM}} hidden units, the
-density-power $\beta$-loss at $\beta = {{BNN_BETA}}$, trained for {{BNN_N_STEPS}}
-Adam steps per client across {{BNN_N_CLIENTS}} clients — and fuses per-test-point
-softmax predictions with `robust_aggregate` at `robustness = {{BNN_ROBUSTNESS}}`
-(`fedference.bnn_baseline_torch.run_bnn_torch_experiment`, run under PyTorch
-{{PYTORCH_VERSION}}). Every number here is executed, not assumed: the consensus
-is a valid probability simplex (maximum deviation from unit mass
-{{BNN_CONSENSUS_SUM}} over the test set) and is bit-identical across repeated
-seeded runs (deterministic: {{BNN_DETERMINISTIC}}). Held-out consensus accuracy
-at contamination {{BNN_TORCH_CONTAM}} is {{BNN_TORCH_STD_ACC}} for the
-$\beta\to 0$ standard client and {{BNN_TORCH_ROBUST_ACC}} for the
-$\beta = {{BNN_BETA}}$ robust client — this is the same
-{{BNN_ROBUSTNESS_MAX_CONTAM}}-contamination endpoint where the NumPy baseline
-above also loses its separation (a single seed here, versus the
-{{BNN_ROBUSTNESS_N_SEEDS}}-seed mean above), so the small gap is consistent
-with, not in tension with, that figure's genuine mid-range margin: both
-axes show the same qualitative collapse-together behavior at the sweep's most
-extreme point. This run confirms that the server-side aggregation API transfers
-to this neural-network setting and produces a valid, deterministic consensus; it
-does not establish model-class universality or that the client-side $\beta$-loss's robustness
-margin transfers at this scale; the certified NumPy logistic-regression
-baseline above remains the axis's rigorous evidence. When PyTorch is not
-installed, the pipeline records unavailable-value sentinels; certified builds
-install the `torch` optional extra ([@sec:reproducibility]).
+[@fig:bnn-robustness] is exploratory per-client proxy evidence. Its loss-limit
+check, finite synthetic contrast, and the separate source-conditional theorem
+have different roles; none comes from the server comparison of
+[@sec:results-verdict]. The
+authoritative three-axis boundary is [@sec:robustness-axes].
+
+**PyTorch deterministic-MLP complement (executed).** The optional pipeline also
+instantiates generalized variational inference with a point-mass MLP family:
+Linear→ReLU→Linear→softmax with {{BNN_HIDDEN_DIM}} hidden units. Clients use the
+density-power $\beta$-loss at $\beta = {{BNN_BETA}}$ for
+{{BNN_N_STEPS}} Adam steps, and per-test-point predictions are fused with
+`robust_aggregate` at `robustness = {{BNN_ROBUSTNESS}}` under PyTorch
+{{PYTORCH_VERSION}}.
+
+The executed consensus is a valid probability simplex, with maximum unit-mass
+deviation {{BNN_CONSENSUS_SUM}}, and repeated seeded runs are bit-identical
+({{BNN_DETERMINISTIC}}). At contamination {{BNN_TORCH_CONTAM}}, held-out
+consensus accuracy is {{BNN_TORCH_STD_ACC}} for the $\beta\to 0$ client and
+{{BNN_TORCH_ROBUST_ACC}} for the $\beta={{BNN_BETA}}$ client.
+
+This single-seed endpoint demonstrates API transfer and deterministic execution,
+not posterior-uncertainty inference, model-class universality, or a robust-loss
+advantage at neural-network scale. It is separate from the
+{{BNN_ROBUSTNESS_N_SEEDS}}-seed exploratory logistic-regression curve above and
+from the source-conditional theorem. When PyTorch is absent, the pipeline records
+unavailable-value sentinels; builds exercising this optional lane install the
+`torch` extra ([@sec:reproducibility]).

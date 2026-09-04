@@ -56,10 +56,8 @@ cd "$AF_REPO"
 uv run python scripts/prepare_web_package.py
 uv run python scripts/validate_web_package.py
 uv run python scripts/validate_rendered_surfaces.py
-TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
-TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
 uv run python scripts/record_pipeline_stage.py render \
-  --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
+  --template-root "$TEMPLATE_REPO"
 uv run python scripts/validate_pipeline_freshness.py
 ~~~
 

@@ -16,6 +16,8 @@ and the release sequence remains in the
 
 ```mermaid
 flowchart TD
+    accTitle: Active Fedference layer ownership
+    accDescr: Callers and thin process adapters delegate to domain operations, typed reports feed figures and manuscript tokens, and source configuration constrains every reusable layer.
     U["Library callers and tests"] --> D["fedference domain operations"]
     S["Thin scripts and installed CLI"] --> D
     D --> R["Typed reports and evidence receipts"]
@@ -26,6 +28,18 @@ flowchart TD
     C --> F
     X["Optional Torch or external-data adapters"] -. "explicit boundary" .-> D
 ```
+
+**Text equivalent.**
+
+| Layer or input | Direct consumer | Boundary conveyed by the arrow |
+| --- | --- | --- |
+| Library callers and tests | `fedference` domain operations | Public callers use importable operations. |
+| Thin scripts and installed CLI | `fedference` domain operations | Process adapters own arguments and status, not a second mathematical implementation. |
+| Domain operations | Typed reports and evidence receipts | Results cross an explicit validated representation. |
+| Reports and receipts | Figure generators and manuscript tokens | Reader-facing material consumes typed evidence. |
+| Figures and tokens | PDF, HTML, slides, and release manifest | Publication surfaces are downstream products. |
+| Configuration and registry | Domain, report, and figure layers | Source-owned controls constrain all three stages. |
+| Optional Torch or external-data adapters | Domain operations | The dotted, labeled edge marks an explicit optional boundary; it is absent from the default import graph. |
 
 The arrows describe ownership and data flow, not a promise that every module
 imports every predecessor. In particular, `src/fedference/` must not import
@@ -136,8 +150,9 @@ leave the boundary with argument handling, sequencing, and status mapping.
 3. Use repository-relative links, copy-pasteable commands, explicit no-claim
    boundaries, and source-owned terminology.
 4. Add Mermaid only when a relationship is materially clearer as a diagram;
-   quote labels containing punctuation and run both static and renderer
-   validation.
+   provide `accTitle`, `accDescr`, quoted punctuation-bearing labels, visible
+   labels on optional/future edges, and an immediately adjacent plain-language
+   text equivalent, then run both static and renderer validation.
 5. Check that every local link resolves and that the page does not introduce
    retired names, stale versions, or unsupported scientific generalizations.
 

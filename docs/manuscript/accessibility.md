@@ -1,15 +1,21 @@
 # Publication accessibility contract
 
 Active Fedference treats the validated HTML manuscript as its canonical,
-accessibility-enhanced reading surface. The combined manuscript PDF is also
-generated through the source-controlled LuaLaTeX/tagpdf path requested by
-`metadata.tagged_pdf: true`. Its release gate requires `pdfinfo` to report
-`Tagged: yes`, qpdf JSON to expose a non-empty catalog `/Lang` and a
-`StructTreeRoot`, and the source-bound language check to pass. Some Poppler
-builds omit the language line from `pdfinfo`; that is why the validator checks
-the PDF catalog as well. Figure alternatives are bound from
-`src/figures/_metadata.py` through the figure registry. Slide PDFs are separate
-Beamer outputs and are not automatically promoted to the tagged-PDF contract.
+accessibility-enhanced manuscript reading surface. Reveal.js is the paired
+accessibility-enhanced slide-reading surface: it retains semantic headings,
+keyboard navigation, responsive tables, figure alternatives and descriptions,
+high-contrast focus states, and a link to the complete HTML manuscript. The
+Beamer slide PDFs are explicitly untagged presentation derivatives; successful
+visual rendering does not promote them to the manuscript's tagged-PDF
+contract.
+
+The combined manuscript PDF is generated through the source-controlled
+LuaLaTeX/tagpdf path requested by `metadata.tagged_pdf: true`. Its release gate
+requires `pdfinfo` to report `Tagged: yes`, qpdf JSON to expose a non-empty
+catalog `/Lang` and a `StructTreeRoot`, and the source-bound language check to
+pass. Some Poppler builds omit the language line from `pdfinfo`; that is why
+the validator checks the PDF catalog as well. Figure alternatives are bound
+from `src/figures/_metadata.py` through the figure registry.
 
 Tagged structure is not the same as PDF/UA certification. A PDF/UA claim is
 allowed only when the retained veraPDF report and manual reading-order,
@@ -54,10 +60,19 @@ whether visual encodings remain understandable without color.
 Figure descriptions originate in manuscript captions and the figure registry,
 not in generated HTML edits. Captions must identify the estimand, encodings,
 units, uncertainty, source relation, and claim boundary without relying on
-color alone. At release review, inspect whether the image alternative and
-adjacent caption cause confusing repetition in at least one screen reader; if
-so, repair the sibling renderer to produce a concise alternative with a
-separate long description.
+color alone. Complex figures additionally carry a structured
+`long_description`; the HTML renderer places it in a labeled disclosure after
+the caption while keeping the image's concise alternative distinct. Full-size
+links name the figure and title rather than exposing a generic “open image”
+label.
+
+Seven quantitative figures also declare stable `fig-values:*` fallback
+identifiers. Analysis derives their exact-value tables from the same typed
+reports used for plotting and writes both machine-readable JSON and a
+human-readable Markdown table under `output/figures/`. The figure registry must
+bind every declared identifier to those artifacts. At release review, inspect
+whether alternative, caption, long description, and exact table complement one
+another without needless repetition in at least one screen reader.
 
 ## PDF and slide boundary
 
@@ -84,6 +99,17 @@ Until the additional veraPDF and manual checks pass, publication prose must
 say “HTML accessibility-enhanced; tagged PDF structure verified, PDF/UA
 conformance not established,” not “fully accessible,” “WCAG conformant,” or
 “PDF/UA conformant.”
+
+The opt-in `render.slides.profile: accessible` contract separately limits a
+frame to 80 prose words and eight displayed table-body rows, reserves at least
+70% of usable space for figure-led frames, and enforces 28/20/16-point floors
+for titles, body text, and figure labels. It splits only at semantic block
+boundaries and rejects uncomposable density rather than splitting equations,
+lists, code, tables, or figures or silently reducing type. Reveal.js carries
+the accessible reading affordances and links to the full manuscript; Beamer
+remains a projection derivative. Passing these automated checks establishes
+neither a WCAG conformance result for Reveal.js nor PDF/UA conformance for
+either PDF surface.
 
 ## Release review sequence
 

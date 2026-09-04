@@ -106,6 +106,7 @@ from figures import (
     generate_robustness_sweep,
     generate_sensitivity_heatmap,
     generate_source_render_provenance,
+    generate_system_overview,
 )
 from figures._metadata import figure_metadata
 from project_paths import resolve_env_project_root
@@ -270,9 +271,9 @@ def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) 
         for artifact_key, path in artifact_paths.items()
         if path.parent.name == "figures"
     }
-    # Fall back to the :mod:`figures` submodule that owns the filename, so
-    # standalone generators (system_overview, graphical_abstract, moving_world)
-    # are credited rather than labelled "preexisting_figure".
+    # Fall back to the :mod:`figures` submodule that owns the filename so any
+    # explicitly supported standalone invocation remains attributable rather
+    # than being labelled ``preexisting_figure``.
     submodule_by_filename = _figure_generators_by_filename(project_root)
 
     def _resolve_generated_by(filename: str) -> str:
@@ -1002,6 +1003,7 @@ def run_analysis_pipeline(
         project_root=root,
     )
     paths["graphical_abstract"] = generate_graphical_abstract(project_root=root)
+    paths["system_overview"] = generate_system_overview(project_root=root)
     paths["generative_model_schema"] = generate_generative_model_schema(project_root=root)
     paths["message_passing"] = generate_message_passing(project_root=root)
     paths["pomdp_loop"] = generate_pomdp_loop(project_root=root)

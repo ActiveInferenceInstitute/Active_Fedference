@@ -78,6 +78,7 @@ ANALYSIS_FIGURE_FILENAMES: tuple[str, ...] = (
     "robustness_sweep.png",
     "sensitivity_heatmap.png",
     "source_render_provenance.png",
+    "system_overview.png",
 )
 
 ANALYSIS_FIGURE_PDF_FILENAMES: tuple[str, ...] = tuple(

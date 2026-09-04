@@ -104,23 +104,70 @@ The HMAC key, replay database, output directory, and any future private keys
 cross from the operator boundary into the runtime and must never be accepted
 from an untrusted experiment payload.
 
-#### Diagram
+#### Protocol-v1 loopback and replay sequence
 
 ```mermaid
-flowchart LR
-    operator["Trusted runner / CLI"] -->|"config, round ID, key handle"| server["Federation server"]
-    operator -->|"belief and process launch"| workers["Workers (potentially malicious)"]
-    workers -->|"bounded authenticated envelope"| server
-    server -->|"validated beliefs"| agg["Aggregation core"]
-    agg -->|"consensus"| server
-    server -->|"result envelope"| workers
-    server -->|"atomic round claim"| replaydb["Local SQLite replay guard"]
-    server -->|"digest events"| replaylog["Replay log"]
-    operator -->|"source, config, output hashes"| receipt["Run receipt"]
-    host["Trusted host / future Docker daemon"] -.-> server
-    ca["Future CA and key store"] -.->|"MAJ-4A mTLS"| server
-    ca -.->|"MAJ-4A mTLS"| workers
+sequenceDiagram
+    accTitle: Protocol-v1 loopback aggregation and replay inspection
+    accDescr: A trusted operator claims a round, workers submit bounded protocol-v1 belief frames, the server validates integrity before local aggregation, and replay inspection reports transport integrity separately from solver health.
+    participant O as Operator
+    participant G as Replay Guard
+    participant S as Server
+    participant W as Workers
+    participant A as Aggregation Core
+    participant L as Replay Log
+    participant R as Receipt Writer
+    O->>G: Claim exact round identifier
+    alt reused or unavailable replay domain
+        G-->>O: Reject before the round starts
+    else fresh round identifier
+        G-->>O: Admit the local round
+        O->>S: Start loopback-only protocol-v1 round with fixed configuration and worker order
+        W->>S: Send bounded belief frames with envelope, digest, and optional shared-HMAC tag
+        alt malformed, unauthenticated, mismatched, duplicate, or out-of-order frame
+            S-->>O: Reject the whole round with an integrity finding
+        else every declared frame is integrity-valid
+            S->>A: Aggregate validated beliefs locally
+            A-->>S: Return rich local result and solver status
+            S-->>W: Send unchanged protocol-v1 payload containing consensus and agent_weights
+            S->>L: Append ordered digest-bound replay events
+            S-->>O: Return the rich local round result
+            O->>R: Bind configuration, provenance, artifacts, and local solver health when a receipt is requested
+        end
+    end
+    O->>L: Request replay inspection using the recorded configuration by default
+    L-->>G: Supply ordered recorded events
+    G->>A: Deterministically recompute consensus from caller-supplied beliefs
+    alt event, envelope, payload, configuration, order, or consensus mismatch
+        G-->>O: Integrity invalid with stable finding code
+    else deterministic transcript matches
+        G-->>O: Integrity valid
+        opt local result has fallback or nonconvergence
+            G-->>O: Separate solver finding while integrity remains valid
+        end
+    end
 ```
+
+**Text equivalent.**
+
+| Sequence step | Admitted path | Rejection or separate finding | Security and scientific boundary |
+| --- | --- | --- | --- |
+| Round claim | The operator asks the replay guard to claim one exact round identifier in the configured local replay domain. | Reused identifiers or unavailable required durable state reject the round before networking begins. | Round uniqueness is local to the selected guard and domain. |
+| Worker submission | Every declared worker sends one bounded protocol-v1 belief frame with envelope and digest; a shared HMAC tag is optional. | Malformed, unauthenticated, mismatched, duplicate, or out-of-order frames reject the whole round. | Optional shared-key authentication is integrity protection, not encryption, confidentiality, or per-worker mTLS identity. |
+| Local aggregation | The server delegates validated beliefs to the canonical aggregation core and keeps its rich solver result locally. | Fallback or nonconvergence is retained as numerical health rather than rewritten as transport failure. | Solver health is not transport integrity, Byzantine tolerance, differential privacy, or scientific robustness. |
+| Worker response | The server sends the unchanged protocol-v1 result payload containing only `consensus` and existing on-wire `agent_weights`. | An invalid result frame is an integrity error. | Rich health fields and base weights are not added to protocol-v1 frames. |
+| Replay and receipt | Ordered digest-bound events are logged; the receipt writer binds configuration, provenance, artifacts, and solver health. Replay uses the recorded configuration unless explicit flags assert an exact match. | Stable integrity codes identify event, order, frame, envelope, payload, configuration, or recomputed-consensus mismatch. A separate solver finding can coexist with integrity validity. | A local replay or receipt does not prove confidentiality, mTLS identity, physical multi-host deployment, Byzantine tolerance, differential privacy, calibration, or scientific validity. |
+
+This sequence documents the current IPv4-loopback implementation. It explicitly
+does **not** claim encryption or transport confidentiality, mTLS identity,
+physical multi-host deployment, Byzantine tolerance, differential privacy, or
+scientific robustness. The future Docker/mTLS lane remains separately gated and
+is not an optional edge in the current protocol diagram. For visual economy,
+the Replay Guard lifeline groups two distinct local controls: `ReplayGuard` or
+`PersistentReplayGuard` claims round identifiers, while
+`inspect_socket_replay` validates the recorded transcript. The diagram does not
+imply that those interfaces are one class or that the socket server writes a
+receipt itself.
 
 ## Assets and security objectives
 

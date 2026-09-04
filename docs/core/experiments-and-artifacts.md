@@ -34,7 +34,7 @@ method × rate × directional-mechanism cell and must fail closed if unmet.
 | `run_belief_sharing` | Categorical source-mechanism analogue to the belief-sharing mechanism illustrated in Friston Fig. 5; estimand is colony mean free energy in nats | `mean_free_energy`, communication gap |
 | `run_language_acquisition` | Single-seed categorical trajectory used in the source-mechanism analogue related to Friston Fig. 7; estimand is KL in nats by ordered count step | `kl_trajectory`, `final_kl`, monotonicity flag |
 | `run_emergence` | BMR structure-selection diagnostic related to the mechanism in Friston Fig. 9; estimand is deterministic ΔF in nats | `delta_F_redundant`, `delta_F_supported`, `convergence` |
-| `run_robustness_sweep` | Declared paired contamination comparison of the standard pool and robust client-loss members; any direction or verdict belongs to the fresh report | `accuracy_by_method_and_rate`, paired-test table, BH-FDR verdict |
+| `run_robustness_sweep` | Declared paired contamination comparison of the project log-linear pool and legacy-named `robust_aggregate` server presets; the labels are not executed client losses, and any direction or verdict belongs to the fresh report | `accuracy_by_method_and_rate`, paired-test table, BH-FDR verdict |
 | `run_review_grid` | Bounded conditional review surface: every predeclared non-KLD method is retained by directional mechanism and rate; no winner is selected for inference | Schema-`1.1` report, all signed seed-level contrasts, method-specific bootstrap intervals, configuration-bound BH/power levels, and MCSE precision receipt |
 | `run_moving_world` | Study 5 three-condition finite simulation; the current source defines the contrast, while numerical direction and significance require a fresh report | `accuracy` (3 conditions), `free_energy_gap`, `n_steps_to_consensus` |
 | `run_disjoint_fov_world` / `run_efe_navigation_test` | V4 finite disjoint-view communication and EFE-navigation controls; numerical direction and significance require a fresh report | `communicating_accuracy`, `isolated_accuracy`, `efe_navigation`, `gap`, `fov_width` (wrapped by `disjoint_fov_report`) |
@@ -62,7 +62,7 @@ have no error band, truncated axes are disclosed in captions and in-figure notes
 and the three robustness axes are labelled separately (`robust_aggregate`
 heuristic, per-client FedGVI, and conservative `variational_aggregate`).
 
-Experiment parameters (seeds, grid sizes, divergence labels, $\alpha$) live in
+Experiment parameters (seeds, grid sizes, legacy server-preset labels, $\alpha$) live in
 [`manuscript/config.yaml`](../../manuscript/config.yaml) under `experiment:` and
 are loaded by `experiment_config.load_experiment_config()`.
 
@@ -178,7 +178,7 @@ Expected from `run_analysis_pipeline()` on a completed fresh run:
 | `robustness_sweep.json` | `_robustness_report` | `generate_robustness_sweep`; tokens `SWEEP_*` |
 | `efe_decomposition.json` | `_efe_terms` | `generate_efe_decomposition` |
 | `robust_influence_weights.json` | `_influence_weights` | `generate_robust_influence_weights` (server-side heuristic) |
-| `bnn_robustness.json` | `_bnn_report` | `generate_bnn_robustness` (client-side FedGVI) |
+| `bnn_robustness.json` | `_bnn_report` | `generate_bnn_robustness`; exploratory generalized-Bayes point-estimate logistic-regression baseline under synthetic label contamination; joint NLL/L2 and RCCE/L2 configurations differ in both loss and shrinkage, while legacy `KLD`/`AR` arguments select L2 coefficients rather than evaluated weight-space divergences |
 | `variational_aggregation.json` | `_variational_aggregation_report` | `generate_aggregation_descent`, `generate_bounded_influence`; tokens `VARIATIONAL_*` (objective descent and tested weight response) |
 | `contamination_gallery.json` | `_contamination_gallery_report` | `generate_contamination_gallery`; tokens `GALLERY_*`; pooled-best descriptive mechanism display, not selection-free inference |
 | `robustness_onset.json` | `_robustness_onset_report` | `generate_robustness_onset`; tokens `ONSET_*`; pooled-best descriptive onset display, not selection-free inference |
@@ -187,7 +187,7 @@ Expected from `run_analysis_pipeline()` on a completed fresh run:
 | `bnn_torch.json` | `_bnn_torch_report` | Executed PyTorch point-mass deterministic MLP complement; tokens `BNN_TORCH_*`, `PYTORCH_VERSION` (`status: skipped` if torch absent) |
 | `hierarchical_world.json` | `hierarchical_world_report` | Study 6 (2-level) standalone report; complements the `{{HIER_*}}` tokens |
 | `nlevel3_world.json` | `nlevel3_world_report` | Study 7 (3-level) standalone report; complements the `{{NLEVEL3_*}}` tokens |
-| `cross_study_summary.json` | `summarize_cross_study` | `generate_cross_study_summary`; per-study federation benefit ± bootstrap CI over the configured structural-extension tier (128 seeds in the checked-out publication config) |
+| `cross_study_summary.json` | `summarize_cross_study` | `generate_cross_study_summary`; native-unit signed contrasts from the separate harmonized seed-level rerun, with 95% percentile-bootstrap intervals over the 128 configured seeds |
 | `disjoint_fov_world.json` | `disjoint_fov_report` | Powered disjoint-FOV necessity test (C1); chance baseline + paired stats |
 | `heuristic_characterization.json` | `heuristic_characterization_report` | Numerical influence, finite-breakdown witness, declared attack grid, typed scoped-no-go witness metadata, and no-claim boundary for the sharp server heuristic |
 | `hierarchical_bmr.json` | `hierarchical_bmr_report` | Hierarchical BMR structure-learning report and `generate_hierarchical_bmr` |
@@ -195,6 +195,9 @@ Expected from `run_analysis_pipeline()` on a completed fresh run:
 | `conditional_world.json` | `run_conditional_world_generalization` | Finite hidden-state/target/observability/attack/weight grid with seed-level matched true-state-mass contrasts; MED-1 slice |
 | `robustness_review_grid.json` | `_review_grid_report` / `run_review_grid` | `generate_robustness_review_grid`; tokens `REVIEW_GRID_*`; schema `1.1` all-method selection-free directional contrasts and a fail-closed precision receipt |
 | `belief_quality.json` | `run_belief_quality_sensitivity` | Primary categorical log-score contrasts plus Brier/ECE diagnostics and oracle/uniform/confident-wrong controls; MED-2 slice |
+| `application_integrity_flow.json` | `application_integrity_flow_contract` | `generate_application_integrity_flow`; deterministic labeled-request, solver-health, artifact, and verification contract |
+| `evidence_replication_map.json` | `evidence_replication_map_contract` | `generate_evidence_replication_map`; deterministic claim-class, estimand, replication-unit, nesting, and no-transfer contract |
+| `source_render_provenance.json` | `source_render_provenance_contract` | `generate_source_render_provenance`; deterministic producer-order, invalidation, and publication-authorization contract |
 
 Every payload above is checked against a typed schema
 ([`src/analysis/report_schemas.py`](../../src/analysis/report_schemas.py)) at the
@@ -211,6 +214,14 @@ statistics, validation, rendered-provenance, and snapshot files are downstream
 control-plane metadata rather than study payload. `invariants.json` remains a
 normal producer result.
 
+`output/figures/figure_exact_values.json` and its deterministic Markdown
+companion are source-generated accessibility fallbacks, not manually copied
+tables. They retain the exact plotted values for the registered complexity,
+generalized-Bayes logistic-regression baseline, belief-quality, conditional-world,
+robustness-review, sensitivity, and cross-study figures. Their `fig-values:*` identifiers,
+source-report bindings, columns, and row inventories are validated together
+with figure-registry schema 1.2.
+
 Treat a fresh `output/reports/artifact_manifest.json` as the generated
 inventory of the stable output tree, including `output/release/`. The schema-4
 release manifest deliberately stops at the upstream
@@ -221,7 +232,9 @@ copying volatile counts into prose.
 
 ## Figures (`output/figures/`)
 
-The rows below are producer expectations. Existing checked-in images remain
+The rows below are producer expectations. Every listed PNG has a same-stem PDF
+generated by the shared saver; the PNG is the manuscript/browser image and the
+PDF is the vector archival companion. Existing checked-in pairs remain
 historical until their reports, final hydration, and render receipt are fresh.
 
 | PNG/PDF | Generator module | Manuscript label (see SYNTAX.md) |
@@ -237,7 +250,7 @@ historical until their reports, final hydration, and render receipt are fresh.
 | `emergence_bmr.png` | `figures/emergence_bmr.py` | BMR $\Delta F$ contrast |
 | `robustness_sweep.png` | `figures/robustness_sweep.py` | contamination sweep |
 | `robust_influence_weights.png` | `figures/robust_influence_weights.py` | server-side pooling weights |
-| `bnn_robustness.png` | `figures/bnn_robustness.py` | FedGVI logistic-regression baseline with seed-level intervals |
+| `bnn_robustness.png` | `figures/bnn_robustness.py` | Exploratory generalized-Bayes point-estimate logistic-regression baseline comparing joint NLL/L2 and RCCE/L2 configurations under synthetic label contamination, with seed-level intervals and no RCCE-only or posterior-uncertainty claim |
 | `efe_decomposition.png` | `figures/efe_decomposition.py` | EFE risk/ambiguity decomposition |
 | `aggregation_descent.png` | `figures/aggregation_descent.py` | variational free-energy descent (`@fig:aggregation-descent`) |
 | `bounded_influence.png` | `figures/bounded_influence.py` | server-side redescending normalized-weight diagnostic (`@fig:bounded-influence`) |
@@ -245,15 +258,18 @@ historical until their reports, final hydration, and render receipt are fresh.
 | `descent_comparison.png` | `figures/descent_comparison.py` | single-start capture vs multi-start escape (`@fig:descent-comparison`) |
 | `robustness_onset.png` | `figures/robustness_onset.py` | pooled-best descriptive per-mechanism onset vs rate with seed-bootstrap bands (`@fig:robustness-onset`); not selection-free inference |
 | `robustness_review_grid.png` | `figures/robustness_review_grid.py` | selection-free all-method robust-minus-KLD rate curves with method-specific 95% seed-bootstrap intervals, plus finite conditional-cell display (`[@fig:robustness-review-grid]`) |
+| `evidence_replication_map.png` / `.pdf` | `figures/evidence_replication_map.py` | evidence-class, estimand, independent-unit, nesting, and no-transfer map (`[@fig:evidence-replication-map]`) |
 | `disjoint_fov_world.png` | `figures/disjoint_fov_world.py` | Disjoint field-of-view geometry supporting the moving-world study |
 | `moving_world.png` / `moving_world.pdf` | `figures/moving_world.py` | 3-condition comparison: isolated / communicating / EFE-guided; PNG is the manuscript embed and PDF is the archival companion (`[@fig:moving-world]`, V4) |
 | `hierarchical_pomdp.png` | `figures/hierarchical_pomdp.py` | 2×3 six-panel: top row = 2-level belief dynamics (Study 6); bottom row = 3-level belief dynamics (Study 7) (`[@fig:hierarchical-pomdp]`, V2) |
 | `hierarchical_bmr.png` | `figures/hierarchical_bmr.py` | Hierarchical BMR surprise under degenerate versus informative 3-level worlds |
 | `heuristic_breakdown.png` | `figures/heuristic_breakdown.py` | Numerical influence, finite-breakdown comparison, and finite-search attack-grid coverage for the sharp server heuristic |
-| `sensitivity_heatmap.png` | `figures/sensitivity_heatmap.py` | 2-panel heatmap of federation accuracy gain over acuity × colony size (Study 8, `[@fig:sensitivity-heatmap]`) |
-| `cross_study_summary.png` | `figures/cross_study_summary.py` | Horizontal bar chart of per-study federation benefit ± 95 % bootstrap CI across all 9 studies (`[@fig:cross-study-summary]`) |
+| `sensitivity_heatmap.png` | `figures/sensitivity_heatmap.py` | 2-panel heatmap of communicating-minus-isolated and hierarchical-minus-flat accuracy contrasts over acuity × colony size (Study 8, `[@fig:sensitivity-heatmap]`) |
+| `cross_study_summary.png` | `figures/cross_study_summary.py` | Page-compatible two-column native-unit signed-contrast summary from the separate harmonized seed-level rerun, with 95% percentile-bootstrap intervals (`[@fig:cross-study-summary]`) |
 | `parameter_recovery.png` | `figures/parameter_recovery.py` | 2-panel scatter+bar of parameter recovery accuracy (Study 9, `[@fig:parameter-recovery]`) |
 | `complexity_scaling.png` | `figures/complexity_scaling.py` | Analytic-order guides and min--max repeated machine-scaling diagnostics (`[@fig:complexity-scaling]`) |
+| `application_integrity_flow.png` / `.pdf` | `figures/application_integrity_flow.py` | labeled application validation, solver-health, artifact, and receipt-verification flow (`[@fig:application-integrity-flow]`) |
+| `source_render_provenance.png` / `.pdf` | `figures/source_render_provenance.py` | source-to-render producer order, invalidation, and authorization gates (`[@fig:source-render-provenance]`) |
 
 ## Manuscript variable hydration
 
@@ -314,26 +330,87 @@ else
 fi
 ```
 
-## Producer → consumer graph
+## Source-to-render production and invalidation graph
 
 ```mermaid
 flowchart TB
-    config[manuscript/config.yaml] --> ec[experiment_config]
-    ec --> workflow[analysis/workflow.run_analysis_pipeline]
-    workflow --> reports[output/reports/*.json]
-    workflow --> figures[output/figures/*.png]
-    reports --> provisional[provisional manuscript hydration]
-    provisional --> fullgate[full test and coverage gate]
-    fullgate --> testreceipt[output/data/test_coverage_receipt.json]
-    reports --> mv[final manuscript_variables.generate_variables]
-    testreceipt --> mv
-    mv --> hier[_hierarchical_variables / _nlevel3_variables]
-    hier --> mv
-    mv --> json[output/data/manuscript_variables.json]
-    json --> resolved[output/manuscript/*.md]
-    resolved --> pdf[infrastructure PDF render]
-    figures --> pdf
+    accTitle: Source-to-render production and stale-artifact invalidation
+    accDescr: Five source-owned inputs feed a branching typed-report, figure, hydration, test, exact-renderer, reader-surface, validation, provenance, and release-manifest graph. GitHub and Zenodo remain separate authorization-gated terminals, and a dashed reverse arrow explains immediate downstream invalidation.
+    subgraph inputs["Source-owned inputs"]
+        source["source · tests · manuscript"]
+        config["configuration · claim contracts"]
+        lockfile["uv.lock · runtime metadata"]
+        registry["figure · accessibility registry source"]
+        template_renderer["exact clean Template renderer commit"]
+    end
+    reports["typed analysis reports"]
+    figures["figure pairs · accessibility metadata"]
+    provisional["provisional hydration"]
+    coverage["full tests · coverage receipt"]
+    final_hydration["final receipt-backed hydration"]
+    render["clean source-locked Template render"]
+    surfaces["PDF · HTML · reveal.js · Beamer"]
+    surface_validation["structure · text · visual · accessibility validation"]
+    provenance["pipeline provenance · artifact manifests"]
+    release_manifest["release manifest · staged checksums"]
+    github["GitHub tag and release authorization"]
+    zenodo["fresh Zenodo publication authorization"]
+
+    source --> reports
+    config --> reports
+    lockfile --> reports
+    source --> figures
+    reports --> figures
+    registry --> figures
+    source --> provisional
+    config --> provisional
+    reports --> provisional
+    source --> coverage
+    config --> coverage
+    lockfile --> coverage
+    provisional --> coverage
+    coverage --> final_hydration
+    source --> final_hydration
+    config --> final_hydration
+    reports --> final_hydration
+    final_hydration --> render
+    figures --> render
+    template_renderer --> render
+    render --> surfaces
+    surfaces --> surface_validation
+    surface_validation --> provenance
+    surfaces --> release_manifest
+    provenance --> release_manifest
+    release_manifest -->|"review + authorize"| github
+    github -->|"verify + fresh approval"| zenodo
+
+    stale_target["earliest immediate stale target"] -. "reverse dependency: points back to changed owner" .-> changed_owner["changed owner"]
 ```
+
+**Text equivalent.**
+
+| Changed owner or producer | Immediate downstream target(s) | Dependency role and invalidation meaning |
+| --- | --- | --- |
+| `source` | `reports`, `figures`, `provisional`, `coverage`, `final_hydration` | Source code, tests, and manuscript bytes branch into analysis, rendering data, both hydrations, and the full gate; changing them invalidates each named immediate target. |
+| `config` | `reports`, `provisional`, `coverage`, `final_hydration` | Configuration and claim contracts bind analysis, token resolution, and tests. |
+| `lockfile` | `reports`, `coverage` | The environment lock binds executed reports and the full test/coverage run. |
+| `registry` | `figures` | Figure and accessibility semantics bind deterministic PNG/PDF pairs and reader metadata. |
+| `reports` | `figures`, `provisional`, `final_hydration` | Typed values feed both figures and manuscript tokens; figures do not feed hydration. |
+| `provisional` | `coverage` | The provisional reader surface is tested before a coverage receipt can authorize final hydration. |
+| `coverage` | `final_hydration` | The source-bound full-suite receipt is an explicit final-hydration input. |
+| `final_hydration`, `figures`, `template_renderer` | `render` | Rendering consumes the final hydrated manuscript, final figure pairs, and the exact clean Template commit as three distinct dependencies. |
+| `render` | `surfaces` | The exact renderer emits PDF, HTML, reveal.js, and untagged Beamer derivatives. |
+| `surfaces` | `surface_validation`, `release_manifest` | Reader bytes are validated and separately inventoried; changing them invalidates both immediate targets. |
+| `surface_validation` | `provenance` | Structural, textual, visual, reflow, and accessibility checks feed the provenance receipt. |
+| `provenance` | `release_manifest` | Receipts and fixed surface bytes are sealed together without a reverse manifest dependency. |
+| `release_manifest` | `github` | A reviewed manifest can enter—but cannot itself grant—the GitHub authorization gate. |
+| `github` | `zenodo` | A verified GitHub release precedes a separately approved irreversible Zenodo call. |
+
+The dashed reverse-validity example is an invalidation reminder, not a producer
+dependency: it traces downstream evidence back to the class of upstream byte
+changes that makes that evidence stale. The diagram itself is generated
+from this source-owned pipeline contract and never reads the final release
+manifest, avoiding a circular dependency.
 
 ## Regeneration order
 

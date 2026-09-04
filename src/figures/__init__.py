@@ -78,6 +78,7 @@ from .robustness_review_grid import generate_robustness_review_grid
 from .robustness_sweep import generate_robustness_sweep
 from .sensitivity_heatmap import generate_sensitivity_heatmap
 from .source_render_provenance import generate_source_render_provenance
+from .system_overview import generate_system_overview
 
 __all__ = [
     "apply_style",
@@ -116,5 +117,6 @@ __all__ = [
     "generate_robustness_sweep",
     "generate_sensitivity_heatmap",
     "generate_source_render_provenance",
+    "generate_system_overview",
     "robust_color",
 ]

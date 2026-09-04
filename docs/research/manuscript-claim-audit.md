@@ -96,6 +96,25 @@ the manuscript's scientific comparisons. A feature-branch push, review PR,
 private-main integration, public-main promotion, versioned release, and Zenodo
 publication remain separate states.
 
+## Current source contract — visual-scholarship claim alignment
+
+The source prose now distinguishes five previously conflated visual claims. The
+free-energy comparison defines its paired sign as incommunicado minus
+communicating, with seed as the independent unit. The robustness sweep's legacy
+method names identify server presets, and its primary comparisons resample
+matched trials nested within a fixed seeded world. Neither clients nor trials
+are reclassified as independent worlds.
+
+The emergence panel is a configured BMR sign control on one fixed posterior.
+The hierarchical panel is instead a thresholded Bayesian-surprise diagnostic,
+not a BMR evidence comparison or an autonomous depth selector. The
+classification panel is an exploratory generalized-Bayes point-estimate
+logistic-regression baseline whose displayed operating point was selected
+within the evaluated synthetic sweep. It compares joint NLL/L2 and RCCE/L2
+configurations and therefore cannot isolate an RCCE-only effect. None of these
+panels establishes universal structure recovery, leakage-free calibration,
+posterior-uncertainty BNN behavior, or source-protocol replication.
+
 ## Load-bearing claims
 
 | Claim family | Status after audit | Evidence / required wording |
@@ -108,6 +127,11 @@ publication remain separate states.
 | Robust server methods dominate the standard pool | Conditional empirical | False at low contamination in the current sweep; the strongest supported claim is regime-dependent benefit under severe declared contamination. |
 | The robustness verdict is statistically supported | Conditional empirical | Matched trials, Wilcoxon test, BH-FDR within the declared family, percentile-bootstrap intervals, and observed-effect planning. The fixed hidden state and attack target remain part of the estimand. |
 | The robustness figure caption reports the plotted estimand | Scoped implementation fact | The rendered caption now hydrates matched-trial profile means from `per_rate_summary`; a regression test rejects the deterministic single-colony scalar when it differs. |
+| Belief sharing lowers free energy in the reduced protocol | Conditional empirical | Define $\Delta \bar F=\bar F_{\mathrm{solo}}-\bar F_{\mathrm{share}}$, so positive values mean lower free energy with communication. Seeds are the independent paired unit; agents remain nested. No general communication-benefit or rate claim follows. |
+| The configured BMR comparison discovers structure emergence | Explicitly narrowed to a deterministic sign control | `emergence.json` compares redundant- and supported-column prunings on one fixed posterior. Opposite signs pass the configured control; they do not establish universal structure discovery or consistent model selection. |
+| The hierarchical surprise routine selects the true model depth by BMR | Explicitly denied | `hierarchical_reduce` thresholds per-level Bayesian surprise for two configured worlds. It does not refit models, compare BMR evidence, or let data independently choose depth. |
+| The generalized-Bayes logistic-regression baseline isolates an RCCE effect or is a calibrated BNN or Alpha-Rényi robustness result | Exploratory conditional evidence only | The NumPy figure compares the joint NLL/L2=0.05 configuration with RCCE/L2=0.10 point-estimate logistic regression. Because loss and shrinkage change together, it cannot identify an RCCE-only effect; the legacy `AR` argument only selects stronger L2 shrinkage, and the displayed contamination level is selected within the evaluated synthetic sweep. It does not establish leakage-free calibration, posterior uncertainty, source-dataset parity, universal robustness, or source-scale FedGVI BNN replication. |
+| Robustness-sweep method labels identify client losses or independent seed replications | Explicitly denied | Legacy labels other than `KLD` are server-heuristic presets. Paired trials are nested within one fixed seeded world; the selection-free review grid separately uses seeds as its inferential unit. |
 | The manuscript renders across publication surfaces | Source-current scoped implementation fact only when matching receipts verify | The 2026-08-01 second-pass template stages produced 43/43 section decks, 43 TeX sources, 44 HTML surfaces including the index, an 84-page combined PDF, and 30 registered figure stems with 60 PNG/PDF assets; those are historical local build facts. The current surface must instead be traced through a matching analysis → test receipt → final hydration → render → web/PDF/slide validation chain. HTML accessibility, source-requested tagged-PDF structure, and any PDF/UA disposition remain build-surface facts, not scientific evidence. |
 | The reported trial count is an independent sample size | Scoped implementation fact | Trials are conditionally independent within the declared world; seeds are the independent Monte Carlo unit for cross-study summaries. Do not count clients/episodes as extra replicates. |
 | Bootstrap intervals describe deployment uncertainty | Open / explicitly denied | They quantify variation over the declared resampling unit, not alternate worlds, hidden states, attacks, or real deployments. |

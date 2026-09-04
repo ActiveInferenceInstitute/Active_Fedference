@@ -25,7 +25,7 @@ numbered-formalism / cross-reference conventions. The acceptance contract is
 | `21_discussion_findings.md` ... `25_conclusion.md` | Findings, related work, limitations, future work, conclusion |
 | `26_reproducibility.md` | Determinism, environment fingerprint, reader-surface accessibility boundary, test/coverage evidence, artifact inventory |
 | `27_supplement_*.md` ... `30_supplement_*.md`, `S*.md` | Supplements and extension studies; `30` is the authoritative notation contract |
-| `99_references.md` | Bibliography pointer (`references.bib`, pandoc `--natbib`) |
+| `99_references.md` | Bibliography pointer (`references.bib`; PDF `--natbib`, non-LaTeX readers `--citeproc`) |
 | `config.yaml` / `config.yaml.example` | Paper metadata + `experiment:` block (mirrors `src/experiment_config.py`) |
 | `preamble.md` | LaTeX injections: amsthm `\newtheorem` envs, caption styling, fonts |
 | `references.bib` | BibTeX (incl. `friston2024federated`, `mildner2025fedgvi`) |
@@ -123,7 +123,10 @@ probe separately for diagrams embedded in README/docs.
 6. Render the provisional inputs from the template repo with explicit hydration
    skipped:
    ~~~bash
+   AF_REPO=/path/to/active_fedference
    TEMPLATE_REPO=/path/to/template
+   cd "$AF_REPO"
+   uv run python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
    cd "$TEMPLATE_REPO"
    uv run python scripts/pipeline/stage_03_render.py \
      --project working/active_fedference --skip-manuscript-hydration
@@ -138,7 +141,10 @@ probe separately for diagrams embedded in README/docs.
 9. Render the receipt-backed final inputs from the template repo, again with
    explicit hydration skipped:
    ~~~bash
+   AF_REPO=/path/to/active_fedference
    TEMPLATE_REPO=/path/to/template
+   cd "$AF_REPO"
+   uv run python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
    cd "$TEMPLATE_REPO"
    uv run python scripts/pipeline/stage_03_render.py \
      --project working/active_fedference --skip-manuscript-hydration
@@ -147,7 +153,7 @@ probe separately for diagrams embedded in README/docs.
    ~~~
 10. Return to the project root; prepare and validate the web package before
     recording the final render receipt, because preparation writes
-    `output/web/`. Use the exact source epoch, template label, and
+    `output/web/`. Use the exact source epoch, source-locked Template checkout, and
     release-bundle tail in
     [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/rendering_pipeline.md).
 
