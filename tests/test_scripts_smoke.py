@@ -28,6 +28,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 from tests.analysis.test_workflow import _make_project
 
@@ -54,6 +55,59 @@ def scaffold_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     # subprocess regression exercise the receipt branch, rather than passing
     # only because a minimal scaffold happens to omit the directory.
     (root / "src").mkdir()
+    renderer = root.parent / "template_renderer_fixture"
+    (renderer / "infrastructure" / "rendering").mkdir(parents=True)
+    (renderer / "infrastructure" / "__init__.py").write_text("", encoding="utf-8")
+    (renderer / "infrastructure" / "rendering" / "__init__.py").write_text(
+        "", encoding="utf-8"
+    )
+    (renderer / "infrastructure" / "rendering" / "preflight.py").write_text(
+        "def run_manuscript_preflight(_manuscript_dir):\n"
+        "    return True, 'fixture preflight passed'\n",
+        encoding="utf-8",
+    )
+    subprocess.run(("git", "-C", str(renderer), "init", "-q"), check=True)
+    subprocess.run(
+        ("git", "-C", str(renderer), "config", "user.name", "Renderer Test"), check=True
+    )
+    subprocess.run(
+        ("git", "-C", str(renderer), "config", "user.email", "renderer@example.invalid"),
+        check=True,
+    )
+    subprocess.run(("git", "-C", str(renderer), "add", "."), check=True)
+    subprocess.run(
+        ("git", "-C", str(renderer), "commit", "-q", "-m", "test: preflight fixture"),
+        check=True,
+    )
+    subprocess.run(
+        (
+            "git",
+            "-C",
+            str(renderer),
+            "remote",
+            "add",
+            "origin",
+            "https://github.com/docxology/template.git",
+        ),
+        check=True,
+    )
+    commit = subprocess.run(
+        ("git", "-C", str(renderer), "rev-parse", "HEAD^{commit}"),
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True,
+    ).stdout.strip()
+    config_path = root / "manuscript" / "config.yaml"
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["rendering"] = {
+        "template_renderer": {
+            "schema_version": "template-renderer-lock-v1",
+            "repository": "docxology/template",
+            "git_commit": commit,
+            "git_tree_state": "clean",
+        }
+    }
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
     return root
 
 
@@ -68,6 +122,10 @@ def _run_script(name: str, scaffold_root: Path) -> subprocess.CompletedProcess[s
     # command is intentional: it proves a config-selected smoke run cannot be
     # mistaken for publication simply because the CLI has no --profile value.
     args = [sys.executable, str(_SCRIPTS / name)]
+    if name == "00_preflight.py":
+        args.extend(
+            ["--template-root", str(scaffold_root.parent / "template_renderer_fixture")]
+        )
     if name == "z_generate_manuscript_variables.py":
         # The session scaffold deliberately has no production analysis receipt.
         # Its hydration remains an explicitly non-release draft path; the final
@@ -245,6 +303,8 @@ def test_manual_stage_recorder_rejects_analysis_promotion(tmp_path: Path) -> Non
             "analysis",
             "--project-root",
             str(tmp_path),
+            "--template-root",
+            str(tmp_path / "template"),
         ],
         capture_output=True,
         text=True,
@@ -253,6 +313,27 @@ def test_manual_stage_recorder_rejects_analysis_promotion(tmp_path: Path) -> Non
     )
     assert result.returncode != 0
     assert "invalid choice" in result.stderr
+
+
+@pytest.mark.parametrize("script_name", ("00_preflight.py", "record_pipeline_stage.py"))
+def test_renderer_boundary_scripts_require_explicit_template_root(
+    tmp_path: Path, script_name: str
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(_SCRIPTS / script_name),
+            *(("render",) if script_name == "record_pipeline_stage.py" else ()),
+            "--project-root",
+            str(tmp_path),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode == 2
+    assert "--template-root" in result.stderr
 
 
 def test_validate_all_dry_run_prints_profile_commands() -> None:

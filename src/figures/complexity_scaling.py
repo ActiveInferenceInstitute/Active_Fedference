@@ -198,7 +198,7 @@ def generate_complexity_scaling(
     modality_row = _measurement(report, method="infer_states", axis="modalities")
 
     apply_style()
-    fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.6), facecolor="white")
+    fig, axes = plt.subplots(2, 2, figsize=(8.2, 8.6), facecolor="white")
     _plot_measurements(
         axes[0, 0],
         agent_rows,

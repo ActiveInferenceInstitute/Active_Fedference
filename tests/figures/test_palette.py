@@ -119,6 +119,59 @@ def test_simultaneous_semantic_series_have_distinct_non_colour_encodings() -> No
     assert len(encodings) == len(roles)
 
 
+def test_neutral_conditions_and_evidence_classes_have_distinct_non_colour_encodings() -> None:
+    from figures import _common
+
+    role_groups = (
+        ("condition_reference", "condition_comparison"),
+        ("favored", "rejected"),
+        (
+            "evidence_formal",
+            "evidence_source_conditional",
+            "evidence_conditional_empirical",
+            "evidence_scoped",
+            "evidence_open",
+        ),
+    )
+    for roles in role_groups:
+        encodings = {
+            (
+                _common.SEMANTIC_STYLES[role].marker,
+                repr(_common.SEMANTIC_STYLES[role].dash),
+                _common.SEMANTIC_STYLES[role].hatch,
+                _common.SEMANTIC_STYLES[role].keyline,
+            )
+            for role in roles
+        }
+        assert len(encodings) == len(roles), f"non-colour style collision in {roles}"
+
+
+def test_non_method_figures_do_not_borrow_aggregation_method_roles() -> None:
+    non_method_modules = {
+        "bnn_robustness.py": {"condition_reference", "condition_comparison"},
+        "emergence_bmr.py": {"favored", "rejected"},
+        "evidence_replication_map.py": {
+            "evidence_formal",
+            "evidence_source_conditional",
+            "evidence_conditional_empirical",
+            "evidence_scoped",
+            "evidence_open",
+        },
+        "free_energy_comparison.py": {"condition_reference", "condition_comparison"},
+        "hierarchical_bmr.py": {"condition_reference", "condition_comparison"},
+        "parameter_recovery.py": {"estimate"},
+    }
+    method_literals = {
+        'semantic_style("naive")',
+        'semantic_style("heuristic_robust")',
+        'semantic_style("variational")',
+    }
+    for filename, required_roles in non_method_modules.items():
+        source = (_FIGURES / filename).read_text(encoding="utf-8")
+        assert not any(literal in source for literal in method_literals), filename
+        assert all(f'"{role}"' in source for role in required_roles), filename
+
+
 def test_declared_role_styles_follow_the_visual_contract() -> None:
     from figures import _common
 

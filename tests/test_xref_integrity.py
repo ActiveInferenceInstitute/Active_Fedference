@@ -199,3 +199,26 @@ def test_every_citation_key_exists_and_every_bibliography_entry_is_used() -> Non
     )
     assert cited - defined == set(), f"citation keys absent from bibliography: {sorted(cited - defined)}"
     assert defined - cited == set(), f"bibliography entries never cited: {sorted(defined - cited)}"
+
+
+def test_bibliography_entries_do_not_repeat_field_names() -> None:
+    bibliography = (_MANUSCRIPT / "references.bib").read_text(encoding="utf-8")
+    duplicates: list[str] = []
+    entries = re.finditer(
+        r"^@(?!comment\b)[A-Za-z]+\{(?P<key>[^,\s]+),(?P<body>.*?)(?=^@|\Z)",
+        bibliography,
+        flags=re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    for entry in entries:
+        fields = [
+            field.casefold()
+            for field in re.findall(
+                r"^[ \t]+([A-Za-z][A-Za-z0-9_-]*)[ \t]*=",
+                entry.group("body"),
+                flags=re.MULTILINE,
+            )
+        ]
+        repeated = sorted({field for field in fields if fields.count(field) > 1})
+        if repeated:
+            duplicates.append(f"{entry.group('key')}: {', '.join(repeated)}")
+    assert not duplicates, "duplicate bibliography fields:\n" + "\n".join(duplicates)

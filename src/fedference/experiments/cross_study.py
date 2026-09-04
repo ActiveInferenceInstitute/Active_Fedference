@@ -24,7 +24,7 @@ CROSS_STUDY_SENS_N_TRIALS: int = 3
 def summarize_cross_study(
     seed: int, n_seeds: int, *, n_trials: int = 40
 ) -> dict[str, Any]:
-    """Collect per-study federation benefit across multiple seeds.
+    """Collect per-study signed contrasts across multiple seeds.
 
     ``n_seeds`` is the independent Monte Carlo unit for every row. The
     robustness row additionally uses ``n_trials`` matched trials per seed and

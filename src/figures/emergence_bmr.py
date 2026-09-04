@@ -26,6 +26,8 @@ from ._common import (
     semantic_style,
 )
 
+MANUSCRIPT_WIDTH_FRACTION = 0.80
+
 
 def generate_emergence_bmr(
     delta_F_redundant: float,
@@ -59,10 +61,12 @@ def generate_emergence_bmr(
     apply_style()
     labels = ["prune redundant\n(configured control)", "prune supported\n(configured control)"]
     values = [df_red, df_sup]
-    favored = semantic_style("heuristic_robust")
-    rejected = semantic_style("reference")
+    favored = semantic_style("favored")
+    rejected = semantic_style("rejected")
 
-    fig, ax = plt.subplots(figsize=(7.2, 5.3), facecolor="white")
+    # Seven inches at the canonical 80% embed keeps the 9.5-point value labels
+    # above the 7-point effective floor without reducing native typography.
+    fig, ax = plt.subplots(figsize=(7.0, 5.3), facecolor="white")
     fig.subplots_adjust(left=0.19, right=0.97, top=0.78, bottom=0.22)
     x = np.arange(2)
     # Full-opacity bars: the positive redundant-column bar is small relative to
@@ -126,7 +130,11 @@ def generate_emergence_bmr(
             loc="upper right",
         )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
 
 
 __all__ = ["generate_emergence_bmr"]

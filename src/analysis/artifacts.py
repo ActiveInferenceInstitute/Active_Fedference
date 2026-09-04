@@ -12,6 +12,7 @@ from pathlib import Path
 
 # These are the report files written by analysis.workflow.run_analysis_pipeline.
 ANALYSIS_REPORT_FILENAMES: tuple[str, ...] = (
+    "application_integrity_flow.json",
     "belief_quality.json",
     "belief_sharing.json",
     "bnn_robustness.json",
@@ -23,6 +24,7 @@ ANALYSIS_REPORT_FILENAMES: tuple[str, ...] = (
     "disjoint_fov_world.json",
     "efe_decomposition.json",
     "emergence.json",
+    "evidence_replication_map.json",
     "heuristic_characterization.json",
     "hierarchical_bmr.json",
     "hierarchical_world.json",
@@ -34,12 +36,18 @@ ANALYSIS_REPORT_FILENAMES: tuple[str, ...] = (
     "robustness_onset.json",
     "robustness_review_grid.json",
     "robustness_sweep.json",
+    "sensitivity.json",
+    "source_render_provenance.json",
     "variational_aggregation.json",
 )
 
 # The pipeline writes these publication-facing figure pairs and the registry.
+# PNGs are embedded by the manuscript; sibling PDFs are retained as the vector
+# fallback.  Keep the stems in one place so the audit cannot silently validate
+# only one member of a required pair.
 ANALYSIS_FIGURE_FILENAMES: tuple[str, ...] = (
     "aggregation_descent.png",
+    "application_integrity_flow.png",
     "belief_heatmap.png",
     "belief_quality.png",
     "bnn_robustness.png",
@@ -52,6 +60,7 @@ ANALYSIS_FIGURE_FILENAMES: tuple[str, ...] = (
     "disjoint_fov_world.png",
     "efe_decomposition.png",
     "emergence_bmr.png",
+    "evidence_replication_map.png",
     "free_energy_comparison.png",
     "generative_model_schema.png",
     "graphical_abstract.png",
@@ -68,6 +77,16 @@ ANALYSIS_FIGURE_FILENAMES: tuple[str, ...] = (
     "robustness_review_grid.png",
     "robustness_sweep.png",
     "sensitivity_heatmap.png",
+    "source_render_provenance.png",
+)
+
+ANALYSIS_FIGURE_PDF_FILENAMES: tuple[str, ...] = tuple(
+    f"{Path(name).stem}.pdf" for name in ANALYSIS_FIGURE_FILENAMES
+)
+
+ANALYSIS_FIGURE_SUPPORT_FILENAMES: tuple[str, ...] = (
+    "figure_exact_values.json",
+    "figure_exact_values.md",
 )
 
 ANALYSIS_DATA_FILENAMES: tuple[str, ...] = (
@@ -93,6 +112,14 @@ def expected_artifacts(project_root: Path) -> dict[str, Path]:
     return {
         **{f"report:{name}": reports / name for name in ANALYSIS_REPORT_FILENAMES},
         **{f"figure:{name}": figures / name for name in ANALYSIS_FIGURE_FILENAMES},
+        **{
+            f"figure-vector:{name}": figures / name
+            for name in ANALYSIS_FIGURE_PDF_FILENAMES
+        },
+        **{
+            f"figure-support:{name}": figures / name
+            for name in ANALYSIS_FIGURE_SUPPORT_FILENAMES
+        },
         "figure_registry": figures / "figure_registry.json",
         **{f"data:{name}": data / name for name in ANALYSIS_DATA_FILENAMES},
     }

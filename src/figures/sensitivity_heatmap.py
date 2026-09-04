@@ -1,9 +1,9 @@
-"""Sensitivity heatmap: federation accuracy gain vs acuity x colony size.
+"""Sensitivity heatmap: signed accuracy contrasts by acuity and colony size.
 
 2-panel figure (1x2) showing the accuracy gap (hierarchical/communicating minus
 flat/isolated) as a 2-D color-annotated heatmap over sensor acuity (y-axis) x
-colony size (x-axis). Left panel = belief-sharing federation benefit; right
-panel = hierarchical POMDP location accuracy gain.
+colony size (x-axis). The left panel is communicating minus isolated accuracy;
+the right panel is hierarchical minus flat location accuracy.
 
 Headless (Agg) matplotlib only; no infrastructure imports (layer contract).
 """
@@ -43,7 +43,7 @@ def generate_sensitivity_heatmap(
     n_trials: int = 20,
     filename: str = "sensitivity_heatmap.png",
 ) -> Path:
-    """2-panel heatmap of federation accuracy gain over acuity x colony size.
+    """Render two signed accuracy-contrast heatmaps over acuity and colony size.
 
     Left panel shows the belief-sharing federation gap (communicating minus
     isolated mean accuracy) and the right panel shows the hierarchical POMDP
@@ -111,7 +111,7 @@ def generate_sensitivity_heatmap(
     vmax = float(max(np.abs(bs_gap).max(), np.abs(hi_gap).max(), 1e-6))
     vmin = -vmax
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    fig, axes = plt.subplots(1, 2, figsize=(7.8, 4.5))
 
     # Hatching denotes a configured display band, not a claim of no effect.
     if report is None:
@@ -201,7 +201,11 @@ def generate_sensitivity_heatmap(
         y=1.02,
     )
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename)
+    return save_figure(
+        fig,
+        out / filename,
+        manuscript_width_fraction=0.90,
+    )
 
 
 __all__ = ["generate_sensitivity_heatmap"]

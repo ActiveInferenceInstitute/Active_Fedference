@@ -26,7 +26,6 @@ from ._common import (
     COLOR_NAIVE,
     COLOR_ROBUST,
     COLOR_VARIATE,
-    annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
@@ -54,10 +53,22 @@ def generate_heuristic_breakdown(
     apply_style()
     grid = report.get("grid")
     if grid:
-        fig, (axl, axr, axg) = plt.subplots(1, 3, figsize=(15.2, 4.8))
+        fig = plt.figure(figsize=(8.2, 7.4))
+        layout = fig.add_gridspec(2, 2, height_ratios=(1.0, 0.88))
+        axl = fig.add_subplot(layout[0, 0])
+        axr = fig.add_subplot(layout[0, 1])
+        axg = fig.add_subplot(layout[1, :])
+        fig.subplots_adjust(
+            left=0.11,
+            right=0.97,
+            top=0.86,
+            bottom=0.11,
+            hspace=0.58,
+            wspace=0.42,
+        )
     else:
-        fig, (axl, axr) = plt.subplots(1, 2, figsize=(10.4, 4.8))
-    fig.subplots_adjust(left=0.07, right=0.98, top=0.78, bottom=0.20, wspace=0.32)
+        fig, (axl, axr) = plt.subplots(1, 2, figsize=(8.2, 4.8))
+        fig.subplots_adjust(left=0.11, right=0.97, top=0.78, bottom=0.20, wspace=0.42)
 
     eps = naive["eps_grid"]
     naive_weights = (
@@ -75,15 +86,20 @@ def generate_heuristic_breakdown(
     axl.plot(eps, robust_weights, "s--", color=COLOR_ROBUST,
              label="robust heuristic", linewidth=1.8)
     axl.axhline(1.0 / naive["n_agents"], color=COLOR_AXIS, linewidth=0.8, linestyle=":")
-    axl.set_xlabel("perturbation toward contamination  (eps)")
-    axl.set_ylabel("perturbed agent normalized weight")
-    axl.set_title("Numerical influence\n(empirical at these settings, not a guarantee)", fontsize=12)
+    axl.set_xlabel(r"Perturbation fraction $\epsilon$")
+    axl.set_ylabel("Normalized agent weight")
+    axl.set_title("A  Numerical influence", loc="left", fontsize=12)
     final_drop = float(naive_weights[-1] - robust_weights[-1])
-    annotate_stats_box(
-        axl,
-        f"final naive-robust weight gap = {final_drop:.3f}\nprobe path: one agent",
-        loc="upper right",
+    axl.annotate(
+        f"$\\Delta w$ = {final_drop:.3f}",
+        xy=(float(eps[-1]), float(robust_weights[-1])),
+        xytext=(-4, 65),
+        textcoords="offset points",
+        ha="right",
+        va="bottom",
         fontsize=9.5,
+        color=COLOR_AXIS,
+        arrowprops={"arrowstyle": "->", "color": COLOR_AXIS, "lw": 0.8},
     )
     axl.legend(fontsize=9.5, loc="lower left")
 
@@ -92,13 +108,14 @@ def generate_heuristic_breakdown(
     ks = [k if k is not None else 0 for k in ks]
     bars = axr.bar([0, 1], ks, 0.55, color=[COLOR_ROBUST, COLOR_VARIATE],
                    edgecolor=COLOR_AXIS, linewidth=0.9, zorder=3)
-    for b, k in zip(bars, ks, strict=True):
+    for b, k, hatch in zip(bars, ks, ("//", ".."), strict=True):
+        b.set_hatch(hatch)
         axr.annotate(f"captured\nat k={k}", xy=(b.get_x() + b.get_width() / 2, k),
                      xytext=(0, 4), textcoords="offset points", ha="center", fontsize=9.5)
     axr.set_xticks([0, 1])
     axr.set_xticklabels(labels, fontsize=10)
-    axr.set_ylabel("colluding adversaries to capture argmax")
-    axr.set_title("Measured breakdown point\nfinite search, not unconditional recovery", fontsize=12)
+    axr.set_ylabel("Adversaries $k$ at argmax capture")
+    axr.set_title("B  Finite-search capture", loc="left", fontsize=12)
     axr.set_ylim(0, max(ks) + 1.4)
     axr.grid(axis="x", visible=False)
 
@@ -119,9 +136,16 @@ def generate_heuristic_breakdown(
         axg.set_xticks(range(len(attacks)))
         axg.set_xticklabels([str(attack).replace("_", "\n") for attack in attacks], fontsize=9.5)
         axg.set_ylim(0, 1.12)
-        axg.set_ylabel("rows with finite capture in search budget")
+        axg.set_xlabel("Attack mechanism")
+        axg.set_ylabel("Rows with finite capture\n(fraction)")
         axg.axhline(0.5, color=COLOR_GRID, linestyle=":", linewidth=0.8)
-        axg.set_title("Declared attack grid\nfinite-search frequency, not a bound", fontsize=12)
+        axg.set_title("C  Declared-grid capture frequency", loc="left", fontsize=12)
+
+    fig.suptitle(
+        "Server-rule finite-grid characterization",
+        fontsize=14,
+        fontweight="bold",
+    )
 
     return save_figure(fig, figures_dir(project_root) / filename)
 

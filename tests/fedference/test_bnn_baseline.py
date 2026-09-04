@@ -1,12 +1,12 @@
-"""Tests for the FedGVI logistic-regression baseline (no mocks, real seeded runs).
+"""Tests for the exploratory logistic-regression proxy (no mocks, real runs).
 
 Pins the two anchoring claims:
 
 * **ISC-31** — :func:`fedference.bnn_baseline.fed_gvi_logreg` is deterministic
   under a fixed seed and returns a ``test_accuracy`` in ``[0, 1]``.
-* **ISC-32** — at ``contamination = 0.3`` the robust RCCE client
+* **ISC-32** — at ``contamination = 0.3`` the RCCE point-estimate client
   (``loss_param ~ 0.7``) achieves strictly higher test accuracy than the
-  NLL / KLD baseline — the federated robustness property FedGVI predicts.
+  configured NLL proxy in the declared finite synthetic comparison.
 
 Every number is a real computation on synthetic Gaussian-blob data with an
 explicit ``np.random.default_rng`` seed; there are no mocks.
@@ -70,7 +70,7 @@ def test_rcce_beats_nll_under_contamination():
 
 
 def test_rcce_advantage_holds_across_seeds():
-    # Not a fluke of one seed: the robust client wins on every seed in a sweep.
+    # Pin the declared finite five-seed pattern without generalizing beyond it.
     for seed in range(5):
         nll = fed_gvi_logreg(contamination=0.3, loss="nll", seed=seed)
         rcce = fed_gvi_logreg(
@@ -87,21 +87,34 @@ def test_rcce_with_zero_param_recovers_nll():
     assert np.allclose(rcce0["weights"], nll["weights"])
 
 
-def test_ar_divergence_path_runs():
+def test_logit_gradient_is_bounded_while_rcce_reduces_high_leverage_contribution():
+    """Pin the mechanism without promoting downweighting to a domination theorem."""
+    predicted_probability = 1e-6
+    observed_label = 1.0
+    nll_logit_gradient = predicted_probability - observed_label
+    rcce_scale = float(
+        _loss_grad_scale(np.array([predicted_probability]), "rcce", 0.5)[0]
+    )
+
+    assert abs(nll_logit_gradient) <= 1.0
+    assert 0.0 < rcce_scale < 1.0
+    assert abs(rcce_scale * nll_logit_gradient) < abs(nll_logit_gradient)
+    assert abs(100.0 * nll_logit_gradient) > abs(nll_logit_gradient)
+
+
+def test_ar_compatibility_shrinkage_path_runs():
+    # AR is a compatibility argument selecting L2=0.10 in this proxy; it is not
+    # an Alpha-Renyi divergence calculation.
     out = fed_gvi_logreg(divergence="AR", seed=0)
     assert 0.0 <= out["test_accuracy"] <= 1.0
 
 
 def test_rcce_separation_is_not_a_knife_edge_in_loss_param():
-    # Advisor + Forge cross-vendor review of the bnn_robustness figure
-    # operating point (loss_param q=1.0) flagged two risks: (1) separation
-    # appears only at that exact value — figure-tuning, not a genuine effect;
-    # (2) a sign-only check (robust > standard) at a single contamination
-    # level would pass on a noise-level 0.0001 margin. This requires a real
-    # minimum margin (0.005 — well above the ~0.002 noise floor seen at low
-    # contamination) across a neighborhood of q (0.6-0.95) AND at two
-    # contamination levels (0.3, 0.35) inside the genuine-separation range,
-    # at the n_per=200 / 20-seed operating point the figure actually uses.
+    # Guard the displayed finite-grid pattern against an isolated operating
+    # point or a sign-only numerical difference. The check requires a declared
+    # minimum margin across a neighborhood of q and two contamination levels
+    # at the exact n_per=200 / 20-seed configuration used by the figure. It is
+    # an exploratory stability check, not calibration or confirmation.
     n_per = 200
     seeds = range(20)
     min_margin = 0.005

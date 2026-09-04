@@ -14,7 +14,12 @@ import pytest
 import yaml
 
 from analysis import workflow
-from analysis.workflow import main, resolve_analysis_profile, run_analysis_pipeline
+from analysis.workflow import (
+    _write_figure_registry,
+    main,
+    resolve_analysis_profile,
+    run_analysis_pipeline,
+)
 from experiment_config import ExperimentConfig
 
 pytestmark = [pytest.mark.slow, pytest.mark.publication]
@@ -115,6 +120,12 @@ def _make_project(root: Path) -> None:
         },
     }
     (manuscript / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
+    (manuscript / "16_results_belief_sharing.md").write_text(
+        "![Belief-sharing posterior mass in the bounded smoke fixture.]"
+        "(../output/figures/belief_heatmap.png)"
+        "{#fig:belief-heatmap width=80%}\n",
+        encoding="utf-8",
+    )
 
 
 def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> None:
@@ -123,6 +134,7 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
 
     expected = {
         # reports
+        "application_integrity_flow_report",
         "belief_sharing_report",
         "language_report",
         "emergence_report",
@@ -137,7 +149,11 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
         "moving_world_report",
         "conditional_world_report",
         "belief_quality_report",
+        "evidence_replication_map_report",
+        "source_render_provenance_report",
+        "sensitivity_report",
         # figures
+        "application_integrity_flow",
         "belief_heatmap",
         "free_energy_comparison",
         "robustness_sweep",
@@ -151,6 +167,12 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
         "disjoint_fov_world",
         "conditional_world",
         "belief_quality",
+        "evidence_replication_map",
+        "source_render_provenance",
+        "sensitivity_heatmap",
+        # accessibility support
+        "figure_exact_values",
+        "figure_exact_values_markdown",
         "figure_registry",
         "analysis_execution",
     }
@@ -271,6 +293,12 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
     registry = json.loads(paths["figure_registry"].read_text())
     figures = {item["label"]: item for item in registry["figures"]}
 
+    assert registry["schema_version"] == "1.2"
+    assert registry["exact_value_artifact"] == {
+        "identifiers": [],
+        "json_path": "output/figures/figure_exact_values.json",
+        "markdown_path": "output/figures/figure_exact_values.md",
+    }
     assert set(figures) == {"fig:belief-heatmap"}
     assert figures["fig:belief-heatmap"]["filename"] == "belief_heatmap.png"
     assert figures["fig:belief-heatmap"]["generated_by"] == "belief_heatmap"
@@ -279,6 +307,21 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
         "Belief heatmap caption for {{BELIEF_SHARING_N_AGENTS}} agents."
     )
     assert (tmp_path / "output" / "figures" / figures["fig:belief-heatmap"]["filename"]).exists()
+
+
+def test_figure_registry_rejects_duplicate_labels_and_files(tmp_path: Path) -> None:
+    _make_project(tmp_path)
+    manuscript = tmp_path / "manuscript"
+    duplicate = (
+        "![First caption.](../output/figures/belief_heatmap.png)"
+        "{#fig:duplicate width=80%}\n\n"
+        "![Second caption.](../output/figures/belief_heatmap.png)"
+        "{#fig:duplicate width=80%}\n"
+    )
+    (manuscript / "16_results_belief_sharing.md").write_text(duplicate, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate manuscript figure label"):
+        _write_figure_registry(tmp_path, {})
 
 
 def test_emergence_report_signs(tmp_path: Path) -> None:
@@ -320,7 +363,10 @@ def test_bnn_report_robust_holds_under_contamination(tmp_path: Path) -> None:
     paths = run_analysis_pipeline(project_root=tmp_path)
     report = json.loads(paths["bnn_report"].read_text())
     configs = report["accuracy_by_config"]
-    assert set(configs) == {"nll / KLD (standard)", "rcce / AR (robust)"}
+    assert set(configs) == {
+        "nll / L2=0.05 (standard proxy)",
+        "rcce / L2=0.10 (exploratory proxy)",
+    }
     levels = report["contamination_levels"]
     for curve in configs.values():
         assert len(curve) == len(levels)
@@ -334,8 +380,8 @@ def test_bnn_report_robust_holds_under_contamination(tmp_path: Path) -> None:
     # exists rather than requiring robust >= standard at every level
     # (including the terminal point, where advisor review confirmed there is
     # no principled reason to expect or require it).
-    standard = configs["nll / KLD (standard)"]
-    robust = configs["rcce / AR (robust)"]
+    standard = configs["nll / L2=0.05 (standard proxy)"]
+    robust = configs["rcce / L2=0.10 (exploratory proxy)"]
     gaps = [r - s for r, s in zip(robust, standard)]
     assert max(gaps) > 0.025, (
         "robust client must show a real (not noise-level) margin over "

@@ -12,8 +12,12 @@ import zipfile
 from pathlib import Path
 
 import pytest
-import tomllib
 import yaml
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - exercised by the Python 3.10 lane
+    import tomli as tomllib
 
 from publication.metadata import validate_publication_lifecycle, write_metadata
 

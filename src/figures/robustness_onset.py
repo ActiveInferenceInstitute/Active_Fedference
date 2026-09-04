@@ -57,10 +57,18 @@ def generate_robustness_onset(
     apply_style()
     # Embedded at width=95% (~6.2 in): large fonts so effective text >= 7 pt.
     _FS_TICK, _FS_LABEL, _FS_TITLE, _FS_ANN = 13, 14, 13, 10
-    fig, axes = plt.subplots(1, len(kinds), figsize=(4.5 * len(kinds), 4.6), sharey=True)
-    fig.subplots_adjust(left=0.08, right=0.98, top=0.82, bottom=0.20, wspace=0.25)
-    if len(kinds) == 1:
-        axes = [axes]
+    fig, axes_array = plt.subplots(
+        len(kinds),
+        1,
+        figsize=(6.5, max(4.8, 3.05 * len(kinds))),
+        sharex=True,
+        sharey=True,
+    )
+    fig.set_layout_engine("none")
+    # Reserve a dedicated band beneath the title for the shared legend.  This
+    # keeps the legend clear of the final panel's x-axis at manuscript scale.
+    fig.subplots_adjust(left=0.14, right=0.79, top=0.82, bottom=0.10, hspace=0.44)
+    axes = np.atleast_1d(axes_array).tolist()
 
     naive_style = semantic_style("naive")
     robust_style = semantic_style("heuristic_robust")
@@ -187,7 +195,8 @@ def generate_robustness_onset(
                 color=COLOR_MUTED,
             )
         ax.set_title(kind.replace("_", " "), fontsize=_FS_TITLE)
-        ax.set_xlabel("Contamination rate $\\epsilon$", labelpad=5)
+        if ax is axes[-1]:
+            ax.set_xlabel("Contamination rate $\\epsilon$", labelpad=5)
         ax.set_xlim(float(rates.min()) - 0.02, float(rates.max()) + 0.12)
         ax.set_ylim(0.0, 1.05)
         # --- stats box: onset rate + final accuracy gap ---
@@ -205,27 +214,26 @@ def generate_robustness_onset(
             va="top",
             bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_MUTED, "alpha": 0.85},
         )
-        methods = cell.get("best_robust_method_by_rate", [])
-        if methods:
-            ax.text(
-                0.04,
-                0.46,
-                "display preset selected within each rate",
-                transform=ax.transAxes,
-                fontsize=_FS_ANN,
-                ha="left",
-                va="top",
-                color=COLOR_MUTED,
-            )
         ax.tick_params(labelsize=_FS_TICK)
         ax.xaxis.label.set_size(_FS_LABEL)
-    axes[0].set_ylabel("Mean consensus accuracy $q(\\mathrm{true})$", labelpad=5)
-    axes[0].yaxis.label.set_size(_FS_LABEL)
-    # Legend on the last panel: its lower-left corner is free of the
-    # rotated onset-rate label that sits there in the byzantine panel.
-    axes[-1].legend(fontsize=_FS_ANN + 1, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2)
+    fig.supylabel(
+        "Mean consensus accuracy $q(\\mathrm{true})$",
+        x=0.02,
+        fontsize=_FS_LABEL,
+    )
+    handles, labels = axes[-1].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        fontsize=_FS_ANN + 1,
+        loc="upper center",
+        bbox_to_anchor=(0.48, 0.915),
+        ncol=min(3, len(labels)),
+    )
     fig.suptitle(
-        "Server-preset onset diagnostic by contamination mechanism", fontsize=_FS_TITLE + 1, fontweight="bold"
+        "Server-preset onset by contamination mechanism",
+        fontsize=_FS_TITLE + 1,
+        fontweight="bold",
     )
 
     return save_figure(fig, figures_dir(project_root) / filename)

@@ -101,12 +101,37 @@ render:
     slides: true
     docx: false
     epub: false
+  # Template defaults to the backwards-compatible `archive` slide profile when
+  # this block is absent. `accessible` is an explicit, fail-closed profile: it
+  # composes at semantic block boundaries and reports density violations rather
+  # than shrinking text or splitting equations, lists, code, tables, or figures.
+  slides:
+    profile: accessible
+    max_prose_words: 80
+    max_table_rows: 8
+    min_figure_area_percent: 70
+    title_font_pt: 28
+    body_font_pt: 20
+    figure_label_font_pt: 16
+    # Reveal.js readers receive this link to the complete canonical manuscript,
+    # where full captions, tables, exact values, and long descriptions remain.
+    reader_href: ../web/index.html
 
 # Combined-PDF page flow only. The default true inserts a page break between
 # source files; false lets modular fragments flow continuously. Use an explicit
 # raw-LaTeX \newpage in source when a hard boundary is required.
 rendering:
   section_breaks: true
+  # Bind publication output to one reviewed, immutable Template commit. Replace
+  # the example hash with the exact merged renderer commit; never use a branch,
+  # tag, dirty checkout, or moving remote head. Preflight and render receipts
+  # require the runtime checkout's canonical origin, commit, and clean tree to
+  # match this source-owned lock exactly.
+  template_renderer:
+    schema_version: "template-renderer-lock-v1"
+    repository: "docxology/template"
+    git_commit: "0123456789abcdef0123456789abcdef01234567"
+    git_tree_state: "clean"
 
 # LLM review / translation toggles (optional; require Ollama).
 llm:
@@ -140,9 +165,11 @@ experiment:
   # Independent seed budget for the structural-extension and cross-study tier.
   replicate_seeds: 128
 
-  # Study 4 — contaminated-sentinel robustness sweep (the FedGVI contribution).
-  # `divergences` lists the FedGVI client-divergence labels; KLD is the non-robust
-  # Friston / standard-Bayes baseline (robustness 0), the rest are robust members.
+  # Study 4 — contaminated-sentinel server-fusion robustness sweep.
+  # `divergences` is a legacy compatibility field for server-preset labels: KLD
+  # denotes the project log-linear-pool reference, while each non-KLD label maps
+  # to a distinct configured `robust_aggregate` robustness operating point. These
+  # labels do not denote executed client divergences or transfer client theorems.
   # `n_agents` here is the executed colony size for ALL studies (the sweep block
   # takes precedence in load_experiment_config).
   robustness_sweep:

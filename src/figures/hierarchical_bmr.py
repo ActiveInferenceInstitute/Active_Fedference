@@ -69,11 +69,11 @@ def generate_hierarchical_bmr(
     deg_vals = [max(float(lv["bayesian_surprise"]), 0.0) for lv in deg_levels]
     inf_vals = [max(float(lv["bayesian_surprise"]), 0.0) for lv in inf_levels]
 
-    fig, ax = plt.subplots(figsize=(8.5, 4.8))
+    fig, ax = plt.subplots(figsize=(6.8, 4.8))
     fig.set_layout_engine("none")
     fig.subplots_adjust(left=0.15, right=0.98, top=0.84, bottom=0.31)
-    informative_style = semantic_style("heuristic_robust")
-    reference_style = semantic_style("reference")
+    informative_style = semantic_style("condition_comparison")
+    reference_style = semantic_style("condition_reference")
     rule_style = semantic_style("reference_rule")
     ax.barh(
         y + height / 2,
@@ -151,7 +151,11 @@ def generate_hierarchical_bmr(
         bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": COLOR_MUTED},
     )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.80,
+    )
 
 
 __all__ = ["generate_hierarchical_bmr"]

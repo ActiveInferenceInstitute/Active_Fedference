@@ -11,19 +11,60 @@ from pathlib import Path
 import pytest
 
 from figures import generate_bnn_robustness
+from figures._common import semantic_style
+from figures.bnn_robustness import _configuration_style_role, _direct_condition_label
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
+
+def test_bnn_configuration_styles_are_neutral_condition_roles() -> None:
+    reference_role = _configuration_style_role("nll / L2=0.05 (standard proxy)", 0)
+    comparison_role = _configuration_style_role(
+        "rcce / L2=0.10 (exploratory proxy)", 0
+    )
+
+    assert reference_role == (
+        "condition_reference",
+        True,
+    )
+    assert comparison_role == (
+        "condition_comparison",
+        False,
+    )
+    reference_style = semantic_style(reference_role[0])
+    comparison_style = semantic_style(comparison_role[0])
+    assert (reference_style.marker, reference_style.dash, reference_style.hatch) != (
+        comparison_style.marker,
+        comparison_style.dash,
+        comparison_style.hatch,
+    )
+
+
+def test_bnn_direct_labels_are_compact_and_neutral() -> None:
+    assert _direct_condition_label("nll / L2=0.05 (standard proxy)") == "standard proxy"
+    assert _direct_condition_label("rcce / L2=0.10 (exploratory proxy)") == "exploratory proxy"
+    assert _direct_condition_label("additional operating point") == "additional operating point"
 
 
 def test_bnn_robustness_happy_path(tmp_path: Path) -> None:
     levels = [0.0, 0.1, 0.2, 0.3]
     accuracy = {
-        "nll / KLD (standard)": [0.95, 0.88, 0.78, 0.70],
-        "rcce / AR (robust)": [0.95, 0.93, 0.91, 0.90],
+        "nll / L2=0.05 (standard proxy)": [0.95, 0.88, 0.78, 0.70],
+        "rcce / L2=0.10 (exploratory proxy)": [0.95, 0.93, 0.91, 0.90],
     }
     intervals = {
-        "nll / KLD (standard)": [[0.94, 0.96], [0.87, 0.89], [0.76, 0.80], [0.68, 0.72]],
-        "rcce / AR (robust)": [[0.94, 0.96], [0.92, 0.94], [0.90, 0.92], [0.89, 0.91]],
+        "nll / L2=0.05 (standard proxy)": [
+            [0.94, 0.96],
+            [0.87, 0.89],
+            [0.76, 0.80],
+            [0.68, 0.72],
+        ],
+        "rcce / L2=0.10 (exploratory proxy)": [
+            [0.94, 0.96],
+            [0.92, 0.94],
+            [0.90, 0.92],
+            [0.89, 0.91],
+        ],
     }
     path = generate_bnn_robustness(
         accuracy,

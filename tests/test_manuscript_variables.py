@@ -80,6 +80,12 @@ def _make_project(root: Path) -> None:
         },
     }
     (manuscript / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
+    (manuscript / "16_results_belief_sharing.md").write_text(
+        "![Belief-sharing posterior mass in the bounded smoke fixture.]"
+        "(../output/figures/belief_heatmap.png)"
+        "{#fig:belief-heatmap width=80%}\n",
+        encoding="utf-8",
+    )
     # A real project carries an ISA (live ISC tally) and a tests/ tree (live
     # TEST_COUNT); provide minimal versions so the provenance tokens resolve to
     # real values rather than the "N/A" sentinel.
@@ -218,8 +224,17 @@ _NEW_SWEEP_TOKENS = (
     "SWEEP_BEST_VERDICT_ACCURACY_CI_LO",
     "SWEEP_BEST_VERDICT_ACCURACY_CI_HI",
     "SWEEP_ACCURACY_AT_VERDICT_TABLE_ROWS",
+    "SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS",
+    "SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS",
     "SWEEP_VERDICT_EFFECT_TABLE_ROWS",
+    "SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS",
+    "SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS",
     "SWEEP_PAIRED_BY_RATE_TABLE_ROWS",
+)
+_NEW_GALLERY_TOKENS = (
+    "GALLERY_OPERATING_POINT_TABLE_ROWS",
+    "GALLERY_CONTRAST_DISPLAY_TABLE_ROWS",
+    "GALLERY_TABLE_ROWS",
 )
 _ALL_NEW_STATS_TOKENS = (
     _NEW_BELIEF_SHARING_TOKENS
@@ -228,6 +243,7 @@ _ALL_NEW_STATS_TOKENS = (
     + _NEW_CONFIG_TOKENS
     + _NEW_POWER_TOKENS
     + _NEW_SWEEP_TOKENS
+    + _NEW_GALLERY_TOKENS
 )
 
 
@@ -386,12 +402,26 @@ def test_power_tokens_are_concrete_and_bounded(tmp_path: Path) -> None:
     assert int(variables["SWEEP_HEADLINE_N_FOR_TARGET_POWER"]) >= 1
     assert variables["SWEEP_HEADLINE_METHOD"] != "KLD"
     assert variables["SWEEP_HEADLINE_METHOD"].strip() != ""
-    # The standardized-effect verdict table now carries a power column: each
-    # robust row has the extra cell (10 pipe-delimited fields).
-    rows = variables["SWEEP_VERDICT_EFFECT_TABLE_ROWS"].splitlines()
-    assert rows
-    for line in rows:
+    # The legacy ten-field row remains available, while the manuscript's two
+    # projection-safe tables partition exactly those cells without changing
+    # their strings or row order.
+    full_rows = variables["SWEEP_VERDICT_EFFECT_TABLE_ROWS"].splitlines()
+    estimate_rows = variables["SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS"].splitlines()
+    inference_rows = variables["SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS"].splitlines()
+    assert full_rows
+    assert len(full_rows) == len(estimate_rows) == len(inference_rows)
+
+    def _cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    for line in full_rows:
         assert line.count("|") == 11  # 10 columns -> 11 pipe separators
+    for full, estimate, inference in zip(full_rows, estimate_rows, inference_rows, strict=True):
+        full_cells = _cells(full)
+        assert _cells(estimate) == full_cells[:5]
+        assert _cells(inference) == [full_cells[0], *full_cells[5:]]
+        assert estimate.count("|") == 6  # 5 columns -> 6 pipe separators
+        assert inference.count("|") == 7  # 6 columns -> 7 pipe separators
 
 
 def test_paired_by_rate_table_has_rows(tmp_path: Path) -> None:
@@ -401,10 +431,97 @@ def test_paired_by_rate_table_has_rows(tmp_path: Path) -> None:
     run_analysis_pipeline(project_root=tmp_path)
     variables = generate_variables(tmp_path)
     rows = variables["SWEEP_PAIRED_BY_RATE_TABLE_ROWS"].splitlines()
+    effect_rows = variables["SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS"].splitlines()
+    inference_rows = variables["SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS"].splitlines()
     assert rows, "expected at least one paired-by-rate row"
+    assert len(rows) == len(effect_rows) == len(inference_rows)
     assert all(line.startswith("| ") and line.endswith(" |") for line in rows)
+
+    def _cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    for full, effect, inference in zip(rows, effect_rows, inference_rows, strict=True):
+        full_cells = _cells(full)
+        effect_cells = _cells(effect)
+        inference_cells = _cells(inference)
+        assert len(full_cells) == 7
+        assert len(effect_cells) == 4
+        assert len(inference_cells) == 5
+        assert effect_cells[:2] == inference_cells[:2]
+        assert full_cells == [*effect_cells, *inference_cells[2:]]
     # KLD is the naive baseline and must not appear as its own contrast row.
     assert not any(line.startswith("| KLD |") for line in rows)
+
+    caption = (_PROJECT_ROOT / "manuscript" / "19_results_robustness.md").read_text(
+        encoding="utf-8"
+    )
+    assert "{{SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS}}" in caption
+    assert "{{SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS}}" in caption
+    assert "reconstructs every source row exactly" in caption
+
+
+def test_gallery_projection_tables_reconstruct_legacy_rows_exactly() -> None:
+    from manuscript_vars.tokens import _gallery_variables
+
+    report = {
+        "rate": 0.5,
+        "n_trials": 4,
+        "n_seeds": 3,
+        "reliable_win_fraction": 0.8,
+        "reliable_kinds": ["confident_wrong"],
+        "entropy_naive_robust": True,
+        "directional_kinds": ["confident_wrong"],
+        "entropy_kinds": ["uniform"],
+        "by_kind": {
+            "confident_wrong": {
+                "directional": True,
+                "naive_mean": 0.25,
+                "robust_mean": 0.75,
+                "best_robust_method": "AR",
+                "mean_diff": 0.5,
+                "diff_ci": [0.4, 0.6],
+                "win_fraction": 1.0,
+                "reliably_beats": True,
+            },
+            "uniform": {
+                "directional": False,
+                "naive_mean": 0.8,
+                "robust_mean": 0.79,
+                "best_robust_method": "RKL",
+                "mean_diff": -0.01,
+                "diff_ci": [-0.03, 0.01],
+                "win_fraction": 0.33,
+                "reliably_beats": False,
+            },
+        },
+    }
+    variables = _gallery_variables(report)
+    full_rows = variables["GALLERY_TABLE_ROWS"].splitlines()
+    operating_rows = variables["GALLERY_OPERATING_POINT_TABLE_ROWS"].splitlines()
+    contrast_rows = variables["GALLERY_CONTRAST_DISPLAY_TABLE_ROWS"].splitlines()
+
+    def _cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    assert len(full_rows) == len(operating_rows) == len(contrast_rows) == 2
+    for full, operating, contrast in zip(
+        full_rows, operating_rows, contrast_rows, strict=True
+    ):
+        full_cells = _cells(full)
+        operating_cells = _cells(operating)
+        contrast_cells = _cells(contrast)
+        assert len(full_cells) == 8
+        assert len(operating_cells) == 4
+        assert len(contrast_cells) == 5
+        assert operating_cells[0] == contrast_cells[0]
+        assert full_cells == [*operating_cells, *contrast_cells[1:]]
+
+    caption = (
+        _PROJECT_ROOT / "manuscript" / "28_supplement_extended_methods.md"
+    ).read_text(encoding="utf-8")
+    assert "{{GALLERY_OPERATING_POINT_TABLE_ROWS}}" in caption
+    assert "{{GALLERY_CONTRAST_DISPLAY_TABLE_ROWS}}" in caption
+    assert "reconstructs every source row exactly" in caption
 
 
 def test_paired_by_rate_table_covers_every_robust_method_and_rate(tmp_path: Path) -> None:
@@ -547,8 +664,8 @@ def test_bnn_robustness_variables_read_generated_report(tmp_path: Path) -> None:
             {
                 "contamination_levels": [0.0, 0.1, 0.2, 0.3, 0.35, 0.4],
                 "accuracy_by_config": {
-                    "nll / KLD (standard)": [0.86, 0.86, 0.86, 0.85, 0.58, 0.15],
-                    "rcce / AR (robust)": [0.86, 0.86, 0.87, 0.86, 0.60, 0.14],
+                    "nll / L2=0.05 (standard proxy)": [0.86, 0.86, 0.86, 0.85, 0.58, 0.15],
+                    "rcce / L2=0.10 (exploratory proxy)": [0.86, 0.86, 0.87, 0.86, 0.60, 0.14],
                 },
                 "peak_margin": 0.0387,
                 "peak_margin_contamination": 0.35,

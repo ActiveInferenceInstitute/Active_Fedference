@@ -18,6 +18,9 @@ import json
 import re
 from pathlib import Path
 
+from analysis.report_schemas import FIGURE_DEPENDENCY_CONTRACTS
+from figures import FIGURE_METADATA
+
 _ROOT = Path(__file__).resolve().parent.parent
 _MANUSCRIPT = _ROOT / "manuscript"
 _FIGURES = _ROOT / "src" / "figures"
@@ -60,38 +63,51 @@ def _embeds() -> list[tuple[str, str, str]]:
 # example is roughly 40 characters.
 _MIN_CAPTION_CHARS = 120
 
-# Evidence-bearing figures must identify both the estimand/quantity and the
-# unit of replication or resampling.  This prevents a caption gate from being
-# satisfied by generic axis and "CI" keywords alone. Conceptual/formal and
-# deterministic diagnostic schematics are intentionally outside this set.
-_DATA_BEARING_LABELS = {
-    "free-energy",
-    "language-kl",
-    "emergence-bmr",
-    "robustness-sweep",
-    "bnn-robustness",
-    "contamination-gallery",
-    "robustness-onset",
-    "disjoint-fov-world",
-    "hierarchical-pomdp",
-    "cross-study-summary",
-    "parameter-recovery",
-}
+# Evidence-bearing scope is derived from the typed report dependency graph and
+# the source-owned metadata status. This prevents a new diagnostic generator
+# from silently escaping caption checks because a reviewer forgot to extend a
+# second hand-maintained label list. Explanatory maps remain non-empirical even
+# though their source-owned contracts pass through the report boundary.
+def _evidence_bearing_labels() -> set[str]:
+    labels: set[str] = set()
+    for label, _, path in _embeds():
+        generator = Path(path).stem
+        contracts = FIGURE_DEPENDENCY_CONTRACTS.get(generator, ())
+        metadata = FIGURE_METADATA[generator]
+        explanatory = metadata["status"].startswith("explanatory ")
+        metadata_evidence = metadata["status"] != "schematic" and not explanatory
+        report_evidence = bool(contracts) and not explanatory
+        if metadata_evidence or report_evidence:
+            labels.add(label)
+    return labels
+
+
 _ESTIMAND = re.compile(
     r"accuracy|free[- ]energy|\bkl\b|delta\s*f|r-squared|absolute error|"
-    r"influence|weight|surprise|probability|benefit",
+    r"influence|weight|surprise|probability|mass|contrast|gap|benefit|wall-clock|elapsed|scaling",
     re.IGNORECASE,
 )
 _REPLICATION_UNIT = re.compile(
     r"\bn\s*=|trials?|seeds?|clients?|agents?|points?|bootstrap|resampl",
     re.IGNORECASE,
 )
-_SOURCE_RELATION = re.compile(r"source relation:", re.IGNORECASE)
-_CAPTION_ESTIMAND = re.compile(r"estimand:", re.IGNORECASE)
+_SOURCE_RELATION = re.compile(r"source\s+relation:", re.IGNORECASE)
+_CAPTION_ESTIMAND = re.compile(r"estimands?(?:\s+is|:|\b)", re.IGNORECASE)
 _CAPTION_UNIT = re.compile(
     r"\bnats?\b|\bfraction(?:s)?\b|\bprobabilit(?:y|ies)\b|\bunitless\b|"
     r"\bconceptual\b|\bcategorical\b|\bsteps?\b|\bweight\b|\bstates?\b|"
     r"\bcomponents?\b|\bR-squared\b|\$R\^2\$",
+    re.IGNORECASE,
+)
+_BOUNDARY_NEGATION = re.compile(
+    r"\b(?:does|do|is|are)\s+not\b|\bno\s+claim\b|\bneither\b|"
+    r"\bnot\s+(?:a|an|the|selection-free|evidence|proof)",
+    re.IGNORECASE,
+)
+_BOUNDARY_SCOPE = re.compile(
+    r"establish|claim|infer|reproduc|general|universal|beyond|bound|proof|"
+    r"ranking|benefit|calibrat|identif|protocol|theorem|post-selection|certif|"
+    r"optimum|heuristic|effect|attack",
     re.IGNORECASE,
 )
 
@@ -111,7 +127,11 @@ def test_every_caption_states_axes_and_uncertainty() -> None:
         # than appear as bare tokens, and the caption must be substantive — both
         # guard against a keyword-stuffed but contentless caption (audit finding).
         substantive = len(caption.strip()) >= _MIN_CAPTION_CHARS
-        axis_described = re.search(r"x-axis\s*(is|are|indexes|shows|=|:)", caption, re.IGNORECASE)
+        axis_described = re.search(
+            r"x-axis\s*(is|are|indexes|shows|reports|=|:)",
+            caption,
+            re.IGNORECASE,
+        )
         missing = []
         if not has_x:
             missing.append("x-axis")
@@ -137,13 +157,48 @@ def test_every_caption_states_axes_and_uncertainty() -> None:
 def test_data_bearing_captions_name_estimand_and_replication_unit() -> None:
     captions = {label: caption for label, caption, _ in _embeds()}
     missing = []
-    for label in sorted(_DATA_BEARING_LABELS):
+    for label in sorted(_evidence_bearing_labels()):
         caption = captions[label]
         if not _ESTIMAND.search(caption):
             missing.append(f"fig:{label}: estimand/quantity")
         if not _REPLICATION_UNIT.search(caption):
             missing.append(f"fig:{label}: sample or resampling unit")
     assert not missing, "under-specified data-bearing captions:\n  " + "\n  ".join(missing)
+
+
+def test_data_bearing_captions_close_with_self_contained_no_claim_boundary() -> None:
+    """Keep scope in the caption's closing sentence, where skimming readers see it."""
+    captions = {label: caption for label, caption, _ in _embeds()}
+    missing: list[str] = []
+    for label in sorted(_evidence_bearing_labels()):
+        caption = captions[label].strip().removesuffix(".")
+        closing_sentence = caption.rsplit(". ", 1)[-1]
+        if not (
+            _BOUNDARY_NEGATION.search(closing_sentence)
+            and _BOUNDARY_SCOPE.search(closing_sentence)
+        ):
+            missing.append(f"fig:{label}: {closing_sentence}")
+    assert not missing, (
+        "data-bearing captions without a bounded closing sentence:\n  "
+        + "\n  ".join(missing)
+    )
+
+
+def test_evidence_bearing_scope_is_derived_for_every_report_backed_diagnostic() -> None:
+    labels = _evidence_bearing_labels()
+    assert labels
+    # Sentinels cover deterministic diagnostics that the former manual list
+    # omitted; they do not define the exhaustive scope used by the tests.
+    assert {
+        "aggregation-descent",
+        "belief-heatmap",
+        "belief-quality",
+        "bounded-influence",
+        "descent-comparison",
+        "heuristic-breakdown",
+        "robust-weights",
+        "sensitivity-heatmap",
+    } <= labels
 
 
 def test_every_generator_is_embedded() -> None:
@@ -199,17 +254,54 @@ def test_math_figure_alts_lead_with_plain_language() -> None:
 def test_new_schematic_captions_are_claim_bounded() -> None:
     """Conceptual figures must declare their status and non-empirical scope."""
     captions = {label: caption.lower() for label, caption, _ in _embeds()}
-    required = {"generative-model-schema", "message-passing", "pomdp-loop", "graphical-abstract"}
+    required = {
+        "application-integrity-flow",
+        "evidence-replication-map",
+        "generative-model-schema",
+        "graphical-abstract",
+        "message-passing",
+        "pomdp-loop",
+        "source-render-provenance",
+    }
     assert required <= captions.keys()
     for label in required:
         caption = captions[label]
-        assert any(word in caption for word in ("schematic", "formal", "mechanistic")), label
+        assert any(
+            word in caption for word in ("schematic", "formal", "mechanistic", "map")
+        ), label
         assert "x-axis" in caption, label
         assert any(word in caption for word in ("y-axis", "rows")), label
         assert any(word in caption for word in ("deterministic", "no ci", "no error band")), label
     assert "non-transferable" in captions["graphical-abstract"]
     assert "recovery-limit" in captions["message-passing"]
     assert "moving-world extension" in captions["pomdp-loop"]
+    assert "scientific validity" in captions["application-integrity-flow"]
+    assert "transfer a client theorem" in captions["evidence-replication-map"]
+    assert "authorize publication" in captions["source-render-provenance"]
+
+    for label in (
+        "application-integrity-flow",
+        "evidence-replication-map",
+        "source-render-provenance",
+    ):
+        word_count = len(re.findall(r"\b[\w'-]+\b", captions[label]))
+        assert 140 <= word_count <= 220, (label, word_count)
+
+
+def test_aggregation_descent_caption_names_its_non_colour_grammar() -> None:
+    caption = {label: text.lower() for label, text, _ in _embeds()}[
+        "aggregation-descent"
+    ]
+    for phrase in (
+        "open triangles",
+        "dash-dot path",
+        "filled triangle",
+        "largest observed descent step",
+        "dark dotted horizontal rule",
+        "ordered states",
+        "not independent replicates",
+    ):
+        assert phrase in caption
 
 
 def test_robustness_caption_matches_uncertainty_aware_artifact() -> None:

@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import math
 from copy import deepcopy
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
@@ -26,8 +27,19 @@ from analysis.report_schemas import (
     check_figure_contract,
     validate_report,
 )
-from analysis.workflow import _PROJECT_ROOT, _write_json
-from fedference.experiments import run_review_grid
+from analysis.visual_contracts import (
+    application_integrity_flow_contract,
+    evidence_replication_map_contract,
+    source_render_provenance_contract,
+)
+from analysis.workflow import _PROJECT_ROOT, _sensitivity_report, _write_json
+from fedference.experiments import (
+    run_bnn_robustness_report,
+    run_hierarchical_bmr,
+    run_parameter_recovery,
+    run_review_grid,
+    run_robustness_sweep,
+)
 
 REPORTS_DIR = _PROJECT_ROOT / "output" / "reports"
 FIGURE_REGISTRY_PATH = _PROJECT_ROOT / "output" / "figures" / "figure_registry.json"
@@ -91,8 +103,52 @@ def _valid_payload(spec: report_schemas.SchemaDefinition) -> dict[str, object]:
     return payload
 
 
-def _valid_payload_for_name(name: str) -> dict[str, object]:
+@lru_cache(maxsize=None)
+def _base_valid_payload_for_name(name: str) -> dict[str, object]:
     """Build a real payload where a schema deliberately validates nested data."""
+    if name == "belief_sharing":
+        return {
+            "schema_version": "1.0",
+            "analysis_unit": "configured seed with within-seed paired conditions",
+            "communicating_free_energy": [1.0, 2.0],
+            "communicating_mean": 1.5,
+            "communication_helps": True,
+            "difference_definition": "incommunicado_minus_communicating",
+            "free_energy_gap": 1.5,
+            "incommunicado_free_energy": [2.0, 4.0],
+            "incommunicado_mean": 3.0,
+            "interval_method": "paired-seed percentile bootstrap",
+            "interval_percent": 95,
+            "n_agents": 4,
+            "n_seeds": 2,
+            "paired_difference_ci": [1.0, 2.0],
+            "paired_difference_mean": 1.5,
+            "paired_free_energy_difference": [1.0, 2.0],
+            "replication_unit": "configured seed",
+        }
+    if name == "bnn_robustness":
+        return run_bnn_robustness_report(
+            3,
+            n_seeds=2,
+            n_per=8,
+            contamination_levels=(0.0, 0.3),
+        )
+    if name == "hierarchical_bmr":
+        return run_hierarchical_bmr()
+    if name == "parameter_recovery":
+        return run_parameter_recovery(
+            5,
+            acuity_grid=(0.65, 0.8),
+            n_observations=5,
+            n_trials=2,
+            fit_resolution=4,
+        )
+    if name == "application_integrity_flow":
+        return dict(application_integrity_flow_contract())
+    if name == "evidence_replication_map":
+        return dict(evidence_replication_map_contract())
+    if name == "source_render_provenance":
+        return dict(source_render_provenance_contract())
     if name == "robustness_review_grid":
         return run_review_grid(
             seed=11,
@@ -103,7 +159,26 @@ def _valid_payload_for_name(name: str) -> dict[str, object]:
             divergences=("KLD", "RKL"),
             target_max_mcse=1.0,
         )
+    if name == "robustness_sweep":
+        report = run_robustness_sweep(
+            7,
+            rates=(0.0, 0.5),
+            divergences=("KLD", "RKL"),
+            n_agents=3,
+            n_contaminated=1,
+            n_trials=2,
+        )
+        report["n_agents"] = 3
+        report["n_contaminated"] = 1
+        return report
+    if name == "sensitivity":
+        return _sensitivity_report(seed=0, n_trials=2)
     return _valid_payload(report_schemas._REPORT_SCHEMAS[name])
+
+
+def _valid_payload_for_name(name: str) -> dict[str, object]:
+    """Return an isolated copy so mutation tests cannot poison cached producers."""
+    return deepcopy(_base_valid_payload_for_name(name))
 
 
 def _valid_bnn_torch_ok_payload() -> dict[str, object]:
@@ -149,7 +224,7 @@ def _valid_figure_entry(label: str = "fig:belief-heatmap") -> dict[str, str]:
 
 def _valid_figure_registry_payload() -> dict[str, object]:
     return {
-        "schema_version": "1.1",
+        "schema_version": "1.2",
         "generated_by": "analysis.workflow.run_analysis_pipeline",
         "figures": [_valid_figure_entry()],
     }
@@ -169,7 +244,9 @@ def test_valid_payload_accepted(name: str) -> None:
 def test_required_only_payload_accepted(name: str) -> None:
     # Declared optional fields may be absent entirely.
     spec = report_schemas._REPORT_SCHEMAS[name]
-    payload = {field: _fresh(tag) for field, tag in spec.required.items()}
+    payload = _valid_payload_for_name(name)
+    for field in spec.optional:
+        payload.pop(field, None)
     version = _version_for_spec(spec)
     if version is not None:
         payload["schema_version"] = version
@@ -270,6 +347,190 @@ def test_review_grid_precision_receipt_is_bound_to_all_signed_cells(
         validate_report("robustness_review_grid", payload)
 
 
+def test_belief_sharing_paired_estimand_is_recomputed_from_source_arrays() -> None:
+    payload = _valid_payload_for_name("belief_sharing")
+    payload["paired_free_energy_difference"][0] += 0.25
+    with pytest.raises(ReportSchemaError, match="must equal"):
+        validate_report("belief_sharing", payload)
+
+
+def test_belief_sharing_rejects_seed_as_an_unpaired_replication_unit() -> None:
+    payload = _valid_payload_for_name("belief_sharing")
+    payload["analysis_unit"] = "unpaired observation"
+    with pytest.raises(ReportSchemaError, match="within-seed pairing"):
+        validate_report("belief_sharing", payload)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    (
+        ("trial_count", "wrong n_trials"),
+        ("fit_bounds", "fit_bounds"),
+        ("seed_role", "seed_role"),
+    ),
+)
+def test_parameter_recovery_deep_contract_rejects_semantic_drift(
+    mutation: str,
+    message: str,
+) -> None:
+    payload = _valid_payload_for_name("parameter_recovery")
+    if mutation == "trial_count":
+        payload["recovered_acuity_by_trial"][0].pop()
+    elif mutation == "fit_bounds":
+        payload["fit_bounds"][1] = 0.75
+    else:
+        payload["seed_role"] = "independent replication unit"
+    with pytest.raises(ReportSchemaError, match=message):
+        validate_report("parameter_recovery", payload)
+
+
+def test_hierarchical_bmr_rejects_threshold_verdict_drift() -> None:
+    payload = _valid_payload_for_name("hierarchical_bmr")
+    payload["surprise_tol"] = 1.0
+    with pytest.raises(ReportSchemaError, match="prunable flag disagrees"):
+        validate_report("hierarchical_bmr", payload)
+
+
+def test_hierarchical_bmr_rejects_secondary_diagnostic_as_decision_owner() -> None:
+    payload = _valid_payload_for_name("hierarchical_bmr")
+    payload["secondary_diagnostic"] = "redundancy_delta_F determines pruning"
+    with pytest.raises(ReportSchemaError, match="must not own"):
+        validate_report("hierarchical_bmr", payload)
+
+
+def test_bnn_legacy_stem_cannot_be_promoted_to_a_posterior_bnn() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    payload["model_family"] = "bayesian_neural_network"
+    with pytest.raises(ReportSchemaError, match="point_estimate_logistic_regression"):
+        validate_report("bnn_robustness", payload)
+
+
+def test_bnn_selected_operating_point_is_bound_to_full_sweep() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    payload["peak_margin"] += 0.1
+    with pytest.raises(ReportSchemaError, match="within-sweep selection"):
+        validate_report("bnn_robustness", payload)
+
+
+def test_bnn_proxy_configuration_labels_cannot_restore_divergence_claims() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    for field in (
+        "accuracy_by_config",
+        "accuracy_ci_by_config",
+        "accuracy_seed_values_by_config",
+    ):
+        mapping = payload[field]
+        assert isinstance(mapping, dict)
+        mapping["rcce / AR (robust)"] = mapping.pop("rcce / L2=0.10 (exploratory proxy)")
+
+    with pytest.raises(ReportSchemaError, match="retain both declared baselines"):
+        validate_report("bnn_robustness", payload)
+
+
+def test_bnn_proxy_configuration_boundary_pins_l2_semantics() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    payload["configuration_boundary"] = "KLD and AR are evaluated divergences"
+
+    with pytest.raises(ReportSchemaError, match="expose the proxy's L2 semantics"):
+        validate_report("bnn_robustness", payload)
+
+
+def test_bnn_proxy_rejects_seed_row_mean_drift() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    rows = payload["accuracy_seed_values_by_config"]
+    assert isinstance(rows, dict)
+    config_rows = rows["nll / L2=0.05 (standard proxy)"]
+    assert isinstance(config_rows, list) and isinstance(config_rows[0], list)
+    config_rows[0][0] = 0.0
+
+    with pytest.raises(ReportSchemaError, match="reported mean disagrees"):
+        validate_report("bnn_robustness", payload)
+
+
+@pytest.mark.parametrize("invalid_accuracy", (-0.01, 1.01))
+def test_bnn_proxy_rejects_out_of_range_seed_accuracies(invalid_accuracy: float) -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    rows = payload["accuracy_seed_values_by_config"]
+    assert isinstance(rows, dict)
+    config_rows = rows["nll / L2=0.05 (standard proxy)"]
+    assert isinstance(config_rows, list) and isinstance(config_rows[0], list)
+    config_rows[0][0] = invalid_accuracy
+
+    with pytest.raises(ReportSchemaError, match="seed accuracy row"):
+        validate_report("bnn_robustness", payload)
+
+
+@pytest.mark.parametrize(
+    ("field", "invalid_value", "message"),
+    (
+        ("analysis_unit", "observation", "analysis_unit"),
+        ("replication_unit", "client", "replication_unit"),
+        ("interval_method", "normal interval over clients", "interval_method"),
+        ("ci_percent", 90, "95-percent"),
+        ("n_bootstrap", 1, "5000-resample"),
+        ("n_per", 0, "positive points-per-class"),
+        ("robust_loss_param", -0.1, r"\[0, 1\]"),
+        ("robust_loss_param", 1.1, r"\[0, 1\]"),
+    ),
+)
+def test_bnn_proxy_pins_seed_level_design_fields(
+    field: str,
+    invalid_value: object,
+    message: str,
+) -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    payload[field] = invalid_value
+
+    with pytest.raises(ReportSchemaError, match=message):
+        validate_report("bnn_robustness", payload)
+
+
+def test_bnn_proxy_rejects_interval_inventory_and_bounds_drift() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    intervals = payload["accuracy_ci_by_config"]
+    assert isinstance(intervals, dict)
+    config_intervals = intervals["nll / L2=0.05 (standard proxy)"]
+    assert isinstance(config_intervals, list)
+    config_intervals.append(list(config_intervals[0]))
+
+    with pytest.raises(ReportSchemaError, match="must match operating points"):
+        validate_report("bnn_robustness", payload)
+
+    payload = _valid_payload_for_name("bnn_robustness")
+    intervals = payload["accuracy_ci_by_config"]
+    assert isinstance(intervals, dict)
+    config_intervals = intervals["nll / L2=0.05 (standard proxy)"]
+    assert isinstance(config_intervals, list) and isinstance(config_intervals[0], list)
+    config_intervals[0][0] = -0.01
+
+    with pytest.raises(ReportSchemaError, match=r"interval must lie in \[0, 1\]"):
+        validate_report("bnn_robustness", payload)
+
+
+def test_bnn_proxy_selection_disclosure_cannot_promote_configured_inputs() -> None:
+    payload = _valid_payload_for_name("bnn_robustness")
+    payload["selection_disclosure"] = (
+        "q and n_per were selected within the displayed sweep for the best result"
+    )
+
+    with pytest.raises(ReportSchemaError, match="limit selection to peak contamination"):
+        validate_report("bnn_robustness", payload)
+
+
+def test_robustness_sweep_rejects_server_preset_label_drift() -> None:
+    payload = _valid_payload_for_name("robustness_sweep")
+    payload["server_robustness_by_label"]["RKL"] = 0.0
+    with pytest.raises(ReportSchemaError, match="positive robust values"):
+        validate_report("robustness_sweep", payload)
+
+
+def test_robustness_sweep_rejects_unmatched_per_rate_budget() -> None:
+    payload = _valid_payload_for_name("robustness_sweep")
+    payload["per_rate_summary"]["0"]["n"] += 1
+    with pytest.raises(ReportSchemaError, match="matched trial budgets"):
+        validate_report("robustness_sweep", payload)
+
+
 # ---------------------------------------------------------------------------
 # bnn_torch: executed "ok" payload vs declared "skipped" degradation
 # ---------------------------------------------------------------------------
@@ -335,6 +596,13 @@ def test_figure_registry_non_dict_entry_rejected() -> None:
         validate_report("figure_registry", payload)
 
 
+def test_figure_registry_empty_inventory_rejected() -> None:
+    payload = _valid_figure_registry_payload()
+    payload["figures"] = []
+    with pytest.raises(ReportSchemaError, match="at least one figure"):
+        validate_report("figure_registry", payload)
+
+
 def test_figure_registry_entry_missing_field_names_figure_label() -> None:
     entry = _valid_figure_entry()
     del entry["caption"]
@@ -355,6 +623,92 @@ def test_figure_registry_entry_mistyped_field_rejected() -> None:
         validate_report("figure_registry", payload)
     message = str(excinfo.value)
     assert "'status'" in message and "expected str" in message
+
+
+def test_figure_registry_rejects_wrong_schema_or_producer() -> None:
+    payload = _valid_figure_registry_payload()
+    payload["schema_version"] = "1.1"
+    with pytest.raises(ReportSchemaError, match="schema_version must be '1.2'"):
+        validate_report("figure_registry", payload)
+
+    payload = _valid_figure_registry_payload()
+    payload["generated_by"] = "manual"
+    with pytest.raises(ReportSchemaError, match="canonical producer"):
+        validate_report("figure_registry", payload)
+
+
+def test_figure_registry_rejects_duplicate_labels() -> None:
+    first = _valid_figure_entry("fig:a")
+    second = _valid_figure_entry("fig:b")
+    second["filename"] = "other.png"
+    second["path"] = "output/figures/other.png"
+    second["generated_by"] = "other"
+    second["label"] = first["label"]
+    payload = _valid_figure_registry_payload()
+    payload["figures"] = [first, second]
+
+    with pytest.raises(ReportSchemaError, match="duplicate label"):
+        validate_report("figure_registry", payload)
+
+
+def test_figure_registry_rejects_duplicate_generator_and_filename() -> None:
+    first = _valid_figure_entry("fig:a")
+    second = _valid_figure_entry("fig:b")
+    payload = _valid_figure_registry_payload()
+    payload["figures"] = [first, second]
+
+    with pytest.raises(ReportSchemaError, match="duplicate filename"):
+        validate_report("figure_registry", payload)
+
+
+def test_figure_registry_fallback_requires_matching_artifact() -> None:
+    entry = _valid_figure_entry()
+    entry["exact_value_fallback"] = "fig-values:belief-heatmap"
+    payload = _valid_figure_registry_payload()
+    payload["figures"] = [entry]
+    with pytest.raises(ReportSchemaError, match="require exact_value_artifact"):
+        validate_report("figure_registry", payload)
+
+    payload["exact_value_artifact"] = {
+        "json_path": "output/figures/figure_exact_values.json",
+        "markdown_path": "output/figures/figure_exact_values.md",
+        "identifiers": ["fig-values:other"],
+    }
+    with pytest.raises(ReportSchemaError, match="do not match"):
+        validate_report("figure_registry", payload)
+
+
+def test_figure_registry_rejects_noncanonical_exact_value_paths() -> None:
+    payload = _valid_figure_registry_payload()
+    payload["exact_value_artifact"] = {
+        "json_path": "elsewhere/figure_exact_values.json",
+        "markdown_path": "output/figures/figure_exact_values.md",
+        "identifiers": [],
+    }
+    with pytest.raises(ReportSchemaError, match="JSON path is not canonical"):
+        validate_report("figure_registry", payload)
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda payload: payload.__setitem__("acuity_values", [0.5, 0.5]), "strictly increasing"),
+        (lambda payload: payload.__setitem__("n_agents_values", [4, 2]), "strictly increasing"),
+        (lambda payload: payload.__setitem__("noise_floor", 1.1), r"must lie in \[0, 1\]"),
+    ],
+)
+def test_sensitivity_report_rejects_ambiguous_axes_or_band(mutation, message: str) -> None:
+    payload = _sensitivity_report(seed=0, n_trials=2)
+    mutation(payload)
+    with pytest.raises(ReportSchemaError, match=message):
+        validate_report("sensitivity", payload)
+
+
+def test_sensitivity_report_rejects_impossible_accuracy_gap() -> None:
+    payload = _sensitivity_report(seed=0, n_trials=2)
+    payload["belief_sharing"]["accuracy_gap_grid"][0][0] = 1.1  # type: ignore[index]
+    with pytest.raises(ReportSchemaError, match=r"must lie in \[-1, 1\]"):
+        validate_report("sensitivity", payload)
 
 
 # ---------------------------------------------------------------------------

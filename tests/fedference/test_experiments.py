@@ -69,11 +69,14 @@ def test_bnn_robustness_discloses_point_estimate_and_selection_scope():
     assert report["schema_version"] == "1.0"
     assert report["model_family"] == "point_estimate_logistic_regression"
     assert report["study_status"] == "exploratory_conditional_synthetic_sweep"
-    assert "selected within" in report["selection_disclosure"]
+    assert "peak_margin_contamination is selected within" in report["selection_disclosure"]
+    assert "configured inputs, not selected by this report" in report["selection_disclosure"]
     assert report["analysis_unit"] == ("synthetic-data seed within contamination operating point")
     assert report["replication_unit"] == "synthetic-data seed"
     assert report["interval_method"] == ("percentile bootstrap across synthetic-data seeds")
     assert "no posterior-uncertainty BNN" in report["claim_boundary"]
+    assert "composite two-configuration contrast" in report["configuration_boundary"]
+    assert "cannot identify an RCCE-only effect" in report["configuration_boundary"]
     gaps = report["robust_minus_standard"]
     peak_index = max(range(len(gaps)), key=lambda index: gaps[index])
     assert report["peak_margin"] == gaps[peak_index]
@@ -86,6 +89,7 @@ def test_bnn_robustness_discloses_point_estimate_and_selection_scope():
         ({"n_seeds": 1}, "n_seeds"),
         ({"n_per": 0}, "n_per"),
         ({"robust_loss_param": float("nan")}, "robust_loss_param"),
+        ({"robust_loss_param": 1.01}, "robust_loss_param"),
         ({"contamination_levels": ()}, "contamination_levels"),
         ({"contamination_levels": (0.1, 0.1)}, "duplicates"),
         ({"contamination_levels": (-0.1, 0.2)}, r"\[0, 1\]"),

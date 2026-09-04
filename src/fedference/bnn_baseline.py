@@ -1,41 +1,44 @@
-"""FedGVI logistic-regression baseline — the small anchor experiment.
+"""Exploratory federated logistic-regression point-estimate proxy.
 
 This module is a minimal, fully deterministic synthetic complement: under its
-declared Gaussian-blob and label-flip mechanism, it compares a *robust*
-generalized-variational client loss (Mildner et al., 2025, FedGVI,
-arXiv:2502.00846) with a standard negative-log-likelihood (NLL) client. It is
-not an external-data result, a deployment guarantee, or a reconstruction of the
-FedGVI source protocol.
+declared Gaussian-blob and label-flip mechanism, it compares the RCCE and
+negative-log-likelihood (NLL) point-estimate gradients. RCCE is motivated by
+the robust-loss literature used by FedGVI (Mildner et al., 2025), but this
+module does not implement FedGVI's variational posterior family or its
+Alpha-Renyi objective. It is not an external-data result, a deployment
+guarantee, or a reconstruction of the FedGVI source protocol.
 
-The setup is a federated 2-class logistic regression — the conjugate Bernoulli
-analogue of the categorical generalized-Bayes update in
-:mod:`fedference.generalized_bayes`. Each of ``n_clients`` clients owns a private
-split of synthetic 2-D Gaussian-blob data, optionally with a fraction of its
-labels flipped (``contamination``). A client runs a few gradient steps of the
-chosen per-example loss and ships its weight vector to the server. The server
-fuses the client weight factors by averaging their natural parameters. This is
-a deliberately limited mean-field Gaussian / FedAvg weight-space analogue of
-the project's log-linear pooling construction; it does not reconstruct
-Friston et al. (2024) Eq. 7 or its complete message-passing protocol.
+The setup is a nonconjugate, federated two-class logistic regression. Each of
+``n_clients`` clients owns a private split of synthetic two-dimensional
+Gaussian-blob data, optionally with a fraction of its labels flipped
+(``contamination``). A client runs full-batch gradient steps of the chosen
+per-example loss and ships one point-estimate weight vector to the server. The
+server applies a simple FedAvg-style arithmetic mean. No posterior variance,
+covariance, site factor, cavity, or natural-parameter posterior is represented.
+The construction therefore does not reconstruct Friston et al. (2024) Eq. 7 or
+the FedGVI source protocol.
 
 Loss / robustness mechanism (the load-bearing maths):
 
-* ``loss='nll'`` — per-example NLL. Gradient w.r.t. the logit is the standard
-  ``(p - y)``; a confidently *mislabelled* point produces a huge gradient and
-  drags the estimator toward the wrong boundary.
+* ``loss='nll'`` — per-example NLL. Its logit gradient is the standard bounded
+  ``(p - y)`` and approaches magnitude one for a confidently *mislabelled*
+  point. Multiplication by a high-leverage feature can nevertheless produce a
+  large parameter gradient and move the estimator toward the wrong boundary.
 * ``loss='rcce'`` — robust categorical cross-entropy / generalized cross-entropy
   ``L_{q_loss} = (1 - p_y^q_loss) / q_loss`` (Zhang & Sabuncu, 2018), the categorical loss in
   :func:`fedference.losses.rcce`. Its logit-gradient is the NLL gradient scaled
   by ``p_y^q_loss`` — the model's own confidence in the *given* label. A contaminated
-  point (low ``p_y``) is therefore down-weighted by ``p_y^q_loss``, so flipped labels
-  cannot dominate in this declared synthetic regime. As ``loss_param = q_loss
-  -> 0``, the scale ``p_y^q_loss -> 1`` and RCCE collapses back to NLL
-  (standard Bayes), the non-robust project client
-  recovery limit.
+  point (low ``p_y``) is therefore down-weighted by ``p_y^q_loss``, reducing its
+  contribution relative to NLL without proving that contamination cannot
+  dominate. As ``loss_param = q_loss -> 0``, the scale ``p_y^q_loss -> 1`` and
+  RCCE recovers the NLL loss and gradient in this point-estimate proxy; it does
+  not create a Bayesian posterior.
 
-The ``divergence`` argument (``'KLD'`` by default) names the regularizer that
-pulls each client weight toward the shared prior, mirroring FedGVI's
-``--server_div``; ``'KLD'`` gives the L2 (Gaussian-prior) shrinkage used here.
+The legacy ``divergence`` argument is only a compatibility-named selector for
+the L2 coefficient that pulls each client point estimate toward the shared
+zero vector. ``'KLD'`` selects ``0.05`` and ``'AR'`` selects ``0.10``. In this
+module, ``'AR'`` does **not** evaluate an Alpha-Renyi divergence or generalized
+posterior objective.
 """
 
 from __future__ import annotations
@@ -81,8 +84,10 @@ def contaminate(x: ArrayF, y: ArrayF, fraction: float, *, rng: np.random.Generat
     distance from the decision boundary (``|x_0|``), so the corruption
     concentrates on *confidently classifiable* points — the high-leverage
     contamination regime FedGVI's robust losses are designed to survive (a
-    flipped outlier produces an enormous NLL gradient but a small RCCE one). The
-    selection is without replacement and fully determined by ``rng``.
+    flipped outlier can produce a large leverage-weighted NLL parameter gradient
+    but a smaller RCCE one in the configured point-estimate proxy). The selection is without replacement and
+    fully determined by ``rng``. This mechanism is a synthetic diagnostic; it
+    is not the source FedGVI corruption protocol or an external-data model.
     """
     if not 0.0 <= fraction <= 1.0:
         raise ValueError("contamination fraction must lie in [0, 1]")
@@ -109,7 +114,7 @@ def _loss_grad_scale(p_true: ArrayF, loss: str, loss_param: float) -> ArrayF:
     * ``nll``  -> 1 (standard gradient).
     * ``rcce`` -> ``p_true ** q_loss`` (the robust down-weight;
       ``q_loss = loss_param``). ``q_loss = 0`` recovers the NLL scale of 1, matching
-      :func:`fedference.losses.rcce`'s limit.
+      :func:`fedference.losses.rcce`'s pointwise loss-gradient limit.
     """
     if loss == "nll":
         return np.ones_like(p_true)
@@ -135,8 +140,9 @@ def _client_update(
     """A few full-batch gradient steps of the chosen loss from prior ``w0``.
 
     ``w`` has length ``n_features + 1`` (last entry is the bias). The ``l2`` term
-    is the KL/Gaussian-prior regularizer shrinking ``w`` toward ``w0`` — the
-    FedGVI ``divergence`` acting in weight space.
+    is ordinary quadratic shrinkage toward ``w0``. The compatibility-named
+    ``divergence`` argument selects its coefficient upstream; no weight-space
+    divergence or posterior family is evaluated here.
     """
     xb = np.hstack([x, np.ones((x.shape[0], 1))])
     w = w0.astype(np.float64).copy()
@@ -175,8 +181,9 @@ def fed_gvi_logreg(
         contamination: fraction of each client's labels to flip (label noise).
         loss: ``'nll'`` (standard) or ``'rcce'`` (robust, FedGVI client loss).
         loss_param: the RCCE robustness ``q_loss`` in ``[0, 1]`` (ignored for NLL).
-        divergence: weight-space regularizer name (``'KLD'`` -> Gaussian/L2;
-            ``'AR'`` -> a slightly heavier shrinkage). Mirrors FedGVI server_div.
+        divergence: compatibility selector for point-estimate L2 shrinkage
+            (``'KLD'`` -> ``0.05``; ``'AR'`` -> ``0.10``). The ``'AR'`` branch
+            does not evaluate Alpha-Renyi divergence.
         seed: deterministic RNG seed (uses ``np.random.default_rng``).
 
     Returns:
@@ -188,7 +195,9 @@ def fed_gvi_logreg(
         raise ValueError("n_clients must be positive")
     rng = np.random.default_rng(seed)
 
-    # Weight-space regularizer strength selected by the named divergence.
+    # Compatibility-named point-estimate shrinkage selector. The AR branch is
+    # deliberately not described as an Alpha-Renyi objective: only the L2
+    # coefficient differs in this exploratory proxy.
     div = divergence.upper()
     if div == "KLD":
         l2 = 0.05
@@ -216,9 +225,8 @@ def fed_gvi_logreg(
         )
         client_weights.append(w)
 
-    # Server fuses client weight factors by averaging natural parameters:
-    # a limited mean-field Gaussian / FedAvg analogue, not an Eq. 7
-    # source-protocol reconstruction.
+    # Server fuses point estimates with a plain FedAvg-style arithmetic mean;
+    # there are no posterior natural parameters or uncertainty quantities.
     consensus = np.mean(np.vstack(client_weights), axis=0)
 
     # Clean held-out test set from the same generative process.

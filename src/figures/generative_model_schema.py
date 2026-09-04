@@ -29,20 +29,7 @@ from figures._common import (
     contrasting_text_color,
     figures_dir,
     save_figure_pair,
-    semantic_style,
 )
-
-_ACCENT_TEXT_COLORS = {
-    COLOR_ROBUST: semantic_style("heuristic_robust").keyline,
-    COLOR_VARIATE: semantic_style("variational").keyline,
-    COLOR_MULTI_1: semantic_style("operating_point_3").keyline,
-    COLOR_MULTI_2: semantic_style("operating_point_4").keyline,
-}
-
-
-def _accent_text_color(accent: str) -> str:
-    """Return the contrast-safe keyline associated with an accent fill."""
-    return _ACCENT_TEXT_COLORS.get(accent, COLOR_DEEP)
 
 
 def _panel(ax: plt.Axes, title: str, subtitle: str) -> None:
@@ -210,7 +197,8 @@ def _factor_card(
         ha="center",
         va="center",
         fontsize=12,
-        color=_accent_text_color(color),
+        # The accent is a keyline; the painted text background is white.
+        color=COLOR_DEEP,
     )
     ax.text(
         x + 0.095,
@@ -241,7 +229,7 @@ def _draw_sensor(ax: plt.Axes) -> None:
         ha="center",
         va="center",
         fontsize=9.0,
-        color=_accent_text_color(COLOR_ROBUST),
+        color=COLOR_DEEP,
     )
     ax.text(
         0.50,
@@ -314,10 +302,10 @@ def _draw_temporal(ax: plt.Axes) -> None:
     _arrow(ax, (0.82, 0.52), (0.34, 0.30), color=COLOR_VARIATE)
     ax.text(
         0.58,
-        0.36,
+        0.30,
         r"$B=P(s'\mid s,u)$",
         fontsize=8.5,
-        color=_accent_text_color(COLOR_VARIATE),
+        color=COLOR_DEEP,
         ha="center",
     )
     ax.text(
@@ -361,21 +349,23 @@ def generate_generative_model_schema(*, project_root: Path | None = None) -> Pat
     """Generate the formal categorical generative-model schematic."""
     apply_style()
     plt.rcParams["figure.autolayout"] = False
-    fig = plt.figure(figsize=(12.4, 8.5), dpi=150, facecolor="white")
+    # The canonical manuscript embeds this schematic at 95% of a 6.5-inch
+    # text block.  A compact portrait canvas keeps the native 8.5-point node
+    # labels above the 7-point effective floor without shrinking typography.
+    fig = plt.figure(figsize=(7.4, 12.2), dpi=150, facecolor="white")
     gs = fig.add_gridspec(
-        2,
-        2,
-        left=0.035,
-        right=0.965,
-        top=0.85,
-        bottom=0.10,
-        wspace=0.045,
-        hspace=0.12,
+        4,
+        1,
+        left=0.055,
+        right=0.945,
+        top=0.845,
+        bottom=0.065,
+        hspace=0.075,
     )
     _draw_sensor(fig.add_subplot(gs[0, 0]))
-    _draw_factors(fig.add_subplot(gs[0, 1]))
-    _draw_temporal(fig.add_subplot(gs[1, 0]))
-    _draw_hierarchy(fig.add_subplot(gs[1, 1]))
+    _draw_factors(fig.add_subplot(gs[1, 0]))
+    _draw_temporal(fig.add_subplot(gs[2, 0]))
+    _draw_hierarchy(fig.add_subplot(gs[3, 0]))
 
     fig.text(
         0.5,
@@ -414,7 +404,7 @@ def generate_generative_model_schema(*, project_root: Path | None = None) -> Pat
     )
     fig.text(
         0.5,
-        0.043,
+        0.027,
         "Schematic formalization: the agent's private sensory outcome becomes a posterior message; "
         "the server fuses messages over the shared categorical state.",
         ha="center",

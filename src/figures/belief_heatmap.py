@@ -28,6 +28,7 @@ from ._common import (
 )
 
 ArrayF = np.ndarray
+MANUSCRIPT_WIDTH_FRACTION = 0.80
 
 
 def generate_belief_heatmap(
@@ -124,7 +125,11 @@ def generate_belief_heatmap(
     cbar.ax.tick_params(labelsize=9.5)
     annotate_stats_box(ax, f"{n_rows - 1} agents\n+ 1 consensus row", loc="lower right")
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
 
 
 __all__ = ["generate_belief_heatmap"]

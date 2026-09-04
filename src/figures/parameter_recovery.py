@@ -115,11 +115,11 @@ def generate_parameter_recovery(
 
     # --- style --------------------------------------------------------------
     apply_style()
-    recovery_style = semantic_style("heuristic_robust")
+    recovery_style = semantic_style("estimate")
     reference_style = semantic_style("reference_rule")
     error_style = semantic_style("operating_point_1")
 
-    fig, (ax_scatter, ax_error) = plt.subplots(1, 2, figsize=(11.2, 5.7), facecolor="white")
+    fig, (ax_scatter, ax_error) = plt.subplots(1, 2, figsize=(7.8, 5.7), facecolor="white")
     fig.set_layout_engine("none")
     fig.subplots_adjust(left=0.10, right=0.98, top=0.80, bottom=0.24, wspace=0.30)
 
@@ -229,7 +229,11 @@ def generate_parameter_recovery(
     # Save
     # ========================================================================
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename)
+    return save_figure(
+        fig,
+        out / filename,
+        manuscript_width_fraction=0.90,
+    )
 
 
 if __name__ == "__main__":

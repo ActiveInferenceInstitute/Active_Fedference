@@ -30,7 +30,7 @@ Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/devel
 | `validate_outputs.py` | Audit | Checks expected Stage-02 artifacts exist and are non-empty |
 | `summarize_tokens.py` | Audit | Prints resolved manuscript-token provenance |
 | `01_run_invariants.py` | Optional | Runs `invariants` checks |
-| `00_preflight.py` | Optional | Chrome/LaTeX environment warnings |
+| `00_preflight.py` | Required before each external render pass | Chrome/LaTeX diagnostics plus exact clean Template renderer-lock enforcement |
 | `generate_api_docs.py` | Aesthetic | Writes `output/docs/api_reference.md` |
 | `_generate_api_docs.py` | Compatibility | Delegates to `generate_api_docs.py`; retained for older local automation |
 
@@ -115,19 +115,18 @@ rewrites `output/web/`, so recording it earlier would attest the wrong surface.
 
 ```bash
 uv run --locked python scripts/record_pipeline_stage.py render \
-  --renderer "template-03-05 commit=<SHA> diff_sha256=<SHA256> source_date_epoch=<EPOCH>"
+  --template-root /path/to/clean/template
 uv run --locked python scripts/validate_pipeline_freshness.py
 ```
 
-Receipt schema 3 omits wall-clock `recorded_at` values by default. Set
+Receipt schema 4 omits wall-clock `recorded_at` values by default. Set
 `SOURCE_DATE_EPOCH` or pass `--timestamp` only when an external release event
 provides that time; content hashes, rather than time, establish freshness.
 
-The renderer label is recorded as provenance metadata; the project can hash the
-render inputs and outputs but cannot content-fingerprint the external template
-implementation from this checkout. A clean-checkout probe is a separate release
-evidence check and is expected to fail in an intentionally dirty development
-tree.
+The structured renderer identity is accepted only from an explicit clean
+checkout whose canonical repository and exact commit match
+`manuscript/config.yaml`. Its runtime path and raw remote URL are not persisted.
+A clean-checkout probe is a separate release evidence gate.
 
 ## Smoke tests
 

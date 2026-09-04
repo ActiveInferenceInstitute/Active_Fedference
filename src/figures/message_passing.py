@@ -135,7 +135,7 @@ def _agent_card(
     ax.text(
         x + 0.105,
         y + h - 0.024,
-        f"Sentinel {agent}: private $o_{agent}$",
+        f"Sentinel {agent}",
         ha="left",
         va="top",
         fontsize=9.5,
@@ -146,7 +146,7 @@ def _agent_card(
     ax.text(
         x + 0.105,
         y + 0.022,
-        r"client update $\rightarrow q_n(s)$",
+        rf"$o_{{{agent}}}\rightarrow q_{{{agent}}}(s)$",
         ha="left",
         va="bottom",
         fontsize=8.5,
@@ -244,7 +244,9 @@ def generate_message_passing(*, project_root: Path | None = None) -> Path:
     """Generate the vertically ordered, claim-bounded message-path figure."""
     apply_style()
     plt.rcParams["figure.autolayout"] = False
-    fig, ax = plt.subplots(figsize=(11.6, 9.0), dpi=150, facecolor="white")
+    # The vertical stage design is intentionally narrow enough that the
+    # manuscript-scale 8.5-point labels remain at least 7 points effective.
+    fig, ax = plt.subplots(figsize=(7.4, 10.2), dpi=150, facecolor="white")
     ax.set_xlim(0.0, 1.0)
     ax.set_ylim(0.0, 1.0)
     ax.axis("off")
@@ -275,93 +277,93 @@ def generate_message_passing(*, project_root: Path | None = None) -> Path:
     )
 
     # 1. Private observations and client-owned update routes.
-    _band(ax, 0.720, 0.215, "1  PRIVATE OBSERVATION AND CLIENT UPDATE", robust.keyline)
+    _band(ax, 0.690, 0.245, "1  PRIVATE OBSERVATION AND CLIENT UPDATE", robust.keyline)
     _agent_card(ax, 0.055, 0.775, "1", 0, COLOR_MULTI_1)
     _agent_card(ax, 0.365, 0.775, "2", 4, robust.keyline)
     _agent_card(ax, 0.675, 0.775, "n", 8, variational.keyline)
     _claim_badge(
         ax,
         0.285,
-        0.750,
-        r"NLL/KLD/$\beta=0$: project recovery identity",
+        0.720,
+        "NLL/KLD/β = 0\nproject recovery identity",
         accent=naive.keyline,
     )
     _claim_badge(
         ax,
         0.715,
-        0.750,
-        "robust client losses: source theorem under assumptions",
+        0.720,
+        "Robust client losses\nsource theorem under assumptions",
         accent=robust.keyline,
     )
 
     # 2. Posterior-only transport boundary.
-    _band(ax, 0.540, 0.145, "2  POSTERIOR-ONLY BROADCAST", COLOR_MULTI_1)
+    _band(ax, 0.515, 0.135, "2  POSTERIOR-ONLY BROADCAST", COLOR_MULTI_1)
     _box(
         ax,
-        0.235,
-        0.565,
-        0.53,
-        0.090,
-        r"Broadcast envelope: $q_n(s)$",
-        r"categorical posterior only; private outcome $o_n$ is not transported",
+        0.205,
+        0.535,
+        0.59,
+        0.085,
+        r"Broadcast $q_n(s)$; private $o_n$ stays local",
+        "categorical posterior only",
         accent=COLOR_MULTI_1,
-        owner="protocol-v1 payload boundary",
+        owner="protocol-v1 payload",
     )
     for x in (0.187, 0.497, 0.807):
-        _arrow(ax, (x, 0.790), (0.50, 0.657), color=COLOR_MULTI_1)
+        _arrow(ax, (x, 0.775), (0.50, 0.622), color=COLOR_MULTI_1)
 
     # 3. Three server routes; properties stay in their owning boxes.
-    _band(ax, 0.285, 0.215, "3  SERVER FUSION ROUTES", COLOR_DEEP)
+    _band(ax, 0.245, 0.225, "3  SERVER FUSION ROUTES", COLOR_DEEP)
     _box(
         ax,
-        0.055,
-        0.300,
-        0.275,
-        0.135,
+        0.045,
+        0.265,
+        0.285,
+        0.160,
         "Log-linear pool",
         r"$\mathrm{softmax}(\sum_n w_n\log q_n)$",
         accent=naive.color,
-        owner="qualified Eq. 7 specialization",
+        owner="qualified Eq. 7\nspecialization",
     )
     _box(
         ax,
-        0.365,
-        0.300,
-        0.275,
-        0.135,
+        0.3575,
+        0.265,
+        0.285,
+        0.160,
         "robust_aggregate",
-        r"configured divergence reweighting",
+        "configured divergence\nreweighting",
         accent=robust.keyline,
-        owner="conditional heuristic evidence",
+        owner="conditional heuristic\nevidence",
     )
     _box(
         ax,
-        0.675,
-        0.300,
-        0.275,
-        0.135,
+        0.670,
+        0.265,
+        0.285,
+        0.160,
         "variational_aggregate",
-        r"$q,a$ block updates of $F(q,a)$",
+        "$q,a$ block updates\nof $F(q,a)$",
         accent=variational.keyline,
-        owner="objective-backed weight property",
+        owner="objective-backed\nweight property",
     )
     for x, color in (
         (0.192, naive.color),
         (0.502, robust.keyline),
         (0.812, variational.keyline),
     ):
-        _arrow(ax, (0.50, 0.565), (x, 0.440), color=color, linestyle="--")
+        _arrow(ax, (0.50, 0.535), (x, 0.427), color=color, linestyle="--")
 
     # 4. Recipient-specific return, preserving cavity exclusion.
-    _band(ax, 0.065, 0.170, "4  RECIPIENT-SPECIFIC RETURN", COLOR_MULTI_1)
+    _band(ax, 0.050, 0.150, "4  RECIPIENT-SPECIFIC RETURN", COLOR_MULTI_1)
     _box(
         ax,
-        0.205,
-        0.080,
-        0.59,
-        0.085,
-        r"Cavity-excluded shared posterior $q_{-n}(s)$",
-        r"recipient n receives only senders $m\ne n$",
+        0.155,
+        0.070,
+        0.69,
+        0.090,
+        r"Cavity-excluded return $q_{-n}(s)$",
+        r"senders $m\ne n$ only",
         accent=COLOR_MULTI_1,
         owner="self-exclusion preserved",
     )
@@ -370,7 +372,7 @@ def generate_message_passing(*, project_root: Path | None = None) -> Path:
         (0.502, robust.keyline),
         (0.812, variational.keyline),
     ):
-        _arrow(ax, (x, 0.300), (0.50, 0.165), color=color, linestyle="--")
+        _arrow(ax, (x, 0.265), (0.50, 0.160), color=color, linestyle="--")
 
     fig.text(
         0.5,

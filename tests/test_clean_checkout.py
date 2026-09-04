@@ -14,6 +14,7 @@ from publication.clean_checkout import (
     HISTORICAL_RELEASE_PDF_LEDGER_PATH,
     IMMUTABLE_RELEASE_PDFS,
     REQUIRED_TRACKED_PATHS,
+    TODO_TRACKED_PATHS,
     historical_release_pdf_findings,
     inspect_clean_checkout,
 )
@@ -38,6 +39,39 @@ def test_validation_receipt_chain_is_required_for_clean_checkout() -> None:
         "src/fedference_cli/_parser.py",
         "src/fedference_cli/_support.py",
     } <= set(REQUIRED_TRACKED_PATHS)
+
+
+def test_visual_contract_chain_is_required_for_clean_checkout() -> None:
+    required = {
+        "src/analysis/artifacts.py",
+        "src/analysis/figure_exact_values.py",
+        "src/analysis/visual_contracts.py",
+        "src/figures/application_integrity_flow.py",
+        "src/figures/evidence_replication_map.py",
+        "src/figures/source_render_provenance.py",
+        "output/figures/application_integrity_flow.png",
+        "output/figures/application_integrity_flow.pdf",
+        "output/figures/evidence_replication_map.png",
+        "output/figures/evidence_replication_map.pdf",
+        "output/figures/source_render_provenance.png",
+        "output/figures/source_render_provenance.pdf",
+        "output/figures/figure_exact_values.json",
+        "output/figures/figure_exact_values.md",
+        "output/reports/application_integrity_flow.json",
+        "output/reports/evidence_replication_map.json",
+        "output/reports/sensitivity.json",
+        "output/reports/source_render_provenance.json",
+    }
+    assert required <= set(REQUIRED_TRACKED_PATHS)
+
+
+def test_every_source_owned_todo_page_is_required_for_clean_checkout() -> None:
+    todo_pages = {
+        path.relative_to(_PROJECT_ROOT).as_posix()
+        for path in (_PROJECT_ROOT / "docs" / "todo").glob("*.md")
+    }
+    assert todo_pages == set(TODO_TRACKED_PATHS)
+    assert todo_pages <= set(REQUIRED_TRACKED_PATHS)
 
 
 def test_all_immutable_release_pdfs_are_required_for_clean_checkout() -> None:

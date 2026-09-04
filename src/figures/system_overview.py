@@ -25,15 +25,23 @@ from typing_extensions import NotRequired
 from fedference.aggregation import log_linear_pool, robust_aggregate
 from figures._common import (
     COLOR_ADVERSARY,
+    COLOR_ADVERSARY_EDGE,
     COLOR_CORRECT,
     COLOR_DEEP,
+    COLOR_HONEST_EDGE,
+    COLOR_MULTI_2,
     COLOR_MUTED,
     COLOR_PANEL_FAIL,
     COLOR_PANEL_GOOD,
     COLOR_PANEL_NOTE,
     COLOR_ROBUST,
+    MIN_SCHEMATIC_FONT_SIZE,
+    SemanticStyle,
     apply_style,
+    contrasting_text_color,
     figures_dir,
+    semantic_style,
+    validate_figure_text,
 )
 
 # ---------------------------------------------------------------------------
@@ -41,9 +49,13 @@ from figures._common import (
 # ---------------------------------------------------------------------------
 HONEST_BLUE = COLOR_ROBUST
 ADVERSARIAL_RED = COLOR_ADVERSARY
+ADVERSARIAL_TEXT = COLOR_ADVERSARY_EDGE
 CORRECT_GREEN = COLOR_CORRECT
+CORRECT_TEXT = COLOR_MULTI_2
+HONEST_TEXT = COLOR_HONEST_EDGE
 PANEL_BG_FAIL = COLOR_PANEL_FAIL
 PANEL_BG_GOOD = COLOR_PANEL_GOOD
+MANUSCRIPT_WIDTH_FRACTION = 1.0
 DARK = COLOR_DEEP
 GREY = COLOR_MUTED
 
@@ -228,18 +240,35 @@ def _draw_agent(
     cx: float,
     cy: float,
     belief: np.ndarray,
-    color: str,
+    style: SemanticStyle,
     label: str,
     bar_width: float = 0.014,
     bar_height_scale: float = 0.35,
     true_state: int = TRUE_STATE,
-) -> None:
-    """Draw an agent circle with a mini bar chart above it."""
+) -> mpatches.Circle:
+    """Draw and return one directly labeled, non-colour-complete agent."""
     radius = 0.062
-    circle = plt.Circle((cx, cy), radius, color=color, zorder=3, linewidth=1.5, ec="white")
+    circle = plt.Circle(
+        (cx, cy),
+        radius,
+        facecolor=style.color,
+        edgecolor=style.keyline,
+        hatch=style.hatch,
+        zorder=3,
+        linewidth=1.8,
+    )
     ax.add_patch(circle)
-    ax.text(cx, cy, label, ha="center", va="center", fontsize=10, color="white",
-            fontweight="bold", zorder=4)
+    ax.text(
+        cx,
+        cy,
+        label,
+        ha="center",
+        va="center",
+        fontsize=10,
+        color=contrasting_text_color(style.color),
+        fontweight="bold",
+        zorder=4,
+    )
 
     # Mini bar chart above the circle
     bar_top = cy + radius + 0.04
@@ -249,6 +278,7 @@ def _draw_agent(
         bar_color = CORRECT_GREEN if s == true_state else GREY
         ax.bar(bx, bh, bottom=bar_top, width=bar_width * 0.85,
                color=bar_color, alpha=0.85, zorder=2)
+    return circle
 
 
 def _draw_consensus_bar(
@@ -321,7 +351,9 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     apply_style()
     data = build_data()
 
-    fig, axes = plt.subplots(1, 3, figsize=(14.5, 5.0), dpi=220)
+    # Stack the three explanatory panels so native 8.5-point labels remain
+    # above the effective 7-point floor in the 100%-width manuscript embed.
+    fig, axes = plt.subplots(3, 1, figsize=(7.4, 8.8), dpi=220)
     fig.patch.set_facecolor("white")
 
     agent_xs = [0.10, 0.26, 0.42, 0.58, 0.74]
@@ -330,6 +362,8 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     adv_labels = ["A₁", "A₂"]
     hon_labels = ["H₁", "H₂", "H₃"]
     all_labels = adv_labels + hon_labels
+    adversarial_style = semantic_style("adversarial")
+    honest_style = semantic_style("honest")
 
     # ------------------------------------------------------------------
     # Panel A — The Setup
@@ -345,8 +379,18 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
 
     # Legend — every color used in this panel gets a key (agents AND mini bars).
     ax_a.legend(handles=[
-        mpatches.Patch(color=ADVERSARIAL_RED, label="Adversarial agent"),
-        mpatches.Patch(color=HONEST_BLUE, label="Honest agent"),
+        mpatches.Patch(
+            facecolor=adversarial_style.color,
+            edgecolor=adversarial_style.keyline,
+            hatch=adversarial_style.hatch,
+            label="Adversarial agent (A, cross-hatched)",
+        ),
+        mpatches.Patch(
+            facecolor=honest_style.color,
+            edgecolor=honest_style.keyline,
+            hatch=honest_style.hatch,
+            label="Honest agent (H, plain fill)",
+        ),
         mpatches.Patch(color=CORRECT_GREEN, label="True-state mass"),
         mpatches.Patch(color=GREY, label="Other states"),
     ], loc="lower left", bbox_to_anchor=(0.0, -0.04), fontsize=9.5,
@@ -355,13 +399,13 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     for i, (x, belief, adv, label) in enumerate(
         zip(agent_xs, data["local_posteriors"], is_adv, all_labels)
     ):
-        color = ADVERSARIAL_RED if adv else HONEST_BLUE
-        _draw_agent(ax_a, x, agent_y, belief, color, label)
+        role_style = adversarial_style if adv else honest_style
+        _draw_agent(ax_a, x, agent_y, belief, role_style, label)
 
     # "True state" annotation (value tracks the module constant)
     ax_a.text(0.60, 0.06, f"True hidden state = {TRUE_STATE + 1}",
               ha="center", va="center",
-              fontsize=10.5, color=CORRECT_GREEN, fontweight="bold",
+              fontsize=10.5, color=CORRECT_TEXT, fontweight="bold",
               bbox={"boxstyle": "round,pad=0.3", "fc": COLOR_PANEL_NOTE,
                     "ec": CORRECT_GREEN, "alpha": 0.9})
 
@@ -384,7 +428,7 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     ax_b.axis("off")
 
     ax_b.set_title("B   Naive Equal-Weight Pooling", fontsize=13, fontweight="bold",
-                   loc="left", pad=6, color=ADVERSARIAL_RED)
+                   loc="left", pad=6, color=ADVERSARIAL_TEXT)
 
     ax_b.text(0.5, 0.95, "Log-linear pool (equal weights)", ha="center", va="bottom",
               fontsize=10, color=DARK)
@@ -401,15 +445,15 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     bar_w_b = 0.55 / N_STATES
     peak_x = 0.5 - 0.55 / 2 + (adv_peak + 0.5) * bar_w_b
     ax_b.annotate("", xy=(peak_x, 0.83), xytext=(peak_x, 0.89),
-                  arrowprops={"arrowstyle": "->", "color": ADVERSARIAL_RED, "lw": 1.4})
+                  arrowprops={"arrowstyle": "->", "color": ADVERSARIAL_TEXT, "lw": 1.4})
     ax_b.text(peak_x, 0.90, "argmax", ha="center", va="bottom",
-              fontsize=9, color=ADVERSARIAL_RED)
+              fontsize=9, color=ADVERSARIAL_TEXT)
 
     naive_peak_state = adv_peak + 1  # 1-indexed
     ax_b.text(0.5, 0.14,
               f"True-state mass: {int(data['naive_acc'])}%\n"
               f"argmax → state {naive_peak_state}  (true: {TRUE_STATE + 1})",
-              ha="center", va="center", fontsize=10.5, color=ADVERSARIAL_RED,
+              ha="center", va="center", fontsize=10.5, color=ADVERSARIAL_TEXT,
               fontweight="bold", linespacing=1.4,
               bbox={"boxstyle": "round,pad=0.4", "fc": "white",
                     "ec": ADVERSARIAL_RED, "alpha": 0.9})
@@ -426,7 +470,7 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     ax_c.axis("off")
 
     ax_c.set_title("C   Heuristic Robust Aggregation", fontsize=13, fontweight="bold",
-                   loc="left", pad=6, color=CORRECT_GREEN)
+                   loc="left", pad=6, color=CORRECT_TEXT)
 
     ax_c.text(0.5, 0.95, "Robust aggregate (effective weights)", ha="center", va="bottom",
               fontsize=10, color=DARK)
@@ -440,9 +484,9 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     bar_w_c = 0.55 / N_STATES
     rob_peak_x = 0.5 - 0.55 / 2 + (rob_peak + 0.5) * bar_w_c
     ax_c.annotate("", xy=(rob_peak_x, 0.83), xytext=(rob_peak_x, 0.89),
-                  arrowprops={"arrowstyle": "->", "color": CORRECT_GREEN, "lw": 1.4})
+                  arrowprops={"arrowstyle": "->", "color": CORRECT_TEXT, "lw": 1.4})
     ax_c.text(rob_peak_x, 0.90, "argmax", ha="center", va="bottom",
-              fontsize=9, color=CORRECT_GREEN)
+              fontsize=9, color=CORRECT_TEXT)
 
     # Weight bars for each agent (5 small bars across the middle of panel C)
     agent_xs_c = np.linspace(0.12, 0.88, 5)
@@ -454,34 +498,35 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
         zip(agent_xs_c, data["normalized_effective_weights"], is_adv, all_labels)
     ):
         bh = (w / max_w) * 0.09
-        color = ADVERSARIAL_RED if adv else HONEST_BLUE
+        role_style = adversarial_style if adv else honest_style
         ax_c.bar(x, bh, bottom=weight_y - 0.09, width=0.07,
-                 color=color, alpha=0.85, zorder=3)
+                 color=role_style.color, edgecolor=role_style.keyline,
+                 hatch=role_style.hatch, linewidth=1.0, alpha=0.85, zorder=3)
         ax_c.text(x, weight_y - 0.09 + bh + 0.005, f"{w:.2f}",
                   ha="center", va="bottom", fontsize=8.5, color=DARK)
         ax_c.text(x, weight_y - 0.105, lbl, ha="center", va="top",
-                  fontsize=8.5, color=color)
+                  fontsize=8.5, color=ADVERSARIAL_TEXT if adv else HONEST_TEXT)
 
     rob_peak_state = rob_peak + 1  # 1-indexed
     ax_c.text(0.5, 0.045,
               f"True-state mass: {int(data['robust_acc'])}%\n"
               f"argmax → state {rob_peak_state}  (true: {TRUE_STATE + 1})",
-              ha="center", va="center", fontsize=10.5, color=CORRECT_GREEN,
+              ha="center", va="center", fontsize=10.5, color=CORRECT_TEXT,
               fontweight="bold", linespacing=1.4,
               bbox={"boxstyle": "round,pad=0.4", "fc": "white",
                     "ec": CORRECT_GREEN, "alpha": 0.9})
 
     # ------------------------------------------------------------------
-    # Dividers between panels
+    # Dividers between vertically ordered panels.
     # ------------------------------------------------------------------
-    for x_pos in [0.355, 0.665]:
+    for y_pos in (0.655, 0.345):
         fig.add_artist(
-            plt.Line2D([x_pos, x_pos], [0.04, 0.96],
+            plt.Line2D([0.04, 0.96], [y_pos, y_pos],
                        transform=fig.transFigure,
                        color=GREY, linewidth=0.8, linestyle=":", alpha=0.6)
         )
 
-    fig.subplots_adjust(left=0.02, right=0.98, top=0.93, bottom=0.08, wspace=0.05)
+    fig.subplots_adjust(left=0.05, right=0.95, top=0.98, bottom=0.035, hspace=0.14)
 
     # ------------------------------------------------------------------
     # Save
@@ -490,6 +535,11 @@ def generate_system_overview(*, project_root: Path | None = None) -> None:
     png_path = out_dir / "system_overview.png"
     pdf_path = out_dir / "system_overview.pdf"
 
+    validate_figure_text(
+        fig,
+        minimum_font_size=MIN_SCHEMATIC_FONT_SIZE,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
     fig.savefig(png_path, dpi=200, bbox_inches="tight", facecolor="white")
     fig.savefig(
         pdf_path,

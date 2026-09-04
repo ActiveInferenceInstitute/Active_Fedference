@@ -28,7 +28,7 @@ in `src/`.
 | Script | Output | Status |
 | --- | --- | --- |
 | `02_run_analysis.py [--profile publication|smoke] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
-| `record_pipeline_stage.py render [--timestamp UTC] [--project-root PATH]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
+| `record_pipeline_stage.py render --template-root PATH [--timestamp UTC] [--project-root PATH]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
 | `validate_test_coverage.py [--verify] [--project-root PATH]` | `output/data/test_coverage_receipt.json` | REQUIRED full-suite receipt before final hydration |
 | `z_generate_manuscript_variables.py [--provisional-validation] [--project-root PATH]` | `output/data/manuscript_variables.json`, `output/manuscript/` | REQUIRED; final non-draft mode consumes the test/coverage receipt, while provisional mode never records hydration |
 | `prepare_web_package.py [--project-root PATH]` | Mirrored figures and numbered cross-format web references | REQUIRED for web package QA |
@@ -42,7 +42,7 @@ in `src/`.
 | `zenodo_release.py [--project-root PATH]` | Create a linked `--new-version-of` draft or `--reserve` one, update draft metadata, optionally correct published metadata in place with `--edit-published-metadata`, upload with explicit `--replace-existing`, verify, and explicitly publish; `--confirm-publish` is required | Release boundary |
 | `validate_mermaid.py [--project-root PATH]` | Validate README/docs Mermaid fences; optionally render every block to SVG | Documentation/publication QA |
 | `01_run_invariants.py [--project-root PATH]` | Invariant report (stdout) | Optional |
-| `00_preflight.py [--project-root PATH] [--template-root PATH]` | Environment diagnostics | Optional |
+| `00_preflight.py --template-root PATH [--project-root PATH]` | Environment and renderer-lock diagnostics | REQUIRED before each external render pass |
 | `summarize_tokens.py [--project-root PATH]` | Summary of all manuscript tokens and their resolved values (stdout) | Optional audit |
 | `validate_outputs.py [--project-root PATH]` | Checks all expected Stage-02 figures/reports/variables exist and are non-empty | Optional audit |
 | `generate_api_docs.py [--project-root PATH]` | `output/docs/api_reference.md` | Aesthetic |
@@ -197,10 +197,8 @@ uv run --locked python scripts/prepare_web_package.py
 uv run --locked python scripts/validate_web_package.py
 uv run --locked python scripts/validate_rendered_surfaces.py
 
-TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
-TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
 uv run --locked python scripts/record_pipeline_stage.py render \
-  --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
+  --template-root "$TEMPLATE_REPO"
 uv run --locked --extra dev python scripts/validate_test_coverage.py --verify
 uv run --locked python scripts/validate_pipeline_freshness.py
 
@@ -246,7 +244,7 @@ receipt; it refuses to attest a tree edited while pytest was running. The
 clean-checkout probe is intentionally separate: it reports whether the current
 Git tree is clean and clone-correct, and therefore adds no evidence when run in
 a dirty development checkout.
-Schema 3 records `recorded_at: null` by default, making a no-op stage receipt
+Schema 4 records `recorded_at: null` by default, making a no-op stage receipt
 byte-idempotent. A canonical `--timestamp` or `SOURCE_DATE_EPOCH` is optional
 external metadata, not permission to skip content freshness.
 

@@ -27,9 +27,10 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
-        "--renderer",
-        default=None,
-        help="Optional external renderer label for the render-stage receipt.",
+        "--template-root",
+        type=Path,
+        required=True,
+        help="clean Template checkout whose exact identity matches the source lock",
     )
     parser.add_argument(
         "--timestamp",
@@ -48,8 +49,6 @@ def main(argv: list[str] | None = None) -> int:
     from project_paths import resolve_script_project_root
 
     root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
-    if args.renderer is not None and args.stage != "render":
-        parser.error("--renderer is valid only for the render stage")
     from publication.release_manifest import timestamp_from_source_date_epoch
 
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH")
@@ -67,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
     record = record_pipeline_stage(
         root,
         args.stage,
-        renderer=args.renderer,
+        template_root=args.template_root.expanduser().resolve(),
         timestamp=timestamp,
     )
     print(f"pipeline stage recorded: {record['stage']}")

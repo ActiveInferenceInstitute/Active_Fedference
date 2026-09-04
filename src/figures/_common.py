@@ -30,6 +30,14 @@ PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent.parent
 # but neither floor is allowed to drift silently.
 MIN_QUANTITATIVE_FONT_SIZE: float = 9.5
 MIN_SCHEMATIC_FONT_SIZE: float = 8.5
+# A 7-point effective floor is the smallest project-supported figure text at
+# the final portrait-manuscript scale. Native artist floors remain higher so
+# HTML zoom and full-size assets retain comfortable typography. The default
+# width fraction matches the dominant 95% manuscript embed; narrower embeds
+# must declare their actual fraction at the shared save boundary.
+MIN_EFFECTIVE_MANUSCRIPT_FONT_SIZE: float = 7.0
+MANUSCRIPT_TEXT_WIDTH_INCHES: float = 6.5
+DEFAULT_MANUSCRIPT_WIDTH_FRACTION: float = 0.95
 FIGURE_EXPORT_DPI: int = 220
 
 #: Shared palette: naive (Friston) vs robust (FedGVI) consensus. The pair is
@@ -197,6 +205,89 @@ SEMANTIC_STYLES = MappingProxyType(
             linewidth=1.0,
             keyline=COLOR_GRID,
         ),
+        # Neutral condition and diagnostic roles. These are deliberately
+        # separate from the three aggregation-method identities above.
+        "condition_reference": SemanticStyle(
+            color=COLOR_MUTED,
+            marker="o",
+            dash="-",
+            hatch="",
+            linewidth=1.8,
+            keyline=COLOR_AXIS,
+        ),
+        "condition_comparison": SemanticStyle(
+            color=COLOR_PURPLE,
+            marker="D",
+            dash=":",
+            hatch="..",
+            linewidth=1.8,
+            keyline="#3C2C68",
+        ),
+        "estimate": SemanticStyle(
+            color=COLOR_GOLD,
+            marker="P",
+            dash=(0, (5, 2)),
+            hatch="++",
+            linewidth=1.8,
+            keyline="#613400",
+        ),
+        "favored": SemanticStyle(
+            color=COLOR_VARIATE,
+            marker="P",
+            dash=(0, (5, 2)),
+            hatch="..",
+            linewidth=1.8,
+            keyline=COLOR_MULTI_2,
+        ),
+        "rejected": SemanticStyle(
+            color=COLOR_MUTED,
+            marker="X",
+            dash="--",
+            hatch="xx",
+            linewidth=1.8,
+            keyline=COLOR_AXIS,
+        ),
+        # Evidence-class identities belong to the claim map, not to a method.
+        "evidence_formal": SemanticStyle(
+            color=COLOR_VARIATE,
+            marker="P",
+            dash="-",
+            hatch="++",
+            linewidth=1.8,
+            keyline=COLOR_MULTI_2,
+        ),
+        "evidence_source_conditional": SemanticStyle(
+            color=COLOR_GOLD,
+            marker="d",
+            dash="--",
+            hatch="//",
+            linewidth=1.8,
+            keyline="#613400",
+        ),
+        "evidence_conditional_empirical": SemanticStyle(
+            color=COLOR_MULTI_1,
+            marker="v",
+            dash="-.",
+            hatch="\\",
+            linewidth=1.8,
+            keyline="#0E3549",
+        ),
+        "evidence_scoped": SemanticStyle(
+            color=COLOR_MULTI_2,
+            marker="h",
+            dash=":",
+            hatch="oo",
+            linewidth=1.8,
+            keyline="#0E3B36",
+        ),
+        "evidence_open": SemanticStyle(
+            color=COLOR_ADVERSARY,
+            marker="X",
+            dash=(0, (7, 2)),
+            hatch="xx",
+            linewidth=1.8,
+            keyline=COLOR_ADVERSARY_EDGE,
+        ),
     }
 )
 
@@ -346,7 +437,20 @@ def _effective_text_background(
                 if values.ndim < 2 or values.shape[0] == 0 or values.shape[1] == 0:
                     continue
                 col_fraction = (data_x - left) / (right - left) if right != left else 0.0
-                row_fraction = (data_y - bottom) / (top - bottom) if top != bottom else 0.0
+                vertical_fraction = (data_y - bottom) / (top - bottom) if top != bottom else 0.0
+                # ``AxesImage.get_extent()`` preserves explicit reversed
+                # extents and also reflects Matplotlib's default upper-origin
+                # extent.  Array row zero is nevertheless painted at the top
+                # for ``origin='upper'`` and at the bottom for
+                # ``origin='lower'``.  Invert exactly once from the declared
+                # bottom-to-top fraction; relying on extent direction alone
+                # samples the opposite heatmap cell for the default upper
+                # origin.
+                row_fraction = (
+                    1.0 - vertical_fraction
+                    if image.origin == "upper"
+                    else vertical_fraction
+                )
                 col = int(np.clip(np.floor(col_fraction * values.shape[1]), 0, values.shape[1] - 1))
                 row = int(np.clip(np.floor(row_fraction * values.shape[0]), 0, values.shape[0] - 1))
                 sample = values[row, col]
@@ -374,27 +478,48 @@ def _effective_text_background(
     return background
 
 
-def _is_genuinely_large_text(artist: Text) -> bool:
-    """Return whether the text qualifies for the 3:1 large-text exception."""
-    size = float(artist.get_fontsize())
+def _is_genuinely_large_text(
+    artist: Text,
+    *,
+    effective_font_size: float,
+) -> bool:
+    """Return whether page-scaled text qualifies for the 3:1 exception."""
     weight = artist.get_fontweight()
     bold = (isinstance(weight, str) and weight.lower() in {"bold", "heavy", "semibold", "demibold"}) or (
         isinstance(weight, (int, float)) and not isinstance(weight, bool) and float(weight) >= 700.0
     )
-    return size >= 18.0 or (bold and size >= 14.0)
+    return effective_font_size >= 18.0 or (bold and effective_font_size >= 14.0)
 
 
 def validate_figure_text(
     fig: "plt.Figure",
     *,
     minimum_font_size: float,
+    manuscript_width_fraction: float = DEFAULT_MANUSCRIPT_WIDTH_FRACTION,
+    minimum_effective_font_size: float = MIN_EFFECTIVE_MANUSCRIPT_FONT_SIZE,
 ) -> None:
-    """Validate every visible text artist's size and effective contrast."""
+    """Validate visible text at native and final manuscript scale.
+
+    ``manuscript_width_fraction`` is the width percentage used by the canonical
+    portrait manuscript expressed as a fraction of its text block. The check is
+    conservative because ``bbox_inches='tight'`` can reduce exported whitespace,
+    but it never assumes that a wide canvas will be legible merely because its
+    native Matplotlib artists meet the point-size floor.
+    """
     if minimum_font_size <= 0:
         raise ValueError("minimum_font_size must be positive")
+    if not 0 < manuscript_width_fraction <= 1:
+        raise ValueError("manuscript_width_fraction must be in (0, 1]")
+    if minimum_effective_font_size <= 0:
+        raise ValueError("minimum_effective_font_size must be positive")
+    canvas_width = float(fig.get_figwidth())
+    if canvas_width <= 0:
+        raise ValueError("figure canvas width must be positive")
+    page_scale = MANUSCRIPT_TEXT_WIDTH_INCHES * manuscript_width_fraction / canvas_width
     # Materialise tick labels and legend text before traversing artists.
     fig.canvas.draw()
     undersized: list[str] = []
+    effectively_undersized: list[str] = []
     low_contrast: list[str] = []
     for artist in fig.findobj(match=Text):
         text = artist.get_text().strip()
@@ -404,6 +529,12 @@ def validate_figure_text(
         if size + 1e-12 < minimum_font_size:
             compact = " ".join(text.split())
             undersized.append(f"{compact[:72]!r} ({size:g} pt)")
+        effective_size = size * page_scale
+        if effective_size + 1e-12 < minimum_effective_font_size:
+            compact = " ".join(text.split())
+            effectively_undersized.append(
+                f"{compact[:72]!r} ({effective_size:.2f} pt effective from {size:g} pt native)"
+            )
         background = _effective_text_background(artist, fig)
         foreground_rgba = list(to_rgba(artist.get_color()))
         artist_alpha = artist.get_alpha()
@@ -411,7 +542,14 @@ def validate_figure_text(
             foreground_rgba[3] *= float(artist_alpha)
         painted_foreground = _composite_rgba(foreground_rgba, background)
         ratio = contrast_ratio(painted_foreground, background)
-        minimum_contrast = 3.0 if _is_genuinely_large_text(artist) else 4.5
+        minimum_contrast = (
+            3.0
+            if _is_genuinely_large_text(
+                artist,
+                effective_font_size=effective_size,
+            )
+            else 4.5
+        )
         if ratio + 1e-12 < minimum_contrast:
             compact = " ".join(text.split())
             low_contrast.append(f"{compact[:72]!r} ({ratio:.2f}:1; required {minimum_contrast:.1f}:1)")
@@ -420,6 +558,15 @@ def validate_figure_text(
         if len(undersized) > 8:
             details += f", and {len(undersized) - 8} more"
         raise ValueError(f"visible figure text below {minimum_font_size:g} pt: {details}")
+    if effectively_undersized:
+        details = ", ".join(effectively_undersized[:8])
+        if len(effectively_undersized) > 8:
+            details += f", and {len(effectively_undersized) - 8} more"
+        raise ValueError(
+            "visible figure text below "
+            f"{minimum_effective_font_size:g} pt at declared manuscript scale "
+            f"({manuscript_width_fraction * 100:g}% width): {details}"
+        )
     if low_contrast:
         details = ", ".join(low_contrast[:8])
         if len(low_contrast) > 8:
@@ -469,9 +616,14 @@ def save_figure(
     path: Path,
     *,
     minimum_font_size: float = MIN_QUANTITATIVE_FONT_SIZE,
+    manuscript_width_fraction: float = DEFAULT_MANUSCRIPT_WIDTH_FRACTION,
 ) -> Path:
     """Validate and save deterministic quantitative PNG/PDF companions."""
-    validate_figure_text(fig, minimum_font_size=minimum_font_size)
+    validate_figure_text(
+        fig,
+        minimum_font_size=minimum_font_size,
+        manuscript_width_fraction=manuscript_width_fraction,
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)
     fig.savefig(
@@ -487,6 +639,7 @@ def save_figure_pair(
     path: Path,
     *,
     minimum_font_size: float = MIN_SCHEMATIC_FONT_SIZE,
+    manuscript_width_fraction: float = DEFAULT_MANUSCRIPT_WIDTH_FRACTION,
 ) -> Path:
     """Save a publication figure as deterministic PNG and PDF companions.
 
@@ -495,7 +648,11 @@ def save_figure_pair(
     metadata is suppressed so repeated schematic renders are byte-stable in
     tests and do not acquire run-specific timestamps.
     """
-    validate_figure_text(fig, minimum_font_size=minimum_font_size)
+    validate_figure_text(
+        fig,
+        minimum_font_size=minimum_font_size,
+        manuscript_width_fraction=manuscript_width_fraction,
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)
     fig.savefig(

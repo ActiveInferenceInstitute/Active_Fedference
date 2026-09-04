@@ -79,7 +79,7 @@ def generate_efe_decomposition(
         )
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(10.8, 7.0))
+    fig, ax = plt.subplots(figsize=(7.4, 7.0))
     fig.subplots_adjust(left=0.12, right=0.98, top=0.80, bottom=0.25)
 
     # Left stack: risk + ambiguity (both add toward G). The stacks use the
@@ -243,7 +243,11 @@ def generate_efe_decomposition(
         borderaxespad=0.0,
     )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.85,
+    )
 
 
 __all__ = ["generate_efe_decomposition"]

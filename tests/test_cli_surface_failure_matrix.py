@@ -922,7 +922,7 @@ def test_full_surface_validator_accumulates_pdf_log_inventory_and_web_findings(
         assert expected in joined
 
 
-def test_surface_validator_handles_empty_outputs_with_valid_web(tmp_path: Path) -> None:
+def test_surface_validator_fails_closed_without_figure_registry(tmp_path: Path) -> None:
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
     (web / "index.html").write_text(
@@ -933,10 +933,11 @@ def test_surface_validator_handles_empty_outputs_with_valid_web(tmp_path: Path) 
         encoding="utf-8",
     )
     result = validate_rendered_surfaces(tmp_path)
-    assert result.web.ok
+    assert not result.web.ok
     assert not result.ok
     assert any("missing combined manuscript PDF" in finding for finding in result.findings)
     assert any("missing generated slide PDFs" in finding for finding in result.findings)
+    assert any("required figure registry is missing" in finding for finding in result.findings)
 
 
 def test_publication_text_and_log_parsers_report_each_stable_failure(

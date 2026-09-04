@@ -26,6 +26,8 @@ from ._common import (
     shade_ci,
 )
 
+MANUSCRIPT_WIDTH_FRACTION = 0.80
+
 
 def generate_language_kl_decay(
     kl_trajectory: Sequence[float],
@@ -44,7 +46,7 @@ def generate_language_kl_decay(
         trajectory_ci: Optional ``(lo, hi)`` pointwise 95% percentile-bootstrap
             intervals, with one bound per trajectory point. The bootstrap unit
             is the independent configured seed, never the ordered time points.
-        monotone_decreasing: Optional monotonicity verdict, annotated on the plot.
+        monotone_decreasing: Optional monotonicity check, annotated on the plot.
         n_seeds: Optional number of independent seeds represented by the mean and
             interval.
         project_root: Project root override.
@@ -80,7 +82,9 @@ def generate_language_kl_decay(
 
     apply_style()
     steps = np.arange(kl.size)
-    fig, ax = plt.subplots(figsize=(8.0, 5.2))
+    # The source manuscript uses an 80%-width embed; the compact canvas keeps
+    # native 10-point explanatory text above the effective 7-point floor.
+    fig, ax = plt.subplots(figsize=(7.0, 5.2))
 
     if ci_lo is not None and ci_hi is not None:
         seed_label = f" (n={n_seeds} seeds)" if n_seeds is not None else ""
@@ -92,8 +96,9 @@ def generate_language_kl_decay(
             COLOR_ROBUST,
             alpha=0.16,
         )
-        ax.plot([], [], color=COLOR_ROBUST, alpha=0.42, linewidth=7.0,
-                label=f"95% seed bootstrap CI{seed_label}")
+        ax.plot(
+            [], [], color=COLOR_ROBUST, alpha=0.42, linewidth=7.0, label=f"95% seed bootstrap CI{seed_label}"
+        )
 
     ax.plot(
         steps,
@@ -108,22 +113,26 @@ def generate_language_kl_decay(
     ax.set_ylabel("KL divergence (nats)")
     ax.set_ylim(bottom=0.0)
     relation = "source-mechanism analogue to Friston et al. (2024), Fig. 7"
-    ax.set_title(f"Categorical language acquisition\n({relation})", pad=12)
+    ax.set_title(f"Seed-mean categorical KL trajectory\n({relation})", pad=12)
 
     if monotone_decreasing is not None:
-        verdict = "monotone decreasing" if monotone_decreasing else "non-monotone"
+        displayed_pattern = "monotone decrease" if monotone_decreasing else "non-monotone trajectory"
         seed_text = f"\nSeeds: {n_seeds}" if n_seeds is not None else ""
         annotate_stats_box(
             ax,
-            f"Verdict: {verdict}{seed_text}\n"
-            f"Initial mean: {kl[0]:.3g} nats\n"
-            f"Final mean: {kl[-1]:.3g} nats",
+            f"Displayed trajectory: {displayed_pattern}{seed_text}\n"
+            f"Initial seed mean: {kl[0]:.3g} nats\n"
+            f"Final seed mean: {kl[-1]:.3g} nats",
             loc="upper right",
             fontsize=10,
         )
     ax.legend(fontsize=10, loc="center right")
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
 
 
 __all__ = ["generate_language_kl_decay"]

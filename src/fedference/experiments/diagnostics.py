@@ -24,6 +24,8 @@ _BNN_N_SEEDS: int = 20
 _BNN_BOOTSTRAP_ALPHA: float = 0.05
 _BNN_BOOTSTRAP_N: int = 5000
 _DEFAULT_COLONY_CONFIDENCE: float = 0.45
+_BNN_STANDARD_LABEL = "nll / L2=0.05 (standard proxy)"
+_BNN_ROBUST_LABEL = "rcce / L2=0.10 (exploratory proxy)"
 
 
 def run_efe_decomposition_report(seed: int) -> dict[str, Any]:
@@ -176,14 +178,17 @@ def run_bnn_robustness_report(
     robust_loss_param: float = _BNN_ROBUST_LOSS_PARAM,
     contamination_levels: tuple[float, ...] = _BNN_CONTAMINATION_LEVELS,
 ) -> dict[str, Any]:
-    """Exploratory generalized-Bayes logistic baseline under contamination.
+    """Exploratory two-configuration point-estimate proxy under contamination.
 
     Despite the legacy report stem, :func:`fed_gvi_logreg` fits point-estimate
     logistic regressions. It does not estimate a posterior over network weights
-    and this report is not a posterior-uncertainty BNN result. The complete
-    synthetic contamination sweep is returned; ``peak_margin_contamination``
-    is selected within that evaluated sweep for display and is not a
-    preregistered or leakage-free operating point.
+    and this report is not a posterior-uncertainty BNN result. The compared
+    configurations change both client loss and L2 shrinkage, so
+    the report cannot identify an RCCE-only effect. The complete synthetic
+    contamination sweep is returned; ``peak_margin_contamination`` is selected
+    within that evaluated sweep for display and is not a preregistered or
+    leakage-free operating point. ``robust_loss_param`` and ``n_per`` are
+    configured inputs rather than selected operating points.
     """
     if isinstance(n_seeds, bool) or not isinstance(n_seeds, int) or n_seeds < 2:
         raise ValueError("n_seeds must be an integer >= 2")
@@ -192,9 +197,9 @@ def run_bnn_robustness_report(
     if (
         isinstance(robust_loss_param, bool)
         or not np.isfinite(float(robust_loss_param))
-        or float(robust_loss_param) < 0.0
+        or not 0.0 <= float(robust_loss_param) <= 1.0
     ):
-        raise ValueError("robust_loss_param must be a finite non-negative number")
+        raise ValueError("robust_loss_param must be a finite number in [0, 1]")
     if not contamination_levels:
         raise ValueError("contamination_levels must be non-empty")
     if any(
@@ -254,8 +259,9 @@ def run_bnn_robustness_report(
         "model_family": "point_estimate_logistic_regression",
         "study_status": "exploratory_conditional_synthetic_sweep",
         "selection_disclosure": (
-            "peak_margin_contamination is selected within the evaluated synthetic "
-            "sweep by maximum robust-minus-standard held-out accuracy margin"
+            "peak_margin_contamination is selected within the displayed contamination "
+            "sweep by maximum composite-configuration held-out accuracy margin; "
+            "robust_loss_param and n_per are configured inputs, not selected by this report"
         ),
         "analysis_unit": "synthetic-data seed within contamination operating point",
         "replication_unit": "synthetic-data seed",
@@ -263,20 +269,27 @@ def run_bnn_robustness_report(
         "claim_boundary": (
             "exploratory conditional point-estimate baseline; no posterior-uncertainty "
             "BNN, leakage-free calibration, universal robustness, or source-protocol "
-            "BNN replication claim"
+            "BNN replication claim; the legacy AR argument selects stronger L2 "
+            "shrinkage and does not evaluate an Alpha-Renyi objective"
+        ),
+        "configuration_boundary": (
+            "this composite two-configuration contrast changes both client loss and L2 "
+            "shrinkage: NLL with L2 coefficient 0.05 versus RCCE with L2 coefficient "
+            "0.10; it cannot identify an RCCE-only effect. KLD and AR are compatibility "
+            "argument names, and neither branch computes a weight-space divergence"
         ),
         "contamination_levels": levels,
         "accuracy_by_config": {
-            "nll / KLD (standard)": standard,
-            "rcce / AR (robust)": robust,
+            _BNN_STANDARD_LABEL: standard,
+            _BNN_ROBUST_LABEL: robust,
         },
         "accuracy_ci_by_config": {
-            "nll / KLD (standard)": standard_ci,
-            "rcce / AR (robust)": robust_ci,
+            _BNN_STANDARD_LABEL: standard_ci,
+            _BNN_ROBUST_LABEL: robust_ci,
         },
         "accuracy_seed_values_by_config": {
-            "nll / KLD (standard)": standard_seed_values,
-            "rcce / AR (robust)": robust_seed_values,
+            _BNN_STANDARD_LABEL: standard_seed_values,
+            _BNN_ROBUST_LABEL: robust_seed_values,
         },
         "robust_minus_standard": gaps,
         "peak_margin": float(gaps[peak_idx]),

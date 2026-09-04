@@ -35,6 +35,7 @@ _ROBUST_STYLE_ROLES = (
     "operating_point_3",
     "operating_point_4",
 )
+MANUSCRIPT_WIDTH_FRACTION = 0.80
 
 
 def generate_robustness_sweep(
@@ -79,7 +80,9 @@ def generate_robustness_sweep(
         raise ValueError("rates must be non-empty")
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(7.4, 5.1))
+    # Match the 80%-width manuscript embed at the validation boundary. The
+    # narrower canvas raises effective type size without shrinking any artist.
+    fig, ax = plt.subplots(figsize=(7.0, 5.5))
     fig.subplots_adjust(left=0.13, right=0.96, top=0.86, bottom=0.30)
     robust_idx = 0
     has_profile = rate_summary is not None
@@ -249,7 +252,11 @@ def generate_robustness_sweep(
             bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
         )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
 
 
 __all__ = ["generate_robustness_sweep"]

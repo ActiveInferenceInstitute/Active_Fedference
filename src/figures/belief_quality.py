@@ -42,7 +42,7 @@ def generate_belief_quality(
     yerr = np.vstack((values - intervals[:, 0], intervals[:, 1] - values))
 
     apply_style()
-    fig, axes = plt.subplots(1, 2, figsize=(11.0, 5.4))
+    fig, axes = plt.subplots(1, 2, figsize=(7.8, 5.4))
     fig.subplots_adjust(left=0.09, right=0.98, top=0.83, bottom=0.22, wspace=0.30)
     x = np.arange(len(names))
     for index, name in enumerate(names):
@@ -124,7 +124,11 @@ def generate_belief_quality(
     axes[1].set_title("Reliability diagnostic")
     axes[1].legend(fontsize=MIN_QUANTITATIVE_FONT_SIZE, loc="best")
     fig.suptitle("Proper scoring and calibration controls", fontweight="bold")
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.90,
+    )
 
 
 __all__ = ["generate_belief_quality"]

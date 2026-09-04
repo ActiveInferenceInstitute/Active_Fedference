@@ -40,6 +40,12 @@ def variables(tmp_path_factory) -> dict[str, str]:
     (root / "manuscript" / "config.yaml").write_text(
         (_MANUSCRIPT / "config.yaml").read_text(encoding="utf-8"), encoding="utf-8"
     )
+    (root / "manuscript" / "16_results_belief_sharing.md").write_text(
+        "![Belief-sharing posterior mass in the bounded smoke fixture.]"
+        "(../output/figures/belief_heatmap.png)"
+        "{#fig:belief-heatmap width=80%}\n",
+        encoding="utf-8",
+    )
     # Keep this real end-to-end fixture bounded. Publication remains the
     # default for the release entry point; the table-arity oracle only needs
     # the same pipeline's schema, not publication-scale sampling.

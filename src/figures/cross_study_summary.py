@@ -29,10 +29,26 @@ from figures._common import (
 
 _UNIT_ORDER: tuple[str, ...] = ("fraction", "nats", "R-sq")
 _UNIT_TITLES: dict[str, str] = {
-    "fraction": "Accuracy gaps (fraction units)",
-    "nats": "Information / free-energy changes (nats)",
+    "fraction": "Signed accuracy contrast (fraction)",
+    "nats": "Signed information / free-energy\ncontrast (nats)",
     "R-sq": r"Parameter-recovery fit ($R^2$, unitless)",
 }
+_UNIT_AXIS_LABELS: dict[str, str] = {
+    "fraction": "Signed contrast (fraction)",
+    "nats": "Signed contrast (nats)",
+    "R-sq": r"Parameter-recovery fit ($R^2$)",
+}
+
+
+def _display_label(entry: dict) -> str:
+    """Return the visible study label with selection status made explicit."""
+    label = str(entry["label"]).replace(
+        "Emergence (BMR)",
+        "Configured BMR\nsign control",
+    )
+    if int(entry.get("study", -1)) == 4:
+        return "Study 4\nWithin-run\ndisplay-selected maximum"
+    return label
 
 
 def _value_annotation_position(
@@ -132,21 +148,23 @@ def generate_cross_study_summary(
         missing = [unit for unit, entries in grouped.items() if not entries]
         raise ValueError(f"cross-study report is missing native-unit facet(s): {missing}")
 
-    # Page-compatible 2x2 composition: the accuracy family receives the full
-    # left column; the smaller native-unit families occupy the right column.
-    fig = plt.figure(figsize=(12.8, 7.4), facecolor="white")
+    # Use a page-compatible 2 x 2 composition: the six-row accuracy family
+    # occupies the full left column, while the two shorter native-unit facets
+    # occupy the right column.  This preserves separate estimands without the
+    # unusually tall portrait page previously required by a three-panel stack.
+    fig = plt.figure(figsize=(9.2, 7.4), facecolor="white")
     fig.set_layout_engine("none")
     grid = fig.add_gridspec(
         2,
         2,
-        width_ratios=(1.45, 1.0),
+        width_ratios=(1.48, 1.0),
         height_ratios=(1.0, 1.0),
-        left=0.20,
-        right=0.98,
-        top=0.84,
+        left=0.235,
+        right=0.97,
+        top=0.79,
         bottom=0.16,
-        wspace=0.38,
-        hspace=0.46,
+        wspace=0.48,
+        hspace=0.74,
     )
     axes_by_unit = {
         "fraction": fig.add_subplot(grid[:, 0]),
@@ -171,7 +189,7 @@ def generate_cross_study_summary(
             COLOR_ROBUST if value > threshold else (COLOR_NAIVE if value < -threshold else COLOR_MUTED)
             for value in means
         ]
-        ax.barh(
+        bars = ax.barh(
             y,
             means,
             xerr=[means - ci_lo, ci_hi - means],
@@ -186,6 +204,8 @@ def generate_cross_study_summary(
                 "ecolor": COLOR_AXIS,
             },
         )
+        for bar, value in zip(bars, means, strict=True):
+            bar.set_hatch("///" if value > threshold else ("xxx" if value < -threshold else ".."))
         ax.axvline(0.0, color=COLOR_GRID, linewidth=1.0, linestyle=":")
 
         x_lo = min(0.0, float(ci_lo.min()))
@@ -201,57 +221,79 @@ def generate_cross_study_summary(
                 f"{value:+.3f}",
                 va="center",
                 ha=alignment,
-                fontsize=10.5,
+                fontsize=11.2,
                 fontweight="bold",
                 bbox=bbox,
             )
         ax.set_yticks(y)
-        display_labels = [
-            str(entry["label"]).replace("Emergence (BMR)", "Configured BMR sign control") for entry in entries
-        ]
-        ax.set_yticklabels(display_labels, fontsize=10.5)
-        ax.set_xlabel(_UNIT_TITLES[unit], labelpad=7, fontsize=12)
+        display_labels = [_display_label(entry) for entry in entries]
+        if unit == "fraction":
+            ax.set_yticklabels(display_labels, fontsize=11.2)
+        else:
+            # The compact right-hand facets carry study names inside their
+            # bars.  Long external tick labels otherwise intrude into Panel A
+            # and collide with its direct value annotations.
+            ax.set_yticklabels(["" for _ in display_labels])
+            label_x = max(0.0, x_lo) + 0.035 * span
+            for index, label in enumerate(display_labels):
+                ax.text(
+                    label_x,
+                    index,
+                    label,
+                    ha="left",
+                    va="center",
+                    fontsize=10.8,
+                    color=COLOR_AXIS,
+                    linespacing=1.05,
+                    bbox={
+                        "boxstyle": "round,pad=0.14",
+                        "facecolor": "white",
+                        "edgecolor": "none",
+                        "alpha": 0.86,
+                    },
+                )
+        ax.set_xlabel(_UNIT_AXIS_LABELS[unit], labelpad=5, fontsize=11.8)
         panel_letter = chr(ord("A") + panel_index)
         ax.set_title(
             f"{panel_letter}  {_UNIT_TITLES[unit]}",
             loc="left",
             pad=7,
-            fontsize=14,
+            fontsize=12.8,
         )
         ax.invert_yaxis()
-        ax.tick_params(axis="x", labelsize=10.5)
-        ax.text(
-            0.99,
-            0.04,
-            f"n = {report_n_seeds} seeds; whiskers = 95% seed bootstrap CI",
-            transform=ax.transAxes,
-            ha="right",
-            va="bottom",
-            fontsize=9.5,
-            color=COLOR_AXIS,
-            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.88, "pad": 0.5},
-        )
+        ax.tick_params(axis="x", labelsize=11.0)
 
     fig.suptitle(
-        "Cross-study summary by native estimand and unit\nPanel scales are intentionally separate",
-        fontsize=16,
+        "Cross-study estimands by native unit",
+        fontsize=16.5,
         fontweight="bold",
+        y=0.980,
     )
     fig.text(
         0.5,
-        0.055,
-        "Intervals come from the separate harmonized seed-level rerun, including "
-        "studies whose primary figure is a deterministic single-posterior diagnostic. "
-        "Whiskers are 95% seed-bootstrap intervals; seed is the independent unit.",
+        0.902,
+        f"Separate harmonized seed-level rerun · n = {report_n_seeds} seeds · seed is the independent unit · "
+        "whiskers are 95% percentile-bootstrap intervals",
         ha="center",
-        va="bottom",
-        fontsize=9.5,
+        va="center",
+        fontsize=10.8,
         color=COLOR_AXIS,
         wrap=True,
     )
+    fig.text(
+        0.5,
+        0.045,
+        "/// positive signed estimand    xxx negative signed estimand    ·· near zero\n"
+        "A spans the left column; B and C occupy the upper and lower right. "
+        "Direction is metric-specific; no cross-unit ranking.",
+        ha="center",
+        va="center",
+        fontsize=11.0,
+        color=COLOR_AXIS,
+    )
 
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename)
+    return save_figure(fig, out / filename, manuscript_width_fraction=0.95)
 
 
 __all__ = ["generate_cross_study_summary"]

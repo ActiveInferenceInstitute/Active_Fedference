@@ -158,6 +158,29 @@ def test_release_bundle_carries_the_declared_license(tmp_path: Path) -> None:
     assert verify_release(tmp_path) == []
 
 
+def test_release_bundle_includes_visual_accessibility_support_artifacts(
+    tmp_path: Path,
+) -> None:
+    _make_artifacts(tmp_path)
+    expected = {
+        "output/figures/figure_exact_values.json": b'{"schema_version":"1.0"}\n',
+        "output/figures/figure_exact_values.md": b"# Exact values\n",
+        "output/figures/figure_registry.json": b'{"schema_version":"1.2"}\n',
+        "output/reports/application_integrity_flow.json": b"{}\n",
+        "output/reports/evidence_replication_map.json": b"{}\n",
+        "output/reports/sensitivity.json": b"{}\n",
+        "output/reports/source_render_provenance.json": b"{}\n",
+    }
+    for relative, content in expected.items():
+        _write_artifact(tmp_path, relative, content)
+
+    manifest = build_release(tmp_path)
+    paths = {str(entry["path"]) for entry in manifest["artifacts"]}
+
+    assert set(expected) <= paths
+    assert verify_release(tmp_path) == []
+
+
 def test_bundle_excludes_its_own_directory_on_rebuild(tmp_path: Path) -> None:
     _make_artifacts(tmp_path)
     build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")

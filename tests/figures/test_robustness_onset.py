@@ -5,11 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from PIL import Image
 
 from fedference.experiments import run_robustness_onset
 from figures import generate_robustness_onset
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+_ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_onset_figure_happy_path(tmp_path: Path) -> None:
@@ -30,6 +32,8 @@ def test_onset_figure_happy_path(tmp_path: Path) -> None:
     path = generate_robustness_onset(by_kind, project_root=tmp_path)
     assert path.exists()
     assert path.read_bytes()[:8] == _PNG_MAGIC
+    with Image.open(path) as image:
+        assert image.height >= 0.7 * image.width, "onset mechanisms must remain vertically stacked"
 
 
 def test_onset_figure_from_real_report(tmp_path: Path) -> None:
@@ -41,3 +45,13 @@ def test_onset_figure_from_real_report(tmp_path: Path) -> None:
 def test_onset_figure_rejects_empty(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="non-empty"):
         generate_robustness_onset({}, project_root=tmp_path)
+
+
+def test_onset_caption_matches_shared_semantic_styles() -> None:
+    manuscript = (_ROOT / "manuscript/28_supplement_extended_methods.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "filled circles with a solid line identify the reference log pool" in manuscript
+    assert "open squares with a dashed line identify the pooled display server preset" in manuscript
+    assert "Naive (dashed)" not in manuscript

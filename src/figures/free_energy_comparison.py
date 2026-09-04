@@ -73,18 +73,18 @@ def generate_free_energy_comparison(
         interval = (lo, hi)
 
     apply_style()
-    naive = semantic_style("naive")
-    robust = semantic_style("heuristic_robust")
+    incommunicado_style = semantic_style("condition_reference")
+    communicating_style = semantic_style("condition_comparison")
     reference = semantic_style("reference_rule")
     fig, (ax_pairs, ax_difference) = plt.subplots(
-        1,
         2,
-        figsize=(10.8, 5.4),
+        1,
+        figsize=(6.5, 7.4),
         facecolor="white",
-        gridspec_kw={"width_ratios": (1.2, 1.0)},
+        gridspec_kw={"height_ratios": (1.08, 1.0)},
     )
     fig.set_layout_engine("none")
-    fig.subplots_adjust(left=0.10, right=0.98, top=0.80, bottom=0.21, wspace=0.29)
+    fig.subplots_adjust(left=0.15, right=0.97, top=0.88, bottom=0.10, hspace=0.48)
 
     seed_alpha = max(0.08, min(0.34, 22.0 / incom.size))
     seed_size = max(14.0, min(34.0, 6000.0 / incom.size))
@@ -100,9 +100,9 @@ def generate_free_energy_comparison(
     ax_pairs.scatter(
         np.zeros(incom.size),
         incom,
-        color=naive.color,
-        edgecolor=naive.keyline,
-        marker=naive.marker,
+        color=incommunicado_style.color,
+        edgecolor=incommunicado_style.keyline,
+        marker=incommunicado_style.marker,
         s=seed_size,
         linewidth=0.8,
         alpha=0.78,
@@ -113,8 +113,8 @@ def generate_free_energy_comparison(
         np.ones(comm.size),
         comm,
         facecolor="white",
-        edgecolor=robust.keyline,
-        marker=robust.marker,
+        edgecolor=communicating_style.keyline,
+        marker=communicating_style.marker,
         s=seed_size,
         linewidth=1.2,
         label="communicating",
@@ -149,17 +149,17 @@ def generate_free_energy_comparison(
         showextrema=False,
     )
     for body in violin["bodies"]:
-        body.set_facecolor(robust.color)
-        body.set_edgecolor(robust.keyline)
+        body.set_facecolor(communicating_style.color)
+        body.set_edgecolor(communicating_style.keyline)
         body.set_alpha(0.16)
         body.set_linewidth(1.0)
     jitter = np.random.default_rng(0).uniform(-0.12, 0.12, size=differences.size)
     ax_difference.scatter(
         differences,
         jitter,
-        marker=robust.marker,
+        marker=communicating_style.marker,
         facecolor="white",
-        edgecolor=robust.keyline,
+        edgecolor=communicating_style.keyline,
         linewidth=1.1,
         s=max(12.0, min(30.0, 4200.0 / differences.size)),
         alpha=max(0.22, min(0.75, 36.0 / differences.size)),
@@ -226,16 +226,21 @@ def generate_free_energy_comparison(
         fontweight="bold",
     )
     ax_difference.text(
-        0.02,
-        0.23,
-        f"{analysis_unit}; {replication_unit} is independent",
+        0.98,
+        0.96,
+        f"{analysis_unit}\nindependent unit: {replication_unit}",
         transform=ax_difference.transAxes,
-        ha="left",
-        va="bottom",
+        ha="right",
+        va="top",
         fontsize=9.5,
         color=COLOR_MUTED,
+        bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": COLOR_GRID},
     )
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.80,
+    )
 
 
 __all__ = ["generate_free_energy_comparison"]

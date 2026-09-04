@@ -85,7 +85,7 @@ def generate_robust_influence_weights(
         raise ValueError("contaminated_indices out of range for normalized_effective_weights")
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(9.2, 5.2), facecolor="white")
+    fig, ax = plt.subplots(figsize=(6.8, 5.2), facecolor="white")
     fig.subplots_adjust(left=0.12, right=0.98, top=0.82, bottom=0.24)
     x = np.arange(normalized_effective_weights_array.size)
 
@@ -242,7 +242,11 @@ def generate_robust_influence_weights(
     )
     annotate_stats_box(ax, stats_text, loc="upper left", fontsize=10)
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.80,
+    )
 
 
 __all__ = ["generate_robust_influence_weights"]

@@ -9,9 +9,11 @@ in the imported core modules** (``fedference.*``) and figure modules
 (:mod:`figures`); this file only aggregates, serialises and plots — the thin
 orchestrator contract. No ``infrastructure.*`` imports (layer contract).
 
-Three-robustness-axes honesty: the logistic-regression robustness figure
-exercises the per-client FedGVI generalized-Bayes update (rcce loss + AR
-regularizer), which carries the client-side robustness claim; the
+Three-robustness-axes honesty: the exploratory point-estimate logistic-regression
+figure compares RCCE and NLL gradients under two explicitly reported L2
+coefficients. Its legacy ``AR`` argument is only a compatibility selector for
+the stronger coefficient; this proxy does not compute an Alpha-Renyi objective
+or establish the source-conditional client-side theorem. The
 influence-weights figure exercises the server-side ``robust_aggregate`` pooling
 *heuristic*, which only owns the naive-recovery limit; and the variational
 diagnostics exercise the conservative objective-backed server rule. The three
@@ -33,7 +35,14 @@ from typing import TypedDict, cast
 
 import numpy as np
 
-from experiment_config import ExperimentConfig, load_experiment_config, load_manuscript_config
+from experiment_config import (
+    DEFAULT_SENSITIVITY_ACUITY,
+    DEFAULT_SENSITIVITY_COLONY_SIZES,
+    SENSITIVITY_NOISE_FLOOR,
+    ExperimentConfig,
+    load_experiment_config,
+    load_manuscript_config,
+)
 from fedference.aggregation import log_linear_pool
 from fedference.belief_updating import infer_states
 from fedference.experiments import (
@@ -43,6 +52,7 @@ from fedference.experiments import (
     nlevel3_world_report,
     run_belief_quality_sensitivity,
     run_belief_sharing,
+    run_belief_sharing_sensitivity,
     run_bnn_robustness_report,
     run_complexity_scaling,
     run_conditional_world_generalization,
@@ -51,6 +61,7 @@ from fedference.experiments import (
     run_emergence,
     run_heuristic_characterization,
     run_hierarchical_bmr,
+    run_hierarchical_sensitivity,
     run_influence_weights_report,
     run_parameter_recovery,
     run_review_grid,
@@ -61,8 +72,10 @@ from fedference.experiments import (
     summarize_language_acquisition,
 )
 from fedference.pomdp import N_LOCATIONS, build_sentinel_world
+from fedference.statistics import bootstrap_ci
 from figures import (
     generate_aggregation_descent,
+    generate_application_integrity_flow,
     generate_belief_heatmap,
     generate_belief_quality,
     generate_bnn_robustness,
@@ -75,6 +88,7 @@ from figures import (
     generate_disjoint_fov_figure,
     generate_efe_decomposition,
     generate_emergence_bmr,
+    generate_evidence_replication_map,
     generate_free_energy_comparison,
     generate_generative_model_schema,
     generate_graphical_abstract,
@@ -91,12 +105,22 @@ from figures import (
     generate_robustness_review_grid,
     generate_robustness_sweep,
     generate_sensitivity_heatmap,
+    generate_source_render_provenance,
 )
 from figures._metadata import figure_metadata
 from project_paths import resolve_env_project_root
 from publication.pipeline_freshness import capture_analysis_input_snapshot
 
 from . import report_schemas
+from .figure_exact_values import (
+    build_figure_exact_values,
+    render_figure_exact_values_markdown,
+)
+from .visual_contracts import (
+    application_integrity_flow_contract,
+    evidence_replication_map_contract,
+    source_render_provenance_contract,
+)
 
 #: Drift levels documented in diagnostics module; kept for figure-registry metadata.
 _INFLUENCE_DRIFTS: tuple[float, ...] = (0.0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 0.99)
@@ -135,6 +159,25 @@ def _write_json(
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as handle:
             handle.write(serialized)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_name, path)
+    except BaseException:
+        try:
+            os.unlink(temporary_name)
+        except FileNotFoundError:
+            pass
+        raise
+    return path
+
+
+def _write_text(text: str, path: Path) -> Path:
+    """Atomically persist a deterministic UTF-8 text artifact."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary_name, path)
@@ -204,6 +247,21 @@ def _figure_generators_by_filename(project_root: Path) -> dict[str, str]:
     return mapping
 
 
+def _require_unique_declared_figures(figures: list[dict[str, str]]) -> None:
+    """Reject ambiguous label or artifact ownership before reading outputs."""
+    seen_labels: set[str] = set()
+    seen_filenames: set[str] = set()
+    for figure in figures:
+        label = figure["label"]
+        filename = figure["filename"]
+        if label in seen_labels:
+            raise ValueError(f"duplicate manuscript figure label {label!r}")
+        if filename in seen_filenames:
+            raise ValueError(f"duplicate manuscript figure filename {filename!r}")
+        seen_labels.add(label)
+        seen_filenames.add(filename)
+
+
 def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) -> Path:
     # Pipeline-produced figures (keyed by the .png they write, since the
     # manuscript embeds the PNG even when the generator returns the .pdf path).
@@ -224,13 +282,24 @@ def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) 
             return submodule_by_filename[filename]
         return "preexisting_figure"
 
+    declared_figures = _declared_manuscript_figures(project_root)
+    _require_unique_declared_figures(declared_figures)
+
+    exact_values_path = artifact_paths.get("figure_exact_values")
+    exact_values_markdown = artifact_paths.get("figure_exact_values_markdown")
+    if exact_values_path is None or exact_values_markdown is None:
+        raise ValueError("figure registry requires both exact-value fallback artifacts")
+    exact_payload = json.loads(exact_values_path.read_text(encoding="utf-8"))
+    report_schemas.validate_report("figure_exact_values", exact_payload)
+    exact_identifiers = {
+        str(table["identifier"])
+        for table in exact_payload["tables"]
+        if isinstance(table, Mapping) and isinstance(table.get("identifier"), str)
+    }
+
     figures: list[dict[str, str]] = []
-    seen: set[str] = set()
-    for figure in _declared_manuscript_figures(project_root):
+    for figure in declared_figures:
         label = figure["label"]
-        if label in seen:
-            continue
-        seen.add(label)
         filename = figure["filename"]
         figure_path = project_root / "output" / "figures" / filename
         if not figure_path.exists():
@@ -238,17 +307,25 @@ def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) 
         generator = _resolve_generated_by(filename)
         if generator == "preexisting_figure":
             raise ValueError(f"no generator metadata owner for embedded figure {filename}")
-        figures.append(
-            {
-                **figure,
-                "generated_by": generator,
-                **figure_metadata(generator),
-            }
-        )
+        metadata = figure_metadata(generator)
+        fallback = metadata.get("exact_value_fallback")
+        if fallback and fallback not in exact_identifiers:
+            raise ValueError(f"figure {label} references unknown exact-value fallback {fallback!r}")
+        figures.append({**figure, "generated_by": generator, **metadata})
+    used_identifiers = {
+        str(figure["exact_value_fallback"])
+        for figure in figures
+        if figure.get("exact_value_fallback")
+    }
     return _write_json(
         {
-            "schema_version": "1.1",
+            "schema_version": "1.2",
             "generated_by": "analysis.workflow.run_analysis_pipeline",
+            "exact_value_artifact": {
+                "json_path": str(exact_values_path.relative_to(project_root)),
+                "markdown_path": str(exact_values_markdown.relative_to(project_root)),
+                "identifiers": sorted(used_identifiers),
+            },
             "figures": sorted(figures, key=lambda item: item["label"]),
         },
         project_root / "output" / "figures" / "figure_registry.json",
@@ -267,15 +344,72 @@ def _belief_sharing_report(config: ExperimentConfig) -> dict:
         incommunicado.append(float(incom["mean_free_energy"]))
     comm_mean = float(np.mean(communicating))
     incom_mean = float(np.mean(incommunicado))
+    paired = [float(incom - comm) for incom, comm in zip(incommunicado, communicating)]
+    paired_mean = float(np.mean(paired))
+    paired_ci = bootstrap_ci(
+        np.asarray(paired, dtype=np.float64),
+        alpha=0.05,
+        n_boot=10_000,
+        rng=np.random.default_rng(config.seeds[0] + 5_000_003),
+    )
     return {
+        "schema_version": "1.0",
         "communicating_free_energy": communicating,
         "incommunicado_free_energy": incommunicado,
         "communicating_mean": comm_mean,
         "incommunicado_mean": incom_mean,
-        "free_energy_gap": incom_mean - comm_mean,
+        "paired_free_energy_difference": paired,
+        "paired_difference_mean": paired_mean,
+        "paired_difference_ci": [float(paired_ci[0]), float(paired_ci[1])],
+        "difference_definition": "incommunicado_minus_communicating",
+        "analysis_unit": "configured seed with within-seed paired conditions",
+        "replication_unit": "configured seed",
+        "interval_method": "percentile_bootstrap_of_paired_seed_differences",
+        "interval_percent": 95,
+        "free_energy_gap": paired_mean,
         "communication_helps": bool(comm_mean < incom_mean),
         "n_agents": config.n_agents,
         "n_seeds": config.n_seeds,
+    }
+
+
+def _sensitivity_report(*, seed: int, n_trials: int) -> dict[str, object]:
+    """Return the two configured sensitivity grids consumed by Figure 8."""
+    acuity_values = tuple(float(value) for value in DEFAULT_SENSITIVITY_ACUITY)
+    n_agents_values = tuple(int(value) for value in DEFAULT_SENSITIVITY_COLONY_SIZES)
+    belief_sharing = run_belief_sharing_sensitivity(
+        seed,
+        acuity_values=acuity_values,
+        n_agents_values=n_agents_values,
+        n_trials=n_trials,
+    )
+    hierarchical = run_hierarchical_sensitivity(
+        seed,
+        acuity_values=acuity_values,
+        n_agents_values=n_agents_values,
+        n_trials=n_trials,
+    )
+    return {
+        "schema_version": "1.0",
+        "seed": seed,
+        "n_trials": n_trials,
+        "acuity_values": list(acuity_values),
+        "n_agents_values": list(n_agents_values),
+        "noise_floor": float(SENSITIVITY_NOISE_FLOOR),
+        "belief_sharing": belief_sharing,
+        "hierarchical": hierarchical,
+        "estimands": {
+            "belief_sharing": "communicating minus isolated mean accuracy",
+            "hierarchical": "hierarchical minus flat location accuracy",
+        },
+        "unit": "fraction",
+        "analysis_unit": "configured acuity-by-colony-size cell",
+        "replication_unit": "synthetic trial nested within configured cell",
+        "uncertainty": "none displayed; each cell is a mean over nested trials",
+        "claim_boundary": (
+            "hatching denotes only the configured display band; it is not a confidence interval, "
+            "significance test, unreliability flag, or proof of zero effect"
+        ),
     }
 
 
@@ -376,7 +510,7 @@ def _variational_aggregation_report(config: ExperimentConfig) -> dict:
 
 
 def _bnn_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Logistic-regression held-out accuracy vs label contamination."""
+    """Exploratory point-estimate logistic accuracy under label contamination."""
     if smoke:
         return run_bnn_robustness_report(
             config.seeds[0],
@@ -528,7 +662,7 @@ def _moving_world_report(config: ExperimentConfig) -> dict:
 
 
 def _parameter_recovery_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Parameter recovery: validate generative-model identifiability (Study 9)."""
+    """Measure finite-grid acuity recovery for the configured estimator (Study 9)."""
     seed = config.seeds[0]
     return dict(
         run_parameter_recovery(
@@ -655,6 +789,25 @@ def run_analysis_pipeline(
     _pipeline_start = time.time()
 
     # --- Reports -----------------------------------------------------------
+    application_flow_report = application_integrity_flow_contract()
+    paths["application_integrity_flow_report"] = _write_json(
+        application_flow_report,
+        reports / "application_integrity_flow.json",
+        schema="application_integrity_flow",
+    )
+    evidence_map_report = evidence_replication_map_contract()
+    paths["evidence_replication_map_report"] = _write_json(
+        evidence_map_report,
+        reports / "evidence_replication_map.json",
+        schema="evidence_replication_map",
+    )
+    source_render_report = source_render_provenance_contract()
+    paths["source_render_provenance_report"] = _write_json(
+        source_render_report,
+        reports / "source_render_provenance.json",
+        schema="source_render_provenance",
+    )
+
     bs_report = _belief_sharing_report(cfg)
     paths["belief_sharing_report"] = _write_json(
         bs_report, reports / "belief_sharing.json", schema="belief_sharing"
@@ -756,6 +909,15 @@ def run_analysis_pipeline(
     )
 
     _t0 = time.time()
+    sensitivity_report = _sensitivity_report(seed=cfg.seeds[0], n_trials=5 if smoke else 20)
+    _timings["sensitivity"] = time.time() - _t0
+    paths["sensitivity_report"] = _write_json(
+        sensitivity_report,
+        reports / "sensitivity.json",
+        schema="sensitivity",
+    )
+
+    _t0 = time.time()
     moving_report = _moving_world_report(cfg)
     _timings["moving_world"] = time.time() - _t0
     paths["moving_world_report"] = _write_json(
@@ -796,7 +958,49 @@ def run_analysis_pipeline(
         disjoint_report, reports / "disjoint_fov_world.json", schema="disjoint_fov_world"
     )
 
+    exact_values = build_figure_exact_values(
+        {
+            "belief_quality": quality_report,
+            "bnn_robustness": bnn_report,
+            "complexity_scaling": complexity_report,
+            "conditional_world": conditional_report,
+            "cross_study_summary": cross_report,
+            "robustness_review_grid": review_grid_report,
+            "sensitivity": sensitivity_report,
+        }
+    )
+    paths["figure_exact_values"] = _write_json(
+        exact_values,
+        root / "output" / "figures" / "figure_exact_values.json",
+        schema="figure_exact_values",
+    )
+    paths["figure_exact_values_markdown"] = _write_text(
+        render_figure_exact_values_markdown(exact_values),
+        root / "output" / "figures" / "figure_exact_values.md",
+    )
+
     # --- Figures (consume the report dicts above) --------------------------
+    report_schemas.check_figure_contract(
+        "application_integrity_flow", "application_integrity_flow", application_flow_report
+    )
+    paths["application_integrity_flow"] = generate_application_integrity_flow(
+        application_flow_report,
+        project_root=root,
+    )
+    report_schemas.check_figure_contract(
+        "evidence_replication_map", "evidence_replication_map", evidence_map_report
+    )
+    paths["evidence_replication_map"] = generate_evidence_replication_map(
+        evidence_map_report,
+        project_root=root,
+    )
+    report_schemas.check_figure_contract(
+        "source_render_provenance", "source_render_provenance", source_render_report
+    )
+    paths["source_render_provenance"] = generate_source_render_provenance(
+        source_render_report,
+        project_root=root,
+    )
     paths["graphical_abstract"] = generate_graphical_abstract(project_root=root)
     paths["generative_model_schema"] = generate_generative_model_schema(project_root=root)
     paths["message_passing"] = generate_message_passing(project_root=root)
@@ -808,6 +1012,11 @@ def run_analysis_pipeline(
     paths["free_energy_comparison"] = generate_free_energy_comparison(
         bs_report["incommunicado_free_energy"],
         bs_report["communicating_free_energy"],
+        paired_difference_mean=bs_report["paired_difference_mean"],
+        paired_difference_ci=bs_report["paired_difference_ci"],
+        difference_definition=bs_report["difference_definition"],
+        analysis_unit=bs_report["analysis_unit"],
+        replication_unit=bs_report["replication_unit"],
         project_root=root,
     )
     report_schemas.check_figure_contract("robustness_sweep", "robustness_sweep", rob_report)
@@ -816,6 +1025,7 @@ def run_analysis_pipeline(
         cfg.contamination_rates,
         accuracy_threshold=rob_report.get("accuracy_threshold"),
         rate_summary=rob_report.get("per_rate_summary"),
+        server_robustness_by_label=rob_report.get("server_robustness_by_label"),
         project_root=root,
     )
     report_schemas.check_figure_contract("language_kl_decay", "language_acquisition", lang_report)
@@ -837,6 +1047,8 @@ def run_analysis_pipeline(
     paths["hierarchical_bmr"] = generate_hierarchical_bmr(
         hier_bmr_report["degenerate"],
         hier_bmr_report["informative"],
+        surprise_tol=hier_bmr_report["surprise_tol"],
+        decision_rule=hier_bmr_report["decision_rule"],
         project_root=root,
     )
     report_schemas.check_figure_contract(
@@ -864,6 +1076,7 @@ def run_analysis_pipeline(
         bnn_report["accuracy_by_config"],
         bnn_report["contamination_levels"],
         accuracy_ci_by_config=bnn_report.get("accuracy_ci_by_config"),
+        selection_disclosure=bnn_report["selection_disclosure"],
         project_root=root,
     )
     report_schemas.check_figure_contract("aggregation_descent", "variational_aggregation", var_report)
@@ -916,11 +1129,11 @@ def run_analysis_pipeline(
         n_observations=param_rec_report.get("n_observations"),
         project_root=root,
     )
-    _t0 = time.time()
+    report_schemas.check_figure_contract("sensitivity_heatmap", "sensitivity", sensitivity_report)
     paths["sensitivity_heatmap"] = generate_sensitivity_heatmap(
-        project_root=root, n_trials=5 if smoke else 20
+        project_root=root,
+        report=sensitivity_report,
     )
-    _timings["sensitivity"] = time.time() - _t0
     report_schemas.check_figure_contract("cross_study_summary", "cross_study_summary", cross_report)
     paths["cross_study_summary"] = generate_cross_study_summary(cross_report, project_root=root)
     _t0 = time.time()
