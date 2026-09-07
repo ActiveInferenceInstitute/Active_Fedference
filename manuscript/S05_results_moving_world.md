@@ -139,8 +139,6 @@ We report this as the null result it is rather than
 claiming an unmeasured EFE benefit. [@fig:disjoint-fov-world] summarizes the
 necessity result.
 
-#### Disjoint-view communication contrast and movement-policy null
-
 ![Communication improves the declared disjoint-view condition, whereas the
 configured movement-policy contrast is near-ceiling and null. This is a
 source-inspired project extension of the moving-world mechanism, produced from
