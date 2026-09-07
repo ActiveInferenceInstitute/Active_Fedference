@@ -6,6 +6,7 @@ import gzip
 import importlib.util
 import io
 import os
+import shutil
 import subprocess
 import tarfile
 import zipfile
@@ -310,6 +311,47 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
     assert "recursive-include manuscript *.bib *.md *.png *.yaml *.yaml.example" in manifest
     assert "recursive-include scripts *.py *.md" in manifest
     assert "recursive-include tests *.md *.py" in manifest
+
+
+@pytest.mark.publication
+def test_real_source_archive_retains_all_declared_source_inputs(tmp_path: Path) -> None:
+    """Build the real package from an isolated source tree and inspect its bytes."""
+    project = tmp_path / "source"
+    project.mkdir()
+    for name in ("src", "docs", "examples", "manuscript", "scripts", "tests", "data", ".github"):
+        shutil.copytree(
+            _ROOT / name,
+            project / name,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.egg-info"),
+        )
+    for name in (
+        "_fedference_build_backend.py", "pyproject.toml", "MANIFEST.in", "README.md",
+        "LICENSE", "AGENTS.md", "CITATION.cff", ".zenodo.json", "codemeta.json",
+        "ISA.md", "REDTEAM_REVIEW.md", "STANDALONE.md", "TODO.md", "uv.lock",
+        ".gitignore", "domain_profile.yaml", "experiment_plan.yaml",
+    ):
+        shutil.copy2(_ROOT / name, project / name)
+    expected = {
+        path.relative_to(project).as_posix(): path.read_bytes()
+        for path in project.rglob("*") if path.is_file()
+    }
+    environment = dict(os.environ)
+    environment.update({"SOURCE_DATE_EPOCH": "1785205200", "UV_NO_PROGRESS": "1"})
+    distribution = tmp_path / "dist"
+    completed = subprocess.run(
+        ["uv", "build", "--sdist", "--force-pep517", "--no-build-isolation",
+         "--out-dir", str(distribution), str(project)],
+        capture_output=True, text=True, check=False, env=environment,
+    )
+    assert completed.returncode == 0, completed.stderr or completed.stdout
+    with tarfile.open(next(distribution.glob("*.tar.gz")), mode="r:gz") as archive:
+        prefix = archive.getnames()[0].split("/", 1)[0] + "/"
+        actual = {
+            member.name.removeprefix(prefix): archive.extractfile(member).read()
+            for member in archive.getmembers() if member.isfile()
+        }
+    assert not (expected.keys() - actual.keys()), sorted(expected.keys() - actual.keys())
+    assert all(actual[name] == content for name, content in expected.items())
 
 
 def test_ci_installed_artifact_gate_executes_the_labeled_application_outside_checkout() -> None:

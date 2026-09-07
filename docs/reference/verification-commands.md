@@ -217,7 +217,13 @@ The source distribution is the archival source package: it includes `LICENSE`,
 the modular `docs/`, `examples/`, `manuscript/`, `scripts/`, and `tests/` trees,
 including the application guide, every numbered example, example data, and the
 copyable `manuscript/config.yaml.example`, plus source-bound metadata and
-acceptance files. The wheel is the typed runtime package; it includes
+acceptance files. The archive also retains `uv.lock`, the experiment and domain
+configuration, the historical-PDF checksum ledger, contributor guidance, CI
+workflow, and the browser test specification. The browser specification is
+hashed by both the validation receipt and release provenance; editing or
+removing it invalidates that evidence. A real isolated source build checks the
+presence and exact bytes of the declared source inputs.
+The wheel is the typed runtime package; it includes
 `fedference/py.typed`, importable modules, and packaged compatibility inputs,
 but not examples or committed reviewer output. Both installed artifact probes
 run outside the checkout and confirm that the default application import graph

@@ -42,6 +42,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
     "src/**/py.typed",
     "tests/**/*.py",
     "tests/**/*.md",
+    "tests/**/*.cjs",
     "scripts/**/*.py",
     "scripts/**/*.md",
     "examples/**/*.py",
@@ -91,7 +92,9 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
 # These files are part of the source-bound contract when present.  Keeping
 # them optional preserves the fixture trees used by focused receipt tests,
 # while a real checkout still hashes the license as a release input.
-_OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset({"manuscript/**/*.tex", "LICENSE"})
+_OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset(
+    {"manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE"}
+)
 MINIMUM_COVERAGE_THRESHOLD = 90.0
 _ENVIRONMENT_FIELDS: tuple[str, ...] = (
     "python_version",

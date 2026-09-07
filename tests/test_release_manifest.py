@@ -586,6 +586,27 @@ def test_verify_rejects_stale_bundle_after_test_change(tmp_path: Path) -> None:
     assert "tests/test_model.py" in bad[0]
 
 
+@pytest.mark.parametrize("remove", (False, True))
+def test_verify_rejects_browser_specification_change_or_removal(
+    tmp_path: Path, remove: bool,
+) -> None:
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    name = "tests/browser/html_zoom_overflow.spec.cjs"
+    browser = _write_artifact(
+        tmp_path, name, (Path(__file__).resolve().parent.parent / name).read_bytes()
+    )
+    build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
+    if remove:
+        browser.unlink()
+    else:
+        browser.write_text("throw new Error('browser acceptance must fail');\n")
+    findings = verify_release(tmp_path)
+    assert len(findings) == 1
+    assert "provenance fingerprint mismatch" in findings[0]
+    assert name in findings[0]
+
+
 @pytest.mark.parametrize(
     ("relative", "replacement"),
     (
