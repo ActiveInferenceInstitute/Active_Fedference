@@ -60,7 +60,9 @@ def generate_contamination_gallery(
             :func:`fedference.experiments.run_contamination_gallery`.
             The source report supplies 95% seed-bootstrap intervals for both
             bars; older report-shaped mappings without those optional fields
-            remain renderable without error bars.
+            remain renderable without error bars. Mechanisms use lexical key
+            order in both canonical and presentation assets, independent of
+            mapping insertion order or JSON serialization.
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -72,6 +74,7 @@ def generate_contamination_gallery(
     """
     if not by_kind:
         raise ValueError("by_kind must be non-empty")
+    by_kind = dict(sorted(by_kind.items()))
     kinds = list(by_kind)
     naive = np.array([float(by_kind[k]["naive_mean"]) for k in kinds])
     robust = np.array([float(by_kind[k]["robust_mean"]) for k in kinds])

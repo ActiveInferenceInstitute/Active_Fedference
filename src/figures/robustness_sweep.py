@@ -53,7 +53,9 @@ def generate_robustness_sweep(
     Args:
         accuracy_by_method_and_rate: Nested ``{method: {rate_key: accuracy}}``
             mapping, where ``rate_key`` is ``f"{rate:g}"`` (the experiment's
-            JSON key convention).
+            JSON key convention). The reference is plotted first, followed by
+            presets in lexical report-label order; mapping insertion order
+            cannot change styles or presentation panel identifiers.
         rates: The contamination rates, in sweep order.
         accuracy_threshold: Optional horizontal reference line.
         rate_summary: Optional trial-level summary from
@@ -92,7 +94,8 @@ def generate_robustness_sweep(
     intervals: dict[str, tuple[list[float], list[float]]] = {}
     styles: dict[str, SemanticStyle] = {}
     labels: dict[str, str] = {}
-    for method, by_rate in accuracy_by_method_and_rate.items():
+    for method in sorted(accuracy_by_method_and_rate, key=lambda key: (key != "KLD", key)):
+        by_rate = accuracy_by_method_and_rate[method]
         if rate_summary is not None:
             profile_blocks = [rate_summary[f"{r:g}"] for r in rate_vals]
             profile_methods = [block["methods"] for block in profile_blocks]

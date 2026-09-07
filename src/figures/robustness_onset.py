@@ -59,7 +59,9 @@ def generate_robustness_onset(
             robust_ci, best_robust_method_by_rate, onset_rate}}`` from
             :func:`fedference.experiments.run_robustness_onset`. The source
             report supplies 95% seed-bootstrap bands; older curve-only mappings
-            remain renderable without bands.
+            remain renderable without bands. Mechanisms use lexical key order
+            in canonical and presentation assets so JSON round trips preserve
+            panel order and identifiers.
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -71,6 +73,7 @@ def generate_robustness_onset(
     """
     if not by_kind:
         raise ValueError("by_kind must be non-empty")
+    by_kind = dict(sorted(by_kind.items()))
     kinds = list(by_kind)
     apply_style()
     # Embedded at width=95% (~6.2 in): large fonts so effective text >= 7 pt.
