@@ -247,7 +247,7 @@ def _arrow(
     if label:
         ax.text(
             (start[0] + end[0]) / 2,
-            (start[1] + end[1]) / 2 + 0.035,
+            (start[1] + end[1]) / 2 + 0.07,
             textwrap.fill(label, width=19),
             ha="center",
             va="bottom",
