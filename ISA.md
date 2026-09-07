@@ -2,12 +2,12 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 265/268
-iteration: 49-linked-zenodo-draft-semantics
-updated_by: iteration-49-2026-08-28
+progress: 266/268
+iteration: 50-measured-presentation-panels
+updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
 started: 2026-06-24
-updated: 2026-08-28
+updated: 2026-09-07
 algorithm_config:
   forge_not_applicable: "direct local Codex review; external cross-vendor verification was not rerun and ISC-89 remains deferred"
   cato_truncates_after_background_launch: true
@@ -1201,13 +1201,20 @@ them.
 
 ### Iteration 50 — measured presentation panels
 
-- [ ] ISC-273: Every required accessible-slide figure has a complete,
+- [x] ISC-273: Every required accessible-slide figure has a complete,
   source-declared presentation inventory, a typed raster-digest/label manifest,
   paired PNG/PDF artifacts, source-bound registry and freshness coverage, and
   final embedded labels at or above 16 points. Canonical portrait figures,
   every method-specific interval, common comparison scales, typed flow edges,
   and no-claim boundaries are preserved. All 33 required figure families have
-  source-owned presentation producers and checked manuscript selectors; final
-  source-bound production and manuscript-placement verification remain open. Probe:
+  source-owned presentation producers and checked manuscript selectors. Source
+  `ab1e9bd1` with merged renderer `cea2904d` passed full publication production,
+  2,824 tests, and 90.58% combined line-and-branch coverage. Final placement
+  located all 562 panels with a minimum effective label size of 16.599 points.
+  Complete visual review covered the 90-page combined PDF, 44 slide PDFs
+  totaling 1,990 pages, and all 33 HTML figure/caption families; prior findings
+  were individually resolved. Tagged PDF structure and language passed;
+  PDF/UA conformance is not established. This local acceptance does not close
+  ISC-89 or ISC-242 or supply the final owner-author release verdict. Probe:
   presentation boundary, figure/caption contracts, real paired renderer,
   full artifact inventory, and complete final PDF/HTML visual inspection.
