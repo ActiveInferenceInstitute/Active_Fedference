@@ -24,13 +24,14 @@ is not sufficient.
 
 ## Scope
 
-Use the exact reviewed and merged `codex/accessible-slide-renderer` Template
-commit from a separate clean checkout. Preserve the user-owned dirty Template
+Use the exact reviewed and merged Template renderer commit recorded in
+`manuscript/config.yaml`, from a separate clean checkout. Preserve the user-owned dirty Template
 checkout unchanged. The accessible profile must fail clearly on unsafe density
 while leaving the archive profile unchanged for other consumers.
 
-Complete Active Fedference's approved four-commit sanitized replay on
-`codex/v1.1-visual-scholarship`, created from refreshed public `main`:
+Complete Active Fedference's approved sanitized history on
+`codex/v1.1-visual-scholarship`, created from refreshed public `main`. The
+following work areas describe dependency order, not a fixed commit count:
 
 1. align visual claims, estimands, uncertainty, replication units, and neutral
    scholarly wording;
@@ -42,10 +43,14 @@ Complete Active Fedference's approved four-commit sanitized replay on
 4. regenerate publication artifacts from the final source and exact renderer
    lock.
 
-This is the fixed public-history policy for the tranche. Preserve the private
-evidence branch unchanged. Do not substitute cherry-picking of private commits,
-a compact replay, squash, rebase, or another history layout merely because it
-passes a scan; any history-policy change requires new approval.
+The authorized continuation preserves the existing visual commits and permits
+additive corrective commits for source, tests, and documentation. Keep those
+corrections separate from `build: refresh visual publication artifacts`, which
+contains generated artifacts only, and explain their scope in the public PR.
+The private evidence branch remains unchanged. Do not substitute cherry-picking
+of private commits, a compact replay, squash, rebase, or a history rewrite to
+force an artificial commit count. Any further history-policy change requires
+new approval; a clean scan does not grant that authority.
 
 The three explanatory figures do not add experimental observations. Existing
 data-bearing figures may change composition or encoding only when the typed
@@ -93,9 +98,11 @@ reveal.js decks, Beamer derivatives, and the combined PDF remain source-bound.
   source and generated commit SHAs, figure/accessibility manifests, PDF and
   browser reports, confidentiality disposition, public PR checks, public merge
   SHA, and green post-merge public-main workflow.
-- The public branch contains exactly the approved four commits based on the
-  refreshed public-main base; its audit records that base and every newly
-  reachable object, while the private evidence branch remains unchanged.
+- The public branch preserves the approved sanitized history and additive
+  corrective commits from the refreshed public-main base. Its audit records
+  that base and every newly reachable object, while the private evidence
+  branch remains unchanged. Source corrections and generated artifacts are
+  separate commits; no history rewrite is used to impose a commit count.
 
 ## Verification Probes
 

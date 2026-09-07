@@ -36,11 +36,16 @@ release-blocking.
 
 ### Candidate gate before each public branch push
 
-For the v1.1 public application/visual lineage, the authorized history policy is
-the reviewed four-commit sanitized replay based directly on refreshed public
-`main`. The retained private evidence branch remains unchanged. A clean scan
-does not authorize a different replay, cherry-pick, squash, rebase, or history
-rewrite. Any history-policy change requires new approval.
+For the v1.1 public application/visual lineage, the authorized history policy
+preserves the reviewed sanitized history based on refreshed public `main` and
+permits additive corrective commits for source, tests, and documentation.
+Keep them separate from `build: refresh visual publication artifacts`, which
+contains generated artifacts only, and explain the corrective scope in the
+public PR. The retained private evidence branch remains unchanged. Audit every
+newly reachable object; a clean scan does not authorize a different replay,
+cherry-pick, squash, rebase, or history rewrite. Do not rewrite existing commits
+to force an artificial count. Any further history-policy change requires new
+approval.
 
 1. Fetch both remotes and record the exact public base, private base, candidate
    commit, tree, branch, renderer commit, and worktree status. Rebuild or stop
@@ -148,9 +153,10 @@ recertification; `fail` blocks release. This release verdict does not close ISC-
   report, render, accessibility, distribution, and manifest chain.
 - Clone outputs and distributions agree byte-for-byte where the repository
   declares determinism.
-- The v1.1 application/visual history is exactly the approved four-commit
-  sanitized replay from refreshed public `main`; the private evidence lineage
-  is unchanged, and any policy change has separate approval.
+- The v1.1 application/visual lineage preserves the approved sanitized history
+  and additive corrective commits from refreshed public `main`. The private
+  evidence lineage is unchanged, source and generated commits remain separate,
+  and any further policy change has separate approval.
 - One eligible structured `pass` binds to the exact public-main commit and
   evidence bundle. The selected path is the owner-author review, which is
   labeled honestly, remains distinct from publication authority, and does not

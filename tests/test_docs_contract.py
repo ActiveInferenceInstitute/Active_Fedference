@@ -1201,7 +1201,7 @@ def test_release_dag_places_identity_merge_before_final_certification() -> None:
         assert marker_positions == sorted(marker_positions)
 
 
-def test_sanitized_history_policy_is_fixed_across_release_surfaces() -> None:
+def test_sanitized_history_policy_preserves_reviewed_additive_corrections() -> None:
     ladder = re.sub(
         r"\s+", " ", _read("docs/todo/release-and-verification-ladder.md")
     )
@@ -1209,13 +1209,19 @@ def test_sanitized_history_policy_is_fixed_across_release_surfaces() -> None:
         r"\s+", " ", _read("docs/todo/visual-scholarship-integration.md")
     )
     isa = re.sub(r"\s+", " ", _read("ISA.md"))
+    roadmap = re.sub(r"\s+", " ", _read("TODO.md"))
 
+    for text in (ladder, visual, isa, roadmap):
+        assert "additive corrective commits" in text
+        assert "four-commit" not in text
     for text in (ladder, visual, isa):
-        assert "four-commit sanitized replay" in text
         assert "private evidence branch remains unchanged" in text
         assert "history-policy change requires new approval" in text
-    assert "refreshed public `main`" in ladder
-    assert "refreshed public `main`" in visual
+    for text in (ladder, visual):
+        assert "refreshed public `main`" in text
+        assert "generated artifacts only" in text
+        assert "squash" in text and "rebase" in text
+        assert "every newly reachable" in text
     assert "refreshed `public/main`" in isa
     assert "cherry-picking of private commits" in visual
 
