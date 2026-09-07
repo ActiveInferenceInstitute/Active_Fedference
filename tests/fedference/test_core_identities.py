@@ -1,10 +1,10 @@
 """Core identity & robustness tests for the FedGVI bridge (no mocks).
 
-These tests pin the synthesis: the robust FedGVI machinery must (a) recover the
-Kullback-Leibler / standard-Bayes special case in the appropriate limit, which
-is exactly Friston et al. (2024) belief-sharing, and (b) genuinely down-weight a
-contaminated agent when robustness is engaged. All numbers are real
-computations on small categorical distributions.
+These tests separately pin client-side standard-Bayes limits and the project
+server-pool recovery identity. The Friston et al. (2024) bridge requires the
+documented admitted-posterior and message-potential assumptions; it does not
+recover the complete source protocol. Finite contamination examples establish
+only conditional behavior. All numbers come from real categorical computations.
 """
 
 from __future__ import annotations
@@ -149,6 +149,18 @@ def test_log_linear_pool_is_product_of_experts():
     manual = a * b
     manual = manual / manual.sum()
     assert np.allclose(pooled, manual, atol=1e-9)
+
+
+def test_pool_uses_admitted_posteriors_for_small_positive_raw_masses() -> None:
+    """The numerical floor changes raw odds while preserving server recovery."""
+    raw = np.asarray([[1e-20, 1.0], [1.0, 1e-10]])
+    original = raw.copy()
+    pooled = log_linear_pool(raw)
+    # Flooring the first mass changes product odds to 1:100. Row normalizers
+    # cancel in the product; unfloored raw masses instead give odds 1:1e10.
+    np.testing.assert_allclose(pooled, [1.0 / 101.0, 100.0 / 101.0], rtol=1e-13, atol=0)
+    np.testing.assert_array_equal(robust_aggregate(raw, robustness=0.0).consensus, pooled)
+    np.testing.assert_array_equal(raw, original)
 
 
 def test_robust_aggregate_recovers_naive_at_zero_robustness():

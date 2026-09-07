@@ -19,6 +19,14 @@ def test_as_pmf_rejects_nonfinite_and_negative_mass():
         as_pmf([0.0, 0.0])
 
 
+def test_as_pmf_floors_small_positive_masses_before_normalizing() -> None:
+    """Two sub-floor masses become equal rather than retaining their raw odds."""
+    raw = np.asarray([1e-14, 1e-13])
+    original = raw.copy()
+    np.testing.assert_array_equal(as_pmf(raw), [0.5, 0.5])
+    np.testing.assert_array_equal(raw, original)
+
+
 def test_as_pmf_matrix_rejects_empty_and_ragged_inputs():
     with pytest.raises(ValueError, match="non-empty"):
         as_pmf_matrix([])

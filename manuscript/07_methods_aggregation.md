@@ -26,6 +26,12 @@ $$
 \end{aligned}
 $$ {#eq:log-linear-pool}
 
+In the floating-point implementation, $q_n$ denotes the admitted posterior
+after input validation, lower flooring of masses, and row normalization.
+The floor acts before normalization and applies to small positive masses as
+well as exact zeros. The pooling formula uses those admitted posteriors;
+rescaling sufficiently small raw masses can change them.
+
 For the source bridge, fix one finite shared support $\mathcal S$ with
 $q_n(s)>0$ for every agent and state.
 

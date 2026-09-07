@@ -49,6 +49,11 @@ message-passing protocol. The bridge has three explicit assumptions:
 3. the project uses a fixed non-negative weight mapping without reconstructing
    the source factor graph, cavity structure, or message schedule.
 
+For the floating-point implementation, these $q_n$ are the admitted probability
+rows after mass flooring and normalization. The boundary floors values below
+`1e-12` before normalizing, including small positive masses. Its raw caller
+inputs need not equal the posteriors in the algebraic identity.
+
 Under those assumptions,
 $\operatorname{softmax}(\sum_n w_n\log q_n)=\operatorname{softmax}(\sum_n w_n m_n)$:
 the omitted local normalizers are state-independent. This establishes the

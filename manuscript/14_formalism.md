@@ -90,7 +90,8 @@ The central project identity is the aggregation collapse of
 log-linear pool [@eq:log-linear-pool]. Its source bridge is deliberately
 narrow.
 
-Take a finite common support with $q_n(s)>0$ and represent each Eq. 7
+Take the admitted posteriors defined in [@sec:method-aggregation], on a finite
+common support with $q_n(s)>0$, and represent each Eq. 7
 softmax input as a posterior log potential
 $m_n(s)=\log q_n(s)+\kappa_n$, with $\kappa_n$ constant in $s$ and fixed
 declared weights $w_n$ independent of the emerging consensus. Softmax then

@@ -23,8 +23,9 @@ _EPS = 1e-12
 def as_pmf(values: ArrayF, *, name: str = "probability vector") -> ArrayF:
     """Return a finite, non-negative, one-dimensional normalized pmf.
 
-    Exact zeros are floored at ``1e-12`` for the log-domain categorical
-    formulas.  Negative values are not numerical zeros: they violate the
+    Values below ``1e-12``, including exact zeros and small positive masses,
+    are floored before row normalization for the log-domain categorical
+    formulas. Negative values are not numerical zeros: they violate the
     simplex and raise ``ValueError`` instead of being silently clipped.
     """
     arr = np.asarray(values)

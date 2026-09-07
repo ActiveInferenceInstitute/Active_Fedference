@@ -338,8 +338,14 @@ result = aggregate_result(local_posteriors, config=config)
 print(result.consensus, result.solver_status)
 ```
 
-Rows are normalized at the API boundary and exact zeros are floored before
-log-domain aggregation. `raw_effective_weights` are the actual final
+Each mass row is validated, floored at `1e-12`, and then normalized at the API
+boundary. The floor applies to small positive masses as well as exact zeros.
+Consequently, rescaling a row can change the admitted probabilities when some
+raw masses cross that floor. The pooling formulas use these admitted rows; the
+labeled result exposes them as `normalized_local_posteriors`, while the request
+retains the original masses.
+
+`raw_effective_weights` are the actual final
 coefficients; `normalized_effective_weights` are relative-influence diagnostics
 and are not substituted back into the pool. Scaling all raw base weights may
 change consensus concentration.

@@ -161,6 +161,10 @@ def log_linear_pool(
     et al. (2024) Eq. 7. It does not reconstruct that paper's complete
     message-passing protocol.
 
+    The log potentials use the admitted rows returned by :func:`as_pmf_matrix`: mass
+    flooring precedes normalization, so sufficiently small positive raw masses
+    can change before pooling. The algebraic formula refers to those admitted pmfs.
+
     ``local_posteriors`` and ``base_weights`` are the canonical names. The old
     ``beliefs``/``weights`` keywords remain additive compatibility aliases.
     """
