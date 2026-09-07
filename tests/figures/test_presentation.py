@@ -43,6 +43,44 @@ def test_presentation_pair_and_manifest_are_measured_and_deterministic(tmp_path:
     assert (raster.read_bytes(), vector.read_bytes(), manifest.read_bytes()) == original
 
 
+@pytest.mark.parametrize("limits", [(9.8e-5, 0.059), (8.3e-4, 1.9), (9.9e-5, 0.00073)])
+def test_projection_axis_label_clears_long_timing_ticks(
+    tmp_path: Path, limits: tuple[float, float],
+) -> None:
+    from typing import cast
+
+    from matplotlib.figure import Figure
+    from matplotlib.text import Text
+    from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator
+
+    from figures._presentation_diagnostics import _axes
+
+    axis = _axes("Measured timing", "Agents", "Seconds")
+    figure = cast(Figure, axis.figure)
+    try:
+        low, high = limits
+        axis.plot([1, 4, 8], [low, (low * high) ** 0.5, high])
+        axis.set_yscale("log")
+        axis.set_ylim(low / 1.5, high * 1.5)
+        axis.yaxis.set_major_locator(FixedLocator([low, high]))
+        axis.yaxis.set_minor_locator(NullLocator())
+        axis.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:.2g}"))
+        figure.canvas.draw()
+        label = next(text for text in figure.findobj(match=Text) if text.get_text() == "Seconds")
+        bounds = label.get_window_extent()
+        ticks = [text.get_window_extent() for text in axis.get_yticklabels() if text.get_visible()]
+        assert ticks
+        assert all(bounds.x1 + 4 * figure.dpi / 72 <= tick.x0 for tick in ticks)
+        record = save_presentation_panel(
+            PresentationPanel("timing", figure, "Measured timing ticks and their seconds unit."),
+            tmp_path / "timing.png",
+        )
+        assert record["minimum_label_px"] >= 30 * FIGURE_EXPORT_DPI / 72
+        assert (tmp_path / "timing.pdf").is_file()
+    finally:
+        plt.close(figure)
+
+
 def test_presentation_file_verification_rejects_tampering_and_missing_vectors(tmp_path: Path) -> None:
     canonical = tmp_path / "evidence.png"
     manifest = save_presentation_panels([_panel()], canonical_path=canonical, expected_identifiers=("first",))

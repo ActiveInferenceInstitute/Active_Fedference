@@ -711,7 +711,7 @@ def heuristic_presentation(path: Path, report: Mapping[str, Any]) -> Path:
                 )
             )
         else:
-            axis = _axes(name, "Aggregator", "Adversaries k")
+            axis = _axes(name, "Aggregator", "Count k")
             style = semantic_style(role)
             axis.bar(
                 [0],

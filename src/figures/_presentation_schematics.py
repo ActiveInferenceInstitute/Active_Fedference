@@ -242,22 +242,29 @@ def colony_presentation(path: Path, *, network: bool = False) -> Path:
                 width=0.65,
             )
             for state in indices:
-                axis.text(
-                    float(state),
-                    float(values[state]) + 0.04,
-                    f"{values[state]:.3f}",
-                    fontsize=30,
-                    ha="center",
-                    va="bottom",
-                    color=COLOR_DEEP,
-                )
-            if start <= peak < stop:
-                axis.annotate(
-                    "",
-                    xy=(peak, float(values[peak]) + 0.2),
-                    xytext=(peak, 0.94),
-                    arrowprops={"arrowstyle": "->", "color": COLOR_DEEP, "lw": 2},
-                )
+                if state == peak:
+                    # Attach the arrow to the numeric label's measured boundary,
+                    # so its shaft cannot cross the displayed posterior mass.
+                    axis.annotate(
+                        f"{values[state]:.3f}",
+                        xy=(float(state), float(values[state])),
+                        xytext=(float(state), 1.1),
+                        fontsize=30,
+                        ha="center",
+                        va="top",
+                        color=COLOR_DEEP,
+                        arrowprops={"arrowstyle": "->", "color": COLOR_DEEP, "lw": 2},
+                    )
+                else:
+                    axis.text(
+                        float(state),
+                        float(values[state]) + 0.04,
+                        f"{values[state]:.3f}",
+                        fontsize=30,
+                        ha="center",
+                        va="bottom",
+                        color=COLOR_DEEP,
+                    )
             axis.set_ylim(0, 1.15)
             axis.set_xticks(indices, [str(state + 1) for state in indices])
             axis.set_yticks([0, 1])

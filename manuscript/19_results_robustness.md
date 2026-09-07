@@ -85,7 +85,7 @@ decorate the server-side `robust_aggregate` heuristic only.
 
 ### Selection-free all-method robustness review {#sec:results-review-grid}
 
-Figure [@fig:robustness-review-grid] is the principal comparative robustness
+The comparison in [@fig:robustness-review-grid] is the principal comparative robustness
 surface. It joins the conditional-world cells to the directional rate profiles
 while retaining every configured non-reference server preset. It uses
 {{REVIEW_GRID_N_SEEDS}} deterministic seed replicates and

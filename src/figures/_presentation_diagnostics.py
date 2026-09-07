@@ -19,6 +19,7 @@ from ._presentation_robustness import _canvas
 
 
 def _axes(title: str, xlabel: str, ylabel: str) -> Axes:
+    """Place units outside the measured tick-label bounds at full label size."""
     fig = _canvas()
     axis = fig.add_axes((0.25, 0.32, 0.71, 0.42))
     axis.tick_params(labelsize=30)
@@ -26,8 +27,8 @@ def _axes(title: str, xlabel: str, ylabel: str) -> Axes:
     axis.yaxis.set_major_locator(MaxNLocator(2))
     axis.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:.2g}"))
     axis.set_xlabel(xlabel, fontsize=30)
+    axis.set_ylabel(ylabel, fontsize=30, labelpad=12, color=COLOR_DEEP)
     fig.text(0.5, 0.98, title, ha="center", va="top", fontsize=30, color=COLOR_DEEP)
-    fig.text(0.02, 0.55, ylabel, rotation=90, ha="left", va="center", fontsize=30, color=COLOR_DEEP)
     return axis
 
 

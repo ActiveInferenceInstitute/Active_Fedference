@@ -37,7 +37,7 @@ research report. It validates one-dimensional categorical inputs, hashes the
 canonical semantic request, delegates once to the shared aggregation domain,
 and records numerical health without adding a decision or interpretation.
 
-Figure [@fig:application-integrity-flow] reads from top to bottom. Panel A follows
+The application flow in [@fig:application-integrity-flow] reads from top to bottom. Panel A follows
 validation and canonical hashing; Panel B places the exact two-by-two
 `solver_status` key below the result classifier; Panel C separates the upper
 atomic-write row from the lower verification lane. Invalid inputs or unsafe

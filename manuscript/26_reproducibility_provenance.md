@@ -2,7 +2,7 @@
 
 ## Producer order, stale invalidation, and publication authority {#sec:repro-provenance-map}
 
-Figure [@fig:source-render-provenance] records the source-owned producer
+The provenance map in [@fig:source-render-provenance] records the source-owned producer
 contract rather than inferring it from the release manifest. Panel A places
 the non-sequential fan-in dependencies in a labeled matrix, then orders the
 temporal, gate, receipt, and authorization dependencies in a crossing-free

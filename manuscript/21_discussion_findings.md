@@ -167,7 +167,7 @@ proved recovery identity plus conditional empirical contrasts, and
 figure or statistic moves a guarantee between these operators; [@sec:limitations]
 records the complete boundary.
 
-Figure [@fig:evidence-replication-map] is the compact ledger for that separation.
+The map in [@fig:evidence-replication-map] is the compact ledger for that separation.
 Its fourteen rows align headline result families and public boundaries with
 their estimands and independent units, while its nesting strip prevents seeds,
 trials, agents, and ordered states from being treated as interchangeable

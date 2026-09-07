@@ -191,7 +191,7 @@ statistics — the three robustness axes of [@sec:robustness-axes] kept distinct
 
 ## Evidence classes and replication hierarchy {#sec:methods-evidence-map}
 
-Figure [@fig:evidence-replication-map] makes the reporting rule explicit. Read
+The reporting map in [@fig:evidence-replication-map] makes the reporting rule explicit. Read
 each numbered row across its six fields: result and class, estimand and unit,
 independent unit, nesting, permitted support, and prohibited support. A formal
 identity, conditional server contrast, protocol check, and application receipt
@@ -293,7 +293,7 @@ A finite grid can also yield a sublinear fitted slope when validation, allocatio
 cache, and interpreter overheads are material; the implementation-derived order
 is the governing claim, not equality between a finite-grid slope and its exponent.
 
-Figure [@fig:complexity-scaling] visualizes the implementation-derived orders
+The timing plot in [@fig:complexity-scaling] visualizes the implementation-derived orders
 and the corresponding finite-grid timing diagnostic.
 
 ![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on ${{COMPLEXITY_MACHINE}}$ with Python ${{COMPLEXITY_PYTHON}}$, NumPy ${{COMPLEXITY_NUMPY}}$, seed ${{COMPLEXITY_SEED}}$, and ${{COMPLEXITY_REPEATS}}$ measured repeat(s) after ${{COMPLEXITY_WARMUPS}}$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../output/figures/complexity_scaling.png){#fig:complexity-scaling width=95% data-slide-manifest="../output/figures/complexity_scaling.slides.json"}
