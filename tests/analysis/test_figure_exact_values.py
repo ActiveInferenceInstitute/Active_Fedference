@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
+from fractions import Fraction
+from itertools import permutations
 from pathlib import Path
 
 import pytest
@@ -90,6 +92,37 @@ def test_exact_values_are_independent_of_report_mapping_insertion_order() -> Non
     )
     for table in expected["tables"]:
         assert len(table["columns"]) == len(set(table["columns"]))
+
+
+@pytest.mark.parametrize("values", list(permutations((0.5, 2.0**-54, -0.5))))
+def test_display_mean_preserves_small_residual_under_cancellation(
+    values: tuple[float, ...],
+) -> None:
+    """A rational reference detects version-dependent float-sum cancellation."""
+    cells = {
+        f"cell-{index}": {
+            "attack": "directional",
+            "adversary_weight": 0.5,
+            "contrast_mean": value,
+        }
+        for index, value in enumerate(values)
+    }
+    original = deepcopy(cells)
+    exact_mean = float(sum(Fraction.from_float(value) for value in values) / len(values))
+
+    summaries = conditional_display_summaries(cells)
+
+    assert summaries == [
+        {
+            "attack": "directional",
+            "adversary_weight": 0.5,
+            "mean_contrast": exact_mean,
+            "half_min_max_span": 0.5,
+            "cell_count": 3,
+        }
+    ]
+    assert summaries[0]["mean_contrast"] > 0.0
+    assert cells == original
 
 
 def test_review_grid_fallback_reuses_displayed_group_mean_and_half_span() -> None:

@@ -81,6 +81,8 @@ def conditional_display_summaries(
     The source-owned helper is consumed by both the plotted annotation and its
     exact-value fallback. It is a finite descriptive grouping over registered
     cells, not an uncertainty interval or a new statistical estimand.
+    Explicit accurate summation keeps the display independent of the built-in
+    float-summation algorithm, which changed in Python 3.12.
     """
 
     cells = [
@@ -106,7 +108,7 @@ def conditional_display_summaries(
                     {
                         "attack": attack,
                         "adversary_weight": weight,
-                        "mean_contrast": sum(values) / len(values),
+                        "mean_contrast": math.fsum(values) / len(values),
                         "half_min_max_span": (max(values) - min(values)) / 2.0,
                         "cell_count": len(values),
                     }
