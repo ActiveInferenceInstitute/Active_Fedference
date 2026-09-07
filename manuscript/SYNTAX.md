@@ -229,7 +229,7 @@ Current figure set, produced by generators in `src/figures/` (all wired through 
 | `{#fig:belief-quality}` | `../output/figures/belief_quality.png` | `belief_quality.generate_belief_quality` | Proper categorical log-score controls and reliability diagnostic | `28_supplement_extended_methods.md` |
 | `{#fig:disjoint-fov-world}` | `../output/figures/disjoint_fov_world.png` | `disjoint_fov_world.generate_disjoint_fov_world` | Disjoint-field-of-view communication and movement-policy comparison | `S05_results_moving_world.md` |
 | `{#fig:application-integrity-flow}` | `../output/figures/application_integrity_flow.png` | `application_integrity_flow.generate_application_integrity_flow` | Labeled-request validation, solver-health classification, atomic artifacts, and receipt-verification levels | `26_reproducibility.md` |
-| `{#fig:source-render-provenance}` | `../output/figures/source_render_provenance.png` | `source_render_provenance.generate_source_render_provenance` | Source-to-render producer order, reverse invalidation, and authorization-gated publication states | `26_reproducibility.md` |
+| `{#fig:source-render-provenance}` | `../output/figures/source_render_provenance.png` | `source_render_provenance.generate_source_render_provenance` | Source-to-render producer order, reverse invalidation, and authorization-gated publication states | `26_reproducibility_provenance.md` |
 
 > **Honesty contract for figures.** `{#fig:robust-weights}` visualises the
 > **server-side heuristic** (`robust_aggregate` divergence-reweighting); its
@@ -388,13 +388,16 @@ Every H1 carries a `{#sec:<name>}` label so cross-section references (`[@sec:met
 | `{#sec:conclusion-boundaries}` | What remains unproved (H2) | `25_conclusion.md` |
 | `{#sec:conclusion-program}` | A falsifiable research program (H2) | `25_conclusion.md` |
 | `{#sec:conclusion-position}` | Final position (H2) | `25_conclusion.md` |
-| `{#sec:reproducibility}` | Reproducibility: execution record and recovery checks | `26_reproducibility.md` |
+| `{#sec:reproducibility}` | Reproducibility: execution record and application integrity | `26_reproducibility.md` |
 | `{#sec:repro-determinism}` | Determinism contract for seeded scientific results (H2) | `26_reproducibility.md` |
+| `{#sec:repro-application-integrity}` | Application integrity and solver-health receipts (H2) | `26_reproducibility.md` |
 | `{#sec:repro-environment}` | Environment fingerprint for the reported run (H2) | `26_reproducibility.md` |
 | `{#sec:repro-accessibility}` | Reader-surface accessibility boundary (H2) | `26_reproducibility.md` |
 | `{#sec:repro-tests}` | Test and coverage evidence for the claim surface (H2) | `26_reproducibility.md` |
 | `{#sec:repro-artifacts}` | Artifact inventory for figures, data, and reports (H2) | `26_reproducibility.md` |
-| `{#sec:repro-recovery}` | Recovery-limit certificate for the client and project-pool corners (H2) | `26_reproducibility.md` |
+| `{#sec:repro-production}` | Reproducibility: producer provenance and recovery checks (H1) | `26_reproducibility_provenance.md` |
+| `{#sec:repro-provenance-map}` | Producer order, stale invalidation, and publication authority (H2) | `26_reproducibility_provenance.md` |
+| `{#sec:repro-recovery}` | Recovery-limit certificate for the client and project-pool corners (H2) | `26_reproducibility_provenance.md` |
 | `{#sec:references}` | References | `99_references.md` |
 
 ### Supplement section labels

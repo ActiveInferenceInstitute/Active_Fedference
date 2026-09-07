@@ -99,12 +99,16 @@ non-draft pre-test escape hatch and must not be used for the final manuscript.
 
 ### Unresolved token check
 
-Hydration applies to the Markdown reader surface. Auxiliary config, preamble,
-and BibTeX files remain source-exact; their consumer-specific producers resolve
-or validate any supported placeholders.
+Hydration applies to Markdown sections and configuration string values. The
+source `manuscript/config.yaml` remains unchanged; its generated copy resolves
+tokens before the pinned Template renderer consumes it. YAML serialization
+preserves quotes, colons, newlines, and non-string values without treating token
+replacements as YAML syntax. Unresolved configuration tokens reject the
+replacement transaction and leave the previous hydrated tree intact. Preamble
+and BibTeX files remain source-exact auxiliaries for their renderer consumers.
 
 ```bash
-if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+if rg -n --glob '*.md' --glob '*.yaml' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else

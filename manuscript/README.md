@@ -12,6 +12,13 @@ manuscript-driven validation gates that bind every claim to generated outputs.
 - `AGENTS.md`: manuscript-specific editing contract.
 - `config.yaml.example`: local copy of the metadata template.
 
+The reproducibility material spans `26_reproducibility.md` and
+`26_reproducibility_provenance.md` in filename order. The first covers execution
+and application integrity; the second retains the producer/invalidation map
+and recovery checks. Each produces a separate complete slide deck within the
+renderer resource limits. Their figures, captions, tokens, and body reading
+order remain part of the combined manuscript.
+
 ## Build sequence
 
 1. Run the locked-core numerical invariants gate from the project root:

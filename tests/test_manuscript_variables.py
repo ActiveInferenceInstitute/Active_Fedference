@@ -837,6 +837,8 @@ def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
     (manuscript / "01_intro.md").write_text("Value: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "README.md").write_text("Example: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "refs.bib").write_text("@misc{x, title={X}}\n", encoding="utf-8")
+    preamble = manuscript / "preamble.md"
+    preamble.write_text("\\newcommand{\\demovalue}{value}\n", encoding="utf-8")
     config_path = manuscript / "config.yaml"
     config_path.write_text(
         config_path.read_text(encoding="utf-8")
@@ -845,13 +847,18 @@ def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
     )
     source_config = config_path.read_bytes()
 
-    out_dir = render_manuscript_tree(tmp_path, {"VALUE": "42"})
+    out_dir = render_manuscript_tree(
+        tmp_path, {"VALUE": "42", "PUBLICATION_DOI": "10.5281/zenodo.12345"}
+    )
 
     assert (out_dir / "01_intro.md").read_text(encoding="utf-8") == "Value: 42\n"
     assert not (out_dir / "README.md").exists()
-    assert (out_dir / "config.yaml").read_bytes() == source_config
+    rendered_config = yaml.safe_load((out_dir / "config.yaml").read_text(encoding="utf-8"))
+    assert rendered_config["source_only_placeholder"] == "10.5281/zenodo.12345"
+    assert config_path.read_bytes() == source_config
     assert b"{{PUBLICATION_DOI}}" in source_config
     assert (out_dir / "refs.bib").exists()
+    assert (out_dir / "preamble.md").read_bytes() == preamble.read_bytes()
     assert "infrastructure" not in inspect.getsource(render_manuscript_tree)
 
 
@@ -870,11 +877,60 @@ def test_full_manuscript_tree_is_exactly_hydrated_without_tokens(tmp_path: Path)
     assert {path.name for path in output.glob("*.md")} == source_names
     unresolved = {
         path.relative_to(output).as_posix(): _TOKEN_RE.findall(path.read_text(encoding="utf-8"))
-        for path in output.rglob("*.md")
+        for path in output.rglob("*") if path.suffix in {".md", ".yaml"}
     }
     assert not {name: tokens for name, tokens in unresolved.items() if tokens}, (
         "full manuscript hydration left unresolved {{TOKEN}} markers"
     )
+
+
+def test_render_config_tokens_preserve_nested_yaml_values(tmp_path: Path) -> None:
+    manuscript = tmp_path / "manuscript"
+    manuscript.mkdir()
+    config = {
+        "paper": {"title": "{{TITLE}}"},
+        "metadata": {
+            "description": "before {{DESCRIPTION}} after",
+            "values": [True, 7, None, {"text": "{{DESCRIPTION}}"}],
+        },
+    }
+    source = manuscript / "config.yaml"
+    source.write_text(yaml.safe_dump(config), encoding="utf-8")
+    before = source.read_bytes()
+    variables = {
+        "TITLE": 'Title: "quoted" # literal',
+        "DESCRIPTION": "line one\nline two: {literal}",
+    }
+
+    output = render_manuscript_tree(tmp_path, variables)
+    observed = yaml.safe_load((output / "config.yaml").read_text(encoding="utf-8"))
+
+    assert observed == {
+        "paper": {"title": variables["TITLE"]},
+        "metadata": {
+            "description": f"before {variables['DESCRIPTION']} after",
+            "values": [True, 7, None, {"text": variables["DESCRIPTION"]}],
+        },
+    }
+    assert source.read_bytes() == before
+
+
+def test_unresolved_config_token_preserves_previous_manuscript_tree(tmp_path: Path) -> None:
+    manuscript = tmp_path / "manuscript"
+    manuscript.mkdir()
+    (manuscript / "config.yaml").write_text("paper:\n  title: '{{UNKNOWN}}'\n")
+    (manuscript / "01_intro.md").write_text("New manuscript\n")
+    previous = tmp_path / "output" / "manuscript"
+    previous.mkdir(parents=True)
+    (previous / "previous.md").write_text("Retain the previous tree\n")
+    before = {p.name: p.read_bytes() for p in previous.iterdir()}
+
+    with pytest.raises(ValueError, match="unresolved.*UNKNOWN"):
+        render_manuscript_tree(tmp_path, {})
+
+    assert {p.name: p.read_bytes() for p in previous.iterdir()} == before
+    assert not list((tmp_path / "output").glob(".manuscript-staging-*"))
+    assert not list((tmp_path / "output").glob(".manuscript-backup-*"))
 
 
 def test_render_manuscript_tree_refuses_symlinked_output_dir(tmp_path: Path) -> None:

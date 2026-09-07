@@ -483,9 +483,9 @@ uv run --locked python scripts/pipeline/stage_05_copy.py --project working/activ
 cd "$AF_REPO"
 uv run --locked --extra dev python scripts/validate_test_coverage.py
 uv run --locked python scripts/z_generate_manuscript_variables.py
-# Hydrated Markdown must be token-free. Auxiliary config/preamble/BibTeX files
-# remain source-exact and are validated by their consumer-specific producers.
-if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+# Hydrated Markdown and config must be token-free. Preamble/BibTeX files remain
+# source-exact auxiliaries and are validated by their renderer consumers.
+if rg -n --glob '*.md' --glob '*.yaml' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else

@@ -317,12 +317,13 @@ the control ordering required to pass before any method contrast is discussed.
 
 Detect unresolved tokens:
 
-This check covers the hydrated Markdown reader surface. Auxiliary config,
-preamble, and BibTeX files remain source-exact and are validated by their
-consumer-specific producers.
+This check covers the hydrated Markdown sections and configuration. The source
+configuration is unchanged; token-bearing string values are resolved in its
+generated YAML copy. Preamble and BibTeX files remain source-exact auxiliaries
+and are validated by their renderer consumers.
 
 ```bash
-if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+if rg -n --glob '*.md' --glob '*.yaml' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else

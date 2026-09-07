@@ -78,6 +78,14 @@ phase). Small magnitudes are emitted both as plain `.2e` tokens and as
 `*_MATH` siblings in LaTeX scientific notation for `$...$` spans — see
 [`tokens-and-labels.md`](tokens-and-labels.md).
 
+Configuration string values are hydrated in `output/manuscript/config.yaml`
+without editing the source template. YAML serialization preserves replacement
+text as values, including quotes, colons, and newlines. Unresolved configuration
+tokens reject the transaction before the previous hydrated tree is replaced.
+The pinned Template renderer preserves this project-resolved configuration and
+rejects any unresolved token that reaches its configuration boundary. Preamble
+and BibTeX files retain their existing source-owned renderer contract.
+
 The `HIER_*` and `NLEVEL3_*` token groups are strict loads from the hierarchical
 and three-level reports generated in Phase 1. Variable hydration does not rerun
 either study or silently synthesize missing report values.
@@ -86,6 +94,7 @@ either study or silently synthesize missing report values.
 
 - `output/data/manuscript_variables.json`
 - `output/manuscript/*.md` (token-resolved)
+- `output/manuscript/config.yaml` (configuration string values resolved)
 
 All `{{TOKEN}}` placeholders must resolve before PDF render.
 
@@ -230,7 +239,8 @@ uv run --locked python scripts/pipeline/stage_03_render.py \
 **Inputs:**
 
 - `output/manuscript/*.md` (substituted)
-- `manuscript/config.yaml`, `preamble.md`, `references.bib`
+- `output/manuscript/config.yaml` (project-resolved configuration)
+- source-owned `manuscript/preamble.md` and `manuscript/references.bib`
 - `output/figures/*.png`
 
 **Outputs:** `output/pdf/active_fedference_combined.pdf` (copied to root
