@@ -509,7 +509,7 @@ def generate_system_overview(*, project_root: Path | None = None) -> Path:
                   fontsize=8.5, color=ADVERSARIAL_TEXT if adv else HONEST_TEXT)
 
     rob_peak_state = rob_peak + 1  # 1-indexed
-    ax_c.text(0.5, 0.045,
+    ax_c.text(0.5, -0.025,
               f"True-state mass: {int(data['robust_acc'])}%\n"
               f"argmax → state {rob_peak_state}  (true: {TRUE_STATE + 1})",
               ha="center", va="center", fontsize=10.5, color=CORRECT_TEXT,

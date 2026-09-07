@@ -187,7 +187,8 @@ def generate_bounded_influence(
     )
     ax.set_xlim(float(np.min(x)) - 0.03 * x_span, label_end_x)
     ax.set_xticks(np.linspace(float(np.min(x)), float(np.max(x)), 6))
-    ax.set_ylim(0.0, y_top)
+    # Leave room below zero so near-zero endpoint markers remain whole.
+    ax.set_ylim(-0.03 * y_top, y_top)
     ax.set_title(
         "Normalized server weight along the configured drift path",
         pad=12,

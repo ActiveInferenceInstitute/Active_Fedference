@@ -112,7 +112,7 @@ def generate_language_kl_decay(
     )
     ax.set_xlabel("learning step (Dirichlet count batch)")
     ax.set_ylabel("KL divergence (nats)")
-    ax.set_ylim(bottom=0.0)
+    ax.set_ylim(bottom=-0.03 * ax.get_ylim()[1])
     relation = "source-mechanism analogue to Friston et al. (2024), Fig. 7"
     ax.set_title(f"Seed-mean categorical KL trajectory\n({relation})", pad=12)
 

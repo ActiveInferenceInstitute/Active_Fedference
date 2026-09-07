@@ -296,8 +296,8 @@ def generate_hierarchical_pomdp(
     ax.set_xlabel("State")
     ax.set_ylabel("Consensus P(location)")
     ax.set_title("C  Colony consensus")
-    # Both consensus distributions saturate at the true state; annotate the
-    # peak values so the identical heights read as measured, not broken.
+    # Direct peak values distinguish near-ceiling consensus distributions
+    # without placing their labels over neighboring axis ticks.
     for xoff, text_offset, color, label, series, align in (
         (-0.2, (0.04, 0.72), COLOR_NAIVE, "flat", flat_consensus2, "left"),
         (0.2, (0.96, 0.72), COLOR_ROBUST, "2 levels", hier_consensus2, "right"),

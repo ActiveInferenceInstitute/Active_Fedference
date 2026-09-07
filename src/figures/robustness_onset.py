@@ -216,7 +216,7 @@ def generate_robustness_onset(
         if ax is axes[-1]:
             ax.set_xlabel("Contamination rate $\\epsilon$", labelpad=5)
         ax.set_xlim(float(rates.min()) - 0.02, float(rates.max()) + 0.12)
-        ax.set_ylim(0.0, 1.05)
+        ax.set_ylim(-0.04, 1.05)
         # --- stats box: onset rate + final accuracy gap ---
         naive_end = float(naive_curve[-1])
         robust_end = float(robust_curve[-1])

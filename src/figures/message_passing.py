@@ -66,7 +66,7 @@ def _box(
     )
     ax.text(
         x + 0.018,
-        y + h - 0.075,
+        y + h - 0.060,
         body,
         ha="left",
         va="top",
@@ -343,7 +343,7 @@ def generate_message_passing(*, project_root: Path | None = None) -> Path:
         0.265,
         0.285,
         0.160,
-        "variational_aggregate",
+        "Variational server",
         "$q,a$ block updates\nof $F(q,a)$",
         accent=variational.keyline,
         owner="objective-backed\nweight property",

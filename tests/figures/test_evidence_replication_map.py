@@ -15,7 +15,7 @@ from figures.evidence_replication_map import (
 
 
 def test_evidence_map_names_the_report_as_independent_unit_owner() -> None:
-    assert _INDEPENDENT_UNIT_HEADER == "Declared\nindependent unit"
+    assert _INDEPENDENT_UNIT_HEADER == "Declared unit\n(independent)"
 
 
 def test_evidence_replication_map_writes_large_type_landscape_pair(tmp_path: Path) -> None:

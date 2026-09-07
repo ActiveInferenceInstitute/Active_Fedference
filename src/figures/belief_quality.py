@@ -117,8 +117,8 @@ def generate_belief_quality(
         linewidth=rule.linewidth,
         label="perfect calibration",
     )
-    axes[1].set_xlim(0.0, 1.02)
-    axes[1].set_ylim(0.0, 1.02)
+    axes[1].set_xlim(-0.03, 1.03)
+    axes[1].set_ylim(-0.03, 1.03)
     axes[1].set_xlabel("Mean confidence")
     axes[1].set_ylabel("Empirical accuracy")
     axes[1].set_title("Reliability diagnostic")

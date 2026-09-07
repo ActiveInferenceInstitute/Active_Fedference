@@ -23,7 +23,6 @@ import numpy as np
 from figures._common import (
     COLOR_GRID,
     COLOR_MUTED,
-    annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
@@ -68,7 +67,7 @@ def generate_parameter_recovery(
             matching length.
         r_squared: Optional coefficient of determination (R²) of the
             recovered-vs-true regression; shown in the scatter title and
-            stats box when provided.
+            summary line when provided.
         mean_abs_error: Optional global mean absolute error across all levels;
             drawn as a horizontal reference line on the error bar chart when
             provided.
@@ -120,7 +119,7 @@ def generate_parameter_recovery(
 
     fig, (ax_scatter, ax_error) = plt.subplots(1, 2, figsize=(7.8, 5.7), facecolor="white")
     fig.set_layout_engine("none")
-    fig.subplots_adjust(left=0.10, right=0.98, top=0.80, bottom=0.24, wspace=0.30)
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.73, bottom=0.32, wspace=0.30)
 
     # ========================================================================
     # LEFT PANEL — scatter: recovered vs true
@@ -164,9 +163,9 @@ def generate_parameter_recovery(
         scatter_title += f"\nR² = {r_squared:.3f}"
     ax_scatter.set_title(scatter_title)
 
-    ax_scatter.legend(fontsize=9.5, loc="lower right")
+    ax_scatter.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.28))
 
-    # Stats text box — upper left
+    # Keep the study summary outside the data axes so intervals stay visible.
     stats_lines: list[str] = []
     if n_trials is not None:
         stats_lines.append(f"independent trials/acuity = {n_trials}")
@@ -178,8 +177,9 @@ def generate_parameter_recovery(
         stats_lines.append(f"R² = {r_squared:.3f}")
 
     if stats_lines:
-        stats_text = "\n".join(stats_lines)
-        annotate_stats_box(ax_scatter, stats_text, loc="upper left", fontsize=10)
+        stats_text = "\n".join("; ".join(stats_lines[i:i + 2])
+                               for i in range(0, len(stats_lines), 2))
+        fig.text(0.5, 0.915, stats_text, ha="center", va="top", fontsize=9.5)
 
     # ========================================================================
     # RIGHT PANEL — bar chart of absolute error per acuity level
@@ -207,7 +207,7 @@ def generate_parameter_recovery(
             zorder=4,
             label=f"mean MAE = {mean_abs_error:.4f}",
         )
-    ax_error.legend(fontsize=9.5, loc="upper right")
+    ax_error.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.28))
 
     ax_error.set_xlabel("True acuity $\\alpha$", labelpad=5)
     ax_error.set_ylabel("|recovered − true| (mean absolute error)", labelpad=5)

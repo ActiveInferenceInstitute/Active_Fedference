@@ -330,7 +330,7 @@ def _draw_temporal(ax: plt.Axes) -> None:
 
 def _draw_hierarchy(ax: plt.Axes) -> None:
     _panel(ax, "D  Hierarchical context", "Optional top-down context conditions the location-level prior")
-    levels = ((0.78, r"$s^L$", "meta-context"), (0.56, r"$s^2$", "context"), (0.34, r"$s^1$", "location"))
+    levels = ((0.72, r"$s^L$", "meta-context"), (0.56, r"$s^2$", "context"), (0.34, r"$s^1$", "location"))
     for y, label, name in levels:
         _node(ax, 0.25, y, label, fill=COLOR_MULTI_2 if y > 0.4 else COLOR_ROBUST, edge=COLOR_ACCENT)
         ax.text(
@@ -348,7 +348,7 @@ def _draw_hierarchy(ax: plt.Axes) -> None:
     _node(ax, 0.76, 0.56, r"$q_1(s)$", fill="white", edge=COLOR_ROBUST)
     _arrow(ax, (0.31, 0.34), (0.70, 0.53), color=COLOR_ROBUST)
     _arrow(ax, (0.31, 0.56), (0.70, 0.56), color=COLOR_MULTI_2)
-    _arrow(ax, (0.31, 0.78), (0.70, 0.59), color=COLOR_MULTI_2, linestyle="--")
+    _arrow(ax, (0.31, 0.72), (0.70, 0.59), color=COLOR_MULTI_2, linestyle="--")
     ax.text(0.76, 0.41, r"$\bar q_1=\sum_k q_2[k]D_{1|k}$", fontsize=8.5, color=COLOR_DARK, ha="center")
     ax.text(
         0.76,

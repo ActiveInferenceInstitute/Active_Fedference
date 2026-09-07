@@ -19,7 +19,6 @@ from matplotlib.colors import to_hex
 
 from ._common import (
     COLOR_ACCENT,
-    annotate_stats_box,
     apply_style,
     contrasting_text_color,
     figures_dir,
@@ -86,7 +85,10 @@ def generate_belief_heatmap(
     ax.grid(False)
     ax.set_xlabel("creature location (grid cell index)", labelpad=6)
     ax.set_ylabel("agent / consensus row", labelpad=6)
-    ax.set_title("Sentinel colony beliefs over shared location", pad=8)
+    ax.set_title(
+        f"Sentinel colony beliefs over shared location\n{n_rows - 1} agents + 1 consensus row",
+        pad=8,
+    )
 
     labels = [f"agent {n}" for n in range(local_posteriors_matrix.shape[0])] + ["consensus"]
     ax.set_yticks(range(n_rows))
@@ -120,7 +122,6 @@ def generate_belief_heatmap(
     )
     cbar = fig.colorbar(im, ax=ax, label="posterior probability mass")
     cbar.ax.tick_params(labelsize=9.5)
-    annotate_stats_box(ax, f"{n_rows - 1} agents\n+ 1 consensus row", loc="lower right")
 
     path = save_figure(
         fig,

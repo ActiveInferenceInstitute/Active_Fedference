@@ -209,8 +209,8 @@ def _reverse_invalidation_arrow_endpoints(
     left, making the reverse dependency direction visible rather than relying
     on a border style or textual arrow glyph.
     """
-    center_y = y + 0.011
-    return (x + 0.236, center_y), (x + 0.068, center_y)
+    center_y = y + 0.014
+    return (x + 0.132, center_y), (x + 0.068, center_y)
 
 
 def _records(report: Mapping[str, object], key: str) -> list[Mapping[str, object]]:
@@ -668,7 +668,7 @@ def generate_source_render_provenance(
         )
         ax.text(
             x + 0.043,
-            y + 0.011,
+            y + 0.014,
             f"Δ{_INVALIDATION_CODES[source]}",
             ha="center",
             va="center",
@@ -677,10 +677,10 @@ def generate_source_render_provenance(
             color=COLOR_DEEP,
         )
         ax.text(
-            x + 0.263,
-            y + 0.011,
+            x + 0.145,
+            y + 0.014,
             "·".join(_INVALIDATION_CODES[target] for target in targets),
-            ha="center",
+            ha="left",
             va="center",
             fontsize=9.0,
             fontweight="bold",
@@ -694,15 +694,6 @@ def generate_source_render_provenance(
             color=COLOR_NAIVE,
             dashed=True,
             zorder=2,
-        )
-        ax.text(
-            x + 0.152,
-            y + 0.023,
-            "stale dependency",
-            ha="center",
-            va="center",
-            fontsize=9.2,
-            color=COLOR_DEEP,
         )
 
     ax.text(
@@ -744,7 +735,7 @@ def generate_source_render_provenance(
         ax.text(
             x + 0.015,
             y + 0.023,
-            textwrap.fill(label, width=43, break_long_words=False, break_on_hyphens=False),
+            textwrap.fill(label, width=32, break_long_words=False, break_on_hyphens=False),
             ha="left",
             va="center",
             fontsize=10.8,

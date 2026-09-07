@@ -159,7 +159,7 @@ def _plot_measurements(
     ax.set_ylabel("Median wall time (s)")
     ax.set_title(title)
     ax.grid(True, which="both", alpha=0.25)
-    ax.legend(fontsize=MIN_QUANTITATIVE_FONT_SIZE, loc="best")
+    # Direct end labels identify every series without obscuring timing ranges.
     x_values = np.concatenate([_numbers(row, "sizes") for row in rows])
     ax.set_xlim(float(x_values.min()) / 1.08, float(x_values.max()) * 1.65)
 

@@ -85,7 +85,7 @@ _NESTING_SHORT_LABEL = {
     "step": "Step / state",
 }
 
-_INDEPENDENT_UNIT_HEADER = "Declared\nindependent unit"
+_INDEPENDENT_UNIT_HEADER = "Declared unit\n(independent)"
 _NESTING_PANEL_TITLE = (
     "Nesting grammar — arrows mean contains, pairs, or repeats; use only row-declared levels"
 )

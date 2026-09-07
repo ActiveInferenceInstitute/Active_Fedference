@@ -8,6 +8,7 @@ shows the optional transition and action pathway.
 
 from __future__ import annotations
 
+import textwrap
 from pathlib import Path
 
 import matplotlib.patches as mpatches
@@ -63,7 +64,11 @@ def _panel(
         fontweight="bold",
         color=COLOR_DEEP,
     )
-    ax.text(x + 0.018, y + h - 0.078, subtitle, ha="left", va="top", fontsize=8.5, color=COLOR_ARROW)
+    ax.text(
+        x + 0.018, y + h - 0.068,
+        textwrap.fill(subtitle, width=95, break_long_words=False, break_on_hyphens=False),
+        ha="left", va="top", fontsize=8.5, color=COLOR_ARROW,
+    )
 
 
 def _world_grid(ax: plt.Axes, x: float, y: float, size: float, highlighted: int = 4) -> None:
@@ -321,8 +326,12 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         color=COLOR_DARK,
     )
     _posterior_card(ax, 0.77, 0.435, "$\\bar q_n$", COLOR_ACCENT, 4)
-    for x in (0.21, 0.35, 0.49):
-        _arrow(ax, (x, 0.472), (0.54, 0.470), color=COLOR_ARROW)
+    # A shared transport bus keeps the private posterior glyphs unobscured.
+    # Each card joins the bus; its single arrow enters the fusion server.
+    for x in (0.15, 0.29, 0.43):
+        ax.plot([x, x], [0.427, 0.415], color=COLOR_ARROW, linewidth=1.2)
+    ax.plot([0.15, 0.49], [0.415, 0.415], color=COLOR_ARROW, linewidth=1.2)
+    _arrow(ax, (0.49, 0.415), (0.54, 0.415), color=COLOR_ARROW)
     _arrow(ax, (0.70, 0.470), (0.76, 0.472), color=COLOR_ACCENT)
     _arrow(ax, (0.83, 0.435), (0.83, 0.405), color=COLOR_ACCENT, linestyle="--")
     ax.text(

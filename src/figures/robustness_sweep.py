@@ -213,7 +213,7 @@ def generate_robustness_sweep(
     # above zero, so a full [0, 1] range wastes panel area; the floor stays visible.
     minimum_value = min(min(values) for values in series.values())
     ax.set_ylim(max(0.0, min(0.4, minimum_value - 0.05)), 1.02)
-    ax.set_xlim(rate_vals[0], label_x + 0.23 * x_span)
+    ax.set_xlim(rate_vals[0] - 0.02 * x_span, label_x + 0.23 * x_span)
     if rate_summary is not None:
         n_profile = int(next(iter(rate_summary.values())).get("n", 0))
         ax.set_title("Server-preset accuracy under contamination")
