@@ -252,11 +252,30 @@ def generate_robustness_sweep(
             bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
         )
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    from ._presentation_studies import sweep_presentation
+
+    presentation_notes = (
+        f"Largest max-rate preset minus reference: {best_final - naive_final:+.3f}. Max rate: {final_rate:g}."
+        if rate_summary is not None
+        else "Single seeded curves; linear accuracy axis."
+    )
+    sweep_presentation(
+        path,
+        rate_vals,
+        series,
+        intervals,
+        styles,
+        labels,
+        accuracy_threshold,
+        n_profile if rate_summary is not None else None,
+        presentation_notes,
+    )
+    return path
 
 
 __all__ = ["generate_robustness_sweep"]

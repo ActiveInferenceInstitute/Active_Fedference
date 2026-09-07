@@ -211,6 +211,19 @@ def _declared_manuscript_figures(project_root: Path) -> list[dict[str, str]]:
         source_path = source_manuscript / path.name
         for match in _MANUSCRIPT_FIGURE_PATTERN.finditer(text):
             figure_path = Path(match.group("path"))
+            from analysis.artifacts import PRESENTATION_FIGURE_STEMS
+
+            selectors = re.findall(r'\bdata-slide-manifest="([^"]+)"', match.group("attrs"))
+            presentation: dict[str, str] = {}
+            if figure_path.stem in PRESENTATION_FIGURE_STEMS:
+                manifest = f"output/figures/{figure_path.stem}.slides.json"
+                if selectors != [f"../{manifest}"]:
+                    raise ValueError(
+                        f"figure {figure_path.stem} requires its exact source-owned presentation selector"
+                    )
+                presentation["presentation_manifest"] = manifest
+            elif selectors:
+                raise ValueError(f"figure {figure_path.stem} has an undeclared presentation selector")
             figures.append(
                 {
                     "label": match.group("label"),
@@ -218,6 +231,7 @@ def _declared_manuscript_figures(project_root: Path) -> list[dict[str, str]]:
                     "path": str(Path("output") / "figures" / figure_path.name),
                     "source_manuscript": str(source_path.relative_to(project_root)),
                     "caption": _normalise_caption(match.group("caption")),
+                    **presentation,
                 }
             )
     return figures
@@ -238,8 +252,10 @@ def _figure_generators_by_filename(project_root: Path) -> dict[str, str]:
     mapping: dict[str, str] = {}
     if not figures_pkg.is_dir():
         return mapping
+    from figures._metadata import FIGURE_SUPPORT_MODULES
+
     for mod in sorted(figures_pkg.glob("*.py")):
-        if mod.name in ("__init__.py", "_common.py"):
+        if mod.stem in FIGURE_SUPPORT_MODULES:
             continue
         stem = mod.stem
         # Generators write both a .png (embedded) and often a sibling .pdf.
@@ -309,6 +325,10 @@ def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) 
         if generator == "preexisting_figure":
             raise ValueError(f"no generator metadata owner for embedded figure {filename}")
         metadata = figure_metadata(generator)
+        if "presentation_manifest" in figure:
+            from figures._presentation import validate_presentation_files
+
+            validate_presentation_files(project_root / figure["presentation_manifest"])
         fallback = metadata.get("exact_value_fallback")
         if fallback and fallback not in exact_identifiers:
             raise ValueError(f"figure {label} references unknown exact-value fallback {fallback!r}")
@@ -1141,7 +1161,11 @@ def run_analysis_pipeline(
     _t0 = time.time()
     report_schemas.check_figure_contract("hierarchical_pomdp", "hierarchical_world", hier_report)
     report_schemas.check_figure_contract("hierarchical_pomdp", "nlevel3_world", nl3_report)
-    paths["hierarchical_pomdp"] = generate_hierarchical_pomdp(hier_report, nl3_report, project_root=root)
+    # The caption's HIER_SEED belongs to the executed report. Bind the
+    # posterior/consensus diagnostic to that seed instead of the demo default.
+    paths["hierarchical_pomdp"] = generate_hierarchical_pomdp(
+        hier_report, nl3_report, project_root=root, seed=int(hier_report["seed"])
+    )
     _timings["hierarchical"] += time.time() - _t0
     report_schemas.check_figure_contract("disjoint_fov_world", "disjoint_fov_world", disjoint_report)
     paths["disjoint_fov_world"] = Path(generate_disjoint_fov_figure(disjoint_report, project_root=root))

@@ -1,9 +1,10 @@
 """Sensitivity heatmap: signed accuracy contrasts by acuity and colony size.
 
-2-panel figure (1x2) showing the accuracy gap (hierarchical/communicating minus
-flat/isolated) as a 2-D color-annotated heatmap over sensor acuity (y-axis) x
-colony size (x-axis). The left panel is communicating minus isolated accuracy;
-the right panel is hierarchical minus flat location accuracy.
+Two vertically stacked panels show the accuracy gap
+(hierarchical/communicating minus flat/isolated) as a 2-D color-annotated
+heatmap over sensor acuity (y-axis) x colony size (x-axis). The upper panel is
+communicating minus isolated accuracy; the lower panel is hierarchical minus
+flat location accuracy.
 
 Headless (Agg) matplotlib only; no infrastructure imports (layer contract).
 """
@@ -45,10 +46,11 @@ def generate_sensitivity_heatmap(
 ) -> Path:
     """Render two signed accuracy-contrast heatmaps over acuity and colony size.
 
-    Left panel shows the belief-sharing federation gap (communicating minus
-    isolated mean accuracy) and the right panel shows the hierarchical POMDP
-    location accuracy gap (hierarchical minus flat). Both are computed by the
-    respective sensitivity sweep functions in :mod:`fedference.experiments`.
+    The upper panel shows the belief-sharing federation gap (communicating
+    minus isolated mean accuracy), and the lower panel shows the hierarchical
+    POMDP location accuracy gap (hierarchical minus flat). Both are computed by
+    the respective sensitivity sweep functions in
+    :mod:`fedference.experiments`.
 
     Args:
         project_root: Project root directory; defaults to the project root
@@ -111,7 +113,12 @@ def generate_sensitivity_heatmap(
     vmax = float(max(np.abs(bs_gap).max(), np.abs(hi_gap).max(), 1e-6))
     vmin = -vmax
 
-    fig, axes = plt.subplots(1, 2, figsize=(7.8, 4.5))
+    # Stack the two maps so every five-column cell retains enough horizontal
+    # room for a signed value at final page scale.  The earlier side-by-side
+    # layout made adjacent negative labels read as one concatenated number.
+    fig, axes = plt.subplots(2, 1, figsize=(6.8, 9.5))
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.14, right=0.86, top=0.91, bottom=0.17, hspace=0.80)
 
     # Hatching denotes a configured display band, not a claim of no effect.
     if report is None:
@@ -163,19 +170,24 @@ def generate_sensitivity_heatmap(
         ax.set_xticklabels(n_agents_labels)
         ax.set_yticks(range(len(acuity_labels)))
         ax.set_yticklabels(acuity_labels)
+        # Visible cell gutters prevent adjacent signed values from merging,
+        # and remain useful when the colour map is viewed in grayscale.
+        ax.set_xticks(np.arange(-0.5, data.shape[1], 1.0), minor=True)
+        ax.set_yticks(np.arange(-0.5, data.shape[0], 1.0), minor=True)
+        ax.grid(which="minor", color=COLOR_GRID, linewidth=0.8, alpha=0.72)
+        ax.tick_params(which="minor", bottom=False, left=False)
         ax.set_xlabel("Colony size (n_agents)", labelpad=6)
         ax.set_ylabel("Sensor acuity", labelpad=6)
         ax.set_title(title, pad=8)
-        ax.axhline(y=-0.5, color=COLOR_GRID, linewidth=0.5)
         max_gap = float(np.abs(data).max())
         pos_cells = int((data > noise_floor).sum())
         total_cells = data.size
-        fig.colorbar(im, ax=ax, label="Accuracy gap (hierarchical/comm. − baseline)")
+        fig.colorbar(im, ax=ax, label="Accuracy difference")
         # Below the axes (under the x-label), fully outside the heatmap so the
         # box cannot cover the bottom-row cell value annotations.
         ax.text(
             0.5,
-            -0.26,
+            -0.22,
             f"max |gap| = {max_gap:.3f}   ·   positive cells = {pos_cells}/{total_cells}",  # noqa: E501
             transform=ax.transAxes,
             ha="center",
@@ -187,25 +199,31 @@ def generate_sensitivity_heatmap(
     # Legend note for hatching.
     fig.text(
         0.5,
-        -0.045,
-        f"Hatching marks the declared display band |gap| ≤ {noise_floor:.2f}; "
-        "it is not a CI, significance test, unreliability flag, or proof of zero effect.",
+        0.018,
+        f"Hatching marks the declared display band |gap| ≤ {noise_floor:.2f}.\n"
+        "It is not a CI, significance test, unreliability flag, or proof of zero effect.",
         ha="center",
+        va="bottom",
         fontsize=10,
+        linespacing=1.3,
         color=COLOR_GRID,
     )
 
     fig.suptitle(
         "Study 8 — Signed accuracy gaps across configured sensitivity cells",
         fontsize=12,
-        y=1.02,
+        y=0.985,
     )
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(
+    path = save_figure(
         fig,
         out / filename,
         manuscript_width_fraction=0.90,
     )
+    from ._presentation_estimates import sensitivity_presentation
+
+    sensitivity_presentation(path, bs_gap, hi_gap, acuity_labels, n_agents_labels, noise_floor)
+    return path
 
 
 __all__ = ["generate_sensitivity_heatmap"]

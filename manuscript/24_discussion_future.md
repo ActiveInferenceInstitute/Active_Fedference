@@ -33,8 +33,9 @@ as a paper-constrained reconstruction rather than an exact replication.
 
 ## Make the sharp server heuristic variational {#sec:future-server}
 
-The asymmetry between the robustness axes ([@sec:robustness-axes]) is the most
-consequential open problem. The client-side $\beta$/rcce update carries a
+The asymmetry between the robustness axes ([@sec:robustness-axes]) motivates a
+consequential theoretical design question that is explicitly parked outside
+the authorized roadmap. The client-side $\beta$/rcce update carries a
 derived, loss-specific bounded-influence result under the matching assumptions;
 the sharp server-side `robust_aggregate`
 carries only its recovery limit
@@ -48,8 +49,7 @@ effective-weight bound and the same
 recovery corner. What it costs is conservatism: it is the maximum-entropy
 consensus, not the sharp accuracy-maximizer.
 
-The remaining open problem is
-therefore sharper than before — to write down a generalized variational objective
+That parked question is sharper than before: write down a generalized variational objective
 in the FedGVI family [@mildner2025fedgvi], informed by recent closed-form GVI
 characterizations [@nguyen2026closedformgvi], logarithmic-pool weighting theory
 [@carvalho2023logpooling], and robust divergence-weighted federated aggregation
@@ -113,9 +113,9 @@ carrying the recovery contract to deeper stacks, and finding a task family in
 which depth actually pays.
 
 The 2-level hierarchical POMDP ([@sec:results-hierarchical]) couples location
-inference to a single global context. The generic N-level architecture
-(:func:`fedference.pomdp.build_nlevel_world`) has already been exercised with a
-3-level stack ([@sec:results-3level], [@sec:supp-3level]): a meta-context
+inference to a single global context. The generic N-level architecture uses
+`build_nlevel_world` from the `fedference.pomdp` module and has already been
+exercised with a 3-level stack ([@sec:results-3level], [@sec:supp-3level]): a meta-context
 variable (L3) gates the context prior (L2) which in turn gates the location
 prior (L1).
 
@@ -151,9 +151,9 @@ representation recovery gates pass.
 
 ## Move from process transport to true multi-machine federation {#sec:future-transport}
 
-Promoting federation from the current queue-backed, single-machine process and
-loopback-socket helpers to cross-host workers would retire the remaining
-deployment caveat of [@sec:limitations] while preserving the bit-identical
+The current deployment uses queue-backed single-machine processes and loopback
+sockets. Promotion to cross-host workers would address the remaining deployment
+caveat of [@sec:limitations]. That extension must preserve the bit-identical
 consensus property proved in Proposition \ref{prop:federation-bit-identity}.
 
 The `federation/` package and

@@ -7,14 +7,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-import figures.conditional_world as conditional_world_module
 from fedference.experiments.conditional_world import (
     run_belief_quality_sensitivity,
     run_conditional_world_generalization,
 )
 from figures._common import semantic_style
 from figures.belief_quality import generate_belief_quality
-from figures.conditional_world import generate_conditional_world
+from figures.conditional_world import _build_conditional_world, generate_conditional_world
 
 
 def test_generate_conditional_world_writes_pair(tmp_path: Path) -> None:
@@ -24,20 +23,9 @@ def test_generate_conditional_world_writes_pair(tmp_path: Path) -> None:
     assert output.with_suffix(".pdf").exists()
 
 
-def test_conditional_world_uses_truthful_range_label_and_shared_zero_rule(
-    tmp_path: Path,
-    monkeypatch,
-) -> None:
+def test_conditional_world_uses_truthful_range_label_and_shared_zero_rule() -> None:
     report = run_conditional_world_generalization(seed=3, n_seeds=3, n_trials=2)
-    captured: dict[str, object] = {}
-
-    def capture_figure(fig, path: Path) -> Path:
-        captured["figure"] = fig
-        return path
-
-    monkeypatch.setattr(conditional_world_module, "save_figure", capture_figure)
-    generate_conditional_world(report, project_root=tmp_path)
-    fig = captured["figure"]
+    fig = _build_conditional_world(report)
     assert isinstance(fig, plt.Figure)
     try:
         summary_ax = fig.axes[1]
@@ -48,9 +36,7 @@ def test_conditional_world_uses_truthful_range_label_and_shared_zero_rule(
         )
         assert "±" not in range_container.get_label()
 
-        zero_rule = next(
-            line for line in summary_ax.lines if line.get_label() == "zero: no method contrast"
-        )
+        zero_rule = next(line for line in summary_ax.lines if line.get_label() == "zero: no method contrast")
         expected = semantic_style("reference_rule")
         assert np.allclose(zero_rule.get_xdata(), [0.0, 0.0])
         assert zero_rule.get_color() == expected.color

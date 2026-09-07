@@ -242,11 +242,18 @@ def generate_robust_influence_weights(
     )
     annotate_stats_box(ax, stats_text, loc="upper left", fontsize=10)
 
-    return save_figure(
+    canonical = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.80,
     )
+    from ._presentation_diagnostics import agent_weights_presentation
+
+    agent_weights_presentation(
+        canonical, normalized_effective_weights_array, contaminated,
+        equal_weight=equal_weight, stats_text=stats_text,
+    )
+    return canonical
 
 
 __all__ = ["generate_robust_influence_weights"]

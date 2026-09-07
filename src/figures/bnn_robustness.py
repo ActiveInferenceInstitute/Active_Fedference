@@ -178,9 +178,8 @@ def generate_bnn_robustness(
     # comparison-minus-reference margin. The margin is reported in the stats box only — a between-curve
     # arrow glyph is illegible at percent-level gaps and has no legend entry.
     curves = {k: [float(v) for v in c] for k, c in accuracy_by_config.items()}
-    reference_candidates = [
-        key for key in curves if "nll" in key.lower() or "standard" in key.lower()
-    ]
+    reference_candidates = [key for key in curves if "nll" in key.lower() or "standard" in key.lower()]
+    peak_note = "No reference-versus-comparison peak contrast available."
     if len(curves) >= 2 and reference_candidates:
         reference_key = reference_candidates[0]
         comparison_key = [key for key in curves if key != reference_key][0]
@@ -194,6 +193,7 @@ def generate_bnn_robustness(
         ]
         peak_idx = max(range(len(gaps)), key=lambda i: gaps[i])
         peak_gap = gaps[peak_idx]
+        peak_note = f"Largest displayed margin: {peak_gap:.1%} at {levels[peak_idx]:.0%} contamination."
         annotate_stats_box(
             ax,
             f"Largest displayed margin: {peak_gap:.1%}\nat {levels[peak_idx]:.0%} contamination",
@@ -229,11 +229,15 @@ def generate_bnn_robustness(
         wrap=True,
     )
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    from ._presentation_studies import bnn_presentation
+
+    bnn_presentation(path, accuracy_by_config, levels, accuracy_ci_by_config, selection_disclosure, peak_note)
+    return path
 
 
 __all__ = ["generate_bnn_robustness"]

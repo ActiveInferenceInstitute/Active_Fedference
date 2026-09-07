@@ -88,11 +88,11 @@ simplex-stationarity equations. The implementation itself uses raw effective
 weights, so this companion is a scope check rather than a description of the
 production update.
 
-| Artifact | Source | Declared scope |
-| --- | --- | --- |
-| Raw contradiction | `server_theory.py` | Interior inputs; raw $q$-block |
-| Normalized companion | `server_theory.py` | Forward-KL class; normalized weights |
-| Typed report | `formal_no_go` | Witness metadata; attack grid separate |
+| Artifact | Implementation surface and declared scope |
+| --- | --- |
+| Raw contradiction | `server_theory.py`; interior inputs and raw $q$-block |
+| Normalized companion | `server_theory.py`; forward-KL class and normalized weights |
+| Typed report | `formal_no_go`; witness metadata, with the attack grid kept separate |
 
 : Formal MAJ-1 witness inventory. These are deterministic finite-simplex proof
 artifacts, not empirical estimates; no resampling interval or deployment claim
@@ -112,12 +112,10 @@ behavior — never a bounded-influence property or an objective-backed status.
 ## Aggregation free energy and its block minimizers {#sec:supp-derivation}
 
 \begin{definition}[Aggregation free energy]\label{def:aggregation-free-energy}
-For \(c>0\), \(\lambda>0\), consensus \(q\), and effective weights
-\(a=(a_n)\), \(a_n\ge0\), define \(F_\lambda(q,a)\) as in
-(\ref{eq:agg-free-energy}), with
-\(\mathrm{CE}(q,q_n)=-\sum_i q_i\log q_{n,i}\) and entropy \(H(q)\).
-Write the generalized weight divergence as
-\(\mathrm{KL}_{\rm gen}(a\|w)=\sum_n g_n\), where
+For \(c,\lambda>0\), consensus \(q\), and nonnegative effective weights
+\(a=(a_n)\), define \(F_\lambda(q,a)\) by (\ref{eq:agg-free-energy}), where
+\(\mathrm{CE}(q,q_n)=-\sum_i q_i\log q_{n,i}\), \(H(q)\) is entropy, and
+\(\mathrm{KL}_{\rm gen}(a\|w)=\sum_n g_n\) for
 \(g_n=a_n\log(a_n/w_n)-a_n+w_n\).
 \end{definition}
 
@@ -180,19 +178,18 @@ an instance of the exact block-descent result.
 
 \begin{theorem}[Properties]
 \label{thm:variational-aggregation}
-Let \(c,\lambda>0\). Updates
-(\ref{eq:agg-q-min})–(\ref{eq:agg-a-min}) are non-increasing in \(F\); converged
-fixed points are coordinatewise stationary. As \(c\to0\), \(a_n\to w_n\), and
-\(q\) becomes the tempered log-linear pool, exactly
-(\ref{eq:log-linear-pool}) when
-\(\lambda={{TEMPERED_ENTROPY_WEIGHT_DEFAULT}}\).
-\(a_n=w_n\exp[-c\,\mathrm{CE}(q,q_n)]\le w_n\), tending to zero as
-\(\mathrm{KL}(q\,\|\,q_n)\to\infty\).
+For \(c,\lambda>0\), (\ref{eq:agg-q-min})–(\ref{eq:agg-a-min}) make \(F\)
+non-increasing. At convergence, \((q^*,a^*)\) is coordinatewise stationary.
+As \(c\to0\), \(a_n\to w_n\) and \(q\) tends to the tempered log-linear pool;
+\(\lambda={{TEMPERED_ENTROPY_WEIGHT_DEFAULT}}\) gives
+(\ref{eq:log-linear-pool}). Finally,
+\(a_n=w_n\exp[-c\,\mathrm{CE}(q,q_n)]\le w_n\), and
+\(\mathrm{KL}(q\,\|\,q_n)\to\infty\) gives \(a_n\to0\).
 \end{theorem}
 
 The variational aggregator therefore shares the project log-linear-pool corner
 of (\ref{eq:robust-identity}). Under the qualified bridge of
-Section~\ref{sec:method-aggregation}, this is only the categorical
+[@sec:method-aggregation], this is only the categorical
 message-combination specialization, not the complete source protocol.
 
 The final inequality makes the raw effective-weight update bounded and
@@ -246,7 +243,7 @@ reaches a lower observed basin at $F = {{VARIATIONAL_MULTI_START_F}}$ — a gap 
 the natural seed can be captured; it neither exhausts all basins nor certifies a
 global optimum.
 
-![Variational free-energy descent on a near-vertex adversarial colony. Source relation: original project objective-descent diagnostic; estimand: objective value $F$ in nats by block-coordinate iteration and configured initialization. The x-axis is iteration and the y-axis is $F$. A filled-circle solid path marks the single-start condition and an open-diamond dotted path marks the multistart condition; these neutral condition encodings do not imply different aggregation methods. Directly labeled terminal marks identify the higher and lower observed basins, a dark dotted rule marks the lower observed final level, and a double-ended annotation reports the terminal gap. The log-linear-pool single start settles at $F={{VARIATIONAL_SINGLE_START_F}}$ with retained saboteur weight, whereas the lowest trajectory among the configured alternatives reaches $F={{VARIATIONAL_MULTI_START_F}}$, a gap of {{VARIATIONAL_CAPTURE_GAP}} nats. These are two deterministic traces from one configured colony, not independent stochastic replications, so no error bar, confidence interval, or resampling interval applies. Finite multistart descent does not certify a global optimum, enumerate every basin, or establish universal robustness.](../output/figures/descent_comparison.png){#fig:descent-comparison width=80%}
+![Variational free-energy descent on a near-vertex adversarial colony. Source relation: original project objective-descent diagnostic; estimand: objective value $F$ in nats by block-coordinate iteration and configured initialization. The x-axis is iteration and the y-axis is $F$. A filled-circle solid path marks the single-start condition and an open-diamond dotted path marks the multistart condition; these neutral condition encodings do not imply different aggregation methods. Directly labeled terminal marks identify the higher and lower observed basins, a dark dotted rule marks the lower observed final level, and a double-ended annotation reports the terminal gap. The log-linear-pool single start settles at $F={{VARIATIONAL_SINGLE_START_F}}$ with retained saboteur weight, whereas the lowest trajectory among the configured alternatives reaches $F={{VARIATIONAL_MULTI_START_F}}$, a gap of {{VARIATIONAL_CAPTURE_GAP}} nats. These are two deterministic traces from one configured colony, not independent stochastic replications, so no error bar, confidence interval, or resampling interval applies. Finite multistart descent does not certify a global optimum, enumerate every basin, or establish universal robustness.](../output/figures/descent_comparison.png){#fig:descent-comparison width=80% data-slide-manifest="../output/figures/descent_comparison.slides.json"}
 
 ## Numerical witnesses for descent and influence bounds {#sec:supp-witnesses}
 

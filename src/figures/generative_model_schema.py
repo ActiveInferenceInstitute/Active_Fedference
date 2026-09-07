@@ -269,12 +269,22 @@ def _draw_factors(ax: plt.Axes) -> None:
         _arrow(ax, (x + 0.095, 0.54), (0.50, 0.34), color=color)
     _node(ax, 0.50, 0.28, r"$q(s)$", fill=COLOR_ROBUST, edge=COLOR_ACCENT, radius=0.055, fontsize=10.0)
     ax.text(
-        0.50, 0.20, "local posterior over location", ha="center", va="center",
-        fontsize=8.5, color=COLOR_DARK,
+        0.50,
+        0.20,
+        "local posterior over location",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DARK,
     )
     ax.text(
-        0.50, 0.10, r"$q(s)=\mathrm{softmax}(\ln D_0+\ln A[o,\cdot])$",
-        ha="center", va="center", fontsize=8.5, color=COLOR_DEEP,
+        0.50,
+        0.10,
+        r"$q(s)=\mathrm{softmax}(\ln D_0+\ln A[o,\cdot])$",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DEEP,
     )
 
 
@@ -309,10 +319,12 @@ def _draw_temporal(ax: plt.Axes) -> None:
         ha="center",
     )
     ax.text(
-        0.50, 0.12,
-        "Flat studies stop after posterior sharing; moving-world studies execute "
-        "B and EFE-guided u.",
-        ha="center", fontsize=8.5, color=COLOR_ARROW,
+        0.50,
+        0.12,
+        "Flat studies stop after posterior sharing; moving-world studies execute B and EFE-guided u.",
+        ha="center",
+        fontsize=8.5,
+        color=COLOR_ARROW,
     )
 
 
@@ -339,9 +351,12 @@ def _draw_hierarchy(ax: plt.Axes) -> None:
     _arrow(ax, (0.31, 0.78), (0.70, 0.59), color=COLOR_MULTI_2, linestyle="--")
     ax.text(0.76, 0.41, r"$\bar q_1=\sum_k q_2[k]D_{1|k}$", fontsize=8.5, color=COLOR_DARK, ha="center")
     ax.text(
-        0.76, 0.23,
+        0.76,
+        0.23,
         "The hierarchy is an extension, not a hidden assumption in every study.",
-        ha="center", fontsize=8.5, color=COLOR_ARROW,
+        ha="center",
+        fontsize=8.5,
+        color=COLOR_ARROW,
     )
 
 
@@ -413,7 +428,11 @@ def generate_generative_model_schema(*, project_root: Path | None = None) -> Pat
         color=COLOR_ARROW,
         style="italic",
     )
-    return save_figure_pair(fig, figures_dir(project_root) / "generative_model_schema.png")
+    path = save_figure_pair(fig, figures_dir(project_root) / "generative_model_schema.png")
+    from ._presentation_schematics import generative_presentation
+
+    generative_presentation(path)
+    return path
 
 
 __all__ = ["generate_generative_model_schema"]

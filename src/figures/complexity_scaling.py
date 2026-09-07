@@ -23,6 +23,7 @@ from figures._common import (
     save_figure,
     semantic_style,
 )
+from figures._presentation_estimates import complexity_presentation
 
 __all__ = ["generate_complexity_scaling"]
 
@@ -246,4 +247,6 @@ def generate_complexity_scaling(
     )
     fig.subplots_adjust(left=0.08, right=0.98, bottom=0.10, top=0.91, wspace=0.25, hspace=0.30)
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename)
+    path = save_figure(fig, out / filename)
+    complexity_presentation(path, dict(report))
+    return path

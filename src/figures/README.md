@@ -31,6 +31,14 @@ useful without color or visual inspection; see the
 | --- | --- |
 | `__init__.py` | Public figure-builder exports. |
 | `_common.py` | Shared plotting helpers, palette constants, font-size floors, and figure savers. |
+| `_presentation.py` | Shared deterministic panel-pair saver, measured label floor, complete ordered inventory, typed manifest, and file-integrity checks. |
+| `_presentation_flows.py` | Complete application and provenance edge panels, including exact status codes, reverse invalidation, and authorization boundaries. |
+| `_presentation_robustness.py` | Selection-free conditional cells and method-specific rate panels with common color scales and shared mechanism limits. |
+| `_presentation_diagnostics.py` | Objective trajectories, weight diagnostics, paired free-energy outcomes, beliefs, and EFE components with shared scales. |
+| `_presentation_estimates.py` | Language, recovery, complexity, conditional-world, and sensitivity estimates with source-specific uncertainty. |
+| `_presentation_schematics.py` | Complete POMDP, message-passing, colony, and generative-model pathways and source-owned numerical states. |
+| `_presentation_studies.py` | Robustness studies, quality controls, BNN contrasts, BMR controls, and finite-search diagnostics. |
+| `_presentation_worlds.py` | Moving-world, disjoint-view, and hierarchical-world results with explicit estimands and replication units. |
 | `_metadata.py` | Data-only provenance registry (`FIGURE_METADATA`): status, source relation, estimand, unit, uncertainty, replication unit, and concise `alt_text` per generator. |
 | `aggregation_descent.py` | Variational aggregation descent figure. |
 | `application_integrity_flow.py` | Labeled-input validation, solver-health, atomic-artifact, and receipt-verification map; explanatory, not a scientific result. |

@@ -26,6 +26,7 @@ from ._common import (
     plt,
     save_figure,
 )
+from ._presentation_diagnostics import belief_heatmap_presentation
 
 ArrayF = np.ndarray
 MANUSCRIPT_WIDTH_FRACTION = 0.80
@@ -56,9 +57,7 @@ def generate_belief_heatmap(
     """
     if "agent_beliefs" in legacy:
         if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated agent_beliefs cannot both be supplied"
-            )
+            raise TypeError("local_posteriors and deprecated agent_beliefs cannot both be supplied")
         local_posteriors = legacy.pop("agent_beliefs")  # type: ignore[assignment]
         warnings.warn(
             "agent_beliefs is deprecated; use local_posteriors",
@@ -89,9 +88,7 @@ def generate_belief_heatmap(
     ax.set_ylabel("agent / consensus row", labelpad=6)
     ax.set_title("Sentinel colony beliefs over shared location", pad=8)
 
-    labels = [
-        f"agent {n}" for n in range(local_posteriors_matrix.shape[0])
-    ] + ["consensus"]
+    labels = [f"agent {n}" for n in range(local_posteriors_matrix.shape[0])] + ["consensus"]
     ax.set_yticks(range(n_rows))
     ax.set_yticklabels(labels)
     ax.set_xticks(range(n_cols))
@@ -125,11 +122,13 @@ def generate_belief_heatmap(
     cbar.ax.tick_params(labelsize=9.5)
     annotate_stats_box(ax, f"{n_rows - 1} agents\n+ 1 consensus row", loc="lower right")
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    belief_heatmap_presentation(path, matrix, labels)
+    return path
 
 
 __all__ = ["generate_belief_heatmap"]

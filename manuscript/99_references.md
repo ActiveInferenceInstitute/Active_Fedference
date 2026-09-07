@@ -23,6 +23,10 @@ when the project is checked out under the template monorepo's
 invoked from the monorepo root with a monorepo-relative path:
 
 ```bash
-uv run python -m infrastructure.reference.citation.cli validate \
-    projects/working/active_fedference/manuscript/references.bib --strict
+p=projects/working/\
+active_fedference
+b=$p/manuscript/references.bib
+uv run python -m \
+  infrastructure.reference.\
+citation.cli validate "$b" --strict
 ```

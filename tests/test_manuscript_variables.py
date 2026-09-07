@@ -83,7 +83,8 @@ def _make_project(root: Path) -> None:
     (manuscript / "16_results_belief_sharing.md").write_text(
         "![Belief-sharing posterior mass in the bounded smoke fixture.]"
         "(../output/figures/belief_heatmap.png)"
-        "{#fig:belief-heatmap width=80%}\n",
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
         encoding="utf-8",
     )
     # A real project carries an ISA (live ISC tally) and a tests/ tree (live

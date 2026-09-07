@@ -130,11 +130,15 @@ def generate_emergence_bmr(
             loc="upper right",
         )
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    from ._presentation_studies import emergence_presentation
+
+    emergence_presentation(path, df_red, df_sup, convergence)
+    return path
 
 
 __all__ = ["generate_emergence_bmr"]

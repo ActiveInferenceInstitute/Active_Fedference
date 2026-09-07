@@ -63,10 +63,10 @@ configured threshold at the most severe swept rate.
 
 The "robust beats naive" conclusion for the declared contamination rate is
 produced only by a matched-pairs Wilcoxon signed-rank test
-[@wilcoxon1945individual] deflated across the divergence family with
-Benjamini–Hochberg FDR [@benjamini1995controlling], reported with bootstrap
-confidence intervals [@efron1993bootstrap] and observed-effect design-power
-planning.
+[@wilcoxon1945individual]. Its multiplicity correction uses
+Benjamini–Hochberg FDR [@benjamini1995controlling] across the divergence family.
+We report the contrast with bootstrap confidence intervals
+[@efron1993bootstrap] and observed-effect design-power planning.
 
 Across {{SWEEP_N_TRIALS}} paired trials, the headline display method
 ({{SWEEP_HEADLINE_METHOD}}; tied set: {{SWEEP_HEADLINE_TIE_SET}}) reaches

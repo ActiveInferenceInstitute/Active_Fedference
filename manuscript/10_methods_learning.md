@@ -25,11 +25,11 @@ a \;\leftarrow\; a + \text{counts},
 \mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o'} a_{o' s}},
 $$ {#eq:dirichlet-update}
 
-implemented in `dirichlet_learning.learn_likelihood`. Intuitively, each
-concentration vector is a running tally of how often each outcome was seen while
-the creature occupied a given state: the prior seeds that tally with
-pseudo-counts, every step adds the co-occurrences it witnessed, and the posterior
-mean is simply the tally renormalized into a categorical.
+implemented by `learn_likelihood` in the `dirichlet_learning` module.
+Intuitively, each concentration vector is a running tally of how often each
+outcome was seen while the creature occupied a given state: the prior seeds
+that tally with pseudo-counts, every step adds the co-occurrences it witnessed,
+and the posterior mean is simply the tally renormalized into a categorical.
 
 Likelihood learning is
 therefore bookkeeping — accumulate counts, then normalize — with no iterative

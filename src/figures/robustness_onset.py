@@ -28,6 +28,24 @@ from ._common import (
 )
 
 
+def _endpoint_label_positions(first: float, second: float) -> tuple[float, float]:
+    """Return boundary-safe endpoint-label positions with visible separation."""
+    low, high = 0.08, 0.94
+    first_position = min(high, max(low, first))
+    second_position = min(high, max(low, second))
+    minimum_gap = 0.13
+    if abs(first_position - second_position) >= minimum_gap:
+        return first_position, second_position
+
+    midpoint = min(
+        high - minimum_gap / 2,
+        max(low + minimum_gap / 2, (first_position + second_position) / 2),
+    )
+    if first >= second:
+        return midpoint + minimum_gap / 2, midpoint - minimum_gap / 2
+    return midpoint - minimum_gap / 2, midpoint + minimum_gap / 2
+
+
 def generate_robustness_onset(
     by_kind: dict,
     *,
@@ -158,30 +176,30 @@ def generate_robustness_onset(
                 fontsize=_FS_ANN,
                 color=COLOR_MUTED,
             )
-        label_x = rates[-1] + 0.01
-        naive_y = max(float(naive_curve[-1]), 0.06)
-        robust_y = max(float(robust_curve[-1]), 0.06)
-        if abs(naive_y - robust_y) < 0.09:
-            mid = 0.5 * (naive_y + robust_y)
-            naive_y, robust_y = mid - 0.045, mid + 0.045
-        ax.text(
-            label_x,
-            naive_y,
+        label_x = float(rates[-1]) + 0.012
+        naive_endpoint = float(naive_curve[-1])
+        robust_endpoint = float(robust_curve[-1])
+        naive_y, robust_y = _endpoint_label_positions(naive_endpoint, robust_endpoint)
+        ax.annotate(
             "reference",
+            xy=(float(rates[-1]), naive_endpoint),
+            xytext=(label_x, naive_y),
             fontsize=_FS_ANN,
             color=naive_style.keyline,
             ha="left",
             va="center",
+            arrowprops={"arrowstyle": "-", "color": naive_style.keyline, "lw": 0.8},
             clip_on=False,
         )
-        ax.text(
-            label_x,
-            robust_y,
+        ax.annotate(
             "display preset",
+            xy=(float(rates[-1]), robust_endpoint),
+            xytext=(label_x, robust_y),
             fontsize=_FS_ANN,
             color=robust_style.keyline,
             ha="left",
             va="center",
+            arrowprops={"arrowstyle": "-", "color": robust_style.keyline, "lw": 0.8},
             clip_on=False,
         )
         if kind == "byzantine":
@@ -236,7 +254,11 @@ def generate_robustness_onset(
         fontweight="bold",
     )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    path = save_figure(fig, figures_dir(project_root) / filename)
+    from ._presentation_studies import onset_presentation
+
+    onset_presentation(path, by_kind)
+    return path
 
 
 __all__ = ["generate_robustness_onset"]

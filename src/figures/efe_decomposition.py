@@ -37,6 +37,7 @@ from ._common import (
     plt,
     save_figure,
 )
+from ._presentation_diagnostics import efe_presentation
 
 
 def generate_efe_decomposition(
@@ -243,11 +244,13 @@ def generate_efe_decomposition(
         borderaxespad=0.0,
     )
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.85,
     )
+    efe_presentation(path, r, amb, prag, epi)
+    return path
 
 
 __all__ = ["generate_efe_decomposition"]

@@ -10,10 +10,9 @@ at matched trial counts, to the standalone heatmap.
 
 ### Experimental protocol for grid sensitivity
 
-The sensitivity sweep is implemented in
-`fedference.experiments.run_belief_sharing_sensitivity` and
-`fedference.experiments.run_hierarchical_sensitivity`. Each function accepts a
-tuple of acuity values and a tuple of colony sizes. In the **belief-sharing**
+The sensitivity sweep uses `run_belief_sharing_sensitivity` and
+`run_hierarchical_sensitivity` from the `fedference.experiments` module. Each
+function accepts a tuple of acuity values and a tuple of colony sizes. In the **belief-sharing**
 sweep every (acuity, colony-size) cell averages $n_{\text{trials}}$ independent
 trials, each seeded via a deterministic formula:
 
@@ -70,9 +69,9 @@ value.
 `imshow` figure with a color-vision-deficiency-safer blue–neutral–brown signed
 palette and symmetric bounds at
 $\pm\max(|\text{gap}|)$, per-cell numeric annotations, and a per-panel colorbar
-labeled "Accuracy gap (hierarchical/comm. − baseline)". The figure is written to
-`output/figures/sensitivity_heatmap.png`. Negative gaps map toward blue,
-positive gaps toward brown, and zero to the neutral midpoint; exact signed cell
+labeled "Accuracy gap (hierarchical/comm. − baseline)". The figure is written
+as `sensitivity_heatmap.png` under `output/figures/`. Negative gaps map toward
+blue, positive gaps toward brown, and zero to the neutral midpoint; exact signed cell
 labels duplicate that encoding. Hatching marks only the declared
 $|\mathrm{gap}| \le {{SENS_NOISE_FLOOR}}$ display band. It is not an
 unreliability flag, confidence interval, significance test, or proof of zero
@@ -115,4 +114,5 @@ the two are not directly comparable at matched trial counts.
 | 8 — Parameter sensitivity | Mean accuracy gap across the sensitivity grid |
 | 9 — Parameter recovery | $R^2$ for acuity identifiability |
 
-Bootstrap CIs use {{BOOTSTRAP_N_BOOT}} resamples (default `n_boot` in `fedference.statistics.bootstrap_ci`).
+Bootstrap CIs use {{BOOTSTRAP_N_BOOT}} resamples. Their default `n_boot` is
+defined by `bootstrap_ci` in the `fedference.statistics` module.

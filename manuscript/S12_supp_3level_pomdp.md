@@ -13,8 +13,8 @@ configuration is empirically evaluated here.
 
 ### Generative model for an N-level hierarchy
 
-The 3-level POMDP implemented in
-`fedference.pomdp.build_3level_world` extends the 2-level construction
+The 3-level POMDP is built by `build_3level_world` in the `fedference.pomdp`
+module. It extends the 2-level construction
 ([@sec:supp-hierarchical]) by adding a top-level meta-context factor.
 
 **L3 (meta-context).** {{NLEVEL3_N_META_CONTEXTS}} ``low_threat`` /
@@ -41,9 +41,10 @@ The conditioned priors are (see [@eq:l3-to-l2-message] and [@eq:l2-to-l1-message
 
 ### Generic N-level architecture
 
-`fedference.pomdp.LayerSpec` and `fedference.pomdp.build_nlevel_world`
-implement the generic N-level version. The declarative layer specification is
-stored at ``src/fedference/config/hierarchical_layers.yaml`` and mirrors the
+The `LayerSpec` type and `build_nlevel_world` function in the
+`fedference.pomdp` module implement the generic N-level version. The declarative
+layer specification is `hierarchical_layers.yaml` under
+`src/fedference/config/`; it mirrors the
 canonical 3-level defaults (a standalone documentation artifact not read by any
 code path, kept in sync with the ``build_3level_world`` defaults).
 

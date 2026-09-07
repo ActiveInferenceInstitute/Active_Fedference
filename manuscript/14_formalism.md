@@ -29,9 +29,9 @@ that boundary is stated in [@sec:robustness-axes].
 
 The recovery limits separate client and server claims. The divergence and loss
 limits recover the standard-Bayes client update; the independently tested
-`robust_aggregate(robustness=0) == log_linear_pool` identity recovers
-the project's standard server pool. Under the explicit shared-support,
-posterior-log-potential, and fixed-weight assumptions in
+identity equates `robust_aggregate` with `log_linear_pool` when
+`robustness=0`, recovering the project's standard server pool. Under the
+explicit shared-support, posterior-log-potential, and fixed-weight assumptions in
 [@sec:method-aggregation], that pool is a categorical specialization of Eq. 7's
 message-combination term, not recovery of the complete source protocol
 [@friston2024federated].
@@ -191,7 +191,7 @@ epistemic value as $I(s;o\mid\boldsymbol{\pi})$, and annotates the identity resi
 visualizes Proposition \ref{prop:efe-decomposition}, not a fitted result, so it
 carries no error bars.
 
-![Expected-free-energy decomposition for the categorical generative model (expected_free_energy.py). Source relation: formal specialization of Friston et al. (2024), Eq. 2; estimand: categorical EFE identity in nats. x-axis: two views of the same identity (left, additive cost view: risk + ambiguity; right, signed value waterfall: positive minus-pragmatic contribution followed by a negative epistemic correction). y-axis: EFE contribution in nats. The heavy endpoint marker and connector, rather than the intermediate top extent, identify the terminal $G(\boldsymbol{\pi})$ value. The epistemic term is state--outcome mutual information $I(s;o\mid\boldsymbol{\pi})$; it is visible because the diagnostic prior is uniform, whereas the canonical point-mass $D_0$ is the corresponding zero-information null. The finite terms satisfy the identity at machine precision. This deterministic algebraic check has no error bars or independent sample size, and it does not reproduce every parameter-learning term in the source equation.](../output/figures/efe_decomposition.png){#fig:efe-decomp width=85%}
+![Expected-free-energy decomposition for the categorical generative model (expected_free_energy.py). Source relation: formal specialization of Friston et al. (2024), Eq. 2; estimand: categorical EFE identity in nats. x-axis: two views of the same identity (left, additive cost view: risk + ambiguity; right, signed value waterfall: positive minus-pragmatic contribution followed by a negative epistemic correction). y-axis: EFE contribution in nats. The heavy endpoint marker and connector, rather than the intermediate top extent, identify the terminal $G(\boldsymbol{\pi})$ value. The epistemic term is state--outcome mutual information $I(s;o\mid\boldsymbol{\pi})$; it is visible because the diagnostic prior is uniform, whereas the canonical point-mass $D_0$ is the corresponding zero-information null. The finite terms satisfy the identity at machine precision. This deterministic algebraic check has no error bars or independent sample size, and it does not reproduce every parameter-learning term in the source equation.](../output/figures/efe_decomposition.png){#fig:efe-decomp width=85% data-slide-manifest="../output/figures/efe_decomposition.slides.json"}
 
 The expected-free-energy identity of [@eq:efe-identity] is the action-selection
 counterpart of the inference-side recovery limits collected above:
@@ -231,7 +231,7 @@ $a_n \le w_n$ omit $\lambda$ and hold for every $\lambda > 0$.
 
 At that default, the endpoint-selection rule also reduces bit-for-bit to the
 standard variational aggregate (Definition
-\ref{def:aggregation-free-energy}, Section~\ref{sec:supp-variational}).
+\ref{def:aggregation-free-energy}; [@sec:supp-variational]).
 
 The proposition is intentionally more specific than the phrase “temperature
 improves robustness.” It identifies exactly which part of the variational

@@ -193,9 +193,9 @@ $$ {#eq:notation-factor-replacement}
 Here $\ell_n$ is the transient, unnormalized log-site vector; the softmax is
 exactly the exponential normalization of that vector.
 
-The code-level adapters are `cavity(global_posterior, site_factor)` and
-`update_factor(old_site_factor, old_global_posterior,
-new_global_posterior)`. The old keywords `posterior`, `factor`,
+The code-level `cavity` adapter takes `global_posterior` and `site_factor`.
+The `update_factor` adapter takes `old_site_factor`, `old_global_posterior`,
+and `new_global_posterior`. The old keywords `posterior`, `factor`,
 `old_factor`, `old_posterior`, and `new_posterior` are accepted only with a
 `DeprecationWarning`; mixed canonical/old calls fail closed.
 

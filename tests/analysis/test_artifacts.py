@@ -40,9 +40,7 @@ def test_expected_artifacts_are_root_relative_and_complete() -> None:
 
 def test_figure_pair_inventory_is_sorted_unique_and_stem_aligned() -> None:
     assert list(ANALYSIS_FIGURE_FILENAMES) == sorted(set(ANALYSIS_FIGURE_FILENAMES))
-    assert list(ANALYSIS_FIGURE_PDF_FILENAMES) == sorted(
-        set(ANALYSIS_FIGURE_PDF_FILENAMES)
-    )
+    assert list(ANALYSIS_FIGURE_PDF_FILENAMES) == sorted(set(ANALYSIS_FIGURE_PDF_FILENAMES))
     assert [Path(name).stem for name in ANALYSIS_FIGURE_FILENAMES] == [
         Path(name).stem for name in ANALYSIS_FIGURE_PDF_FILENAMES
     ]
@@ -76,3 +74,21 @@ def test_freshness_contract_can_import_before_workflow_barrel() -> None:
         text=True,
     )
     assert completed.returncode == 0, completed.stderr
+
+
+def test_presentation_manifest_inventory_matches_every_authored_selector() -> None:
+    import re
+
+    from analysis.artifacts import ANALYSIS_FIGURE_SUPPORT_FILENAMES, PRESENTATION_FIGURE_STEMS
+
+    root = Path(__file__).resolve().parents[2]
+    selected = []
+    for source in sorted((root / "manuscript").glob("*.md")):
+        selected.extend(
+            re.findall(r'data-slide-manifest="../output/figures/([a-z_]+)\.slides\.json"', source.read_text())
+        )
+    assert len(selected) == len(set(selected))
+    assert set(selected) == set(PRESENTATION_FIGURE_STEMS)
+    assert {name for name in ANALYSIS_FIGURE_SUPPORT_FILENAMES if name.endswith(".slides.json")} == {
+        f"{stem}.slides.json" for stem in selected
+    }

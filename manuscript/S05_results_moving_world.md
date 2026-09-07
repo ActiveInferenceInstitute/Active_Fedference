@@ -87,7 +87,7 @@ colony runs {{MOVING_N_STEPS}} steps over a {{MOVING_N_POSITIONS}}-cell linear
 grid with {{MOVING_N_AGENTS}} disjoint-FOV agents. No resampling interval
 applies to this deterministic seeded run. The finite reduced world does not
 establish a general communication benefit, an optimal movement policy, or
-source-protocol replication.](../output/figures/moving_world.png){#fig:moving-world width=80%}
+source-protocol replication.](../output/figures/moving_world.png){#fig:moving-world width=80% data-slide-manifest="../output/figures/moving_world.slides.json"}
 
 ### Disjoint field-of-view extension {#sec:results-disjoint-fov}
 
@@ -138,6 +138,8 @@ We report this as the null result it is rather than
 claiming an unmeasured EFE benefit. [@fig:disjoint-fov-world] summarizes the
 necessity result.
 
+#### Disjoint-view communication contrast and movement-policy null
+
 ![Communication improves the declared disjoint-view condition, whereas the
 configured movement-policy contrast is near-ceiling and null. This is a
 source-inspired project extension of the moving-world mechanism, produced from
@@ -159,4 +161,4 @@ $p = {{V4_EFE_WILCOX_PVALUE}}$ for Panel B. The first supports only the
 configured communication contrast; the second records the observed null rather
 than an EFE benefit. The panels do not establish universal communication
 necessity, movement-policy superiority, causal mechanism, or generalization
-beyond the declared worlds and seed schedule.](../output/figures/disjoint_fov_world.png){#fig:disjoint-fov-world width=80%}
+beyond the declared worlds and seed schedule.](../output/figures/disjoint_fov_world.png){#fig:disjoint-fov-world width=80% data-slide-manifest="../output/figures/disjoint_fov_world.slides.json"}

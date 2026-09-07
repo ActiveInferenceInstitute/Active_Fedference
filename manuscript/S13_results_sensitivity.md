@@ -87,7 +87,7 @@ within their configured cell, and no resampling interval is shown. The sweep
 protocol is detailed in the sensitivity supplement, and the finite grid does
 not establish a general communication or hierarchy effect outside the declared
 acuity and colony-size settings.
-](../output/figures/sensitivity_heatmap.png){#fig:sensitivity-heatmap width=90%}
+](../output/figures/sensitivity_heatmap.png){#fig:sensitivity-heatmap width=90% data-slide-manifest="../output/figures/sensitivity_heatmap.slides.json"}
 
 ![Native-unit cross-study summary of the headline signed contrasts. Source
 relation: original-project synthesis from a separate harmonized seed-level
@@ -109,4 +109,4 @@ figures. The Study 4 row is the within-run display-selected maximum across
 non-reference server presets at the declared worst rate, neither a preselected method nor an inferential winner.
 Native units are preserved: the figure neither
 ranks nor pools studies nor implies a shared effect or universal benefit.
-](../output/figures/cross_study_summary.png){#fig:cross-study-summary width=95%}
+](../output/figures/cross_study_summary.png){#fig:cross-study-summary width=95% data-slide-manifest="../output/figures/cross_study_summary.slides.json"}

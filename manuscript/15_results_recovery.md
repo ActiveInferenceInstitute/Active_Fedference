@@ -90,8 +90,8 @@ These residuals are nonzero—a small multiple of the input offset itself, as th
 first-order Taylor behavior near the limit predicts—yet remain several orders
 of magnitude below the $O(1)$ scale of the
 loss/divergence values being compared, and shrinking monotonically as the
-offset shrinks toward the switch band (verified in
-`tests/fedference/test_core_identities.py`).
+offset shrinks toward the switch band. The verification is in
+`test_core_identities.py` under `tests/fedference/`.
 
 This is evidence that the general formula itself converges to the
 standard-Bayes limit, not merely that the implementation switches to it exactly

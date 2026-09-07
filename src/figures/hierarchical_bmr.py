@@ -151,11 +151,15 @@ def generate_hierarchical_bmr(
         bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": COLOR_MUTED},
     )
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.80,
     )
+    from ._presentation_studies import hierarchical_bmr_presentation
+
+    hierarchical_bmr_presentation(path, degenerate, informative, surprise_tol, decision_rule)
+    return path
 
 
 __all__ = ["generate_hierarchical_bmr"]

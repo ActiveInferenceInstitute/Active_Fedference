@@ -353,11 +353,15 @@ def generate_robustness_review_grid(
         "Source-bound robustness review grid: signed, selection-free server contrasts",
         fontweight="bold",
     )
-    return save_figure(
+    canonical = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.98,
     )
+    from ._presentation_robustness import generate_review_grid_presentation
+
+    generate_review_grid_presentation(report, canonical)
+    return canonical
 
 
 __all__ = ["generate_robustness_review_grid"]

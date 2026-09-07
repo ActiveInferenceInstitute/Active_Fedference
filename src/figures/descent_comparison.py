@@ -24,6 +24,7 @@ from ._common import (
     save_figure,
     semantic_style,
 )
+from ._presentation_diagnostics import descent_comparison_presentation
 
 MANUSCRIPT_WIDTH_FRACTION = 0.80
 
@@ -184,11 +185,13 @@ def generate_descent_comparison(
     # multi-start curve.
     ax.legend(fontsize=10, loc="center left")
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    descent_comparison_presentation(path, single, multi, stats_text)
+    return path
 
 
 __all__ = ["generate_descent_comparison"]

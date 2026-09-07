@@ -752,7 +752,11 @@ def generate_source_render_provenance(
             linespacing=0.95,
         )
     fig.subplots_adjust(left=0.010, right=0.990, top=0.998, bottom=0.010)
-    return save_figure_pair(fig, figures_dir(project_root) / filename)
+    canonical = save_figure_pair(fig, figures_dir(project_root) / filename)
+    from ._presentation_flows import generate_source_render_presentation
+
+    generate_source_render_presentation(report, canonical)
+    return canonical
 
 
 __all__ = ["generate_source_render_provenance"]

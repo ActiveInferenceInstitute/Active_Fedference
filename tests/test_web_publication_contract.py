@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import json
 import os
+import signal
+import sys
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from pathlib import Path
+from types import FrameType
 
 import pytest
 
@@ -919,14 +924,8 @@ def test_normalize_web_xrefs_preserves_single_and_double_quoted_attribute_markup
 ) -> None:
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
-    single_quoted = (
-        "data-single='<span class=\"citation\" data-cites=\"sec:method\">"
-        "[@sec:method]</span>'"
-    )
-    double_quoted = (
-        'data-double="<span class=\'citation\' data-cites=\'sec:method\'>'
-        '[@sec:method]</span>"'
-    )
+    single_quoted = 'data-single=\'<span class="citation" data-cites="sec:method">[@sec:method]</span>\''
+    double_quoted = "data-double=\"<span class='citation' data-cites='sec:method'>[@sec:method]</span>\""
     (web / "index.html").write_text(
         '<h2 data-number="3" id="sec:method">Method</h2>'
         f"<div {single_quoted} {double_quoted}>Attribute templates.</div>"
@@ -958,7 +957,7 @@ def test_normalize_and_validate_share_protected_context_boundaries(
         '<!-- aria-label="Comment [sec:method]" and [sec:method] -->'
         '<ScRiPt data-probe=">">const ref = "[sec:method]";</sCrIpT>'
         '<STYLE>.probe::after { content: "[sec:method]"; }</style>'
-        '<TeXtArEa>[sec:method]</tExTaReA>'
+        "<TeXtArEa>[sec:method]</tExTaReA>"
         '<div data-note="[sec:method]" aria-label="See [sec:method]">'
         "Visible [sec:method]</div>",
     )
@@ -976,8 +975,8 @@ def test_normalize_and_validate_share_protected_context_boundaries(
     assert '<!-- aria-label="Comment [sec:method]" and [sec:method] -->' in rendered
     assert '<ScRiPt data-probe=">">const ref = "[sec:method]";</sCrIpT>' in rendered
     assert '<STYLE>.probe::after { content: "[sec:method]"; }</style>' in rendered
-    assert '<TeXtArEa>[sec:method]</tExTaReA>' in rendered
-    assert '<TiTlE>Links [sec:method]</tItLe>' in rendered
+    assert "<TeXtArEa>[sec:method]</tExTaReA>" in rendered
+    assert "<TiTlE>Links [sec:method]</tItLe>" in rendered
     assert 'data-note="[sec:method]"' in rendered
     assert 'aria-label="See Section 3"' in rendered
     assert '<a class="xref" href="#sec:method">Section 3</a>' in rendered
@@ -988,7 +987,7 @@ def test_normalize_and_validate_share_protected_context_boundaries(
 @pytest.mark.parametrize(
     "unterminated",
     [
-        '<!-- protected [sec:method]',
+        "<!-- protected [sec:method]",
         '<ScRiPt data-probe=">">const ref = "[sec:method]";',
         '<STYLE data-probe=">">[sec:method]',
         '<TiTlE data-probe=">">[sec:method]',
@@ -1003,10 +1002,7 @@ def test_normalize_web_xrefs_rejects_unterminated_protected_context_before_writi
     web.mkdir(parents=True)
     index = web / "index.html"
     broken = web / "z-broken.html"
-    index_text = (
-        '<h2 data-number="3" id="sec:method">Method</h2>'
-        "Visible [sec:method]"
-    )
+    index_text = '<h2 data-number="3" id="sec:method">Method</h2>Visible [sec:method]'
     index.write_text(index_text, encoding="utf-8")
     broken.write_text(unterminated, encoding="utf-8")
 
@@ -1028,10 +1024,7 @@ def test_validate_web_package_reports_unterminated_protected_context(
     result = validate_web_package(tmp_path)
 
     assert not result.ok
-    assert any(
-        "unterminated <script> raw-text element" in issue
-        for issue in result.malformed_markup
-    )
+    assert any("unterminated <script> raw-text element" in issue for issue in result.malformed_markup)
 
 
 def test_normalize_web_xrefs_avoids_nested_links_in_anchor_and_button(
@@ -1042,7 +1035,7 @@ def test_normalize_web_xrefs_avoids_nested_links_in_anchor_and_button(
     (web / "index.html").write_text(
         '<h2 data-number="3" id="sec:method">Method</h2>'
         '<a href="#sec:method">[sec:method]</a>'
-        '<button>[sec:method]</button>'
+        "<button>[sec:method]</button>"
         '<a href="#other"><span class="citation" '
         'data-cites="sec:method">[@sec:method]</span></a>',
         encoding="utf-8",
@@ -1157,9 +1150,44 @@ def test_normalize_web_xrefs_preflights_every_destination_before_writing(
     assert not tuple(web.glob(".*.xref-*.tmp"))
 
 
+@contextmanager
+def _observe_filesystem_calls(
+    *,
+    link: Callable[[Path, Path, str], None] | None = None,
+    replace: Callable[[Path, Path, str], None] | None = None,
+) -> Iterator[None]:
+    """Observe real syscalls to schedule edits and real interrupts deterministically.
+
+    No function or syscall is replaced. The observer can remove a real source
+    before a link, change real destination bytes, or deliver SIGINT after an
+    actual successful syscall. Restore any existing profiler on every exit.
+    """
+    previous = sys.getprofile()
+
+    def observe(frame: FrameType, event: str, function: object) -> None:
+        if previous is not None:
+            previous(frame, event, function)
+        if event not in {"c_call", "c_return"}:
+            return
+        if function is os.link and link is not None and frame.f_code is web_package._link_no_clobber.__code__:
+            link(frame.f_locals["source"], frame.f_locals["destination"], event)
+        elif function is os.replace and replace is not None:
+            if frame.f_code is web_package._commit_html_writes.__code__:
+                item = frame.f_locals["item"]
+                replace(item.document.path, item.rollback_path, event)
+            elif frame.f_code is web_package._restore_committed_html.__code__:
+                item = frame.f_locals["item"]
+                replace(item.document.path, item.replacement_path, event)
+
+    sys.setprofile(observe)
+    try:
+        yield
+    finally:
+        sys.setprofile(previous)
+
+
 def test_normalize_web_xrefs_rechecks_each_destination_and_rolls_back(
     tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
@@ -1176,30 +1204,26 @@ def test_normalize_web_xrefs_rechecks_each_destination_and_rolls_back(
     )
     later.write_bytes(later_original)
 
-    real_link = os.link
     forward_links = 0
 
     def link_with_concurrent_edit(
         source: str | Path,
         destination: str | Path,
-        *,
-        follow_symlinks: bool = True,
+        event: str,
     ) -> None:
         nonlocal forward_links
         source_path = Path(source)
-        real_link(source, destination, follow_symlinks=follow_symlinks)
-        if "xref-replacement" in source_path.name:
+        if event == "c_return" and "xref-replacement" in source_path.name:
             forward_links += 1
             if forward_links == 1:
                 later.write_bytes(concurrent_edit)
 
-    monkeypatch.setattr(web_package.os, "link", link_with_concurrent_edit)
-
-    with pytest.raises(
-        RuntimeError,
-        match=r"z\.html: HTML input changed during normalization",
-    ):
-        normalize_web_xrefs(tmp_path)
+    with _observe_filesystem_calls(link=link_with_concurrent_edit):
+        with pytest.raises(
+            RuntimeError,
+            match=r"z\.html: HTML input changed during normalization",
+        ):
+            normalize_web_xrefs(tmp_path)
 
     assert first.read_bytes() == first_original
     assert later.read_bytes() == concurrent_edit
@@ -1208,7 +1232,6 @@ def test_normalize_web_xrefs_rechecks_each_destination_and_rolls_back(
 
 def test_normalize_web_xrefs_rolls_back_when_replace_raises_after_commit(
     tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
@@ -1216,26 +1239,22 @@ def test_normalize_web_xrefs_rolls_back_when_replace_raises_after_commit(
     original = b'<h2 data-number="3" id="sec:method">Method</h2>See [sec:method].'
     page.write_bytes(original)
 
-    real_link = os.link
     interrupted = False
 
     def link_then_interrupt(
         source: str | Path,
         destination: str | Path,
-        *,
-        follow_symlinks: bool = True,
+        event: str,
     ) -> None:
         nonlocal interrupted
         source_path = Path(source)
-        real_link(source, destination, follow_symlinks=follow_symlinks)
-        if not interrupted and "xref-replacement" in source_path.name:
+        if event == "c_return" and not interrupted and "xref-replacement" in source_path.name:
             interrupted = True
-            raise KeyboardInterrupt
+            signal.raise_signal(signal.SIGINT)
 
-    monkeypatch.setattr(web_package.os, "link", link_then_interrupt)
-
-    with pytest.raises(KeyboardInterrupt):
-        normalize_web_xrefs(tmp_path)
+    with _observe_filesystem_calls(link=link_then_interrupt):
+        with pytest.raises(KeyboardInterrupt):
+            normalize_web_xrefs(tmp_path)
 
     assert page.read_bytes() == original
     assert not tuple(web.glob(".*.xref-*.tmp"))
@@ -1243,7 +1262,6 @@ def test_normalize_web_xrefs_rolls_back_when_replace_raises_after_commit(
 
 def test_normalize_web_xrefs_preserves_concurrent_edit_and_recovery_files(
     tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
@@ -1260,29 +1278,24 @@ def test_normalize_web_xrefs_preserves_concurrent_edit_and_recovery_files(
         encoding="utf-8",
     )
 
-    real_link = os.link
-
     def link_then_edit_or_fail(
         source: str | Path,
         destination: str | Path,
-        *,
-        follow_symlinks: bool = True,
+        event: str,
     ) -> None:
         source_path = Path(source)
         destination_path = Path(destination)
-        if "xref-replacement" in source_path.name and destination_path == later:
-            raise OSError("forced second commit failure")
-        real_link(source, destination, follow_symlinks=follow_symlinks)
-        if "xref-replacement" in source_path.name and destination_path == first:
+        if event == "c_call" and "xref-replacement" in source_path.name and destination_path == later:
+            source_path.unlink()
+        if event == "c_return" and "xref-replacement" in source_path.name and destination_path == first:
             first.write_bytes(concurrent_edit)
 
-    monkeypatch.setattr(web_package.os, "link", link_then_edit_or_fail)
-
-    with pytest.raises(
-        RuntimeError,
-        match="destination changed concurrently after commit",
-    ):
-        normalize_web_xrefs(tmp_path)
+    with _observe_filesystem_calls(link=link_then_edit_or_fail):
+        with pytest.raises(
+            RuntimeError,
+            match="destination changed concurrently after commit",
+        ):
+            normalize_web_xrefs(tmp_path)
 
     assert first.read_bytes() == concurrent_edit
     assert later.read_bytes() == later_original
@@ -1300,7 +1313,6 @@ def test_normalize_web_xrefs_preserves_concurrent_edit_and_recovery_files(
 
 def test_normalize_web_xrefs_captures_edit_after_freshness_check(
     tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
@@ -1309,26 +1321,24 @@ def test_normalize_web_xrefs_captures_edit_after_freshness_check(
     concurrent_edit = b"Edit injected between freshness check and capture."
     page.write_bytes(original)
 
-    real_replace = os.replace
     injected = False
 
-    def edit_before_capture(source: str | Path, destination: str | Path) -> None:
+    def edit_before_capture(source: str | Path, destination: str | Path, event: str) -> None:
         nonlocal injected
         source_path = Path(source)
         destination_path = Path(destination)
         if (
-            not injected
+            event == "c_call"
+            and not injected
             and source_path == page
             and "xref-rollback" in destination_path.name
         ):
             injected = True
             page.write_bytes(concurrent_edit)
-        real_replace(source, destination)
 
-    monkeypatch.setattr(web_package.os, "replace", edit_before_capture)
-
-    with pytest.raises(RuntimeError, match="HTML input changed during normalization"):
-        normalize_web_xrefs(tmp_path)
+    with _observe_filesystem_calls(replace=edit_before_capture):
+        with pytest.raises(RuntimeError, match="HTML input changed during normalization"):
+            normalize_web_xrefs(tmp_path)
 
     assert page.read_bytes() == concurrent_edit
     assert not tuple(web.glob(".*.xref-*.tmp"))
@@ -1337,7 +1347,6 @@ def test_normalize_web_xrefs_captures_edit_after_freshness_check(
 @pytest.mark.parametrize("interruption_stage", ["rollback_move", "rollback_link"])
 def test_normalize_web_xrefs_retains_recovery_after_rollback_baseexception(
     tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
     interruption_stage: str,
 ) -> None:
     web = tmp_path / "output" / "web"
@@ -1354,53 +1363,51 @@ def test_normalize_web_xrefs_retains_recovery_after_rollback_baseexception(
         encoding="utf-8",
     )
 
-    real_replace = os.replace
-    real_link = os.link
     interrupted = False
 
     def replace_with_rollback_interrupt(
         source: str | Path,
         destination: str | Path,
+        event: str,
     ) -> None:
         nonlocal interrupted
         source_path = Path(source)
         destination_path = Path(destination)
-        real_replace(source, destination)
         if (
-            not interrupted
+            event == "c_return"
+            and not interrupted
             and interruption_stage == "rollback_move"
             and source_path == first
             and "xref-replacement" in destination_path.name
         ):
             interrupted = True
-            raise KeyboardInterrupt
+            signal.raise_signal(signal.SIGINT)
 
     def link_with_failure_or_interrupt(
         source: str | Path,
         destination: str | Path,
-        *,
-        follow_symlinks: bool = True,
+        event: str,
     ) -> None:
         nonlocal interrupted
         source_path = Path(source)
         destination_path = Path(destination)
-        if "xref-replacement" in source_path.name and destination_path == later:
-            raise OSError("force rollback after first commit")
-        real_link(source, destination, follow_symlinks=follow_symlinks)
+        if event == "c_call" and "xref-replacement" in source_path.name and destination_path == later:
+            source_path.unlink()
         if (
-            not interrupted
+            event == "c_return"
+            and not interrupted
             and interruption_stage == "rollback_link"
             and "xref-rollback" in source_path.name
             and destination_path == first
         ):
             interrupted = True
-            raise KeyboardInterrupt
+            signal.raise_signal(signal.SIGINT)
 
-    monkeypatch.setattr(web_package.os, "replace", replace_with_rollback_interrupt)
-    monkeypatch.setattr(web_package.os, "link", link_with_failure_or_interrupt)
-
-    with pytest.raises(RuntimeError, match="rollback was incomplete"):
-        normalize_web_xrefs(tmp_path)
+    with _observe_filesystem_calls(
+        replace=replace_with_rollback_interrupt, link=link_with_failure_or_interrupt
+    ):
+        with pytest.raises(RuntimeError, match="rollback was incomplete"):
+            normalize_web_xrefs(tmp_path)
 
     assert interrupted
     assert first.read_bytes() == first_original
@@ -1416,10 +1423,7 @@ def test_normalize_web_xrefs_preserves_crlf_outside_replacement(tmp_path: Path) 
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
     page = web / "index.html"
-    page.write_bytes(
-        b'<h2 data-number="3" id="sec:method">Method</h2>\r\n'
-        b"See [sec:method].\r\n"
-    )
+    page.write_bytes(b'<h2 data-number="3" id="sec:method">Method</h2>\r\nSee [sec:method].\r\n')
 
     normalize_web_xrefs(tmp_path)
 
@@ -1450,8 +1454,7 @@ def test_normalize_web_xrefs_uses_only_actual_id_attributes(tmp_path: Path) -> N
 def test_validate_web_package_ignores_fragment_ids_in_protected_text(tmp_path: Path) -> None:
     _write_valid_link_page(
         tmp_path,
-        "<script>const fake = 'id=\"sec:fake\"';</script>"
-        '<a href="#sec:fake">Fake target</a>',
+        '<script>const fake = \'id="sec:fake"\';</script><a href="#sec:fake">Fake target</a>',
     )
 
     result = validate_web_package(tmp_path)
@@ -1471,10 +1474,7 @@ def test_normalize_web_xrefs_preserves_all_bounded_raw_text_elements(
     web = tmp_path / "output" / "web"
     web.mkdir(parents=True)
     page = web / "index.html"
-    original = (
-        '<h2 data-number="3" id="sec:method">Method</h2>'
-        f"<{tag}>[sec:method]</{tag}>"
-    )
+    original = f'<h2 data-number="3" id="sec:method">Method</h2><{tag}>[sec:method]</{tag}>'
     page.write_text(original, encoding="utf-8")
 
     assert normalize_web_xrefs(tmp_path) == 0
@@ -1486,8 +1486,7 @@ def test_normalize_web_xrefs_preserves_plaintext_through_eof(tmp_path: Path) -> 
     web.mkdir(parents=True)
     page = web / "index.html"
     original = (
-        '<h2 data-number="3" id="sec:method">Method</h2>'
-        "<plaintext>[sec:method]</plaintext>[sec:method]"
+        '<h2 data-number="3" id="sec:method">Method</h2><plaintext>[sec:method]</plaintext>[sec:method]'
     )
     page.write_text(original, encoding="utf-8")
 
@@ -1545,7 +1544,7 @@ def test_validate_web_package_scopes_text_scans_away_from_protected_contexts(
 ) -> None:
     _write_valid_link_page(
         tmp_path,
-        '<script>const source = \'src="missing.png" {{FAKE_TOKEN}}\';</script>'
+        "<script>const source = 'src=\"missing.png\" {{FAKE_TOKEN}}';</script>"
         '<style>.probe::after { content: "](/figures/a.png){#fig:x"; }</style>'
         "<!-- {{FAKE_TOKEN}} -->",
     )
@@ -1617,10 +1616,7 @@ def test_validate_web_package_rejects_symlinked_resource_target(tmp_path: Path) 
     result = validate_web_package(tmp_path)
 
     assert not result.ok
-    assert any(
-        "resource target has a symlinked path component" in issue
-        for issue in result.malformed_markup
-    )
+    assert any("resource target has a symlinked path component" in issue for issue in result.malformed_markup)
 
 
 def test_validate_web_package_requires_integrity_for_external_scripts(tmp_path: Path) -> None:
@@ -1736,8 +1732,7 @@ def test_validate_web_package_rejects_external_document_base_script_bypass(
 ) -> None:
     page = _write_valid_link_page(
         tmp_path,
-        '<base href="https://cdn.example.org/">'
-        '<script src="local.js"></script>',
+        '<base href="https://cdn.example.org/"><script src="local.js"></script>',
     )
     (page.parent / "local.js").write_text("// local decoy\n", encoding="utf-8")
 
@@ -1745,8 +1740,7 @@ def test_validate_web_package_rejects_external_document_base_script_bypass(
 
     assert not result.ok
     assert any(
-        "document <base> elements are not allowed because they alter resource resolution"
-        in issue
+        "document <base> elements are not allowed because they alter resource resolution" in issue
         for issue in result.malformed_markup
     )
 
@@ -1778,7 +1772,7 @@ def test_validate_web_package_rejects_every_document_base_variant(
 def test_validate_web_package_ignores_base_like_protected_text(tmp_path: Path) -> None:
     _write_valid_link_page(
         tmp_path,
-        '<script>const example = \'<base href="https://cdn.example.org/">\';</script>'
+        "<script>const example = '<base href=\"https://cdn.example.org/\">';</script>"
         '<!-- <base href="https://cdn.example.org/"> -->',
     )
 
@@ -1791,33 +1785,27 @@ def test_validate_web_package_ignores_base_like_protected_text(tmp_path: Path) -
     ("markup", "expected_issue"),
     [
         (
-            '<![CDATA[><base href="https://evil.example/">]]>'
-            '<script src="local.js"></script>',
+            '<![CDATA[><base href="https://evil.example/">]]><script src="local.js"></script>',
             "CDATA sections are not allowed in static text/html",
         ),
         (
-            '<!--x--!><base href="https://evil.example/"><!-- -->'
-            '<script src="local.js"></script>',
+            '<!--x--!><base href="https://evil.example/"><!-- --><script src="local.js"></script>',
             "document <base> elements are not allowed",
         ),
         (
-            '<script>0</script ignored><base href="https://evil.example/">'
-            '<script src="local.js"></script>',
+            '<script>0</script ignored><base href="https://evil.example/"><script src="local.js"></script>',
             "document <base> elements are not allowed",
         ),
         (
-            '<div data=x"><base href="https://evil.example/">">'
-            '<script src="local.js"></script>',
+            '<div data=x"><base href="https://evil.example/">"><script src="local.js"></script>',
             "document <base> elements are not allowed",
         ),
         (
-            '<script>0</script data=x"><base href="https://evil.example/>">'
-            '<script src="local.js"></script>',
+            '<script>0</script data=x"><base href="https://evil.example/>"><script src="local.js"></script>',
             "document <base> elements are not allowed",
         ),
         (
-            '<noscript><base href="https://evil.example/"></noscript>'
-            '<script src="local.js"></script>',
+            '<noscript><base href="https://evil.example/"></noscript><script src="local.js"></script>',
             "<noscript> elements are not allowed",
         ),
     ],
@@ -1840,8 +1828,7 @@ def test_validate_web_package_rejects_ambiguous_protected_context_bypasses(
     ("markup", "expected_issue"),
     [
         (
-            '<script =src="local.js" '
-            'src="https://cdn.example.org/library.js"></script>',
+            '<script =src="local.js" src="https://cdn.example.org/library.js"></script>',
             "external script must declare a valid SHA-2 integrity value",
         ),
         (
@@ -1877,8 +1864,7 @@ def test_validate_web_package_preserves_effective_srcset_candidates(
 ) -> None:
     page = _write_valid_link_page(
         tmp_path,
-        '<img srcset="one.png 1x, two.png 2x" '
-        'srcset="javascript:alert(1) 1x" alt="set">',
+        '<img srcset="one.png 1x, two.png 2x" srcset="javascript:alert(1) 1x" alt="set">',
     )
     (page.parent / "one.png").write_bytes(b"one")
     (page.parent / "two.png").write_bytes(b"two")
@@ -1915,11 +1901,7 @@ def test_validate_web_package_accepts_integrity_bound_https_script(
 
 
 def test_validate_web_package_accepts_valid_mixed_sri_metadata(tmp_path: Path) -> None:
-    integrity = (
-        f"  sha256-{'A' * 43}=\t"
-        f"sha384-{'A' * 64}\n"
-        f"sha512-{'A' * 86}==  "
-    )
+    integrity = f"  sha256-{'A' * 43}=\tsha384-{'A' * 64}\nsha512-{'A' * 86}==  "
     _write_valid_link_page(
         tmp_path,
         '<script src="https://cdn.example.org/library.js" '

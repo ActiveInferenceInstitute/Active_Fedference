@@ -38,8 +38,8 @@ $$
 q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),
 $$ {#eq:tempered-softmax}
 
-The implementation surface is
-`generalized_bayes.generalized_posterior`.
+The implementation surface is the `generalized_posterior` function in the
+`generalized_bayes` module.
 
 The tempered softmax of [@eq:tempered-softmax], stated in the definition above,
 is not an approximation: it
@@ -134,8 +134,8 @@ from {{LANGUAGE_INITIAL_KL}} to {{LANGUAGE_FINAL_KL}} across
 A forgetting hyperprior optionally decays
 the running mass toward an asymptote so the agent does not become infinitely
 confident; with the hyperprior disabled the classical unbounded accumulation of
-[@eq:dirichlet-update] is recovered. The implementation is
-`dirichlet_learning.learn_likelihood`.
+[@eq:dirichlet-update] is recovered. The implementation is `learn_likelihood`
+in the `dirichlet_learning` module.
 
 ## Bayesian model reduction for structure comparison {#sec:method-bmr}
 

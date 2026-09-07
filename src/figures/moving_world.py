@@ -22,9 +22,7 @@ from figures._common import (
 )
 
 
-def generate_moving_world(
-    results, project_root, *, filename: str = "moving_world.png"
-) -> Path:
+def generate_moving_world(results, project_root, *, filename: str = "moving_world.png") -> Path:
     """Three-panel bar chart for the moving sentinel world.
 
     Left panel: consensus accuracy. Center panel: free-energy gap (nats). Right
@@ -85,8 +83,13 @@ def generate_moving_world(
             va = "bottom" if v >= 0 else "top"
             offset = pad if v >= 0 else -pad
             ax.text(
-                i, v + offset, fmt.format(v),
-                ha="center", va=va, fontsize=_FS_ANN, color=COLOR_AXIS,
+                i,
+                v + offset,
+                fmt.format(v),
+                ha="center",
+                va=va,
+                fontsize=_FS_ANN,
+                color=COLOR_AXIS,
             )
 
     # --- stats box in accuracy panel ---
@@ -116,6 +119,9 @@ def generate_moving_world(
     # extension, but the canonical no-override path is the manuscript PNG.
     png_path = out_path if out_path.suffix.lower() == ".png" else out_path.with_suffix(".png")
     save_figure_pair(fig, png_path, manuscript_width_fraction=0.80)
+    from ._presentation_worlds import moving_presentation
+
+    moving_presentation(png_path, results)
     return png_path if out_path.suffix.lower() == ".png" else out_path
 
 

@@ -293,7 +293,11 @@ def generate_cross_study_summary(
     )
 
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename, manuscript_width_fraction=0.95)
+    path = save_figure(fig, out / filename, manuscript_width_fraction=0.95)
+    from ._presentation_studies import cross_study_presentation
+
+    cross_study_presentation(path, grouped, report_n_seeds)
+    return path
 
 
 __all__ = ["generate_cross_study_summary"]

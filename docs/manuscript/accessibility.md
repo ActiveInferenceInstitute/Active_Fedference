@@ -111,6 +111,21 @@ remains a projection derivative. Passing these automated checks establishes
 neither a WCAG conformance result for Reveal.js nor PDF/UA conformance for
 either PDF surface.
 
+Dense figures use source-owned presentation manifests selected by the
+manuscript's `data-slide-manifest` attribute. The canonical portrait PNG/PDF
+pair is retained. Each generator declares the complete ordered panel inventory;
+the shared presentation saver records the smallest visible Matplotlib label in
+pixels, binds it to the raster digest, checks a conservative design envelope,
+and emits a typed manifest. The renderer independently checks actual PDF image
+scale against the unchanged 16-point floor. The registry verifies both files in
+each declared panel pair and every raster digest, while stage provenance binds
+the source, manifest, and panel bytes. A successful subset is not a complete
+figure-label audit: every required figure must have measured presentation
+coverage before release. All 33 required figure families implement this path,
+and the manuscript selectors are checked against the declared manifest inventory.
+Final source-bound production, embedded-label measurements, and complete PDF/HTML
+visual inspection remain release gates.
+
 ## Release review sequence
 
 Run source validation first, then generate analysis, hydrate the manuscript,

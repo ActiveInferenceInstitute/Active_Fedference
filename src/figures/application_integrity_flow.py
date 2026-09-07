@@ -57,6 +57,16 @@ _STATUS_KEY_LAYOUT = (
     (False, True, "not converged · fallback", "not_converged_with_fallback"),
 )
 
+_APPLICATION_PANEL_A_LAYOUT = {
+    "request": (0.04, 0.63, 0.23, 0.19),
+    "strict_validation": (0.34, 0.63, 0.26, 0.19),
+    "canonical_request": (0.67, 0.63, 0.24, 0.19),
+    "destination_safety": (0.04, 0.32, 0.28, 0.19),
+    "aggregate_result": (0.62, 0.32, 0.28, 0.19),
+    "unsafe_destination": (0.03, 0.06, 0.31, 0.14),
+    "invalid_request": (0.37, 0.06, 0.30, 0.14),
+}
+
 # Geometry is keyed by typed dependency endpoints. The renderer iterates report
 # edges and rejects any route without an exact geometry entry; it never draws a
 # semantically independent arrow. Cross-panel dependencies enter at the top of
@@ -64,18 +74,18 @@ _STATUS_KEY_LAYOUT = (
 _APPLICATION_ROUTE_GEOMETRY: dict[
     tuple[str, str], tuple[int, tuple[float, float], tuple[float, float], float, bool]
 ] = {
-    ("request", "strict_validation"): (0, (0.19, 0.605), (0.22, 0.605), 0.0, False),
-    ("strict_validation", "canonical_request"): (0, (0.41, 0.605), (0.45, 0.605), 0.0, False),
-    ("strict_validation", "invalid_request"): (0, (0.315, 0.48), (0.29, 0.29), 0.0, True),
-    ("canonical_request", "destination_safety"): (0, (0.62, 0.605), (0.66, 0.605), 0.0, False),
+    ("request", "strict_validation"): (0, (0.27, 0.725), (0.34, 0.725), 0.0, False),
+    ("strict_validation", "canonical_request"): (0, (0.60, 0.725), (0.67, 0.725), 0.0, False),
+    ("strict_validation", "invalid_request"): (0, (0.47, 0.63), (0.52, 0.20), 0.0, False),
+    ("canonical_request", "destination_safety"): (0, (0.79, 0.63), (0.18, 0.51), -0.12, False),
     ("destination_safety", "unsafe_destination"): (
         0,
-        (0.74, 0.48),
-        (0.71, 0.29),
+        (0.18, 0.32),
+        (0.185, 0.20),
         0.0,
-        True,
+        False,
     ),
-    ("destination_safety", "aggregate_result"): (0, (0.82, 0.605), (0.85, 0.605), 0.0, False),
+    ("destination_safety", "aggregate_result"): (0, (0.32, 0.415), (0.62, 0.415), 0.0, False),
     ("aggregate_result", "rich_result"): (1, (0.18, 0.91), (0.18, 0.84), 0.0, False),
     ("rich_result", "solver_status"): (1, (0.325, 0.75), (0.395, 0.75), 0.0, False),
     ("solver_status", "non_nominal"): (1, (0.665, 0.75), (0.735, 0.75), 0.0, True),
@@ -346,7 +356,7 @@ def generate_application_integrity_flow(
     # methodological qualifications belong to the self-contained caption;
     # the image keeps only execution states and the exact solver-status key.
     fig.set_layout_engine("none")
-    grid = fig.add_gridspec(3, 1, height_ratios=(1.0, 1.18, 1.0), hspace=0.13)
+    grid = fig.add_gridspec(3, 1, height_ratios=(1.12, 1.18, 1.0), hspace=0.13)
     axes = [fig.add_subplot(grid[index, 0]) for index in range(3)]
     fig.suptitle(
         "Application integrity and numerical health remain separate evidence layers",
@@ -363,16 +373,7 @@ def generate_application_integrity_flow(
     panel = panels[0]
     _panel_setup(axes[0], _label(panel))
     nodes = _id_map(_records(panel, "nodes"))
-    positions = {
-        "request": (0.02, 0.48, 0.17, 0.25),
-        "strict_validation": (0.22, 0.48, 0.19, 0.25),
-        "canonical_request": (0.45, 0.48, 0.17, 0.25),
-        "destination_safety": (0.66, 0.48, 0.16, 0.25),
-        "aggregate_result": (0.85, 0.48, 0.13, 0.25),
-        "invalid_request": (0.14, 0.10, 0.30, 0.19),
-        "unsafe_destination": (0.56, 0.10, 0.30, 0.19),
-    }
-    for identifier, (x, y, width, height) in positions.items():
+    for identifier, (x, y, width, height) in _APPLICATION_PANEL_A_LAYOUT.items():
         record = nodes[identifier]
         _box(
             axes[0],
@@ -499,7 +500,7 @@ def generate_application_integrity_flow(
     axes[2].text(
         0.50,
         0.805,
-        "dotted = atomic write order · solid purple = data dependency",
+        "dotted = atomic write order · solid = data dependency",
         ha="center",
         va="bottom",
         fontsize=8.7,
@@ -527,7 +528,11 @@ def generate_application_integrity_flow(
     )
     _draw_application_edges(axes, panels)
     fig.subplots_adjust(left=0.025, right=0.975, top=0.965, bottom=0.025)
-    return save_figure_pair(fig, figures_dir(project_root) / filename)
+    canonical = save_figure_pair(fig, figures_dir(project_root) / filename)
+    from ._presentation_flows import generate_application_presentation
+
+    generate_application_presentation(report, canonical)
+    return canonical
 
 
 __all__ = ["generate_application_integrity_flow"]

@@ -43,6 +43,7 @@ from figures._common import (
     semantic_style,
     validate_figure_text,
 )
+from figures._presentation_schematics import colony_presentation
 
 # ---------------------------------------------------------------------------
 # Palette (semantic aliases for local readability)
@@ -552,6 +553,7 @@ def generate_system_overview(*, project_root: Path | None = None) -> Path:
 
     print(str(png_path))
     print(str(pdf_path))
+    colony_presentation(png_path, network=False)
     return png_path
 
 

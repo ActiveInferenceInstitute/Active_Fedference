@@ -114,6 +114,20 @@ def test_raw_latex_proposition_uses_print_reference_not_pandoc_citation() -> Non
     assert "@prop:" not in text
 
 
+def test_section_references_use_portable_pandoc_crossrefs() -> None:
+    """Raw section refs lose their label in HTML and can expose literal tildes."""
+    offenders: list[str] = []
+    for section in _section_paths():
+        text = section.read_text(encoding="utf-8")
+        for match in re.finditer(r"\\(?:ref|autoref|cref)\{sec:[A-Za-z0-9_\-]+\}", text):
+            line = text[: match.start()].count("\n") + 1
+            offenders.append(f"{section.name}:{line}: {match.group(0)}")
+    assert not offenders, (
+        "section references must use [@sec:...] so PDF, HTML, and slides share one portable label:\n"
+        + "\n".join(offenders)
+    )
+
+
 def test_live_cross_reference_labels_are_unique() -> None:
     occurrences: dict[str, list[str]] = {}
     for section in _section_paths():

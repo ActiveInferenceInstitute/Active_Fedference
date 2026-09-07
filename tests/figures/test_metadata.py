@@ -21,6 +21,7 @@ from figures._common import (
     MIN_QUANTITATIVE_FONT_SIZE,
     MIN_SCHEMATIC_FONT_SIZE,
 )
+from figures._metadata import FIGURE_SUPPORT_MODULES
 
 _EXACT_VALUE_FIGURES = {
     "belief_quality",
@@ -38,7 +39,7 @@ def test_every_figure_generator_has_complete_metadata() -> None:
     generators = {
         path.stem
         for path in figure_dir.glob("*.py")
-        if path.name not in {"__init__.py", "_common.py", "_metadata.py"}
+        if path.stem not in FIGURE_SUPPORT_MODULES
     }
     assert generators == set(FIGURE_METADATA)
     required = {
@@ -88,7 +89,7 @@ def test_reflowed_complex_descriptions_match_visible_panel_contracts() -> None:
     assert "two-by-two key" in application_alt
     assert "neutral dashed exit" in application_alt
     assert "separates artifact integrity" in application_long
-    assert "solid purple arrows" in application_long.lower()
+    assert "solid arrows" in application_long.lower()
     assert "dotted sequence" in application_long.lower()
     for solver_status in (
         "nominal",

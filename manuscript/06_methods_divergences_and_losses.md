@@ -125,7 +125,7 @@ diverges.
 
 The largest observed discrepancies are {{RECOVERY_BETA_MAXDIFF}} and
 {{RECOVERY_RCCE_MAXDIFF}}, respectively
-(Section~\ref{sec:results-recovery}). Section~\ref{sec:results-robustness}
+([@sec:results-recovery]). [@sec:results-robustness]
 validates the bounded-loss robustness.
 
 Taking the loss-parameter limits ($\beta\to0$ or

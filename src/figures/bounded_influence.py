@@ -193,11 +193,18 @@ def generate_bounded_influence(
         pad=12,
         color=COLOR_DARK,
     )
-    return save_figure(
+    canonical = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.80,
     )
+    from ._presentation_diagnostics import influence_path_presentation
+
+    influence_path_presentation(
+        canonical, x, y, naive_influence,
+        crossing_index=int(crossings[0]) if crossings.size else None,
+    )
+    return canonical
 
 
 __all__ = ["generate_bounded_influence"]

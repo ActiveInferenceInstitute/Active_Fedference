@@ -9,6 +9,7 @@ from PIL import Image
 
 from fedference.experiments import run_robustness_onset
 from figures import generate_robustness_onset
+from figures.robustness_onset import _endpoint_label_positions
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 _ROOT = Path(__file__).resolve().parents[2]
@@ -55,3 +56,10 @@ def test_onset_caption_matches_shared_semantic_styles() -> None:
     assert "filled circles with a solid line identify the reference log pool" in manuscript
     assert "open squares with a dashed line identify the pooled display server preset" in manuscript
     assert "Naive (dashed)" not in manuscript
+
+
+def test_endpoint_labels_remain_separated_and_inside_the_plot_lane() -> None:
+    first, second = _endpoint_label_positions(0.0, 0.0)
+    assert abs(first - second) >= 0.13
+    assert 0.08 <= first <= 0.94
+    assert 0.08 <= second <= 0.94

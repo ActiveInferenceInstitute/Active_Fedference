@@ -25,6 +25,7 @@ from ._common import (
     save_figure,
     shade_ci,
 )
+from ._presentation_estimates import language_presentation
 
 MANUSCRIPT_WIDTH_FRACTION = 0.80
 
@@ -128,11 +129,13 @@ def generate_language_kl_decay(
         )
     ax.legend(fontsize=10, loc="center right")
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    language_presentation(path, kl, ci_lo, ci_hi, monotone_decreasing, n_seeds)
+    return path
 
 
 __all__ = ["generate_language_kl_decay"]

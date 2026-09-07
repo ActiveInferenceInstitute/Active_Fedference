@@ -6,6 +6,7 @@ No mocks: real accuracy curves and optional seed-level intervals are rendered to
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -106,3 +107,19 @@ def test_bnn_robustness_rejects_bad_ci(tmp_path: Path) -> None:
             accuracy_ci_by_config={"x": [[0.8, 1.0]]},
             project_root=tmp_path,
         )
+
+
+def test_full_selection_disclosure_is_retained_across_readable_panels(tmp_path: Path) -> None:
+    disclosure = (
+        "The displayed condition was selected after examining the same experimental outcomes. "
+        "This exploratory comparison cannot establish a fixed-preset confirmatory contrast. "
+        "Loss and shrinkage change together; the result does not identify an RCCE-only effect."
+    )
+    output = generate_bnn_robustness(
+        {"nll / L2=0.05 (standard proxy)": [0.9, 0.8]}, [0.0, 1.0],
+        selection_disclosure=disclosure, project_root=tmp_path,
+    )
+    manifest = json.loads(output.with_suffix(".slides.json").read_text())
+    selections = [row for row in manifest["panels"] if ".slide-selection-" in row["src"]]
+    assert len(selections) > 1
+    assert " ".join(" ".join(row["alt"].split()) for row in selections) == disclosure

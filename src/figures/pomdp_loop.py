@@ -29,6 +29,7 @@ from figures._common import (
     figures_dir,
     save_figure_pair,
 )
+from figures._presentation_schematics import pomdp_presentation
 
 
 def _panel(
@@ -53,8 +54,14 @@ def _panel(
         )
     )
     ax.text(
-        x + 0.018, y + h - 0.035, title, ha="left", va="top", fontsize=10.2,
-        fontweight="bold", color=COLOR_DEEP,
+        x + 0.018,
+        y + h - 0.035,
+        title,
+        ha="left",
+        va="top",
+        fontsize=10.2,
+        fontweight="bold",
+        color=COLOR_DEEP,
     )
     ax.text(x + 0.018, y + h - 0.078, subtitle, ha="left", va="top", fontsize=8.5, color=COLOR_ARROW)
 
@@ -147,7 +154,12 @@ def _posterior_card(ax: plt.Axes, x: float, y: float, label: str, color: str, hi
         )
     )
     ax.text(
-        x + 0.016, y + h - 0.021, label, ha="left", va="top", fontsize=8.5,
+        x + 0.016,
+        y + h - 0.021,
+        label,
+        ha="left",
+        va="top",
+        fontsize=8.5,
         # The accent is a keyline; the painted card background is pale.
         color=COLOR_DEEP,
         fontweight="bold",
@@ -290,12 +302,23 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         )
     )
     ax.text(
-        0.625, 0.485, "server", ha="center", va="center", fontsize=9.0,
-        fontweight="bold", color=COLOR_DEEP,
+        0.625,
+        0.485,
+        "server",
+        ha="center",
+        va="center",
+        fontsize=9.0,
+        fontweight="bold",
+        color=COLOR_DEEP,
     )
     ax.text(
-        0.625, 0.450, "qualified Eq. 7 pool\nor robust route", ha="center", va="center",
-        fontsize=8.5, color=COLOR_DARK,
+        0.625,
+        0.450,
+        "qualified Eq. 7 pool\nor robust route",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DARK,
     )
     _posterior_card(ax, 0.77, 0.435, "$\\bar q_n$", COLOR_ACCENT, 4)
     for x in (0.21, 0.35, 0.49):
@@ -312,8 +335,13 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         color=COLOR_ACCENT,
     )
     ax.text(
-        0.30, 0.397, "no raw sensory data are pooled", ha="center", va="top",
-        fontsize=8.5, color=COLOR_ARROW,
+        0.30,
+        0.397,
+        "no raw sensory data are pooled",
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        color=COLOR_ARROW,
     )
 
     _panel(
@@ -380,7 +408,9 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         style="italic",
     )
     fig.subplots_adjust(left=0.035, right=0.965, top=0.90, bottom=0.055)
-    return save_figure_pair(fig, figures_dir(project_root) / "pomdp_loop.png")
+    path = save_figure_pair(fig, figures_dir(project_root) / "pomdp_loop.png")
+    pomdp_presentation(path)
+    return path
 
 
 __all__ = ["generate_pomdp_loop"]

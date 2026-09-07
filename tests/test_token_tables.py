@@ -43,7 +43,8 @@ def variables(tmp_path_factory) -> dict[str, str]:
     (root / "manuscript" / "16_results_belief_sharing.md").write_text(
         "![Belief-sharing posterior mass in the bounded smoke fixture.]"
         "(../output/figures/belief_heatmap.png)"
-        "{#fig:belief-heatmap width=80%}\n",
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
         encoding="utf-8",
     )
     # Keep this real end-to-end fixture bounded. Publication remains the

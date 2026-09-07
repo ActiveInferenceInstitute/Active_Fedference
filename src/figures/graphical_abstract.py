@@ -41,6 +41,7 @@ from figures._common import (
     contrasting_text_color,
     validate_figure_text,
 )
+from figures._presentation_schematics import colony_presentation
 from figures.system_overview import SYSTEM_OVERVIEW_METADATA, build_data
 
 # ---------------------------------------------------------------------------
@@ -890,6 +891,7 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
     )
     plt.close(fig)
 
+    colony_presentation(png_path, network=True)
     return png_path
 
 

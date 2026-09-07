@@ -1,8 +1,9 @@
 ## Three-level hierarchical POMDP: an executed test of the N-level template {#sec:results-3level}
 
 The 2-level hierarchical POMDP ([@sec:results-hierarchical]) couples location
-inference to a single global context. The N-level architecture
-(`fedference.pomdp.build_nlevel_world`) provides a parameterized stack
+inference to a single global context. The N-level architecture uses
+`build_nlevel_world` from the `fedference.pomdp` module and provides a
+parameterized stack
 of levels; the canonical {{NLEVEL3_N_LEVELS}}-level example couples location (L1; {{NLEVEL3_N_LOCATIONS}}
 states) to a context variable (L2; {{NLEVEL3_N_CONTEXTS}} states: ``quiet`` /
 ``alert``) and further to a meta-context variable (L3; {{NLEVEL3_N_META_CONTEXTS}}

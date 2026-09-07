@@ -12,6 +12,15 @@ from typing import Final
 
 from analysis.visual_contracts import COMPLEX_FIGURE_GENERATORS
 
+FIGURE_SUPPORT_MODULES: Final[frozenset[str]] = frozenset({
+    "__init__", "_common", "_metadata", "_presentation",
+    "_presentation_flows", "_presentation_robustness", "_presentation_diagnostics",
+    "_presentation_estimates",
+    "_presentation_schematics",
+    "_presentation_studies",
+    "_presentation_worlds",
+})
+
 _GENERATORS: Final[tuple[str, ...]] = (
     "aggregation_descent",
     "application_integrity_flow",
@@ -257,7 +266,7 @@ _LONG_DESCRIPTIONS: Final[dict[str, str]] = {
         "converged_with_fallback, not_converged, and not_converged_with_fallback. Its neutral dashed branch "
         "retains valid artifacts at exit 1 when health is non-nominal. Panel C carries the canonical request "
         "and rich result into request.json and result.json, binds both into receipt.json, and then enters "
-        "verification. Solid purple arrows encode these data dependencies; a separate dotted sequence "
+        "verification. Solid arrows encode these data dependencies; a separate dotted sequence "
         "above the artifact boxes encodes the atomic request.json, result.json, receipt.json write order. "
         "The lower "
         "lane separates artifact integrity, source equivalence, and optional nominal solver health, while a "

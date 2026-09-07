@@ -23,6 +23,7 @@ from ._common import (
     save_figure_pair,
     semantic_style,
 )
+from ._presentation_flows import generate_evidence_presentation
 
 MANUSCRIPT_WIDTH_FRACTION = 0.98
 
@@ -301,8 +302,7 @@ def _nesting_strip(
     font_size: float = 10.8,
 ) -> None:
     expected_pairs = [
-        (_text(nesting[index], "id"), _text(nesting[index + 1], "id"))
-        for index in range(len(nesting) - 1)
+        (_text(nesting[index], "id"), _text(nesting[index + 1], "id")) for index in range(len(nesting) - 1)
     ]
     observed_pairs = [(_text(edge, "source"), _text(edge, "target")) for edge in edges]
     if observed_pairs != expected_pairs:
@@ -463,9 +463,7 @@ def _lane_card(
     body_parts = [f"{prefix} · {_text(display, key)}" for prefix, key in fields]
     body = "\n".join(_wrapped(part, 43) for part in body_parts)
     if len(body.splitlines()) > 7:
-        raise ValueError(
-            f"evidence card row {index + 1} exceeds seven body lines; tighten display wording"
-        )
+        raise ValueError(f"evidence card row {index + 1} exceeds seven body lines; tighten display wording")
     ax.text(
         x + 0.016,
         y + height - 0.047,
@@ -627,11 +625,13 @@ def generate_evidence_replication_map(
     _no_transfer_strip(ax, no_claims)
 
     fig.subplots_adjust(left=0.010, right=0.990, top=0.998, bottom=0.010)
-    return save_figure_pair(
+    path = save_figure_pair(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    generate_evidence_presentation(report, path)
+    return path
 
 
 __all__ = ["generate_evidence_replication_map"]

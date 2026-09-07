@@ -14,6 +14,7 @@ from analysis.visual_contracts import (
     source_render_provenance_contract,
 )
 from figures.application_integrity_flow import (
+    _APPLICATION_PANEL_A_LAYOUT,
     _APPLICATION_ROUTE_GEOMETRY,
     _application_edge_inventory,
     _solver_status_key,
@@ -93,6 +94,22 @@ def test_application_flow_geometry_is_owned_by_every_exact_typed_edge() -> None:
     assert set(_APPLICATION_ROUTE_GEOMETRY) == {
         (source, target) for _, source, target, _ in APPLICATION_FLOW_EDGE_INVENTORY
     }
+
+
+def test_application_flow_failure_routes_use_clear_dedicated_lanes() -> None:
+    destination = _APPLICATION_PANEL_A_LAYOUT["destination_safety"]
+    aggregate = _APPLICATION_PANEL_A_LAYOUT["aggregate_result"]
+    invalid_route = _APPLICATION_ROUTE_GEOMETRY[("strict_validation", "invalid_request")]
+    unsafe_route = _APPLICATION_ROUTE_GEOMETRY[("destination_safety", "unsafe_destination")]
+
+    invalid_xs = (invalid_route[1][0], invalid_route[2][0])
+    assert destination[0] + destination[2] < min(invalid_xs)
+    assert max(invalid_xs) < aggregate[0]
+    assert invalid_route[4] is False
+
+    unsafe_xs = (unsafe_route[1][0], unsafe_route[2][0])
+    assert destination[0] < min(unsafe_xs) <= max(unsafe_xs) < destination[0] + destination[2]
+    assert unsafe_route[4] is False
 
 
 def test_application_flow_rejects_dependency_omission(tmp_path: Path) -> None:

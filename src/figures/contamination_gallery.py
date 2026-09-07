@@ -35,9 +35,15 @@ def _robust_facecolors(reliable: list[bool], full_color: str) -> list[str]:
 
 
 def _selected_preset_annotation(method: str, win_fraction: float, reliable: bool) -> str:
-    """Return the direct, non-colour identity and descriptive status label."""
-    mark = "display flag" if reliable else "below display bar"
-    return f"selected server preset · {method}\nwin fraction {win_fraction:.2f}\n{mark}"
+    """Return a compact direct label for one selected-preset bar.
+
+    The legend owns the repeated ``selected server preset`` role name.  Each
+    category label therefore carries only the method, descriptive win
+    fraction, and display disposition; this keeps five adjacent labels
+    independently readable at manuscript scale.
+    """
+    mark = "flagged" if reliable else "below bar"
+    return f"{method} · win {win_fraction:.2f}\n{mark}"
 
 
 def generate_contamination_gallery(
@@ -134,8 +140,10 @@ def generate_contamination_gallery(
             zorder=4,
         )
     # Repeat the reference role inside every open bar so neither role identity
-    # depends on hue or a remote legend. Reserve one aligned direct-label lane
-    # above the bars for each selected server preset and its descriptive flag.
+    # depends on hue or a remote legend. Reserve one aligned, compact direct-
+    # label lane above the bars.  The shared role name remains in the legend;
+    # repeating it five times here would turn the labels into one unreadable
+    # text band at final manuscript scale.
     for i, height in enumerate(naive):
         ax.text(
             i - w / 2,
@@ -149,7 +157,7 @@ def generate_contamination_gallery(
             fontweight="bold",
             zorder=5,
         )
-    annotation_y = 1.19
+    annotation_y = 1.12
     for i, (wf, rel, method) in enumerate(zip(wins, reliable, methods)):
         top = max(naive[i], robust[i])
         if have_ci:
@@ -157,7 +165,7 @@ def generate_contamination_gallery(
         ax.annotate(
             _selected_preset_annotation(method, wf, rel),
             xy=(i + w / 2, top + 0.012),
-            xytext=(i, annotation_y),
+            xytext=(i + w / 2, annotation_y),
             arrowprops={"arrowstyle": "-", "color": robust_style.keyline, "lw": 0.9},
             ha="center",
             va="bottom",
@@ -187,11 +195,15 @@ def generate_contamination_gallery(
         color=COLOR_ACCENT,
     )
 
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.85,
     )
+    from ._presentation_studies import gallery_presentation
+
+    gallery_presentation(path, by_kind)
+    return path
 
 
 __all__ = ["generate_contamination_gallery"]

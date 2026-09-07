@@ -716,12 +716,20 @@ def test_robustness_taxonomy_has_one_authoritative_definition() -> None:
         assert heading in gap
 
     abstract = _read("manuscript/00_abstract.md")
-    synthesis = next(
+    syntheses = [
         paragraph
         for paragraph in abstract.split("\n\n")
-        if paragraph.startswith("Following the authoritative guarantee map")
-    )
+        if "authoritative" in paragraph and "guarantee map" in paragraph
+    ]
+    assert len(syntheses) == 1, "abstract must contain one authoritative guarantee-map synthesis"
+    synthesis = " ".join(syntheses[0].split())
     assert synthesis.count(".") == 1
+    for claim_owner in (
+        "source-conditional client updates",
+        "recovery-only heuristic server rule",
+        "objective-backed variational server rule",
+    ):
+        assert claim_owner in synthesis
     assert "no robustness guarantee transferred between them" in synthesis
 
     limitations = _read("manuscript/23_discussion_limitations.md")
@@ -1472,6 +1480,10 @@ def test_todo_command_floor_uses_locked_environment() -> None:
 
     assert "uv run --locked ruff check" in roadmap
     assert "uv run --locked mypy src/" in roadmap
+    assert (
+        "uv run --locked python scripts/validate_mermaid.py --render --renderer npx "
+        "--output-dir .tmp/mermaid-render"
+    ) in roadmap
     assert "uv run ruff check" not in roadmap
     assert "uv run mypy src/" not in roadmap
 

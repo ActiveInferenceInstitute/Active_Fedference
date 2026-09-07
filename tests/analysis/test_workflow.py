@@ -123,7 +123,8 @@ def _make_project(root: Path) -> None:
     (manuscript / "16_results_belief_sharing.md").write_text(
         "![Belief-sharing posterior mass in the bounded smoke fixture.]"
         "(../output/figures/belief_heatmap.png)"
-        "{#fig:belief-heatmap width=80%}\n",
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
         encoding="utf-8",
     )
 
@@ -287,7 +288,8 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
         "See [@fig:belief-heatmap].\n\n"
         "![Belief heatmap caption for {{BELIEF_SHARING_N_AGENTS}} agents.]"
         "(../output/figures/belief_heatmap.png)"
-        "{#fig:belief-heatmap width=80%}\n",
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
         encoding="utf-8",
     )
     paths = run_analysis_pipeline(project_root=tmp_path)
@@ -302,6 +304,9 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
     }
     assert set(figures) == {"fig:belief-heatmap"}
     assert figures["fig:belief-heatmap"]["filename"] == "belief_heatmap.png"
+    assert figures["fig:belief-heatmap"]["presentation_manifest"] == (
+        "output/figures/belief_heatmap.slides.json"
+    )
     assert figures["fig:belief-heatmap"]["generated_by"] == "belief_heatmap"
     assert figures["fig:belief-heatmap"]["source_manuscript"] == "manuscript/16_results_belief_sharing.md"
     assert figures["fig:belief-heatmap"]["caption"] == (
@@ -315,9 +320,9 @@ def test_figure_registry_rejects_duplicate_labels_and_files(tmp_path: Path) -> N
     manuscript = tmp_path / "manuscript"
     duplicate = (
         "![First caption.](../output/figures/belief_heatmap.png)"
-        "{#fig:duplicate width=80%}\n\n"
+        "{#fig:duplicate width=80% data-slide-manifest=\"../output/figures/belief_heatmap.slides.json\"}\n\n"
         "![Second caption.](../output/figures/belief_heatmap.png)"
-        "{#fig:duplicate width=80%}\n"
+        "{#fig:duplicate width=80% data-slide-manifest=\"../output/figures/belief_heatmap.slides.json\"}\n"
     )
     (manuscript / "16_results_belief_sharing.md").write_text(duplicate, encoding="utf-8")
 

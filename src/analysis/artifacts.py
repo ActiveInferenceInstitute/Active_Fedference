@@ -85,9 +85,46 @@ ANALYSIS_FIGURE_PDF_FILENAMES: tuple[str, ...] = tuple(
     f"{Path(name).stem}.pdf" for name in ANALYSIS_FIGURE_FILENAMES
 )
 
+PRESENTATION_FIGURE_STEMS: tuple[str, ...] = (
+    "aggregation_descent",
+    "application_integrity_flow",
+    "belief_heatmap",
+    "belief_quality",
+    "bnn_robustness",
+    "bounded_influence",
+    "complexity_scaling",
+    "conditional_world",
+    "contamination_gallery",
+    "cross_study_summary",
+    "descent_comparison",
+    "disjoint_fov_world",
+    "efe_decomposition",
+    "emergence_bmr",
+    "evidence_replication_map",
+    "free_energy_comparison",
+    "generative_model_schema",
+    "graphical_abstract",
+    "heuristic_breakdown",
+    "hierarchical_bmr",
+    "hierarchical_pomdp",
+    "language_kl_decay",
+    "message_passing",
+    "moving_world",
+    "parameter_recovery",
+    "pomdp_loop",
+    "robust_influence_weights",
+    "robustness_onset",
+    "robustness_review_grid",
+    "robustness_sweep",
+    "sensitivity_heatmap",
+    "source_render_provenance",
+    "system_overview",
+)
+
 ANALYSIS_FIGURE_SUPPORT_FILENAMES: tuple[str, ...] = (
     "figure_exact_values.json",
     "figure_exact_values.md",
+    *(f"{stem}.slides.json" for stem in PRESENTATION_FIGURE_STEMS),
 )
 
 ANALYSIS_DATA_FILENAMES: tuple[str, ...] = (
@@ -113,14 +150,8 @@ def expected_artifacts(project_root: Path) -> dict[str, Path]:
     return {
         **{f"report:{name}": reports / name for name in ANALYSIS_REPORT_FILENAMES},
         **{f"figure:{name}": figures / name for name in ANALYSIS_FIGURE_FILENAMES},
-        **{
-            f"figure-vector:{name}": figures / name
-            for name in ANALYSIS_FIGURE_PDF_FILENAMES
-        },
-        **{
-            f"figure-support:{name}": figures / name
-            for name in ANALYSIS_FIGURE_SUPPORT_FILENAMES
-        },
+        **{f"figure-vector:{name}": figures / name for name in ANALYSIS_FIGURE_PDF_FILENAMES},
+        **{f"figure-support:{name}": figures / name for name in ANALYSIS_FIGURE_SUPPORT_FILENAMES},
         "figure_registry": figures / "figure_registry.json",
         **{f"data:{name}": data / name for name in ANALYSIS_DATA_FILENAMES},
     }

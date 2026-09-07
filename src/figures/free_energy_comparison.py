@@ -16,7 +16,6 @@ import numpy as np
 
 from ._common import (
     COLOR_AXIS,
-    COLOR_GRID,
     COLOR_MUTED,
     apply_style,
     figures_dir,
@@ -24,6 +23,7 @@ from ._common import (
     save_figure,
     semantic_style,
 )
+from ._presentation_diagnostics import free_energy_presentation
 
 
 def generate_free_energy_comparison(
@@ -79,12 +79,12 @@ def generate_free_energy_comparison(
     fig, (ax_pairs, ax_difference) = plt.subplots(
         2,
         1,
-        figsize=(6.5, 7.4),
+        figsize=(6.5, 7.8),
         facecolor="white",
         gridspec_kw={"height_ratios": (1.08, 1.0)},
     )
     fig.set_layout_engine("none")
-    fig.subplots_adjust(left=0.15, right=0.97, top=0.88, bottom=0.10, hspace=0.48)
+    fig.subplots_adjust(left=0.15, right=0.97, top=0.88, bottom=0.18, hspace=0.48)
 
     seed_alpha = max(0.08, min(0.34, 22.0 / incom.size))
     seed_size = max(14.0, min(34.0, 6000.0 / incom.size))
@@ -163,7 +163,7 @@ def generate_free_energy_comparison(
         linewidth=1.1,
         s=max(12.0, min(30.0, 4200.0 / differences.size)),
         alpha=max(0.22, min(0.75, 36.0 / differences.size)),
-        label="one paired difference per seed",
+        label="paired seed differences",
         zorder=3,
     )
     ax_difference.axvline(
@@ -171,7 +171,7 @@ def generate_free_energy_comparison(
         color=reference.color,
         linestyle=reference.dash,
         linewidth=reference.linewidth,
-        label="zero difference",
+        label="zero",
         zorder=1,
     )
     if interval is None:
@@ -197,50 +197,50 @@ def generate_free_energy_comparison(
             color=COLOR_AXIS,
             linewidth=2.0,
             capsize=5,
-            label="paired mean with 95% interval",
+            label="paired mean, 95% interval",
             zorder=4,
         )
     ax_difference.set_ylim(-0.38, 0.21)
     ax_difference.set_yticks(())
-    ax_difference.set_xlabel("$\\Delta F$ (nats)\nincommunicado − communicating")
-    ax_difference.set_title("B  Seed-level paired differences", loc="left")
-    ax_difference.legend(loc="upper left", fontsize=9.5)
-    ax_difference.text(
-        0.02,
-        0.03,
-        rf"mean $\Delta F$ = {mean_difference:+.3g} nats"
-        "\n"
-        f"n = {differences.size} {replication_unit}s\n"
-        "positive = lower F with communication",
-        transform=ax_difference.transAxes,
-        ha="left",
-        va="bottom",
-        fontsize=9.5,
-        bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID},
+    ax_difference.set_xlabel(
+        "$\\Delta F$ (nats): incommunicado − communicating\n"
+        "positive values mean lower F with communication\n"
+        rf"mean $\Delta F$ = {mean_difference:+.3g} nats; "
+        f"independent unit = {replication_unit} (n = {differences.size})\n"
+        f"analysis unit = {analysis_unit}",
+        fontsize=10.5,
+        labelpad=8,
+        linespacing=1.2,
     )
-
+    ax_difference.set_title("B  Seed-level paired differences", loc="left", y=1.16)
+    # Keep the key in the inter-panel margin.  A legend inside the axes hides
+    # the paired-difference distribution, while a second unit box in the same
+    # corner collides with both the key and the observations.
+    ax_difference.legend(
+        loc="lower left",
+        bbox_to_anchor=(0.0, 1.015),
+        ncol=3,
+        fontsize=9.5,
+        frameon=False,
+        borderaxespad=0.0,
+        columnspacing=1.1,
+        handletextpad=0.55,
+    )
     fig.suptitle(
         "Paired colony free-energy comparison",
         y=0.985,
         fontsize=15,
         fontweight="bold",
     )
-    ax_difference.text(
-        0.98,
-        0.96,
-        f"{analysis_unit}\nindependent unit: {replication_unit}",
-        transform=ax_difference.transAxes,
-        ha="right",
-        va="top",
-        fontsize=9.5,
-        color=COLOR_MUTED,
-        bbox={"boxstyle": "round,pad=0.25", "fc": "white", "ec": COLOR_GRID},
-    )
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.80,
     )
+    free_energy_presentation(
+        path, incom, comm, differences, jitter, mean_difference, interval, analysis_unit, replication_unit
+    )
+    return path
 
 
 __all__ = ["generate_free_energy_comparison"]

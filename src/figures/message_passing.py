@@ -25,6 +25,7 @@ from figures._common import (
     save_figure_pair,
     semantic_style,
 )
+from figures._presentation_schematics import message_presentation
 
 
 def _box(
@@ -384,7 +385,9 @@ def generate_message_passing(*, project_root: Path | None = None) -> Path:
         fontsize=9.5,
         color=COLOR_ARROW,
     )
-    return save_figure_pair(fig, figures_dir(project_root) / "message_passing.png")
+    path = save_figure_pair(fig, figures_dir(project_root) / "message_passing.png")
+    message_presentation(path)
+    return path
 
 
 __all__ = ["generate_message_passing"]

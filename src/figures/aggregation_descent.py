@@ -100,7 +100,7 @@ def generate_aggregation_descent(
         edgecolor=variational_style.keyline,
         s=60,
         zorder=5,
-        label=f"Stationary point  $F^* = {fe[-1]:.4g}$ nats",
+        label=f"Final iterate  $F_{{end}} = {fe[-1]:.4g}$ nats",
     )
 
     # The largest observed step is an annotation on the same trajectory, not a
@@ -163,11 +163,18 @@ def generate_aggregation_descent(
     # converged tail of the curve along the bottom.
     ax.legend(fontsize=10, loc="center right")
 
-    return save_figure(
+    canonical = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
     )
+    from ._presentation_diagnostics import objective_presentation
+
+    objective_presentation(
+        canonical, iters, fe,
+        largest_step_index=big_step_idx if diffs.size else None, stats_text=stats_text,
+    )
+    return canonical
 
 
 __all__ = ["generate_aggregation_descent"]

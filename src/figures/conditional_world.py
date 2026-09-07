@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
+from typing import NamedTuple
 
 import numpy as np
+from matplotlib.figure import Figure
 
 from ._common import (
     COLOR_ACCENT,
@@ -19,6 +21,16 @@ from ._common import (
     semantic_style,
 )
 
+_ATTACKS = ("clean", "confident_wrong", "permutation", "label_noise", "uniform")
+_COLUMNS = ["s0_o45", "s0_o70", "s1_o45", "s1_o70"]
+
+
+class _ConditionalData(NamedTuple):
+    heatmap: np.ndarray
+    means: list[float]
+    minima: list[float]
+    maxima: list[float]
+
 
 def generate_conditional_world(
     report: Mapping[str, object],
@@ -27,14 +39,24 @@ def generate_conditional_world(
     filename: str = "conditional_world.png",
 ) -> Path:
     """Render per-cell seed contrasts and finite-grid attack summaries."""
+    data = _conditional_data(report)
+    fig = _build_conditional_world(report, data=data)
+    path = save_figure(fig, figures_dir(project_root) / filename)
+    from ._presentation_estimates import conditional_presentation
+
+    conditional_presentation(path, data.heatmap, data.means, data.minima, data.maxima, _ATTACKS, _COLUMNS)
+    return path
+
+
+def _conditional_data(report: Mapping[str, object]) -> _ConditionalData:
+    """Derive the finite-grid display summaries once for both figure surfaces."""
     raw = report.get("by_scenario")
     if not isinstance(raw, Mapping) or not raw:
         raise ValueError("conditional-world report must contain by_scenario")
     cells = [cell for cell in raw.values() if isinstance(cell, Mapping)]
     if not cells:
         raise ValueError("conditional-world report has no scenario cells")
-    attacks = ("clean", "confident_wrong", "permutation", "label_noise", "uniform")
-    columns = ["s0_o45", "s0_o70", "s1_o45", "s1_o70"]
+    attacks, columns = _ATTACKS, _COLUMNS
     heatmap = np.full((len(attacks), len(columns)), np.nan, dtype=np.float64)
     for cell in cells:
         attack = str(cell["attack"])
@@ -53,6 +75,13 @@ def generate_conditional_world(
         attack_min.append(float(values.min()))
         attack_max.append(float(values.max()))
 
+    return _ConditionalData(heatmap, attack_means, attack_min, attack_max)
+
+
+def _build_conditional_world(report: Mapping[str, object], *, data: _ConditionalData | None = None) -> Figure:
+    """Compose the actual artists independently of the explicit file boundary."""
+    heatmap, attack_means, attack_min, attack_max = data if data is not None else _conditional_data(report)
+    attacks, columns = _ATTACKS, _COLUMNS
     apply_style()
     # The manuscript uses a 95%-width embed.  A vertical composition preserves
     # readable cell values and attack labels at that scale; the former 1x2
@@ -123,7 +152,7 @@ def generate_conditional_world(
         "Conditional robustness on the declared finite grid",
         fontweight="bold",
     )
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return fig
 
 
 __all__ = ["generate_conditional_world"]

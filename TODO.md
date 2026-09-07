@@ -38,9 +38,9 @@ can still block a release. The source-indexed dependency map is
 
 The active critical path is:
 
-1. use the exact reviewed and merged accessible Template renderer commit from
-   a separate clean checkout and complete the source-only visual-scholarship
-   candidate;
+1. complete the separate accessible Template renderer review in a clean
+   checkout, use its exact merged commit, and finish the source-only visual-
+   scholarship candidate;
 2. run the candidate-specific portion of MIN-2, push the exact visual branch to
    both remotes, merge it normally into public `main`, and require green
    post-merge CI;
@@ -99,8 +99,9 @@ the draft and GitHub release have been verified.
 
 The following tracks are defined in the
 [phase plan](docs/todo/scholarship-and-phase-plan.md#parked-tracks) but are not
-active implementation items: streaming/nonstationary inference, multimodal
-missingness, privacy-preserving federation, and language-summary generation.
+active implementation items: a sharper objective-backed replacement for the
+server heuristic, streaming/nonstationary inference, multimodal missingness,
+privacy-preserving federation, and language-summary generation.
 Moving one into the active table first requires its source bundle, threat or
 evaluation protocol, primary estimand, independent unit, falsifier, and claim
 boundary to be reviewed. No parked track has a version, ordering priority, or
@@ -120,6 +121,7 @@ uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
 uv run --locked ruff check src/ tests/ scripts/ examples/ _fedference_build_backend.py
 uv run --locked mypy src/
 uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx --output-dir .tmp/mermaid-render
 uv run --locked python scripts/validate_pipeline_freshness.py
 uv run --locked python scripts/build_release.py --verify
 uv run --locked python scripts/validate_all.py full

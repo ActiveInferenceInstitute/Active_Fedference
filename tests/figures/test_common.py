@@ -30,6 +30,7 @@ from figures._common import (
     semantic_style,
     validate_figure_text,
 )
+from figures._metadata import FIGURE_SUPPORT_MODULES
 
 
 def test_apply_style_and_figures_dir(tmp_path: Path) -> None:
@@ -305,7 +306,7 @@ def test_every_manuscript_embed_matches_its_effective_font_boundary() -> None:
     generator_names = {
         path.stem
         for path in (root / "src" / "figures").glob("*.py")
-        if path.name not in {"__init__.py", "_common.py", "_metadata.py"}
+        if path.stem not in FIGURE_SUPPORT_MODULES
     }
     assert set(widths) == generator_names
 

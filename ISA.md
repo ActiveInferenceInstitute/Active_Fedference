@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 265/267
+progress: 265/268
 iteration: 49-linked-zenodo-draft-semantics
 updated_by: iteration-49-2026-08-28
 mode: ALGORITHM
@@ -1198,3 +1198,16 @@ them.
   malformed-success and semantic-echo response inspection,
   recovery/revalidation, negative HTTP, constructor, CLI-summary, and
   idempotent-reuse tests in `tests/test_zenodo.py`.
+
+### Iteration 50 — measured presentation panels
+
+- [ ] ISC-273: Every required accessible-slide figure has a complete,
+  source-declared presentation inventory, a typed raster-digest/label manifest,
+  paired PNG/PDF artifacts, source-bound registry and freshness coverage, and
+  final embedded labels at or above 16 points. Canonical portrait figures,
+  every method-specific interval, common comparison scales, typed flow edges,
+  and no-claim boundaries are preserved. All 33 required figure families have
+  source-owned presentation producers and checked manuscript selectors; final
+  source-bound production and manuscript-placement verification remain open. Probe:
+  presentation boundary, figure/caption contracts, real paired renderer,
+  full artifact inventory, and complete final PDF/HTML visual inspection.

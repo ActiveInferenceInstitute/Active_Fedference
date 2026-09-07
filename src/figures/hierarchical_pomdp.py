@@ -108,17 +108,18 @@ def generate_hierarchical_pomdp(
     # Panel 2 data: colony consensus (2-level), true state=4, context=alert.
     true_state2 = 4
     per_agent_obs2 = [
-        int(rng.choice(A2.shape[0], p=np.clip(A2[:, true_state2], 0, None) /
-                       np.clip(A2[:, true_state2], 0, None).sum()))
+        int(
+            rng.choice(
+                A2.shape[0],
+                p=np.clip(A2[:, true_state2], 0, None) / np.clip(A2[:, true_state2], 0, None).sum(),
+            )
+        )
         for _ in range(n_agents)
     ]
-    flat_local_posteriors2 = [
-        infer_states(A2, o, flat_log_prior) for o in per_agent_obs2
-    ]
+    flat_local_posteriors2 = [infer_states(A2, o, flat_log_prior) for o in per_agent_obs2]
     flat_consensus2 = log_linear_pool(flat_local_posteriors2)
     hier_local_posteriors2 = [
-        hierarchical_infer(A2, o, world2, n_iters=n_iters)["q_loc"]
-        for o in per_agent_obs2
+        hierarchical_infer(A2, o, world2, n_iters=n_iters)["q_loc"] for o in per_agent_obs2
     ]
     hier_consensus2 = log_linear_pool(hier_local_posteriors2)
 
@@ -184,12 +185,7 @@ def generate_hierarchical_pomdp(
             gap3_list.append(
                 float(np.argmax(log_linear_pool(hier_b3)) == ts)
                 - float(
-                    np.argmax(
-                        log_linear_pool(
-                            [infer_states(A3, o, flat_log_prior) for o in obs_list3]
-                        )
-                    )
-                    == ts
+                    np.argmax(log_linear_pool([infer_states(A3, o, flat_log_prior) for o in obs_list3])) == ts
                 )
             )
 
@@ -254,10 +250,22 @@ def generate_hierarchical_pomdp(
 
     # --- Panel 1 (top-middle): L2 context posterior evolution 2-level ---
     ax = axes[0, 1]
-    ax.plot(iters_x, ctx_arr2[:, 0], "o-", color=COLOR_NAIVE,
-            label=f"P({world2['context_labels'][0]})", linewidth=1.5)
-    ax.plot(iters_x, ctx_arr2[:, 1], "s-", color=COLOR_ROBUST,
-            label=f"P({world2['context_labels'][1]})", linewidth=1.5)
+    ax.plot(
+        iters_x,
+        ctx_arr2[:, 0],
+        "o-",
+        color=COLOR_NAIVE,
+        label=f"P({world2['context_labels'][0]})",
+        linewidth=1.5,
+    )
+    ax.plot(
+        iters_x,
+        ctx_arr2[:, 1],
+        "s-",
+        color=COLOR_ROBUST,
+        label=f"P({world2['context_labels'][1]})",
+        linewidth=1.5,
+    )
     ax.axhline(y=0.5, color=COLOR_GRID, linestyle=":", linewidth=0.8)
     ax.set_xlabel("Iteration")
     ax.set_ylabel("P(context)")
@@ -291,15 +299,15 @@ def generate_hierarchical_pomdp(
     # Both consensus distributions saturate at the true state; annotate the
     # peak values so the identical heights read as measured, not broken.
     for xoff, text_offset, color, label, series, align in (
-        (-0.2, (-35, 10), COLOR_NAIVE, "flat", flat_consensus2, "right"),
-        (0.2, (35, 10), COLOR_ROBUST, "2 levels", hier_consensus2, "left"),
+        (-0.2, (0.04, 0.72), COLOR_NAIVE, "flat", flat_consensus2, "left"),
+        (0.2, (0.96, 0.72), COLOR_ROBUST, "2 levels", hier_consensus2, "right"),
     ):
         peak = int(np.argmax(series))
         ax.annotate(
             f"{label}\n{float(series[peak]):.2f}",
             xy=(peak + xoff, float(series[peak])),
             xytext=text_offset,
-            textcoords="offset points",
+            textcoords="axes fraction",
             ha=align,
             va="bottom",
             fontsize=_FS_ANN,
@@ -349,10 +357,8 @@ def generate_hierarchical_pomdp(
 
     # --- Panel 4 (bottom-middle): L2+L3 posterior evolution 3-level ---
     ax = axes[1, 1]
-    ax.plot(iters_x, ctx_arr3_l2[:, 1], "s-", color=COLOR_ROBUST,
-            label="L2 alert", linewidth=1.5)
-    ax.plot(iters_x, ctx_arr3_l3[:, 1], "^--", color=COLOR_VARIATE,
-            label="L3 high threat", linewidth=1.5)
+    ax.plot(iters_x, ctx_arr3_l2[:, 1], "s-", color=COLOR_ROBUST, label="L2 alert", linewidth=1.5)
+    ax.plot(iters_x, ctx_arr3_l3[:, 1], "^--", color=COLOR_VARIATE, label="L3 high threat", linewidth=1.5)
     ax.axhline(y=0.5, color=COLOR_GRID, linestyle=":", linewidth=0.8)
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Level posterior")
@@ -363,8 +369,7 @@ def generate_hierarchical_pomdp(
     # --- Panel 5 (bottom-right): measured accuracy gap 2-level vs 3-level ---
     ax = axes[1, 2]
     bar_x = np.array([0.0, 1.0])
-    ax.bar(bar_x, [final_gap2, final_gap3], 0.55,
-           color=[COLOR_ROBUST, COLOR_VARIATE], alpha=0.85)
+    ax.bar(bar_x, [final_gap2, final_gap3], 0.55, color=[COLOR_ROBUST, COLOR_VARIATE], alpha=0.85)
     ax.axhline(y=0, color="black", linestyle="--", linewidth=0.8)
     ax.set_xticks(bar_x)
     ax.set_xticklabels(["2L", "3L"])
@@ -376,13 +381,22 @@ def generate_hierarchical_pomdp(
     pad = max(0.01, 0.6 * (hi - lo))
     ax.set_ylim(lo - pad, hi + pad)
     for bx, g in zip(bar_x, (final_gap2, final_gap3)):
-        ax.annotate(f"{g:+.3f}", xy=(bx, g),
-                    xytext=(0, 6 if g >= 0 else -14), textcoords="offset points",
-                    ha="center", fontsize=_FS_ANN)
+        ax.annotate(
+            f"{g:+.3f}",
+            xy=(bx, g),
+            xytext=(0, 6 if g >= 0 else -14),
+            textcoords="offset points",
+            ha="center",
+            fontsize=_FS_ANN,
+        )
     ax.text(
-        0.97, 0.96,
+        0.97,
+        0.96,
         f"n = {n_trials} trials",
-        transform=ax.transAxes, fontsize=_FS_ANN, ha="right", va="top",
+        transform=ax.transAxes,
+        fontsize=_FS_ANN,
+        ha="right",
+        va="top",
         bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
     )
 
@@ -408,7 +422,30 @@ def generate_hierarchical_pomdp(
 
     out = figures_dir(Path(project_root) if project_root is not None else None)
     path = out / filename
-    return save_figure(fig, path, manuscript_width_fraction=0.80)
+    save_figure(fig, path, manuscript_width_fraction=0.80)
+    from ._presentation_worlds import hierarchical_presentation
+
+    hierarchical_presentation(
+        path,
+        posterior_flat=q_loc_flat2,
+        posterior_two=q_loc_hier2,
+        posterior_three=q_loc_hier3,
+        consensus_flat=flat_consensus2,
+        consensus_two=hier_consensus2,
+        context_two=ctx_arr2,
+        context_three=ctx_arr3_l2,
+        meta_three=ctx_arr3_l3,
+        context_labels=list(world2["context_labels"]),
+        gap_two=final_gap2,
+        gap_three=final_gap3,
+        n_trials=n_trials,
+        obs=obs_demo,
+        true_state=true_state2,
+        acuity=acuity,
+        n_agents=n_agents,
+        illustrative=hier_report is None,
+    )
+    return path
 
 
 __all__ = ["generate_hierarchical_pomdp"]

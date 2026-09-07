@@ -207,7 +207,7 @@ and public software boundaries; exact estimates and intervals remain in their
 typed reports and the native-unit cross-study summary
 ([@fig:cross-study-summary]).
 
-![Evidence class and replication remain result-family specific; guarantees do not migrate between client, server, study, protocol, and application evidence. Source relation: source-owned headline-result and claim-owner classification; status: deterministic evidence map, not an empirical result. Fourteen numbered rows align each headline family or public boundary with six fields: class, estimand and unit, independent unit, nesting, permitted support, and prohibited support. The rows retain paired belief-sharing free energy, Dirichlet learning, configured BMR, moving/disjoint-field worlds, hierarchy/sensitivity, acuity recovery, and tempered transfer alongside formal, server, protocol, application, and open-confirmation lanes. A top strip supplies the generic grammar from study or run through seed when present, matched trial or condition, agent or contamination role, and ordered step or posterior state; three bottom boxes state the no-transfer boundaries. The x-axis indexes six evidence fields; the y-axis indexes fourteen result families. Class symbols, keylines, row numbers, and direct labels duplicate color. The estimand and unit are row-specific. No uncertainty belongs to this deterministic map; underlying intervals resample the independent unit named on their row while lower levels remain nested. Exact estimates remain in typed reports and the native-unit cross-study summary. The figure does not establish source-dataset confirmation, isolate an RCCE-only effect, transfer a client theorem to a server rule, promote nested observations to independent datasets, or turn software integrity into scientific validity.](../output/figures/evidence_replication_map.png){#fig:evidence-replication-map width=98%}
+![Evidence class and replication remain result-family specific; guarantees do not migrate between client, server, study, protocol, and application evidence. Source relation: source-owned headline-result and claim-owner classification; status: deterministic evidence map, not an empirical result. Fourteen numbered rows align each headline family or public boundary with six fields: class, estimand and unit, independent unit, nesting, permitted support, and prohibited support. The rows retain paired belief-sharing free energy, Dirichlet learning, configured BMR, moving/disjoint-field worlds, hierarchy/sensitivity, acuity recovery, and tempered transfer alongside formal, server, protocol, application, and open-confirmation lanes. A top strip supplies the generic grammar from study or run through seed when present, matched trial or condition, agent or contamination role, and ordered step or posterior state; three bottom boxes state the no-transfer boundaries. The x-axis indexes six evidence fields; the y-axis indexes fourteen result families. Class symbols, keylines, row numbers, and direct labels duplicate color. The estimand and unit are row-specific. No uncertainty belongs to this deterministic map; underlying intervals resample the independent unit named on their row while lower levels remain nested. Exact estimates remain in typed reports and the native-unit cross-study summary. The figure does not establish source-dataset confirmation, isolate an RCCE-only effect, transfer a client theorem to a server rule, promote nested observations to independent datasets, or turn software integrity into scientific validity.](../output/figures/evidence_replication_map.png){#fig:evidence-replication-map width=98% data-slide-manifest="../output/figures/evidence_replication_map.slides.json"}
 
 ## Computational complexity and scaling diagnostic {#sec:methods-complexity}
 
@@ -217,29 +217,27 @@ solver-iteration budget, $B$ the number of variational starts, and $M$ the
 number of conditionally independent observation modalities.
 
 The dominant dense work and the storage actually retained by the current NumPy
-paths are shown separately so neither quantity is compressed at presentation
-scale. Here `LOO` means self-excluding leave-one-out sharing, and `server round`
-excludes queue and network wait.
+paths are summarized separately so neither quantity is compressed at
+presentation scale. Here `LOO` means self-excluding leave-one-out sharing, and
+`server round` excludes queue and network wait.
 
-| Operation | Dominant time order |
-|---|---|
-| log pool | ${{COMPLEXITY_LOG_TIME_ORDER}}$ |
-| robust pool | ${{COMPLEXITY_ROBUST_TIME_ORDER}}$ |
-| variational pool | ${{COMPLEXITY_VARIATIONAL_TIME_ORDER}}$ |
-| naive LOO | ${{COMPLEXITY_SHARING_TIME_ORDER}}$ |
-| robust LOO | ${{COMPLEXITY_ROBUST_SHARING_TIME_ORDER}}$ |
-| state inference | ${{COMPLEXITY_INFER_TIME_ORDER}}$ |
-| server round | ${{COMPLEXITY_SERVER_TIME_ORDER}}$ |
+**Time, aggregation.** The log, robust, and variational pools have orders
+${{COMPLEXITY_LOG_TIME_ORDER}}$, ${{COMPLEXITY_ROBUST_TIME_ORDER}}$, and
+${{COMPLEXITY_VARIATIONAL_TIME_ORDER}}$, respectively.
 
-| Operation | Retained or peak storage |
-|---|---|
-| log pool | ${{COMPLEXITY_LOG_MEMORY_ORDER}}$ |
-| robust pool | ${{COMPLEXITY_ROBUST_MEMORY_ORDER}}$ |
-| variational pool | ${{COMPLEXITY_VARIATIONAL_MEMORY_ORDER}}$ |
-| naive LOO | ${{COMPLEXITY_SHARING_MEMORY_ORDER}}$ |
-| robust LOO | ${{COMPLEXITY_ROBUST_SHARING_MEMORY_ORDER}}$ |
-| state inference | ${{COMPLEXITY_INFER_MEMORY_ORDER}}$ |
-| server round | ${{COMPLEXITY_SERVER_MEMORY_ORDER}}$ |
+**Time, sharing and inference.** Naive LOO, robust LOO, state inference, and a
+server round have orders ${{COMPLEXITY_SHARING_TIME_ORDER}}$,
+${{COMPLEXITY_ROBUST_SHARING_TIME_ORDER}}$, ${{COMPLEXITY_INFER_TIME_ORDER}}$,
+and ${{COMPLEXITY_SERVER_TIME_ORDER}}$, respectively.
+
+**Storage, aggregation.** The log, robust, and variational pools retain or peak
+at ${{COMPLEXITY_LOG_MEMORY_ORDER}}$, ${{COMPLEXITY_ROBUST_MEMORY_ORDER}}$, and
+${{COMPLEXITY_VARIATIONAL_MEMORY_ORDER}}$, respectively.
+
+**Storage, sharing and inference.** Naive LOO, robust LOO, state inference, and
+a server round retain or peak at ${{COMPLEXITY_SHARING_MEMORY_ORDER}}$,
+${{COMPLEXITY_ROBUST_SHARING_MEMORY_ORDER}}$, ${{COMPLEXITY_INFER_MEMORY_ORDER}}$,
+and ${{COMPLEXITY_SERVER_MEMORY_ORDER}}$, respectively.
 
 These are dominant interaction counts, not hardware-independent FLOP totals.
 The $N^2$ sharing term is material: with sensory attenuation enabled, one round
@@ -298,4 +296,4 @@ is the governing claim, not equality between a finite-grid slope and its exponen
 Figure [@fig:complexity-scaling] visualizes the implementation-derived orders
 and the corresponding finite-grid timing diagnostic.
 
-![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on ${{COMPLEXITY_MACHINE}}$ with Python ${{COMPLEXITY_PYTHON}}$, NumPy ${{COMPLEXITY_NUMPY}}$, seed ${{COMPLEXITY_SEED}}$, and ${{COMPLEXITY_REPEATS}}$ measured repeat(s) after ${{COMPLEXITY_WARMUPS}}$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../output/figures/complexity_scaling.png){#fig:complexity-scaling width=95%}
+![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on ${{COMPLEXITY_MACHINE}}$ with Python ${{COMPLEXITY_PYTHON}}$, NumPy ${{COMPLEXITY_NUMPY}}$, seed ${{COMPLEXITY_SEED}}$, and ${{COMPLEXITY_REPEATS}}$ measured repeat(s) after ${{COMPLEXITY_WARMUPS}}$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../output/figures/complexity_scaling.png){#fig:complexity-scaling width=95% data-slide-manifest="../output/figures/complexity_scaling.slides.json"}

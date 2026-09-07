@@ -80,9 +80,9 @@ NumPy logistic-regression baseline and the PyTorch MLP complement both use
 point-estimate weights; no posterior covariance is computed.
 
 A genuine mean-field variational family over the weights—diagonal-Gaussian
-$q(w)$ with a closed-form KL and a Monte-Carlo ELBO—is implemented as a tested
-primitive (`bnn_variational_torch.VariationalMLP`, recovering the point-estimate
-net exactly as its posterior variance vanishes).
+$q(w)$ with a closed-form KL and a Monte-Carlo ELBO—is implemented by the tested
+`VariationalMLP` primitive in the `bnn_variational_torch` module. It recovers the
+point-estimate net exactly as its posterior variance vanishes.
 
 The source-comparable training and evaluation lane remains unexecuted:
 leakage-free calibration, source-dataset parity, posterior-family comparisons,
@@ -125,13 +125,12 @@ unlike communication-efficient or Byzantine-robust federated learning
 ## What the statistics can and cannot claim {#sec:limitations-stats}
 
 The verdict is a paired comparison at a single high contamination rate
-([@sec:results-verdict], [@tbl:robustness_verdict]). This concentrates power
-where the effect is largest, which is honest about *where* robustness pays off
-but does not characterize the full contamination curve as a continuous function;
-the per-rate effect and inference projections ([@tbl:paired-by-rate;
-@tbl:paired-by-rate-inference]) report the rest of the sweep without
-claiming family-wide significance beyond what BH-FDR
-[@benjamini1995controlling] supports.
+([@sec:results-verdict], [@tbl:robustness_verdict]). The design concentrates
+power where the effect is largest. It therefore identifies *where* robustness
+pays off, but it does not characterize contamination as a continuous function.
+The per-rate effect and inference projections ([@tbl:paired-by-rate;
+@tbl:paired-by-rate-inference]) describe the remaining sweep. Their inferential
+claims do not exceed the declared BH-FDR control [@benjamini1995controlling].
 
 BH-FDR controls expected false discovery
 proportion within the declared family, not the chance of any false positive.

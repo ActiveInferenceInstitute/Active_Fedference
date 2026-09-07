@@ -12,8 +12,8 @@ above chance while leaving location accuracy statistically unchanged.
 
 ### Generative model for context-gated location inference
 
-The two-level POMDP implemented in
-`fedference.pomdp.build_hierarchical_world` couples the sentinel's
+The two-level POMDP is built by `build_hierarchical_world` in the
+`fedference.pomdp` module. It couples the sentinel's
 {{HIER_N_LOCATIONS}}-location L1 factor to a {{HIER_N_CONTEXTS}}-state L2 context
 factor via **context-conditioned L1 priors**.
 
@@ -30,7 +30,7 @@ the center cell (the den) and spreads the residual uniformly.
 
 ### Inference algorithm for top-down empirical priors
 
-`fedference.pomdp.hierarchical_infer` performs {{HIER_N_ITERS}} passes of
+The module's `hierarchical_infer` function performs {{HIER_N_ITERS}} passes of
 alternating minimization:
 
 **1. L2 → L1 empirical prior.**

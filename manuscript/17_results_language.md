@@ -49,6 +49,6 @@ The mean curve falls monotonically from {{LANGUAGE_INITIAL_KL}} nats to
 computed from the unrounded endpoints); the computed monotone-decreasing check
 is {{LANGUAGE_MONOTONE}}. This reduced categorical protocol is related to, but
 does not exactly reproduce, the richer multi-episode protocol in Friston et al.
-(2024).](../output/figures/language_kl_decay.png){#fig:language-kl width=80%}
+(2024).](../output/figures/language_kl_decay.png){#fig:language-kl width=80% data-slide-manifest="../output/figures/language_kl_decay.slides.json"}
 
 [@fig:language-kl] plots the full learning curve and its CI band.

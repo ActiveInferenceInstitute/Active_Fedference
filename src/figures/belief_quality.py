@@ -124,11 +124,15 @@ def generate_belief_quality(
     axes[1].set_title("Reliability diagnostic")
     axes[1].legend(fontsize=MIN_QUANTITATIVE_FONT_SIZE, loc="best")
     fig.suptitle("Proper scoring and calibration controls", fontweight="bold")
-    return save_figure(
+    path = save_figure(
         fig,
         figures_dir(project_root) / filename,
         manuscript_width_fraction=0.90,
     )
+    from ._presentation_studies import quality_presentation
+
+    quality_presentation(path, raw_controls)
+    return path
 
 
 __all__ = ["generate_belief_quality"]

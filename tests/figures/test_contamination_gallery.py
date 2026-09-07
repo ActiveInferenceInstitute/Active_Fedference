@@ -29,10 +29,9 @@ def test_gallery_display_flag_controls_robust_bar_fill() -> None:
     ]
 
 
-def test_gallery_direct_annotation_names_the_selected_server_role() -> None:
-    assert _selected_preset_annotation("AR", 0.75, True) == (
-        "selected server preset · AR\nwin fraction 0.75\ndisplay flag"
-    )
+def test_gallery_direct_annotation_is_compact_and_names_the_method_and_disposition() -> None:
+    assert _selected_preset_annotation("AR", 0.75, True) == "AR · win 0.75\nflagged"
+    assert _selected_preset_annotation("beta", 0.25, False) == "beta · win 0.25\nbelow bar"
 
 
 def test_gallery_figure_happy_path(tmp_path: Path) -> None:

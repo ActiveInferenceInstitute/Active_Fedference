@@ -20,6 +20,7 @@ from pathlib import Path
 
 from analysis.report_schemas import FIGURE_DEPENDENCY_CONTRACTS
 from figures import FIGURE_METADATA
+from figures._metadata import FIGURE_SUPPORT_MODULES
 
 _ROOT = Path(__file__).resolve().parent.parent
 _MANUSCRIPT = _ROOT / "manuscript"
@@ -205,7 +206,7 @@ def test_every_generator_is_embedded() -> None:
     embedded_paths = " ".join(p for _, _, p in _embeds())
     orphans: list[str] = []
     for gen in sorted(_FIGURES.glob("*.py")):
-        if gen.name in ("__init__.py", "_common.py", "_metadata.py"):
+        if gen.stem in FIGURE_SUPPORT_MODULES:
             continue
         # figures may be generated as PNG or PDF
         if (gen.stem + ".png") not in embedded_paths and (gen.stem + ".pdf") not in embedded_paths:

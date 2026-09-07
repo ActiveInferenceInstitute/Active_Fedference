@@ -1,10 +1,8 @@
 """Parameter recovery figure: recovered vs true acuity (Study 9).
 
-Two-panel figure that validates generative-model identifiability by showing
-how well the inference procedure recovers the true sensor acuity parameter
-from simulated data.  A well-identified model produces a tight scatter on the
-identity line (left panel) and uniformly small absolute errors across the full
-acuity range (right panel).
+Two-panel diagnostic of sensor-acuity recovery from the declared simulated
+data. The scatter and absolute errors describe recovery on the configured
+acuity grid; they do not establish global model identifiability.
 
 Left panel  — scatter of recovered acuity (y) vs true acuity (x) with
               per-point 95 % empirical percentile-interval error bars and the
@@ -32,6 +30,7 @@ from figures._common import (
     save_figure,
     semantic_style,
 )
+from figures._presentation_estimates import recovery_presentation
 
 __all__ = ["generate_parameter_recovery"]
 
@@ -54,9 +53,9 @@ def generate_parameter_recovery(
 ) -> Path:
     """Generate a two-panel parameter-recovery figure for sensor acuity.
 
-    Validates generative-model identifiability: if the model is identified,
-    recovered acuity tracks true acuity along the identity line and absolute
-    errors are uniformly small across the acuity range.
+    Describes recovery on the configured simulation grid. Proximity to the
+    identity line and observed absolute errors do not by themselves establish
+    global model identifiability.
 
     Args:
         true_acuity: True (ground-truth) acuity values, one per condition.
@@ -229,11 +228,13 @@ def generate_parameter_recovery(
     # Save
     # ========================================================================
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(
+    path = save_figure(
         fig,
         out / filename,
         manuscript_width_fraction=0.90,
     )
+    recovery_presentation(path, ta, ra, ci_lo, ci_hi, ae, mean_abs_error, "\n".join(stats_lines))
+    return path
 
 
 if __name__ == "__main__":

@@ -160,6 +160,9 @@ def generate_disjoint_fov_figure(
 
     out_path = figures_dir(Path(project_root) if project_root else None) / filename
     save_figure(fig, out_path, manuscript_width_fraction=0.80)
+    from ._presentation_worlds import disjoint_presentation
+
+    disjoint_presentation(out_path, ms)
     return out_path
 
 
