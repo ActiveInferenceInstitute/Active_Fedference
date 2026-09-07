@@ -94,7 +94,7 @@ At the verdict rate, the naive pool has mean accuracy
 {{SWEEP_NAIVE_VERDICT_ACCURACY_MEAN}} ({{CI_PERCENT}}% CI
 $[{{SWEEP_NAIVE_VERDICT_ACCURACY_CI_LO}}, {{SWEEP_NAIVE_VERDICT_ACCURACY_CI_HI}}]$).
 
-The most accurate robust member within this configured sweep has mean accuracy
+The headline display method {{SWEEP_HEADLINE_METHOD}} has mean accuracy
 {{SWEEP_BEST_VERDICT_ACCURACY_MEAN}} ({{CI_PERCENT}}% CI
 $[{{SWEEP_BEST_VERDICT_ACCURACY_CI_LO}}, {{SWEEP_BEST_VERDICT_ACCURACY_CI_HI}}]$).
 

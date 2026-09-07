@@ -40,9 +40,9 @@ recorded as {{SWEEP_NAIVE_DEGRADES}}.
 **Worst-rate display check:** at rate {{SWEEP_WORST_RATE}}, at least one
 non-reference preset remains at or above {{SWEEP_ACCURACY_THRESHOLD}}, recorded
 as {{SWEEP_ROBUST_ABOVE_THRESHOLD}}. Standard accuracy is
-{{SWEEP_NAIVE_ACCURACY}}, the highest pooled robust mean is
-{{SWEEP_BEST_ROBUST_ACCURACY}}, and the display method is
-{{SWEEP_WORST_RATE_BEST_METHOD}}.
+{{SWEEP_NAIVE_ACCURACY}}; the highest robust consensus mass in this
+single-world mechanistic sweep is {{SWEEP_MECHANISTIC_BEST_ACCURACY}},
+attained by {{SWEEP_MECHANISTIC_BEST_METHOD}}.
 
 The rate trend above is one deterministic sweep per cell. The paired profile
 reruns each rate over $n_{\rm trial} = {{SWEEP_N_TRIALS}}$ matched trials nested
@@ -157,7 +157,7 @@ world and rate, not a universal method ranking.
 |---|---|---|---|
 {{SWEEP_ACCURACY_AT_VERDICT_TABLE_ROWS}}
 
-: Per-method consensus accuracy at the verdict rate {{SWEEP_VERDICT_RATE}} with {{CI_PERCENT}}% percentile-bootstrap CI, including the standard `KLD` baseline. The CI is conditional on the seeded matched-trial design and resamples trials, not alternate world models. The standard pool sits at {{SWEEP_NAIVE_VERDICT_ACCURACY_MEAN}} ($[{{SWEEP_NAIVE_VERDICT_ACCURACY_CI_LO}}, {{SWEEP_NAIVE_VERDICT_ACCURACY_CI_HI}}]$); the highest pooled robust mean among the configured members is {{SWEEP_BEST_VERDICT_ACCURACY_MEAN}} ($[{{SWEEP_BEST_VERDICT_ACCURACY_CI_LO}}, {{SWEEP_BEST_VERDICT_ACCURACY_CI_HI}}]$). {#tbl:accuracy-at-verdict}
+: Per-method consensus accuracy at the verdict rate {{SWEEP_VERDICT_RATE}} with {{CI_PERCENT}}% percentile-bootstrap CI, including the standard `KLD` baseline. The CI is conditional on the seeded matched-trial design and resamples trials, not alternate world models. The standard pool sits at {{SWEEP_NAIVE_VERDICT_ACCURACY_MEAN}} ($[{{SWEEP_NAIVE_VERDICT_ACCURACY_CI_LO}}, {{SWEEP_NAIVE_VERDICT_ACCURACY_CI_HI}}]$); the headline display method {{SWEEP_HEADLINE_METHOD}} has pooled mean {{SWEEP_BEST_VERDICT_ACCURACY_MEAN}} ($[{{SWEEP_BEST_VERDICT_ACCURACY_CI_LO}}, {{SWEEP_BEST_VERDICT_ACCURACY_CI_HI}}]$). {#tbl:accuracy-at-verdict}
 
 **Reference mean.** Naive-pool mean accuracy at the verdict rate is
 {{SWEEP_NAIVE_VERDICT_RATE_MEAN}} (per-trial mean over {{SWEEP_N_TRIALS}}

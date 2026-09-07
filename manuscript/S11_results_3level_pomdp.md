@@ -43,9 +43,10 @@ Across
 {{NLEVEL3_LOC_ACC_FLAT_CI_LO}}–{{NLEVEL3_LOC_ACC_FLAT_CI_HI}}), a mean accuracy gap of
 {{NLEVEL3_LOC_ACC_GAP_MEAN}} ({{CI_PERCENT}} % CI
 {{NLEVEL3_LOC_ACC_GAP_CI_LO}}–{{NLEVEL3_LOC_ACC_GAP_CI_HI}};
-Wilcoxon signed-rank $p = {{NLEVEL3_WILCOX_PVALUE}}$, effect size
-$r = {{NLEVEL3_EFFECT_SIZE}}$, {{NLEVEL3_EFFECT_LABEL}}; the location gap over the
-flat baseline is not statistically significant at this seed count).
+Wilcoxon signed-rank $p = {{NLEVEL3_WILCOX_PVALUE_MATH}}$, effect size
+$r = {{NLEVEL3_EFFECT_SIZE}}$, {{NLEVEL3_EFFECT_LABEL}}). The signed mean gap
+and its interval describe the location-accuracy cost of this configured
+three-level condition relative to the flat baseline.
 
 The 3-level
 condition additionally reports context accuracy {{NLEVEL3_CTX_ACC}} and

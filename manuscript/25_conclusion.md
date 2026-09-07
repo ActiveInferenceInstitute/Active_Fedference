@@ -71,10 +71,12 @@ The contamination study adds a second lesson. The server-side heuristic is
 regime-dependent: robust operating points can give up a little efficiency when
 contamination is weak and recover that cost when the declared attack is severe.
 
-At the most severe swept rate, the highest pooled robust mean reaches
-{{SWEEP_BEST_ROBUST_ACCURACY}} against the standard pool's
+At the most severe swept rate, the highest robust consensus mass in the
+single-world mechanistic sweep reaches {{SWEEP_MECHANISTIC_BEST_ACCURACY}}
+({{SWEEP_MECHANISTIC_BEST_METHOD}}) against the standard pool's
 {{SWEEP_NAIVE_ACCURACY}} ([@tbl:robustness_sweep]); at the verdict rate, the
-matched, BH-adjusted comparison of [@sec:results-robustness] gives
+matched, BH-adjusted comparison for {{SWEEP_HEADLINE_METHOD}} in
+[@sec:results-robustness] gives
 {{SWEEP_BEST_VERDICT_ACCURACY_MEAN}} against
 {{SWEEP_NAIVE_VERDICT_ACCURACY_MEAN}}.
 

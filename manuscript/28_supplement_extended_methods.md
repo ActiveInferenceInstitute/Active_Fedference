@@ -134,8 +134,9 @@ is {{GALLERY_DIRECTIONAL_KINDS}}; the **byzantine** attack is directional too,
 but its *multiplicative* log-odds tilt escalates faster: at this strength it
 sits near a veto cliff where the naive pool is already badly degraded and the
 displayed robust advantage does not hold across seeds (its win fraction is well
-below the {{GALLERY_RELIABLE_WIN_FRACTION}} display bar and its difference CI
-straddles zero), so we do *not* claim it.
+below the {{GALLERY_RELIABLE_WIN_FRACTION}} display bar), so it does not
+clear the descriptive reliability screen. The paired mean-difference interval
+is reported separately in [@tbl:contamination-gallery-contrast].
 
 The **entropy** attacks
 ({{GALLERY_ENTROPY_KINDS}})

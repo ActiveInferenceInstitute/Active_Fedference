@@ -29,7 +29,7 @@ the consensus $q$ back to every contributing worker over its response channel.
 \begin{proposition}[Federation bit-identity]\label{prop:federation-bit-identity}
 When the transport serialization is lossless — an exact IEEE-754 float64
 round-trip — the federated consensus equals the in-process aggregation
-\(q = \mathrm{robust\_aggregate}(\{q_n\}, c)\) *bit-for-bit*. Transport moves
+\(q = \mathrm{robust\_aggregate}(\{q_n\}, c)\) bit-for-bit. Transport moves
 bytes, not mathematics, so no precision is lost and no result changes.
 \end{proposition}
 

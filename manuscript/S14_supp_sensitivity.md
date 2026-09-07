@@ -65,11 +65,11 @@ value.
 
 ### Figure rendering for sensitivity summaries
 
-`generate_sensitivity_heatmap` assembles the two grids into a 1×2 matplotlib
-`imshow` figure with a color-vision-deficiency-safer blue–neutral–brown signed
+`generate_sensitivity_heatmap` assembles the two grids into vertically stacked matplotlib
+`imshow` panels with a color-vision-deficiency-safer blue–neutral–brown signed
 palette and symmetric bounds at
 $\pm\max(|\text{gap}|)$, per-cell numeric annotations, and a per-panel colorbar
-labeled "Accuracy gap (hierarchical/comm. − baseline)". The figure is written
+labeled "Accuracy difference". The figure is written
 as `sensitivity_heatmap.png` under `output/figures/`. Negative gaps map toward
 blue, positive gaps toward brown, and zero to the neutral midpoint; exact signed cell
 labels duplicate that encoding. Hatching marks only the declared

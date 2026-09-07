@@ -26,6 +26,29 @@ if (new Set(HTML_PAGES).size !== HTML_PAGES.length) {
 
 for (const htmlPage of HTML_PAGES) {
   const pageName = path.basename(htmlPage);
+  test(`${pageName} keeps desktop figure edges visible`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(pathToFileURL(htmlPage).href, { waitUntil: "domcontentloaded" });
+    const clipped = await page.locator("figure img").evaluateAll((images) => {
+      const findings = [];
+      for (const image of images) {
+        const bounds = image.getBoundingClientRect();
+        if (bounds.left < -1 || bounds.right > innerWidth + 1) {
+          findings.push({ image: image.getAttribute("src"), ancestor: "viewport" });
+        }
+        for (let ancestor = image.parentElement; ancestor; ancestor = ancestor.parentElement) {
+          const overflow = getComputedStyle(ancestor).overflowX;
+          if (!["hidden", "clip", "auto", "scroll"].includes(overflow)) continue;
+          const clip = ancestor.getBoundingClientRect();
+          if (bounds.left < clip.left - 1 || bounds.right > clip.right + 1) {
+            findings.push({ image: image.getAttribute("src"), ancestor: ancestor.tagName, overflow });
+          }
+        }
+      }
+      return findings;
+    });
+    expect(clipped).toEqual([]);
+  });
   for (const zoom of [2, 4]) {
     test(`${pageName} keeps overflow local at ${zoom * 100}% zoom`, async ({ browser }) => {
       // Browser zoom reduces the CSS viewport while retaining the same physical

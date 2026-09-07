@@ -1,4 +1,4 @@
-"""Real-browser zoom and local-overflow checks for the rendered HTML reader."""
+"""Real-browser figure visibility, zoom, and overflow checks for the HTML reader."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ _PLAYWRIGHT = _NODE_PROJECT / "node_modules" / ".bin" / "playwright"
 
 
 def test_every_rendered_html_surface_contains_zoom_overflow_locally() -> None:
-    """Exercise the index and every emitted reader page at 200% and 400% zoom."""
+    """Check desktop figure edges and 200%/400% reflow on every reader page."""
 
     index = _WEB / "index.html"
     manuscript_pages = sorted(_WEB.glob("manuscript__*.html"))

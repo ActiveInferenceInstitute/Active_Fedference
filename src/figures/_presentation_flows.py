@@ -26,12 +26,15 @@ from ._presentation import PresentationPanel, save_presentation_panels
 
 
 def _text_panel(identifier: str, text: str) -> PresentationPanel:
+    """Wrap prose while preserving a standalone mathtext expression per line."""
     apply_style()
     fig = Figure(figsize=(7.0, 2.1), facecolor=COLOR_WHITE)
     FigureCanvasAgg(fig)
     fig.set_layout_engine("none")
     wrapped = "\n".join(
-        textwrap.fill(line, width=36, break_long_words=False, break_on_hyphens=False)
+        line
+        if line.startswith("$") and line.endswith("$") and line.count("$") == 2
+        else textwrap.fill(line, width=36, break_long_words=False, break_on_hyphens=False)
         for line in text.splitlines()
     )
     fig.text(0.5, 0.5, wrapped, ha="center", va="center", fontsize=22, color=COLOR_DEEP)

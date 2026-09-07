@@ -226,8 +226,8 @@ _ALT_TEXT: Final[dict[str, str]] = {
     ),
     "sensitivity_heatmap": (
         "Two heatmaps of accuracy gaps over sensor acuity and colony size: "
-        "communicating minus isolated on the left, and hierarchical minus flat on "
-        "the right. A symmetric color scale is centered at zero and hatched cells "
+        "communicating minus isolated above, and hierarchical minus flat below. "
+        "A symmetric color scale is centered at zero and hatched cells "
         "mark near-zero gaps."
     ),
     "source_render_provenance": (

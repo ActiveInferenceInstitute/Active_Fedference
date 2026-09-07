@@ -42,7 +42,7 @@ the communicating (random-moves + sharing) accuracy is {{MOVING_ACC_COMM_MEAN}} 
 In this binary-complement regime the isolated condition is in fact
 significantly *higher* on accuracy than the EFE-guided sharing condition —
 their {{CI_PERCENT}} % intervals do not overlap — and the EFE-vs-isolated
-accuracy contrast yields Wilcoxon signed-rank $p = {{MOVING_WILCOX_PVALUE}}$
+accuracy contrast yields Wilcoxon signed-rank $p = {{MOVING_WILCOX_PVALUE_MATH}}$
 ({{MOVING_SIGNIFICANCE_VERDICT}}; isolated higher), effect size
 $r = {{MOVING_EFFECT_SIZE}}$ ({{MOVING_EFFECT_LABEL}}). Sharing is therefore
 not merely unnecessary in this regime; it costs a small but reliable amount
@@ -111,11 +111,12 @@ the {{V4_CHANCE_BASELINE}} chance baseline — isolated agents are *not* at
 chance, since a partial FOV plus majority voting still carries some signal.
 
 The paired Wilcoxon signed-rank test (communicating vs. isolated, matched by
-seed) gives $p = {{V4_WILCOX_PVALUE}}$, effect size $r = {{V4_EFFECT_SIZE}}$
+seed) gives $p = {{V4_WILCOX_PVALUE_MATH}}$, effect size $r = {{V4_EFFECT_SIZE}}$
 ({{V4_EFFECT_LABEL}}): communicating beats isolated on every one of the
-{{V4_N_SEEDS}} seeds, which is also why the p-value is at the smallest a
-{{V4_N_SEEDS}}-seed paired sign test can report — it should be read as "every
-seed agreed," not as a precise magnitude of evidence beyond that floor.
+{{V4_N_SEEDS}} seeds. This agreement saturates the rank-biserial effect
+at its upper bound; it does not turn the reported Wilcoxon signed-rank
+p-value into an exact paired sign-test probability. The paired mean gap and
+its interval quantify the accuracy contrast in its native units.
 
 Given
 isolated performance is above chance, the precise claim is not that
@@ -129,10 +130,10 @@ unquantified "widens the gap" effect. In a matched but smaller-scale
 disjoint-FOV movement-policy comparison ({{V4_EFE_N_AGENTS}} agents,
 {{V4_EFE_N_POSITIONS}}-position binary-state grid, belief sharing active in
 both arms), EFE-guided accuracy is {{V4_EFE_ACC_MEAN}} versus
-{{V4_RANDOM_ACC_MEAN}} for random movement ($p = {{V4_EFE_WILCOX_PVALUE}}$,
-{{V4_EFE_EFFECT_LABEL}} effect): the two movement policies are not
-significantly different, because both are already near ceiling once belief
-sharing is active.
+{{V4_RANDOM_ACC_MEAN}} for random movement ($p = {{V4_EFE_WILCOX_PVALUE_MATH}}$,
+{{V4_EFE_EFFECT_LABEL}} effect). This comparison did not resolve an accuracy
+difference in the configured near-ceiling regime with belief sharing active;
+it does not establish equivalence of the movement policies.
 
 We report this as the null result it is rather than
 claiming an unmeasured EFE benefit. [@fig:disjoint-fov-world] summarizes the
@@ -156,8 +157,8 @@ trials whose pooled argmax equals the true state. Direct x-axis labels, distinct
 hatches, dark keylines, and printed summary boxes duplicate color. Bars are
 means across independent configured seeds; error bars are across-seed standard
 deviations, not confidence intervals. Trials and agents are nested within each
-seed. The paired Wilcoxon results are $p = {{V4_WILCOX_PVALUE}}$ for Panel A and
-$p = {{V4_EFE_WILCOX_PVALUE}}$ for Panel B. The first supports only the
+seed. The paired Wilcoxon results are $p = {{V4_WILCOX_PVALUE_MATH}}$ for Panel A and
+$p = {{V4_EFE_WILCOX_PVALUE_MATH}}$ for Panel B. The first supports only the
 configured communication contrast; the second records the observed null rather
 than an EFE benefit. The panels do not establish universal communication
 necessity, movement-policy superiority, causal mechanism, or generalization

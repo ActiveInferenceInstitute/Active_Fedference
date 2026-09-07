@@ -8,7 +8,8 @@ computes, and the exact parameters of the executed run.
 It answers the question
 the main section brackets — *by what mechanism does a second latent level enter
 the inference at all* — and thereby fixes why the hierarchy resolves context
-above chance while leaving location accuracy statistically unchanged.
+above chance while retaining the separate location-accuracy contrast
+reported in [@sec:results-hierarchical].
 
 ### Generative model for context-gated location inference
 

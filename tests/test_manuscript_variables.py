@@ -694,7 +694,14 @@ def test_disjoint_fov_variables_earn_the_necessity_claim(tmp_path: Path) -> None
     )
 
     v = _disjoint_fov_variables(tmp_path)
-    assert float(v["V4_WILCOX_PVALUE"]) < 0.05, "necessity contrast must be significant"
+    assert 0 < float(v["V4_WILCOX_PVALUE"]) < 0.05, "a positive report p-value must not round to zero"
+    raw_pvalue = report["multiseed"]["communicating_vs_isolated"]["paired_test"]["pvalue"]
+    if raw_pvalue < 1e-4:
+        assert float(v["V4_WILCOX_PVALUE"]) == pytest.approx(raw_pvalue, rel=0.005, abs=0)
+        assert r"\times 10^{-" in v["V4_WILCOX_PVALUE_MATH"]
+    else:
+        assert v["V4_WILCOX_PVALUE"] == f"{raw_pvalue:.4f}"
+        assert v["V4_WILCOX_PVALUE_MATH"] == v["V4_WILCOX_PVALUE"]
     assert float(v["V4_EFFECT_SIZE"]) > 0.0
     assert float(v["V4_COMM_MEAN"]) > float(v["V4_ISO_MEAN"])
     chance = 1.0 / int(v["V4_N_POSITIONS"])
@@ -972,6 +979,32 @@ def test_format_residual_handles_zero() -> None:
     assert _format_residual(1e-12).startswith("1.00e")
 
 
+@pytest.mark.parametrize("value", [1e-300, 9.347445243847876e-23, 2.880158533707409e-12, 0.00001])
+def test_pvalue_tokens_do_not_round_positive_report_values_to_zero(value: float) -> None:
+    from manuscript_vars.loaders import _pvalue_variables
+
+    tokens = _pvalue_variables("P", value)
+    assert float(tokens["P"]) > 0
+    assert float(tokens["P"]) == pytest.approx(value, rel=0.005, abs=0)
+    assert r"\times 10^{-" in tokens["P_MATH"]
+
+
+@pytest.mark.parametrize("value", [0.0, 0.0001, 0.10460302467221208, 1.0])
+def test_pvalue_tokens_keep_ordinary_probability_display(value: float) -> None:
+    from manuscript_vars.loaders import _pvalue_variables
+
+    tokens = _pvalue_variables("P", value)
+    assert tokens == {"P": f"{value:.4f}", "P_MATH": f"{value:.4f}"}
+
+
+@pytest.mark.parametrize("value", [-0.1, 1.1, float("nan"), float("inf")])
+def test_pvalue_tokens_reject_invalid_probability(value: float) -> None:
+    from manuscript_vars.loaders import _pvalue_variables
+
+    with pytest.raises(ValueError, match="finite probability"):
+        _pvalue_variables("P", value)
+
+
 def test_format_residual_math_renders_latex_scientific_notation() -> None:
     from manuscript_variables import _format_residual_math
 
@@ -998,6 +1031,7 @@ def test_math_sibling_tokens_resolve_alongside_their_prose_twins(
     Contract: a _MATH sibling exists for each math-consumed scientific-notation
     token, its prose twin is still emitted unchanged, and the sibling is either
     the "0" sentinel or valid LaTeX scientific notation (never bare ".2e").
+    Paired-test probabilities may also retain their bounded four-decimal form.
     """
     math_tokens = sorted(t for t in _manuscript_tokens(_FEDFERENCE_SECTIONS) if t.endswith("_MATH"))
     assert math_tokens, "expected *_MATH tokens in the shipped manuscript prose"
@@ -1007,6 +1041,10 @@ def test_math_sibling_tokens_resolve_alongside_their_prose_twins(
         prose_twin = token[: -len("_MATH")]
         assert prose_twin in variables, f"{prose_twin} missing for {token}"
         value = variables[token]
+        if prose_twin.endswith("WILCOX_PVALUE") and re.fullmatch(r"[01]\.\d{4}", value):
+            assert 0.0 <= float(value) <= 1.0
+            assert value == variables[prose_twin]
+            continue
         assert value == "0" or latex_sci.fullmatch(value) or value == "N/A", (
             f"{token} value {value!r} is neither the zero sentinel nor LaTeX scientific notation"
         )

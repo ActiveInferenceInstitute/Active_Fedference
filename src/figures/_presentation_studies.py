@@ -492,8 +492,8 @@ def bnn_presentation(
         ),
         (
             "scope",
-            "No Alpha-Renyi objective, calibration, universal robustness, or exact "
-            "source-protocol replication is established by this exploratory proxy.",
+            "Exploratory proxy only: no Alpha-Renyi objective, calibration, "
+            "universal robustness, or exact source-protocol replication.",
         ),
     )
     for identifier, text in notes:

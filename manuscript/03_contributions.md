@@ -126,7 +126,7 @@ $R^2 = {{PARAM_RECOVERY_R_SQUARED}}$ ([@fig:parameter-recovery]).
 Acuity-by-colony-size behavior belongs to the separate sensitivity study; it is
 not a parameter-recovery result.
 
-## 8. The F$_\lambda$ tempered aggregation family
+## 8. The tempered aggregation family
 
 A one-parameter $\lambda>0$ generalization of the variational aggregate
 ([@sec:supp-tempered]) is the objective
@@ -171,7 +171,7 @@ remains well short of full accuracy.
 
 Across {{V4_N_SEEDS}} seeds, isolated accuracy is {{V4_ISO_MEAN}} versus
 communicating {{V4_COMM_MEAN}}, a reproducible margin under the declared
-matched-seed comparison (Wilcoxon $p = {{V4_WILCOX_PVALUE}}$). This is evidence
+matched-seed comparison (Wilcoxon $p = {{V4_WILCOX_PVALUE_MATH}}$). This is evidence
 for the configured disjoint-observation protocol, not a universal communication
 theorem.
 

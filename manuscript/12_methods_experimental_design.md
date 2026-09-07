@@ -47,7 +47,7 @@ Unless a study specifies otherwise, the global defaults are
 $n_{\text{seeds}} = {{CONFIG_N_SEEDS}}$ independent seeds and
 $n_{\text{trials}} = {{CONFIG_N_TRIALS}}$ matched trials per condition.
 
-Tables [@tbl:study-measures; @tbl:study_params] separate each study's declared
+The inventories in [@tbl:study-measures; @tbl:study_params] separate each study's declared
 measure from its compact execution parameters so neither meaning is compressed
 at presentation scale.
 

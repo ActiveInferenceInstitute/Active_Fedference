@@ -126,6 +126,12 @@ and the manuscript selectors are checked against the declared manifest inventory
 Final source-bound production, embedded-label measurements, and complete PDF/HTML
 visual inspection remain release gates.
 
+Desktop browser checks also verify that no clipping ancestor hides the edges
+of widened figure images. A figure can fit within the viewport yet be cut off
+by a narrower prose container, so viewport-overflow checks alone are insufficient.
+The browser suite checks this separately from narrow-layout reflow, keyboard
+focus, full-size link names, and disclosure operation.
+
 ## Release review sequence
 
 Run source validation first, then generate analysis, hydrate the manuscript,

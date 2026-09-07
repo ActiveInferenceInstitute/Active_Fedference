@@ -32,7 +32,7 @@ Across
 versus flat {{HIER_LOC_ACC_FLAT_MEAN}} ({{CI_PERCENT}} % CI
 {{HIER_LOC_ACC_FLAT_CI_LO}}–{{HIER_LOC_ACC_FLAT_CI_HI}}), a mean accuracy gap of
 {{HIER_LOC_ACC_GAP_MEAN}} ({{CI_PERCENT}} % CI {{HIER_LOC_ACC_GAP_CI_LO}}–{{HIER_LOC_ACC_GAP_CI_HI}};
-Wilcoxon signed-rank $p = {{HIER_WILCOX_PVALUE}}$, effect size
+Wilcoxon signed-rank $p = {{HIER_WILCOX_PVALUE_MATH}}$, effect size
 $r = {{HIER_EFFECT_SIZE}}$, {{HIER_EFFECT_LABEL}}).
 
 On location the gap is small

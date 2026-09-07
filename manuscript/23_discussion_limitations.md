@@ -21,7 +21,7 @@ A source-conditional client theorem does not certify either server rule, a
 server recovery identity does not supply an objective or estimator-level
 influence bound, and objective descent plus raw-weight control does not imply
 truth recovery or peak-accuracy dominance. Likewise, conditional accuracy
-contrasts cannot confer a theorem on the heuristic. Figure
+contrasts cannot confer a theorem on the heuristic. The evidence map in
 [@fig:evidence-replication-map] makes that no-transfer boundary and its nested
 replication units explicit.
 

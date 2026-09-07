@@ -160,7 +160,7 @@ def generate_parameter_recovery(
 
     scatter_title = "Acuity recovery"
     if r_squared is not None:
-        scatter_title += f"\nR² = {r_squared:.3f}"
+        scatter_title += f"\nR² = {r_squared:.4f}"
     ax_scatter.set_title(scatter_title)
 
     ax_scatter.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.28))
@@ -174,7 +174,7 @@ def generate_parameter_recovery(
     if mean_abs_error is not None:
         stats_lines.append(f"MAE = {mean_abs_error:.4f}")
     if r_squared is not None:
-        stats_lines.append(f"R² = {r_squared:.3f}")
+        stats_lines.append(f"R² = {r_squared:.4f}")
 
     if stats_lines:
         stats_text = "\n".join("; ".join(stats_lines[i:i + 2])

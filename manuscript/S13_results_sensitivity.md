@@ -48,14 +48,15 @@ shows an exactly zero belief-sharing gap at every acuity. Under self-exclusion
 belief, so the heard consensus adds no pooled evidence. Colonies of four or
 more show the positive low-acuity contrast within this grid.
 
-### Pattern 3: a near-zero hierarchical gap
+### Pattern 3: a conditional hierarchical contrast
 
-**The hierarchical gap is near zero across most of the grid.** The
-hierarchical-minus-flat location-accuracy gap is approximately zero over most
-cells. A few strongly negative low-acuity cells and small positive cells occur
-only in the two-agent column, consistent with the per-study finding that the
-hierarchical architecture matches rather than beats the flat baseline on
-location accuracy.
+**The hierarchical contrast changes with acuity and colony size.** Negative
+hierarchical-minus-flat location-accuracy gaps occur across the lower-acuity
+rows, including colonies larger than two agents. The higher-acuity rows are
+near zero outside the two-agent column; positive cells are confined to that
+column in this grid. This conditional pattern does not establish a general
+hierarchical accuracy advantage, and the per-study paired location contrast
+remains a separate estimate under its own trial and seed budget.
 
 The full parameter grid and protocol details are in the supplement
 ([@sec:supp-sensitivity]). A native-unit cross-study overview of the headline
@@ -71,11 +72,11 @@ recovery row. Each study appears once, in its applicable native-unit panel.
 Source relation: original project sensitivity diagnostic; estimand: per-cell
 accuracy gaps (fractions) as functions of acuity and colony size; uncertainty:
 deterministic per-cell means over the declared trials, with no resampling
-interval. Two-panel heatmap (1×2) of the Study 8 parameter sensitivity sweep.
-Left panel: y-axis indexes sensor acuity ({{SENS_ACUITY_MIN}}–{{SENS_ACUITY_MAX}}, {{SENS_N_ACUITY_LEVELS}} levels); x-axis
+interval. Two vertically stacked heatmaps of the Study 8 parameter sensitivity sweep.
+Upper panel: y-axis indexes sensor acuity ({{SENS_ACUITY_MIN}}–{{SENS_ACUITY_MAX}}, {{SENS_N_ACUITY_LEVELS}} levels); x-axis
 indexes colony size ({{SENS_COLONY_SIZE_MIN}}–{{SENS_COLONY_SIZE_MAX}} agents, {{SENS_N_COLONY_SIZES}} levels); color encodes the
 belief-sharing accuracy gap (communicating minus isolated mean accuracy).
-Right panel: identical axes; color encodes the hierarchical POMDP location
+Lower panel: identical axes; color encodes the hierarchical POMDP location
 accuracy gap (hierarchical minus flat).
 The zero-centered blue–neutral–brown scale encodes negative, zero, and positive
 gaps, respectively; printed signed values provide the non-color encoding.

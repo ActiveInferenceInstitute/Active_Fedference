@@ -62,9 +62,9 @@ standard pool at low contamination, then the selected pooled display member sepa
 under severe contamination.
 
 At the largest swept rate,
-{{SWEEP_BEST_ROBUST_METHOD}} reaches {{SWEEP_BEST_ROBUST_ACCURACY}} against
+{{SWEEP_MECHANISTIC_BEST_METHOD}} reaches {{SWEEP_MECHANISTIC_BEST_ACCURACY}} against
 {{SWEEP_NAIVE_ACCURACY}} for the standard pool
-([@tbl:robustness_sweep]; the sweep figure [@fig:robustness-sweep] plots the
+([@tbl:robustness_sweep]; the sweep plot in [@fig:robustness-sweep] shows the
 separate matched-trial gallery colony, whose largest-rate separation is
 smaller).
 

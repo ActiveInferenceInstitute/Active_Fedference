@@ -60,6 +60,23 @@ The `HIER_*` and `NLEVEL3_*` tokens are strict loads from
 (Phase 1 outputs); hydration raises `FileNotFoundError` if either report is
 missing rather than rerunning the study or synthesizing values.
 
+### Robustness sweep selection and estimands
+
+`SWEEP_BEST_*` tokens retain their compatibility names but bind to the report's
+`headline_method` and that method's own verdict row. The producer owns its
+rank-biserial selection and stable tie-break; token generation must not repeat
+that selection from JSON object order. In particular, the headline label, paired
+mean difference, confidence interval, and power must all describe the same row.
+The verdict accuracy tokens describe that selected method, not necessarily the
+largest pooled accuracy.
+
+`SWEEP_MECHANISTIC_BEST_METHOD` and `SWEEP_MECHANISTIC_BEST_ACCURACY` instead
+identify the largest robust consensus mass at the worst rate in the single-world
+mechanistic sweep. `SWEEP_WORST_RATE_BEST_METHOD` and
+`SWEEP_PROFILE_BEST_ROBUST_ACCURACY` describe the worst-rate matched-trial
+profile. These selections answer different questions and must not exchange
+method labels or estimates in prose.
+
 ### `*_MATH` sibling tokens (scientific notation in math contexts)
 
 Small magnitudes are emitted twice. The plain token carries the `.2e` string
@@ -76,6 +93,12 @@ Sibling-emitting groups: every `RECOVERY_*` residual (each key gets a
 `SWEEP_BEST_QVALUE_MATH`, and `SWEEP_BEST_RAW_PVALUE_MATH`. Rule: inside math
 mode use the `_MATH` sibling; outside math mode use the plain token. Never
 hand-format scientific notation in manuscript prose.
+
+The moving-world, disjoint-field-of-view, hierarchical, and three-level paired
+test p-values also have `_MATH` siblings. Positive values below `1e-4` use
+scientific notation rather than rounding to `0.0000`; ordinary probabilities
+retain four decimal places. These are display choices applied to the report's
+finite probability, with no change to its test statistic or significance rule.
 
 ### Hydration command
 
@@ -122,6 +145,13 @@ fi
 | --- | --- |
 | [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md) | Canonical `{#eq:}`, `{#fig:}`, `{#tbl:}`, `{#sec:}`, `{#prop:}`, `{#thm:}`, `{#lem:}`, `{#cor:}`, `{#def:}` registry |
 | Manuscript `.md` files | Use `[@fig:label]` in prose; `{#fig:label}` on figure lines |
+
+The cross-reference renderer supplies the figure, table, equation, or section
+prefix. Write descriptive prose such as `the comparison in [@fig:label]` or
+`the inventories in [@tbl:first; @tbl:second]`; do not prepend another `Figure`,
+`Table`, or equivalent label to the reference. The same rule applies when prose
+and its reference wrap onto separate source lines. Inspect the rendered text
+for duplicate prefixes as part of final cross-reference review.
 
 Adding a figure:
 

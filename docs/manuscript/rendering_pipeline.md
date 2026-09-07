@@ -268,9 +268,12 @@ stale combined-manuscript aux file, builds the combined PDF, validates the new
 aux label map, and then refreshes every enabled slide derivative in strict
 mode. The refresh pass
 (`infrastructure/rendering/_slides_crossref.py` in the Template repository)
-substitutes the combined PDF's printed numbers into cross-deck references;
-within-deck references remain native Beamer references. A missing, unreadable,
-or unresolved non-section label fails the canonical refresh and removes the
+substitutes the combined PDF's printed numbers into canonical references and
+binds each labeled single-number `equation` environment to that same number
+with an explicit Beamer tag. This keeps displayed equations and their references
+consistent even when a section deck starts later in the manuscript. Missing or
+conflicting equation-label numbers, conflicting authored tags, and unreadable
+or unresolved non-section labels fail the canonical refresh and remove the
 affected derivative instead of publishing a stale deck. Direct standalone
 slide rendering remains a deliberately fail-open authoring convenience: when
 no aux map is available, unresolved section references are exposed as visible

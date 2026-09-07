@@ -405,6 +405,8 @@ def _variational_variables(report: dict[str, Any]) -> dict[str, str]:
 
 
 _SWEEP_KEYS = (
+    "SWEEP_MECHANISTIC_BEST_METHOD",
+    "SWEEP_MECHANISTIC_BEST_ACCURACY",
     "SWEEP_NAIVE_ACCURACY",
     "SWEEP_BEST_ROBUST_ACCURACY",
     "SWEEP_PROFILE_NAIVE_ACCURACY",
@@ -527,6 +529,12 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
     out["SWEEP_NAIVE_ACCURACY"] = _fmt(accuracy["KLD"][worst_key])
     operating_points = sweep.get("server_robustness_by_label", {})
     labels = sweep.get("divergences", operating_points)
+    mechanistic_methods = [label for label in labels if label != "KLD" and label in accuracy]
+    mechanistic_best = max(mechanistic_methods, key=lambda method: accuracy[method][worst_key], default="")
+    out["SWEEP_MECHANISTIC_BEST_METHOD"] = mechanistic_best or "N/A"
+    out["SWEEP_MECHANISTIC_BEST_ACCURACY"] = (
+        _fmt(accuracy[mechanistic_best][worst_key]) if mechanistic_best else "N/A"
+    )
     out["SWEEP_SERVER_OPERATING_POINTS"] = (
         ", ".join(
             f"{label} (c={_fmt(operating_points[label], 2)})" for label in labels if label in operating_points
@@ -550,12 +558,11 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
     else:
         out["SWEEP_PROFILE_BEST_ROBUST_ACCURACY"] = "N/A"
 
-    # Headline method = largest positive rank-biserial effect in the verdict
-    # panel. Ties and the stable display tie-break are explicit report fields.
-    best_method, best = "", None
-    for method, stats in verdict.items():
-        if best is None or stats["effect_size"] > best["effect_size"]:
-            best_method, best = method, stats
+    # The producer owns the headline selection and its stable tie-break.
+    # Re-selecting from this mapping would change tied choices after sorted
+    # JSON serialization and bind the displayed method to another row's values.
+    best_method = str(sweep["headline_method"])
+    best = verdict[best_method] if best_method else None
     if best is not None:
         out["SWEEP_BEST_ROBUST_METHOD"] = best_method
         out["SWEEP_BEST_ROBUST_ACCURACY"] = _fmt(accuracy[best_method][worst_key])
@@ -571,7 +578,7 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
         out["SWEEP_BEST_EFFECT_LABEL"] = str(best.get("effect_label", "N/A"))
         out["SWEEP_BEST_RAW_PVALUE"] = _format_residual(float(best["raw_pvalue"]))
         out["SWEEP_BEST_RAW_PVALUE_MATH"] = _format_residual_math(float(best["raw_pvalue"]))
-        # Mean naive-minus-robust accuracy difference and its 95% bootstrap CI.
+        # Mean robust-minus-naive accuracy difference and its 95% bootstrap CI.
         out["SWEEP_BEST_MEAN_ACC_DIFF"] = _fmt(best["mean_accuracy_diff"])
         diff_lo, diff_hi = best["mean_accuracy_diff_ci"]
         out["SWEEP_BEST_MEAN_ACC_DIFF_CI_LO"] = _fmt(diff_lo)

@@ -97,7 +97,7 @@ A corrupted local observation enters the per-agent generalized-Bayes update of
 source theorem's matching loss, divergence, model, and regularity assumptions
 [@mildner2025fedgvi].
 
-The logistic-regression figure [@fig:bnn-robustness] is a narrower exploratory
+The logistic-regression comparison in [@fig:bnn-robustness] is a narrower exploratory
 proxy: it compares RCCE and NLL point-estimate gradients under two L2
 coefficients. Its legacy `AR` argument selects the larger coefficient; it does
 not evaluate Alpha-Rényi divergence or inherit the source theorem from the

@@ -57,8 +57,8 @@ the declared separability and differentiability conditions has \(Q(a;s)\) as
 its \(q\)-coordinate minimizer for every positive interior \(a\) and \(s\).
 \end{proposition}
 
-Precisely, \(G\) is continuously differentiable and independent of \(a,s\),
-while \(R\) is independent of \(q,s\). Under those conditions, this objective
+Precisely, $G$ is continuously differentiable and independent of $a,s$,
+while $R$ is independent of $q,s$. Under those conditions, this objective
 class cannot realize both block maps of the implemented raw-weight heuristic.
 
 *Proof sketch.* Fix any non-uniform interior $q$, a positive scalar
@@ -98,7 +98,7 @@ production update.
 artifacts, not empirical estimates; no resampling interval or deployment claim
 is implied. {#tbl:server-theory-witness}
 
-Table [@tbl:server-theory-witness] records the deterministic implementation
+The witness table in [@tbl:server-theory-witness] records the deterministic implementation
 surfaces that bind this scoped result to the typed analysis report.
 
 The proposition does **not** say that no objective of any kind exists. It does

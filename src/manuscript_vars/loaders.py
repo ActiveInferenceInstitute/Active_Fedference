@@ -109,6 +109,17 @@ def _format_residual_math(value: float) -> str:
     return f"{mantissa} \\times 10^{{{int(exponent)}}}"
 
 
+def _pvalue_variables(key: str, value: float) -> dict[str, str]:
+    """Preserve small positive probabilities in plain and math-mode tokens."""
+    probability = float(value)
+    if not np.isfinite(probability) or not 0.0 <= probability <= 1.0:
+        raise ValueError(f"{key} must be a finite probability")
+    scientific = 0.0 < probability < 1e-4
+    plain = f"{probability:.2e}" if scientific else _fmt(probability)
+    math = _format_residual_math(probability) if scientific else plain
+    return {key: plain, f"{key}_MATH": math}
+
+
 #: Off-switch-point parameters for the M2 convergence witness below: each
 #: value sits strictly outside its function's closed-form switch band
 #: (rcce/beta_loss switch at |param| < 1e-9; renyi_divergence switches at
@@ -596,7 +607,7 @@ def _moving_world_variables(root: Path) -> dict[str, str]:
         "MOVING_FE_GAP_EFE_MEAN": _fmt(float(fe_gap_ms["mean"]), 3),
         "MOVING_FE_GAP_EFE_CI_LO": _fmt(float(fe_gap_ms["ci_lo"]), 3),
         "MOVING_FE_GAP_EFE_CI_HI": _fmt(float(fe_gap_ms["ci_hi"]), 3),
-        "MOVING_WILCOX_PVALUE": _fmt(float(pt_efe["pvalue"]), 4),
+        **_pvalue_variables("MOVING_WILCOX_PVALUE", float(pt_efe["pvalue"])),
         "MOVING_EFFECT_SIZE": _fmt(abs(float(pt_efe["effect_size"])), 3),
         "MOVING_EFFECT_LABEL": ms["efe_vs_isolated"]["effect_label"],
     }
@@ -640,12 +651,12 @@ def _disjoint_fov_variables(root: Path) -> dict[str, str]:
         "V4_COMM_MEAN": _fmt(float(comm_ms.get("mean", 0)), 3),
         "V4_COMM_CI_LO": _fmt(float(comm_ms.get("ci_lo", 0)), 3),
         "V4_COMM_CI_HI": _fmt(float(comm_ms.get("ci_hi", 0)), 3),
-        "V4_WILCOX_PVALUE": _fmt(float(pt_comm.get("pvalue", 0)), 4),
+        **_pvalue_variables("V4_WILCOX_PVALUE", float(pt_comm.get("pvalue", 0))),
         "V4_EFFECT_SIZE": _fmt(abs(float(pt_comm.get("effect_size", 0))), 3),
         "V4_EFFECT_LABEL": ms.get("communicating_vs_isolated", {}).get("effect_label", "N/A"),
         "V4_EFE_ACC_MEAN": _fmt(float(efe_ms.get("mean", 0)), 3),
         "V4_RANDOM_ACC_MEAN": _fmt(float(rnd_ms.get("mean", 0)), 3),
-        "V4_EFE_WILCOX_PVALUE": _fmt(float(pt_efe.get("pvalue", 0)), 4),
+        **_pvalue_variables("V4_EFE_WILCOX_PVALUE", float(pt_efe.get("pvalue", 0))),
         "V4_EFE_EFFECT_SIZE": _fmt(abs(float(pt_efe.get("effect_size", 0))), 3),
         "V4_EFE_EFFECT_LABEL": ms.get("efe_vs_random", {}).get("effect_label", "N/A"),
     }
@@ -702,7 +713,7 @@ def _hierarchical_variables(root: Path) -> dict[str, str]:
         "HIER_LOC_ACC_GAP_MEAN": _fmt(float(gap_ms.get("mean", 0)), 3),
         "HIER_LOC_ACC_GAP_CI_LO": _fmt(float(gap_ms.get("ci_lo", 0)), 3),
         "HIER_LOC_ACC_GAP_CI_HI": _fmt(float(gap_ms.get("ci_hi", 0)), 3),
-        "HIER_WILCOX_PVALUE": _fmt(float(pt.get("pvalue", 0)), 4),
+        **_pvalue_variables("HIER_WILCOX_PVALUE", float(pt.get("pvalue", 0))),
         "HIER_EFFECT_SIZE": _fmt(abs(float(pt.get("effect_size", 0))), 3),
         "HIER_EFFECT_LABEL": ms.get("effect_label", "N/A"),
     }
@@ -763,7 +774,7 @@ def _nlevel3_variables(root: Path) -> dict[str, str]:
         "NLEVEL3_LOC_ACC_GAP_MEAN": _fmt(float(gap_ms.get("mean", 0)), 3),
         "NLEVEL3_LOC_ACC_GAP_CI_LO": _fmt(float(gap_ms.get("ci_lo", 0)), 3),
         "NLEVEL3_LOC_ACC_GAP_CI_HI": _fmt(float(gap_ms.get("ci_hi", 0)), 3),
-        "NLEVEL3_WILCOX_PVALUE": _fmt(float(pt.get("pvalue", 0)), 4),
+        **_pvalue_variables("NLEVEL3_WILCOX_PVALUE", float(pt.get("pvalue", 0))),
         "NLEVEL3_EFFECT_SIZE": _fmt(abs(float(pt.get("effect_size", 0))), 3),
         "NLEVEL3_EFFECT_LABEL": ms.get("effect_label", "N/A"),
         "NLEVEL3_LOW_THREAT_QUIET_PRIOR": _fmt(1.0 / N_CONTEXTS, 2),
