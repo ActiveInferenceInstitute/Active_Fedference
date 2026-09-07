@@ -120,16 +120,17 @@ insufficient.
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
-**Line coverage on `src/`.** {{COVERAGE_PERCENT}}%, achieved by the bound full
-gate. CI enforces $\ge 90\%$ line coverage and tracks branch coverage
-separately.
+**Combined line and branch coverage on `src/`.** {{COVERAGE_PERCENT}}%,
+achieved by the bound full gate with branch measurement enabled. The shared
+coverage threshold is $\ge 90\%$ on this combined measure.
 
 To regenerate this evidence from a clean checkout, run the project suite under
-the pinned development environment; the same invocation is the CI gate, so a
-passing local run and a green build are the same event:
+the pinned development environment. Local execution and hosted CI are separate
+results; the hosted checks must pass for the exact reviewed commit before
+public integration. Both use the following coverage gate:
 
 ```bash
-uv run --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ \
   --cov=src --cov-fail-under=90
 ```
 
@@ -138,8 +139,8 @@ required provisional pre-test render, then rerun hydration without its
 provisional flag:
 
 ```bash
-uv run --extra dev python scripts/validate_test_coverage.py
-uv run python scripts/\
+uv run --locked --extra dev python scripts/validate_test_coverage.py
+uv run --locked python scripts/\
 z_generate_manuscript_variables.py
 ```
 

@@ -608,9 +608,9 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 - No mocks anywhere — tests are real seeded computations with explicit numeric
   expectations; the no-mocks policy is part of this repository's acceptance
   contract.
-- $\ge 90\%$ line coverage on `src/`; branch measurement is enabled in the
-  coverage configuration, while the release-facing achieved line-coverage
-  record is `output/data/test_coverage_receipt.json`. `coverage_project.json`
+- $\ge 90\%$ combined line and branch coverage on `src/`; branch measurement
+  is enabled in the coverage configuration, and the release-facing achieved
+  coverage record is `output/data/test_coverage_receipt.json`. `coverage_project.json`
   is only an ignored local convenience export and never reviewer evidence.
 - New modules: `src/fedference/<name>.py` with a sibling
   `tests/fedference/test_<name>.py`; module docstring cites the relevant Friston (2024)
