@@ -19,7 +19,7 @@ _PLAYWRIGHT = _NODE_PROJECT / "node_modules" / ".bin" / "playwright"
 
 
 def test_every_rendered_html_surface_contains_zoom_overflow_locally() -> None:
-    """Check desktop figure edges and 200%/400% reflow on every reader page."""
+    """Check completed desktop, initial zoom, and live reflow on every reader page."""
 
     index = _WEB / "index.html"
     manuscript_pages = sorted(_WEB.glob("manuscript__*.html"))
@@ -82,7 +82,9 @@ def test_every_rendered_html_surface_contains_zoom_overflow_locally() -> None:
         check=False,
         capture_output=True,
         text=True,
-        timeout=300,
+        # Four real-browser cases per page now await MathJax, fonts, and images;
+        # retain the individual 90-second limits while allowing the full matrix.
+        timeout=900,
     )
     assert completed.returncode == 0, (
         "rendered-browser accessibility probe failed\n"

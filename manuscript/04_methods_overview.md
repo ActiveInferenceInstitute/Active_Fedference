@@ -99,7 +99,7 @@ The aggregation weights are $w_n$ (raw/base), $a_n$ (raw variational
 effective), and $\widetilde a_n$ (normalized influence). The server
 robustness coefficient is $c$, the variational entropy weight is $\lambda$,
 the Rényi order is $\alpha$, the density-power parameter is $\beta$, and
-the robust cross-entropy parameter is $q_{\rm loss}$. The notation supplement
+the robust cross-entropy parameter is $q_{\text{loss}}$. The notation supplement
 also defines the seed/trial nesting and all statistical quantities used below.
 
 The study is run over a fixed ensemble of {{CONFIG_N_AGENTS}} agents sharing a

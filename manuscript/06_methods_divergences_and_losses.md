@@ -104,21 +104,21 @@ The robust categorical cross-entropy (generalized cross-entropy)
 
 $$
 \begin{aligned}
-L_{q_{\rm loss}}(p, o)
-&= \frac{1 - p(o)^{q_{\rm loss}}}{q_{\rm loss}},\\
-L_{q_{\rm loss}}
-&\xrightarrow[q_{\rm loss}\to 0]{} \mathrm{NLL}.
+L_{q_{\text{loss}}}(p, o)
+&= \frac{1 - p(o)^{q_{\text{loss}}}}{q_{\text{loss}}},\\
+L_{q_{\text{loss}}}
+&\xrightarrow[q_{\text{loss}}\to 0]{} \mathrm{NLL}.
 \end{aligned}
 $$ {#eq:rcce-loss}
 
-which by l'Hôpital recovers NLL as $q_{\rm loss}\to 0$ and at
-$q_{\rm loss}=1$ is the bounded
+which by l'Hôpital recovers NLL as $q_{\text{loss}}\to 0$ and at
+$q_{\text{loss}}=1$ is the bounded
 mean-absolute-error loss $1 - p(o)$, finite exactly where NLL diverges.
 
 \begin{proposition}[\(\beta\)-loss and rcce recover NLL]\label{prop:robust-loss-recovery}
 The recentered density-power loss \(L_\beta\) of (\ref{eq:beta-loss}) tends to NLL
-as \(\beta\to0\); robust categorical cross-entropy \(L_{q_{\rm loss}}\) of
-(\ref{eq:rcce-loss}) does likewise as \(q_{\rm loss}\to0\). Both limits are exact
+as \(\beta\to0\); robust categorical cross-entropy \(L_{q_{\text{loss}}}\) of
+(\ref{eq:rcce-loss}) does likewise as \(q_{\text{loss}}\to0\). Both limits are exact
 in the implementation. At the bounded end, each loss remains finite where NLL
 diverges.
 \end{proposition}
@@ -129,7 +129,7 @@ The largest observed discrepancies are {{RECOVERY_BETA_MAXDIFF}} and
 validates the bounded-loss robustness.
 
 Taking the loss-parameter limits ($\beta\to0$ or
-$q_{\rm loss}\to0$) reproduces standard Bayes. Combining those local posteriors
+$q_{\text{loss}}\to0$) reproduces standard Bayes. Combining those local posteriors
 through the qualified categorical specialization in
 [@sec:method-aggregation] is a separate server step, not a recovery claim for
 the complete belief-sharing protocol of Friston et al.

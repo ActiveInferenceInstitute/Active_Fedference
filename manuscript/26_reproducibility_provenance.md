@@ -47,7 +47,7 @@ maximum difference {{RECOVERY_RENYI_MAXDIFF}}.
 
 **Loss recoveries:** $\beta$-loss versus NLL as $\beta\to 0$ has maximum
 difference {{RECOVERY_BETA_MAXDIFF}}, while rcce versus NLL as
-$q_{\rm loss}\to 0$ has maximum difference {{RECOVERY_RCCE_MAXDIFF}}.
+$q_{\text{loss}}\to 0$ has maximum difference {{RECOVERY_RCCE_MAXDIFF}}.
 
 Any drift in these limits beyond machine precision would mean the robust
 generalization no longer

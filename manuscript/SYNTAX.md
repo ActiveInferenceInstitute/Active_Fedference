@@ -66,7 +66,7 @@ Each display equation in the manuscript gets exactly one of these labels. The "O
 | `{#eq:standard-bayes}` | KL/NLL recovery to standard Bayes: $q^\ast(s)\propto\pi(s)\prod_i p(o_i\mid s)$ (the corollary corner) | `07_methods_aggregation.md` |
 | `{#eq:renyi-limit}` | Rényi $\alpha$-divergence KL limit: $D_\alpha(q\,\|\,p)\xrightarrow{\alpha\to1}\mathrm{KL}(q\,\|\,p)$ | `06_methods_divergences_and_losses.md` |
 | `{#eq:beta-loss}` | Density-power $\beta$-loss (recentered) and its $\beta\to0\Rightarrow\mathrm{NLL}$ limit | `06_methods_divergences_and_losses.md` |
-| `{#eq:rcce-loss}` | Robust categorical cross-entropy $L_{q_{\rm loss}}(p,o)=(1-p(o)^{q_{\rm loss}})/q_{\rm loss}$ and its $q_{\rm loss}\to0\Rightarrow\mathrm{NLL}$ limit | `06_methods_divergences_and_losses.md` |
+| `{#eq:rcce-loss}` | Robust categorical cross-entropy $L_{q_{\text{loss}}}(p,o)=(1-p(o)^{q_{\text{loss}}})/q_{\text{loss}}$ and its $q_{\text{loss}}\to0\Rightarrow\mathrm{NLL}$ limit | `06_methods_divergences_and_losses.md` |
 | `{#eq:log-linear-pool}` | Log-linear pool $=\mathrm{softmax}(\sum_n w_n\log q_n)$ — categorical posterior-log-potential specialization of Eq. 7's message-combination term under explicit shared-support and fixed-weight assumptions (`friston_belief_share`) | `07_methods_aggregation.md` |
 | `{#eq:robust-identity}` | Project-local identity: `robust_aggregate(·, robustness=0)` $\equiv$ `log_linear_pool(·)`; it does not recover the complete source protocol | `07_methods_aggregation.md` |
 | `{#eq:cavity}` | Cavity operation: remove one site factor in natural-parameter space, $q_{-n}=\mathrm{normalize}(q/t_n)$ | `05_methods_generalized_bayes.md` |
@@ -149,7 +149,7 @@ pool by the project-local identity (equation~\ref{eq:robust-identity}).
 | `def:generalized-bayes` | `definition` | Generalised-(Gibbs)-Bayes posterior (objective [@eq:gen-bayes]) | `05_methods_generalized_bayes.md` |
 | `def:cavity` | `definition` | Cavity / PVI factor update ([@eq:cavity]) | `05_methods_generalized_bayes.md` |
 | `lem:renyi-kl-limit` | `lemma` | KL is the $\alpha\to1$ limit of the Rényi family ([@eq:renyi-limit]) | `06_methods_divergences_and_losses.md` |
-| `prop:robust-loss-recovery` | `proposition` | $\beta$-loss and rcce recover NLL in the $\beta\to0$ / $q_{\rm loss}\to0$ limit ([@eq:beta-loss], [@eq:rcce-loss]) | `06_methods_divergences_and_losses.md` |
+| `prop:robust-loss-recovery` | `proposition` | $\beta$-loss and rcce recover NLL in the $\beta\to0$ / $q_{\text{loss}}\to0$ limit ([@eq:beta-loss], [@eq:rcce-loss]) | `06_methods_divergences_and_losses.md` |
 | `thm:belief-sharing-recovery` | `theorem` | Categorical posterior-log-potential specialization of Eq. 7's message-combination term plus the local $c=0$ identity ([@eq:log-linear-pool], [@eq:robust-identity]) | `07_methods_aggregation.md` |
 | `cor:closed-form-bayes` | `corollary` | `generalized_posterior(KLD, NLL)` equals closed-form prior×likelihood Bayes ([@eq:standard-bayes]) | `07_methods_aggregation.md` |
 | `prop:efe-decomposition` | `proposition` | Expected-free-energy decomposition identity ([@eq:efe-identity]) | `14_formalism.md` |

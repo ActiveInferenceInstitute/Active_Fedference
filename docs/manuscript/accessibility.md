@@ -131,6 +131,11 @@ of widened figure images. A figure can fit within the viewport yet be cut off
 by a narrower prose container, so viewport-overflow checks alone are insufficient.
 The browser suite checks this separately from narrow-layout reflow, keyboard
 focus, full-size link names, and disclosure operation.
+Geometry is measured after MathJax typesetting, pending viewport reflow, fonts,
+and images have completed. A separate live-resize check moves an already
+rendered page between desktop, 200%, and 400% equivalent widths, verifying
+that equation numbers remain visible and the input mathematics is unchanged.
+Loading a page at a narrow width alone does not establish this behavior.
 
 ## Release review sequence
 

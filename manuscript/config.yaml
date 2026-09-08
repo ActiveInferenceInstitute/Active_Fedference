@@ -151,7 +151,7 @@ rendering:
   template_renderer:
     schema_version: "template-renderer-lock-v1"
     repository: "docxology/template"
-    git_commit: "cea2904defa92738ed5ef80d0ba5ba6466a783dc"
+    git_commit: "60ba9159124a1a1c91a7bfd51fba4f3b2da64ca6"
     git_tree_state: "clean"
 
 # LLM review / translation toggles (optional; require Ollama).

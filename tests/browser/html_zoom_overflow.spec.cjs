@@ -3,6 +3,29 @@ const { pathToFileURL } = require("node:url");
 
 const { expect, test } = require("@playwright/test");
 
+test.setTimeout(90000);
+
+async function settleReader(page) {
+  if (await page.locator("script[data-template-mathjax-config]").count()) {
+    await page.waitForFunction(() => typeof window.MathJax?.startup?.document?.rerenderPromise === "function");
+    await page.evaluate(async () => {
+      await window.MathJax.startup.promise;
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      let reflow;
+      do {
+        reflow = window.templateMathJaxReflowPromise;
+        await reflow;
+      } while (reflow !== window.templateMathJaxReflowPromise);
+      if (window.templateMathJaxReflowError) throw new Error(window.templateMathJaxReflowError);
+    });
+  }
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all([...document.images].map((image) => image.decode()));
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
+}
+
 const ROOT = process.cwd();
 const defaultPage = path.join(
   ROOT,
@@ -29,6 +52,7 @@ for (const htmlPage of HTML_PAGES) {
   test(`${pageName} keeps desktop figure edges visible`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(pathToFileURL(htmlPage).href, { waitUntil: "domcontentloaded" });
+    await settleReader(page);
     const clipped = await page.locator("figure img").evaluateAll((images) => {
       const findings = [];
       for (const image of images) {
@@ -49,6 +73,39 @@ for (const htmlPage of HTML_PAGES) {
     });
     expect(clipped).toEqual([]);
   });
+  test(`${pageName} reflows completed equations after live zoom changes`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(pathToFileURL(htmlPage).href, { waitUntil: "domcontentloaded" });
+    await settleReader(page);
+    const source = await page.evaluate(() => window.MathJax?.startup?.document
+      ?.getMathItemsWithin(document.body).map((item) => item.math) || []);
+    for (const width of [640, 320, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await settleReader(page);
+      const geometry = await page.evaluate(() => ({
+        viewportWidth: document.documentElement.clientWidth,
+        bodyScrollWidth: document.body.scrollWidth,
+        source: window.MathJax?.startup?.document
+          ?.getMathItemsWithin(document.body).map((item) => item.math) || [],
+        clippedMath: [...document.querySelectorAll("mjx-math")]
+          .filter((element) => !element.closest(".table-scroll"))
+          .filter((element) => {
+            for (let ancestor = element; ancestor; ancestor = ancestor.parentElement) {
+              const style = getComputedStyle(ancestor);
+              if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") return false;
+            }
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 && (rect.left < -1 || rect.right > innerWidth + 1);
+          })
+          .map((element) => ({ text: element.textContent, bounds: element.getBoundingClientRect().toJSON() })),
+      }));
+      expect(geometry.source).toEqual(source);
+      // Desktop figures intentionally extend beyond the centered text column.
+      // The reader viewport, not that narrower column, is the clipping boundary.
+      expect(geometry.bodyScrollWidth).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+      expect(geometry.clippedMath).toEqual([]);
+    }
+  });
   for (const zoom of [2, 4]) {
     test(`${pageName} keeps overflow local at ${zoom * 100}% zoom`, async ({ browser }) => {
       // Browser zoom reduces the CSS viewport while retaining the same physical
@@ -60,6 +117,7 @@ for (const htmlPage of HTML_PAGES) {
       });
       const page = await context.newPage();
       await page.goto(pathToFileURL(htmlPage).href, { waitUntil: "domcontentloaded" });
+      await settleReader(page);
 
       const geometry = await page.evaluate(() => {
         const root = document.documentElement;

@@ -26,7 +26,7 @@ top of them.
 ## Recovery limits: standard-Bayes and project-pool corners are exact to machine precision {#sec:results-recovery}
 
 The identities that anchor every result are the client recovery of standard
-Bayes at the KL/NLL/$\beta\to0$ and $q_{\rm loss}\to0$ limits plus the
+Bayes at the KL/NLL/$\beta\to0$ and $q_{\text{loss}}\to0$ limits plus the
 project-local server recovery to the log-linear pool at $c=0$ — the scoped
 claims of [@sec:formalism] (Corollary \ref{cor:closed-form-bayes}, Lemma
 \ref{lem:renyi-kl-limit}, Theorem \ref{thm:belief-sharing-recovery}).
@@ -68,18 +68,18 @@ deviation {{RECOVERY_POSTERIOR_MAXDIFF}}.
 **Loss recoveries.** The $\beta$-loss recovers the NLL as $\beta\to 0$
 ([@eq:beta-loss], Proposition \ref{prop:robust-loss-recovery}): residual
 {{RECOVERY_BETA_MAXDIFF}}. The robust categorical cross-entropy recovers the NLL
-as $q_{\rm loss}\to 0$ ([@eq:rcce-loss], Proposition
+as $q_{\text{loss}}\to 0$ ([@eq:rcce-loss], Proposition
 \ref{prop:robust-loss-recovery}): residual {{RECOVERY_RCCE_MAXDIFF}}.
 
 Because the Rényi divergence and the two categorical losses switch to their
 exact closed form inside narrow numerical-stability bands around the limit
 point (the Rényi switch band for $\alpha$ and the categorical-loss switch band
-for $q_{\rm loss}$ and $\beta$), the three zero residuals above confirm that branch equals
+for $q_{\text{loss}}$ and $\beta$), the three zero residuals above confirm that branch equals
 the standard object — not, by themselves, that the *general* formula converges
 there.
 
 As a genuine (non-branch) convergence witness, evaluating each general
-formula strictly *outside* its switch band — $q_{\rm loss} = \beta =
+formula strictly *outside* its switch band — $q_{\text{loss}} = \beta =
 {{RECOVERY_OFFSWITCH_Q_MATH}}$ for the
 categorical losses and $\alpha = {{RECOVERY_OFFSWITCH_ALPHA}}$ for the Rényi
 divergence — gives residuals {{RECOVERY_RCCE_OFFSWITCH_MAXDIFF}} (rcce),

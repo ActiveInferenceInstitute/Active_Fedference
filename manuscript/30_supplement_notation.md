@@ -119,13 +119,13 @@ is not an estimator-level B-robustness theorem.
 | $\lambda>0$ | Variational-objective entropy weight. |
 | $\alpha>0$ | Rényi-divergence order. |
 | $\beta\ge0$ | Density-power-loss parameter. |
-| $q_{\rm loss}>0$ | Robust categorical-cross-entropy parameter. |
+| $q_{\text{loss}}>0$ | Robust categorical-cross-entropy parameter. |
 | $\rho\in[0,1]$ | Declared contamination rate. |
 
 The coefficient $\lambda$ controls the variational objective and its
 coordinate updates; $\lambda\downarrow0$ is a separate deterministic
-tied-argmax endpoint. The parameter $q_{\rm loss}$ belongs to
-$L_{q_{\rm loss}}$; its $q_{\rm loss}\downarrow0$ NLL limit is handled
+tied-argmax endpoint. The parameter $q_{\text{loss}}$ belongs to
+$L_{q_{\text{loss}}}$; its $q_{\text{loss}}\downarrow0$ NLL limit is handled
 separately, and the subscript prevents collision with posterior $q(s)$.
 Contamination rate $\rho$ is always interpreted within the declared attack
 mechanism.

@@ -54,7 +54,7 @@ out otherwise.
 Their genuine falsifiers are the *off-switch* convergence
 residuals, evaluated just outside the band (at
 $\alpha = {{RECOVERY_OFFSWITCH_ALPHA}}$, $\beta = {{RECOVERY_OFFSWITCH_BETA_MATH}}$,
-$q_{\rm loss} = {{RECOVERY_OFFSWITCH_Q_MATH}}$) where the general formulas run
+$q_{\text{loss}} = {{RECOVERY_OFFSWITCH_Q_MATH}}$) where the general formulas run
 and a nonzero gap is possible: those residuals are
 ${{RECOVERY_RENYI_OFFSWITCH_MAXDIFF_MATH}}$,
 ${{RECOVERY_BETA_OFFSWITCH_MAXDIFF_MATH}}$, and
@@ -71,7 +71,7 @@ where the consensus must still land on the log-linear pool to tight tolerance.
 | Identity (owner statement) | Trusting limit | Tested residual |
 |---|---|---|
 | Rényi $\to$ KL (Lemma \ref{lem:renyi-kl-limit}, [@eq:renyi-limit]) | $\alpha \to 1$ | {{RECOVERY_RENYI_MAXDIFF}} |
-| rcce $\to$ NLL (Proposition \ref{prop:robust-loss-recovery}, [@eq:rcce-loss]) | $q_{\rm loss} \to 0$ | {{RECOVERY_RCCE_MAXDIFF}} |
+| rcce $\to$ NLL (Proposition \ref{prop:robust-loss-recovery}, [@eq:rcce-loss]) | $q_{\text{loss}} \to 0$ | {{RECOVERY_RCCE_MAXDIFF}} |
 | $\beta$-loss $\to$ NLL (Proposition \ref{prop:robust-loss-recovery}, [@eq:beta-loss]) | $\beta \to 0$ | {{RECOVERY_BETA_MAXDIFF}} |
 | generalized posterior $\to$ Bayes (Corollary \ref{cor:closed-form-bayes}, [@eq:standard-bayes]) | KL, NLL | {{RECOVERY_POSTERIOR_MAXDIFF}} |
 | `robust_aggregate` $\to$ log-linear pool (Theorem \ref{thm:belief-sharing-recovery}, [@eq:robust-identity]) | $c = 0$ | {{RECOVERY_AGGREGATE_MAXDIFF}} |

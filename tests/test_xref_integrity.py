@@ -102,7 +102,9 @@ def test_notation_objective_is_canonical_and_referenced() -> None:
 def test_rcce_loss_parameter_is_distinct_from_posterior_q() -> None:
     """Reserve plain q for posterior notation and q_loss for the RCCE control."""
     text = _manuscript_text()
-    assert r"L_{q_{\rm loss}}" in text
+    assert r"L_{q_{\text{loss}}}" in text
+    # Text subscripts remain words in MathJax speech instead of SI-unit letters.
+    assert r"q_{\rm loss}" not in text
     assert "L_q" not in text
 
 
