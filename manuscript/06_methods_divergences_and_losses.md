@@ -116,11 +116,10 @@ $q_{\text{loss}}=1$ is the bounded
 mean-absolute-error loss $1 - p(o)$, finite exactly where NLL diverges.
 
 \begin{proposition}[\(\beta\)-loss and rcce recover NLL]\label{prop:robust-loss-recovery}
-The recentered density-power loss \(L_\beta\) of (\ref{eq:beta-loss}) tends to NLL
-as \(\beta\to0\); robust categorical cross-entropy \(L_{q_{\text{loss}}}\) of
-(\ref{eq:rcce-loss}) does likewise as \(q_{\text{loss}}\to0\). Both limits are exact
-in the implementation. At the bounded end, each loss remains finite where NLL
-diverges.
+The losses in (\ref{eq:beta-loss}) and (\ref{eq:rcce-loss}) recover NLL as
+their respective loss parameters tend to zero. Both limits are exact in the
+implementation. At their bounded endpoints, both losses remain finite where
+NLL diverges.
 \end{proposition}
 
 The largest observed discrepancies are {{RECOVERY_BETA_MAXDIFF}} and
