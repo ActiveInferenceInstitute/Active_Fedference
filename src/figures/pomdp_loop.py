@@ -356,9 +356,9 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
     _panel(
         ax,
         0.04,
-        0.055,
+        0.020,
         0.92,
-        0.28,
+        0.315,
         "C  Active-inference temporal loop",
         "The flat federation uses inference and communication; the moving-world "
         "extension also executes B and EFE-guided control",
@@ -368,18 +368,18 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         "observation": (0.35, 0.195),
         "belief": (0.55, 0.195),
         "action": (0.75, 0.155),
-        "next": (0.55, 0.105),
+        "next": (0.45, 0.075),
     }
     _node(ax, *positions["state"], r"$s_t$", "hidden location", fill=COLOR_ROBUST, edge=COLOR_ACCENT)
     _node(ax, *positions["observation"], r"$o_t$", "private report", fill=COLOR_MULTI_1, edge=COLOR_ACCENT)
     _node(ax, *positions["belief"], r"$q_t(s)$", "local posterior", fill="white", edge=COLOR_ROBUST)
     _node(ax, *positions["action"], r"$u_t$", "still / left / right", fill=COLOR_VARIATE, edge=COLOR_ACCENT)
     _node(ax, *positions["next"], r"$s_{t+1}$", "", fill=COLOR_ROBUST, edge=COLOR_ACCENT)
-    _arrow(ax, (0.21, 0.205), (0.31, 0.228), color=COLOR_MULTI_1)
+    _arrow(ax, (0.21, 0.222), (0.31, 0.230), color=COLOR_MULTI_1)
     _arrow(ax, (0.39, 0.238), (0.51, 0.238), color=COLOR_ROBUST)
-    _arrow(ax, (0.59, 0.225), (0.71, 0.205), color=COLOR_VARIATE)
-    _arrow(ax, (0.73, 0.160), (0.59, 0.120), color=COLOR_VARIATE)
-    _arrow(ax, (0.51, 0.115), (0.21, 0.165), color=COLOR_ROBUST, connectionstyle="arc3,rad=0.25")
+    _arrow(ax, (0.59, 0.238), (0.71, 0.230), color=COLOR_VARIATE)
+    _arrow(ax, (0.71, 0.135), (0.49, 0.080), color=COLOR_VARIATE)
+    _arrow(ax, (0.41, 0.080), (0.21, 0.130), color=COLOR_ROBUST, connectionstyle="arc3,rad=-0.25")
     ax.text(
         0.26,
         0.205,
@@ -391,14 +391,15 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
     ax.text(
         0.65,
         0.205,
-        "$C$ preferences / EFE",
+        "$C$ preferences\n/ EFE",
+        va="center",
         fontsize=8.5,
         color=COLOR_DEEP,
         ha="center",
     )
     ax.text(
-        0.43,
-        0.080,
+        0.61,
+        0.050,
         "$B=P(s'|s,u)$",
         fontsize=8.5,
         color=COLOR_DEEP,
