@@ -29,7 +29,7 @@ def language_presentation(
     axis.plot(steps, kl, color=COLOR_ROBUST, marker="o", markersize=8, linewidth=3)
     if ci_lo is not None and ci_hi is not None:
         axis.fill_between(steps, ci_lo, ci_hi, color=COLOR_ROBUST, alpha=0.16)
-    axis.set_ylim(bottom=0)
+    axis.margins(y=0.10)
     panels = [
         PresentationPanel(
             "trajectory",
@@ -197,7 +197,8 @@ def complexity_presentation(path: Path, report: dict[str, object]) -> Path:
             )
             axis.set_xscale("log", base=2)
             axis.set_yscale("log")
-            axis.set_ylim(all_min / 1.5, all_max * 1.5)
+            log_padding = max(float(np.log(all_max / all_min)) * 0.10, float(np.log(1.5)))
+            axis.set_ylim(all_min * np.exp(-log_padding), all_max * np.exp(log_padding))
             axis.set_xlim(sizes.min() / 1.1, sizes.max() * 1.1)
             axis.xaxis.set_major_locator(FixedLocator([sizes[0], sizes[len(sizes) // 2], sizes[-1]]))
             axis.yaxis.set_major_locator(FixedLocator([all_min, all_max]))
@@ -427,7 +428,8 @@ def sensitivity_presentation(
         ),
         (
             "hatching",
-            f"Hatching: declared display band |gap| ≤ {band:.2f}. It is not a CI, significance "
+            f"Hatching uses unrounded gaps: |gap| ≤ {band:.2f}. Printed values are rounded; "
+            "equal printed values can have different hatching. It is not a CI, significance "
             f"test, unreliability flag or proof of zero effect.",
         ),
     )

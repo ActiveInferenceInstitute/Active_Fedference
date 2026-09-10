@@ -159,6 +159,13 @@ def generate_application_presentation(report: Mapping[str, object], canonical_pa
     from .application_integrity_flow import _NODE_DISPLAY_LABELS, _records, _solver_status_key
 
     validate_report("application_integrity_flow", report)
+    # Standalone edge slides do not contain the canonical A/B panel letters.
+    labels = {
+        **_NODE_DISPLAY_LABELS,
+        "rich_result": "Consensus, weights,\nand histories",
+        "request_json": "1  request.json",
+        "result_json": "2  result.json",
+    }
     panels: list[PresentationPanel] = []
     for group in _records(report, "panels"):
         for edge in _records(group, "edges"):
@@ -166,8 +173,8 @@ def generate_application_presentation(report: Mapping[str, object], canonical_pa
             panels.append(
                 _edge_panel(
                     f"{source}-{target}".replace("_", "-"),
-                    _NODE_DISPLAY_LABELS[source],
-                    _NODE_DISPLAY_LABELS[target],
+                    labels[source],
+                    labels[target],
                     str(edge["label"]),
                     str(edge["disposition"]),
                 )
@@ -178,8 +185,8 @@ def generate_application_presentation(report: Mapping[str, object], canonical_pa
         panels.append(
             _edge_panel(
                 f"write-{source}-{target}".replace("_", "-"),
-                _NODE_DISPLAY_LABELS[source],
-                _NODE_DISPLAY_LABELS[target],
+                labels[source],
+                labels[target],
                 "Atomic write order",
                 "write_order",
             )

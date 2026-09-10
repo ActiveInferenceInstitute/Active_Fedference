@@ -150,7 +150,8 @@ def influence_path_presentation(
             zorder=5,
         )
     axis.margins(x=0.04)
-    axis.set_ylim(0, max(float(np.max(influence)), naive, 1e-6) * 1.18)
+    weight_max = max(float(np.max(influence)), naive, 1e-6)
+    axis.set_ylim(-0.10 * weight_max, 1.18 * weight_max)
     panels = [
         PresentationPanel(
             "weight-path",
@@ -387,6 +388,7 @@ def free_energy_presentation(
     )
     axis.set_xticks((0, 1), ("Isolated", "Sharing"))
     axis.set_xlim(-0.3, 1.3)
+    axis.margins(y=0.10)
     panels = [
         PresentationPanel(
             "paired-seeds",

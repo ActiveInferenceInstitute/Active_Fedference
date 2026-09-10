@@ -58,7 +58,7 @@ def sweep_presentation(
             rule = semantic_style("reference_rule")
             axis.axhspan(0, threshold, color=COLOR_PANEL_FAIL, alpha=0.45)
             axis.axhline(threshold, color=rule.color, linestyle=rule.dash, linewidth=2)
-        axis.set_ylim(-0.03, 1.05)
+        axis.set_ylim(-0.10, 1.10)
         span = max(max(rates) - min(rates), 0.1)
         axis.set_xlim(min(rates) - 0.04 * span, max(rates) + 0.04 * span)
         identifier = f"preset-{index + 1}"
@@ -146,7 +146,7 @@ def onset_presentation(path: Path, by_kind: Mapping[str, Any]) -> Path:
                 arrowprops={"arrowstyle": "->", "color": semantic_style("reference_rule").color, "lw": 2},
             )
         axis.set_xlim(rates.min() - 0.03, rates.max() + 0.03)
-        axis.set_ylim(-0.05, 1.05)
+        axis.set_ylim(-0.10, 1.10)
         identifier = f"mechanism-{index + 1}"
         panels.append(
             PresentationPanel(
@@ -249,7 +249,7 @@ def quality_presentation(path: Path, controls: Mapping[str, Any]) -> Path:
         )
         axis.plot([0, 1], [0, 1], color=rule.color, linestyle=rule.dash, linewidth=2)
         axis.set_xlim(-0.04, 1.04)
-        axis.set_ylim(-0.04, 1.04)
+        axis.set_ylim(-0.10, 1.10)
         panels.append(
             PresentationPanel(
                 f"{identifier}-reliability",

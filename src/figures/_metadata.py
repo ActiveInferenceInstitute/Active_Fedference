@@ -228,7 +228,8 @@ _ALT_TEXT: Final[dict[str, str]] = {
         "Two heatmaps of accuracy gaps over sensor acuity and colony size: "
         "communicating minus isolated above, and hierarchical minus flat below. "
         "A symmetric color scale is centered at zero and hatched cells "
-        "mark near-zero gaps."
+        "mark the declared display band using unrounded gaps. Printed values are rounded, "
+        "so equal printed values can have different hatching; the band is not a confidence interval."
     ),
     "source_render_provenance": (
         "Three vertical panels show a five-input dependency matrix beside a crossing-free producer path, "

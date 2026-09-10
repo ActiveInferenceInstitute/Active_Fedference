@@ -81,7 +81,8 @@ accuracy gap (hierarchical minus flat).
 The zero-centered blue–neutral–brown scale encodes negative, zero, and positive
 gaps, respectively; printed signed values provide the non-color encoding.
 Diagonal hatching marks the declared $|\mathrm{gap}| \le {{SENS_NOISE_FLOOR}}$
-display band. The hatch is not an unreliability designation, confidence
+display band using unrounded gaps. Printed cell values are rounded, so equal
+printed values can have different hatching. The hatch is not an unreliability designation, confidence
 interval, significance test, or proof of zero effect. Cell values are
 deterministic per-cell means over {{SENS_N_TRIALS}} trials; trials are nested
 within their configured cell, and no resampling interval is shown. The sweep
