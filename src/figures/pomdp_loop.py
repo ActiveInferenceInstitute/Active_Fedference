@@ -8,6 +8,7 @@ shows the optional transition and action pathway.
 
 from __future__ import annotations
 
+import textwrap
 from pathlib import Path
 
 import matplotlib.patches as mpatches
@@ -25,9 +26,11 @@ from figures._common import (
     COLOR_ROBUST,
     COLOR_VARIATE,
     apply_style,
+    contrasting_text_color,
     figures_dir,
     save_figure_pair,
 )
+from figures._presentation_schematics import pomdp_presentation
 
 
 def _panel(
@@ -52,10 +55,20 @@ def _panel(
         )
     )
     ax.text(
-        x + 0.018, y + h - 0.035, title, ha="left", va="top", fontsize=10.2,
-        fontweight="bold", color=COLOR_DEEP,
+        x + 0.018,
+        y + h - 0.035,
+        title,
+        ha="left",
+        va="top",
+        fontsize=10.2,
+        fontweight="bold",
+        color=COLOR_DEEP,
     )
-    ax.text(x + 0.018, y + h - 0.078, subtitle, ha="left", va="top", fontsize=8.5, color=COLOR_ARROW)
+    ax.text(
+        x + 0.018, y + h - 0.068,
+        textwrap.fill(subtitle, width=95, break_long_words=False, break_on_hyphens=False),
+        ha="left", va="top", fontsize=8.5, color=COLOR_ARROW,
+    )
 
 
 def _world_grid(ax: plt.Axes, x: float, y: float, size: float, highlighted: int = 4) -> None:
@@ -92,7 +105,17 @@ def _world_grid(ax: plt.Axes, x: float, y: float, size: float, highlighted: int 
 def _agent(ax: plt.Axes, x: float, y: float, label: str, color: str) -> None:
     """Draw a sentinel agent and its visual field line."""
     ax.add_patch(mpatches.Circle((x, y), 0.027, facecolor=color, edgecolor=COLOR_DEEP, linewidth=0.9))
-    ax.text(x, y, label, ha="center", va="center", fontsize=8.5, color="white", fontweight="bold")
+    ax.text(
+        x,
+        y,
+        label,
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=contrasting_text_color(color),
+        fontweight="bold",
+        bbox={"facecolor": color, "edgecolor": "none", "pad": 0.0},
+    )
 
 
 def _arrow(
@@ -136,8 +159,16 @@ def _posterior_card(ax: plt.Axes, x: float, y: float, label: str, color: str, hi
         )
     )
     ax.text(
-        x + 0.016, y + h - 0.021, label, ha="left", va="top", fontsize=8.5,
-        color=color, fontweight="bold",
+        x + 0.016,
+        y + h - 0.021,
+        label,
+        ha="left",
+        va="top",
+        fontsize=8.5,
+        # The accent is a keyline; the painted card background is pale.
+        color=COLOR_DEEP,
+        fontweight="bold",
+        bbox={"facecolor": COLOR_PANEL_BG, "edgecolor": "none", "pad": 0.2},
     )
     cell = 0.012
     gx, gy = x + 0.016, y + 0.015
@@ -155,21 +186,50 @@ def _posterior_card(ax: plt.Axes, x: float, y: float, label: str, color: str, hi
                     linewidth=0.35,
                 )
             )
-    ax.text(x + 0.065, y + 0.020, "q(s)", ha="left", va="bottom", fontsize=8.5, color=COLOR_DARK)
+    ax.text(
+        x + 0.065,
+        y + 0.020,
+        "q(s)",
+        ha="left",
+        va="bottom",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        bbox={"facecolor": COLOR_PANEL_BG, "edgecolor": "none", "pad": 0.25},
+    )
 
 
 def _node(ax: plt.Axes, x: float, y: float, label: str, description: str, *, fill: str, edge: str) -> None:
     """Draw a node in the lower temporal loop."""
     ax.add_patch(mpatches.Circle((x, y), 0.043, facecolor=fill, edgecolor=edge, linewidth=1.1))
-    ax.text(x, y + 0.004, label, ha="center", va="center", fontsize=9.2, color=COLOR_DEEP)
-    ax.text(x, y - 0.060, description, ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
+    ax.text(
+        x,
+        y + 0.004,
+        label,
+        ha="center",
+        va="center",
+        fontsize=9.2,
+        color=contrasting_text_color(fill),
+        bbox={"facecolor": fill, "edgecolor": "none", "pad": 0.0},
+    )
+    ax.text(
+        x,
+        y - 0.060,
+        description,
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.3},
+    )
 
 
 def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
     """Generate the sentinel-world and active-inference loop schematic."""
     apply_style()
     plt.rcParams["figure.autolayout"] = False
-    fig, ax = plt.subplots(figsize=(12.4, 8.2), dpi=150, facecolor="white")
+    # A compact portrait canvas preserves the full three-stage schematic while
+    # keeping every 8.5-point label legible after the 95%-width page embed.
+    fig, ax = plt.subplots(figsize=(7.4, 9.8), dpi=150, facecolor="white")
     ax.set_xlim(0.0, 1.0)
     ax.set_ylim(0.0, 1.0)
     ax.axis("off")
@@ -198,41 +258,48 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
     _panel(
         ax,
         0.04,
-        0.49,
-        0.43,
-        0.38,
+        0.66,
+        0.92,
+        0.27,
         "A  Shared nine-cell world",
         "Three sentinels see noisy categorical reports of the same hidden location",
     )
-    _world_grid(ax, 0.18, 0.55, 0.19)
-    _agent(ax, 0.105, 0.72, "1", COLOR_MULTI_1)
-    _agent(ax, 0.105, 0.58, "2", COLOR_ROBUST)
-    _agent(ax, 0.39, 0.71, "n", COLOR_VARIATE)
+    _world_grid(ax, 0.43, 0.685, 0.14)
+    _agent(ax, 0.24, 0.775, "1", COLOR_MULTI_1)
+    _agent(ax, 0.24, 0.705, "2", COLOR_ROBUST)
+    _agent(ax, 0.75, 0.750, "n", COLOR_VARIATE)
     for start, end in [
-        ((0.128, 0.705), (0.18, 0.70)),
-        ((0.128, 0.595), (0.18, 0.62)),
-        ((0.367, 0.692), (0.34, 0.70)),
+        ((0.268, 0.770), (0.43, 0.770)),
+        ((0.268, 0.710), (0.43, 0.720)),
+        ((0.722, 0.745), (0.57, 0.750)),
     ]:
         _arrow(ax, start, end, color=COLOR_ARROW, linestyle="--")
-    ax.text(0.105, 0.515, "private outcome $o_n$", ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
-    ax.text(0.29, 0.515, "hidden state $s_t$", ha="center", va="top", fontsize=8.5, color=COLOR_DEEP)
+    ax.text(
+        0.50,
+        0.675,
+        r"shared hidden state $s_t$; each private outcome $o_n$ stays local",
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        color=COLOR_DARK,
+    )
     _panel(
         ax,
-        0.51,
-        0.49,
-        0.47,
+        0.04,
         0.38,
+        0.92,
+        0.24,
         "B  One belief-sharing round",
         "Local posteriors are the messages; the return is cavity-excluded",
     )
-    _posterior_card(ax, 0.55, 0.690, "$q_1$", COLOR_MULTI_1, 0)
-    _posterior_card(ax, 0.55, 0.600, "$q_2$", COLOR_ROBUST, 4)
-    _posterior_card(ax, 0.55, 0.510, "$q_n$", COLOR_VARIATE, 8)
+    _posterior_card(ax, 0.09, 0.435, "$q_1$", COLOR_MULTI_1, 0)
+    _posterior_card(ax, 0.23, 0.435, "$q_2$", COLOR_ROBUST, 4)
+    _posterior_card(ax, 0.37, 0.435, "$q_n$", COLOR_VARIATE, 8)
     ax.add_patch(
         mpatches.FancyBboxPatch(
-            (0.72, 0.575),
-            0.13,
-            0.14,
+            (0.55, 0.420),
+            0.15,
+            0.10,
             boxstyle="round,pad=0.012",
             linewidth=1.0,
             edgecolor=COLOR_ACCENT,
@@ -240,61 +307,104 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         )
     )
     ax.text(
-        0.785, 0.665, "server", ha="center", va="center", fontsize=9.0,
-        fontweight="bold", color=COLOR_DEEP,
+        0.625,
+        0.485,
+        "server",
+        ha="center",
+        va="center",
+        fontsize=9.0,
+        fontweight="bold",
+        color=COLOR_DEEP,
     )
     ax.text(
-        0.785, 0.625, "qualified Eq. 7 pool\nor robust route", ha="center", va="center",
-        fontsize=8.5, color=COLOR_DARK,
+        0.625,
+        0.450,
+        "qualified Eq. 7 pool\nor robust route",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DARK,
     )
-    _posterior_card(ax, 0.855, 0.610, "$\\bar q_n$", COLOR_ACCENT, 4)
-    for y in (0.727, 0.637, 0.547):
-        _arrow(ax, (0.675, y), (0.71, 0.645), color=COLOR_ARROW)
-    _arrow(ax, (0.85, 0.645), (0.855, 0.645), color=COLOR_ACCENT)
-    _arrow(ax, (0.88, 0.605), (0.88, 0.545), color=COLOR_ACCENT, linestyle="--")
-    ax.text(0.88, 0.532, "heard by n\nwith m ≠ n", ha="center", va="top", fontsize=8.5, color=COLOR_ACCENT)
+    _posterior_card(ax, 0.77, 0.435, "$\\bar q_n$", COLOR_ACCENT, 4)
+    # A shared transport bus keeps the private posterior glyphs unobscured.
+    # Each card joins the bus; its single arrow enters the fusion server.
+    for x in (0.15, 0.29, 0.43):
+        ax.plot([x, x], [0.427, 0.415], color=COLOR_ARROW, linewidth=1.2)
+    ax.plot([0.15, 0.49], [0.415, 0.415], color=COLOR_ARROW, linewidth=1.2)
+    _arrow(ax, (0.49, 0.415), (0.54, 0.415), color=COLOR_ARROW)
+    _arrow(ax, (0.70, 0.470), (0.76, 0.472), color=COLOR_ACCENT)
+    _arrow(ax, (0.83, 0.435), (0.83, 0.405), color=COLOR_ACCENT, linestyle="--")
     ax.text(
-        0.735, 0.515, "no raw sensory data are pooled", ha="center", va="top",
-        fontsize=8.5, color=COLOR_ARROW,
+        0.83,
+        0.397,
+        r"recipient n; $m\ne n$",
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        color=COLOR_ACCENT,
+    )
+    ax.text(
+        0.30,
+        0.397,
+        "no raw sensory data are pooled",
+        ha="center",
+        va="top",
+        fontsize=8.5,
+        color=COLOR_ARROW,
     )
 
     _panel(
         ax,
         0.04,
-        0.05,
+        0.020,
         0.92,
-        0.35,
+        0.315,
         "C  Active-inference temporal loop",
         "The flat federation uses inference and communication; the moving-world "
         "extension also executes B and EFE-guided control",
     )
     positions = {
-        "state": (0.17, 0.20),
-        "observation": (0.35, 0.245),
-        "belief": (0.55, 0.245),
-        "action": (0.75, 0.20),
-        "next": (0.55, 0.14),
+        "state": (0.17, 0.155),
+        "observation": (0.35, 0.195),
+        "belief": (0.55, 0.195),
+        "action": (0.75, 0.155),
+        "next": (0.45, 0.075),
     }
     _node(ax, *positions["state"], r"$s_t$", "hidden location", fill=COLOR_ROBUST, edge=COLOR_ACCENT)
     _node(ax, *positions["observation"], r"$o_t$", "private report", fill=COLOR_MULTI_1, edge=COLOR_ACCENT)
     _node(ax, *positions["belief"], r"$q_t(s)$", "local posterior", fill="white", edge=COLOR_ROBUST)
     _node(ax, *positions["action"], r"$u_t$", "still / left / right", fill=COLOR_VARIATE, edge=COLOR_ACCENT)
     _node(ax, *positions["next"], r"$s_{t+1}$", "", fill=COLOR_ROBUST, edge=COLOR_ACCENT)
-    _arrow(ax, (0.21, 0.255), (0.31, 0.278), color=COLOR_MULTI_1)
-    _arrow(ax, (0.39, 0.288), (0.51, 0.288), color=COLOR_ROBUST)
-    _arrow(ax, (0.59, 0.275), (0.71, 0.255), color=COLOR_VARIATE)
-    _arrow(ax, (0.73, 0.205), (0.59, 0.170), color=COLOR_VARIATE)
-    _arrow(ax, (0.51, 0.165), (0.21, 0.215), color=COLOR_ROBUST, connectionstyle="arc3,rad=0.25")
-    ax.text(0.26, 0.235, "$A=P(o|s)$", fontsize=8.5, color=COLOR_MULTI_1, ha="center")
-    ax.text(0.65, 0.235, "$C$ preferences / EFE", fontsize=8.5, color=COLOR_VARIATE, ha="center")
-    ax.text(0.43, 0.165, "$B=P(s'|s,u)$", fontsize=8.5, color=COLOR_ROBUST, ha="center")
+    _arrow(ax, (0.21, 0.222), (0.31, 0.230), color=COLOR_MULTI_1)
+    _arrow(ax, (0.39, 0.238), (0.51, 0.238), color=COLOR_ROBUST)
+    _arrow(ax, (0.59, 0.238), (0.71, 0.230), color=COLOR_VARIATE)
+    _arrow(ax, (0.71, 0.135), (0.49, 0.080), color=COLOR_VARIATE)
+    _arrow(ax, (0.41, 0.080), (0.21, 0.130), color=COLOR_ROBUST, connectionstyle="arc3,rad=-0.25")
     ax.text(
-        0.50, 0.075,
-        "Inference and federation are the executed bridge; action selection is "
-        "an explicitly scoped extension.",
-        ha="center", fontsize=8.5, color=COLOR_ARROW,
+        0.26,
+        0.205,
+        "$A=P(o|s)$",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        ha="center",
     )
-
+    ax.text(
+        0.65,
+        0.205,
+        "$C$ preferences\n/ EFE",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        ha="center",
+    )
+    ax.text(
+        0.61,
+        0.050,
+        "$B=P(s'|s,u)$",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        ha="center",
+    )
     fig.text(
         0.5,
         0.018,
@@ -307,7 +417,10 @@ def generate_pomdp_loop(*, project_root: Path | None = None) -> Path:
         color=COLOR_ARROW,
         style="italic",
     )
-    return save_figure_pair(fig, figures_dir(project_root) / "pomdp_loop.png")
+    fig.subplots_adjust(left=0.035, right=0.965, top=0.90, bottom=0.055)
+    path = save_figure_pair(fig, figures_dir(project_root) / "pomdp_loop.png")
+    pomdp_presentation(path)
+    return path
 
 
 __all__ = ["generate_pomdp_loop"]

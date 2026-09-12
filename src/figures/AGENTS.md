@@ -32,8 +32,13 @@ Every generator draws through the `apply_style()` rcParams in `_common.py`, and
 no rendered text may fall below the shared floors declared there:
 `MIN_QUANTITATIVE_FONT_SIZE` (9.5 pt) for data-bearing labels and
 `MIN_SCHEMATIC_FONT_SIZE` (8.5 pt) for schematic node labels, both exported so
-`tests/figures/test_palette.py` can gate drift. Figures export at
-`FIGURE_EXPORT_DPI` (220). Save through `save_figure` / `save_figure_pair`, which
+tests can gate drift. The shared saver also requires at least 7.0 pt after the
+figure is scaled to its declared canonical manuscript width. A generator whose
+embed is narrower than the default 95% text width must pass its actual
+`manuscript_width_fraction`; changing DPI does not improve effective type size.
+Reflow the figure or remove caption-owned microcopy when that gate fails.
+Figures export at `FIGURE_EXPORT_DPI` (220). Save through `save_figure` /
+`save_figure_pair`, which
 emit a deterministic PNG plus a byte-stable sibling PDF (creation metadata is
 suppressed so repeated renders stay reproducible).
 

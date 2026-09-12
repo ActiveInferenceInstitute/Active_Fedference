@@ -108,6 +108,22 @@ def test_validation_boundary_includes_the_package_license() -> None:
     assert "LICENSE" in hashes
 
 
+def test_validation_boundary_binds_the_actual_browser_specification() -> None:
+    hashes = validation_input_hashes(_PROJECT_ROOT)
+    assert "tests/browser/html_zoom_overflow.spec.cjs" in hashes
+
+
+def test_browser_spec_change_and_removal_invalidate_validation_inputs(tmp_path: Path) -> None:
+    _make_validation_tree(tmp_path)
+    name = "tests/browser/html_zoom_overflow.spec.cjs"
+    _write(tmp_path, name, (_PROJECT_ROOT / name).read_text(encoding="utf-8"))
+    before = validation_input_hashes(tmp_path)
+    _write(tmp_path, name, "throw new Error('browser acceptance must fail');\n")
+    assert validation_input_hashes(tmp_path) != before
+    (tmp_path / name).unlink()
+    assert validation_input_hashes(tmp_path) != before
+
+
 def _write_successful_receipt(root: Path) -> dict[str, object]:
     return write_validation_receipt(
         root,

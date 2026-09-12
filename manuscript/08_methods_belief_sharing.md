@@ -1,7 +1,9 @@
 ## Belief sharing: the standard aggregation corner {#sec:method-belief-sharing}
 
 `belief_sharing.share_round` lifts the aggregation rule of
-[@sec:method-aggregation] to a colony of categorical sentinel agents. Each
+[@sec:method-aggregation] to a colony of categorical sentinel agents.
+
+Each
 agent has a private sensory outcome and a local posterior over the same shared
 latent location; it broadcasts the posterior, not its raw observation. Following
 the sensory attenuation that the active-inference formulation of belief sharing
@@ -15,14 +17,19 @@ $$ {#eq:belief-round}
 so the round in [@eq:belief-round] implements the declared categorical
 colony-hive-mind mechanism. With the naive fusion rule of
 [@eq:log-linear-pool], [@eq:belief-round] is the project's standard
-log-linear-pool consensus. Under the explicit shared-support,
+log-linear-pool consensus.
+
+Under the explicit shared-support,
 posterior-log-potential, and fixed-weight assumptions of
 [@sec:method-aggregation], it specializes Eq. 7's message-combination term;
-it does not reconstruct the complete source protocol. With the server-side
+it does not reconstruct the complete source protocol.
+
+With the server-side
 robust rule it yields a hive-mind that can down-weight a contaminated sentinel —
 an effect the contamination sweep of [@sec:results-robustness] measures rather
-than assumes, and one that carries no guarantee beyond the recovery limit. The
-per-round diagnostics — the post-sharing belief matrix, the global consensus,
+than assumes, and one that carries no guarantee beyond the recovery limit.
+
+The per-round diagnostics — the post-sharing belief matrix, the global consensus,
 and the mean surprise and accuracy against a known ground-truth state — are
 returned by `share_round` and drive Studies 1 and 4.
 
@@ -30,7 +37,9 @@ returned by `share_round` and drive Studies 1 and 4.
 different private categorical views of the nine-cell world, convert those
 views into local posteriors, and send only those posteriors to a fusion route.
 The return path is a cavity message, so the consensus heard by agent $n$
-excludes the local posterior $q_n$. The figure remains a protocol map rather than a new result; the
+excludes the local posterior $q_n$.
+
+The figure remains a protocol map rather than a new result; the
 empirical belief matrix and free-energy comparison remain the evidence surfaces
 in [@fig:belief-heatmap] and [@fig:free-energy].
 
@@ -38,10 +47,13 @@ Because [@eq:belief-round] calls the aggregation rule of [@eq:log-linear-pool] o
 its robust generalization, the recovery identity of [@eq:robust-identity]
 propagates upward: a colony running `share_round` at zero server robustness is
 bit-identical to a colony running the project's standard log-linear-pool round.
+
 Under the qualified categorical bridge, the pool realizes only the source
 message-combination specialization; the robust round is a project extension,
 not a reconstruction of the active-inference ensemble literature
-[@friston2024federated; @heins2023collective]. [@sec:results-belief_sharing]
+[@friston2024federated; @heins2023collective].
+
+[@sec:results-belief_sharing]
 reports that communicating colonies reach a mean variational free energy of
 {{BELIEF_SHARING_MEAN_F_COMMUNICATE}} nats against
 {{BELIEF_SHARING_MEAN_F_INCOMMUNICADO}} nats for incommunicado colonies across
@@ -53,11 +65,14 @@ The honesty boundary of [@sec:robustness-axes] carries through the lift unchange
 robustness that [@eq:belief-round] inherits when the colony fuses with the
 server-side heuristic is the divergence-reweighting device of
 [@sec:method-aggregation], whose positive property is the naive-recovery
-limit and whose declared separable objective class has a scoped no-go result;
-the per-agent FedGVI bounded-influence result enters the colony only
+limit and whose declared separable objective class has a scoped no-go result.
+
+The per-agent FedGVI bounded-influence result enters the colony only
 through the rcce/AR client losses of [@sec:method-losses], under the source
 theorem's matching assumptions, applied inside each agent's local
-generalized-Bayes update. The robustness sweep in
+generalized-Bayes update.
+
+The robustness sweep in
 [@sec:results-robustness] and the variational supplement in
 [@sec:supp-variational] keep the three axes distinct. The federation transport
 ([@sec:supp-federation]) realizes this sharing

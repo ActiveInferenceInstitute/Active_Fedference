@@ -17,28 +17,20 @@ abstract: 'Multi-agent active inference gives a natural account of belief sharin
   a replacement for belief sharing, but a containment result: ordinary belief sharing
   is recovered when robustness is turned off. Bounded-loss theory applies on the client
   axis, while the variational-server axis supplies an objective-backed redescending
-  weight update. The manuscript separates three robustness axes that are often conflated.
-  First, client-side generalized-Bayes updates change how each agent absorbs evidence;
-  this is the rigorous axis, carrying FedGVI''s bounded-influence result only under
-  the source theorem''s loss, model, and contamination assumptions. Second, a sharp
-  server-side reweighting heuristic suppresses beliefs that pull away from the emerging
-  consensus, while carrying only its recovery-limit guarantee — no proven objective
-  and no bounded-influence bound. Third, a variational aggregation rule supplies a
-  more conservative objective-backed server alternative, with a raw effective-weight
-  bound but not an estimator-level bounded-influence proof for the normalized consensus.
-  Keeping these axes separate lets the paper state exactly which claims are proven,
-  which are empirical, and which remain engineering extensions. The study suite then
-  exercises the framework as an end-to-end research system: recovery checks anchor
-  the standard-Bayes limit, belief-sharing studies verify the communication baseline,
-  contamination experiments test robust consensus, and extension studies probe moving
-  agents, hierarchical latent structure, sensitivity to acuity and colony size, parameter
-  recovery, and single-host socket-backed federation traces. All reported quantities
-  are generated from deterministic analysis artifacts and injected into the manuscript
-  by token, so the paper, figures, release package, and validation reports remain
-  tied to the same execution record. The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-  This development manuscript has no assigned version DOI; published versions bind
-  their reserved DOI, deposited PDF, and repository URL only after the release gates
-  close.'
+  weight update. Following the manuscript''s authoritative three-axis guarantee map,
+  the paper keeps source-conditional client updates, a recovery-only heuristic server
+  rule, and an objective-backed variational server rule as separate claim owners,
+  with no robustness guarantee transferred between them. The study suite then exercises
+  the framework as an end-to-end research system: recovery checks anchor the standard-Bayes
+  limit, belief-sharing studies verify the communication baseline, contamination experiments
+  test robust consensus, and extension studies probe moving agents, hierarchical latent
+  structure, sensitivity to acuity and colony size, parameter recovery, and single-host
+  socket-backed federation traces. All reported quantities are generated from deterministic
+  analysis artifacts and injected into the manuscript by token, so the paper, figures,
+  release package, and validation reports remain tied to the same execution record.
+  The open-source repository is ActiveInferenceInstitute/Active_Fedference. This development
+  manuscript has no assigned version DOI; published versions bind their reserved DOI,
+  deposited PDF, and repository URL only after the release gates close.'
 authors:
 - affiliation: Active Inference Institute
   email: daniel@activeinference.institute

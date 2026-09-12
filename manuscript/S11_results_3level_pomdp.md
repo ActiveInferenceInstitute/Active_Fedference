@@ -1,8 +1,9 @@
 ## Three-level hierarchical POMDP: an executed test of the N-level template {#sec:results-3level}
 
 The 2-level hierarchical POMDP ([@sec:results-hierarchical]) couples location
-inference to a single global context. The N-level architecture
-(`fedference.pomdp.build_nlevel_world`) provides a parameterized stack
+inference to a single global context. The N-level architecture uses
+`build_nlevel_world` from the `fedference.pomdp` module and provides a
+parameterized stack
 of levels; the canonical {{NLEVEL3_N_LEVELS}}-level example couples location (L1; {{NLEVEL3_N_LOCATIONS}}
 states) to a context variable (L2; {{NLEVEL3_N_CONTEXTS}} states: ``quiet`` /
 ``alert``) and further to a meta-context variable (L3; {{NLEVEL3_N_META_CONTEXTS}}
@@ -23,14 +24,18 @@ the top-down pass propagates empirical priors from L3 → L2 → L1 via
 each level's belief from the marginal evidence contributed by the level below.
 
 We compare two conditions over {{NLEVEL3_N_TRIALS}} seeded trials with
-{{NLEVEL3_N_AGENTS}} agents at sensor acuity {{NLEVEL3_ACUITY}}:
+{{NLEVEL3_N_AGENTS}} agents at sensor acuity {{NLEVEL3_ACUITY}}.
 
-* **Flat** — agents ignore all hierarchy and infer location under a uniform prior;
-* **3-level** — agents run {{NLEVEL3_N_ITERS}} alternating-minimization iterations
-  across all three levels before federating.
+**Flat condition.** Agents ignore all hierarchy and infer location under a
+uniform prior.
+
+**Three-level condition.** Agents run {{NLEVEL3_N_ITERS}}
+alternating-minimization iterations across all three levels before federating.
 
 The measured location accuracies are {{NLEVEL3_LOC_ACC_FLAT}} (flat) and
-{{NLEVEL3_LOC_ACC_3LEVEL}} (3-level), a gap of {{NLEVEL3_LOC_ACC_GAP}}. Across
+{{NLEVEL3_LOC_ACC_3LEVEL}} (3-level), a gap of {{NLEVEL3_LOC_ACC_GAP}}.
+
+Across
 {{NLEVEL3_N_SEEDS}} independent seeds the 3-level location accuracy is
 {{NLEVEL3_LOC_ACC_3LEVEL_MEAN}} (SD {{NLEVEL3_LOC_ACC_3LEVEL_STD}}; {{CI_PERCENT}} % CI
 {{NLEVEL3_LOC_ACC_3LEVEL_CI_LO}}–{{NLEVEL3_LOC_ACC_3LEVEL_CI_HI}}) versus flat
@@ -38,18 +43,27 @@ The measured location accuracies are {{NLEVEL3_LOC_ACC_FLAT}} (flat) and
 {{NLEVEL3_LOC_ACC_FLAT_CI_LO}}–{{NLEVEL3_LOC_ACC_FLAT_CI_HI}}), a mean accuracy gap of
 {{NLEVEL3_LOC_ACC_GAP_MEAN}} ({{CI_PERCENT}} % CI
 {{NLEVEL3_LOC_ACC_GAP_CI_LO}}–{{NLEVEL3_LOC_ACC_GAP_CI_HI}};
-Wilcoxon signed-rank $p = {{NLEVEL3_WILCOX_PVALUE}}$, effect size
-$r = {{NLEVEL3_EFFECT_SIZE}}$, {{NLEVEL3_EFFECT_LABEL}}; the location gap over the
-flat baseline is not statistically significant at this seed count). The 3-level
+Wilcoxon signed-rank $p = {{NLEVEL3_WILCOX_PVALUE_MATH}}$, effect size
+$r = {{NLEVEL3_EFFECT_SIZE}}$, {{NLEVEL3_EFFECT_LABEL}}). The signed mean gap
+and its interval describe the location-accuracy cost of this configured
+three-level condition relative to the flat baseline.
+
+The 3-level
 condition additionally reports context accuracy {{NLEVEL3_CTX_ACC}} and
-meta-context accuracy {{NLEVEL3_META_CTX_ACC}}. Against the two-state chance
+meta-context accuracy {{NLEVEL3_META_CTX_ACC}}.
+
+Against the two-state chance
 baseline of $0.5$, location is recovered and the intermediate context latent is
 resolved well above chance, but the meta-context latent is only marginally above
 chance — the weakest of the three levels — and is therefore *not* convincingly
-recovered here. The study thus demonstrates that the generic $N$-level
+recovered here.
+
+The study thus demonstrates that the generic $N$-level
 alternating-minimization runs and federates end-to-end and recovers the fastest
 (location) and intermediate (context) latents; full recovery of the slowest
-(meta-context) level is left open. The full figure
+(meta-context) level is left open.
+
+The full figure
 comparing 2-level and 3-level belief dynamics is [@fig:hierarchical-pomdp]. The
 declarative layer specification used by the generic constructor is documented in
 the supplement ([@sec:supp-3level]). For the effect of acuity and colony size on

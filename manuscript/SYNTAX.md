@@ -16,7 +16,7 @@ display equations / sections / tables / figures collide.
 Friston et al. [-@friston2024federated] <!-- author-suppressed narrative (year only) -->
 ```
 
-All citation keys must exist in [`references.bib`](references.bib). Pandoc with `--natbib` converts `[@key]` to the right LaTeX cite command automatically; **never** write raw `\cite{}` in Markdown. The complete key set is fixed — do not invent keys:
+All citation keys must exist in [`references.bib`](references.bib). The PDF path uses Pandoc `--natbib`; HTML and other non-LaTeX reader surfaces use `--citeproc` against the same file. Both convert `[@key]` appropriately, so **never** write raw `\cite{}` in Markdown. The complete key set is fixed — do not invent keys:
 
 `friston2024federated`, `mildner2025fedgvi`, `pascal1654probability`,
 `huygens1657ratiociniis`, `montmort1708essay`, `bernoulli1713ars`,
@@ -66,7 +66,7 @@ Each display equation in the manuscript gets exactly one of these labels. The "O
 | `{#eq:standard-bayes}` | KL/NLL recovery to standard Bayes: $q^\ast(s)\propto\pi(s)\prod_i p(o_i\mid s)$ (the corollary corner) | `07_methods_aggregation.md` |
 | `{#eq:renyi-limit}` | Rényi $\alpha$-divergence KL limit: $D_\alpha(q\,\|\,p)\xrightarrow{\alpha\to1}\mathrm{KL}(q\,\|\,p)$ | `06_methods_divergences_and_losses.md` |
 | `{#eq:beta-loss}` | Density-power $\beta$-loss (recentered) and its $\beta\to0\Rightarrow\mathrm{NLL}$ limit | `06_methods_divergences_and_losses.md` |
-| `{#eq:rcce-loss}` | Robust categorical cross-entropy $L_{q_{\rm loss}}(p,o)=(1-p(o)^{q_{\rm loss}})/q_{\rm loss}$ and its $q_{\rm loss}\to0\Rightarrow\mathrm{NLL}$ limit | `06_methods_divergences_and_losses.md` |
+| `{#eq:rcce-loss}` | Robust categorical cross-entropy $L_{q_{\text{loss}}}(p,o)=(1-p(o)^{q_{\text{loss}}})/q_{\text{loss}}$ and its $q_{\text{loss}}\to0\Rightarrow\mathrm{NLL}$ limit | `06_methods_divergences_and_losses.md` |
 | `{#eq:log-linear-pool}` | Log-linear pool $=\mathrm{softmax}(\sum_n w_n\log q_n)$ — categorical posterior-log-potential specialization of Eq. 7's message-combination term under explicit shared-support and fixed-weight assumptions (`friston_belief_share`) | `07_methods_aggregation.md` |
 | `{#eq:robust-identity}` | Project-local identity: `robust_aggregate(·, robustness=0)` $\equiv$ `log_linear_pool(·)`; it does not recover the complete source protocol | `07_methods_aggregation.md` |
 | `{#eq:cavity}` | Cavity operation: remove one site factor in natural-parameter space, $q_{-n}=\mathrm{normalize}(q/t_n)$ | `05_methods_generalized_bayes.md` |
@@ -74,6 +74,7 @@ Each display equation in the manuscript gets exactly one of these labels. The "O
 | `{#eq:efe-decomposition}` | Expected-free-energy decomposition: $G(\pi)=\text{risk}+\text{ambiguity}=-(\text{pragmatic}+\text{epistemic})$ | `14_formalism.md` |
 | `{#eq:efe-identity}` | EFE identity (machine-checkable): $\text{risk}+\text{ambiguity}\equiv-(\text{pragmatic}+\text{epistemic})$ | `14_formalism.md` |
 | `{#eq:observation-likelihood}` | Generative likelihood $P(o\mid s)$ — the agent observation model | `09_methods_generative_model.md` |
+| `{#eq:contribution-tempered-family}` | Projection-safe statement of the $F_\lambda$ tempered aggregation objective | `03_contributions.md` |
 | `{#eq:state-inference}` | State-inference update under variational Bayes | `09_methods_generative_model.md` |
 | `{#eq:variational-free-energy}` | Variational free energy $F = \mathrm{KL}(q(s)\|p(s)) - \mathbb{E}_q[\log p(o\mid s)]$ | `09_methods_generative_model.md` |
 | `{#eq:dirichlet-update}` | Dirichlet belief update (sufficient-statistic accumulation) | `10_methods_learning.md` |
@@ -84,10 +85,12 @@ Each display equation in the manuscript gets exactly one of these labels. The "O
 | `{#eq:agg-updates}` | Block-coordinate closed-form minimizers: $q^*$ and $a^*$ of $F(q,a)$ | `07_methods_aggregation.md` |
 | `{#eq:agg-q-min}` | $q$-minimizer of $F$: $q^*(s)=\mathrm{softmax}(\sum_n a_n \log q_n(s))$ | `27_supplement_aggregation_objective.md` |
 | `{#eq:agg-a-min}` | $a$-minimizer of $F$: $a_n^* \propto w_n \exp(-c\cdot\mathrm{CE}(q,q_n))$ — the raw effective-weight form (bounded and redescending, not a bounded-influence-function guarantee) | `27_supplement_aggregation_objective.md` |
+| `{#eq:agg-q-objective}` | Equivalent cross-entropy and expanded forms of the variational objective's $q$-dependent block | `27_supplement_aggregation_objective.md` |
 | `{#eq:raw-log-pool-block}` | Raw weighted log-pool block $Q(a;s)=\operatorname{softmax}(\sum_n a_n\log s_n)$ used by the sharp heuristic | `27_supplement_aggregation_objective.md` |
 | `{#eq:separable-server-objective}` | Declared separable objective class ruled out by the scoped raw-log-pool proposition | `27_supplement_aggregation_objective.md` |
 | `{#eq:raw-log-pool-witness-source}` | One-agent interior source construction used by the scoped raw-log-pool no-go proof | `27_supplement_aggregation_objective.md` |
-| `{#eq:notation-variational-objective}` | Variational objective and coordinate updates for $c>0,\lambda>0$; the $\lambda\downarrow0$ tied-argmax endpoint is separately implemented | `30_supplement_notation.md` |
+| `{#eq:notation-variational-objective}` | Variational objective for $c>0,\lambda>0$ | `30_supplement_notation.md` |
+| `{#eq:notation-variational-updates}` | Variational coordinate updates for $c>0,\lambda>0$; the $\lambda\downarrow0$ tied-argmax endpoint is separately implemented | `30_supplement_notation.md` |
 | `{#eq:notation-cavity}` | Normalized cavity $q_{-n}(s) \propto q(s)/t_n(s)$ | `30_supplement_notation.md` |
 | `{#eq:notation-factor-replacement}` | Normalized site-factor replacement update | `30_supplement_notation.md` |
 | `{#eq:gaussian-kl}` | Closed-form KL divergence between two Gaussians (supplement derivation) | `28_supplement_extended_methods.md` |
@@ -106,7 +109,14 @@ Each display equation in the manuscript gets exactly one of these labels. The "O
 > The same rule applies to any equation an author is tempted to restate — define
 > once in the owner file, reference everywhere else.
 
-> **LaTeX label fix (2026-06-26).** `eq:tempered-softmax`, `eq:cavity`, and `eq:standard-bayes` each appear inside raw LaTeX theorem environments (`\begin{definition}`, `\begin{corollary}`). Because pandoc-crossref cannot process raw LaTeX blocks, the `{#eq:…}` tags inside those environments were replaced with explicit `\label{eq:…}` commands on the line immediately after the closing `$$`. XeLaTeX resolves these labels directly; `[@eq:…]` references in the Markdown prose still resolve via pandoc-crossref (which emits `\ref{eq:…}` in the output `.tex`). Both mechanisms point to the same `\label` — no duplicate definitions.
+> **Theorem/equation boundary (2026-08-29).** `eq:tempered-softmax`,
+> `eq:cavity`, and `eq:standard-bayes` follow their theorem-like statements as
+> ordinary source-owned display equations. Their `{#eq:…}` identifiers are
+> therefore visible to pandoc-crossref in PDF, HTML, and slide derivatives,
+> while the enclosing definition/corollary labels remain native LaTeX theorem
+> identifiers. This separation preserves complete statements in the canonical
+> manuscript and lets accessible slides isolate equations without splitting a
+> raw theorem environment.
 
 ## Theorem / Definition Environments
 
@@ -139,7 +149,7 @@ pool by the project-local identity (equation~\ref{eq:robust-identity}).
 | `def:generalized-bayes` | `definition` | Generalised-(Gibbs)-Bayes posterior (objective [@eq:gen-bayes]) | `05_methods_generalized_bayes.md` |
 | `def:cavity` | `definition` | Cavity / PVI factor update ([@eq:cavity]) | `05_methods_generalized_bayes.md` |
 | `lem:renyi-kl-limit` | `lemma` | KL is the $\alpha\to1$ limit of the Rényi family ([@eq:renyi-limit]) | `06_methods_divergences_and_losses.md` |
-| `prop:robust-loss-recovery` | `proposition` | $\beta$-loss and rcce recover NLL in the $\beta\to0$ / $q_{\rm loss}\to0$ limit ([@eq:beta-loss], [@eq:rcce-loss]) | `06_methods_divergences_and_losses.md` |
+| `prop:robust-loss-recovery` | `proposition` | $\beta$-loss and rcce recover NLL in the $\beta\to0$ / $q_{\text{loss}}\to0$ limit ([@eq:beta-loss], [@eq:rcce-loss]) | `06_methods_divergences_and_losses.md` |
 | `thm:belief-sharing-recovery` | `theorem` | Categorical posterior-log-potential specialization of Eq. 7's message-combination term plus the local $c=0$ identity ([@eq:log-linear-pool], [@eq:robust-identity]) | `07_methods_aggregation.md` |
 | `cor:closed-form-bayes` | `corollary` | `generalized_posterior(KLD, NLL)` equals closed-form prior×likelihood Bayes ([@eq:standard-bayes]) | `07_methods_aggregation.md` |
 | `prop:efe-decomposition` | `proposition` | Expected-free-energy decomposition identity ([@eq:efe-identity]) | `14_formalism.md` |
@@ -173,55 +183,62 @@ uniqueness, presence, resolution, and the absence of hard-coded counters.
 ```
 
 - PNGs must exist in `output/figures/` at render time (generated by `src/figures/` via `src/analysis/workflow.py`).
-- Always set `width=80%` (the project default) to avoid float-too-large warnings.
-- Captions are self-contained — they render in the PDF, provide the current
-  HTML image alternative, and supply the long-form figure description. Keep
-  them understandable without color alone; the release review checks whether
-  the generated alternative plus adjacent caption causes confusing repetition.
+- Set the explicit source-owned width between 80–100% according to the figure's
+  page-scale legibility contract. The shared saver validates effective type at
+  that exact width; reflow dense figures instead of shrinking typography.
+- Captions are self-contained and render in every reader surface. A separate
+  concise alternative and, for complex figures, a structured long description
+  live in the figure-accessibility registry consumed by HTML. Keep all three
+  understandable without color alone while avoiding needless repetition.
 
 ### Canonical figure label registry
 
 Current figure set, produced by generators in `src/figures/` (all wired through `src/analysis/workflow.run_analysis_pipeline`). Use the label string verbatim and the exact file path.
 
-| Label string (use verbatim) | PNG path | Generator in `src/figures/` | What it shows |
-|---|---|---|---|
-| `{#fig:system-overview}` | `../output/figures/system_overview.png` | `system_overview.generate_system_overview` | Three-panel schematic: setup, naive equal-weight pooling, and heuristic robust aggregation — true-state consensus mass is derived from the schematic's pooled beliefs (`SYSTEM_OVERVIEW_METADATA`), not hand-typed |
-| `{#fig:belief-heatmap}` | `../output/figures/belief_heatmap.png` | `belief_heatmap.generate_belief_heatmap` | Per-agent belief matrix before/after one share round |
-| `{#fig:free-energy}` | `../output/figures/free_energy_comparison.png` | `free_energy_comparison.generate_free_energy_comparison` | Study 1 categorical source-mechanism analogue to the belief-sharing mechanism illustrated in Friston Fig. 5 |
-| `{#fig:language-kl}` | `../output/figures/language_kl_decay.png` | `language_kl_decay.generate_language_kl_decay` | Study 2 categorical source-mechanism analogue to the language-acquisition estimand related to Friston Fig. 7; seed-level pointwise CI |
-| `{#fig:emergence-bmr}` | `../output/figures/emergence_bmr.png` | `emergence_bmr.generate_emergence_bmr` | Study 3 BMR diagnostic related to the mechanism in Friston Fig. 9 |
-| `{#fig:robustness-sweep}` | `../output/figures/robustness_sweep.png` | `robustness_sweep.generate_robustness_sweep` | Consensus accuracy vs contamination rate, naive vs robust members (Study 4), with matched-trial CI and max-rate robust-minus-naive separation annotated |
-| `{#fig:efe-decomp}` | `../output/figures/efe_decomposition.png` | `efe_decomposition.generate_efe_decomposition` | Additive risk-plus-ambiguity cost view and signed pragmatic/epistemic waterfall terminating at $G(\pi)$; identity residual annotated ([@eq:efe-identity]) |
-| `{#fig:robust-weights}` | `../output/figures/robust_influence_weights.png` | `robust_influence_weights.generate_robust_influence_weights` | Per-agent server-side influence weight; contaminated agents highlighted — **labelled heuristic axis** |
-| `{#fig:bnn-robustness}` | `../output/figures/bnn_robustness.png` | `bnn_robustness.generate_bnn_robustness` | Held-out accuracy vs label contamination; standard (nll/KLD) vs robust per-client FedGVI (rcce/AR) |
-| `{#fig:descent-comparison}` | `../output/figures/descent_comparison.png` | `descent_comparison.generate_descent_comparison` | Single-start log-linear-pool capture basin vs multi-start escape; $F$-gap annotated — **heuristic axis** (iteration 6) |
-| `{#fig:moving-world}` | `../output/figures/moving_world.png` | `moving_world.generate_moving_world` | 3-condition bar chart (isolated / communicating / EFE-guided): accuracy, free-energy gap, steps to consensus (V4) |
-| `{#fig:hierarchical-pomdp}` | `../output/figures/hierarchical_pomdp.png` | `hierarchical_pomdp.generate_hierarchical_pomdp` | 2×3 six-panel belief dynamics — top row: 2-level (L1 posteriors, L2 context evolution, colony consensus); bottom row: 3-level extension (L1 posteriors, L2+L3 posteriors, accuracy gap over n_trials) (V2, Studies 6–7) |
-| `{#fig:hierarchical-bmr}` | `../output/figures/hierarchical_bmr.png` | `hierarchical_bmr.generate_hierarchical_bmr` | Per-level Bayesian surprise for the degenerate vs informative 3-level worlds — the meta-context is pruned when non-gating, kept when informative (V2 ext., structure learning, MAJ-7) |
-| `{#fig:heuristic-breakdown}` | `../output/figures/heuristic_breakdown.png` | `heuristic_breakdown.generate_heuristic_breakdown` | Empirical characterization of robust_aggregate: numerical influence gap, measured finite breakdown point, and finite-search attack-grid coverage (MAJ-1) |
-| `{#fig:sensitivity-heatmap}` | `../output/figures/sensitivity_heatmap.png` | `sensitivity_heatmap.generate_sensitivity_heatmap` | 2-panel heatmap of federation accuracy gain over acuity × colony size (Study 8) |
-| `{#fig:cross-study-summary}` | `../output/figures/cross_study_summary.png` | `cross_study_summary.generate_cross_study_summary` | Horizontal bar chart of per-study federation benefit ± 95 % bootstrap CI with positive/near-zero/negative row counts (Studies 1–9) |
-| `{#fig:parameter-recovery}` | `../output/figures/parameter_recovery.png` | `parameter_recovery.generate_parameter_recovery` | Two-panel parameter-recovery figure: recovered vs true acuity (identity-line scatter with 95 % empirical percentile interval across independent trials) and mean absolute error per acuity level (Study 9) |
-| `{#fig:complexity-scaling}` | `../output/figures/complexity_scaling.png` | `complexity_scaling.generate_complexity_scaling` | Implementation-derived asymptotic orders and seeded machine-scaling diagnostics for aggregation, leave-one-out sharing, and state inference |
-| `{#fig:graphical-abstract}` | `../output/figures/graphical_abstract.png` | `figures/graphical_abstract.generate_graphical_abstract` | Layered graphical abstract: recovery anchor, federated network, deterministic consensus cards, and the three non-transferable robustness axes |
-| `{#fig:generative-model-schema}` | `../output/figures/generative_model_schema.png` | `generative_model_schema.generate_generative_model_schema` | Formal schematic of temporal, hierarchical, and factorial/categorical model depth; no empirical data |
-| `{#fig:message-passing}` | `../output/figures/message_passing.png` | `message_passing.generate_message_passing` | Symbolic local-update, broadcast, server-fusion, and three-axis claim-ownership map; no empirical data |
-| `{#fig:pomdp-loop}` | `../output/figures/pomdp_loop.png` | `pomdp_loop.generate_pomdp_loop` | Hidden-state, observation, action, transition, and federated-belief loop; selected paths are executed in different studies |
-| `{#fig:aggregation-descent}` | `../output/figures/aggregation_descent.png` | `aggregation_descent.generate_aggregation_descent` | Variational free energy $F(q,a)$ vs block-coordinate iteration — monotone non-increasing convergence (server-side objective-backed axis) | `19_results_robustness.md` |
-| `{#fig:bounded-influence}` | `../output/figures/bounded_influence.png` | `bounded_influence.generate_bounded_influence` | Probed-agent normalized influence weight under `variational_aggregate` vs naive pool — empirical redescending-weight diagnostic | `19_results_robustness.md` |
-| `{#fig:contamination-gallery}` | `../output/figures/contamination_gallery.png` | `contamination_gallery.generate_contamination_gallery` | Descriptive pooled-display-member accuracy per contamination mechanism with conditional seed-bootstrap bars and win-fraction screen; not selection-free inference | `28_supplement_extended_methods.md` |
-| `{#fig:robustness-onset}` | `../output/figures/robustness_onset.png` | `robustness_onset.generate_robustness_onset` | Descriptive pooled-display-member accuracy vs contamination rate per directional mechanism with conditional seed-bootstrap bands, onset marker, and final gap; not selection-free inference | `28_supplement_extended_methods.md` |
-| `{#fig:conditional-world}` | `../output/figures/conditional_world.png` | `conditional_world.generate_conditional_world` | Finite conditional-world grid over hidden state, observability, attack mechanism, and adversarial weight geometry | `28_supplement_extended_methods.md` |
-| `{#fig:robustness-review-grid}` | `../output/figures/robustness_review_grid.png` | `robustness_review_grid.generate_robustness_review_grid` | Expanded all-method, selection-free conditional/rate robustness review surface; seeds are the inferential unit and trials are nested | `28_supplement_extended_methods.md` |
-| `{#fig:belief-quality}` | `../output/figures/belief_quality.png` | `belief_quality.generate_belief_quality` | Proper categorical log-score controls and reliability diagnostic with seed-level uncertainty | `28_supplement_extended_methods.md` |
-| `{#fig:disjoint-fov-world}` | `../output/figures/disjoint_fov_world.png` | `disjoint_fov_world.generate_disjoint_fov_world` | 3-condition bar chart (isolated/communicating/EFE-guided) for disjoint-FOV extension of moving sentinel world (V4) | `S05_results_moving_world.md` |
+| Label string (use verbatim) | PNG path | Generator in `src/figures/` | What it shows | Owning manuscript source |
+|---|---|---|---|---|
+| `{#fig:system-overview}` | `../output/figures/system_overview.png` | `system_overview.generate_system_overview` | Three-panel schematic: setup, naive equal-weight pooling, and heuristic robust aggregation — true-state consensus mass is derived from the schematic's pooled beliefs (`SYSTEM_OVERVIEW_METADATA`), not hand-typed | `01_introduction.md` |
+| `{#fig:belief-heatmap}` | `../output/figures/belief_heatmap.png` | `belief_heatmap.generate_belief_heatmap` | Per-agent belief matrix before/after one share round | `16_results_belief_sharing.md` |
+| `{#fig:free-energy}` | `../output/figures/free_energy_comparison.png` | `free_energy_comparison.generate_free_energy_comparison` | Study 1 categorical source-mechanism analogue to the belief-sharing mechanism illustrated in Friston Fig. 5 | `16_results_belief_sharing.md` |
+| `{#fig:language-kl}` | `../output/figures/language_kl_decay.png` | `language_kl_decay.generate_language_kl_decay` | Study 2 categorical source-mechanism analogue to the language-acquisition estimand related to Friston Fig. 7; seed-level pointwise CI | `17_results_language.md` |
+| `{#fig:emergence-bmr}` | `../output/figures/emergence_bmr.png` | `emergence_bmr.generate_emergence_bmr` | Configured BMR sign control on one fixed posterior: redundant-state pruning is favored and supported-state pruning is rejected; no universal emergence claim | `18_results_emergence.md` |
+| `{#fig:robustness-sweep}` | `../output/figures/robustness_sweep.png` | `robustness_sweep.generate_robustness_sweep` | Consensus accuracy vs contamination rate, naive vs robust members (Study 4), with matched-trial CI and max-rate robust-minus-naive separation annotated | `19_results_robustness.md` |
+| `{#fig:efe-decomp}` | `../output/figures/efe_decomposition.png` | `efe_decomposition.generate_efe_decomposition` | Additive risk-plus-ambiguity cost view and signed pragmatic/epistemic waterfall terminating at $G(\pi)$; identity residual annotated ([@eq:efe-identity]) | `14_formalism.md` |
+| `{#fig:robust-weights}` | `../output/figures/robust_influence_weights.png` | `robust_influence_weights.generate_robust_influence_weights` | Per-agent server-side influence weight; contaminated agents highlighted — **labelled heuristic axis** | `19_results_robustness.md` |
+| `{#fig:bnn-robustness}` | `../output/figures/bnn_robustness.png` | `bnn_robustness.generate_bnn_robustness` | Exploratory generalized-Bayes point-estimate logistic-regression baseline comparing joint NLL/L2 and RCCE/L2 configurations; the display operating point is selected within the sweep and no RCCE-only effect is identified | `20_results_baseline.md` |
+| `{#fig:descent-comparison}` | `../output/figures/descent_comparison.png` | `descent_comparison.generate_descent_comparison` | Variational/objective-backed server initialization diagnostic: single-start log-linear-pool capture basin versus the lowest observed configured multistart basin, with the $F$ gap annotated | `27_supplement_aggregation_objective.md` |
+| `{#fig:moving-world}` | `../output/figures/moving_world.png` | `moving_world.generate_moving_world` | Three-condition comparison of isolated, communicating, and EFE-guided accuracy, free-energy gap, and steps to consensus | `S05_results_moving_world.md` |
+| `{#fig:hierarchical-pomdp}` | `../output/figures/hierarchical_pomdp.png` | `hierarchical_pomdp.generate_hierarchical_pomdp` | Two- and three-level belief dynamics with native-unit accuracy contrasts | `S09_results_hierarchical_pomdp.md` |
+| `{#fig:hierarchical-bmr}` | `../output/figures/hierarchical_bmr.png` | `hierarchical_bmr.generate_hierarchical_bmr` | Configured Bayesian-surprise threshold control for degenerate versus informative three-level worlds | `S16_results_hierarchical_bmr.md` |
+| `{#fig:heuristic-breakdown}` | `../output/figures/heuristic_breakdown.png` | `heuristic_breakdown.generate_heuristic_breakdown` | Numerical influence, finite breakdown, and finite-search attack-grid coverage for the server heuristic | `S17_results_heuristic_characterization.md` |
+| `{#fig:sensitivity-heatmap}` | `../output/figures/sensitivity_heatmap.png` | `sensitivity_heatmap.generate_sensitivity_heatmap` | Federation and hierarchical accuracy gaps over acuity and colony size | `S13_results_sensitivity.md` |
+| `{#fig:cross-study-summary}` | `../output/figures/cross_study_summary.png` | `cross_study_summary.generate_cross_study_summary` | Page-compatible two-column native-unit summary from the separate harmonized seed-level rerun, with accuracy spanning the left and information/recovery facets at right | `S13_results_sensitivity.md` |
+| `{#fig:parameter-recovery}` | `../output/figures/parameter_recovery.png` | `parameter_recovery.generate_parameter_recovery` | Recovered versus true acuity and absolute recovery error over independent synthetic trials; the configured seed owns only the base RNG stream | `S15_results_parameter_recovery.md` |
+| `{#fig:complexity-scaling}` | `../output/figures/complexity_scaling.png` | `complexity_scaling.generate_complexity_scaling` | Implementation-derived orders and seeded machine-scaling diagnostics | `13_methods_statistics.md` |
+| `{#fig:evidence-replication-map}` | `../output/figures/evidence_replication_map.png` | `evidence_replication_map.generate_evidence_replication_map` | Claim-lane evidence classes, estimands, independent units, nesting, and no-transfer boundaries | `13_methods_statistics.md` |
+| `{#fig:graphical-abstract}` | `../output/figures/graphical_abstract.png` | `graphical_abstract.generate_graphical_abstract` | Recovery anchor, federated network, and three non-transferable robustness axes | `00_abstract.md` |
+| `{#fig:generative-model-schema}` | `../output/figures/generative_model_schema.png` | `generative_model_schema.generate_generative_model_schema` | Formal temporal, hierarchical, and factorial categorical model structure | `09_methods_generative_model.md` |
+| `{#fig:message-passing}` | `../output/figures/message_passing.png` | `message_passing.generate_message_passing` | Local update, broadcast, server fusion, and claim ownership | `07_methods_aggregation.md` |
+| `{#fig:pomdp-loop}` | `../output/figures/pomdp_loop.png` | `pomdp_loop.generate_pomdp_loop` | Hidden-state, observation, action, transition, and federated-belief loop | `09_methods_generative_model.md` |
+| `{#fig:aggregation-descent}` | `../output/figures/aggregation_descent.png` | `aggregation_descent.generate_aggregation_descent` | Variational free-energy descent on the objective-backed server axis | `19_results_robustness.md` |
+| `{#fig:bounded-influence}` | `../output/figures/bounded_influence.png` | `bounded_influence.generate_bounded_influence` | Probed-agent normalized-weight response under `variational_aggregate` | `19_results_robustness.md` |
+| `{#fig:contamination-gallery}` | `../output/figures/contamination_gallery.png` | `contamination_gallery.generate_contamination_gallery` | Descriptive pooled-display-member accuracy by contamination mechanism | `28_supplement_extended_methods.md` |
+| `{#fig:robustness-onset}` | `../output/figures/robustness_onset.png` | `robustness_onset.generate_robustness_onset` | Descriptive pooled-display-member accuracy by directional mechanism and rate | `28_supplement_extended_methods.md` |
+| `{#fig:conditional-world}` | `../output/figures/conditional_world.png` | `conditional_world.generate_conditional_world` | Finite conditional-world grid over state, observability, attack, and adversarial weight | `28_supplement_extended_methods.md` |
+| `{#fig:robustness-review-grid}` | `../output/figures/robustness_review_grid.png` | `robustness_review_grid.generate_robustness_review_grid` | Principal all-method, selection-free conditional and rate robustness review; exact fallback reproduces displayed grouped means and half min-max spans | `19_results_robustness.md` |
+| `{#fig:belief-quality}` | `../output/figures/belief_quality.png` | `belief_quality.generate_belief_quality` | Proper categorical log-score controls and reliability diagnostic | `28_supplement_extended_methods.md` |
+| `{#fig:disjoint-fov-world}` | `../output/figures/disjoint_fov_world.png` | `disjoint_fov_world.generate_disjoint_fov_world` | Disjoint-field-of-view communication and movement-policy comparison | `S05_results_moving_world.md` |
+| `{#fig:application-integrity-flow}` | `../output/figures/application_integrity_flow.png` | `application_integrity_flow.generate_application_integrity_flow` | Labeled-request validation, solver-health classification, atomic artifacts, and receipt-verification levels | `26_reproducibility.md` |
+| `{#fig:source-render-provenance}` | `../output/figures/source_render_provenance.png` | `source_render_provenance.generate_source_render_provenance` | Source-to-render producer order, reverse invalidation, and authorization-gated publication states | `26_reproducibility_provenance.md` |
 
 > **Honesty contract for figures.** `{#fig:robust-weights}` visualises the
 > **server-side heuristic** (`robust_aggregate` divergence-reweighting); its
 > caption must say so and must NOT claim a bounded-influence guarantee.
-> `{#fig:bnn-robustness}`'s robust curve exercises the **per-client FedGVI**
-> mechanism (rcce/AR client losses); the cited source guarantee remains
-> conditional on its matching assumptions. `{#fig:bounded-influence}` belongs
+> `{#fig:bnn-robustness}` is an exploratory **point-estimate generalized-Bayes
+> logistic-regression baseline** comparing NLL/L2 and RCCE/L2 configurations;
+> because both components differ, it does not isolate an RCCE-only effect. Its
+> legacy `AR` argument does not evaluate Alpha-Rényi divergence, and the cited FedGVI guarantee
+> remains separate and source-conditional. `{#fig:bounded-influence}` belongs
 > to the conservative **variational server** axis and demonstrates only the
 > tested redescending normalized-weight path. Captions must keep all three axes
 > distinct.
@@ -250,14 +267,18 @@ Existing tables keep their labels (note: the underscore forms below already appe
 | `{#tbl:robustness_sweep}` | Consensus accuracy $q(\text{true state})$ by contamination rate (`{{SWEEP_RATE_TABLE_ROWS}}`) | `19_results_robustness.md` | existing |
 | `{#tbl:robustness_verdict}` | Per-method paired Wilcoxon + BH-FDR verdict vs naive pool (`{{SWEEP_VERDICT_TABLE_ROWS}}`) | `19_results_robustness.md` | existing |
 | `{#tbl:study_params}` | Per-study configuration from `experiment:` (`config.yaml`) | `12_methods_experimental_design.md` | existing |
+| `{#tbl:study-measures}` | Declared measure associated with each configured study | `12_methods_experimental_design.md` | new |
 | `{#tbl:repro_env}` | Software + configuration fingerprint (Python/NumPy/SciPy/platform/config hash) | `26_reproducibility.md` | existing |
 | `{#tbl:repro_artifacts}` | Generated-artifact inventory (figures/data/reports/total) | `26_reproducibility.md` | existing |
-| `{#tbl:verdict-effects}` | Standardized-effect verdict (rank-biserial r, d-equivalent, label, acc-diff CI, raw p, q, reject) (`{{SWEEP_VERDICT_EFFECT_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
+| `{#tbl:verdict-effect-estimates}` | Standardized-effect estimates: d-equivalent, label, and accuracy-difference CI (`{{SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
+| `{#tbl:verdict-inference-power}` | Paired inference, BH adjustment, observed-effect design power, and prospective sample size (`{{SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
 | `{#tbl:accuracy-at-verdict}` | Per-method accuracy at the verdict rate with 95% bootstrap CI (`{{SWEEP_ACCURACY_AT_VERDICT_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
-| `{#tbl:paired-by-rate}` | Per-rate naive-vs-robust paired tests, BH-deflated per method (`{{SWEEP_PAIRED_BY_RATE_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
+| `{#tbl:paired-by-rate}` | Effect-size projection of per-rate standard-vs-server-preset paired tests, keyed by preset and rate (`{{SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
+| `{#tbl:paired-by-rate-inference}` | Inference and BH-decision projection of the same per-rate paired tests, keyed by preset and rate (`{{SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS}}`) | `19_results_robustness.md` | new |
 | `{#tbl:hier-params}` | Study 6 hierarchical POMDP execution parameters, including agent/trial budget and L2/L1 state cardinalities | `S10_supp_hierarchical_pomdp.md` | new |
 | `{#tbl:nlevel3-params}` | Study 7 three-level hierarchical POMDP execution parameters, including agent/trial budget and L3/L2/L1 state cardinalities | `S12_supp_3level_pomdp.md` | new |
-| `{#tbl:contamination-gallery}` | Descriptive pooled-display robust-vs-naive accuracy, win fraction, and conditional CI under each contamination mechanism (`{{GALLERY_TABLE_ROWS}}`) | `28_supplement_extended_methods.md` | new |
+| `{#tbl:contamination-gallery}` | Descriptive operating-point projection under each contamination mechanism (`{{GALLERY_OPERATING_POINT_TABLE_ROWS}}`) | `28_supplement_extended_methods.md` | new |
+| `{#tbl:contamination-gallery-contrast}` | Descriptive contrast, interval, win-fraction, and display-flag projection keyed by mechanism (`{{GALLERY_CONTRAST_DISPLAY_TABLE_ROWS}}`) | `28_supplement_extended_methods.md` | new |
 | `{#tbl:robustness-onset}` | Descriptive pooled-display onset rate and worst-rate naive/robust accuracy (`{{ONSET_TABLE_ROWS}}`) | `28_supplement_extended_methods.md` | new |
 | `{#tbl:server-theory-witness}` | Deterministic raw-log-pool and normalized-weight scoped no-go witness inventory | `27_supplement_aggregation_objective.md` | new |
 
@@ -302,10 +323,13 @@ Every H1 carries a `{#sec:<name>}` label so cross-section references (`[@sec:met
 | `{#sec:methods-learning}` | Learning stack: EFE, Dirichlet updates, and BMR (H2, demoted from H1) | `10_methods_learning.md` |
 | `{#sec:methods-dirichlet}` | Conjugate Dirichlet learning from co-occurrence counts (H2) | `10_methods_learning.md` |
 | `{#sec:methods-efe}` | Expected free energy as the action-selection objective (H2) | `10_methods_learning.md` |
-| `{#sec:methods-bmr}` | Bayesian model reduction for structure emergence (H2) | `10_methods_learning.md` |
+| `{#sec:methods-bmr}` | Bayesian model reduction for the configured pruning sign control (H2) | `10_methods_learning.md` |
 | `{#sec:methods-contamination}` | Contamination models: declared failure modes for belief fusion (H2, demoted from H1) | `11_methods_contamination.md` |
 | `{#sec:methods-corruption}` | Corruption process for adversarial belief broadcasts (H2) | `11_methods_contamination.md` |
 | `{#sec:methods-contamination-axes}` | How contamination meets the three robustness axes (H2) | `11_methods_contamination.md` |
+| `{#sec:methods-contamination-client}` | Client bounded-loss contamination route (H3) | `11_methods_contamination.md` |
+| `{#sec:methods-contamination-heuristic-server}` | Heuristic-server contamination route (H3) | `11_methods_contamination.md` |
+| `{#sec:methods-contamination-variational-server}` | Objective-backed variational-server contamination route (H3) | `11_methods_contamination.md` |
 | `{#sec:methods-experimental-design}` | Experimental design: studies, estimands, determinism, and power (H2, demoted from H1) | `12_methods_experimental_design.md` |
 | `{#sec:methods-determinism}` | Determinism through fixed seeds and generated variables (H2) | `12_methods_experimental_design.md` |
 | `{#sec:methods-studies}` | Study suite and contamination sweep (H2) | `12_methods_experimental_design.md` |
@@ -327,13 +351,13 @@ Every H1 carries a `{#sec:<name>}` label so cross-section references (`[@sec:met
 | `{#sec:formalism-tempered-interpretation-summary}` | Publication-facing interpretation (H3, V1) | `14_formalism.md` |
 | `{#sec:results}` | Results: recovery checks and study suite | `15_results_recovery.md` |
 | `{#sec:results-belief_sharing}` | Belief sharing lowers free energy at the project-pool corner (H2) | `16_results_belief_sharing.md` |
-| `{#sec:results-language}` | Language acquisition follows conjugate Dirichlet updating (H2) | `17_results_language.md` |
-| `{#sec:results-emergence}` | Bayesian model reduction selects supported structure (H2) | `18_results_emergence.md` |
+| `{#sec:results-language}` | Conjugate Dirichlet likelihood-learning trajectory (H2) | `17_results_language.md` |
+| `{#sec:results-emergence}` | Configured BMR sign control on one fixed posterior (H2) | `18_results_emergence.md` |
 | `{#sec:results-robustness}` | Contamination sweep: regime-dependent server behavior under declared attacks (H2) | `19_results_robustness.md` |
-| `{#sec:results-verdict}` | Earned robustness verdict at the decisive rate (H3, statistics) | `19_results_robustness.md` |
+| `{#sec:results-verdict}` | Conditional matched-trial comparison at the declared rate (H3, statistics) | `19_results_robustness.md` |
 | `{#sec:results-variational}` | Variational aggregator: conservative objective-backed weight control (H3) | `19_results_robustness.md` |
 | `{#sec:results-recovery}` | Recovery limits: standard-Bayes and project-pool corners are exact to machine precision (H2) | `15_results_recovery.md` |
-| `{#sec:results-baseline}` | Client-side robustness complement: categorical FedGVI baseline (H2) | `20_results_baseline.md` |
+| `{#sec:results-baseline}` | Client-side robustness complement: exploratory generalized-Bayes logistic-regression proxy (H2) | `20_results_baseline.md` |
 | `{#sec:discussion}` | Discussion: what the evidence supports (H1) | `21_discussion_findings.md` |
 | `{#sec:discussion-limit}` | The recovery limit is the formal anchor (H2) | `21_discussion_findings.md` |
 | `{#sec:discussion-joint}` | What the study suite jointly shows (H2) | `21_discussion_findings.md` |
@@ -364,13 +388,16 @@ Every H1 carries a `{#sec:<name>}` label so cross-section references (`[@sec:met
 | `{#sec:conclusion-boundaries}` | What remains unproved (H2) | `25_conclusion.md` |
 | `{#sec:conclusion-program}` | A falsifiable research program (H2) | `25_conclusion.md` |
 | `{#sec:conclusion-position}` | Final position (H2) | `25_conclusion.md` |
-| `{#sec:reproducibility}` | Reproducibility: execution record and recovery checks | `26_reproducibility.md` |
+| `{#sec:reproducibility}` | Reproducibility: execution record and application integrity | `26_reproducibility.md` |
 | `{#sec:repro-determinism}` | Determinism contract for seeded scientific results (H2) | `26_reproducibility.md` |
+| `{#sec:repro-application-integrity}` | Application integrity and solver-health receipts (H2) | `26_reproducibility.md` |
 | `{#sec:repro-environment}` | Environment fingerprint for the reported run (H2) | `26_reproducibility.md` |
 | `{#sec:repro-accessibility}` | Reader-surface accessibility boundary (H2) | `26_reproducibility.md` |
 | `{#sec:repro-tests}` | Test and coverage evidence for the claim surface (H2) | `26_reproducibility.md` |
 | `{#sec:repro-artifacts}` | Artifact inventory for figures, data, and reports (H2) | `26_reproducibility.md` |
-| `{#sec:repro-recovery}` | Recovery-limit certificate for the client and project-pool corners (H2) | `26_reproducibility.md` |
+| `{#sec:repro-production}` | Reproducibility: producer provenance and recovery checks (H1) | `26_reproducibility_provenance.md` |
+| `{#sec:repro-provenance-map}` | Producer order, stale invalidation, and publication authority (H2) | `26_reproducibility_provenance.md` |
+| `{#sec:repro-recovery}` | Recovery-limit certificate for the client and project-pool corners (H2) | `26_reproducibility_provenance.md` |
 | `{#sec:references}` | References | `99_references.md` |
 
 ### Supplement section labels
@@ -382,7 +409,7 @@ Supplement files use numbers above `26` (aggregation-objective, extended-methods
 | `{#sec:supp-variational}` | Supplement: variational aggregation objective and weight control (H1) | `27_supplement_aggregation_objective.md` |
 | `{#sec:supp-why-heuristic}` | Why the sharp heuristic is not yet variational (H2) | `27_supplement_aggregation_objective.md` |
 | `{#sec:supp-derivation}` | Aggregation free energy and its block minimizers (H2) | `27_supplement_aggregation_objective.md` |
-| `{#sec:supp-theorem}` | Formal properties of the conservative server rule (H2) | `27_supplement_aggregation_objective.md` |
+| `{#sec:supp-theorem}` | Conservative-server properties (H2) | `27_supplement_aggregation_objective.md` |
 | `{#sec:supp-witnesses}` | Numerical witnesses for descent and influence bounds (H2) | `27_supplement_aggregation_objective.md` |
 | `{#sec:supp-tempered}` | Tempered aggregation family for the accuracy-guarantee trade (H2, V1) | `27_supplement_aggregation_objective.md` |
 | `{#sec:supp-extended}` | Supplement: extended methods for scoped generalization (H1) | `28_supplement_extended_methods.md` |
@@ -395,16 +422,16 @@ Supplement files use numbers above `26` (aggregation-objective, extended-methods
 | `{#sec:supp-greedy-bmr}` | Greedy multi-hypothesis model reduction beyond the main BMR study (H2) | `28_supplement_extended_methods.md` |
 | `{#sec:supp-federation}` | Federation transport protocol and bit-identity witness (H2, V3) | `29_supplement_federation_protocol.md` |
 | `{#sec:supp-notation}` | Authoritative supplemental notation contract (H1) | `30_supplement_notation.md` |
-| `{#sec:results-moving}` | Moving sentinel world: communication benefit depends on field of view (H2, V4) | `S05_results_moving_world.md` |
+| `{#sec:results-moving}` | Moving sentinel world: communication contrast depends on field of view (H2, V4) | `S05_results_moving_world.md` |
 | `{#sec:results-disjoint-fov}` | Disjoint field-of-view extension (H3, V4) | `S05_results_moving_world.md` |
 | `{#sec:supp-moving}` | Supplement: moving-world methods and condition definitions (H2, V4) | `S06_supp_moving_world.md` |
 | `{#sec:results-hierarchical}` | Hierarchical POMDP: federated belief sharing across levels (H2, V2) | `S09_results_hierarchical_pomdp.md` |
 | `{#sec:supp-hierarchical}` | Supplement: hierarchical POMDP methods and parameters (H2, V2) | `S10_supp_hierarchical_pomdp.md` |
 | `{#sec:results-3level}` | Three-level hierarchical POMDP: an executed test of the N-level template (H2, V2 ext.) | `S11_results_3level_pomdp.md` |
 | `{#sec:supp-3level}` | Supplement: N-level hierarchical POMDP methods (H2, V2 ext.) | `S12_supp_3level_pomdp.md` |
-| `{#sec:results-hierarchical-bmr}` | Structure learning: does the hierarchy earn its depth? (H2, V2 ext.) | `S16_results_hierarchical_bmr.md` |
+| `{#sec:results-hierarchical-bmr}` | Configured hierarchical surprise-threshold control (H2, V2 ext.) | `S16_results_hierarchical_bmr.md` |
 | `{#sec:results-heuristic-characterization}` | Sharp server heuristic: influence and finite-breakdown characterization (H2, MAJ-1) | `S17_results_heuristic_characterization.md` |
-| `{#sec:results-sensitivity}` | Parameter sensitivity of federation benefit | `S13_results_sensitivity.md` |
+| `{#sec:results-sensitivity}` | Signed accuracy contrasts over acuity and colony size | `S13_results_sensitivity.md` |
 | `{#sec:supp-sensitivity}` | Supplement: parameter-sensitivity methods | `S14_supp_sensitivity.md` |
 | `{#sec:results-parameter-recovery}` | Parameter recovery: acuity selection on the tested grid | `S15_results_parameter_recovery.md` |
 

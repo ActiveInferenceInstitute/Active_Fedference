@@ -25,9 +25,7 @@ def test_robustness_sweep_happy_path_with_threshold(tmp_path: Path) -> None:
         "KLD": {"0": 0.9, "0.5": 0.6, "0.9": 0.3},
         "RKL": {"0": 0.9, "0.5": 0.8, "0.9": 0.7},
     }
-    path = generate_robustness_sweep(
-        accuracy, rates, accuracy_threshold=0.5, project_root=tmp_path
-    )
+    path = generate_robustness_sweep(accuracy, rates, accuracy_threshold=0.5, project_root=tmp_path)
     assert path.exists()
     assert path.read_bytes()[:8] == _PNG_MAGIC
 
@@ -55,11 +53,34 @@ def test_robustness_sweep_profile_renders_trial_intervals(tmp_path: Path) -> Non
         }
         for key, mean in (("0", 0.88), ("0.9", 0.24))
     }
-    path = generate_robustness_sweep(
-        accuracy, rates, rate_summary=summary, project_root=tmp_path
-    )
+    path = generate_robustness_sweep(accuracy, rates, rate_summary=summary, project_root=tmp_path)
     assert path.exists()
     assert path.read_bytes()[:8] == _PNG_MAGIC
+
+
+def test_robustness_sweep_accepts_actual_server_constants(tmp_path: Path) -> None:
+    rates = [0.0, 0.9]
+    accuracy = {
+        "KLD": {"0": 0.9, "0.9": 0.2},
+        "legacy-client-label": {"0": 0.9, "0.9": 0.7},
+    }
+    path = generate_robustness_sweep(
+        accuracy,
+        rates,
+        server_robustness_by_label={"KLD": 0.0, "legacy-client-label": 1.5},
+        project_root=tmp_path,
+    )
+    assert path.exists()
+
+
+def test_robustness_sweep_rejects_incomplete_server_constant_map(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="missing server robustness"):
+        generate_robustness_sweep(
+            {"KLD": {"0": 0.9}, "RKL": {"0": 0.8}},
+            [0.0],
+            server_robustness_by_label={"KLD": 0.0},
+            project_root=tmp_path,
+        )
 
 
 def test_robustness_sweep_rejects_empty_accuracy(tmp_path: Path) -> None:

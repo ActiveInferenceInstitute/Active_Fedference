@@ -1,0 +1,119 @@
+{
+  "panels": [
+    {
+      "alt": "clean: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c2499539eab03b7dd64c75eec5b601bd65840bfc204450c5b55ac5429c98601a",
+      "src": "../figures/conditional_world.slide-attack-1-cells-1-2.png"
+    },
+    {
+      "alt": "clean: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "62a27b19bc6881e01d86a223b0246f4de05ed5131bae575d06b8352af8ee7e52",
+      "src": "../figures/conditional_world.slide-attack-1-cells-3-4.png"
+    },
+    {
+      "alt": "clean: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "345a960bfd9ed726691f24da703e756667fc36310bf8d2188320ed366bce1126",
+      "src": "../figures/conditional_world.slide-attack-1-range.png"
+    },
+    {
+      "alt": "confident_wrong: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "62cf45a29450b87d764490dda0f41edd94cef2dade28aaf3201a4a2686a8b930",
+      "src": "../figures/conditional_world.slide-attack-2-cells-1-2.png"
+    },
+    {
+      "alt": "confident_wrong: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c74891dd90270fbf91e8b4dca4ad550f9830a301da4c10ce2b2e0b8d9a4cc3d6",
+      "src": "../figures/conditional_world.slide-attack-2-cells-3-4.png"
+    },
+    {
+      "alt": "confident_wrong: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "db8abc85cb5934fa766988bb497fbfc0d24f9fb680b46f54e8335f32ca53dbd6",
+      "src": "../figures/conditional_world.slide-attack-2-range.png"
+    },
+    {
+      "alt": "permutation: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "bd97c68c83fd17dc9de1f8aa93c52a4d6fa733d2c9dad7d93c114529fb8e1a54",
+      "src": "../figures/conditional_world.slide-attack-3-cells-1-2.png"
+    },
+    {
+      "alt": "permutation: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ca745ec4e2f18b7c921c913b77e186b4117810ca6ae0a69c86b3bc9c97f5a54b",
+      "src": "../figures/conditional_world.slide-attack-3-cells-3-4.png"
+    },
+    {
+      "alt": "permutation: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c08c98605958dae6cc3c0b62b1dd832a7fa5451623b38b0921e538412d167ffb",
+      "src": "../figures/conditional_world.slide-attack-3-range.png"
+    },
+    {
+      "alt": "label_noise: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "418ab29c07c7c70f5dc16a3299cb4c70f8733ae51314f339453de6e5c376baae",
+      "src": "../figures/conditional_world.slide-attack-4-cells-1-2.png"
+    },
+    {
+      "alt": "label_noise: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "496b3fd3d42ae5b86a50280769ef90475783a72b360aa4548494a28dfdf28375",
+      "src": "../figures/conditional_world.slide-attack-4-cells-3-4.png"
+    },
+    {
+      "alt": "label_noise: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "83f67e00e2342724cd9dfb77bd08798f05ffeba859f9d02bf324dcbf15658d0a",
+      "src": "../figures/conditional_world.slide-attack-4-range.png"
+    },
+    {
+      "alt": "uniform: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "04aa08d792a653a1f9d221f7249b2416a5ef52977141c63627cf30edac8f41db",
+      "src": "../figures/conditional_world.slide-attack-5-cells-1-2.png"
+    },
+    {
+      "alt": "uniform: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "eb7a29fc85307a348c486bac1835c822b5075c15fabe90b300acf4fdc6391c34",
+      "src": "../figures/conditional_world.slide-attack-5-cells-3-4.png"
+    },
+    {
+      "alt": "uniform: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "22572a8cb6ccb6141104eebb076be6d06b924219695e6a48dfa39cc991d3a546",
+      "src": "../figures/conditional_world.slide-attack-5-range.png"
+    },
+    {
+      "alt": "Seed-level true-state-mass contrast: naive error minus robust error. Positive values favor the heuristic on the declared finite grid.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2977e0f13037c27807836054706a8048d4e6a1975f5c78edee6336ff7edd6406",
+      "src": "../figures/conditional_world.slide-key.png"
+    },
+    {
+      "alt": "Heatmap: adversary weight 1. State s0/s1; observability o45/o70. Common color scale: [-0.4889, 0.4889]. Every cell prints its signed mean.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f5decf2e28a98249f30b5a88b1fa2fb203921b4be523a7778c88e10d59cdde88",
+      "src": "../figures/conditional_world.slide-grid.png"
+    },
+    {
+      "alt": "Summary circles: finite-grid means across configured cells per attack. Asymmetric capped whiskers reach the observed minimum and maximum; they are not confidence intervals.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "732e65034079cff2fe732ef5359b8adc2949ceb55987c1f13171fd17cbe10ee1",
+      "src": "../figures/conditional_world.slide-ranges.png"
+    },
+    {
+      "alt": "Dark dotted rule: zero method contrast. This finite-grid summary does not support population, deployment or universal robustness claims.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ef610e8437a88a7b63e2881ddc8908e4f30136fd70545d403f8ad070e71242ee",
+      "src": "../figures/conditional_world.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

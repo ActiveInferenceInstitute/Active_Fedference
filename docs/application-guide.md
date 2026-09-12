@@ -15,6 +15,50 @@ input/output/provenance integrity. It does **not** prove that the input models
 are calibrated, that an aggregation rule is suitable for the domain, that a
 downstream decision is safe, or that a scientific claim is valid.
 
+## Application, solver-health, and receipt flow
+
+```mermaid
+flowchart TB
+    accTitle: Labeled aggregation and application receipt flow
+    accDescr: JSON or Python requests pass strict validation and one canonical aggregation call; nominal and non-nominal results are written atomically, while invalid inputs, unsafe destinations, and verification mismatches follow separate failure exits.
+    subgraph request["A. Validate and canonicalize the request"]
+        json["Labeled JSON request for the CLI"] --> json_parse["Duplicate-key-safe JSON parsing"]
+        json_parse --> validation["Shared exact-field, identifier, finite-mass, and one-dimensional-shape validation"]
+        python["Labeled Python request with no I/O"] --> validation
+        validation -->|"invalid labeled request"| invalid["Raise a validation error; CLI exits 2 before destination creation"]
+        validation -->|"valid"| canonical["Canonical semantic request with preserved order and masses"]
+        canonical -->|"CLI"| cli_checks["Validate required provenance and destination safety"]
+        cli_checks -->|"unsafe destination or required provenance unavailable"| reject["Reject before destination creation; CLI exit 2"]
+        cli_checks -->|"safe"| delegate["Delegate exactly once to aggregate_result"]
+        canonical -->|"Python; no I/O"| delegate
+    end
+    subgraph health["B. Preserve numerical health"]
+        delegate --> diagnostics["Consensus, raw and normalized weights, iterations, convergence, fallbacks, and histories"]
+        diagnostics --> statuses["solver_status: nominal; converged_with_fallback; not_converged; not_converged_with_fallback"]
+        statuses -->|"nominal"| nominal["Completed artifacts; CLI exit 0"]
+        statuses -->|"any non-nominal status"| retained["Retain complete artifacts for review; CLI exit 1"]
+    end
+    subgraph receipt["C. Write and verify the application receipt"]
+        nominal --> request_file["Atomically write request.json"]
+        retained --> request_file
+        request_file --> result_file["Atomically write result.json"]
+        result_file --> receipt_file["Atomically write receipt.json"]
+        receipt_file --> levels["Verify artifact integrity; optional source equivalence; optional nominal-solver requirement"]
+        levels -->|"hash, source, or requested-health mismatch"| mismatch["Report exact mismatch; verification exit 1 or malformed-input exit 2"]
+        levels -->|"declared checks pass"| verified["Report each verification level separately"]
+    end
+    verified --> boundary["No claim of calibration, domain suitability, scientific validity, downstream decision quality, or acceptance"]
+```
+
+**Text equivalent.**
+
+| Stage | Successful path | Distinct failure or review path | What the stage does not establish |
+| --- | --- | --- | --- |
+| Request boundary | CLI JSON first passes duplicate-key parsing; CLI and pure Python requests then share exact-field, identifier, finite-mass, and one-dimensional-shape validation. The canonical semantic request preserves order and caller-supplied masses. Before delegation, the CLI separately validates required provenance and destination safety; the pure Python route performs no I/O. | An invalid labeled request follows its own exit; an unsafe destination or unavailable required provenance follows a distinct CLI exit. Both CLI cases exit 2 before the destination is created, while the pure Python boundary raises a validation error. | Valid input shape or path safety does not establish calibration or domain suitability. |
+| Aggregation boundary | The labeled adapter delegates once to `aggregate_result` and retains consensus, raw and normalized weights, iterations, convergence, fallbacks, and histories. | The three non-nominal statuses retain complete artifacts and make the CLI exit 1 rather than discarding evidence. | A nominal solver status does not establish scientific validity or decision quality. |
+| Write boundary | `request.json`, `result.json`, and `receipt.json` are written atomically in that order. | Partial unsafe setup is rejected before creation; a completed receipt records execution completion, not acceptance. | File production does not authorize a downstream action. |
+| Verification boundary | Artifact integrity is always checked; source equivalence and nominal solver health are reported only when requested and available. | Hash, source, or requested-health mismatches produce explicit findings and a nonzero exit. | Receipt integrity, source equivalence, and nominal numerical health do not establish calibration, domain suitability, scientific validity, a downstream decision, or acceptance. |
+
 ## Fastest own-data path
 
 The default runtime supports Python 3.10 or newer and does not import Torch.
@@ -294,8 +338,14 @@ result = aggregate_result(local_posteriors, config=config)
 print(result.consensus, result.solver_status)
 ```
 
-Rows are normalized at the API boundary and exact zeros are floored before
-log-domain aggregation. `raw_effective_weights` are the actual final
+Each mass row is validated, floored at `1e-12`, and then normalized at the API
+boundary. The floor applies to small positive masses as well as exact zeros.
+Consequently, rescaling a row can change the admitted probabilities when some
+raw masses cross that floor. The pooling formulas use these admitted rows; the
+labeled result exposes them as `normalized_local_posteriors`, while the request
+retains the original masses.
+
+`raw_effective_weights` are the actual final
 coefficients; `normalized_effective_weights` are relative-influence diagnostics
 and are not substituted back into the pool. Scaling all raw base weights may
 change consensus concentration.

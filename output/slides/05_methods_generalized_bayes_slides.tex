@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,185 +259,266 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
+\begin{frame}{Generalized Bayes: the route back to standard Bayes}
 \protect\phantomsection\label{sec:method-genbayes}
 The inference engine FedGVI federates is the generalized (Gibbs)
 posterior (Bissiri et al. 2016; Jiang and Tanner 2008; Jewson et al.
-2018; Knoblauch et al. 2022), which trades the likelihood for a loss
-\(L\) and the KL regularizer for a general divergence \(\mathcal D\):
-
-\begin{equation}\protect\phantomsection\label{eq:gen-bayes}{
-q_n^\ast(s) \;=\; \arg\min_{q_n} \; \mathbb{E}_{q_n}\!\Big[\textstyle\sum_i L(s; o_i)\Big]
-\;+\; \tfrac{1}{\tau}\, \mathcal D\!\big(q_n \,\|\, \pi_0\big),
-}\end{equation}
-
+2018; Knoblauch et al. 2022),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
+\begin{frame}{Generalized Bayes (part 2)}
+which trades the likelihood for a loss \(L\) and the KL regularizer for
+a general divergence \(\mathcal D\):
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 3)}
+\begin{equation}\tag{2}\protect\phantomsection\label{eq:gen-bayes}{
+\begin{aligned}
+q_n^\ast(s)
+&= \arg\min_{q_n}
+\left\{
+\begin{aligned}
+&\mathbb{E}_{q_n}\!\Big[\textstyle\sum_i L(s; o_i)\Big]\\
+&\quad + \tfrac{1}{\tau}\,\mathcal D\!\big(q_n \,\|\, \pi_0\big)
+\end{aligned}
+\right\}.
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 4)}
 with prior \(\pi_0\), learning rate \(\tau\), and regularizing
 divergence \(\mathcal D\). The learning rate is part of the inferential
-specification, not a cosmetic constant; coarsened-posterior and
-safe-Bayes work show why calibration of that temperature matters under
-misspecification (Miller and Dunson 2018; Grünwald 2012), where ordinary
-Bayes concentrates around a KL pseudo-truth rather than literal truth
-when the model family is wrong (Kleijn and Vaart 2012). We name the
-object eq.~\ref{eq:gen-bayes} defines.
-
+specification, not a cosmetic constant;
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
+\begin{frame}{Generalized Bayes (part 5)}
+coarsened-posterior and safe-Bayes work show why calibration of that
+temperature matters under misspecification (Miller and Dunson 2018;
+Grünwald 2012), where ordinary Bayes concentrates around a KL
+pseudo-truth rather than literal truth when the model family is wrong
+(Kleijn and Vaart 2012).
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 6)}
+We name the object eq.~2 defines.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 7)}
 \begin{definition}[Generalized-(Gibbs)-Bayes posterior]\label{def:generalized-bayes}
-For a loss $L$, prior $\pi_0$, learning rate $\tau>0$, and divergence
-$\mathcal D$, the generalized-Bayes posterior is the minimizer $q_n^\ast$ of
-(\ref{eq:gen-bayes}). For
-$\mathcal D=\mathrm{KL}$ the minimizer is the tempered softmax
-$$
-q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),
-$$
-\label{eq:tempered-softmax}
-implemented in \breaktt{generalized\_bayes.generalized\_posterior}.
+Given loss $L$, prior $\pi_0$, learning rate $\tau>0$, and divergence
+$\mathcal D$, the generalized-Bayes posterior $q_n^\ast$ minimizes
+(2). When $\mathcal D=\mathrm{KL}$, its exact categorical
+minimizer is the tempered softmax in (3).
 \end{definition}
-
-The tempered softmax of eq.~\ref{eq:tempered-softmax}, stated in the
-definition above, is not an approximation: it is the exact closed-form
-minimizer of eq.~\ref{eq:gen-bayes} when the regularizer is the KL
-divergence, because the categorical support is finite and the objective
-is strictly convex in \(q\). The recovery to standard Bayes follows by
-choosing the loss. With \(L=\mathrm{NLL}\),
-\(\mathrm{NLL}(p, o) = -\log p(o)\), the exponential in that tempered
-softmax becomes a product of likelihoods and the minimizer is
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
-\emph{exactly} standard Bayes; eq.~6 in
-sec.~5.8 states that corner, and Corollary
-6 there pins it to the closed-form
-prior-times-likelihood product. The largest observed discrepancy between
-\breaktt{generalized\_posterior} in this regime and the analytic Bayes
-posterior is 5.55e-17, reported in sec.~7.1 ---
-exact to machine precision (a maximum deviation of about one ULP), not
-merely close.
+\begin{frame}{Generalized Bayes (part 8)}
+\begin{equation}\tag{3}\protect\phantomsection\label{eq:tempered-softmax}{
+q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),
+}\end{equation}
+\end{frame}
 
+\begin{frame}[fragile]{Generalized Bayes (part 9)}
+The implementation surface is the \texttt{generalized\_posterior}
+function in the \texttt{generalized\_bayes} module.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 10)}
+The tempered softmax of eq.~3, stated in the
+definition above, is not an approximation: it is the exact closed-form
+minimizer of eq.~2 when the regularizer is the KL
+divergence, because the categorical support is finite and the objective
+is strictly convex in \(q\).
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 11)}
+The recovery to standard Bayes follows by choosing the loss.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 12)}
+With \(L=\mathrm{NLL}\), \(\mathrm{NLL}(p, o) = -\log p(o)\), the
+exponential in that tempered softmax becomes a product of likelihoods
+and the minimizer is \emph{exactly} standard Bayes;
+eq.~11 in sec.~5.8 states
+that corner,
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 13)}
+and Corollary 6 there pins it to the
+closed-form prior-times-likelihood product.
+\end{frame}
+
+\begin{frame}[fragile]{Generalized Bayes (part 14)}
+The largest observed discrepancy between \texttt{generalized\_posterior}
+in this regime and the analytic Bayes posterior is 5.55e-17, reported in
+sec.~7.1 --- exact to machine precision (a
+maximum deviation of about one ULP), not merely close.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 15)}
 FedGVI computes each client update against a \emph{cavity} rather than
 the full posterior, so a contributing agent does not double-count its
 own previous message. We name that operation.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
+\begin{frame}{Generalized Bayes (part 16)}
 \begin{definition}[Cavity / PVI factor update]\label{def:cavity}
-The cavity removes agent $n$'s factor from the colony posterior in
-natural-parameter (log) space,
-$$
-q_{-n}(s)
-\;=\;
-\frac{q(s)/t_n(s)}{\sum_{s'} q(s')/t_n(s')}
-\;=\;
-\operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
-$$
-\label{eq:cavity}
-where the final expression makes the normalization explicit; the
-partitioned-variational-inference (PVI) update
-re-multiplies a refreshed factor onto the cavity of (\ref{eq:cavity}). Taking a
-cavity and re-multiplying the original site factor restores the global posterior
-\begin{equation}
-q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s'}q_{-n}(s')t_n(s')},
-\label{eq:factor-replacement}
-\end{equation}
-with the original site factor, the recombination identity, the
-property \breaktt{generalized\_bayes.cavity} and
-\breaktt{generalized\_bayes.update\_factor} satisfy.
+The cavity is the normalized removal of agent $n$'s site factor from the colony
+posterior in natural-parameter space, as in (4). PVI replaces the
+site factor and recombines it with that cavity according to
+(5).
 \end{definition}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
-The numbered recombination identity is eq.~\ref{eq:factor-replacement}.
+\begin{frame}{Generalized Bayes (part 17)}
+\begin{equation}\tag{4}\protect\phantomsection\label{eq:cavity}{
+\begin{aligned}
+q_{-n}(s)
+&=
+\frac{q(s)/t_n(s)}{\sum_{s'} q(s')/t_n(s')}
+\\
+&=
+\operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
+\end{aligned}
+}\end{equation}
+\end{frame}
 
-The cavity of eq.~\ref{eq:cavity} is the discrete analogue of the
+\begin{frame}{Generalized Bayes (part 18)}
+The final expression makes normalization explicit. Taking a cavity and
+re-multiplying the original site factor restores the global posterior:
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 19)}
+\begin{equation}\tag{5}\protect\phantomsection\label{eq:factor-replacement}{
+q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s'}q_{-n}(s')t_n(s')},
+}\end{equation}
+\end{frame}
+
+\begin{frame}[fragile]{Generalized Bayes (part 20)}
+This is the recombination identity satisfied by
+\texttt{generalized\_bayes.cavity} and
+\texttt{generalized\_bayes.update\_factor}.
+
+The numbered recombination identity is eq.~5.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 21)}
+The cavity of eq.~4 is the discrete analogue of the
 expectation- propagation / partitioned-VI cavity used outside active
-inference (Ashman et al. 2022; Bui et al. 2018), imported here so that
-the per-agent generalized-Bayes update of eq.~\ref{eq:gen-bayes} is
-computed against the colony belief with the agent's own contribution
-removed --- exactly the sensory-attenuation discipline the
-belief-sharing round of sec.~5.9 requires.
-What remains unspecified in eq.~\ref{eq:gen-bayes} are its two
+inference (Ashman et al. 2022; Bui et al. 2018),
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 22)}
+imported here so that the per-agent generalized-Bayes update of
+eq.~2 is computed against the colony belief with the
+agent's own contribution removed --- exactly the sensory-attenuation
+discipline the belief-sharing round of
+sec.~5.9 requires.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 23)}
+What remains unspecified in eq.~2 are its two
 ingredients --- the divergence \(\mathcal D\) and the loss \(L\) ---
 whose robust members and standard-Bayes limits
-sec.~5.6 develops next; the aggregation
-identity (sec.~5.8) then federates the
-resulting per-agent posteriors.
-
+sec.~5.6 develops next;
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized Bayes: the route
-back to standard Bayes}
+\begin{frame}{Generalized Bayes (part 24)}
+the aggregation identity (sec.~5.8) then
+federates the resulting per-agent posteriors.
+\end{frame}
+
+\begin{frame}{Generalized Bayes (part 25)}
 The authoritative notation supplement makes the same normalization and
-recombination contract explicit in eq.~30 and
-eq.~31; those equations govern the
+recombination contract explicit in eq.~36 and
+eq.~37; those equations govern the
 symbols used by the implementation and all later supplements.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Conjugate likelihood learning
-for the shared model}
+\begin{frame}{Conjugate likelihood learning for the shared model}
 \protect\phantomsection\label{sec:method-learning}
 Active-inference agents learn the parameters of their generative model,
-not just plan with them (Smith et al. 2022; Friston et al. 2024). The
-likelihood matrix \(A\) carries a Dirichlet prior with concentration
+not just plan with them (Smith et al. 2022; Friston et al. 2024).
+\end{frame}
+
+\begin{frame}{Conjugate likelihood\ldots{} (part 2)}
+The likelihood matrix \(A\) carries a Dirichlet prior with concentration
 \(a\) over each column, updated conjugately by accumulating
-observation-state co-occurrence counts (eq.~14),
+observation-state co-occurrence counts (eq.~18),
+\end{frame}
+
+\begin{frame}{Conjugate likelihood\ldots{} (part 3)}
 giving the column-normalized expected likelihood. The update of
-eq.~14 is driven by the expected sufficient
-statistics under the data-generating model, so as the concentrations
-accumulate \(\mathbb{E}[A]\) converges to the true likelihood.
+eq.~18 is driven by the expected sufficient
+statistics under the data-generating model,
+
+so as the concentrations accumulate \(\mathbb{E}[A]\) converges to the
+true likelihood.
+\end{frame}
+
+\begin{frame}{Conjugate likelihood\ldots{} (part 4)}
 Convergence is measured by the per-column KL divergence summed over
 hidden states, which decreases monotonically toward the standard-Bayes
 fixed point; sec.~7.3 reports the learning curve,
-where the KL falls from 3.4231 to 0.0027 across 24 count batches. A
-forgetting hyperprior optionally decays the running mass toward an
+where the KL falls from 3.4231 to 0.0027 across 24 count batches.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Conjugate likelihood learning
-for the shared model}
+\begin{frame}{Conjugate likelihood\ldots{} (part 5)}
+A forgetting hyperprior optionally decays the running mass toward an
 asymptote so the agent does not become infinitely confident; with the
 hyperprior disabled the classical unbounded accumulation of
-eq.~14 is recovered. The implementation is
-\breaktt{dirichlet\_learning.learn\_likelihood}.
+eq.~18 is recovered.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Bayesian model reduction for
-structure comparison}
+\begin{frame}[fragile]{Conjugate likelihood\ldots{} (part 6)}
+The implementation is \texttt{learn\_likelihood} in the
+\texttt{dirichlet\_learning} module.
+\end{frame}
+
+\begin{frame}[fragile]{Bayesian model reduction for structure
+comparison}
 \protect\phantomsection\label{sec:method-bmr}
 Structure learning in the active-inference frame proceeds by Bayesian
 model reduction (BMR): given a full model with Dirichlet posterior
-\texttt{post} under prior \texttt{prior}, the change in negative
-variational free energy from swapping in a \emph{reduced} prior --- for
-example one that prunes a redundant column toward zero --- is available
-in closed form without re-running inference (Friston and Penny 2011;
-Smith et al. 2022). Because the likelihood is shared, the reduced
-posterior is \breaktt{post\ +\ reduced\_prior\ -\ prior}, and the
-free-energy difference is a difference of log multivariate Beta
-functions (eq.~16), where
-\(\ln B(a) = \sum_k \ln\Gamma(a_k) - \ln\Gamma(\sum_k a_k)\) is the log
-Dirichlet normalizer. A positive \(\Delta F\) in eq.~16
-means the reduced model has more evidence --- the pruned structure was
-redundant and should be adopted; a negative \(\Delta F\) means the
+\texttt{post} under prior \texttt{prior},
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Bayesian model reduction for
-structure comparison}
-reduction destroyed something the data support. When the reduced prior
-equals the prior the score is identically zero, the no-reduction fixed
-point. sec.~7.4 reports \(\Delta F = 3.68\) for
-a redundant reduction (accepted) against \(\Delta F = -27.67\) for a
+\begin{frame}{Bayesian model reduction\ldots{} (part 2)}
+the change in negative variational free energy from swapping in a
+\emph{reduced} prior --- for example one that prunes a redundant column
+toward zero ---
+\end{frame}
+
+\begin{frame}{Bayesian model reduction\ldots{} (part 3)}
+is available in closed form without re-running inference (Friston and
+Penny 2011; Smith et al. 2022).
+\end{frame}
+
+\begin{frame}[fragile]{Bayesian model reduction\ldots{} (part 4)}
+Because the likelihood is shared, the reduced posterior is
+\texttt{post\ +\ reduced\_prior\ -\ prior}, and the free-energy
+difference is a difference of log multivariate Beta functions
+(eq.~20), where
+\(\ln B(a) = \sum_k \ln\Gamma(a_k) - \ln\Gamma(\sum_k a_k)\) is the log
+Dirichlet normalizer.
+\end{frame}
+
+\begin{frame}{Bayesian model reduction\ldots{} (part 5)}
+A positive \(\Delta F\) in eq.~20 means the reduced
+model has more evidence --- the pruned structure was redundant and
+should be adopted; a negative \(\Delta F\) means the reduction destroyed
+something the data support. When the reduced prior equals the prior the
+score is identically zero,
+\end{frame}
+
+\begin{frame}[fragile]{Bayesian model reduction\ldots{} (part 6)}
+the no-reduction fixed point.
+
+sec.~7.4 reports \(\Delta F = 3.68\) for a
+redundant reduction (accepted) against \(\Delta F = -27.67\) for a
 supported one (rejected). The implementation is
-\breaktt{bayesian\_model\_reduction.reduce}.
+\texttt{bayesian\_model\_reduction.reduce}.
 \end{frame}
 
 \end{document}

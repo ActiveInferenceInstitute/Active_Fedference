@@ -1,6 +1,6 @@
 # Visual claim audit
 
-Updated 2026-08-13. The numerical and render records dated 2026-07-17,
+Updated 2026-08-29. The numerical and render records dated 2026-07-17,
 2026-07-28, and 2026-08-01 are historical snapshots. The checked-out source
 declares an enlarged experiment configuration and a revised selection-free
 review-grid producer. A visual is current only when its named report and the
@@ -46,6 +46,15 @@ ledger.
 
 ## Current visual source contract
 
+Three source-owned explanatory maps extend the manuscript without adding an
+experimental result. `application_integrity_flow` records validation,
+solver-health, artifact, and receipt-verification states;
+`evidence_replication_map` separates claim owners, estimands, independent units,
+nesting, and prohibited transfers; and `source_render_provenance` records
+producer order, stale invalidation, and authorization-gated publication. Each is
+deterministic, has no sampling interval or replication unit, and becomes a
+current visual only after source-bound regeneration and surface review.
+
 `robustness_review_grid` is a conditional finite-grid diagnostic backed by
 schema `1.1`. Its left panel reports a half min--max span over the finite
 conditional cell, not a confidence interval. Its rate panels draw every
@@ -55,6 +64,11 @@ The report retains every signed method × rate × directional-mechanism cell and
 fails if the configured maximum MCSE target is not met. Captions name the
 estimand, seed/trial nesting, uncertainty semantics, and the absence of
 universal, causal, breakdown, or independence claims.
+
+The review grid is embedded once in the main robustness results as the principal
+all-method comparative surface. The pooled-display gallery, onset, and legacy
+sweep retain their narrower descriptive or fixed-world roles; promotion in the
+manuscript does not enlarge the review grid's finite-design claim.
 
 The contamination-gallery and robustness-onset surfaces remain
 pooled-best/descriptive displays. Their pooled-best summaries and intervals may
@@ -70,16 +84,33 @@ message-passing, POMDP, and system-overview visuals remain deterministic
 formal/mechanistic schematics unless their captions explicitly bind them to a
 data-bearing report; no schematic receives an empirical CI.
 
+The current source also fixes five figure-specific semantics before visual
+redesign. `free_energy_comparison` uses the paired seed-level difference
+incommunicado minus communicating. `robustness_sweep` uses legacy method names
+only as server-preset labels and treats trials as nested within a fixed seeded
+world. `emergence_bmr` is a configured sign control on one posterior.
+`hierarchical_bmr` is a thresholded surprise diagnostic, not BMR evidence.
+`bnn_robustness` is an exploratory point-estimate logistic-regression sweep with
+within-sweep operating-point selection.
+
 | Visual | Mode | Evidence source | Permitted reading | Explicit boundary |
 | --- | --- | --- | --- | --- |
 | `graphical-abstract.png` | Deterministic formal/mechanistic schematic | `system_overview` metadata and pooled beliefs | Recovery anchor, broadcast pathway, and three-axis map | Not a benchmark, CI, significance result, or transfer of the variational bound to `robust_aggregate` |
 | `generative_model_schema.png` | Deterministic formal schematic | Categorical `A/B/C/D`, state-inference equation, hierarchy API | Temporal, hierarchical, and factorial model structure | Does not claim every displayed dependency is estimated in every study |
 | `message_passing.png` | Deterministic mechanistic schematic | Aggregation and belief-sharing equations | Local update → broadcast → server-fusion routes | Client-side FedGVI, heuristic server, and variational server have separate claim ownership |
 | `pomdp_loop.png` | Deterministic model schematic | Categorical POMDP and moving-world implementation | Hidden state → observation → belief → action → transition, plus federation | Flat studies use an inference-sharing subset; moving-world results execute the action/transition extension |
+| `application_integrity_flow.png` | Deterministic source-owned implementation map | Typed labeled-application, solver-health, receipt, and verification contract | Fail-closed request handling, four solver-health states, atomic artifact order, and verification levels | Receipt integrity, source equivalence, or nominal solver health does not establish calibration, domain suitability, scientific validity, decision correctness, or acceptance |
+| `evidence_replication_map.png` | Deterministic source-owned evidence map | Claim ledger, typed report contracts, and declared nesting rules | Claim-lane evidence class, estimand, unit, independent level, nesting, permitted reading, and prohibited transfer | Formal, client, server, protocol, application, and open external-confirmation lanes cannot exchange guarantees or replication units |
+| `source_render_provenance.png` | Deterministic source-owned provenance map | Producer-order, invalidation, renderer, and publication-authorization contracts | Earliest-owner regeneration, clean rendering, surface validation, manifests, and separately gated GitHub/Zenodo terminals | A green build does not authorize publication, validate science, establish PDF/UA or WCAG conformance, or enlarge the claim surface |
 | `system_overview.png` | Deterministic configured schematic | `SYSTEM_OVERVIEW_METADATA` | One derived failure-and-repair example | Not universal robustness evidence and not a variational-server result |
+| `free_energy_comparison.png` | Paired conditional empirical diagnostic | Paired communicating and incommunicado colony means in `belief_sharing.json` | $\bar F_{\mathrm{solo}}-\bar F_{\mathrm{share}}$ by independent seed, with positive values indicating lower free energy under communication | Agents are nested within seed; no general communication benefit, rate claim, or exact source-protocol replication |
+| `emergence_bmr.png` | Deterministic configured sign control | `emergence.json` and one fixed posterior | Opposite BMR signs for declared redundant and supported pruning candidates | Not universal structure emergence, consistent model selection, or exact source-figure reproduction |
+| `hierarchical_bmr.png` | Deterministic threshold diagnostic | `hierarchical_bmr.json` and configured surprise threshold | Per-level Bayesian surprise and the resulting configured prune/keep labels | Not BMR evidence, posterior refitting, autonomous depth selection, or universal depth recovery |
+| `robustness_sweep.png` | Conditional matched-trial server-preset comparison | `robustness_sweep.json` | True-state mass for the standard pool and configured heuristic presets over matched trials | Legacy labels are not client losses; trials are nested within one fixed seeded world and are not independent worlds |
+| `bnn_robustness.png` | Exploratory conditional point-estimate proxy | `bnn_robustness.json` | Clean synthetic held-out accuracy for joint NLL/L2=0.05 and RCCE/L2=0.10 configurations | Loss and shrinkage change together, so the contrast cannot identify an RCCE-only effect; only peak contamination is selected within the displayed grid, while $q$ and points per class per client are configured inputs; legacy `AR` is a coefficient selector, not an Alpha-Rényi objective; no leakage-free calibration, posterior-uncertainty BNN, universal robustness, or source-parity claim |
 | `complexity_scaling.png` | Implementation-derived diagnostic | `complexity_scaling.json`, `src/fedference/complexity.py`, and the public-path timing experiment | Dense-path orders plus seeded machine-local scaling observations | Dotted lines are normalized guides; min–max bars are not confidence intervals; no cross-machine, network, FLOP, or universal asymptotic claim |
 | `conditional_world.png` | Conditional empirical finite-grid diagnostic | `conditional_world.json` and `run_conditional_world_generalization` | Seed-level true-state-mass contrasts across hidden state, observability, attack, and adversarial-weight cells | Mixed cell signs are retained; no universal attack or breakdown claim |
-| `robustness_review_grid.png` | Conditional finite-grid, all-method inferential diagnostic on a fresh run | Fresh schema-`1.1` `robustness_review_grid.json` with its precision receipt | Every predeclared non-KLD robust-minus-KLD contrast by directional mechanism and rate, with method-specific seed-bootstrap intervals | No winner selection, pooled inference, universal attack claim, or claim before a source-current report and render exist |
+| `robustness_review_grid.png` | Main-text conditional finite-grid, all-method inferential diagnostic on a fresh run | Fresh schema-`1.1` `robustness_review_grid.json` with its precision receipt | Every predeclared non-KLD robust-minus-KLD contrast by directional mechanism and rate, with method-specific seed-bootstrap intervals | No winner selection, pooled inference, universal attack claim, or claim before a source-current report and render exist |
 | `belief_quality.png` | Conditional empirical proper-score diagnostic | `belief_quality.json` and `run_belief_quality_sensitivity` | Categorical log-score controls with Brier/ECE secondary diagnostics and seed-level uncertainty | Controls validate score direction only; no calibration-under-shift, decision-optimality, or robust-score advantage claim |
 | `sensitivity_heatmap.png` | Deterministic seeded sensitivity summary | `SENSITIVITY_NOISE_FLOOR` plus the executed cell means | Acuity × colony-size gaps and the declared near-zero display convention | Hatching is a visualization threshold, not a test of statistical significance or a zero-effect claim |
 | Data-bearing result figures | Conditional empirical or formal diagnostic | JSON reports and core tests | Only the statistic, estimand, and run named in the caption | CIs quantify the declared resampling unit; they do not generalize across unmodeled worlds or deployments |
@@ -89,20 +120,31 @@ data-bearing report; no schematic receives an empirical CI.
 | Source surface | Project surface | Material protocol difference | Permitted interpretation | Prohibited claim |
 | --- | --- | --- | --- | --- |
 | Friston et al. Eq. 2 | `efe_decomposition` signed waterfall | Categorical state--outcome information gain is displayed; parameter-learning terms from the source equation are not added | Formal specialization of the executable algebraic identity | Exact reproduction of the full source decomposition |
-| Friston et al. Fig. 5 | `free_energy_comparison`, `message_passing` | Reduced categorical colony and one-round summary rather than the source multi-agent, multi-panel protocol | Source-mechanism analogue of belief sharing and its declared free-energy estimand | Figure-level reproduction or transfer of source numerical values |
+| Friston et al. Fig. 5 | `free_energy_comparison`, `message_passing` | Reduced categorical colony and one-round summary rather than the source multi-agent, multi-panel protocol | Source-mechanism analogue with the paired seed-level contrast defined as incommunicado minus communicating | Figure-level reproduction, general communication benefit, rate claim, or transfer of source numerical values |
 | Friston et al. Fig. 7 | `language_kl_decay` | One categorical likelihood trajectory aggregated over configured seeds rather than the source auditory mappings and episode protocol | Source-mechanism analogue of the language-acquisition estimand; seed is the replication unit | Exact episode-level replication or CI over ordered time points |
-| Friston et al. Fig. 9 | `emergence_bmr` | Deterministic categorical BMR pruning diagnostic rather than the source multi-agent language-naive protocol | Diagnostic related to the model-reduction mechanism | Exact source simulation or universal structure-emergence claim |
+| Friston et al. Fig. 9 | `emergence_bmr` | Deterministic categorical BMR pruning diagnostic rather than the source multi-agent language-naive protocol | Configured sign control on one fixed posterior, related to the model-reduction mechanism | Exact source simulation, universal structure emergence, or consistent model-selection claim |
 
 ## Red-team checks
 
 - A caption for a schematic must say `schematic`, `formal`, or `mechanistic` and
   state that no uncertainty interval applies.
+- A caption for a deterministic explanatory map must name its source-owned
+  contract, categorical or conceptual unit, absence of statistical uncertainty,
+  and explicit no-transfer or authorization boundary.
 - A caption for a stochastic or seed-aggregated figure must name the interval,
   sample/resampling unit, and estimand.
 - Gallery and onset captions must call their pooled-best displays descriptive;
   they must not borrow the review grid's selection-free inference language.
 - A review-grid caption must identify its all-method, selection-free rate
   curves and must not call a finite-grid min--max span a confidence interval.
+- The free-energy caption must define the sign of its paired difference and name
+  seed—not agent—as the independent unit.
+- The emergence caption must call the result a configured sign control; the
+  hierarchical surprise caption must not call its threshold decision BMR.
+- The logistic-regression caption must disclose within-sweep operating-point
+  selection and must not call the point-estimate model a posterior BNN.
+- The robustness-sweep caption must identify server presets and matched trials;
+  legacy labels must not imply client-loss theorem transfer.
 - `robust_aggregate` may be described as a server heuristic with conditional
   empirical behavior and a recovery limit; it may not be described as carrying
   the per-client FedGVI bounded-influence guarantee.
@@ -137,8 +179,12 @@ no-claim boundary. Formal and mechanistic diagrams remain explicitly
 uncertainty-free schematics; finite-grid spans remain descriptive ranges rather
 than confidence intervals; and robustness axes remain distinct.
 
-All five Mermaid blocks in the root README and `docs/` render to SVG with the
-same source contract used by the static validator. The combined PDF passes
+At that audit, all five then-present Mermaid blocks in the root README and
+`docs/` rendered to SVG with the same source contract used by the static
+validator. The source-current validator now discovers the live block count and
+also requires one `accTitle`, one `accDescr`, quoted punctuation-bearing
+labels, and an adjacent plain-language text equivalent for every diagram. The
+combined PDF passes
 `qpdf --check`; the archived PDF reported `Tagged: no`, so the HTML surface
 remained the accessibility-enhanced canonical surface and no PDF/UA
 conformance was claimed. The source-current combined PDF has an additional

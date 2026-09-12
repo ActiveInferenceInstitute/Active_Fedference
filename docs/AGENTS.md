@@ -68,7 +68,7 @@ Technical index for `docs/`. Navigation hub:
 | `src/analysis/report_schemas.py` | REQUIRED | Report/figure write-boundary schemas + figure dependency contracts; `tests/analysis/test_report_schemas.py` |
 | `src/fedference_cli/` | REQUIRED | Installed CLI facade, command dispatch, output isolation, and receipt contracts; `tests/test_fedference_cli.py` |
 | `src/figures/*.py` | REQUIRED | Figure generators (one module per figure); `tests/figures/` |
-| `README.md`, `docs/**/*.md` Mermaid blocks | REQUIRED | `scripts/validate_mermaid.py`; renderer probe for release review |
+| `README.md`, `docs/**/*.md` Mermaid blocks | REQUIRED | `scripts/validate_mermaid.py` enforces accessible names, descriptions, quoted punctuation, and adjacent text equivalents; renderer probe for release review |
 | `src/manuscript_variables.py` | REQUIRED | `tests/test_manuscript_variables.py`; live tokens |
 | `src/experiment_config.py` | REQUIRED | `tests/test_experiment_config.py` |
 | `src/fedference/config/hierarchical_layers.yaml` | REFERENCE | Human-readable mirror of the defaults in `build_3level_world`; `tests/fedference/test_hierarchical_layers_yaml.py` gates acuity, goal bonus, and canonical prior drift |

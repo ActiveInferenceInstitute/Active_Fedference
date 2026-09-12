@@ -80,9 +80,10 @@ Full module map, experiments, and artifacts:
 - Manuscript numbers are `{{TOKEN}}` only — see [`docs/manuscript/tokens-and-labels.md`](docs/manuscript/tokens-and-labels.md)
 - Generated `output/` is a committed reviewer snapshot regenerated from source;
   `.tmp/` is local review scratch space and must never be released.
-- README/docs diagrams use fenced GitHub-compatible Mermaid with quoted labels
-  whenever punctuation could be parsed as syntax; validate statically and with
-  the renderer before release.
+- README/docs diagrams use fenced GitHub-compatible Mermaid with exactly one
+  non-empty `accTitle` and `accDescr`, quoted punctuation-bearing labels, and an
+  immediately following `**Text equivalent.**` table or ordered description;
+  validate statically and with the renderer before release.
 - Every figure has source relation, estimand, unit, uncertainty disposition,
   replication unit, and concise `alt_text` in `_metadata.py`, with a
   self-contained caption and final PDF/HTML visual QA. HTML remains the

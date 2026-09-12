@@ -1,0 +1,35 @@
+{
+  "panels": [
+    {
+      "alt": "Variational objective in nats at every iteration; filled triangle is final iterate, large open triangles mark the largest observed step.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "fc389f038031d4978155ce09f78c7670620e456190b4b956642784004a886469",
+      "src": "../figures/aggregation_descent.slide-trajectory.png"
+    },
+    {
+      "alt": "Triangles and dash-dot: variational objective.\nFilled triangle: final iterate.\nLarge open triangles: largest observed step.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e889e8edf8ea34367cf92a423aa1ddf6be40ae3ec4b848d4060477915732faff",
+      "src": "../figures/aggregation_descent.slide-encoding.png"
+    },
+    {
+      "alt": "Iterations: 11\nTotal drop \u0394F = 0.868 nats\nMax ascent step = 8.9e-16 nats",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f74745480c04401ca15ee4f9eacf4a66965b2cf9faddab0ad5fa03fc73d4d233",
+      "src": "../figures/aggregation_descent.slide-notes-1.png"
+    },
+    {
+      "alt": "Monotone: yes  \u2713 converged",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a056de48dcac01e0bf4deb73a7f21c3eb2123fabf8cb271f335c87856f21745d",
+      "src": "../figures/aggregation_descent.slide-notes-2.png"
+    },
+    {
+      "alt": "One deterministic trajectory; no sampling interval.\nA final iterate is not a global-optimum certificate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a8eee6f8321f31dbf78088ef7ec95d11ee5b2be8f54b02d464235ad98a2d46b5",
+      "src": "../figures/aggregation_descent.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

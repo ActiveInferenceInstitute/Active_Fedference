@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from PIL import Image
 
 from figures.hierarchical_pomdp import generate_hierarchical_pomdp
 
@@ -21,6 +22,9 @@ def test_hierarchical_pomdp_happy_path(tmp_path: Path) -> None:
     )
     assert path.exists(), "PNG file was not created"
     assert path.read_bytes()[:8] == _PNG_MAGIC, "file is not a valid PNG"
+    with Image.open(path) as image:
+        assert image.width > image.height
+        assert image.height >= 0.75 * image.width, "six panels must retain the readable 2x3 reflow"
 
 
 def test_hierarchical_pomdp_custom_filename(tmp_path: Path) -> None:

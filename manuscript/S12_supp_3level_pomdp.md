@@ -4,23 +4,28 @@ This supplement specifies the generic $N$-level architecture that
 [@sec:results-3level] exercises at depth three: how the meta-context (L3),
 context (L2), and location (L1) factors are chained through conditioned priors,
 what the declarative `LayerSpec` interface fixes versus leaves free, and the
-top-down/bottom-up passes the inference runs. It answers *what the executed
+top-down/bottom-up passes the inference runs.
+
+It answers *what the executed
 3-level result is a special case of* — the reason the same code runs at other
 depths without new mathematics — while recording that only the declared 3-level
 configuration is empirically evaluated here.
 
 ### Generative model for an N-level hierarchy
 
-The 3-level POMDP implemented in
-`fedference.pomdp.build_3level_world` extends the 2-level construction
-([@sec:supp-hierarchical]) by adding a top-level meta-context factor:
+The 3-level POMDP is built by `build_3level_world` in the `fedference.pomdp`
+module. It extends the 2-level construction
+([@sec:supp-hierarchical]) by adding a top-level meta-context factor.
 
-* **L3 (meta-context)** — {{NLEVEL3_N_META_CONTEXTS}} states (``low_threat`` /
-  ``high_threat``) with initial uniform prior, gating the L2 context prior;
-* **L2 (context)** — {{NLEVEL3_N_CONTEXTS}} states (``quiet`` / ``alert``) with
-  context-conditioned L1 location priors, gating the L1 prior;
-* **L1 (location)** — the standard 3x3 grid with {{NLEVEL3_N_LOCATIONS}} states
-  and sensor acuity {{NLEVEL3_ACUITY}}.
+**L3 (meta-context).** {{NLEVEL3_N_META_CONTEXTS}} ``low_threat`` /
+``high_threat`` states begin from a uniform prior and gate the L2 context
+prior.
+
+**L2 (context).** {{NLEVEL3_N_CONTEXTS}} ``quiet`` / ``alert`` states gate the
+L1 prior through context-conditioned location priors.
+
+**L1 (location).** The standard 3x3 grid has {{NLEVEL3_N_LOCATIONS}} states and
+sensor acuity {{NLEVEL3_ACUITY}}.
 
 The conditioned priors are (see [@eq:l3-to-l2-message] and [@eq:l2-to-l1-message]):
 
@@ -36,11 +41,14 @@ The conditioned priors are (see [@eq:l3-to-l2-message] and [@eq:l2-to-l1-message
 
 ### Generic N-level architecture
 
-`fedference.pomdp.LayerSpec` and `fedference.pomdp.build_nlevel_world`
-implement the generic N-level version. The declarative layer specification is
-stored at ``src/fedference/config/hierarchical_layers.yaml`` and mirrors the
+The `LayerSpec` type and `build_nlevel_world` function in the
+`fedference.pomdp` module implement the generic N-level version. The declarative
+layer specification is `hierarchical_layers.yaml` under
+`src/fedference/config/`; it mirrors the
 canonical 3-level defaults (a standalone documentation artifact not read by any
-code path, kept in sync with the ``build_3level_world`` defaults). The constructor
+code path, kept in sync with the ``build_3level_world`` defaults).
+
+The constructor
 accepts depth ≥ 2; the executed empirical result in this manuscript is restricted
 to the declared 3-level configuration, and the leaf layer must carry
 ``n_states == N_LOCATIONS``.
@@ -50,14 +58,16 @@ to the declared 3-level configuration, and the leaf layer must carry
 `fedference.pomdp.nlevel_infer` performs {{NLEVEL3_N_ITERS}} passes of
 top-down / bottom-up alternating minimization over all N levels:
 
-1. **Top-down pass** — compute the empirical prior for each level by marginalizing
-   over the level above ([@eq:l3-to-l2-message], [@eq:l2-to-l1-message]).
-2. **L1 update** — one-step variational posterior on the observation:
-   $q_{\text{loc}} = \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
-   \log A[\text{obs},\,\cdot])$.
-3. **Bottom-up pass** — update each non-leaf level's belief from the marginal
-   evidence contributed by the level below:
-   $\ell_j = \log(\tilde{p}_{\text{child|parent=}j}^\top q_{\text{child}})$.
+**1. Top-down pass.** Compute the empirical prior for each level by marginalizing
+over the level above ([@eq:l3-to-l2-message], [@eq:l2-to-l1-message]).
+
+**2. L1 update.** The one-step variational posterior on the observation is
+$q_{\text{loc}} = \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
+\log A[\text{obs},\,\cdot])$.
+
+**3. Bottom-up pass.** Update each non-leaf level's belief from the marginal
+evidence contributed by the level below:
+$\ell_j = \log(\tilde{p}_{\text{child|parent=}j}^\top q_{\text{child}})$.
 
 After {{NLEVEL3_N_ITERS}} iterations the agent broadcasts all N level beliefs;
 the colony federates each level independently via a log-linear pool

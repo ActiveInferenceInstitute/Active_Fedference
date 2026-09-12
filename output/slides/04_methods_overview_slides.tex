@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -220,141 +262,195 @@
 \section{Methods: the federated active-inference
 stack}\label{sec:methods}
 
-\begin{frame}[fragile,allowframebreaks]{Methods: the federated
-active-inference stack}
+\begin{frame}{Methods: the federated active-inference stack}
 \protect\phantomsection\label{sec:methodology}{}
 
 This section develops the federated generalized variational inference
-(FedGVI) core in the discrete-categorical setting and defines the
-primitives whose recovery limits sec.~6 then states as
-numbered theorems. Every belief here is a categorical pmf --- a
-non-negative vector summing to one --- so the
-generalized-variational-inference machinery reduces to closed forms that
-are exactly testable. All mathematics lives in \texttt{src/fedference/};
-the prose names the module and the identity that pins each claim.
-
+(FedGVI) core in the discrete-categorical setting and defines its
+primitives. Their recovery limits are stated as numbered theorems in
+sec.~6.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Methods: the federated
-active-inference stack}
+\begin{frame}{Methods: the federated\ldots{} (part 2)}
+Every belief here is a categorical pmf --- a non-negative vector summing
+to one --- so the generalized-variational-inference machinery reduces to
+closed forms that are exactly testable.
+\end{frame}
+
+\begin{frame}[fragile]{Methods: the federated\ldots{} (part 3)}
+All mathematics lives in \texttt{src/fedference/}; the prose names the
+module and the identity that pins each claim.
+\end{frame}
+
+\begin{frame}{Methods: the federated\ldots{} (part 4)}
 The active-inference community has built a rich apparatus for federated
 belief sharing: discrete-state-space agents that broadcast posteriors
 and fuse them into a consensus (Da Costa et al. 2020; Friston et al.
-2024), message-passing toolboxes that make exact-Bayes inference
-scalable (Heins et al. 2022; Bagaev et al. 2023), and collective and
-multi-agent formulations in which ensembles coordinate by sharing
-observations and beliefs (Heins et al. 2024; Albarracin et al. 2022;
-Kaufmann et al. 2021). We accept that apparatus and extend it: the
-consensus rule the field uses is exact-Bayes and trusting, with no
-account of what happens when an agent in the ensemble is misspecified or
-adversarial. Outside active inference, the federated-learning and
-robust-Bayes literatures address important parts of that question ---
-decentralized aggregation (McMahan et al. 2017), partitioned and
-federated variational inference (Ashman et al. 2022; Bui et al. 2018),
+2024),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Methods: the federated
-active-inference stack}
-and generalized, robustness-bearing Bayesian updating (Bissiri et al.
-2016; Knoblauch et al. 2022; Basu et al. 1998; Zhang and Sabuncu 2018)
---- but none has been carried into the generative-model-bearing,
-action-selecting POMDP setting. The methodology below is the bridge: it
-federates the FedGVI objective (Mildner et al. 2025) per agent inside an
-active-inference ensemble, proves the standard-Bayes client limits, and
-tests the project-local zero-robustness log-linear-pool identity. Under
-the qualified categorical bridge of sec.~5.8,
+\begin{frame}{Methods: the federated\ldots{} (part 5)}
+message-passing toolboxes that make exact-Bayes inference scalable
+(Heins et al. 2022; Bagaev et al. 2023), and collective and multi-agent
+formulations in which ensembles coordinate by sharing observations and
+beliefs (Heins et al. 2024; Albarracin et al. 2022; Kaufmann et al.
+2021).
+\end{frame}
+
+\begin{frame}{Methods: the federated\ldots{} (part 6)}
+We accept that apparatus and extend it. Among the active-inference
+sources reviewed here, the consensus rules are exact-Bayes and trusting,
+without an account of an ensemble member that is misspecified or
+adversarial.
+\end{frame}
+
+\begin{frame}{Methods: the federated\ldots{} (part 7)}
+Outside active inference, the federated-learning and robust-Bayes
+literatures address important parts of that question --- decentralized
+aggregation (McMahan et al. 2017), partitioned and federated variational
+inference (Ashman et al. 2022; Bui et al. 2018), and generalized,
+\end{frame}
+
+\begin{frame}{Methods: the federated\ldots{} (part 8)}
+robustness-bearing Bayesian updating (Bissiri et al. 2016; Knoblauch et
+al. 2022; Basu et al. 1998; Zhang and Sabuncu 2018). Among the sources
+reviewed here, that apparatus has not been carried into the
+generative-model-bearing, action-selecting POMDP setting. The
+methodology below is the bridge.
+\end{frame}
+
+\begin{frame}{Methods: the federated\ldots{} (part 9)}
+It federates the FedGVI objective (Mildner et al. 2025) per agent inside
+an active-inference ensemble, proves the standard-Bayes client limits,
+and tests the project-local zero-robustness log-linear-pool identity.
+Under the qualified categorical bridge of
+sec.~5.8,
+\end{frame}
+
+\begin{frame}{Methods: the federated\ldots{} (part 10)}
 that pool specializes Eq. 7's message-combination term rather than the
 complete source protocol. fig.~2 illustrates the
 three-axis architecture and the recovery hierarchy.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Federation protocol: local update,
-server fusion, broadcast}
+\begin{frame}{Federation protocol: local update, server fusion,
+broadcast}
 \protect\phantomsection\label{sec:method-protocol}
 A colony of \(N\) agents shares a single latent factor
 \(s \in \{1,\dots,n_s\}\) (in the sentinel scenario, the location of a
 creature on a grid of \(n_s\) cells). Each round proceeds in three
 steps:
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Federation protocol: local update,
-server fusion, broadcast}
-\begin{enumerate}
-\tightlist
-\item
-  \textbf{Local inference.} Agent \(n\) observes \(o_n\) and forms a
-  local posterior \(q_n(s)\) over the shared factor by a
-  generalized-Bayes update against its own cavity (the colony belief
-  with agent \(n\)'s previous contribution removed). This is where
-  robustness enters per agent: the update minimizes a loss-plus-
-  divergence objective, and the FedGVI choice of a bounded loss is what
-  carries the source theorem's bounded-influence result under its
-  matching assumptions.
-\item
-  \textbf{Broadcast.} Agent \(n\) broadcasts \(q_n(s)\), optionally with
-  a scalar base weight \(w_n \ge 0\).
-\item
-  \textbf{Aggregation.} The server (or, equivalently, each agent acting
-  as its own server) fuses the broadcast beliefs into a consensus.
-  Following sensory attenuation --- ``agents do not hear themselves''
-  --- an agent's heard consensus excludes its own message.
-\end{enumerate}
-
+\begin{frame}{1. Local inference}
+\protect\phantomsection\label{local-inference}
+Agent \(n\) observes \(o_n\) and forms a local posterior \(q_n(s)\) over
+the shared factor by a generalized-Bayes update against its own cavity,
+the colony belief with agent \(n\)'s previous contribution removed.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Federation protocol: local update,
-server fusion, broadcast}
+\begin{frame}{1. Local inference (part 2)}
+This is where robustness enters per agent: the update minimizes a
+loss-plus-divergence objective, and the FedGVI choice of a bounded loss
+carries the source theorem's bounded-influence result under its matching
+assumptions.
+\end{frame}
+
+\begin{frame}{2. Broadcast}
+\protect\phantomsection\label{broadcast}
+Agent \(n\) broadcasts \(q_n(s)\), optionally with a scalar base weight
+\(w_n \ge 0\).
+\end{frame}
+
+\begin{frame}{3. Aggregation}
+\protect\phantomsection\label{aggregation}
+The server, or equivalently each agent acting as its own server, fuses
+the broadcast beliefs into a consensus. Following sensory attenuation
+--- ``agents do not hear themselves'' --- an agent's heard consensus
+excludes its own message.
+\end{frame}
+
+\begin{frame}{3. Aggregation (part 2)}
 The protocol has two distinct places where robustness can live, and we
 keep them separate throughout. The \textbf{per-agent generalized-Bayes
 update} in step 1 is FedGVI-faithful at the stated primitive level: its
 formal bounded-influence claim is conditional on the source theorem's
-assumptions. The \textbf{server-side aggregation rule} in step 3 admits
-an optional divergence-reweighting heuristic that down-weights agents
-far from the emerging consensus; this heuristic is a complementary
-device whose positive formal property is recovery of the naive consensus
-in its trusting limit, while a scoped proposition rejects one declared
-separable objective class. sec.~3.3 holds this
-boundary; no figure, table, or sentence in this work grants the
-server-side heuristic the per-agent FedGVI guarantee.
+assumptions.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Notation for beliefs, losses, and
-divergences}
+\begin{frame}{3. Aggregation (part 3)}
+The \textbf{server-side aggregation rule} in step 3 admits an optional
+divergence-reweighting heuristic that down-weights agents far from the
+emerging consensus; this heuristic is a complementary device whose
+positive formal property is recovery of the naive consensus in its
+trusting limit,
+\end{frame}
+
+\begin{frame}{3. Aggregation (part 4)}
+while a scoped proposition rejects one declared separable objective
+class.
+
+sec.~3.3 holds this boundary; no figure, table, or
+sentence in this work grants the server-side heuristic the per-agent
+FedGVI guarantee.
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses, and divergences}
 \protect\phantomsection\label{sec:method-notation}
 The authoritative symbol and API contract is
-sec.~13. In the main text, \(q_n(s)\) denotes agent
+sec.~14. In the main text, \(q_n(s)\) denotes agent
 \(n\)'s local posterior, \(q(s)\) the global consensus, and
-\(q_{-n}(s)\) the cavity after removing the site factor \(t_n(s)\). The
-prior is \(\pi_0(s)\), while \(\boldsymbol{\pi}\) is a policy. The POMDP
-tensors are \(A[o,s]\), \(B[s',s,u]\), \(C[o]\), and \(D_0[s]\). The
-aggregation weights are \(w_n\) (raw/base), \(a_n\) (raw variational
+\(q_{-n}(s)\) the cavity after removing the site factor \(t_n(s)\).
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 2)}
+The prior is \(\pi_0(s)\), while \(\boldsymbol{\pi}\) is a policy. The
+POMDP tensors are \(A[o,s]\), \(B[s',s,u]\), \(C[o]\), and \(D_0[s]\).
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 3)}
+The aggregation weights are \(w_n\) (raw/base), \(a_n\) (raw variational
 effective), and \(\widetilde a_n\) (normalized influence). The server
 robustness coefficient is \(c\), the variational entropy weight is
 \(\lambda\), the Rényi order is \(\alpha\), the density-power parameter
-is \(\beta\), and the robust cross-entropy parameter is
-\(q_{\rm loss}\). The notation supplement also defines the seed/trial
-nesting and all statistical quantities used below.
-
+is \(\beta\),
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Notation for beliefs, losses, and
-divergences}
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 4)}
+and the robust cross-entropy parameter is \(q_{\text{loss}}\). The
+notation supplement also defines the seed/trial nesting and all
+statistical quantities used below.
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 5)}
 The study is run over a fixed ensemble of 7 agents sharing a factor of 9
 locations, with all randomness seeded at 0; the full per-study
-configuration is tabulated in tbl.~1. As an
-independent generative-model-free baseline, we also implement FedGVI in
-a deterministic MLP complement trained with the density-power
-\(\beta\)-loss --- generalized variational inference with a point-mass
-variational family (sec.~7.6). The remaining
-methodology subsections develop each primitive in turn: the
-generalized-Bayes update and its recovery to standard Bayes
-(sec.~5.3), the divergence family and its KL limit
+configuration is tabulated in tbl.~2. As an
+independent generative-model-free baseline,
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 6)}
+we also implement FedGVI in a deterministic MLP complement trained with
+the density-power \(\beta\)-loss --- generalized variational inference
+with a point-mass variational family (sec.~7.6).
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 7)}
+The remaining methodology subsections develop each primitive in turn:
+the generalized-Bayes update and its recovery to standard Bayes
+(sec.~5.3),
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 8)}
+the divergence family and its KL limit
 (sec.~5.6) and the robust loss family and its
 NLL limit (sec.~5.7), the aggregation identity
 (sec.~5.8), the lift to a belief-sharing round
-(sec.~5.9), and the paired statistics that
-earn every ``robust beats naive'' verdict
+(sec.~5.9),
+\end{frame}
+
+\begin{frame}{Notation for beliefs, losses\ldots{} (part 9)}
+and the paired statistics that earn every ``robust beats naive'' verdict
 (sec.~5.27).
 \end{frame}
 

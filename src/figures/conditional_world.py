@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from pathlib import Path
+from typing import NamedTuple
 
 import numpy as np
+from matplotlib.figure import Figure
 
 from ._common import (
     COLOR_ACCENT,
@@ -16,7 +18,18 @@ from ._common import (
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+
+_ATTACKS = ("clean", "confident_wrong", "permutation", "label_noise", "uniform")
+_COLUMNS = ["s0_o45", "s0_o70", "s1_o45", "s1_o70"]
+
+
+class _ConditionalData(NamedTuple):
+    heatmap: np.ndarray
+    means: list[float]
+    minima: list[float]
+    maxima: list[float]
 
 
 def generate_conditional_world(
@@ -26,14 +39,24 @@ def generate_conditional_world(
     filename: str = "conditional_world.png",
 ) -> Path:
     """Render per-cell seed contrasts and finite-grid attack summaries."""
+    data = _conditional_data(report)
+    fig = _build_conditional_world(report, data=data)
+    path = save_figure(fig, figures_dir(project_root) / filename)
+    from ._presentation_estimates import conditional_presentation
+
+    conditional_presentation(path, data.heatmap, data.means, data.minima, data.maxima, _ATTACKS, _COLUMNS)
+    return path
+
+
+def _conditional_data(report: Mapping[str, object]) -> _ConditionalData:
+    """Derive the finite-grid display summaries once for both figure surfaces."""
     raw = report.get("by_scenario")
     if not isinstance(raw, Mapping) or not raw:
         raise ValueError("conditional-world report must contain by_scenario")
     cells = [cell for cell in raw.values() if isinstance(cell, Mapping)]
     if not cells:
         raise ValueError("conditional-world report has no scenario cells")
-    attacks = ("clean", "confident_wrong", "permutation", "label_noise", "uniform")
-    columns = ["s0_o45", "s0_o70", "s1_o45", "s1_o70"]
+    attacks, columns = _ATTACKS, _COLUMNS
     heatmap = np.full((len(attacks), len(columns)), np.nan, dtype=np.float64)
     for cell in cells:
         attack = str(cell["attack"])
@@ -52,32 +75,53 @@ def generate_conditional_world(
         attack_min.append(float(values.min()))
         attack_max.append(float(values.max()))
 
+    return _ConditionalData(heatmap, attack_means, attack_min, attack_max)
+
+
+def _build_conditional_world(report: Mapping[str, object], *, data: _ConditionalData | None = None) -> Figure:
+    """Compose the actual artists independently of the explicit file boundary."""
+    heatmap, attack_means, attack_min, attack_max = data if data is not None else _conditional_data(report)
+    attacks, columns = _ATTACKS, _COLUMNS
     apply_style()
-    fig, axes = plt.subplots(1, 2, figsize=(12.2, 5.7), gridspec_kw={"width_ratios": [1.15, 1]})
-    fig.subplots_adjust(left=0.08, right=0.97, top=0.84, bottom=0.20, wspace=0.34)
+    # The manuscript uses a 95%-width embed.  A vertical composition preserves
+    # readable cell values and attack labels at that scale; the former 1x2
+    # layout forced both panel headings and categorical ticks to collide.
+    fig, axes = plt.subplots(
+        2,
+        1,
+        figsize=(8.0, 7.8),
+        gridspec_kw={"height_ratios": [1.18, 1.0]},
+    )
+    fig.subplots_adjust(left=0.17, right=0.91, top=0.89, bottom=0.09, hspace=0.52)
     vmax = max(abs(float(np.nanmin(heatmap))), abs(float(np.nanmax(heatmap))), 1e-6)
     image = axes[0].imshow(heatmap, cmap="RdBu", vmin=-vmax, vmax=vmax, aspect="auto")
-    axes[0].set_xticks(
-        range(len(columns)),
-        ["true 0\nacuity .45", "true 0\nacuity .70", "true 1\nacuity .45", "true 1\nacuity .70"],
-    )
+    axes[0].set_xticks(range(len(columns)), ["s0 · .45", "s0 · .70", "s1 · .45", "s1 · .70"])
     axes[0].set_yticks(range(len(attacks)), [attack.replace("_", " ") for attack in attacks])
-    axes[0].set_xlabel("Declared world/observability cell")
+    axes[0].set_xlabel("World cell: true state s · observability")
     axes[0].set_ylabel("Attack mechanism")
-    axes[0].set_title("Seed-level robust true-state-mass gain")
+    axes[0].set_title("A  Seed-level true-state-mass contrast", loc="left", pad=9)
     for row in range(heatmap.shape[0]):
         for col in range(heatmap.shape[1]):
             value = heatmap[row, col]
             if np.isfinite(value):
-                axes[0].text(col, row, f"{value:+.3f}", ha="center", va="center", fontsize=9.5)
+                axes[0].text(
+                    col,
+                    row,
+                    f"{value:+.3f}",
+                    ha="center",
+                    va="center",
+                    fontsize=10.5,
+                    color=COLOR_ACCENT,
+                    bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.6},
+                )
     axes[0].axhline(-0.5, color="white", linewidth=0.8)
     fig.colorbar(image, ax=axes[0], fraction=0.046, pad=0.04, label="naive error − robust error")
 
-    x = np.arange(len(attacks))
+    y = np.arange(len(attacks))
     axes[1].errorbar(
-        x,
         attack_means,
-        yerr=np.vstack(
+        y,
+        xerr=np.vstack(
             (
                 np.asarray(attack_means) - np.asarray(attack_min),
                 np.asarray(attack_max) - np.asarray(attack_means),
@@ -88,29 +132,27 @@ def generate_conditional_world(
         ecolor=COLOR_MUTED,
         capsize=4,
         linewidth=1.6,
-        label="mean across finite grid cells ± min/max span",
+        label="mean with asymmetric capped min–max range",
     )
-    axes[1].axhline(0.0, color=COLOR_ACCENT, linewidth=1.0, linestyle="--", label="no method contrast")
-    axes[1].set_xticks(x, [attack.replace("_", "\n") for attack in attacks])
-    axes[1].set_xlabel("Attack mechanism")
-    axes[1].set_ylabel("True-state-mass gain")
-    axes[1].set_title("Geometry-averaged conditional summary")
-    axes[1].legend(fontsize=MIN_QUANTITATIVE_FONT_SIZE, loc="best")
-    axes[1].text(
-        0.03,
-        0.56,
-        "Unit: seed; agents/trials nested\nspan is grid variation, not a CI",
-        transform=axes[1].transAxes,
-        fontsize=MIN_QUANTITATIVE_FONT_SIZE,
-        color=COLOR_MUTED,
-        va="bottom",
-        bbox={"facecolor": "white", "alpha": 0.78, "edgecolor": "none", "pad": 2.5},
+    reference_rule = semantic_style("reference_rule")
+    axes[1].axvline(
+        0.0,
+        color=reference_rule.color,
+        linewidth=reference_rule.linewidth,
+        linestyle=reference_rule.dash,
+        label="zero: no method contrast",
     )
+    axes[1].set_yticks(y, [attack.replace("_", " ") for attack in attacks])
+    axes[1].invert_yaxis()
+    axes[1].set_xlabel("True-state-mass contrast: naive error − robust error")
+    axes[1].set_ylabel("Attack mechanism")
+    axes[1].set_title("B  Finite-grid means and capped min–max ranges", loc="left", pad=9)
+    axes[1].legend(fontsize=MIN_QUANTITATIVE_FONT_SIZE, loc="lower left")
     fig.suptitle(
-        "Conditional robustness across hidden states, targets, acuity, and weights",
+        "Conditional robustness on the declared finite grid",
         fontweight="bold",
     )
-    return save_figure(fig, figures_dir(project_root) / filename)
+    return fig
 
 
 __all__ = ["generate_conditional_world"]

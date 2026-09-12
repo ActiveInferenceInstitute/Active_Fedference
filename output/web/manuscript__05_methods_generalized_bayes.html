@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>05_methods_generalized_bayes.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -473,9 +637,16 @@ posterior <span class="citation">(Bissiri et al. 2016; Jiang and Tanner 2008; Je
 class="math inline">\(L\)</span> and the KL regularizer for a general
 divergence <span class="math inline">\(\mathcal D\)</span>:</p>
 <p><span class="math display">\[
-q_n^\ast(s) \;=\; \arg\min_{q_n} \;
-\mathbb{E}_{q_n}\!\Big[\textstyle\sum_i L(s; o_i)\Big]
-\;+\; \tfrac{1}{\tau}\, \mathcal D\!\big(q_n \,\|\, \pi_0\big),
+\begin{aligned}
+q_n^\ast(s)
+&amp;= \arg\min_{q_n}
+\left\{
+\begin{aligned}
+&amp;\mathbb{E}_{q_n}\!\Big[\textstyle\sum_i L(s; o_i)\Big]\\
+&amp;\quad + \tfrac{1}{\tau}\,\mathcal D\!\big(q_n \,\|\, \pi_0\big)
+\end{aligned}
+\right\}.
+\end{aligned}
 \]</span> {#eq:gen-bayes}</p>
 <p>with prior <span class="math inline">\(\pi_0\)</span>, learning rate
 <span class="math inline">\(\tau\)</span>, and regularizing divergence
@@ -484,42 +655,38 @@ part of the inferential specification, not a cosmetic constant;
 coarsened-posterior and safe-Bayes work show why calibration of that
 temperature matters under misspecification <span class="citation">(Miller and Dunson 2018; Grunwald 2012)</span>, where ordinary Bayes concentrates around a KL
 pseudo-truth rather than literal truth when the model family is wrong
-<span class="citation">(Kleijn and van der Vaart 2012)</span>. We name the object <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> defines.</p>
+<span class="citation">(Kleijn and van der Vaart 2012)</span>. We name the object <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> defines.</p>
 <div id="def:generalized-bayes" class="theorem-box definition">
 <p><strong>Definition 1</strong> (Generalized-(Gibbs)-Bayes posterior).
-For a loss <span class="math inline">\(L\)</span>, prior <span
+Given loss <span class="math inline">\(L\)</span>, prior <span
 class="math inline">\(\pi_0\)</span>, learning rate <span
 class="math inline">\(\tau&gt;0\)</span>, and divergence <span
 class="math inline">\(\mathcal D\)</span>, the generalized-Bayes
-posterior is the minimizer <span class="math inline">\(q_n^\ast\)</span>
-of (<a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a>). For <span
-class="math inline">\(\mathcal D=\mathrm{KL}\)</span> the minimizer is
-the tempered softmax <span class="math display">\[
+posterior <span class="math inline">\(q_n^\ast\)</span> minimizes (<a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a>). When <span
+class="math inline">\(\mathcal D=\mathrm{KL}\)</span>, its exact
+categorical minimizer is the tempered softmax in (<a class="xref" href="index.html#eq:tempered-softmax">Eq. (3)</a>).</p>
+</div>
+<p><span class="math display">\[
 q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s;
 o_i)\big),
-\]</span> implemented in
-<code>generalized_bayes.generalized_posterior</code>.</p>
-</div>
-<p>The tempered softmax of <span class="xref">Eq. 1</span>, stated
+\]</span> {#eq:tempered-softmax}</p>
+<p>The implementation surface is the <code>generalized_posterior</code>
+function in the <code>generalized_bayes</code> module.</p>
+<p>The tempered softmax of <a class="xref" href="index.html#eq:tempered-softmax">Eq. (3)</a>, stated
 in the definition above, is not an approximation: it is the exact
-closed-form minimizer of <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> when the regularizer is
+closed-form minimizer of <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> when the regularizer is
 the KL divergence, because the categorical support is finite and the
 objective is strictly convex in <span class="math inline">\(q\)</span>.
-The recovery to standard Bayes follows by choosing the loss. With <span
-class="math inline">\(L=\mathrm{NLL}\)</span>, <span
+The recovery to standard Bayes follows by choosing the loss.</p>
+<p>With <span class="math inline">\(L=\mathrm{NLL}\)</span>, <span
 class="math inline">\(\mathrm{NLL}(p, o) = -\log p(o)\)</span>, the
 exponential in that tempered softmax becomes a product of likelihoods
-and the minimizer is <em>exactly</em> standard Bayes; <span
-class="citation"
-data-cites="eq:standard-bayes"><span class="xref">Eq. 6</span></span> in <span
-class="citation"
-data-cites="sec:method-aggregation"><a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a></span>
+and the minimizer is <em>exactly</em> standard Bayes; <a class="xref" href="index.html#eq:standard-bayes">Eq. (11)</a> in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>
 states that corner, and Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> there pins it
-to the closed-form prior-times-likelihood product. The largest observed
-discrepancy between <code>generalized_posterior</code> in this regime
-and the analytic Bayes posterior is 5.55e-17, reported in <span
-class="citation"
-data-cites="sec:results-recovery"><a class="xref" href="index.html#sec:results-recovery">Section 7.1</a></span> — exact
+to the closed-form prior-times-likelihood product.</p>
+<p>The largest observed discrepancy between
+<code>generalized_posterior</code> in this regime and the analytic Bayes
+posterior is 5.55e-17, reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a> — exact
 to machine precision (a maximum deviation of about one ULP), not merely
 close.</p>
 <p>FedGVI computes each client update against a <em>cavity</em> rather
@@ -527,72 +694,71 @@ than the full posterior, so a contributing agent does not double-count
 its own previous message. We name that operation.</p>
 <div id="def:cavity" class="theorem-box definition">
 <p><strong>Definition 2</strong> (Cavity / PVI factor update). The
-cavity removes agent <span class="math inline">\(n\)</span>’s factor
-from the colony posterior in natural-parameter (log) space, <span
-class="math display">\[
-q_{-n}(s)
-\;=\;
-\frac{q(s)/t_n(s)}{\sum_{s&#39;} q(s&#39;)/t_n(s&#39;)}
-\;=\;
-\operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
-\]</span> where the final expression makes the normalization explicit;
-the partitioned-variational-inference (PVI) update re-multiplies a
-refreshed factor onto the cavity of (<span class="xref">Eq. 2</span>). Taking a cavity and
-re-multiplying the original site factor restores the global posterior
-<span class="math display">\[\begin{equation}
-q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s&#39;}q_{-n}(s&#39;)t_n(s&#39;)},
-\label{eq:factor-replacement}
-\end{equation}\]</span> with the original site factor, the recombination
-identity, the property <code>generalized_bayes.cavity</code> and
-<code>generalized_bayes.update_factor</code> satisfy.</p>
+cavity is the normalized removal of agent <span
+class="math inline">\(n\)</span>’s site factor from the colony posterior
+in natural-parameter space, as in (<a class="xref" href="index.html#eq:cavity">Eq. (4)</a>). PVI replaces the site
+factor and recombines it with that cavity according to (<a class="xref" href="index.html#eq:factor-replacement">Eq. (5)</a>).</p>
 </div>
-<p>The numbered recombination identity is <span class="xref">Eq. 2</span>.</p>
-<p>The cavity of <span class="xref">Eq. 2</span> is the discrete analogue of
+<p><span class="math display">\[
+\begin{aligned}
+q_{-n}(s)
+&amp;=
+\frac{q(s)/t_n(s)}{\sum_{s&#39;} q(s&#39;)/t_n(s&#39;)}
+\\
+&amp;=
+\operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
+\end{aligned}
+\]</span> {#eq:cavity}</p>
+<p>The final expression makes normalization explicit. Taking a cavity
+and re-multiplying the original site factor restores the global
+posterior:</p>
+<p><span class="math display">\[
+q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s&#39;}q_{-n}(s&#39;)t_n(s&#39;)},
+\]</span> {#eq:factor-replacement}</p>
+<p>This is the recombination identity satisfied by
+<code>generalized_bayes.cavity</code> and
+<code>generalized_bayes.update_factor</code>.</p>
+<p>The numbered recombination identity is <a class="xref" href="index.html#eq:factor-replacement">Eq. (5)</a>.</p>
+<p>The cavity of <a class="xref" href="index.html#eq:cavity">Eq. (4)</a> is the discrete analogue of
 the expectation- propagation / partitioned-VI cavity used outside active
 inference <span class="citation">(Ashman et al. 2022; Bui et al. 2018)</span>, imported here so
-that the per-agent generalized-Bayes update of <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> is computed against the
+that the per-agent generalized-Bayes update of <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> is computed against the
 colony belief with the agent’s own contribution removed — exactly the
-sensory-attenuation discipline the belief-sharing round of <span
-class="citation"
-data-cites="sec:method-belief-sharing"><a class="xref" href="index.html#sec:method-belief-sharing">Section 5.9</a></span>
-requires. What remains unspecified in <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> are its two ingredients
+sensory-attenuation discipline the belief-sharing round of <a class="xref" href="index.html#sec:method-belief-sharing">Section 5.9</a>
+requires.</p>
+<p>What remains unspecified in <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> are its two ingredients
 — the divergence <span class="math inline">\(\mathcal D\)</span> and the
 loss <span class="math inline">\(L\)</span> — whose robust members and
 standard-Bayes limits <a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>
 develops next; the aggregation identity (<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>)
 then federates the resulting per-agent posteriors.</p>
 <p>The authoritative notation supplement makes the same normalization
-and recombination contract explicit in <a class="xref" href="index.html#eq:notation-cavity">Eq. (29)</a> and <span
-class="citation"
-data-cites="eq:notation-factor-replacement"><a class="xref" href="index.html#eq:notation-factor-replacement">Eq. (30)</a></span>;
+and recombination contract explicit in <a class="xref" href="index.html#eq:notation-cavity">Eq. (36)</a> and <a class="xref" href="index.html#eq:notation-factor-replacement">Eq. (37)</a>;
 those equations govern the symbols used by the implementation and all
 later supplements.</p>
 <h2 id="sec:method-learning">Conjugate likelihood learning for the
 shared model</h2>
 <p>Active-inference agents learn the parameters of their generative
-model, not just plan with them <span class="citation">(Smith et al. 2022; Friston et al. 2024)</span>.
-The likelihood matrix <span class="math inline">\(A\)</span> carries a
-Dirichlet prior with concentration <span
+model, not just plan with them <span class="citation">(Smith et al. 2022; Friston et al. 2024)</span>.</p>
+<p>The likelihood matrix <span class="math inline">\(A\)</span> carries
+a Dirichlet prior with concentration <span
 class="math inline">\(a\)</span> over each column, updated conjugately
-by accumulating observation-state co-occurrence counts (<span
-class="citation"
-data-cites="eq:dirichlet-update"><a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a></span>), giving
-the column-normalized expected likelihood. The update of <span
-class="citation"
-data-cites="eq:dirichlet-update"><a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a></span> is driven
+by accumulating observation-state co-occurrence counts (<a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a>), giving
+the column-normalized expected likelihood. The update of <a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a> is driven
 by the expected sufficient statistics under the data-generating model,
 so as the concentrations accumulate <span
 class="math inline">\(\mathbb{E}[A]\)</span> converges to the true
-likelihood. Convergence is measured by the per-column KL divergence
-summed over hidden states, which decreases monotonically toward the
-standard-Bayes fixed point; <a class="xref" href="index.html#sec:results-language">Section 7.3</a> reports
+likelihood.</p>
+<p>Convergence is measured by the per-column KL divergence summed over
+hidden states, which decreases monotonically toward the standard-Bayes
+fixed point; <a class="xref" href="index.html#sec:results-language">Section 7.3</a> reports
 the learning curve, where the KL falls from 3.4231 to 0.0027 across 24
-count batches. A forgetting hyperprior optionally decays the running
-mass toward an asymptote so the agent does not become infinitely
-confident; with the hyperprior disabled the classical unbounded
-accumulation of <a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a> is
-recovered. The implementation is
-<code>dirichlet_learning.learn_likelihood</code>.</p>
+count batches.</p>
+<p>A forgetting hyperprior optionally decays the running mass toward an
+asymptote so the agent does not become infinitely confident; with the
+hyperprior disabled the classical unbounded accumulation of <a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a> is
+recovered. The implementation is <code>learn_likelihood</code> in the
+<code>dirichlet_learning</code> module.</p>
 <h2 id="sec:method-bmr">Bayesian model reduction for structure
 comparison</h2>
 <p>Structure learning in the active-inference frame proceeds by Bayesian
@@ -600,21 +766,19 @@ model reduction (BMR): given a full model with Dirichlet posterior
 <code>post</code> under prior <code>prior</code>, the change in negative
 variational free energy from swapping in a <em>reduced</em> prior — for
 example one that prunes a redundant column toward zero — is available in
-closed form without re-running inference <span class="citation">(Friston and Penny 2011; Smith et al. 2022)</span>. Because the likelihood is shared, the reduced
-posterior is <code>post + reduced_prior - prior</code>, and the
-free-energy difference is a difference of log multivariate Beta
-functions (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a>), where <span
-class="math inline">\(\ln B(a) = \sum_k \ln\Gamma(a_k) -
-\ln\Gamma(\sum_k a_k)\)</span> is the log Dirichlet normalizer. A
-positive <span class="math inline">\(\Delta F\)</span> in <span
-class="citation" data-cites="eq:bmr-deltaf"><a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a></span>
+closed form without re-running inference <span class="citation">(Friston and Penny 2011; Smith et al. 2022)</span>.</p>
+<p>Because the likelihood is shared, the reduced posterior is
+<code>post + reduced_prior - prior</code>, and the free-energy
+difference is a difference of log multivariate Beta functions (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a>),
+where <span class="math inline">\(\ln B(a) = \sum_k \ln\Gamma(a_k) -
+\ln\Gamma(\sum_k a_k)\)</span> is the log Dirichlet normalizer.</p>
+<p>A positive <span class="math inline">\(\Delta F\)</span> in <a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a>
 means the reduced model has more evidence — the pruned structure was
 redundant and should be adopted; a negative <span
 class="math inline">\(\Delta F\)</span> means the reduction destroyed
 something the data support. When the reduced prior equals the prior the
-score is identically zero, the no-reduction fixed point. <span
-class="citation"
-data-cites="sec:results-emergence"><a class="xref" href="index.html#sec:results-emergence">Section 7.4</a></span>
+score is identically zero, the no-reduction fixed point.</p>
+<p><a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>
 reports <span class="math inline">\(\Delta F = 3.68\)</span> for a
 redundant reduction (accepted) against <span
 class="math inline">\(\Delta F = -27.67\)</span> for a supported one

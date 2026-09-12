@@ -26,6 +26,7 @@ from figures._common import (
     COLOR_ROBUST,
     COLOR_VARIATE,
     apply_style,
+    contrasting_text_color,
     figures_dir,
     save_figure_pair,
 )
@@ -113,7 +114,15 @@ def _node(
             linewidth=1.0,
         )
     )
-    ax.text(x, y, label, ha="center", va="center", fontsize=fontsize, color=COLOR_DARK)
+    ax.text(
+        x,
+        y,
+        label,
+        ha="center",
+        va="center",
+        fontsize=fontsize,
+        color=contrasting_text_color(fill),
+    )
 
 
 def _grid(
@@ -181,7 +190,16 @@ def _factor_card(
             facecolor="white",
         )
     )
-    ax.text(x + 0.095, y + 0.115, label, ha="center", va="center", fontsize=12, color=color)
+    ax.text(
+        x + 0.095,
+        y + 0.115,
+        label,
+        ha="center",
+        va="center",
+        fontsize=12,
+        # The accent is a keyline; the painted text background is white.
+        color=COLOR_DEEP,
+    )
     ax.text(
         x + 0.095,
         y + 0.045,
@@ -204,7 +222,15 @@ def _draw_sensor(ax: plt.Axes) -> None:
     ax.text(0.245, 0.30, "hidden location s", ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
     ax.text(0.755, 0.30, "one outcome o", ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
     _arrow(ax, (0.41, 0.47), (0.59, 0.47), color=COLOR_ROBUST)
-    ax.text(0.50, 0.54, r"$A[o,s]=P(o\mid s)$", ha="center", va="center", fontsize=9.0, color=COLOR_ROBUST)
+    ax.text(
+        0.50,
+        0.54,
+        r"$A[o,s]=P(o\mid s)$",
+        ha="center",
+        va="center",
+        fontsize=9.0,
+        color=COLOR_DEEP,
+    )
     ax.text(
         0.50,
         0.14,
@@ -243,12 +269,22 @@ def _draw_factors(ax: plt.Axes) -> None:
         _arrow(ax, (x + 0.095, 0.54), (0.50, 0.34), color=color)
     _node(ax, 0.50, 0.28, r"$q(s)$", fill=COLOR_ROBUST, edge=COLOR_ACCENT, radius=0.055, fontsize=10.0)
     ax.text(
-        0.50, 0.20, "local posterior over location", ha="center", va="center",
-        fontsize=8.5, color=COLOR_DARK,
+        0.50,
+        0.20,
+        "local posterior over location",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DARK,
     )
     ax.text(
-        0.50, 0.10, r"$q(s)=\mathrm{softmax}(\ln D_0+\ln A[o,\cdot])$",
-        ha="center", va="center", fontsize=8.5, color=COLOR_DEEP,
+        0.50,
+        0.10,
+        r"$q(s)=\mathrm{softmax}(\ln D_0+\ln A[o,\cdot])$",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        color=COLOR_DEEP,
     )
 
 
@@ -260,37 +296,67 @@ def _draw_temporal(ax: plt.Axes) -> None:
     descriptions = ("hidden location", "private report", "posterior", "control")
     for x, label, fill, description in zip(xs, labels, fills, descriptions):
         _node(ax, x, 0.57, label, fill=fill, edge=COLOR_ACCENT)
-        ax.text(x, 0.43, description, ha="center", va="top", fontsize=8.5, color=COLOR_DARK)
+        ax.text(
+            x,
+            0.43,
+            description,
+            ha="center",
+            va="top",
+            fontsize=8.5,
+            color=COLOR_DEEP,
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.3},
+        )
     for start, end in zip(xs[:-1], xs[1:]):
         _arrow(ax, (start + 0.045, 0.57), (end - 0.045, 0.57))
     _node(ax, 0.30, 0.25, r"$s_{t+1}$", fill=COLOR_ROBUST, edge=COLOR_ACCENT)
     _arrow(ax, (0.82, 0.52), (0.34, 0.30), color=COLOR_VARIATE)
-    ax.text(0.58, 0.36, r"$B=P(s'\mid s,u)$", fontsize=8.5, color=COLOR_VARIATE, ha="center")
     ax.text(
-        0.50, 0.12,
-        "Flat studies stop after posterior sharing; moving-world studies execute "
-        "B and EFE-guided u.",
-        ha="center", fontsize=8.5, color=COLOR_ARROW,
+        0.58,
+        0.30,
+        r"$B=P(s'\mid s,u)$",
+        fontsize=8.5,
+        color=COLOR_DEEP,
+        ha="center",
+    )
+    ax.text(
+        0.50,
+        0.12,
+        "Flat studies stop after posterior sharing; moving-world studies execute B and EFE-guided u.",
+        ha="center",
+        fontsize=8.5,
+        color=COLOR_ARROW,
     )
 
 
 def _draw_hierarchy(ax: plt.Axes) -> None:
     _panel(ax, "D  Hierarchical context", "Optional top-down context conditions the location-level prior")
-    levels = ((0.78, r"$s^L$", "meta-context"), (0.56, r"$s^2$", "context"), (0.34, r"$s^1$", "location"))
+    levels = ((0.72, r"$s^L$", "meta-context"), (0.56, r"$s^2$", "context"), (0.34, r"$s^1$", "location"))
     for y, label, name in levels:
         _node(ax, 0.25, y, label, fill=COLOR_MULTI_2 if y > 0.4 else COLOR_ROBUST, edge=COLOR_ACCENT)
-        ax.text(0.36, y, name, fontsize=8.5, color=COLOR_DARK, va="center", ha="left")
+        ax.text(
+            0.36,
+            y,
+            name,
+            fontsize=8.5,
+            color=COLOR_DEEP,
+            va="center",
+            ha="left",
+            bbox={"facecolor": "white", "edgecolor": "none", "pad": 0.3},
+        )
     for upper, lower in zip(levels[:-1], levels[1:]):
         _arrow(ax, (0.25, upper[0] - 0.05), (0.25, lower[0] + 0.05), color=COLOR_MULTI_2)
     _node(ax, 0.76, 0.56, r"$q_1(s)$", fill="white", edge=COLOR_ROBUST)
     _arrow(ax, (0.31, 0.34), (0.70, 0.53), color=COLOR_ROBUST)
     _arrow(ax, (0.31, 0.56), (0.70, 0.56), color=COLOR_MULTI_2)
-    _arrow(ax, (0.31, 0.78), (0.70, 0.59), color=COLOR_MULTI_2, linestyle="--")
+    _arrow(ax, (0.31, 0.72), (0.70, 0.59), color=COLOR_MULTI_2, linestyle="--")
     ax.text(0.76, 0.41, r"$\bar q_1=\sum_k q_2[k]D_{1|k}$", fontsize=8.5, color=COLOR_DARK, ha="center")
     ax.text(
-        0.76, 0.23,
+        0.76,
+        0.23,
         "The hierarchy is an extension, not a hidden assumption in every study.",
-        ha="center", fontsize=8.5, color=COLOR_ARROW,
+        ha="center",
+        fontsize=8.5,
+        color=COLOR_ARROW,
     )
 
 
@@ -298,21 +364,23 @@ def generate_generative_model_schema(*, project_root: Path | None = None) -> Pat
     """Generate the formal categorical generative-model schematic."""
     apply_style()
     plt.rcParams["figure.autolayout"] = False
-    fig = plt.figure(figsize=(12.4, 8.5), dpi=150, facecolor="white")
+    # The canonical manuscript embeds this schematic at 95% of a 6.5-inch
+    # text block.  A compact portrait canvas keeps the native 8.5-point node
+    # labels above the 7-point effective floor without shrinking typography.
+    fig = plt.figure(figsize=(7.4, 12.2), dpi=150, facecolor="white")
     gs = fig.add_gridspec(
-        2,
-        2,
-        left=0.035,
-        right=0.965,
-        top=0.85,
-        bottom=0.10,
-        wspace=0.045,
-        hspace=0.12,
+        4,
+        1,
+        left=0.055,
+        right=0.945,
+        top=0.845,
+        bottom=0.065,
+        hspace=0.075,
     )
     _draw_sensor(fig.add_subplot(gs[0, 0]))
-    _draw_factors(fig.add_subplot(gs[0, 1]))
-    _draw_temporal(fig.add_subplot(gs[1, 0]))
-    _draw_hierarchy(fig.add_subplot(gs[1, 1]))
+    _draw_factors(fig.add_subplot(gs[1, 0]))
+    _draw_temporal(fig.add_subplot(gs[2, 0]))
+    _draw_hierarchy(fig.add_subplot(gs[3, 0]))
 
     fig.text(
         0.5,
@@ -351,7 +419,7 @@ def generate_generative_model_schema(*, project_root: Path | None = None) -> Pat
     )
     fig.text(
         0.5,
-        0.043,
+        0.027,
         "Schematic formalization: the agent's private sensory outcome becomes a posterior message; "
         "the server fuses messages over the shared categorical state.",
         ha="center",
@@ -360,7 +428,11 @@ def generate_generative_model_schema(*, project_root: Path | None = None) -> Pat
         color=COLOR_ARROW,
         style="italic",
     )
-    return save_figure_pair(fig, figures_dir(project_root) / "generative_model_schema.png")
+    path = save_figure_pair(fig, figures_dir(project_root) / "generative_model_schema.png")
+    from ._presentation_schematics import generative_presentation
+
+    generative_presentation(path)
+    return path
 
 
 __all__ = ["generate_generative_model_schema"]

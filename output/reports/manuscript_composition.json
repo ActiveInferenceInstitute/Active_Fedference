@@ -1,271 +1,277 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "39d4981bfdf72e462e127d2cbeb1d66108ed334f9b14d7b02cab64b38556bede",
+  "binding_sha256": "5482f3d28da5f350c19a17d46058f71ff462fc0b1c93eda48ebc0f706fbac0dd",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "bdbbed621149fe1caad2c873d2fc7eb1ec2028cf3c6628a6c6d31d0ac8698f94",
-  "combined_size_bytes": 346836,
+  "combined_sha256": "c1a01925064b22a01b1fe2b0f15eb1eb50ddd8cb95922e5083c743539eabcc8e",
+  "combined_size_bytes": 360236,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
       "ordinal": 1,
       "path": "output/manuscript/00_abstract.md",
-      "sha256": "30001cfc6cef9d303649727210f7b1ee1e6f90d5c652080c86ba237aa9bd7da2",
-      "size_bytes": 4633
+      "sha256": "df878ac7b2401a41d016ae624bfbb62c0dacba458f1c31e6278475d4d37cd741",
+      "size_bytes": 4498
     },
     {
       "ordinal": 2,
       "path": "output/manuscript/01_introduction.md",
-      "sha256": "dcfa4a977df79b5c00c02d30925060f336b7a4b6bc009ca54788955654a1f59c",
-      "size_bytes": 12782
+      "sha256": "8dc88bc2bdc487f2c6c2122a70ece1a914ef9f0435c39a07b6b34798dd20e0e1",
+      "size_bytes": 13165
     },
     {
       "ordinal": 3,
       "path": "output/manuscript/02_gap.md",
-      "sha256": "4e6ecea3fcb09a87871a6a33fedef7b919ede1ad0a8a6d3ab13d6b9f6fbca5ba",
-      "size_bytes": 7601
+      "sha256": "28e5c5d6646a29d92e04de7881da639eb427fabc44edf90fba4e5b2c1d40bf0f",
+      "size_bytes": 6955
     },
     {
       "ordinal": 4,
       "path": "output/manuscript/03_contributions.md",
-      "sha256": "25ee9b4c6869c8c32838e6af42872d2f010f4b4bc1c83c2c292592c0f3b43dac",
-      "size_bytes": 8691
+      "sha256": "571eb83478a871944e9f3f61ceec578153ff8b966c88f97dfc28f4ceb3b37d5b",
+      "size_bytes": 8603
     },
     {
       "ordinal": 5,
       "path": "output/manuscript/04_methods_overview.md",
-      "sha256": "ce5795aefc44d56b920db240f585135e4f7f5eb8ec5cc23be62ffbc2f4a59379",
-      "size_bytes": 6100
+      "sha256": "dded2de5a95078d0853858fccbc73f942cd9f7459cb919568f43c2e782417942",
+      "size_bytes": 6140
     },
     {
       "ordinal": 6,
       "path": "output/manuscript/05_methods_generalized_bayes.md",
-      "sha256": "cf926ac2b3131ee27d0607ba6e3eac364e7bced17889b3441b6edfd550f7d270",
-      "size_bytes": 7229
+      "sha256": "e700f5200ff1cceb8b0e9d26693c05f53ad59bc3772858ed5f41c4f4425b48c2",
+      "size_bytes": 7372
     },
     {
       "ordinal": 7,
       "path": "output/manuscript/06_methods_divergences_and_losses.md",
-      "sha256": "a6236a9b39dae7a4a21b9240226ebc6fd496fb58f5f327fdf4e85c4b60f48d54",
-      "size_bytes": 6645
+      "sha256": "7c5d8ee89ed7da885e3ce376e4d3f4136ee63d3992815365a8783aa27966ea51",
+      "size_bytes": 6390
     },
     {
       "ordinal": 8,
       "path": "output/manuscript/07_methods_aggregation.md",
-      "sha256": "e2c9dc7b61db370e6d65a5df148fc04ccd70930d46b10703abbc7a5340ddf0a4",
-      "size_bytes": 12728
+      "sha256": "e80defbd24457c5d119616aee9839f25e573593422924543861c17844b69340b",
+      "size_bytes": 13330
     },
     {
       "ordinal": 9,
       "path": "output/manuscript/08_methods_belief_sharing.md",
-      "sha256": "4dc0fc705f103b14f54d58272d040e474e8d6b18bb536026c70a6188f9df264e",
-      "size_bytes": 4113
+      "sha256": "50c34a0599e02b73424590d060d2da4d7625a447f1d9a5e393d38bbf0f328088",
+      "size_bytes": 4122
     },
     {
       "ordinal": 10,
       "path": "output/manuscript/09_methods_generative_model.md",
-      "sha256": "38b23129a197121caa96de71bd9ea25eeedef5891af1bbb9b5bdd155f8fafcc9",
-      "size_bytes": 10314
+      "sha256": "d41c4f59f1ef07446cc396f36d89c4ee8ccb168b2d8f5eba51131eace1a8552e",
+      "size_bytes": 11516
     },
     {
       "ordinal": 11,
       "path": "output/manuscript/10_methods_learning.md",
-      "sha256": "d545ab8d7fabd74091b351a4242d3090378e0713ec8e4700751004582df8c178",
-      "size_bytes": 7147
+      "sha256": "6c6b48b54d02474005b858698e277f074b3f9bcb40cd0dbd81f4cef982d2da69",
+      "size_bytes": 7356
     },
     {
       "ordinal": 12,
       "path": "output/manuscript/11_methods_contamination.md",
-      "sha256": "1f76abcf00585f624cc60a23d80cff1816679d739d889190ea3a7e6987ca59f2",
-      "size_bytes": 6869
+      "sha256": "5c2d21c8c275ed2684c0039b4c586a2239acce26d6ba1c7330ce274d10b244f8",
+      "size_bytes": 6647
     },
     {
       "ordinal": 13,
       "path": "output/manuscript/12_methods_experimental_design.md",
-      "sha256": "a32c157f2455e8a500792df00d5d96ec7ca5b6791a7c774c7c7d224c28368872",
-      "size_bytes": 11860
+      "sha256": "a008f800875bc11562356eb3c015e3052e8fecf0e1f50b37dfb0a401ca2659ee",
+      "size_bytes": 12697
     },
     {
       "ordinal": 14,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "53d608bc3d83be921c2f30196e365477fee48391362d505ce05ed25be9110768",
-      "size_bytes": 13715
+      "sha256": "949aa0efec0f551245e9b263f9651a051d758b460d1e0aaccf7e17cff7de9350",
+      "size_bytes": 17502
     },
     {
       "ordinal": 15,
       "path": "output/manuscript/14_formalism.md",
-      "sha256": "8b205601ab318a604e3af4103fb764bba07bcc39ccc7c5fdcd7cd681867d238d",
-      "size_bytes": 18641
+      "sha256": "1aa8117d1df4cd34f7a2f83812c19b9eeabe955406fb906f92245245afaf87a8",
+      "size_bytes": 18595
     },
     {
       "ordinal": 16,
       "path": "output/manuscript/15_results_recovery.md",
-      "sha256": "455871d73f5d6ecd49c85c8eb12ff57a6f639362d10600b0244358f780006583",
-      "size_bytes": 5931
+      "sha256": "98c14742eda07f44acf236fd9495bf2ffa991d96344cc7d5a24f74117390ecf3",
+      "size_bytes": 6054
     },
     {
       "ordinal": 17,
       "path": "output/manuscript/16_results_belief_sharing.md",
-      "sha256": "f40138fc0014cd9c5b437ddcbcffa6c340b386a7c0a95d1cf07b1bb46825ea93",
-      "size_bytes": 6856
+      "sha256": "e18db3539a0c7c9fe76756cb17458e9e45aad4ee911cdebcc2ff34d87861f8b7",
+      "size_bytes": 5231
     },
     {
       "ordinal": 18,
       "path": "output/manuscript/17_results_language.md",
-      "sha256": "ff1b22824aeb6c8b46798e9d3d095f698620b3451304721b0fccd477453fb6b7",
-      "size_bytes": 2900
+      "sha256": "1c035ca03d52e951b605828d69a13a8a076161a9af39c3f09ea5124cdf51448e",
+      "size_bytes": 2963
     },
     {
       "ordinal": 19,
       "path": "output/manuscript/18_results_emergence.md",
-      "sha256": "35f5c3d1f8200cb20661bc16fdd4643029006e31b890d70ed016bafdf0250404",
-      "size_bytes": 3271
+      "sha256": "7b0af7e4f17dc1afc4284ed0e2820a756966042466d4fd5508cc46a1af1b41d6",
+      "size_bytes": 3366
     },
     {
       "ordinal": 20,
       "path": "output/manuscript/19_results_robustness.md",
-      "sha256": "fe7aa05c1eaf716fea325d0a8ad3817367e4e981fe0c884f121cb22d0ced4b83",
-      "size_bytes": 17909
+      "sha256": "ee85a10e61268e1ff16f0a8d598c77b93ccac68f9f647b7a34033c8e6c1104df",
+      "size_bytes": 24241
     },
     {
       "ordinal": 21,
       "path": "output/manuscript/20_results_baseline.md",
-      "sha256": "18c4a122f376d059fcfd0853106607abb7b94a8977fe9710f07d22930e49d638",
-      "size_bytes": 7758
+      "sha256": "482c7fe1f750b4f53b5fc91ddbfc373b47f4aad65e3f3101a7d8b28a49615df0",
+      "size_bytes": 6019
     },
     {
       "ordinal": 22,
       "path": "output/manuscript/21_discussion_findings.md",
-      "sha256": "4d017b8e999054968c23ec41cdecf1200f94f76343e725040d330b8cb91d7bc8",
-      "size_bytes": 10182
+      "sha256": "65a78e6bf07f43e6d57adbfa64150ff208ba999b36d4356c5529a93b7f3fe14b",
+      "size_bytes": 10390
     },
     {
       "ordinal": 23,
       "path": "output/manuscript/22_discussion_related_work.md",
-      "sha256": "f7315d1dc79055ec9ca8e74a4e0eaaf83fbfa1750cf7a866d6e1655367bdd7f1",
-      "size_bytes": 13924
+      "sha256": "9bd90deed029d0fc5eb9188cb1958d5f96228f0aab5e73dd7d950f7a5a1ccaa7",
+      "size_bytes": 11661
     },
     {
       "ordinal": 24,
       "path": "output/manuscript/23_discussion_limitations.md",
-      "sha256": "df3e4fa203dade53707fa2db2507a7ef44086d356014bcc1cc45e22600bd7842",
-      "size_bytes": 11700
+      "sha256": "891510c37b9bf052482c0bac15bcf917ff615846ff1f1bacf173e2c58f9ea5ee",
+      "size_bytes": 8275
     },
     {
       "ordinal": 25,
       "path": "output/manuscript/24_discussion_future.md",
-      "sha256": "065018f979bc89d9378b3273db429cf36e699694996e7c53f4724c8fac5ecd45",
-      "size_bytes": 11074
+      "sha256": "d7f6771ee3786c91839a8fdf53da1e74a6ec70f504dce4255de5eb9cf46fb2db",
+      "size_bytes": 11286
     },
     {
       "ordinal": 26,
       "path": "output/manuscript/25_conclusion.md",
-      "sha256": "2237e0ec279d6ca4a952eac419c07e4ccda7b3e61a8a1b4e07445718efc2bac6",
-      "size_bytes": 10349
+      "sha256": "300b2d75c7cd40e47b831b9f2ff3a16666c8a068638cb7877267f94d5985aeca",
+      "size_bytes": 10017
     },
     {
       "ordinal": 27,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "df9b624fb2f283dfc9b48610deb73be844f343c056f85f9126b5ea9a778bd97e",
-      "size_bytes": 7683
+      "sha256": "eedea3cddfd413e1c33f8555f9eba0e67183e9a2e898e121bde621edfc682637",
+      "size_bytes": 9279
     },
     {
       "ordinal": 28,
-      "path": "output/manuscript/27_supplement_aggregation_objective.md",
-      "sha256": "cec8ca752516ae3313cf30a15617dc7d9882bf23a7ca041ee9a3e66180d8273f",
-      "size_bytes": 15714
+      "path": "output/manuscript/26_reproducibility_provenance.md",
+      "sha256": "aed509542e6e30c3a70860001105b708f16582d865f4fb2989bd16582f31d168",
+      "size_bytes": 4857
     },
     {
       "ordinal": 29,
-      "path": "output/manuscript/28_supplement_extended_methods.md",
-      "sha256": "2c846008eee205d78a51997ffc93d65c31f34d0b98e9b52bae596ae4dd508373",
-      "size_bytes": 19740
+      "path": "output/manuscript/27_supplement_aggregation_objective.md",
+      "sha256": "c467f7576b13be606d9342ee1a3c79e5ad0bf5ac4219145b41630365ee8d078a",
+      "size_bytes": 16236
     },
     {
       "ordinal": 30,
-      "path": "output/manuscript/29_supplement_federation_protocol.md",
-      "sha256": "e30677a2fc6415db74e622e6cfcac9e3d5d60ef2dc2952a100953dce71b639c2",
-      "size_bytes": 2980
+      "path": "output/manuscript/28_supplement_extended_methods.md",
+      "sha256": "36fea56002278ad45fc5279fd64ef25632279a2e2cae82deb1d70fef88849f83",
+      "size_bytes": 18485
     },
     {
       "ordinal": 31,
-      "path": "output/manuscript/30_supplement_notation.md",
-      "sha256": "baa16a68beb8a79387f967db427d2eb73a16e87c89651e711b2df218b15e3fbf",
-      "size_bytes": 12718
+      "path": "output/manuscript/29_supplement_federation_protocol.md",
+      "sha256": "b5f9b0a1290f29243b83d3018784a0fe709f7989ff61f11e81069ef25f28ff29",
+      "size_bytes": 2981
     },
     {
       "ordinal": 32,
-      "path": "output/manuscript/S05_results_moving_world.md",
-      "sha256": "01fa4f52da127923ecf1e877dcff7a144eab00ad3cd12e46dee9e4fe631796d1",
-      "size_bytes": 8752
+      "path": "output/manuscript/30_supplement_notation.md",
+      "sha256": "a572d585c9906d250becb2fd280b8ea50efea7e63948ab8dec556974488e40c0",
+      "size_bytes": 13619
     },
     {
       "ordinal": 33,
-      "path": "output/manuscript/S06_supp_moving_world.md",
-      "sha256": "ec62d34a01de134d044217b4d31d0f03c381c98bbd7ed85c023ad32f8aa5bdee",
-      "size_bytes": 2287
+      "path": "output/manuscript/S05_results_moving_world.md",
+      "sha256": "44465d556b57ca4158a698bc746382e34031c6977d2d02645eb5c1ad6112aae6",
+      "size_bytes": 9159
     },
     {
       "ordinal": 34,
-      "path": "output/manuscript/S09_results_hierarchical_pomdp.md",
-      "sha256": "6d960e7ee6013d3e640ba5645d4d745a8cdf3c7127f687926f54013fc9997204",
-      "size_bytes": 4483
+      "path": "output/manuscript/S06_supp_moving_world.md",
+      "sha256": "02ffcb446d8efe6f61657c0a30cbbc03b8738e2e08dfdee8a7567e68e649dfb5",
+      "size_bytes": 2290
     },
     {
       "ordinal": 35,
-      "path": "output/manuscript/S10_supp_hierarchical_pomdp.md",
-      "sha256": "e02a1224918db2ae9ce703ee055400b9b1a987d9113fec3dde911dae861bb3c3",
-      "size_bytes": 2799
+      "path": "output/manuscript/S09_results_hierarchical_pomdp.md",
+      "sha256": "c2105306410ada8996d2a6972b0a7fe580dacaed47a40499cd9260aae5b68296",
+      "size_bytes": 4389
     },
     {
       "ordinal": 36,
-      "path": "output/manuscript/S11_results_3level_pomdp.md",
-      "sha256": "5249fdde5565dbf1160b9c4d1b0ce9360b228f21867031a9710a50442025e85b",
-      "size_bytes": 2787
+      "path": "output/manuscript/S10_supp_hierarchical_pomdp.md",
+      "sha256": "db606d8515ee86d8b9874f91d6de0638b4bda175cf19508176fb187b64ab5f02",
+      "size_bytes": 2841
     },
     {
       "ordinal": 37,
-      "path": "output/manuscript/S12_supp_3level_pomdp.md",
-      "sha256": "355260420bfbe37a9f4b809a67d0fce830d89290a7a3116209a89c0690669767",
-      "size_bytes": 3687
+      "path": "output/manuscript/S11_results_3level_pomdp.md",
+      "sha256": "210a3e8c22369e89f19bb88e40183f49922c565b2320b931e88b56fdd620a78a",
+      "size_bytes": 2896
     },
     {
       "ordinal": 38,
-      "path": "output/manuscript/S13_results_sensitivity.md",
-      "sha256": "2e4b3e76701d009da63305519a5e7c17fe0916a5ab3fd5d6946476951ca4c9b9",
-      "size_bytes": 5170
+      "path": "output/manuscript/S12_supp_3level_pomdp.md",
+      "sha256": "20141fac68bc0e86e04e6b273f8557ae069384844123e294b7b79f7308c03a80",
+      "size_bytes": 3678
     },
     {
       "ordinal": 39,
-      "path": "output/manuscript/S14_supp_sensitivity.md",
-      "sha256": "5713357da1269f9cf3e37ea43e15727eb25fe3099d9201f8f4aaf09efe523b9b",
-      "size_bytes": 5081
+      "path": "output/manuscript/S13_results_sensitivity.md",
+      "sha256": "2b618ff6cfd87ee461402570acef02f0d7b200b4eb4eb96dbfb7f52e40beef24",
+      "size_bytes": 6847
     },
     {
       "ordinal": 40,
-      "path": "output/manuscript/S15_results_parameter_recovery.md",
-      "sha256": "f71f6995d5671216b105c8dde6f302634f71fd79d8f42c4b983e60e459716e03",
-      "size_bytes": 1975
+      "path": "output/manuscript/S14_supp_sensitivity.md",
+      "sha256": "369a55979aa17f498ec2bdf0c88d4c236d1a9e314c7659fd966b4d9baaf2150d",
+      "size_bytes": 6029
     },
     {
       "ordinal": 41,
-      "path": "output/manuscript/S16_results_hierarchical_bmr.md",
-      "sha256": "2be526bd74b0d46c1185e0031c71d497c00d7bc490ea51b4bc737d907357f3a9",
-      "size_bytes": 3656
+      "path": "output/manuscript/S15_results_parameter_recovery.md",
+      "sha256": "157a7f555d6bea5d3a77e4be64143ce921ecc2a85b7885cfc5acc2c6ed9ec504",
+      "size_bytes": 2420
     },
     {
       "ordinal": 42,
-      "path": "output/manuscript/S17_results_heuristic_characterization.md",
-      "sha256": "e10b8cd0d50ed881ca07cd89b2bd1d59060680ca945c36a956baaf1c1a41cfd1",
-      "size_bytes": 4894
+      "path": "output/manuscript/S16_results_hierarchical_bmr.md",
+      "sha256": "9bca5e3b19b2394045283dbce06406ee7836c506c361ed2f496952006588d16e",
+      "size_bytes": 3706
     },
     {
       "ordinal": 43,
+      "path": "output/manuscript/S17_results_heuristic_characterization.md",
+      "sha256": "6c315c36ad1a61dd5a06d9603b835ae2caef97a25469e868080ee023e10505c0",
+      "size_bytes": 4776
+    },
+    {
+      "ordinal": 44,
       "path": "output/manuscript/99_references.md",
-      "sha256": "05614d7ddad285f43004f782b27232ed54df7a97055ebb451e338a6f26f5b021",
-      "size_bytes": 1247
+      "sha256": "20d90f9895cf488a2e122246643f5b31547fe030b226db9f454394707066a1c9",
+      "size_bytes": 1278
     }
   ],
-  "ordered_inputs_sha256": "decd2c7b6d8ae03ee1a502d1af27ab7fdfd7951bab99d033d0205ed4558874c9",
+  "ordered_inputs_sha256": "b5c63876d0b0cfa3e71954db17325c0e5d6089a669baf61521278eaf6d6319a4",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }

@@ -1,0 +1,35 @@
+{
+  "panels": [
+    {
+      "alt": "Both complete objective trajectories, observed endpoints, lower final reference and terminal gap.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f3e5338bb5ec2d8a1516f2c12ec598c84690faed6c85e632a81470cd7bd62156",
+      "src": "../figures/descent_comparison.slide-trajectories.png"
+    },
+    {
+      "alt": "Filled circles / solid: single start. Open diamonds / dotted: multistart. Both use the same variational method.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4a041bd3a70e9cc39751c703c0fbe3fd55e349f53397836a9058e3dfa5d46850",
+      "src": "../figures/descent_comparison.slide-key.png"
+    },
+    {
+      "alt": "Single-start final F: 1.31 nats\nMulti-start final F: -0.231 nats\nBasin gap \u0394F: 1.54 nats",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b6433b19d25e529f1e7a5fa506d76285918881e5d0dceb3fe5d914a7e132871b",
+      "src": "../figures/descent_comparison.slide-notes-1.png"
+    },
+    {
+      "alt": "Iterations: single=10, multi=6",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "db82f192036c35f48e857c366d6e760e0001702ab55bc6a49b35f3bd32cb6565",
+      "src": "../figures/descent_comparison.slide-notes-2.png"
+    },
+    {
+      "alt": "Two deterministic traces from one configured colony. No uncertainty interval applies. Observed basins do not certify a global optimum.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6029fb774b918e972138ea2c361dd2badbcdc8eada7cff58ada490f07eb560a7",
+      "src": "../figures/descent_comparison.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

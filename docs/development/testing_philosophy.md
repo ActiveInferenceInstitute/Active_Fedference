@@ -22,11 +22,16 @@ uv run --locked pytest tests/ \
   --cov-fail-under=90
 ```
 
-The raw pytest command above is authoritative for the line-coverage threshold.
+The raw pytest command above is authoritative for the coverage threshold.
+With `branch = true`, coverage.py combines covered statements and branch
+destinations in its reported percentage; the threshold applies to that combined
+line and branch measure.
 For a release-facing hydration, run
 `uv run --locked --extra dev python scripts/validate_test_coverage.py`: it executes that
 same full coverage gate and writes the source-bound
 `output/data/test_coverage_receipt.json` required by final non-draft hydration.
+Local execution and hosted CI are separate results. The hosted checks must pass
+for the exact reviewed commit before public integration.
 
 Pytest profiles are explicit and complementary:
 

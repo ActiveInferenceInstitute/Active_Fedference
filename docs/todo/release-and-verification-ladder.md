@@ -5,213 +5,200 @@
 ## Status
 
 - Priority class: Minor
-- State: Open — exact-commit fresh-clone certification, release-verdict,
-  broader independent-reproduction, and author-authority gates remain for the
-  next fully reviewed release wave
-- Owner surface: git tracking set, release workflow, reviewer eligibility,
-  broader cross-vendor verification, publication accessibility decision
+- State: Open
+- Queue position: candidate-specific checks before each public push and the
+  authoritative two-clone campaign before v1.1 tagging
+- Owner surface: tracking set, renderer identity, public-history review,
+  reproducible distributions, isolated-clone receipts, release-verdict
+  eligibility, and ISC-242
 
 ## Rationale
 
-Clean-checkout evidence is commit-specific. A prior commit's passing
-`validate_clean_checkout.py` result never certifies a later development
-overlay, even when the later source suite is green. Analysis, hydration,
-rendering, and release receipts are likewise trusted only when their declared
-input and output hashes match the reviewed tree in producer order.
+Release evidence is commit-specific. Passing tests on an earlier source commit,
+in a dirty worktree, or against an unpinned renderer cannot certify a later
+candidate. Analysis, hydration, figures, rendering, package builds, and release
+manifests are valid only when their declared inputs and outputs bind to the
+exact reviewed tree in producer order.
 
-The latest published snapshot is v1.0.4. The current v1.1 application work is
-an unreleased development line and deliberately carries neither a version DOI
-nor a release date. A scoped feature-branch push and review PR may expose an
-exact candidate to hosted checks only after the approved sanitized-history
-confidentiality gate below passes. It does not integrate the candidate into private or public
-`main` and does not create a release. Hosted checks govern the development PR.
-After that PR and the separate release-identity PR are merged, the complete
-release ladder requires two genuinely isolated clones of the exact final
-public-main commit before a tag is created. Those clone runs establish
-regeneration and isolated-environment behavior for the release-identity
-commit; they do not substitute for the separate reviewer-verdict or
-release-authority gates, and they do not close the broader cross-vendor and
-independent-reproduction lanes.
+The active v1.1 path has two different verification scales. A public feature or
+release branch first needs a complete candidate-history audit plus the
+applicable local and hosted gates. The final public-main merge commit that
+would be tagged then needs two isolated, sequential, write-once clone runs.
+Neither scale replaces the required release verdict or publication authority,
+and neither creates new scientific evidence.
+
+The Minor classification describes this lane as verification rather than a new
+scientific or product capability. It does not describe runtime or importance:
+the final clone campaign is deliberately broad, coordination-heavy, and
+release-blocking.
 
 ## Scope
 
-1. **Tracking set.** The prior load-bearing source, documentation, tests,
-   generated reports, figures, and reviewer snapshot were committed; the
-   current development additions must be tracked and re-probed before that
-   statement becomes current again. The sibling
-   template repository's rendering changes remain owned by that repository.
-   Keep the executable tracking/import probe in the release ladder.
-2. **Exact-history confidentiality before a public push.** Refresh the public
-   base, fix the exact candidate SHA, and inspect every object newly reachable
-   in `public/main..candidate`, not only the candidate tree. Enumerate current
-   and deleted paths and blobs; scan the full range for secrets; review commit
-   messages and author identities; inspect machine-local paths, confidential
-   drafts, proprietary inputs, and generated artifacts; review every object at
-   or above 50 MiB; and hard-block any object over GitHub's 100 MiB limit.
-   Retain the public-base SHA, candidate SHA, tool versions, findings, and
-   disposition. Any unresolved publishability concern blocks the public branch
-   push and PR. The approved v1.1 policy uses a four-commit sanitized replay
-   based directly on refreshed public `main`; the retained private evidence
-   branch is not rewritten. Any further history-policy change requires new
-   approval and complete commit-bound regeneration.
-3. **Fresh-clone verification (the rigorous "check everything" procedure).**
-   Run this authoritative two-clone campaign only after the development PR and
-   release-identity PR have merged and public `main` is green, on the exact
-   final public-main SHA that would be tagged.
-   Recheck free space and provision at least 40 GiB of safe working headroom
-   without reclaiming active research data or caches absent a separate
-   ownership check. From each of two isolated clean checkouts, run the full
-   ladder in order:
-   - verify the content-bound analysis → hydration → render receipt chain;
-   - source gates: Ruff, mypy, invariants, layer-boundary grep;
-   - full coverage suite at the declared gate floor;
-   - report scale guard (publication n-fields) after the suite — this must pass
-     *after* the suite, proving the suite does not touch the committed snapshot;
-   - publication regeneration (analysis, token hydration) and byte-comparison of
-     regenerated reports against the committed snapshot;
-   - render of all three surfaces and the count-based invariants: rendered
-     theorem-box count vs source environment count, zero unresolved reference
-     markers in the slide text layer, zero unresolved tokens;
-   - raster reads of at least one formalism page and one results page of the
-     PDF (text extraction cannot see math-rendering or scale regressions);
-   - release build plus fingerprint verification;
-   - build the wheel and source distribution, install each into its own empty
-     environment, and run the installed CLI plus a core import/aggregation
-     smoke;
-   - build both distribution formats twice with the same
-     `SOURCE_DATE_EPOCH` and require byte-identical pairs. The custom PEP 517
-     wrapper normalizes archive order, owner, and time metadata and the
-     setuptools build backend is exactly pinned; backend-version or checkout
-     mtime drift is a real release failure.
-   Use candidate-specific write-once paths beneath
-   `/Volumes/blue/active_fedference-verification/v1.1.0-<FINAL_SHA>/`, with
-   `clone-a` and `clone-b` as separate checkout roots and receipts retained in
-   sibling directories outside both clones. This mount layout is an approved,
-   non-confidential operational example: it exposes no credential, user home,
-   dataset location, or proprietary input and is allowed by the public-history
-   audit.
-4. **Release-certification verdict.** Obtain exactly one structured
-   `pass`/`concerns`/`fail` verdict on the exact final SHA, tree, manifest,
-   claim ledger, no-claim boundaries, and two-clone evidence. The eligible
-   reviewer is either an identified human or a genuinely different-vendor
-   model. A local subagent does not qualify. Daniel Ari Friedman's selected
-   verdict is recorded as an identified owner-author human review, not as
-   independent external replication or cross-vendor review. `pass` permits
-   tagging; every `concerns` item requires disposition or repair through a new
-   public PR and complete recertification; `fail` blocks the release. This
-   release-specific verdict does not close ISC-89 or the broader cross-vendor
-   and independent-reproduction lane.
-5. **Accessibility disposition.** Treat the validated HTML manuscript as the
-   canonical accessibility-enhanced publication surface. The combined
-   manuscript PDF must be emitted by the source-controlled tagged producer and
-   pass the `Tagged: yes`, qpdf `/Lang`, language, and `StructTreeRoot` gates.
-   The validator accepts catalog language when Poppler omits its optional
-   `Language:` line. Slide PDFs are separate convenience surfaces. Tagged
-   structure is not PDF/UA conformance; a PDF/UA statement still requires a
-   dedicated conformance validator and manual review.
+### Candidate gate before each public branch push
+
+For the v1.1 public application/visual lineage, the authorized history policy
+preserves the reviewed sanitized history based on refreshed public `main` and
+permits additive corrective commits for source, tests, and documentation.
+Keep them separate from `build: refresh visual publication artifacts`, which
+contains generated artifacts only, and explain the corrective scope in the
+public PR. The retained private evidence branch remains unchanged. Audit every
+newly reachable object; a clean scan does not authorize a different replay,
+cherry-pick, squash, rebase, or history rewrite. Do not rewrite existing commits
+to force an artificial count. Any further history-policy change requires new
+approval.
+
+1. Fetch both remotes and record the exact public base, private base, candidate
+   commit, tree, branch, renderer commit, and worktree status. Rebuild or stop
+   when a base moved unexpectedly.
+2. Audit every commit, tree, current/deleted path, and blob newly reachable in
+   `public/main..candidate`. Run a full-history secret scan; review authors,
+   emails, commit messages, machine-local paths, internal drafts, proprietary
+   data, generated artifacts, Gitlinks, and every object at or above 50 MiB;
+   hard-block an object above GitHub's 100 MiB limit.
+3. Require a clean candidate worktree and an explicit clean Template checkout
+   at the exact configured renderer commit. A nearby dirty Template checkout is
+   never an implicit dependency.
+4. Run targeted tests during editing, then the full applicable source,
+   publication, render, browser, slide, package, and reproducibility gates.
+5. Push the fixed candidate SHA non-forcibly to the required `codex/*` branches.
+   Merge only through a public PR after the exact head and merge ref are green,
+   using a normal merge commit; require a green post-merge public-main workflow.
+
+### Exact-final-SHA release campaign
+
+After MED-5A's release-only PR merges and public `main` is green, recapture the
+exact merge commit rather than certifying the PR head. The release-only PR must
+therefore precede this final certification; MIN-2 is not a prerequisite for
+creating or merging that PR. Immediately before
+each clone, verify at least 40 GiB of safe headroom and confirm that no active
+producer or protected data/caches would be disturbed. Use a new write-once
+namespace beneath
+`/Volumes/blue/active_fedference-verification/v1.1.0-<FINAL_SHA>/` with separate
+`clone-a`, `clone-b`, and sibling receipt directories. This is an approved,
+non-confidential operational example; it names no credential, user home,
+dataset location, or proprietary input.
+
+Run clone A and clone B sequentially without reusing either checkout. Give each
+clone its own clean renderer checkout at the configured Template commit. Each
+run must independently execute:
+
+- exact source/tree/lock/renderer and tracking-set capture;
+- Ruff, mypy, invariants, layer-boundary, non-slow, integration, publication,
+  example, and full coverage gates;
+- publication analysis, typed report validation, figure generation,
+  provisional hydration, source-bound coverage receipt, and final hydration;
+- clean PDF, HTML, reveal.js, and Beamer rendering;
+- Mermaid, bibliography, cross-reference, token, caption, figure, accessibility,
+  browser, slide-density, freshness, scale-guard, and release-manifest checks;
+- post-suite proof that tests did not mutate the committed publication snapshot;
+- combined-PDF structure, text, `/Lang`, non-empty `StructTreeRoot`, qpdf, and
+  formalism/results raster review, described only as tagged structure;
+- wheel and source-distribution installation in separate empty environments,
+  installed application/CLI smoke, package membership, `py.typed`, and no
+  default Torch import; and
+- two builds of each distribution under one explicit `SOURCE_DATE_EPOCH`, with
+  byte-identical pairs and cross-clone comparison wherever determinism is
+  declared.
+
+Retain command, environment, source, renderer, lock, output, distribution,
+rendering, visual-review, and result receipts outside the disposable clone
+trees.
+
+### Release-certification verdict
+
+Technical eligibility for this v1.1 release checkpoint permits either an
+identified human or a genuinely different-vendor reviewer. A local subagent
+does not qualify. The selected v1.1 path is specifically to present the exact
+final SHA, tree, manifest, claim ledger, no-claim boundaries, two-clone evidence,
+distribution hashes, PDF evidence, and unresolved items to Daniel Ari Friedman
+and record his verdict as identified owner-author human review, not as
+independent external replication or cross-vendor review.
+
+The structured result is `pass`, `concerns`, or `fail`. `pass` supplies the
+technical release verdict but does not itself supply publication authority;
+it permits tagging only under the separately authorized MED-5B sequence;
+every concern requires disposition or a reviewed repair and complete
+recertification; `fail` blocks release. This release verdict does not close ISC-89 or the broader independent-reproduction lane.
 
 ## Implementation Notes
 
-- The suite-write scaffolding is already in place: subprocess smoke tests
-  redirect through the validated `ACTIVE_FEDFERENCE_PROJECT_ROOT` override and
-  the scale guard is the standing tripwire. The ladder's post-suite guard step
-  exists to keep that property continuously proven.
-- Do not weaken any gate to make a fresh-clone run pass; a red step is a real
-  finding about the release, not about the ladder.
-- `scripts/validate_clean_checkout.py` is now the executable front door for the
-  clone/tracking/import check. `scripts/validate_pipeline_freshness.py` is the
-  executable front door for upstream/downstream artifact freshness. Both are
-  release-evidence probes; neither upgrades scientific claims.
-- Exact run counts, hashes, rendering receipts, and the current development
-  disposition belong in `ISA.md` and generated verification artifacts. They
-  are intentionally not copied into this forward-looking page, where they
-  would become stale after the next source change.
-- Other live research campaigns may be active on the workstation or external
-  volumes. No cache or data reclamation is authorized by this roadmap item.
-  Free space is volatile and must be rechecked immediately before each
-  isolated clone/render run; the 40 GiB threshold is a planning floor, not
-  deletion authority.
-- For a new unreleased draft, the exact package/manuscript version ends in
-  `.devN`, `publication.doi` is the empty string,
-  `publication.doi_status` is exactly `(forthcoming)`, and `date_released` is
-  null. The split preserves plain cover text without inventing an unassigned
-  DOI resolver link. Generated CFF, Zenodo, and CodeMeta surfaces omit their DOI
-  and release-date fields, and the package URL table omits a version-specific
-  DOI. The immutable v1.0.4 release retains its DOI/date on its own tag and
-  artifacts; development metadata must not copy them forward before approval.
+- Use repository commands of record and retain full failing output. Never
+  weaken a gate, delete evidence, change a frozen threshold, or switch to an
+  unapproved history policy to manufacture a pass.
+- Keep generated output producer-owned. Regenerate in declared order rather
+  than hand-editing a stale report, figure, manuscript, receipt, or manifest.
+- `scripts/validate_clean_checkout.py` is the tracking/import front door;
+  `scripts/validate_pipeline_freshness.py` is the upstream/downstream freshness
+  front door; `scripts/build_release.py --verify` checks the exact release
+  bundle.
+- Free-space status is volatile and confers no authority to delete active data,
+  caches, worktrees, or outputs.
+- Development identity remains a PEP 440 development version with an empty DOI,
+  `(forthcoming)`, and no release date or project DOI URL. Final identity is set
+  only in the reviewed release-only PR.
 
 ## Acceptance Criteria
 
-- Primary estimand: not applicable — this is release-integrity engineering; no
-  scientific quantity is measured. Success is judged by ladder outcomes on a
-  clean checkout, not by a statistical contrast.
-- Independent/replication unit: one fresh clone plus one complete ladder run;
-  two isolated clone units must reproduce the required results.
-- Every load-bearing file is tracked; the post-commit probe confirms that
-  `git ls-files` covers every import, docs-contract target, and test in the
-  verified baseline.
-- The full ladder passes from a fresh clone with no machine-local dependencies
-  beyond the declared toolchain.
-- Wheel and source-distribution installs expose `fedference aggregate`, `list`,
-  `run`, `benchmark`, `verify`, and `replay`, retain `py.typed`, and run a
-  labeled own-data application without importing Torch in the default
-  NumPy/SciPy path.
-- Before any public development-branch push, the sanitized-history scan covers all
-  newly reachable commits and blobs, including deleted paths, and records an
-  explicit publishability disposition with no unresolved concerns.
-- A future draft carries no DOI or release date until confidentiality, license,
-  attribution, and author approval are complete. Published v1.0.4 metadata is
-  immutable release identity, not a development default.
-- The eventual committed `output/` snapshot matches a post-commit regeneration at
-  publication scale (value-identical reports, declared volatile fields aside).
-- One eligible structured release-certification verdict exists. The evidence
-  identifies whether it came from a human or genuinely different-vendor
-  reviewer and never relabels an owner-author human verdict as independent
-  external replication. ISC-89 and the broader independent-reproduction lane
-  remain open after an owner-author `pass`.
-- Each decision-queue item has a recorded decision and, where accepted, its
-  implementation and test.
+- Primary estimand: not applicable; this item establishes exact-source release
+  integrity rather than a scientific quantity.
+- Independent replication unit: not applicable; audit/review units are one
+  fixed public candidate for the branch gate and each fresh clone plus complete
+  ladder for the final campaign. Both clone units are required.
+- The load-bearing tracked set includes every imported module, test, source
+  document, figure/accessibility contract, example, and packaged resource.
+- The candidate audit covers all newly reachable history and records zero open
+  publishability concerns, object-size disposition, tool versions, public base,
+  candidate SHA/tree, and evidence-manifest digest.
+- Each final clone independently regenerates and validates the declared source,
+  report, render, accessibility, distribution, and manifest chain.
+- Clone outputs and distributions agree byte-for-byte where the repository
+  declares determinism.
+- The v1.1 application/visual lineage preserves the approved sanitized history
+  and additive corrective commits from refreshed public `main`. The private
+  evidence lineage is unchanged, source and generated commits remain separate,
+  and any further policy change has separate approval.
+- One eligible structured `pass` binds to the exact public-main commit and
+  evidence bundle. The selected path is the owner-author review, which is
+  labeled honestly, remains distinct from publication authority, and does not
+  close ISC-89.
+- Required acceptance evidence: candidate-history record, hosted check URLs,
+  post-merge workflow URL, two clone receipt sets, cross-clone comparison,
+  release-verdict record, and an ISC-242 update only after every required
+  component exists.
 
 ## Verification Probes
 
-- Falsifier: a fresh clone that fails import, the suite, the post-suite scale
-  guard, regeneration parity, a rendered-surface count invariant, or fingerprint
-  verification falsifies the release claim; a missing, ineligible, `concerns`
-  without disposition, or `fail` release verdict blocks tagging. An
-  owner-author `pass` still cannot establish independent verification.
-- Falsifier: a changed report, manuscript input, or rendered surface that still
-  passes `validate_pipeline_freshness.py` without the dependent receipt being
-  regenerated falsifies the stage-order guard.
-- `git ls-files` audit against the recorded load-bearing set.
-- `git fetch --prune public`, followed by a commit- and blob-level audit of the
-  fixed `public/main..candidate` range, a full-history secret scan, size review,
-  and recorded disposition before the public branch push.
-- `uv run --locked python scripts/validate_clean_checkout.py` from the clean clone and
-  `uv run --locked python scripts/validate_pipeline_freshness.py` after stages 03–05.
-- The ordered ladder commands in `TODO.md` "Gates For Any Item" plus the
-  fresh-clone additions above, each with captured output.
-- Raster page reads and count-based rendered-surface checks as listed in Scope.
+- `git ls-files` audit against the load-bearing import, docs, test, figure,
+  example, and package set.
+- Full commit/blob history and secret/size/path audit for each fixed candidate.
+- `uv run --locked python scripts/validate_clean_checkout.py`.
+- The complete command floor in `TODO.md`, real clean-renderer production,
+  browser/slide/PDF visual review, and package-installed smoke.
+- `uv run --locked python scripts/validate_pipeline_freshness.py` and
+  `uv run --locked python scripts/build_release.py --verify` after final
+  regeneration.
+- Cross-clone report/output/distribution digest comparison and structured
+  reviewer-verdict schema validation.
 
 ## Claim-Boundary Constraints
 
-Prohibited claims (no-claim boundary):
-
-- No claim that release integrity, fingerprints, or a green ladder add
-  scientific evidence for any estimand; they establish reproducibility of the
-  already-declared results only.
-- No use of a green fresh-clone run to promote `robust_aggregate` beyond its
-  recovery-limit guarantee or `variational_aggregate` beyond its raw
-  effective-weight bound.
-- No treating a local subagent as an eligible reviewer, or an owner-author
-  human verdict as independent external or cross-vendor replication.
+- Falsifier: a moved base, dirty tree, renderer mismatch, unresolved history
+  finding, failed source/render/package check, clone divergence, missing
+  receipt, ineligible verdict, undispositioned concern, or `fail` blocks the
+  affected push, merge, tag, or release step.
+- Prohibited claims: clean clones, fingerprints, green CI, tagged structure, or
+  a release verdict do not establish scientific validity, universal robustness,
+  source-protocol identity, physical multi-host execution, WCAG, or PDF/UA.
+- Do not treat a local subagent as an eligible reviewer or an owner-author
+  verdict as independent reproduction.
 
 ## Dependencies
 
-None blocking; interacts with the implemented release fingerprint and receipt
-capability in `src/publication/release_manifest.py` and
-`src/publication/pipeline_freshness.py`, and the phase ordering owned by
-[`scholarship-and-phase-plan.md`](scholarship-and-phase-plan.md).
-Future public release waves additionally require confidentiality, third-party
-attribution, license, and author approval outside local validation. Those
-governance checks are not retroactively claimed as scientific evidence for the
-published v1.0.4 artifact.
+The candidate gate depends on a fixed branch/tree, current remote heads, the
+approved sanitized-history policy, and an exact clean renderer. The final
+campaign begins only after MED-5A merges the release-only identity/artifact PR
+and public `main` is green; it then depends on safe external headroom and current
+toolchain access. After this exact-final-SHA ladder and the selected owner-author
+`pass`, MED-5B owns tag, GitHub, and Zenodo publication; MIN-3 then verifies and
+closes the live documentation handoff before MED-5B performs the one-time
+tree-identical private synchronization. MAJ-8 begins only after that sequence.

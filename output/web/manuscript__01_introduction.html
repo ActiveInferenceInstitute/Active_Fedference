@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>01_introduction.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -472,93 +636,94 @@ generalized Bayes</h1>
 the power and the fragility of the pool it uses: the same multiplication
 of reports that sharpens an honest consensus lets a single confident,
 wrong member capture it. Two research communities each hold part of the
-remedy but do not, on their own, close the gap. The active-inference
-community gives agents generative models, action selection, and
-colony-level belief sharing. The robust- and federated-Bayes community
-gives generalized objectives and aggregation methods for inference under
-misspecification or contamination. The cited literatures do not,
-however, provide a single tested treatment of robust categorical belief
-fusion for active-inference agents. This introduction states the problem
-and its evidence boundary; <a class="xref" href="index.html#sec:gap">Section 3</a> scopes the reviewed gap, and
-<a class="xref" href="index.html#sec:contributions">Section 4</a> lists the
+remedy but do not, on their own, close the gap.</p>
+<p>The active-inference community gives agents generative models, action
+selection, and colony-level belief sharing. The robust- and
+federated-Bayes community gives generalized objectives and aggregation
+methods for inference under misspecification or contamination.</p>
+<p>The cited literatures do not, however, provide a single tested
+treatment of robust categorical belief fusion for active-inference
+agents. This introduction states the problem and its evidence boundary;
+<a class="xref" href="index.html#sec:gap">Section 3</a> scopes the
+reviewed gap, and <a class="xref" href="index.html#sec:contributions">Section 4</a> lists the
 contributions together with what each result does not establish.</p>
 <h2 id="sec:intro-active-inference">Active inference supplies generative
 agents and shared beliefs</h2>
 <p>Active inference casts perception, learning, and action as the
 minimization of variational free energy under a generative model, a
 program that grew out of the free-energy principle <span class="citation">(Friston 2010)</span> and
-its process-theory implementation <span class="citation">(Friston et al. 2017)</span>. In the discrete
-state-space setting the formalism is now standardized: an agent carries
-the categorical tensors <span class="math inline">\(A\)</span>
-(likelihood), <span class="math inline">\(B\)</span> (transitions),
-<span class="math inline">\(C\)</span> (preferences), and <span
-class="math inline">\(D_0\)</span> (initial priors), infers hidden
-states by minimizing variational free energy, and selects actions by
+its process-theory implementation <span class="citation">(Friston et al. 2017)</span>.</p>
+<p>In the discrete state-space setting the formalism is now
+standardized. An agent carries the categorical tensors <span
+class="math inline">\(A\)</span> (likelihood), <span
+class="math inline">\(B\)</span> (transitions), <span
+class="math inline">\(C\)</span> (preferences), and <span
+class="math inline">\(D_0\)</span> (initial priors), and infers hidden
+states by minimizing variational free energy. It selects actions by
 minimizing <em>expected</em> free energy — the sum of a risk term and an
 ambiguity term that together trade off goal-seeking against
-uncertainty-resolving behavior <span class="citation">(Da Costa et al. 2020)</span>. This synthesis is
-the substrate we build on. Mature toolboxes make it executable at scale:
-pymdp provides discrete-state active inference in Python
-<span class="citation">(Heins et al. 2022)</span>, and RxInfer delivers reactive message passing for
-exact Bayesian inference <span class="citation">(Bagaev et al. 2023)</span>.</p>
+uncertainty-resolving behavior <span class="citation">(Da Costa et al. 2020)</span>.</p>
+<p>This synthesis is the substrate we build on. Mature toolboxes make it
+executable at scale: pymdp provides discrete-state active inference in
+Python <span class="citation">(Heins et al. 2022)</span>, and RxInfer delivers reactive message passing
+for exact Bayesian inference <span class="citation">(Bagaev et al. 2023)</span>.</p>
 <p>The community has also moved from single agents to
 <em>collectives</em>. Surprise-minimizing ensembles reproduce collective
 animal behavior such as schooling and flocking <span class="citation">(Heins et al. 2024)</span>;
 epistemic communities form when agents share a generative model and
 exchange evidence <span class="citation">(Albarracin et al. 2022)</span>; and collective intelligence
 has been framed directly in active-inference terms
-<span class="citation">(Kaufmann et al. 2021)</span>. The narrow bridge studied here starts from
-posterior broadcasts over one shared categorical factor — a predator’s
-location, say — and forms a project log-linear pool (<span
-class="citation"
-data-cites="eq:log-linear-pool"><a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a></span>). Under the
+<span class="citation">(Kaufmann et al. 2021)</span>.</p>
+<p>The narrow bridge studied here starts from posterior broadcasts over
+one shared categorical factor — a predator’s location, say — and forms a
+project log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>). Under the
 explicit finite-shared-support, posterior-log-potential, and
 fixed-weight assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 that weighted geometric pool is a specialization of Friston et al.’s Eq.
-7 message-combination term <span class="citation">(Friston et al. 2024)</span>. It is not a
-reconstruction of the source message construction, scheduling, cavity
-policy, generative factors, or complete protocol. That representation
-connects the qualified categorical bridge to the classical
-logarithmic-pooling literature <span class="citation">(Genest and Zidek 1986; Genest et al. 1986)</span>, to modern Bayesian treatments of log-pool weights
+7 message-combination term <span class="citation">(Friston et al. 2024)</span>.</p>
+<p>It is not a reconstruction of the source message construction,
+scheduling, cavity policy, generative factors, or complete protocol.
+That representation connects the qualified categorical bridge to the
+classical logarithmic-pooling literature <span class="citation">(Genest and Zidek 1986; Genest et al. 1986)</span>, to modern Bayesian treatments of log-pool weights
 <span class="citation">(Carvalho et al. 2023)</span>, to product-of-experts geometry in machine
 learning <span class="citation">(Hinton 2002)</span>, and to distributed Bayesian estimators
 <span class="citation">(Tresp 2000)</span>. In the reproduced baseline, communication lowers
-mean free energy relative to the matched incommunicado condition (<span
-class="citation"
-data-cites="sec:results-belief_sharing"><a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a></span>).
-Friston et al. <span class="citation">(Friston et al. 2024)</span> crystallized the colony mechanism
-into three worked simulations — communicating-colony free-energy
-convergence, Dirichlet language acquisition, and Bayesian model
-reduction structure emergence — whose mechanisms motivate three reduced
-categorical analogues in this repository (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>). They
+mean free energy relative to the matched incommunicado condition (<a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>).</p>
+<p>Friston et al. <span class="citation">(Friston et al. 2024)</span> crystallized the colony
+mechanism into three worked simulations — communicating-colony
+free-energy convergence, Dirichlet language acquisition, and Bayesian
+model reduction structure emergence — whose mechanisms motivate three
+reduced categorical analogues in this repository (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>). They
 are not numerical or exact protocol replications; a source-parity
 reconstruction remains future work before evaluating source-level
-equivalence. Alongside fusion, the community has tools for growing the
-model itself: active inference connects naturally to Bayesian optimal
+equivalence.</p>
+<p>Alongside fusion, the community has tools for growing the model
+itself: active inference connects naturally to Bayesian optimal
 experimental design and model selection <span class="citation">(Smith et al. 2022)</span>, and post-hoc
 Bayesian model reduction prunes redundant structure by comparing
-free-energy bounds <span class="citation">(Friston and Penny 2011)</span> — the engine behind our emergence
-study (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>).</p>
+free-energy bounds <span class="citation">(Friston and Penny 2011)</span> — the algebra used by our
+configured BMR sign control (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>).</p>
 <p>The reviewed active-inference belief-sharing work does not
 systematically characterize fusion under explicit contamination or
-intentionally wrong belief broadcasts. The log-linear pool assumes
-reports are compatible with the shared generative model, while the
-opinion-pooling literature makes the assumptions about independence,
-weights, and external Bayesian coherence explicit <span class="citation">(Genest and Zidek 1986; Genest et al. 1986)</span>. Fully Bayesian aggregation sharpens the point:
-geometric pooling is normatively compelling under dynamic-Bayesian
-rationality assumptions, not an assumption-free robustness procedure
-<span class="citation">(Dietrich 2021)</span>. The same product geometry can be brittle: if a
-report assigns zero or near-zero mass to the true state, the product can
-assign near-zero mass there too. That is the failure mode tested here,
-not a claim that every federation or every product pool behaves
-identically.</p>
+intentionally wrong belief broadcasts.</p>
+<p>The log-linear pool assumes reports are compatible with the shared
+generative model, while the opinion-pooling literature makes the
+assumptions about independence, weights, and external Bayesian coherence
+explicit <span class="citation">(Genest and Zidek 1986; Genest et al. 1986)</span>. Fully Bayesian
+aggregation sharpens the point: geometric pooling is normatively
+compelling under dynamic-Bayesian rationality assumptions, not an
+assumption-free robustness procedure <span class="citation">(Dietrich 2021)</span>.</p>
+<p>The same product geometry can be brittle: if a report assigns zero or
+near-zero mass to the true state, the product can assign near-zero mass
+there too. That is the failure mode tested here, not a claim that every
+federation or every product pool behaves identically.</p>
 <h2 id="sec:intro-robust-bayes">Robust and federated Bayes supplies
 bounded-influence updating</h2>
 <p>A separate literature studies bounded-influence updating outside
 active inference. <strong>Federated learning</strong> aggregates models
 trained on decentralized data without pooling the data itself, the
-canonical algorithm being FedAvg <span class="citation">(McMahan et al. 2017)</span>. Cast
-probabilistically, federated and continual learning unify under
+canonical algorithm being FedAvg <span class="citation">(McMahan et al. 2017)</span>.</p>
+<p>Cast probabilistically, federated and continual learning unify under
 <strong>partitioned variational inference</strong>, in which each client
 owns a factor of a global approximate posterior and the server combines
 factors in natural-parameter space <span class="citation">(Bui et al. 2018; Ashman et al. 2022)</span>. This is a closely related factor algebra
@@ -569,32 +734,32 @@ that the two settings are interchangeable.</p>
 Bayesian inference</strong>, which replaces the likelihood with a
 <em>loss</em> and the KL regularizer with a <em>general divergence</em>,
 so that the posterior minimizes a generalized objective rather than
-applying Bayes’ rule literally <span class="citation">(Bissiri et al. 2016; Jewson et al. 2018; Knoblauch et al. 2022)</span>. This includes
-Gibbs-posterior updates <span class="citation">(Jiang and Tanner 2008)</span>, coarsened or tempered
-posteriors that condition on neighborhoods rather than exact data
-<span class="citation">(Miller and Dunson 2018)</span>, and learning-rate/temperature choices designed
-for safe updating under misspecification <span class="citation">(Grunwald 2012; Kleijn and van der Vaart 2012)</span>. Choosing a loss or divergence with a
+applying Bayes’ rule literally <span class="citation">(Bissiri et al. 2016; Jewson et al. 2018; Knoblauch et al. 2022)</span>.</p>
+<p>This includes Gibbs-posterior updates <span class="citation">(Jiang and Tanner 2008)</span>, coarsened or
+tempered posteriors that condition on neighborhoods rather than exact
+data <span class="citation">(Miller and Dunson 2018)</span>, and learning-rate/temperature choices
+designed for safe updating under misspecification <span class="citation">(Grunwald 2012; Kleijn and van der Vaart 2012)</span>. Choosing a loss or divergence with a
 bounded-influence property — for example, the density-power <span
 class="math inline">\(\beta\)</span>-loss <span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span> or generalized cross-entropy
 <span class="citation">(Zhang and Sabuncu 2018)</span> — can cap the influence of a contaminated
-observation under the corresponding assumptions. <strong>FedGVI</strong>
-<span class="citation">(Mildner et al. 2025)</span> federates this idea: each client runs a robust
-generalized-Bayes update against a <em>cavity</em> (the global posterior
-with the client’s own factor removed), and the server aggregates the
-refreshed factors under a chosen server divergence. The result is
-federated inference with divergence- and loss-specific robustness
-guarantees, demonstrated on Bayesian neural networks under label
-contamination.</p>
+observation under the corresponding assumptions.</p>
+<p><strong>FedGVI</strong> <span class="citation">(Mildner et al. 2025)</span> federates this idea: each
+client runs a robust generalized-Bayes update against a <em>cavity</em>
+(the global posterior with the client’s own factor removed), and the
+server aggregates the refreshed factors under a chosen server
+divergence. The result is federated inference with divergence- and
+loss-specific robustness guarantees, demonstrated on Bayesian neural
+networks under label contamination.</p>
 <p>Crucially, standard Bayes is a <em>corner</em> of this generalized
 family — the case where the loss is the negative log-likelihood and the
 divergence is KL. Friston et al. do not claim FedGVI, generalized Bayes,
 <span class="math inline">\(\beta\)</span>-divergence, or robustness;
-this manuscript supplies the recasting. Robust generalized Bayes
-therefore does not replace exact-Bayes belief fusion; it contains the
-standard pool as a tested zero-robustness recovery limit. That
-containment is the hinge this paper tests, and the recovery limits are
-stated formally as numbered results in <a class="xref" href="index.html#sec:formalism">Section 6</a> and the central
-identity in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>.</p>
+this manuscript supplies the recasting.</p>
+<p>Robust generalized Bayes therefore does not replace exact-Bayes
+belief fusion; it contains the standard pool as a tested zero-robustness
+recovery limit. That containment is the hinge this paper tests, and the
+recovery limits are stated formally as numbered results in <a class="xref" href="index.html#sec:formalism">Section 6</a> and
+the central identity in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>.</p>
 <p>The historical framing is deliberately modest. The manuscript uses
 early probability, inverse-probability, utility, and collective-judgment
 sources as a conceptual genealogy for belief, evidence, expectation, and
@@ -618,11 +783,11 @@ mechanism, how does the server heuristic change consensus accuracy
 across contamination rates? Third, what does the objective-backed
 variational server rule guarantee, and what accuracy does it trade away?
 Fourth, how do communication, hierarchy, sensitivity, and parameter
-recovery behave in the accompanying categorical extensions? The first
-question is answered algebraically and by machine-precision checks; the
-others are conditional simulation results. The independent unit,
-resampling scheme, and fixed hidden-state/attack-target estimand are
-specified in <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+recovery behave in the accompanying categorical extensions?</p>
+<p>The first question is answered algebraically and by machine-precision
+checks; the others are conditional simulation results. The independent
+unit, resampling scheme, and fixed hidden-state/attack-target estimand
+are specified in <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
 and <a class="xref" href="index.html#sec:methods-statistics">Section 5.27</a>.</p>
 <h3 id="sec:intro-visual-map">How to read the visual architecture</h3>
 <p>The manuscript uses two complementary visual layers. The formal
@@ -631,11 +796,11 @@ of Friston et al. <span class="citation">(Friston et al. 2024)</span> to the cat
 implementation: <a class="xref" href="index.html#fig:generative-model-schema">Figure 4</a>
 shows the private sensory report and <span
 class="math inline">\(A/B/C/D\)</span> substrate, <a class="xref" href="index.html#fig:message-passing">Figure 3</a> shows how
-three local posterior messages become server inputs, and <span
-class="citation" data-cites="fig:pomdp-loop"><a class="xref" href="index.html#fig:pomdp-loop">Figure 5</a></span>
+three local posterior messages become server inputs, and <a class="xref" href="index.html#fig:pomdp-loop">Figure 5</a>
 shows the hidden-state, agent, and active-control context. These
-diagrams are explanatory maps, not additional empirical observations.
-The data-bearing figures then report the executed recovery checks,
+diagrams are explanatory maps, not additional empirical
+observations.</p>
+<p>The data-bearing figures then report the executed recovery checks,
 conditional contamination sweep, and objective/descent diagnostics;
 their captions identify the relevant uncertainty and resampling unit.
 The graphical abstract in <a class="xref" href="index.html#fig:graphical-abstract">Figure 1</a>
@@ -649,25 +814,30 @@ server-side heuristic reweights the broadcasts (Panel C). It is a
 deterministic schematic, not a universal robustness claim; the three
 axes and their distinct guarantees are defined in <a class="xref" href="index.html#sec:gap">Section 3</a> and <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>.</p>
 <figure id="fig:system-overview">
-<a class="figure-full-size-link" href="../figures/system_overview.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/system_overview.png" style="width:100.0%"
-alt="Three-part schematic of a five-agent colony with two adversarial agents, naive equal-weight pooling, and heuristic reweighting. The naive argmax is off target, while the reweighted consensus recovers the displayed true state." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>System overview. Source relation:
-original project schematic; estimand: displayed posterior-mass and
-influence-weight contrasts; uncertainty: none. 5 agents with
-heterogeneous beliefs (blue = honest, red = adversarial) feed into naive
-pooling (Panel B, argmax pulled off-target) versus canonical
-<code>robust_aggregate</code> heuristic reweighting (Panel C, true state
-recovered). x-axis is hidden-state index (1–8) in Panels B and C;
-y-axis: bar height indexes probability mass per state, and each agent in
-Panel A carries its own mini posterior bar chart (green column = true
-state). The true hidden state is 3; under 40% contamination the
-equal-weight pool concentrates 39% of consensus mass on the true state
-(its argmax lands on the adversaries’ state), while the heuristic
-concentrates 50% and recovers the correct argmax. This is a single
-deterministic schematic (no resampling, hence no error bars or CI); all
-percentages are computed from the pooled beliefs shown, and the panel
-does not claim the variational server’s objective-backed weight-control
-result for <code>robust_aggregate</code>.</figcaption>
+<a class="figure-full-size-link" href="../figures/system_overview.png" target="_blank" rel="noopener" aria-label="Open full-size figure, System overview of one configured failure-and-repair diagnostic."><img src="../figures/system_overview.png" style="width:100.0%"
+data-slide-manifest="../figures/system_overview.slides.json"
+alt="Three-part configured diagnostic of a five-agent colony with two A-labeled adversarial and three H-labeled honest agents, naive equal-weight pooling, and heuristic reweighting. Cross-hatched A roles and plain-filled H roles have distinct keylines; direct state, argmax, true-state-mass, agent-role, and influence-weight labels show the off-target naive outcome and displayed heuristic recovery without color." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>System overview of one configured
+failure-and-repair diagnostic. Source relation: original project
+schematic computed from the displayed colony; estimand: posterior-mass
+and normalized influence-weight contrasts. Read Panels A–C from the five
+heterogeneous local posteriors, through naive equal-weight pooling, to
+canonical <code>robust_aggregate</code> heuristic reweighting. The
+x-axis is hidden-state index 1–8 in Panels B and C; the y-axis is
+posterior probability mass, while the influence bars report normalized
+server weight. Cross-hatched A₁/A₂ roles with adversarial keylines and
+plain-filled H₁–H₃ roles with honest keylines distinguish agents without
+color; numbered states, true-state text, argmax arrows, per-agent weight
+labels, and direct percentages identify every outcome. The true hidden
+state is 3. Under 40% configured contamination, the equal-weight pool
+assigns 39% mass to the true state and its argmax lands on the
+adversarial state, whereas the heuristic assigns 50% and recovers the
+displayed true-state argmax. Units are probability mass and normalized
+weight. This single deterministic colony has no independent replication
+unit, resampling interval, error bar, or CI; its failure and repair do
+not establish calibrated uncertainty, universal heuristic robustness, or
+the variational server’s objective-backed weight-control
+result.</figcaption>
 </figure>
 </main>
 </body>

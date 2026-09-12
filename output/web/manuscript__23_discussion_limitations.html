@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>23_discussion_limitations.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -471,199 +635,141 @@ mjx-container[display="true"] {
 show — concretely and testably — that the categorical
 generalized-variational construction inspired by FedGVI
 <span class="citation">(Mildner et al. 2025)</span> has standard-Bayes client limits and a project-local
-log-linear-pool server identity. Under the explicit bridge in <span
-class="citation"
-data-cites="sec:method-aggregation"><a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a></span>,
+log-linear-pool server identity. Under the explicit bridge in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 the latter specializes Friston et al.’s Eq. 7 message-combination term
 <span class="citation">(Friston et al. 2024)</span>, not the complete source protocol; behavior away
 from those limits is evaluated only under declared simulation
-conditions. The exact identities are formal; performance and deployment
-claims remain conditional. Items beyond that boundary are named as
-future work.</p>
+conditions.</p>
+<p>The exact identities are formal; performance and deployment claims
+remain conditional. Items beyond that boundary are named as future
+work.</p>
 <h2 id="sec:limitations-axes">Three robustness axes: theorem, heuristic,
 and objective</h2>
-<p>Robustness enters in three places with unequal standing — a
-distinction surfaced by an adversarial review of this work and preserved
-deliberately throughout (<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>).</p>
-<ol type="1">
-<li><p><strong>Client-side, source-theorem-backed.</strong> A robust
-per-agent generalized-Bayes update with a bounded loss — <span
-class="math inline">\(\beta\)</span>-loss <span class="citation">(Basu et al. 1998)</span> or
-generalized cross-entropy <span class="citation">(Zhang and Sabuncu 2018)</span> — inside the
-generalized posterior. Density-power and gamma-divergence Bayes make
-clear that this is a loss/divergence-specific robustness property, not
-an automatic property of every generalized posterior
-<span class="citation">(Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span>. It is derived from the
-generalized-Bayes objective <span class="citation">(Bissiri et al. 2016; Jewson et al. 2018; Knoblauch et al. 2022)</span>, provably limits to NLL/Bayes (hence to the
-standard pool) as the loss parameter goes to zero (<span
-class="citation" data-cites="eq:beta-loss"><a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a></span>, <span
-class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>), and
-is the theorem-bearing axis under the matching loss, divergence, and
-regularity assumptions of FedGVI. The manuscript does not re-prove that
-theorem for every possible categorical data-generating process.
-<strong>This is the client-side mechanism implemented and evaluated
-here.</strong></p></li>
-<li><p><strong>Server-side, heuristic.</strong> The
-divergence-reweighting aggregator <code>robust_aggregate</code>. Its
-positive formal property is the recovery limit — robustness <span
-class="math inline">\(0\)</span> equals the standard log-linear pool
-(<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). A scoped
-no-go rejects one declared separable objective class; it is <em>not</em>
-a closed-form minimizer of a FedGVI objective, and we never claim it
-inherits the bounded-influence bound. An empirical characterization
-(<a class="xref" href="index.html#sec:results-heuristic-characterization">Section 14.2</a>)
-makes this boundary concrete: the heuristic has a <em>finite</em>
-measured breakdown point (a colluding majority captures it), a witness
-against unconditional server resistance rather than a transferred client
-theorem. The robustness sweep reports it as a complementary heuristic,
-and <a class="xref" href="index.html#fig:robust-weights">Figure 13</a> is labeled
-accordingly. Robust federated optimizers such as Krum and gamma-mean
-aggregation motivate the adversarial client problem <span class="citation">(Blanchard et al. 2017; Li et al. 2022)</span>, but they do not certify this belief-pooling heuristic.
-It has BH-rejected positive contrasts in the configured accuracy verdict
-in <a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a>, while
-the declared mechanism gallery and conditional-world study retain
-reversals that prohibit a universal accuracy claim.</p></li>
-<li><p><strong>Server-side, objective-backed (conservative).</strong>
-The variational aggregator <code>variational_aggregate</code> of <span
-class="citation"
-data-cites="sec:method-variational"><a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a></span>,
-derived in <a class="xref" href="index.html#sec:supp-variational">Section 11</a>. It
-runs exact closed-form block updates that descend the stated free energy
-<a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>
-monotonically on each block, shares the recovery corner (<span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>) with axis
-2, and — unlike axis 2 — carries a proven raw effective-weight bound
-with empirical redescending behavior (<a class="xref" href="index.html#fig:bounded-influence">Figure 15</a>). Its
-cost in the declared comparison is conservatism: the entropy
-regularization yields a more diffuse consensus, and the method does
-<em>not</em> win that configured peak-accuracy verdict. It closes the
-“is there <em>any</em> objective-backed server rule with raw-weight
-control” gap; it does not retroactively endow the sharp axis-2 heuristic
-with an objective.</p></li>
-</ol>
-<p>The honest state is therefore a triangle, not a binary: axis 1 is
-source-theorem-backed under matching assumptions, axis 2 has conditional
-wins and reversals <em>without</em> a server-side objective, and axis 3
-is objective-backed <em>but</em> conservative. No experiment attributes
-axis 2’s accuracy win to a theoretical guarantee, and none attributes
-axis 3’s weight bound to a peak-accuracy claim. The remaining open
-problem — an objective whose minimizer is the <em>sharp</em> reweighting
-itself, which would combine accuracy and guarantee in one server rule —
-is named future work in <a class="xref" href="index.html#sec:future">Section 8.17</a>; the extended methods that
-broaden the toolkit without touching these claims are cataloged in <span
-class="citation"
-data-cites="sec:supp-extended"><a class="xref" href="index.html#sec:supp-extended">Section 12</a></span>.</p>
+<p>The authoritative definitions and claim owners are in <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>; this
+section records only what still cannot transfer. A source-conditional
+client theorem does not certify either server rule, a server recovery
+identity does not supply an objective or estimator-level influence
+bound, and objective descent plus raw-weight control does not imply
+truth recovery or peak-accuracy dominance. Likewise, conditional
+accuracy contrasts cannot confer a theorem on the heuristic. The
+evidence map in <a class="xref" href="index.html#fig:evidence-replication-map">Figure 6</a>
+makes that no-transfer boundary and its nested replication units
+explicit.</p>
+<p>The remaining methodological problem is a server objective that
+combines competitive conditional performance with an appropriate
+robustness guarantee. Related robust-federation work motivates the
+target <span class="citation">(Blanchard et al. 2017; Li et al. 2022)</span> but does not certify either
+project server rule. Any such result must also survive beyond the
+present categorical model, declared attack grid, and single-host
+execution setting; future work and extended methods remain separate
+(<a class="xref" href="index.html#sec:future">Section 8.17</a>,
+<a class="xref" href="index.html#sec:supp-extended">Section 13</a>).</p>
 <h2 id="sec:limitations-scope">Scope boundaries that the evidence does
 not cross</h2>
-<ul>
-<li><strong>The bridge is a recasting, not an upstream claim.</strong>
+<p><strong>The bridge is a recasting, not an upstream claim.</strong>
 Friston et al. <span class="citation">(Friston et al. 2024)</span> supply a belief-sharing operator
 for agents with a shared world model; Mildner et al. <span class="citation">(Mildner et al. 2025)</span>
 supply robust federated generalized variational inference. Neither paper
 claims the other. The contribution here is to recast the former as the
 tested KL/NLL zero-robustness recovery corner of the latter-inspired
-construction, then measure what changes when robust losses and server
-reweighting are introduced.</li>
-<li><strong>Historical sources are conceptual, not formal
+construction, then measure changes under robust losses and server
+reweighting.</p>
+<p><strong>Historical sources are conceptual, not formal
 support.</strong> The pre-modern sources added in <a class="xref" href="index.html#sec:related-historical">Section 8.9</a>
 support a genealogy of expectation, inverse inference, utility, and
 collective judgment <span class="citation">(Huygens 1657; Bayes 1763; Laplace 1774; Bernoulli 1738; Condorcet 1785)</span>. They do
-not support any claim about KL, NLL, product-of-experts training,
-FedGVI, or <code>robust_aggregate</code>. Those claims rest only on the
-modern cited formalism and the tests reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>.</li>
-<li><strong>Single-machine federation.</strong> Federation is validated
+not support claims about KL, NLL, product-of-experts training, FedGVI,
+or <code>robust_aggregate</code>.</p>
+<p>Those claims rest only on the modern cited formalism and the tests
+reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>.</p>
+<p><strong>Single-machine federation.</strong> Federation is validated
 with queue transport, a single-machine OS-process helper, and loopback
 TCP: agents serialize beliefs, the server aggregates, and consensus is
-broadcast back without changing the mathematics. The socket path now
+broadcast back without changing the mathematics. The socket path
 exercises frame integrity and file-backed digest-verified replay
-validation; an optional SQLite round-ID guard also survives local
-process restarts. These controls are still not a substitute for
-cross-host deployment, identity-bound mTLS, a shared multi-host replay
-domain, discovery, long-running worker orchestration, or fault
-tolerance; those steps are scoped as future work (<a class="xref" href="index.html#sec:future">Section 8.17</a>).</li>
-<li><strong>GPU / PyTorch Bayesian-neural-network experiments at the
-original FedGVI scale.</strong> The bounded-influence result is anchored
-here by a small NumPy logistic-regression baseline (<span
-class="citation"
-data-cites="fig:bnn-robustness"><a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a></span>), not the
-RTX-class runs of the source paper <span class="citation">(Mildner et al. 2025)</span>. Even on that
-anchor the robust client’s margin over the standard client is
-non-monotone rather than uniform: it opens in the moderate-to-high
-contamination range and then vanishes at the most extreme swept level,
-where both configurations collapse together with no reliable ordering
-(<a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>). That
-terminal convergence is reported, not trimmed; the axis’s rigorous
-standing rests on the recovery identities and the FedGVI theorem under
-its matching assumptions, not on the size or monotonicity of the
-empirical gap in this figure.</li>
-<li><strong>Classification baselines are point estimates, not full
+validation; an optional SQLite round-ID guard survives local process
+restarts.</p>
+<p>These controls do not substitute for cross-host deployment,
+identity-bound mTLS, a shared multi-host replay domain, discovery,
+long-running worker orchestration, or fault tolerance; those steps are
+scoped as future work (<a class="xref" href="index.html#sec:future">Section 8.17</a>).</p>
+<p><strong>Source-scale posterior FedGVI classification remains
+open.</strong> The displayed NumPy logistic-regression baseline is an
+exploratory point-estimate comparison, not the source paper’s
+posterior-uncertainty BNN experiment <span class="citation">(Mildner et al. 2025)</span>. Its operating
+point was selected within the evaluated synthetic sweep to expose a
+mid-contamination margin (<a class="xref" href="index.html#fig:bnn-robustness">Figure 18</a>).</p>
+<p>The curves lose reliable ordering at the highest rate. The source
+theorem, not this selected finite sweep, carries the source-conditional
+robustness claim.</p>
+<p><strong>Classification baselines are point estimates, not full
 posteriors.</strong> The NumPy logistic-regression baseline and the
-PyTorch MLP complement both use point-estimate weights (no posterior
-covariance is computed). A genuine mean-field variational family over
-the weights — diagonal-Gaussian <span
-class="math inline">\(q(w)\)</span> with a closed-form KL and a
-Monte-Carlo ELBO — is implemented as a tested primitive
-(<code>bnn_variational_torch.VariationalMLP</code>, recovering the
-point-estimate net exactly as its posterior variance vanishes), but the
-full paper-faithful FedGVI classification lane (that variational family
-trained under the contamination sweep, at GPU scale) is not: MCMC,
-non-diagonal structure, and stochastic-weight averaging remain
-unimplemented, and the full-posterior regime remains unverified.</li>
-<li><strong>Hierarchical depth does not by itself improve the base
-task.</strong> The two- and three-level stacks (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>,
-<a class="xref" href="index.html#sec:results-3level">Section 13.11</a>) run
+PyTorch MLP complement both use point-estimate weights; no posterior
+covariance is computed.</p>
+<p>A genuine mean-field variational family over the
+weights—diagonal-Gaussian <span class="math inline">\(q(w)\)</span> with
+a closed-form KL and a Monte-Carlo ELBO—is implemented by the tested
+<code>VariationalMLP</code> primitive in the
+<code>bnn_variational_torch</code> module. It recovers the
+point-estimate net exactly as its posterior variance vanishes.</p>
+<p>The source-comparable training and evaluation lane remains
+unexecuted: leakage-free calibration, source-dataset parity,
+posterior-family comparisons, and source-scale compute are still
+open.</p>
+<p><strong>Hierarchical depth does not by itself improve the base
+task.</strong> The two- and three-level stacks (<a class="xref" href="index.html#sec:results-hierarchical">Section 14.9</a>,
+<a class="xref" href="index.html#sec:results-3level">Section 14.11</a>) run
 alternating L1/L2(/L3) inference end-to-end and resolve their added
-context latents above chance, but on the shared location task they do
-not beat the flat baseline — the paired location-accuracy gap is a
-small, statistically reliable negative gap at the reported seed count
-(<a class="xref" href="index.html#fig:hierarchical-pomdp">Figure 25</a>).
-Depth is therefore validated as executable and consensus-preserving, not
-as an accuracy improvement; whether a richer policy-and-horizon task
-family rewards hierarchy is future work (<a class="xref" href="index.html#sec:future-hierarchical">Section 8.20</a>).</li>
-<li><strong>Discrete POMDP only — continuous or hybrid state spaces are
-not addressed.</strong> This work is discrete-categorical only, matching
-the community’s worked POMDP example <span class="citation">(Da Costa et al. 2020; Friston et al. 2024)</span>. The limit-as-proof contract is validated off the
+context latents above chance. On the shared location task they do not
+beat the flat baseline: the paired location-accuracy gap is a small,
+statistically reliable negative gap at the reported seed count (<a class="xref" href="index.html#fig:hierarchical-pomdp">Figure 28</a>).</p>
+<p>Depth is therefore validated as executable and consensus-preserving,
+not as an accuracy improvement; whether a richer policy-and-horizon task
+family rewards hierarchy is future work (<a class="xref" href="index.html#sec:future-hierarchical">Section 8.20</a>).</p>
+<p><strong>Discrete POMDP only—continuous or hybrid state spaces are not
+addressed.</strong> This work is discrete-categorical only, matching the
+community’s worked POMDP example <span class="citation">(Da Costa et al. 2020; Friston et al. 2024)</span>. The limit-as-proof contract is validated off the
 categorical case only for a one-dimensional Gaussian-mean conjugate
 slice; continuous-state active inference and Gaussian belief-sharing
-colonies remain untested.</li>
-<li><strong>Temperature and divergence calibration are fixed, not
+colonies remain untested.</p>
+<p><strong>Temperature and divergence calibration are fixed, not
 learned.</strong> Coarsened posterior and safe-Bayes theory make clear
 that the learning-rate/temperature is part of the inference rule under
 misspecification <span class="citation">(Miller and Dunson 2018; Grunwald 2012; Kleijn and van der Vaart 2012)</span>. This manuscript validates the configured
 losses and divergences, but it does not learn an optimal coarsening
-radius, temperature, or divergence schedule across agents.</li>
-<li><strong>Real multi-machine federation, networking, and privacy
+radius, temperature, or divergence schedule across agents.</p>
+<p><strong>Real multi-machine federation, networking, and privacy
 cryptography.</strong> Federation here is <em>mathematical</em> (factor
-aggregation), not infrastructural — unlike communication-efficient or
-Byzantine-robust federated learning <span class="citation">(McMahan et al. 2017; Blanchard et al. 2017)</span>.</li>
-<li><strong>New linguistic theory.</strong> The language-acquisition
+aggregation), not infrastructural— unlike communication-efficient or
+Byzantine-robust federated learning <span class="citation">(McMahan et al. 2017; Blanchard et al. 2017)</span>.</p>
+<p><strong>New linguistic theory.</strong> The language-acquisition
 study (<a class="xref" href="index.html#sec:results-language">Section 7.3</a>)
-reproduces the Dirichlet count mechanism (<a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a>)
-mechanically; it does not extend the linguistics.</li>
-</ul>
+reproduces the Dirichlet count mechanism (<a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a>)
+mechanically; it does not extend the linguistics.</p>
 <h2 id="sec:limitations-stats">What the statistics can and cannot
 claim</h2>
 <p>The verdict is a paired comparison at a single high contamination
-rate (<a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a>, <span
-class="citation"
-data-cites="tbl:robustness_verdict"><a class="xref" href="index.html#tbl:robustness_verdict">Table 4</a></span>).
-This concentrates power where the effect is largest, which is honest
-about <em>where</em> robustness pays off but does not characterize the
-full contamination curve as a continuous function; the per-rate table
-(<a class="xref" href="index.html#tbl:paired-by-rate">Table paired-by-rate</a>) reports
-the rest of the sweep without claiming family-wide significance beyond
-what BH-FDR <span class="citation">(Benjamini and Hochberg 1995)</span> certifies. BH-FDR controls
-expected false discovery proportion within the declared family, not the
-chance of any false positive. The matched-pairs Wilcoxon tests are rank
-tests under paired-difference assumptions <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span>, not assumption-free proofs about raw means. Confidence
-intervals are percentile bootstrap <span class="citation">(Efron and Tibshirani 1993)</span>, not analytic,
-and inherit that method’s small-sample caveats at the lowest trial
-counts. The power values are observed-effect design approximations
-useful for confirmatory sample-size planning; they are not independent
-evidence for the verdict and do not cover model-specification
-uncertainty outside the seeded simulation harness
-<span class="citation">(Wasserstein and Lazar 2016)</span>.</p>
+rate (<a class="xref" href="index.html#sec:results-verdict">Section 7.5.2</a>, <a class="xref" href="index.html#tbl:robustness_verdict">Table 6</a>).
+The design concentrates power where the effect is largest. It therefore
+identifies <em>where</em> robustness pays off, but it does not
+characterize contamination as a continuous function. The per-rate effect
+and inference projections (<span class="citation"
+data-cites="tbl:paired-by-rate tbl:paired-by-rate-inference">[@tbl:paired-by-rate;
+@tbl:paired-by-rate-inference]</span>) describe the remaining sweep.
+Their inferential claims do not exceed the declared BH-FDR control
+<span class="citation">(Benjamini and Hochberg 1995)</span>.</p>
+<p>BH-FDR controls expected false discovery proportion within the
+declared family, not the chance of any false positive. The matched-pairs
+Wilcoxon tests are rank tests under paired-difference assumptions
+<span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span>, not assumption-free proofs
+about raw means.</p>
+<p>Confidence intervals are percentile bootstrap <span class="citation">(Efron and Tibshirani 1993)</span>,
+not analytic, and inherit that method’s small-sample caveats at the
+lowest trial counts.</p>
+<p>The power values are observed-effect design approximations useful for
+confirmatory sample-size planning; they are not independent evidence for
+the verdict and do not cover model-specification uncertainty outside the
+seeded simulation harness <span class="citation">(Wasserstein and Lazar 2016)</span>.</p>
 </main>
 </body>
 </html>

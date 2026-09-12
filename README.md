@@ -174,72 +174,30 @@ extension recipe are documented in
 
 ```mermaid
 flowchart TD
-    subgraph core["src/fedference/ — NumPy/SciPy mathematical core"]
-        D["divergences.py<br/>KL, RKL, alpha-Renyi, TV"]
-        L["losses.py<br/>NLL, beta-loss, rcce"]
-        G["generalized_bayes.py<br/>generalized_posterior, cavity"]
-        AG["aggregation.py<br/>log_linear_pool: categorical Eq. 7 bridge<br/>robust_aggregate: heuristic<br/>variational_aggregate: objective-backed"]
-        AC["aggregation_comparators.py<br/>experimental linear and CLR controls"]
-        TH["server_theory.py<br/>scoped no-go witnesses"]
-        CAL["calibration.py<br/>held-out configuration selection"]
-        BS["belief_sharing.py<br/>share_round"]
-    end
-    subgraph ai["Active-inference machinery"]
-        P["pomdp.py<br/>sentinel world"]
-        BU["belief_updating.py<br/>infer_states, vfe"]
-        DL["dirichlet_learning.py<br/>language acquisition"]
-        EFE["expected_free_energy.py"]
-        BMR["bayesian_model_reduction.py"]
-        AGT["agents.py<br/>SentinelEnsemble"]
-    end
-    subgraph ens["Ensemble & experiments"]
-        C["contamination.py"]
-        ST["statistics.py<br/>Wilcoxon, BH-FDR"]
-        CO["colonies.py<br/>colony builders"]
-        EX["experiments/ subpackage<br/>nine studies"]
-        BNN["bnn_baseline.py<br/>FedGVI logreg"]
-        BNNT["bnn_baseline_torch.py<br/>point-mass MLP — PyTorch, optional"]
-        BNNV["bnn_variational_torch.py<br/>mean-field MLP — PyTorch, optional"]
-        BNNP["bnn_fedgvi.py<br/>site, cavity, factor replacement"]
-    end
-    subgraph fed["Federation transport (queue, process, loopback TCP)"]
-        FP["federation/process.py"]
-        FS["federation/server.py"]
-        FW["federation/worker.py"]
-        FT["federation/socket_transport.py"]
-    end
-    subgraph evidence["Research and evidence boundary"]
-        RR["research_registry.py<br/>source, dataset, experiment profiles"]
-        EV["evidence.py<br/>versioned receipts and hashes"]
-        ED["external_data.py<br/>pinned archive acquisition"]
-        subgraph CLI["fedference_cli installed boundary"]
-            CLIF["__init__.py<br/>compatibility facade"]
-            CLIP["_parser.py<br/>argument grammar"]
-            CLIC["_commands.py<br/>registry dispatch"]
-            CLIS["_support.py<br/>output isolation and receipts"]
-            CLIF --> CLIP --> CLIC --> CLIS
-        end
-    end
-    D --> G --> AG --> BS
-    AC --> CAL
-    TH --> CAL
-    L --> G
-    P --> BU --> AGT
-    DL --> BMR
-    AGT --> EX
-    C --> EX
-    CO --> EX
-    ST --> EX
-    BS --> EX
-    BNN --> EX
-    BNNV --> EX
-    BNNP -. "completed synthetic-pilot cavity wiring; source-data/CUDA parity future" .-> BNNV
-    FP --> FS
-    FS --> FW
-    RR --> CLIC
-    ED --> CLIC
-    CLIS --> EV
+    accTitle: Reader-level Active Fedference architecture
+    accDescr: Callers enter through typed library or CLI boundaries, the mathematical core owns aggregation, explicit adapters own effects, and source-bound reports feed accessible publication surfaces.
+    callers["Library callers, applications, and tests"] --> boundary["Typed Python API and installed CLI"]
+    boundary --> core["NumPy/SciPy mathematical and active-inference core"]
+    core --> federation["In-process, spawned-process, and loopback federation adapters"]
+    core --> analysis["Typed analysis reports and evidence receipts"]
+    adapters["Explicit data, checkpoint, replay, and optional-Torch boundaries"] --> core
+    config["Source configuration, registries, and dependency lock"] --> core
+    config --> analysis
+    analysis --> publication["Figures, hydrated manuscript, HTML, PDF, and slides"]
+    publication --> gates["Freshness, accessibility, package, and release gates"]
 ```
+
+**Text equivalent.**
+
+| From | To | Meaning |
+| --- | --- | --- |
+| Library callers, applications, and tests | Typed Python API and installed CLI | Callers select the narrowest stable boundary instead of reimplementing domain logic. |
+| Typed boundary | NumPy/SciPy core | Validated requests delegate to reusable aggregation and active-inference operations. |
+| Core | Federation adapters | In-process, process, and loopback routes reuse the same aggregation rules. |
+| Explicit adapters | Core | Data, checkpoint, replay, and optional-Torch effects enter only through named boundaries. |
+| Configuration and registries | Core and typed analysis | Source-owned controls determine execution and report interpretation. |
+| Typed analysis | Reader surfaces | Reports feed figures and hydrated HTML, PDF, and slide outputs. |
+| Reader surfaces | Publication gates | Freshness, accessibility, packaging, and release checks remain separate from scientific claims and publication authority. |
 
 The architecture diagram is source documentation, not an import-graph claim:
 the executable layer gate remains `src/fedference/`-only and the report-schema
@@ -254,6 +212,8 @@ uv run --locked python scripts/validate_mermaid.py --render --renderer npx \
 
 The second command invokes Mermaid CLI and writes only review scratch files;
 the `.mmd` sources remain in Markdown so GitHub renders the same diagrams.
+The detailed module inventory below is supplemented by the responsibility and
+module tables in [`docs/core/architecture.md`](docs/core/architecture.md).
 
 - **`src/fedference/` core** — `divergences`, `losses`, `generalized_bayes`,
   `aggregation`, `belief_sharing`, and the implementation-derived `complexity`
@@ -270,10 +230,16 @@ the `.mmd` sources remain in Markdown so GitHub renders the same diagrams.
   robustness sweep, moving-world and hierarchical extensions, sensitivity,
   parameter recovery, and a hierarchical structure-learning study) plus extension studies (contamination gallery, robustness
   onset, descent comparison, etc.); `statistics.py` supplies the paired Wilcoxon
-  test and BH-FDR that earn the "robust beats naive" verdict; `bnn_baseline.py`
-  anchors the result at the classification level, and the optional
+  test and BH-FDR that qualify the declared server contrast; `bnn_baseline.py`
+  provides a separate exploratory generalized-Bayes point-estimate
+  logistic-regression baseline comparing joint NLL/L2 and RCCE/L2
+  configurations (its legacy `AR` argument is only an L2-coefficient selector,
+  so the comparison does not isolate an RCCE-only effect), and the optional
   `bnn_baseline_torch.py` and `bnn_variational_torch.py` modules provide
   composable point-mass and mean-field MLP complements when torch is installed.
+  The completed synthetic-pilot cavity wiring is retained as implementation
+  evidence; source-data/CUDA parity future work remains open and cannot be
+  inferred from that pilot.
 - **Complexity diagnostic** — `run_complexity_scaling` calculates the dense
   implementation orders, measures seeded aggregation/sharing/inference scaling
   on the configured machine, and records timing variability without promoting
@@ -642,9 +608,9 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 - No mocks anywhere — tests are real seeded computations with explicit numeric
   expectations; the no-mocks policy is part of this repository's acceptance
   contract.
-- $\ge 90\%$ line coverage on `src/`; branch measurement is enabled in the
-  coverage configuration, while the release-facing achieved line-coverage
-  record is `output/data/test_coverage_receipt.json`. `coverage_project.json`
+- $\ge 90\%$ combined line and branch coverage on `src/`; branch measurement
+  is enabled in the coverage configuration, and the release-facing achieved
+  coverage record is `output/data/test_coverage_receipt.json`. `coverage_project.json`
   is only an ignored local convenience export and never reviewer evidence.
 - New modules: `src/fedference/<name>.py` with a sibling
   `tests/fedference/test_<name>.py`; module docstring cites the relevant Friston (2024)

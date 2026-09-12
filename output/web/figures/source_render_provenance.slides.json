@@ -1,0 +1,353 @@
+{
+  "panels": [
+    {
+      "alt": "I1  Source \u00b7 tests \u00b7 manuscript \u2192 P1 Typed reports: P \u00b7 execute; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bdae2e7893a09fb272061b0f1b9e3a3d747c74c8fb4bb4315c5881af27c18c28",
+      "src": "../figures/source_render_provenance.slide-producer-source-reports.png"
+    },
+    {
+      "alt": "I2  Configuration \u00b7 claim contracts \u2192 P1 Typed reports: P \u00b7 configure; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f68b8726e8df23085731ded6ab7359a1d80c28d4aff3f19dcaf57e8b3a2fa7c9",
+      "src": "../figures/source_render_provenance.slide-producer-config-reports.png"
+    },
+    {
+      "alt": "I3  Lockfile \u00b7 runtime metadata \u2192 P1 Typed reports: P \u00b7 bind environment; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "adbc7015d8b23a74c4993c8fa83048cc5dd01c6eeb8bbb8d26b00af4b06422d1",
+      "src": "../figures/source_render_provenance.slide-producer-lockfile-reports.png"
+    },
+    {
+      "alt": "I1  Source \u00b7 tests \u00b7 manuscript \u2192 P2 Figures + a11y: P \u00b7 run generators; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4ffb1bc410a82a03d9a36769377baccd48e63674870cd72a6dd37ddda8f37704",
+      "src": "../figures/source_render_provenance.slide-producer-source-figures.png"
+    },
+    {
+      "alt": "P1 Typed reports \u2192 P2 Figures + a11y: P \u00b7 render typed values; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b399fd8c451993cec8005ff8dc292e7b618c4699d64d856edea300265b8cdc54",
+      "src": "../figures/source_render_provenance.slide-producer-reports-figures.png"
+    },
+    {
+      "alt": "I4  Figure \u00b7 accessibility registry \u2192 P2 Figures + a11y: P \u00b7 bind semantics; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "14376530f71f866ce3f305655e922d2926ec321850965a7a539ffe51afc8befc",
+      "src": "../figures/source_render_provenance.slide-producer-registry-figures.png"
+    },
+    {
+      "alt": "I1  Source \u00b7 tests \u00b7 manuscript \u2192 P3 Provisional hydration: P \u00b7 hydrate manuscript; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6ef19d413c92ecbfb97f6c0b8875d57a6732abac6aac022edb57799bf80bbda6",
+      "src": "../figures/source_render_provenance.slide-producer-source-provisional.png"
+    },
+    {
+      "alt": "I2  Configuration \u00b7 claim contracts \u2192 P3 Provisional hydration: P \u00b7 bind tokens; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "05d70c5c554021e4b6e53958e9ecb0e374cc1bfc418062a836499b71dd78e5b2",
+      "src": "../figures/source_render_provenance.slide-producer-config-provisional.png"
+    },
+    {
+      "alt": "P1 Typed reports \u2192 P3 Provisional hydration: P \u00b7 supply values; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "aecdd24557514f2631e67a8f1bbd23a09dd634b1985c395dba19c9aa1a034b38",
+      "src": "../figures/source_render_provenance.slide-producer-reports-provisional.png"
+    },
+    {
+      "alt": "I1  Source \u00b7 tests \u00b7 manuscript \u2192 G4 Tests + coverage: G \u00b7 test source; gate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0d94fdaaded2978d26921de420674cbee00b06fff62542bd311dae9e9021a20e",
+      "src": "../figures/source_render_provenance.slide-producer-source-coverage.png"
+    },
+    {
+      "alt": "I2  Configuration \u00b7 claim contracts \u2192 G4 Tests + coverage: G \u00b7 test configuration; gate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "01165a02c73e4cb92450bd33a7e2148a11022749aa6affbbb4ed0a50d29361ec",
+      "src": "../figures/source_render_provenance.slide-producer-config-coverage.png"
+    },
+    {
+      "alt": "I3  Lockfile \u00b7 runtime metadata \u2192 G4 Tests + coverage: G \u00b7 lock test runtime; gate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7554bcd1976cc9b327bd6529ad8a35bbff5a95597cb943e5f1b74d59b26739fc",
+      "src": "../figures/source_render_provenance.slide-producer-lockfile-coverage.png"
+    },
+    {
+      "alt": "P3 Provisional hydration \u2192 G4 Tests + coverage: G \u00b7 test provisional surface; gate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "841dff2294bbce08296eb5d72ebe8da37f924741806546f538c713c9ffd6ee30",
+      "src": "../figures/source_render_provenance.slide-producer-provisional-coverage.png"
+    },
+    {
+      "alt": "G4 Tests + coverage \u2192 P5 Final hydration: G \u00b7 bind receipt; gate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b238c9bba74e417cbf92d14a8e3501709b16934c7004bf993ecad00160b8423c",
+      "src": "../figures/source_render_provenance.slide-producer-coverage-final-hydration.png"
+    },
+    {
+      "alt": "I1  Source \u00b7 tests \u00b7 manuscript \u2192 P5 Final hydration: P \u00b7 hydrate final source; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "51b7f337e961a2e9c3c9907ea490c4309cbbbe180bd80322e78c369c3c3a73c0",
+      "src": "../figures/source_render_provenance.slide-producer-source-final-hydration.png"
+    },
+    {
+      "alt": "I2  Configuration \u00b7 claim contracts \u2192 P5 Final hydration: P \u00b7 bind final tokens; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "733bed2f17d6574d801ee160d0881fe3b742eecf5d32aaa5c14a6727a8bb986a",
+      "src": "../figures/source_render_provenance.slide-producer-config-final-hydration.png"
+    },
+    {
+      "alt": "P1 Typed reports \u2192 P5 Final hydration: P \u00b7 supply final values; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a6049527fb7cf1fe761839576b43b457a92c01bc68d3bef51988307ab40e8ce6",
+      "src": "../figures/source_render_provenance.slide-producer-reports-final-hydration.png"
+    },
+    {
+      "alt": "P5 Final hydration \u2192 E6 Clean render: P \u00b7 render manuscript; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e02b3067765951c88b4c4beb3979949191454040933a6ba430218377116da756",
+      "src": "../figures/source_render_provenance.slide-producer-final-hydration-render.png"
+    },
+    {
+      "alt": "P2 Figures + a11y \u2192 E6 Clean render: P \u00b7 embed figures; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "76b3e2b5cc6f0aba3690894ddbfadb59f1563e60eef179af6c130060795f9d8f",
+      "src": "../figures/source_render_provenance.slide-producer-figures-render.png"
+    },
+    {
+      "alt": "I5  Exact clean Template commit \u2192 E6 Clean render: P \u00b7 execute exact renderer; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "434e5eba6f12d331822d51d19fbb76b1820cfd9861f7450d6cc257b5afb6217e",
+      "src": "../figures/source_render_provenance.slide-producer-template-renderer-render.png"
+    },
+    {
+      "alt": "E6 Clean render \u2192 S7 PDF \u00b7 HTML slides: P \u00b7 produce; producer.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9552c79216bf548dfee4bcb9c9945396a5da717e5e0d97139e3aa3c583d804bc",
+      "src": "../figures/source_render_provenance.slide-producer-render-surfaces.png"
+    },
+    {
+      "alt": "S7 PDF \u00b7 HTML slides \u2192 G8 Surface QA: G \u00b7 validate; gate.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6e296c9791f826914f7cca7c56ecdc5e161d3e679b0156d537c336292e978460",
+      "src": "../figures/source_render_provenance.slide-producer-surfaces-surface-validation.png"
+    },
+    {
+      "alt": "G8 Surface QA \u2192 R9 Provenance: R \u00b7 record; receipt.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e653bbbfd4bacc349b69417b61584582b4faa58d0131300b0789165ced152b6d",
+      "src": "../figures/source_render_provenance.slide-producer-surface-validation-provenance.png"
+    },
+    {
+      "alt": "S7 PDF \u00b7 HTML slides \u2192 R10 Manifest + checksums: R \u00b7 inventory bytes; receipt.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4295b09325ff0664405711206c37a075a6ee95d3f6ac60ce8ea37f61c4ddc5a5",
+      "src": "../figures/source_render_provenance.slide-producer-surfaces-release-manifest.png"
+    },
+    {
+      "alt": "R9 Provenance \u2192 R10 Manifest + checksums: R \u00b7 seal receipts; receipt.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f386d0eae16c3e8fdf8d0f13d2ff72b84064f8afc12a589b6e23e2d394832fbf",
+      "src": "../figures/source_render_provenance.slide-producer-provenance-release-manifest.png"
+    },
+    {
+      "alt": "R10 Manifest + checksums \u2192 A1  GitHub tag \u00b7 release: A \u00b7 review + authorize; authorization.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "88e08d2ed57ab05d167ac8473e90e856ca251b857191e04385d24284bd25b135",
+      "src": "../figures/source_render_provenance.slide-producer-release-manifest-github.png"
+    },
+    {
+      "alt": "A1  GitHub tag \u00b7 release \u2192 A2  Zenodo publication: A \u00b7 verify + fresh approval; authorization.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "909d7c33c547d15ca2efdfa773827c9de82f5609dfdceac060354ef559653916",
+      "src": "../figures/source_render_provenance.slide-producer-github-zenodo.png"
+    },
+    {
+      "alt": "P1 Typed reports \u2192 I1  Source \u00b7 tests \u00b7 manuscript: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "be409c24cc92a4bcd462417e9173d091e1be5ddc414102a912e69bead98a8219",
+      "src": "../figures/source_render_provenance.slide-invalidation-source-reports.png"
+    },
+    {
+      "alt": "P1 Typed reports \u2192 I2  Configuration \u00b7 claim contracts: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b2f736958bef713b11fc1fd2b02934e5e341fe3f776fb44d0a502974224fb7c1",
+      "src": "../figures/source_render_provenance.slide-invalidation-config-reports.png"
+    },
+    {
+      "alt": "P1 Typed reports \u2192 I3  Lockfile \u00b7 runtime metadata: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0fc060b4c034fd974d9c95d02c2e84e74e4b004b8c5d7558bbe5182d70ad1e71",
+      "src": "../figures/source_render_provenance.slide-invalidation-lockfile-reports.png"
+    },
+    {
+      "alt": "P2 Figures + a11y \u2192 I1  Source \u00b7 tests \u00b7 manuscript: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "17728617ac81e75ca39bbca55acc297c64f6dc4e5042bc14ffd1612b4eeb3ea1",
+      "src": "../figures/source_render_provenance.slide-invalidation-source-figures.png"
+    },
+    {
+      "alt": "P2 Figures + a11y \u2192 P1 Typed reports: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "33ad672c36be8bb94aae54c83a6cdedde55ea6a26d5a19b779e3eb5ce989bcee",
+      "src": "../figures/source_render_provenance.slide-invalidation-reports-figures.png"
+    },
+    {
+      "alt": "P2 Figures + a11y \u2192 I4  Figure \u00b7 accessibility registry: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9873fe7c845191fd073ad835db895ad384276f85dc8ae2455c4f56b00720ec46",
+      "src": "../figures/source_render_provenance.slide-invalidation-registry-figures.png"
+    },
+    {
+      "alt": "P3 Provisional hydration \u2192 I1  Source \u00b7 tests \u00b7 manuscript: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9ffe796db6226057ae51248a12e9030fd5f482a858feff14ecfb121ec1035379",
+      "src": "../figures/source_render_provenance.slide-invalidation-source-provisional.png"
+    },
+    {
+      "alt": "P3 Provisional hydration \u2192 I2  Configuration \u00b7 claim contracts: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7ea6feca1cfc7f59bb4437b39790bb9a6fa2acacccbfa4f1d6628db6010722cb",
+      "src": "../figures/source_render_provenance.slide-invalidation-config-provisional.png"
+    },
+    {
+      "alt": "P3 Provisional hydration \u2192 P1 Typed reports: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8ba9cc332fa5ab7de0f2a9bda14d096fdf5f47102ed0c8ebdb9661761a2abffd",
+      "src": "../figures/source_render_provenance.slide-invalidation-reports-provisional.png"
+    },
+    {
+      "alt": "G4 Tests + coverage \u2192 I1  Source \u00b7 tests \u00b7 manuscript: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "89cd8682a2b81b7bc576edb9d5baed7eceb28700bbad1ed49d93abc732e9f9f8",
+      "src": "../figures/source_render_provenance.slide-invalidation-source-coverage.png"
+    },
+    {
+      "alt": "G4 Tests + coverage \u2192 I2  Configuration \u00b7 claim contracts: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0fa2ab6a497305dc2b5d4b0ac074d752c28fa23fdb395b0013088cd32f117405",
+      "src": "../figures/source_render_provenance.slide-invalidation-config-coverage.png"
+    },
+    {
+      "alt": "G4 Tests + coverage \u2192 I3  Lockfile \u00b7 runtime metadata: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2f44ec044b943568b446fa25f5091e752656bfa955f32ddd28d69498419ac467",
+      "src": "../figures/source_render_provenance.slide-invalidation-lockfile-coverage.png"
+    },
+    {
+      "alt": "G4 Tests + coverage \u2192 P3 Provisional hydration: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5ad1694dbc8b09f15e9ebe8c00ab44ab87a0ae62764cababf04d4aed318d00b8",
+      "src": "../figures/source_render_provenance.slide-invalidation-provisional-coverage.png"
+    },
+    {
+      "alt": "P5 Final hydration \u2192 G4 Tests + coverage: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4a9941454feced9bf708ce692460004e00cbb4c8d2aea3eac1f24f849aeca23b",
+      "src": "../figures/source_render_provenance.slide-invalidation-coverage-final-hydration.png"
+    },
+    {
+      "alt": "P5 Final hydration \u2192 I1  Source \u00b7 tests \u00b7 manuscript: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3601b1625afe88c55b8bc7c2acb3061ccbb63f4e331d6a9f3188b8ef5916e817",
+      "src": "../figures/source_render_provenance.slide-invalidation-source-final-hydration.png"
+    },
+    {
+      "alt": "P5 Final hydration \u2192 I2  Configuration \u00b7 claim contracts: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "622abf050f100c5bd864c0736852359d4c643e041b6d98d843585343a3b7887d",
+      "src": "../figures/source_render_provenance.slide-invalidation-config-final-hydration.png"
+    },
+    {
+      "alt": "P5 Final hydration \u2192 P1 Typed reports: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d1021dd75c8578ad1f799ad42a3237b4efcdaf9de2df2ea4e42f6ba69c50cd9a",
+      "src": "../figures/source_render_provenance.slide-invalidation-reports-final-hydration.png"
+    },
+    {
+      "alt": "E6 Clean render \u2192 P5 Final hydration: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a9781588d9b30ad53f83a3ceb2b0003f09f3ccba2818442d35f58649239c168b",
+      "src": "../figures/source_render_provenance.slide-invalidation-final-hydration-render.png"
+    },
+    {
+      "alt": "E6 Clean render \u2192 P2 Figures + a11y: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "123b8611a0c8c2f08e75137adcd3a2dc54ee7dbd468e7c321862177e4b187145",
+      "src": "../figures/source_render_provenance.slide-invalidation-figures-render.png"
+    },
+    {
+      "alt": "E6 Clean render \u2192 I5  Exact clean Template commit: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3958d450ed74971ab5539fd93806e6841f3a9d8c3b6fd6f09c623e5eeb73e5d1",
+      "src": "../figures/source_render_provenance.slide-invalidation-template-renderer-render.png"
+    },
+    {
+      "alt": "S7 PDF \u00b7 HTML slides \u2192 E6 Clean render: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "140186c811f0b807aeb2fc24c0b904dcdd809039a35ec127a46950e936e7b3ca",
+      "src": "../figures/source_render_provenance.slide-invalidation-render-surfaces.png"
+    },
+    {
+      "alt": "G8 Surface QA \u2192 S7 PDF \u00b7 HTML slides: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bd30ec1fc9c34e935e8e3f3f8dc9c390b39e7911756b33db5e33278b43e54da3",
+      "src": "../figures/source_render_provenance.slide-invalidation-surfaces-surface-validation.png"
+    },
+    {
+      "alt": "R9 Provenance \u2192 G8 Surface QA: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c5e746adb9df5b6d519d6de39b5b7012e5c044ea81f7689eaf81159a7ed68b60",
+      "src": "../figures/source_render_provenance.slide-invalidation-surface-validation-provenance.png"
+    },
+    {
+      "alt": "R10 Manifest + checksums \u2192 S7 PDF \u00b7 HTML slides: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "367ffc637a29f11a4f177a2e4c74ea6e48000136112a517f840e242efecdc5fc",
+      "src": "../figures/source_render_provenance.slide-invalidation-surfaces-release-manifest.png"
+    },
+    {
+      "alt": "R10 Manifest + checksums \u2192 R9 Provenance: Stale dependency after change; invalidation.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ff2550318d94d950726b4c58578547e6aee00b0365b8b85dab48520843380c75",
+      "src": "../figures/source_render_provenance.slide-invalidation-provenance-release-manifest.png"
+    },
+    {
+      "alt": "green engineering and rendering gates are necessary inputs to review; they do not automatically authorize a merge, tag, GitHub release, or Zenodo publication",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3a47d8fde18482e3ba5207bf58d8bec0fd35f204e7ce25f8451155ff89f40651",
+      "src": "../figures/source_render_provenance.slide-authorization-boundary.png"
+    },
+    {
+      "alt": "this figure is generated from this source-owned contract and never reads the downstream release manifest that later inventories it",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "30cebead4b7e100a8708696a6892281d6b3fd38e7c9a7afd9fdb94eaacc9e885",
+      "src": "../figures/source_render_provenance.slide-manifest-cycle-boundary.png"
+    },
+    {
+      "alt": "a green build is not scientific validation",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e858cebbbfc3f36cddc2fc142281148dffabdd4ca8eaf522817deedd5c628f9a",
+      "src": "../figures/source_render_provenance.slide-no-claim-1.png"
+    },
+    {
+      "alt": "tagged PDF structure is not PDF/UA conformance",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "21153fd7dd434d19925a94240a35aff03c43368058a456d0f81d3b7ec4c00a52",
+      "src": "../figures/source_render_provenance.slide-no-claim-2.png"
+    },
+    {
+      "alt": "HTML accessibility enhancements are not a WCAG conformance claim",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bc86163deab93b7a5a7b7dfa31ed12c744f45046c58223bc313c2ac72a2f7768",
+      "src": "../figures/source_render_provenance.slide-no-claim-3.png"
+    },
+    {
+      "alt": "a GitHub release or DOI does not enlarge the scientific claim surface",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9b46ef67d4046bc95b2f3b732da430e73d0aef9d6f2b1b7e39e59095b1d0179d",
+      "src": "../figures/source_render_provenance.slide-no-claim-4.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

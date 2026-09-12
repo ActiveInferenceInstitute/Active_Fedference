@@ -24,8 +24,12 @@ _DIAGRAM_HEADER = re.compile(
     r"journey|gantt|pie|quadrantChart|xychart-beta|mindmap|timeline|gitGraph)\b"
 )
 _UNQUOTED_PUNCTUATED_NODE = re.compile(
-    r"^\s*[A-Za-z][A-Za-z0-9_-]*\[(?![\"'`])[^\]]*[()][^\]]*\]"
+    r"\b[A-Za-z][A-Za-z0-9_-]*\[(?![\"'`])[^\]]*[^\w\s][^\]]*\]"
 )
+_ACCESSIBLE_TITLE = re.compile(r"^\s*accTitle:\s*\S.*$", flags=re.MULTILINE)
+_ACCESSIBLE_DESCRIPTION = re.compile(r"^\s*accDescr:\s*\S.*$", flags=re.MULTILINE)
+_TEXT_EQUIVALENT_MARKER = "**text equivalent.**"
+_TEXT_EQUIVALENT_CONTENT = re.compile(r"^(?:\||[-*+]\s+|\d+[.)]\s+)")
 
 
 @dataclass(frozen=True)
@@ -86,7 +90,7 @@ def extract_mermaid_blocks(root: Path) -> tuple[MermaidBlock, ...]:
 
 
 def validate_mermaid_blocks(root: Path) -> tuple[MermaidBlock, ...]:
-    """Validate fence balance, diagram declarations, and safe node labels."""
+    """Validate syntax-facing and reader-facing Mermaid accessibility contracts."""
     errors: list[str] = []
     blocks = extract_mermaid_blocks(root)
     for block in blocks:
@@ -103,11 +107,36 @@ def validate_mermaid_blocks(root: Path) -> tuple[MermaidBlock, ...]:
             errors.append(f"{location}: unsupported or missing diagram declaration: {header!r}")
         if not block.source.strip():
             errors.append(f"{location}: empty Mermaid block")
+        title_matches = _ACCESSIBLE_TITLE.findall(block.source)
+        description_matches = _ACCESSIBLE_DESCRIPTION.findall(block.source)
+        if len(title_matches) != 1:
+            errors.append(
+                f"{location}: expected exactly one non-empty accTitle, found {len(title_matches)}"
+            )
+        if len(description_matches) != 1:
+            errors.append(
+                f"{location}: expected exactly one non-empty accDescr, found "
+                f"{len(description_matches)}"
+            )
         for offset, line in enumerate(block.source.splitlines(), start=1):
             if _UNQUOTED_PUNCTUATED_NODE.search(line):
                 errors.append(
                     f"{location}+{offset}: quote node labels containing parentheses or similar punctuation"
                 )
+        markdown_lines = block.path.read_text(encoding="utf-8").splitlines()
+        following_nonempty = [
+            line.strip() for line in markdown_lines[block.end_line :] if line.strip()
+        ]
+        if not following_nonempty or following_nonempty[0].lower() != _TEXT_EQUIVALENT_MARKER:
+            errors.append(
+                f"{location}: place '**Text equivalent.**' immediately after the diagram"
+            )
+        elif len(following_nonempty) < 2 or not _TEXT_EQUIVALENT_CONTENT.match(
+            following_nonempty[1]
+        ):
+            errors.append(
+                f"{location}: follow '**Text equivalent.**' with a table or ordered list"
+            )
     if errors:
         raise ValueError("\n".join(errors))
     return blocks

@@ -1,7 +1,8 @@
 """Tests for manuscript variable generation.
 
-No mocks: the analysis pipeline runs for real into ``tmp_path``, then
-``generate_variables`` reads the produced JSON reports. The headline test
+No mocks: one real analysis pipeline populates a module-scoped temporary
+project. Each consuming test receives its own copy of those completed artifacts,
+then ``generate_variables`` reads the reports. Mutations remain test-local. The headline test
 cross-checks that every fedference ``{{TOKEN}}`` used in the shipped manuscript
 prose is resolved by ``generate_variables`` — the prose and the code share one
 source of truth.
@@ -80,6 +81,13 @@ def _make_project(root: Path) -> None:
         },
     }
     (manuscript / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
+    (manuscript / "16_results_belief_sharing.md").write_text(
+        "![Belief-sharing posterior mass in the bounded smoke fixture.]"
+        "(../output/figures/belief_heatmap.png)"
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
+        encoding="utf-8",
+    )
     # A real project carries an ISA (live ISC tally) and a tests/ tree (live
     # TEST_COUNT); provide minimal versions so the provenance tokens resolve to
     # real values rather than the "N/A" sentinel.
@@ -95,6 +103,22 @@ def _make_project(root: Path) -> None:
     )
 
 
+@pytest.fixture(scope="module")
+def analyzed_project_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Run the unchanged real smoke budget once for report-consumer checks."""
+    root = tmp_path_factory.mktemp("manuscript-analysis")
+    _make_project(root)
+    run_analysis_pipeline(project_root=root)
+    return root
+
+
+@pytest.fixture
+def analyzed_project(tmp_path: Path, analyzed_project_template: Path) -> Path:
+    """Keep file mutations isolated while reusing genuinely produced reports."""
+    shutil.copytree(analyzed_project_template, tmp_path, dirs_exist_ok=True)
+    return tmp_path
+
+
 def _manuscript_tokens(section_files: tuple[str, ...]) -> set[str]:
     tokens: set[str] = set()
     manuscript = _PROJECT_ROOT / "manuscript"
@@ -105,10 +129,8 @@ def _manuscript_tokens(section_files: tuple[str, ...]) -> set[str]:
     return tokens - _RESERVED_EXAMPLE_NAMES
 
 
-def test_generate_variables_returns_strings(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+def test_generate_variables_returns_strings(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
     assert variables
     assert all(isinstance(k, str) and isinstance(v, str) for k, v in variables.items())
 
@@ -137,10 +159,8 @@ def test_count_tests_uses_pytest_collected_parametrizations(tmp_path: Path) -> N
     assert _count_tests(tmp_path) == "4"
 
 
-def test_covers_every_fedference_manuscript_token(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+def test_covers_every_fedference_manuscript_token(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
 
     prose_tokens = _manuscript_tokens(_FEDFERENCE_SECTIONS)
     assert prose_tokens, "expected fedference tokens in the shipped manuscript prose"
@@ -148,10 +168,8 @@ def test_covers_every_fedference_manuscript_token(tmp_path: Path) -> None:
     assert not missing, f"manuscript tokens not produced by generate_variables: {missing}"
 
 
-def test_headline_numbers_are_resolved_not_na(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+def test_headline_numbers_are_resolved_not_na(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
     # With reports present, the headline results must be concrete, not sentinels.
     for key in (
         "BELIEF_SHARING_DELTA_F",
@@ -218,8 +236,17 @@ _NEW_SWEEP_TOKENS = (
     "SWEEP_BEST_VERDICT_ACCURACY_CI_LO",
     "SWEEP_BEST_VERDICT_ACCURACY_CI_HI",
     "SWEEP_ACCURACY_AT_VERDICT_TABLE_ROWS",
+    "SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS",
+    "SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS",
     "SWEEP_VERDICT_EFFECT_TABLE_ROWS",
+    "SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS",
+    "SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS",
     "SWEEP_PAIRED_BY_RATE_TABLE_ROWS",
+)
+_NEW_GALLERY_TOKENS = (
+    "GALLERY_OPERATING_POINT_TABLE_ROWS",
+    "GALLERY_CONTRAST_DISPLAY_TABLE_ROWS",
+    "GALLERY_TABLE_ROWS",
 )
 _ALL_NEW_STATS_TOKENS = (
     _NEW_BELIEF_SHARING_TOKENS
@@ -228,28 +255,25 @@ _ALL_NEW_STATS_TOKENS = (
     + _NEW_CONFIG_TOKENS
     + _NEW_POWER_TOKENS
     + _NEW_SWEEP_TOKENS
+    + _NEW_GALLERY_TOKENS
 )
 
 
-def test_new_statistics_tokens_present_and_concrete(tmp_path: Path) -> None:
+def test_new_statistics_tokens_present_and_concrete(analyzed_project: Path) -> None:
     # Every new per-condition n / CI / p-value / q-value / effect-size token
     # exists and resolves to a concrete (non-N/A, non-empty) value after a real
     # seeded pipeline run.
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     for key in _ALL_NEW_STATS_TOKENS:
         assert key in variables, f"missing new statistics token: {key}"
         assert variables[key] != "N/A", f"token left as N/A after real run: {key}"
         assert variables[key].strip() != "", f"token resolved to empty: {key}"
 
 
-def test_config_tokens_reflect_the_project_config(tmp_path: Path) -> None:
+def test_config_tokens_reflect_the_project_config(analyzed_project: Path) -> None:
     # Every config value is a token; they mirror the written experiment block,
     # so no number is hand-typed downstream.
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     assert variables["CONFIG_N_AGENTS"] == "5"
     assert variables["CONFIG_N_SEEDS"] == "4"
     assert variables["CONFIG_N_TRIALS"] == "6"
@@ -262,10 +286,8 @@ def test_config_tokens_reflect_the_project_config(tmp_path: Path) -> None:
     assert variables["CONFIG_TARGET_POWER"] == "0.80"
 
 
-def test_cross_study_sensitivity_trial_token_matches_source_constant(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+def test_cross_study_sensitivity_trial_token_matches_source_constant(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
     assert variables["CROSS_STUDY_SENS_N_TRIALS"] == str(CROSS_STUDY_SENS_N_TRIALS)
 
 
@@ -295,33 +317,27 @@ def test_default_project_root_is_repo_root_not_src() -> None:
     assert (root / "src" / "manuscript_vars").is_dir()
 
 
-def test_missing_stage_timings_degrades_to_na_and_writes_nothing(tmp_path: Path) -> None:
+def test_missing_stage_timings_degrades_to_na_and_writes_nothing(analyzed_project: Path) -> None:
     """A missing timings artifact must yield N/A tokens, not a fabricated file."""
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    timings = tmp_path / "output" / "data" / "stage_timings.json"
+    timings = analyzed_project / "output" / "data" / "stage_timings.json"
     assert timings.exists()  # pipeline writes real timings
     timings.unlink()
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     assert variables["STAGE_ANALYSIS_TOTAL_DURATION"] == "N/A"
     assert not timings.exists()  # generator must not re-create it
 
 
-def test_malformed_stage_timings_degrade_to_na(tmp_path: Path) -> None:
+def test_malformed_stage_timings_degrade_to_na(analyzed_project: Path) -> None:
     """Invalid timing metadata must not become a fabricated rendered duration."""
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    timings = tmp_path / "output" / "data" / "stage_timings.json"
+    timings = analyzed_project / "output" / "data" / "stage_timings.json"
     timings.write_text("{not valid json", encoding="utf-8")
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     assert variables["STAGE_ANALYSIS_TOTAL_DURATION"] == "N/A"
     assert timings.read_text(encoding="utf-8") == "{not valid json"
 
 
-def test_system_overview_tokens_reflect_figure_metadata(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+def test_system_overview_tokens_reflect_figure_metadata(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
     assert variables["SYSTEM_OVERVIEW_N_AGENTS"] == str(SYSTEM_OVERVIEW_METADATA["n_agents"])
     assert variables["SYSTEM_OVERVIEW_N_ADVERSARIAL"] == str(SYSTEM_OVERVIEW_METADATA["n_adversarial"])
     assert variables["SYSTEM_OVERVIEW_N_HONEST"] == str(SYSTEM_OVERVIEW_METADATA["n_honest"])
@@ -373,44 +389,139 @@ def test_system_overview_metadata_is_derived_from_pooled_beliefs() -> None:
     assert adversary_mean < honest_mean
 
 
-def test_power_tokens_are_concrete_and_bounded(tmp_path: Path) -> None:
+def test_power_tokens_are_concrete_and_bounded(analyzed_project: Path) -> None:
     # The headline design power is a probability in [0,1]; the prospective n is
     # a positive integer. These decorate the SERVER-SIDE aggregation heuristic's
     # contrast — never the beta/rcce per-agent FedGVI guarantee.
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     power = float(variables["SWEEP_HEADLINE_POWER"])
     assert 0.0 <= power <= 1.0
     assert int(variables["SWEEP_PROSPECTIVE_N"]) >= 1
     assert int(variables["SWEEP_HEADLINE_N_FOR_TARGET_POWER"]) >= 1
     assert variables["SWEEP_HEADLINE_METHOD"] != "KLD"
     assert variables["SWEEP_HEADLINE_METHOD"].strip() != ""
-    # The standardized-effect verdict table now carries a power column: each
-    # robust row has the extra cell (10 pipe-delimited fields).
-    rows = variables["SWEEP_VERDICT_EFFECT_TABLE_ROWS"].splitlines()
-    assert rows
-    for line in rows:
+    # The legacy ten-field row remains available, while the manuscript's two
+    # projection-safe tables partition exactly those cells without changing
+    # their strings or row order.
+    full_rows = variables["SWEEP_VERDICT_EFFECT_TABLE_ROWS"].splitlines()
+    estimate_rows = variables["SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS"].splitlines()
+    inference_rows = variables["SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS"].splitlines()
+    assert full_rows
+    assert len(full_rows) == len(estimate_rows) == len(inference_rows)
+
+    def _cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    for line in full_rows:
         assert line.count("|") == 11  # 10 columns -> 11 pipe separators
+    for full, estimate, inference in zip(full_rows, estimate_rows, inference_rows, strict=True):
+        full_cells = _cells(full)
+        assert _cells(estimate) == full_cells[:5]
+        assert _cells(inference) == [full_cells[0], *full_cells[5:]]
+        assert estimate.count("|") == 6  # 5 columns -> 6 pipe separators
+        assert inference.count("|") == 7  # 6 columns -> 7 pipe separators
 
 
-def test_paired_by_rate_table_has_rows(tmp_path: Path) -> None:
+def test_paired_by_rate_table_has_rows(analyzed_project: Path) -> None:
     # The per-contamination-rate paired-test table emits a markdown row per
     # (robust method x rate); the naive KLD baseline is excluded (no self-test).
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     rows = variables["SWEEP_PAIRED_BY_RATE_TABLE_ROWS"].splitlines()
+    effect_rows = variables["SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS"].splitlines()
+    inference_rows = variables["SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS"].splitlines()
     assert rows, "expected at least one paired-by-rate row"
+    assert len(rows) == len(effect_rows) == len(inference_rows)
     assert all(line.startswith("| ") and line.endswith(" |") for line in rows)
+
+    def _cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    for full, effect, inference in zip(rows, effect_rows, inference_rows, strict=True):
+        full_cells = _cells(full)
+        effect_cells = _cells(effect)
+        inference_cells = _cells(inference)
+        assert len(full_cells) == 7
+        assert len(effect_cells) == 4
+        assert len(inference_cells) == 5
+        assert effect_cells[:2] == inference_cells[:2]
+        assert full_cells == [*effect_cells, *inference_cells[2:]]
     # KLD is the naive baseline and must not appear as its own contrast row.
     assert not any(line.startswith("| KLD |") for line in rows)
 
+    caption = (_PROJECT_ROOT / "manuscript" / "19_results_robustness.md").read_text(
+        encoding="utf-8"
+    )
+    assert "{{SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS}}" in caption
+    assert "{{SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS}}" in caption
+    assert "reconstructs every source row exactly" in caption
 
-def test_paired_by_rate_table_covers_every_robust_method_and_rate(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+
+def test_gallery_projection_tables_reconstruct_legacy_rows_exactly() -> None:
+    from manuscript_vars.tokens import _gallery_variables
+
+    report = {
+        "rate": 0.5,
+        "n_trials": 4,
+        "n_seeds": 3,
+        "reliable_win_fraction": 0.8,
+        "reliable_kinds": ["confident_wrong"],
+        "entropy_naive_robust": True,
+        "directional_kinds": ["confident_wrong"],
+        "entropy_kinds": ["uniform"],
+        "by_kind": {
+            "confident_wrong": {
+                "directional": True,
+                "naive_mean": 0.25,
+                "robust_mean": 0.75,
+                "best_robust_method": "AR",
+                "mean_diff": 0.5,
+                "diff_ci": [0.4, 0.6],
+                "win_fraction": 1.0,
+                "reliably_beats": True,
+            },
+            "uniform": {
+                "directional": False,
+                "naive_mean": 0.8,
+                "robust_mean": 0.79,
+                "best_robust_method": "RKL",
+                "mean_diff": -0.01,
+                "diff_ci": [-0.03, 0.01],
+                "win_fraction": 0.33,
+                "reliably_beats": False,
+            },
+        },
+    }
+    variables = _gallery_variables(report)
+    full_rows = variables["GALLERY_TABLE_ROWS"].splitlines()
+    operating_rows = variables["GALLERY_OPERATING_POINT_TABLE_ROWS"].splitlines()
+    contrast_rows = variables["GALLERY_CONTRAST_DISPLAY_TABLE_ROWS"].splitlines()
+
+    def _cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    assert len(full_rows) == len(operating_rows) == len(contrast_rows) == 2
+    for full, operating, contrast in zip(
+        full_rows, operating_rows, contrast_rows, strict=True
+    ):
+        full_cells = _cells(full)
+        operating_cells = _cells(operating)
+        contrast_cells = _cells(contrast)
+        assert len(full_cells) == 8
+        assert len(operating_cells) == 4
+        assert len(contrast_cells) == 5
+        assert operating_cells[0] == contrast_cells[0]
+        assert full_cells == [*operating_cells, *contrast_cells[1:]]
+
+    caption = (
+        _PROJECT_ROOT / "manuscript" / "28_supplement_extended_methods.md"
+    ).read_text(encoding="utf-8")
+    assert "{{GALLERY_OPERATING_POINT_TABLE_ROWS}}" in caption
+    assert "{{GALLERY_CONTRAST_DISPLAY_TABLE_ROWS}}" in caption
+    assert "reconstructs every source row exactly" in caption
+
+
+def test_paired_by_rate_table_covers_every_robust_method_and_rate(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
     rows = variables["SWEEP_PAIRED_BY_RATE_TABLE_ROWS"].splitlines()
     robust_methods = [method for method in variables["CONFIG_DIVERGENCES"].split(", ") if method != "KLD"]
     rates = [f"{float(rate):g}" for rate in variables["CONFIG_CONTAMINATION_RATES"].split(", ")]
@@ -430,12 +541,10 @@ def test_paired_by_rate_table_covers_every_robust_method_and_rate(tmp_path: Path
     assert seen == {(method, rate) for method in robust_methods for rate in rates}
 
 
-def test_no_token_left_unresolved_on_real_run(tmp_path: Path) -> None:
+def test_no_token_left_unresolved_on_real_run(analyzed_project: Path) -> None:
     # Contract: given a real pipeline run, NO emitted token is an unresolved
     # sentinel — every value is a non-empty string and none is "N/A".
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     unresolved = sorted(k for k, val in variables.items() if val == "N/A" or val.strip() == "")
     assert not unresolved, f"tokens unresolved after real run: {unresolved}"
     # The smoke review grid deliberately does not assert that its small sample
@@ -547,8 +656,8 @@ def test_bnn_robustness_variables_read_generated_report(tmp_path: Path) -> None:
             {
                 "contamination_levels": [0.0, 0.1, 0.2, 0.3, 0.35, 0.4],
                 "accuracy_by_config": {
-                    "nll / KLD (standard)": [0.86, 0.86, 0.86, 0.85, 0.58, 0.15],
-                    "rcce / AR (robust)": [0.86, 0.86, 0.87, 0.86, 0.60, 0.14],
+                    "nll / L2=0.05 (standard proxy)": [0.86, 0.86, 0.86, 0.85, 0.58, 0.15],
+                    "rcce / L2=0.10 (exploratory proxy)": [0.86, 0.86, 0.87, 0.86, 0.60, 0.14],
                 },
                 "peak_margin": 0.0387,
                 "peak_margin_contamination": 0.35,
@@ -585,7 +694,14 @@ def test_disjoint_fov_variables_earn_the_necessity_claim(tmp_path: Path) -> None
     )
 
     v = _disjoint_fov_variables(tmp_path)
-    assert float(v["V4_WILCOX_PVALUE"]) < 0.05, "necessity contrast must be significant"
+    assert 0 < float(v["V4_WILCOX_PVALUE"]) < 0.05, "a positive report p-value must not round to zero"
+    raw_pvalue = report["multiseed"]["communicating_vs_isolated"]["paired_test"]["pvalue"]
+    if raw_pvalue < 1e-4:
+        assert float(v["V4_WILCOX_PVALUE"]) == pytest.approx(raw_pvalue, rel=0.005, abs=0)
+        assert r"\times 10^{-" in v["V4_WILCOX_PVALUE_MATH"]
+    else:
+        assert v["V4_WILCOX_PVALUE"] == f"{raw_pvalue:.4f}"
+        assert v["V4_WILCOX_PVALUE_MATH"] == v["V4_WILCOX_PVALUE"]
     assert float(v["V4_EFFECT_SIZE"]) > 0.0
     assert float(v["V4_COMM_MEAN"]) > float(v["V4_ISO_MEAN"])
     chance = 1.0 / int(v["V4_N_POSITIONS"])
@@ -597,10 +713,8 @@ def test_disjoint_fov_variables_earn_the_necessity_claim(tmp_path: Path) -> None
     assert v["V4_EFE_EFFECT_LABEL"] == "negligible"
 
 
-def test_recovery_residuals_are_near_zero(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+def test_recovery_residuals_are_near_zero(analyzed_project: Path) -> None:
+    variables = generate_variables(analyzed_project)
     for key in (
         "RECOVERY_RCCE_MAXDIFF",
         "RECOVERY_BETA_MAXDIFF",
@@ -614,13 +728,11 @@ def test_recovery_residuals_are_near_zero(tmp_path: Path) -> None:
             assert float(val) < 1e-6
 
 
-def test_recovery_offswitch_residuals_are_nonzero_and_tiny(tmp_path: Path) -> None:
+def test_recovery_offswitch_residuals_are_nonzero_and_tiny(analyzed_project: Path) -> None:
     """M2 fix: the off-switch-point residuals must be genuinely nonzero
     (unlike the exact-branch residuals, which are exactly 0/near machine
     epsilon) — proof the general formula converges, not just the branch."""
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    variables = generate_variables(tmp_path)
+    variables = generate_variables(analyzed_project)
     for key in (
         "RECOVERY_RCCE_OFFSWITCH_MAXDIFF",
         "RECOVERY_BETA_OFFSWITCH_MAXDIFF",
@@ -732,6 +844,8 @@ def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
     (manuscript / "01_intro.md").write_text("Value: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "README.md").write_text("Example: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "refs.bib").write_text("@misc{x, title={X}}\n", encoding="utf-8")
+    preamble = manuscript / "preamble.md"
+    preamble.write_text("\\newcommand{\\demovalue}{value}\n", encoding="utf-8")
     config_path = manuscript / "config.yaml"
     config_path.write_text(
         config_path.read_text(encoding="utf-8")
@@ -740,13 +854,18 @@ def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
     )
     source_config = config_path.read_bytes()
 
-    out_dir = render_manuscript_tree(tmp_path, {"VALUE": "42"})
+    out_dir = render_manuscript_tree(
+        tmp_path, {"VALUE": "42", "PUBLICATION_DOI": "10.5281/zenodo.12345"}
+    )
 
     assert (out_dir / "01_intro.md").read_text(encoding="utf-8") == "Value: 42\n"
     assert not (out_dir / "README.md").exists()
-    assert (out_dir / "config.yaml").read_bytes() == source_config
+    rendered_config = yaml.safe_load((out_dir / "config.yaml").read_text(encoding="utf-8"))
+    assert rendered_config["source_only_placeholder"] == "10.5281/zenodo.12345"
+    assert config_path.read_bytes() == source_config
     assert b"{{PUBLICATION_DOI}}" in source_config
     assert (out_dir / "refs.bib").exists()
+    assert (out_dir / "preamble.md").read_bytes() == preamble.read_bytes()
     assert "infrastructure" not in inspect.getsource(render_manuscript_tree)
 
 
@@ -765,11 +884,60 @@ def test_full_manuscript_tree_is_exactly_hydrated_without_tokens(tmp_path: Path)
     assert {path.name for path in output.glob("*.md")} == source_names
     unresolved = {
         path.relative_to(output).as_posix(): _TOKEN_RE.findall(path.read_text(encoding="utf-8"))
-        for path in output.rglob("*.md")
+        for path in output.rglob("*") if path.suffix in {".md", ".yaml"}
     }
     assert not {name: tokens for name, tokens in unresolved.items() if tokens}, (
         "full manuscript hydration left unresolved {{TOKEN}} markers"
     )
+
+
+def test_render_config_tokens_preserve_nested_yaml_values(tmp_path: Path) -> None:
+    manuscript = tmp_path / "manuscript"
+    manuscript.mkdir()
+    config = {
+        "paper": {"title": "{{TITLE}}"},
+        "metadata": {
+            "description": "before {{DESCRIPTION}} after",
+            "values": [True, 7, None, {"text": "{{DESCRIPTION}}"}],
+        },
+    }
+    source = manuscript / "config.yaml"
+    source.write_text(yaml.safe_dump(config), encoding="utf-8")
+    before = source.read_bytes()
+    variables = {
+        "TITLE": 'Title: "quoted" # literal',
+        "DESCRIPTION": "line one\nline two: {literal}",
+    }
+
+    output = render_manuscript_tree(tmp_path, variables)
+    observed = yaml.safe_load((output / "config.yaml").read_text(encoding="utf-8"))
+
+    assert observed == {
+        "paper": {"title": variables["TITLE"]},
+        "metadata": {
+            "description": f"before {variables['DESCRIPTION']} after",
+            "values": [True, 7, None, {"text": variables["DESCRIPTION"]}],
+        },
+    }
+    assert source.read_bytes() == before
+
+
+def test_unresolved_config_token_preserves_previous_manuscript_tree(tmp_path: Path) -> None:
+    manuscript = tmp_path / "manuscript"
+    manuscript.mkdir()
+    (manuscript / "config.yaml").write_text("paper:\n  title: '{{UNKNOWN}}'\n")
+    (manuscript / "01_intro.md").write_text("New manuscript\n")
+    previous = tmp_path / "output" / "manuscript"
+    previous.mkdir(parents=True)
+    (previous / "previous.md").write_text("Retain the previous tree\n")
+    before = {p.name: p.read_bytes() for p in previous.iterdir()}
+
+    with pytest.raises(ValueError, match="unresolved.*UNKNOWN"):
+        render_manuscript_tree(tmp_path, {})
+
+    assert {p.name: p.read_bytes() for p in previous.iterdir()} == before
+    assert not list((tmp_path / "output").glob(".manuscript-staging-*"))
+    assert not list((tmp_path / "output").glob(".manuscript-backup-*"))
 
 
 def test_render_manuscript_tree_refuses_symlinked_output_dir(tmp_path: Path) -> None:
@@ -811,6 +979,32 @@ def test_format_residual_handles_zero() -> None:
     assert _format_residual(1e-12).startswith("1.00e")
 
 
+@pytest.mark.parametrize("value", [1e-300, 9.347445243847876e-23, 2.880158533707409e-12, 0.00001])
+def test_pvalue_tokens_do_not_round_positive_report_values_to_zero(value: float) -> None:
+    from manuscript_vars.loaders import _pvalue_variables
+
+    tokens = _pvalue_variables("P", value)
+    assert float(tokens["P"]) > 0
+    assert float(tokens["P"]) == pytest.approx(value, rel=0.005, abs=0)
+    assert r"\times 10^{-" in tokens["P_MATH"]
+
+
+@pytest.mark.parametrize("value", [0.0, 0.0001, 0.10460302467221208, 1.0])
+def test_pvalue_tokens_keep_ordinary_probability_display(value: float) -> None:
+    from manuscript_vars.loaders import _pvalue_variables
+
+    tokens = _pvalue_variables("P", value)
+    assert tokens == {"P": f"{value:.4f}", "P_MATH": f"{value:.4f}"}
+
+
+@pytest.mark.parametrize("value", [-0.1, 1.1, float("nan"), float("inf")])
+def test_pvalue_tokens_reject_invalid_probability(value: float) -> None:
+    from manuscript_vars.loaders import _pvalue_variables
+
+    with pytest.raises(ValueError, match="finite probability"):
+        _pvalue_variables("P", value)
+
+
 def test_format_residual_math_renders_latex_scientific_notation() -> None:
     from manuscript_variables import _format_residual_math
 
@@ -837,6 +1031,7 @@ def test_math_sibling_tokens_resolve_alongside_their_prose_twins(
     Contract: a _MATH sibling exists for each math-consumed scientific-notation
     token, its prose twin is still emitted unchanged, and the sibling is either
     the "0" sentinel or valid LaTeX scientific notation (never bare ".2e").
+    Paired-test probabilities may also retain their bounded four-decimal form.
     """
     math_tokens = sorted(t for t in _manuscript_tokens(_FEDFERENCE_SECTIONS) if t.endswith("_MATH"))
     assert math_tokens, "expected *_MATH tokens in the shipped manuscript prose"
@@ -846,6 +1041,10 @@ def test_math_sibling_tokens_resolve_alongside_their_prose_twins(
         prose_twin = token[: -len("_MATH")]
         assert prose_twin in variables, f"{prose_twin} missing for {token}"
         value = variables[token]
+        if prose_twin.endswith("WILCOX_PVALUE") and re.fullmatch(r"[01]\.\d{4}", value):
+            assert 0.0 <= float(value) <= 1.0
+            assert value == variables[prose_twin]
+            continue
         assert value == "0" or latex_sci.fullmatch(value) or value == "N/A", (
             f"{token} value {value!r} is neither the zero sentinel nor LaTeX scientific notation"
         )
@@ -866,13 +1065,11 @@ def test_math_sibling_tokens_are_authored_inside_math_spans() -> None:
 
 
 @pytest.fixture
-def variables(tmp_path: Path):
-    _make_project(tmp_path)
-    run_analysis_pipeline(project_root=tmp_path)
-    return generate_variables(tmp_path)
+def variables(analyzed_project: Path) -> dict[str, str]:
+    return generate_variables(analyzed_project)
 
 
-def test_sensitivity_and_bootstrap_token_values(variables):
+def test_sensitivity_and_bootstrap_token_values(variables: dict[str, str]) -> None:
     """SENS_* and BOOTSTRAP_N_BOOT constants must match experiment defaults."""
     assert variables["SENS_N_TRIALS"] == "20"
     assert variables["SENS_SEED_BASE"] == "0"

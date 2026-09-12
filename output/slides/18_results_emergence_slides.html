@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Configured BMR sign control passed — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-abb31b1a242b">
+<h1 id="presentation-title-abb31b1a242b" class="visually-hidden">Configured BMR sign control passed — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:results-emergence" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48b05f0d4028">
+<h2 class="prose-slide" id="slide-heading-48b05f0d4028">Configured BMR sign control passed</h2>
+<p>The first two studies fixed the model structure. This third study
+instead checks the sign of a configured Bayesian-model-reduction
+comparison. Its estimand is the BMR free-energy difference for two
+candidate likelihood-column prunings.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f0a01452030a">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 2" id="slide-heading-f0a01452030a">Configured BMR
+sign… (part 2)</h2>
+<p>The categorical diagnostic is related to the model-reduction
+mechanism discussed by Friston et al. <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span> and the
+post-hoc BMR lineage <span class="citation"
+data-cites="friston2011post">(Friston and Penny 2011)</span>. It is not
+a discovery claim about structure emergence.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-85704d897579">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 3" id="slide-heading-85704d897579">Configured BMR
+sign… (part 3)</h2>
+<p>The fixed posterior ranges over <span class="math inline">\(n =
+4\)</span> candidate states. One likelihood column is unsupported by the
+configured evidence; another is a supported control. BMR substitutes a
+reduced prior for each candidate and computes <span
+class="math inline">\(\Delta F\)</span> <span class="cross-reference">Equation (20)</span>.
+This is one deterministic closed-form comparison,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea44fb288836">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 4" id="slide-heading-ea44fb288836">Configured BMR
+sign… (part 4)</h2>
+<p>so no resampled sample, confidence interval, or paired test applies
+<span class="citation" data-cites="smith2020active">(Smith et al.
+2022)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b87f65662756">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 5" id="slide-heading-b87f65662756">Configured BMR
+sign… (part 5)</h2>
+<p><span class="math inline">\(\Delta F\)</span> is positive for the
+declared redundant-column pruning, so the reduced candidate is favored
+for this fixed posterior. <strong>Redundant-column result:</strong>
+<span class="math inline">\(\Delta F=3.68\)</span>; the configured
+reduction is accepted.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d6f678f545f3">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 6" id="slide-heading-d6f678f545f3">Configured BMR
+sign… (part 6)</h2>
+<p>It is negative for the declared supported-column control.
+<strong>Supported-column control:</strong> <span
+class="math inline">\(\Delta F=-27.67\)</span>; that reduction is
+rejected.</p>
+<p><strong>Configured sign-control disposition:</strong> redundant
+accepted and supported rejected, recorded as Yes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ed156d3161c3">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 7" id="slide-heading-ed156d3161c3">Configured BMR
+sign… (part 7)</h2>
+<p>The observed sign pattern <span class="math inline">\(\Delta
+F_{\text{redundant}} &gt; 0 &gt; \Delta F_{\text{supported}}\)</span>
+passes the configured control: this fixed posterior favors pruning the
+declared redundant column and rejects pruning the declared supported
+column.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-963e9aa7d6a1">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 8" id="slide-heading-963e9aa7d6a1">Configured BMR
+sign… (part 8)</h2>
+<p>It does not show that arbitrary data or model families will discover,
+prune, or retain the correct structure.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Configured BMR sign control passed, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6895608518af">
+<h2 class="figure-led"
+aria-label="Configured BMR sign control passed, part 9" id="slide-heading-6895608518af">Configured BMR
+sign… (part 9)</h2>
+<figure id="fig:emergence-bmr-slide-panel-1">
+<img src="../figures/emergence_bmr.slide-controls.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="82ba8219627d29b1eff327571454558681bf0c0182f2f9b077ca763126f18e8b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1488"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1754386"
+alt="Both signed model-reduction gains on one nats scale; hatches distinguish targets and a dotted rule marks zero." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Configured BMR sign control passed, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f3e611043c9">
+<h2 class="figure-led"
+aria-label="Configured BMR sign control passed, part 10" id="slide-heading-1f3e611043c9">Configured BMR
+sign… (part 10)</h2>
+<figure id="fig:emergence-bmr-slide-panel-2">
+<img src="../figures/emergence_bmr.slide-values.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ee3b90ad0378b0d3ee4269d349479587397ebe8f3125736d9c31ee2a9329ef38"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1185"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.5909091"
+alt="Redundant target ΔF: 3.677 nats. Supported target ΔF: -27.67 nats. Positive gain favors the reduction; negative gain rejects it." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Configured BMR sign control passed, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-13eb68ae131c">
+<h2 class="figure-led"
+aria-label="Configured BMR sign control passed, part 11" id="slide-heading-13eb68ae131c">Configured BMR
+sign… (part 11)</h2>
+<figure id="fig:emergence-bmr-slide-panel-3">
+<img src="../figures/emergence_bmr.slide-verdict.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a1e393d20451b4971584a5bd427ed21327ac0f8a8a293ce8a0efbe6b8fe1f67d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1196"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7086614"
+alt="Source configured sign-control verdict: True. This is not an optimizer convergence diagnostic." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Configured BMR sign control passed, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-177c7e3942dc">
+<h2 class="figure-led"
+aria-label="Configured BMR sign control passed, part 12" id="slide-heading-177c7e3942dc">Configured BMR
+sign… (part 12)</h2>
+<figure id="fig:emergence-bmr-slide-panel-4">
+<img src="../figures/emergence_bmr.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b9384cda60d678bacb3507613639256ebf9eed86309ecb52d5ab1c8a79d90806"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1290"
+data-slide-figure-intrinsic-height="483"
+data-slide-figure-intrinsic-aspect="2.6708075"
+alt="One fixed-posterior categorical diagnostic. No independent stochastic replication or uncertainty interval applies. Source-mechanism analogue, not full protocol reconstruction." />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e53c8d67d76">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 13" id="slide-heading-7e53c8d67d76">Configured BMR
+sign… (part 13)</h2>
+<p><span class="cross-reference">Figure 12</span>
+contrasts the two configured prunings and reports the sign control.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Configured BMR sign control passed, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6fcc7366b482">
+<h2 class="prose-slide"
+aria-label="Configured BMR sign control passed, part 14" id="slide-heading-6fcc7366b482">Configured BMR
+sign… (part 14)</h2>
+<p>Studies 1–3 all ran in a <em>trusting</em> world, where every
+broadcast belief is honest. The contamination sweep that follows removes
+that assumption, and it is the point at which the three robustness axes
+of <span class="cross-reference">Section 7.2.1</span>
+begin to diverge.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

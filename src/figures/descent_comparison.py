@@ -2,10 +2,10 @@
 
 Makes the iteration-4 fix visible. On a near-one-hot adversarial colony the
 log-linear-pool seed is itself captured, so a single-start descent of the
-variational free energy settles in a high-$F$ capture basin (the outlier keeps
-its weight). Multi-start descent (the default) reaches the genuinely lower-$F$
-vetoing basin. Plotting both free-energy trajectories on one axis shows the
-capture and the escape directly. Pure ``matplotlib`` (Agg); the two histories
+variational free energy settles in a higher observed basin (the outlier keeps
+its weight). One configured alternative start reaches a lower observed basin.
+Plotting both free-energy trajectories on one axis shows the finite contrast
+without certifying a global optimum. Pure ``matplotlib`` (Agg); the two histories
 come from the analysis workflow, this module only draws.
 """
 
@@ -16,18 +16,17 @@ from pathlib import Path
 import numpy as np
 
 from ._common import (
-    COLOR_ADVERSARY,
-    COLOR_CORRECT,
     COLOR_DARK,
-    COLOR_MUTED,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+from ._presentation_diagnostics import descent_comparison_presentation
+
+MANUSCRIPT_WIDTH_FRACTION = 0.80
 
 
 def generate_descent_comparison(
@@ -41,9 +40,9 @@ def generate_descent_comparison(
 
     Args:
         single_history: Free-energy values per iteration from the single
-            (log-linear-pool) start — the captured basin on a near-vertex colony.
+            (log-linear-pool) start — the higher observed basin on a near-vertex colony.
         multi_history: Free-energy values from the multi-start descent — the
-            vetoing basin (lower final $F$).
+            lower final $F$ among the configured starts.
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -65,30 +64,42 @@ def generate_descent_comparison(
 
     single_iters = np.arange(1, single.size + 1)
     multi_iters = np.arange(1, multi.size + 1)
+    single_style = semantic_style("condition_reference")
+    multi_style = semantic_style("condition_comparison")
+    reference_rule = semantic_style("reference_rule")
 
-    # Single-start: colored with COLOR_NAIVE (captured / naive baseline)
+    # Both curves are initialization conditions for the same variational
+    # method.  Neutral condition styles prevent the single-start trajectory
+    # from masquerading as the naive aggregation method and prevent the
+    # multi-start trajectory from borrowing the heuristic-robust identity.
     ax.plot(
         single_iters,
         single,
-        marker="s",
+        marker=single_style.marker,
         markersize=4,
-        linewidth=1.8,
-        color=COLOR_NAIVE,
-        label=f"Single-start  (captured basin,  $F_\\infty$ = {single[-1]:.3g} nats)",
+        linewidth=single_style.linewidth,
+        linestyle=single_style.dash,
+        color=single_style.color,
+        markerfacecolor=single_style.color,
+        markeredgecolor=single_style.keyline,
+        label=f"Single-start  (higher observed basin,  $F_\\infty$ = {single[-1]:.3g} nats)",
         zorder=3,
     )
 
-    # Multi-start: COLOR_ROBUST at full saturation, drawn above everything else
-    # so the escape trajectory stays visible.
+    # The comparison condition uses an open diamond and dotted path, remaining
+    # distinguishable in grayscale and when the legend is detached.
     ax.plot(
         multi_iters,
         multi,
-        marker="o",
+        marker=multi_style.marker,
         markersize=5,
-        linewidth=2.4,
+        linewidth=multi_style.linewidth,
+        linestyle=multi_style.dash,
         alpha=1.0,
-        color=COLOR_ROBUST,
-        label=f"Multi-start  (vetoing basin,  $F_\\infty$ = {multi[-1]:.3g} nats)",
+        color=multi_style.color,
+        markerfacecolor="white",
+        markeredgecolor=multi_style.keyline,
+        label=f"Multi-start  (lower observed basin,  $F_\\infty$ = {multi[-1]:.3g} nats)",
         zorder=4,
     )
 
@@ -96,31 +107,35 @@ def generate_descent_comparison(
     ax.scatter(
         [single_iters[-1]],
         [single[-1]],
-        color=COLOR_ADVERSARY,
+        marker=single_style.marker,
+        facecolor=single_style.color,
+        edgecolor=single_style.keyline,
         s=55,
         zorder=5,
-        label="Single-start terminus  (suboptimal)",
+        label="Single-start terminus  (higher observed)",
     )
     ax.scatter(
         [multi_iters[-1]],
         [multi[-1]],
-        color=COLOR_CORRECT,
+        marker=multi_style.marker,
+        facecolor="white",
+        edgecolor=multi_style.keyline,
         s=55,
         zorder=5,
-        label="Multi-start terminus  (optimal basin)",
+        label="Multi-start terminus  (lower among configured starts)",
     )
 
-    # Floor reference for multi-start basin
+    # Reference at the lower final value observed among configured starts.
     ax.axhline(
         multi[-1],
-        color=COLOR_MUTED,
-        linestyle=":",
-        linewidth=1.0,
-        label="Vetoing-basin floor",
+        color=reference_rule.color,
+        linestyle=reference_rule.dash,
+        linewidth=reference_rule.linewidth,
+        label="Lower observed final level",
         zorder=2,
     )
 
-    # Shade gap between basins (shows the cost of capture)
+    # Shade the gap between the two observed termini.
     gap = float(single[-1] - multi[-1])
     if gap > 0:
         ax.annotate(
@@ -129,7 +144,7 @@ def generate_descent_comparison(
             xytext=(max(single_iters[-1], multi_iters[-1]) + 0.15, float(single[-1])),
             arrowprops={
                 "arrowstyle": "<->",
-                "color": COLOR_ADVERSARY,
+                "color": multi_style.keyline,
                 "lw": 1.4,
             },
         )
@@ -139,13 +154,13 @@ def generate_descent_comparison(
             f"ΔF={gap:.3g}",
             va="center",
             fontsize=9.5,
-            color=COLOR_ADVERSARY,
+            color=multi_style.keyline,
         )
 
     ax.set_xlabel("Block-coordinate iteration", labelpad=6, color=COLOR_DARK)
     ax.set_ylabel("Variational free energy $F$  (nats)", labelpad=6, color=COLOR_DARK)
     ax.set_title(
-        "Multi-start escapes the near-vertex capture basin",
+        "Configured alternative start reaches a lower observed basin",
         pad=8,
         color=COLOR_DARK,
     )
@@ -170,7 +185,13 @@ def generate_descent_comparison(
     # multi-start curve.
     ax.legend(fontsize=10, loc="center left")
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    path = save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
+    descent_comparison_presentation(path, single, multi, stats_text)
+    return path
 
 
 __all__ = ["generate_descent_comparison"]

@@ -25,10 +25,10 @@ import numpy as np
 
 from figures._common import (
     COLOR_GRID,
+    COLOR_HONEST_EDGE,
     COLOR_NAIVE,
     COLOR_ROBUST,
     COLOR_VARIATE,
-    annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
@@ -108,17 +108,18 @@ def generate_hierarchical_pomdp(
     # Panel 2 data: colony consensus (2-level), true state=4, context=alert.
     true_state2 = 4
     per_agent_obs2 = [
-        int(rng.choice(A2.shape[0], p=np.clip(A2[:, true_state2], 0, None) /
-                       np.clip(A2[:, true_state2], 0, None).sum()))
+        int(
+            rng.choice(
+                A2.shape[0],
+                p=np.clip(A2[:, true_state2], 0, None) / np.clip(A2[:, true_state2], 0, None).sum(),
+            )
+        )
         for _ in range(n_agents)
     ]
-    flat_local_posteriors2 = [
-        infer_states(A2, o, flat_log_prior) for o in per_agent_obs2
-    ]
+    flat_local_posteriors2 = [infer_states(A2, o, flat_log_prior) for o in per_agent_obs2]
     flat_consensus2 = log_linear_pool(flat_local_posteriors2)
     hier_local_posteriors2 = [
-        hierarchical_infer(A2, o, world2, n_iters=n_iters)["q_loc"]
-        for o in per_agent_obs2
+        hierarchical_infer(A2, o, world2, n_iters=n_iters)["q_loc"] for o in per_agent_obs2
     ]
     hier_consensus2 = log_linear_pool(hier_local_posteriors2)
 
@@ -184,12 +185,7 @@ def generate_hierarchical_pomdp(
             gap3_list.append(
                 float(np.argmax(log_linear_pool(hier_b3)) == ts)
                 - float(
-                    np.argmax(
-                        log_linear_pool(
-                            [infer_states(A3, o, flat_log_prior) for o in obs_list3]
-                        )
-                    )
-                    == ts
+                    np.argmax(log_linear_pool([infer_states(A3, o, flat_log_prior) for o in obs_list3])) == ts
                 )
             )
 
@@ -201,105 +197,206 @@ def generate_hierarchical_pomdp(
     # Embedded at width=80% (~5.2 in) in the manuscript: keep the canvas
     # compact and the fonts large so effective tick text stays >= 7 pt.
     _FS_TICK, _FS_LABEL, _FS_TITLE, _FS_LEGEND, _FS_ANN = 14, 14, 13, 11, 11
-    fig, axes = plt.subplots(2, 3, figsize=(10, 6))
+    fig, axes = plt.subplots(2, 3, figsize=(8.0, 7.3))
+    fig.subplots_adjust(
+        left=0.08,
+        right=0.985,
+        top=0.84,
+        bottom=0.10,
+        wspace=0.56,
+        hspace=0.52,
+    )
     x = np.arange(N_LOCATIONS)
     iters_x = np.arange(1, 8)
 
     # --- Panel 0 (top-left): L1 posteriors 2-level ---
     ax = axes[0, 0]
-    ax.bar(x - 0.2, q_loc_flat2, 0.4, color=COLOR_NAIVE, label="Flat prior", alpha=0.85)
-    ax.bar(x + 0.2, q_loc_hier2, 0.4, color=COLOR_ROBUST, label="2-level hier.", alpha=0.85)
-    ax.axvline(x=obs_demo, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
-    ax.set_xlabel("Location state")
-    ax.set_ylabel("Posterior probability")
-    ax.set_title("L1 posterior (2-level)")
-    ax.legend(fontsize=_FS_LEGEND)
-    annotate_stats_box(
-        ax,
-        f"acuity = {acuity:.2f}\nobs = {obs_demo}\nn_agents = {n_agents}",
-        loc="upper right", fontsize=_FS_ANN,
+    ax.bar(
+        x - 0.2,
+        q_loc_flat2,
+        0.4,
+        color=COLOR_NAIVE,
+        edgecolor=COLOR_HONEST_EDGE,
+        alpha=0.85,
     )
+    ax.bar(
+        x + 0.2,
+        q_loc_hier2,
+        0.4,
+        color=COLOR_ROBUST,
+        edgecolor=COLOR_HONEST_EDGE,
+        hatch="//",
+        alpha=0.85,
+    )
+    ax.axvline(x=obs_demo, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
+    ax.set_xlabel("State")
+    ax.set_ylabel("P(location)")
+    ax.set_title("A  L1 posterior · 2 levels")
+    for xoff, yoff, label, series, color in (
+        (-0.2, 0.04, "flat", q_loc_flat2, COLOR_NAIVE),
+        (0.2, 0.13, "2 levels", q_loc_hier2, COLOR_HONEST_EDGE),
+    ):
+        peak = int(np.argmax(series))
+        ax.text(
+            peak + xoff,
+            float(series[peak]) + yoff,
+            label,
+            ha="center",
+            va="bottom",
+            fontsize=_FS_ANN,
+            color=color,
+        )
+    ax.set_ylim(0, 1.18)
 
     # --- Panel 1 (top-middle): L2 context posterior evolution 2-level ---
     ax = axes[0, 1]
-    ax.plot(iters_x, ctx_arr2[:, 0], "o-", color=COLOR_NAIVE,
-            label=f"P({world2['context_labels'][0]})", linewidth=1.5)
-    ax.plot(iters_x, ctx_arr2[:, 1], "s-", color=COLOR_ROBUST,
-            label=f"P({world2['context_labels'][1]})", linewidth=1.5)
+    ax.plot(
+        iters_x,
+        ctx_arr2[:, 0],
+        "o-",
+        color=COLOR_NAIVE,
+        label=f"P({world2['context_labels'][0]})",
+        linewidth=1.5,
+    )
+    ax.plot(
+        iters_x,
+        ctx_arr2[:, 1],
+        "s-",
+        color=COLOR_ROBUST,
+        label=f"P({world2['context_labels'][1]})",
+        linewidth=1.5,
+    )
     ax.axhline(y=0.5, color=COLOR_GRID, linestyle=":", linewidth=0.8)
-    ax.set_xlabel("Alternating-min iteration")
-    ax.set_ylabel("Context posterior P(ctx)")
-    ax.set_title("L2 context belief (2-level)")
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("P(context)")
+    ax.set_title("B  L2 context · 2 levels")
     ax.legend(fontsize=_FS_LEGEND)
     ax.set_ylim(0, 1)
 
     # --- Panel 2 (top-right): colony consensus 2-level ---
     ax = axes[0, 2]
-    ax.bar(x - 0.2, flat_consensus2, 0.4, color=COLOR_NAIVE, label="Flat", alpha=0.85)
-    ax.bar(x + 0.2, hier_consensus2, 0.4, color=COLOR_ROBUST, label="2-level hier.", alpha=0.85)
+    ax.bar(
+        x - 0.2,
+        flat_consensus2,
+        0.4,
+        color=COLOR_NAIVE,
+        edgecolor=COLOR_HONEST_EDGE,
+        alpha=0.85,
+    )
+    ax.bar(
+        x + 0.2,
+        hier_consensus2,
+        0.4,
+        color=COLOR_ROBUST,
+        edgecolor=COLOR_HONEST_EDGE,
+        hatch="//",
+        alpha=0.85,
+    )
     ax.axvline(x=true_state2, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
-    ax.set_xlabel("Location state")
-    ax.set_ylabel("Colony consensus probability")
-    ax.set_title(f"Colony consensus ({n_agents} agents)")
-    # Both consensus distributions saturate at the true state; annotate the
-    # peak values so the identical heights read as measured, not broken.
-    for xoff, yoff, color, series in (
-        (-0.2, 0.02, COLOR_NAIVE, flat_consensus2),
-        (0.2, 0.12, COLOR_ROBUST, hier_consensus2),
+    ax.set_xlabel("State")
+    ax.set_ylabel("Consensus P(location)")
+    ax.set_title("C  Colony consensus")
+    # Direct peak values distinguish near-ceiling consensus distributions
+    # without placing their labels over neighboring axis ticks.
+    for xoff, text_offset, color, label, series, align in (
+        (-0.2, (0.04, 0.72), COLOR_NAIVE, "flat", flat_consensus2, "left"),
+        (0.2, (0.96, 0.72), COLOR_ROBUST, "2 levels", hier_consensus2, "right"),
     ):
         peak = int(np.argmax(series))
-        ax.text(
-            peak + xoff, float(series[peak]) + yoff, f"{float(series[peak]):.2f}",
-            ha="center", va="bottom", fontsize=_FS_ANN - 1, color=color,
+        ax.annotate(
+            f"{label}\n{float(series[peak]):.2f}",
+            xy=(peak + xoff, float(series[peak])),
+            xytext=text_offset,
+            textcoords="axes fraction",
+            ha=align,
+            va="bottom",
+            fontsize=_FS_ANN,
+            color=COLOR_HONEST_EDGE if color == COLOR_ROBUST else color,
+            arrowprops={"arrowstyle": "-", "color": color, "lw": 0.8},
         )
     ax.set_ylim(0, 1.3)
-    ax.legend(fontsize=_FS_LEGEND, loc="center left")
 
     # --- Panel 3 (bottom-left): L1 posteriors 3-level ---
     ax = axes[1, 0]
-    ax.bar(x - 0.2, q_loc_flat2, 0.4, color=COLOR_NAIVE, label="Flat prior", alpha=0.85)
-    ax.bar(x + 0.2, q_loc_hier3, 0.4, color=COLOR_VARIATE, label="3-level hier.", alpha=0.85)
+    ax.bar(
+        x - 0.2,
+        q_loc_flat2,
+        0.4,
+        color=COLOR_NAIVE,
+        edgecolor=COLOR_HONEST_EDGE,
+        alpha=0.85,
+    )
+    ax.bar(
+        x + 0.2,
+        q_loc_hier3,
+        0.4,
+        color=COLOR_VARIATE,
+        edgecolor=COLOR_HONEST_EDGE,
+        hatch="//",
+        alpha=0.85,
+    )
     ax.axvline(x=obs_demo, color="black", linestyle="--", linewidth=0.8, alpha=0.5)
-    ax.set_xlabel("Location state")
-    ax.set_ylabel("Posterior probability")
-    ax.set_title("L1 posterior (3-level)")
-    ax.legend(fontsize=_FS_LEGEND)
+    ax.set_xlabel("State")
+    ax.set_ylabel("P(location)")
+    ax.set_title("D  L1 posterior · 3 levels")
+    for xoff, yoff, label, series, color in (
+        (-0.2, 0.04, "flat", q_loc_flat2, COLOR_NAIVE),
+        (0.2, 0.13, "3 levels", q_loc_hier3, COLOR_HONEST_EDGE),
+    ):
+        peak = int(np.argmax(series))
+        ax.text(
+            peak + xoff,
+            float(series[peak]) + yoff,
+            label,
+            ha="center",
+            va="bottom",
+            fontsize=_FS_ANN,
+            color=color,
+        )
+    ax.set_ylim(0, 1.18)
 
     # --- Panel 4 (bottom-middle): L2+L3 posterior evolution 3-level ---
     ax = axes[1, 1]
-    ax.plot(iters_x, ctx_arr3_l2[:, 1], "s-", color=COLOR_ROBUST,
-            label="L2 P(alert)", linewidth=1.5)
-    ax.plot(iters_x, ctx_arr3_l3[:, 1], "^--", color=COLOR_VARIATE,
-            label="L3 P(high_threat)", linewidth=1.5)
+    ax.plot(iters_x, ctx_arr3_l2[:, 1], "s-", color=COLOR_ROBUST, label="L2 alert", linewidth=1.5)
+    ax.plot(iters_x, ctx_arr3_l3[:, 1], "^--", color=COLOR_VARIATE, label="L3 high threat", linewidth=1.5)
     ax.axhline(y=0.5, color=COLOR_GRID, linestyle=":", linewidth=0.8)
-    ax.set_xlabel("Alternating-min iteration")
+    ax.set_xlabel("Iteration")
     ax.set_ylabel("Level posterior")
-    ax.set_title("L2/L3 belief (3-level)")
+    ax.set_title("E  L2/L3 context · 3 levels")
     ax.legend(fontsize=_FS_LEGEND)
     ax.set_ylim(0, 1)
 
     # --- Panel 5 (bottom-right): measured accuracy gap 2-level vs 3-level ---
     ax = axes[1, 2]
     bar_x = np.array([0.0, 1.0])
-    ax.bar(bar_x, [final_gap2, final_gap3], 0.55,
-           color=[COLOR_ROBUST, COLOR_VARIATE], alpha=0.85)
+    ax.bar(bar_x, [final_gap2, final_gap3], 0.55, color=[COLOR_ROBUST, COLOR_VARIATE], alpha=0.85)
     ax.axhline(y=0, color="black", linestyle="--", linewidth=0.8)
     ax.set_xticks(bar_x)
-    ax.set_xticklabels(["2-level", "3-level"])
-    ax.set_ylabel("Accuracy gap (hier − flat)")
-    ax.set_title("Measured accuracy gap")
+    ax.set_xticklabels(["2L", "3L"])
+    ax.set_xlabel("Hierarchy depth")
+    ax.set_ylabel("Accuracy contrast\n(hier − flat)")
+    ax.set_title("F  Final accuracy contrast")
     lo = min(final_gap2, final_gap3, 0.0)
     hi = max(final_gap2, final_gap3, 0.0)
     pad = max(0.01, 0.6 * (hi - lo))
     ax.set_ylim(lo - pad, hi + pad)
     for bx, g in zip(bar_x, (final_gap2, final_gap3)):
-        ax.annotate(f"{g:+.3f}", xy=(bx, g),
-                    xytext=(0, 6 if g >= 0 else -14), textcoords="offset points",
-                    ha="center", fontsize=_FS_ANN)
+        ax.annotate(
+            f"{g:+.3f}",
+            xy=(bx, g),
+            xytext=(0, 6 if g >= 0 else -14),
+            textcoords="offset points",
+            ha="center",
+            fontsize=_FS_ANN,
+        )
     ax.text(
-        0.97, 0.96,
-        f"measured over\nn_trials = {n_trials}",
-        transform=ax.transAxes, fontsize=_FS_ANN, ha="right", va="top",
+        0.97,
+        0.96,
+        f"n = {n_trials} trials",
+        transform=ax.transAxes,
+        fontsize=_FS_ANN,
+        ha="right",
+        va="top",
         bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
     )
 
@@ -310,13 +407,45 @@ def generate_hierarchical_pomdp(
         panel.title.set_size(_FS_TITLE)
 
     fig.suptitle(
-        "V2 Hierarchical POMDP — 2-level (top) and 3-level (bottom) federation",
+        "Hierarchical POMDP: two- and three-level diagnostics",
         fontsize=_FS_TITLE + 1,
+        y=0.985,
+    )
+    fig.text(
+        0.5,
+        0.930,
+        f"acuity {acuity:.2f} · observed state {obs_demo} · {n_agents} agents",
+        ha="center",
+        va="center",
+        fontsize=_FS_ANN,
     )
 
     out = figures_dir(Path(project_root) if project_root is not None else None)
     path = out / filename
-    return save_figure(fig, path)
+    save_figure(fig, path, manuscript_width_fraction=0.80)
+    from ._presentation_worlds import hierarchical_presentation
+
+    hierarchical_presentation(
+        path,
+        posterior_flat=q_loc_flat2,
+        posterior_two=q_loc_hier2,
+        posterior_three=q_loc_hier3,
+        consensus_flat=flat_consensus2,
+        consensus_two=hier_consensus2,
+        context_two=ctx_arr2,
+        context_three=ctx_arr3_l2,
+        meta_three=ctx_arr3_l3,
+        context_labels=list(world2["context_labels"]),
+        gap_two=final_gap2,
+        gap_three=final_gap3,
+        n_trials=n_trials,
+        obs=obs_demo,
+        true_state=true_state2,
+        acuity=acuity,
+        n_agents=n_agents,
+        illustrative=hier_report is None,
+    )
+    return path
 
 
 __all__ = ["generate_hierarchical_pomdp"]

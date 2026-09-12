@@ -37,6 +37,7 @@ from ._common import (
     plt,
     save_figure,
 )
+from ._presentation_diagnostics import efe_presentation
 
 
 def generate_efe_decomposition(
@@ -79,7 +80,7 @@ def generate_efe_decomposition(
         )
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(10.8, 7.0))
+    fig, ax = plt.subplots(figsize=(7.4, 7.0))
     fig.subplots_adjust(left=0.12, right=0.98, top=0.80, bottom=0.25)
 
     # Left stack: risk + ambiguity (both add toward G). The stacks use the
@@ -185,7 +186,7 @@ def generate_efe_decomposition(
     )
     positive_extent = max(0.0, pragmatic_magnitude, total_ra)
     span = max(positive_extent - min(0.0, g_level), 1.0)
-    ax.set_ylim(min(0.0, g_level) - 0.08 * span, positive_extent + 0.25 * span)
+    ax.set_ylim(min(0.0, g_level) - 0.08 * span, positive_extent + 0.65 * span)
     # Keep the two views visually comparable.  The endpoint annotation is
     # deliberately inside this fixed data window so tight bounding-box export
     # cannot shrink the plotting area around an overflowing note.
@@ -202,16 +203,6 @@ def generate_efe_decomposition(
         fontsize=15,
         pad=14,
     )
-    ax.annotate(
-        f"identity residual = {residual:.2e} nats",
-        xy=(0.5, 0.02),
-        xycoords="axes fraction",
-        ha="center",
-        va="bottom",
-        fontsize=10,
-        color=COLOR_ACCENT,
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=COLOR_ACCENT, alpha=0.7),
-    )
     annotate_stats_box(
         ax,
         f"diagnostic prior: uniform\n"
@@ -219,7 +210,8 @@ def generate_efe_decomposition(
         f"risk {r:.3g},  amb {amb:.3g}\n"
         f"prag {prag:.3g},  epi {epi:.3g}\n"
         "epi = $I(s;o\\mid\\boldsymbol{\\pi})$\n"
-        "right endpoint, not top extent, equals G",
+        "right endpoint, not top extent, equals G\n"
+        f"identity residual = {residual:.2e} nats",
         loc="upper left",
         fontsize=10,
     )
@@ -243,7 +235,13 @@ def generate_efe_decomposition(
         borderaxespad=0.0,
     )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    path = save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.85,
+    )
+    efe_presentation(path, r, amb, prag, epi)
+    return path
 
 
 __all__ = ["generate_efe_decomposition"]

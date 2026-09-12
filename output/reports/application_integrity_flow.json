@@ -1,0 +1,254 @@
+{
+  "no_claims": [
+    "calibration",
+    "domain suitability",
+    "scientific validity",
+    "downstream decision correctness",
+    "acceptance"
+  ],
+  "panels": [
+    {
+      "edges": [
+        {
+          "disposition": "normal",
+          "label": "parse",
+          "source": "request",
+          "target": "strict_validation"
+        },
+        {
+          "disposition": "normal",
+          "label": "valid",
+          "source": "strict_validation",
+          "target": "canonical_request"
+        },
+        {
+          "disposition": "rejected",
+          "label": "invalid request",
+          "source": "strict_validation",
+          "target": "invalid_request"
+        },
+        {
+          "disposition": "normal",
+          "label": "validated semantics",
+          "source": "canonical_request",
+          "target": "destination_safety"
+        },
+        {
+          "disposition": "rejected",
+          "label": "unsafe path or provenance failure",
+          "source": "destination_safety",
+          "target": "unsafe_destination"
+        },
+        {
+          "disposition": "normal",
+          "label": "single delegation",
+          "source": "destination_safety",
+          "target": "aggregate_result"
+        }
+      ],
+      "id": "validation",
+      "label": "A  Validate and canonicalize",
+      "nodes": [
+        {
+          "id": "request",
+          "label": "Labeled JSON or Python request",
+          "role": "input"
+        },
+        {
+          "id": "strict_validation",
+          "label": "Strict schema + one-dimensional shape validation",
+          "role": "gate"
+        },
+        {
+          "id": "canonical_request",
+          "label": "Canonical semantic request + SHA-256",
+          "role": "artifact"
+        },
+        {
+          "id": "destination_safety",
+          "label": "Validate destination safety and required source provenance",
+          "role": "gate"
+        },
+        {
+          "id": "aggregate_result",
+          "label": "Delegate once to aggregate_result",
+          "role": "domain"
+        },
+        {
+          "id": "invalid_request",
+          "label": "Exit 2: invalid request; no directory created",
+          "role": "rejected"
+        },
+        {
+          "id": "unsafe_destination",
+          "label": "Exit 2: unsafe destination or required provenance unavailable; no directory created",
+          "role": "rejected"
+        }
+      ]
+    },
+    {
+      "edges": [
+        {
+          "disposition": "data_dependency",
+          "label": "finite result",
+          "source": "aggregate_result",
+          "target": "rich_result"
+        },
+        {
+          "disposition": "normal",
+          "label": "classify health",
+          "source": "rich_result",
+          "target": "solver_status"
+        },
+        {
+          "disposition": "retained_warning",
+          "label": "fallback or nonconvergence",
+          "source": "solver_status",
+          "target": "non_nominal"
+        }
+      ],
+      "id": "solver_health",
+      "label": "B  Preserve numerical health",
+      "nodes": [
+        {
+          "id": "rich_result",
+          "label": "Consensus + raw/normalized weights + histories",
+          "role": "result"
+        },
+        {
+          "id": "solver_status",
+          "label": "Convergence \u00d7 fallback \u2192 four-state solver status",
+          "role": "health"
+        },
+        {
+          "id": "non_nominal",
+          "label": "Exit 1: retain valid artifacts for non-nominal solver status",
+          "role": "retained_warning"
+        }
+      ]
+    },
+    {
+      "edges": [
+        {
+          "disposition": "data_dependency",
+          "label": "semantic input",
+          "source": "canonical_request",
+          "target": "request_json"
+        },
+        {
+          "disposition": "data_dependency",
+          "label": "semantic output",
+          "source": "rich_result",
+          "target": "result_json"
+        },
+        {
+          "disposition": "data_dependency",
+          "label": "bind request hash",
+          "source": "request_json",
+          "target": "receipt_json"
+        },
+        {
+          "disposition": "data_dependency",
+          "label": "bind result hash + provenance",
+          "source": "result_json",
+          "target": "receipt_json"
+        },
+        {
+          "disposition": "normal",
+          "label": "verify",
+          "source": "receipt_json",
+          "target": "verification"
+        },
+        {
+          "disposition": "rejected",
+          "label": "mismatch",
+          "source": "verification",
+          "target": "mismatch"
+        }
+      ],
+      "id": "receipt",
+      "label": "C  Write atomically and verify by level",
+      "nodes": [
+        {
+          "id": "request_json",
+          "label": "1  request.json",
+          "role": "artifact"
+        },
+        {
+          "id": "result_json",
+          "label": "2  result.json",
+          "role": "artifact"
+        },
+        {
+          "id": "receipt_json",
+          "label": "3  receipt.json",
+          "role": "receipt"
+        },
+        {
+          "id": "verification",
+          "label": "Artifact integrity \u2192 source equivalence \u2192 optional nominal health",
+          "role": "verification"
+        },
+        {
+          "id": "mismatch",
+          "label": "Verification mismatch: report exact finding; do not reinterpret result",
+          "role": "rejected"
+        }
+      ],
+      "write_order": [
+        "request_json",
+        "result_json",
+        "receipt_json"
+      ]
+    }
+  ],
+  "schema_version": "1.0",
+  "solver_statuses": [
+    {
+      "converged": true,
+      "fallbacks": false,
+      "id": "nominal",
+      "label": "nominal"
+    },
+    {
+      "converged": true,
+      "fallbacks": true,
+      "id": "converged_with_fallback",
+      "label": "converged_with_fallback"
+    },
+    {
+      "converged": false,
+      "fallbacks": false,
+      "id": "not_converged",
+      "label": "not_converged"
+    },
+    {
+      "converged": false,
+      "fallbacks": true,
+      "id": "not_converged_with_fallback",
+      "label": "not_converged_with_fallback"
+    }
+  ],
+  "source_relation": "explanatory map of the implemented labeled aggregation, solver-health, artifact-writing, and receipt-verification boundaries",
+  "study_status": "source_owned_explanatory_contract",
+  "verification_levels": [
+    {
+      "does_not_establish": "equivalence to another source checkout or nominal solver health",
+      "establishes": "recorded request/result bytes match the receipt",
+      "id": "artifact_integrity",
+      "label": "Artifact integrity"
+    },
+    {
+      "does_not_establish": "calibration, domain suitability, or scientific validity",
+      "establishes": "requested source inputs match recorded source provenance",
+      "id": "source_equivalence",
+      "label": "Source equivalence"
+    },
+    {
+      "does_not_establish": "a downstream decision, acceptance, or truth of an interpretation",
+      "establishes": "the recorded run converged without fallback",
+      "id": "nominal_solver",
+      "label": "Nominal solver health"
+    }
+  ]
+}

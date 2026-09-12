@@ -2,20 +2,19 @@
 
 Draws the federated logistic-regression baseline
 (:func:`fedference.bnn_baseline.fed_gvi_logreg`) held-out test accuracy as a
-function of the per-client label-contamination fraction, for two FedGVI client
-configurations:
+function of the per-client label-contamination fraction, for two exploratory
+point-estimate configurations:
 
-* **standard** — ``loss="nll"`` with the ``KLD`` (Gaussian/L2) weight-space
-  regularizer: the non-robust baseline, which degrades as labels are flipped;
-* **robust** — ``loss="rcce"`` (robust client loss) with the ``AR`` regularizer:
-  the FedGVI generalized-Bayes client objective, which opens a reproducible
-  mid-range margin before the terminal contamination cliff.
+* **standard** — ``loss="nll"`` with L2 coefficient ``0.05``;
+* **RCCE proxy** — ``loss="rcce"`` with L2 coefficient ``0.10``. The legacy
+  ``divergence="AR"`` argument selects that coefficient but does not compute an
+  Alpha-Renyi objective.
 
-This figure is the small weight-space anchor for the per-client FedGVI axis.
-The contrast it shows is a client-update property (the rcce loss + AR
-regularizer act inside each client), distinct from the server-side pooling
-heuristic of ``robust_influence_weights``. Pure ``matplotlib`` (Agg); the
-accuracy grid comes from the analysis workflow, this module only draws.
+This figure is a small exploratory composite configuration proxy, not an
+identified RCCE-only effect, FedGVI posterior, or source-protocol result. The
+contrast is distinct from the server-side pooling heuristic of
+``robust_influence_weights``. Pure ``matplotlib`` (Agg); the accuracy grid comes
+from the analysis workflow, and this module only draws.
 """
 
 from __future__ import annotations
@@ -26,14 +25,36 @@ from pathlib import Path
 import matplotlib.ticker as _ticker
 
 from ._common import (
-    COLOR_NAIVE,
-    COLOR_ROBUST,
+    COLOR_MUTED,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+
+MANUSCRIPT_WIDTH_FRACTION = 0.80
+
+
+def _configuration_style_role(label: str, comparison_index: int) -> tuple[str, bool]:
+    """Return a neutral condition style without implying an aggregation method."""
+    is_reference = "nll" in label.lower() or "standard" in label.lower()
+    if is_reference:
+        return "condition_reference", True
+    if comparison_index == 0:
+        return "condition_comparison", False
+    return f"operating_point_{comparison_index}", False
+
+
+def _direct_condition_label(label: str) -> str:
+    """Return a compact, neutral curve label for placement inside the axes."""
+    lowered = label.lower()
+    if "nll" in lowered or "standard" in lowered:
+        return "standard proxy"
+    if "rcce" in lowered or "exploratory" in lowered:
+        return "exploratory proxy"
+    return label
 
 
 def generate_bnn_robustness(
@@ -41,6 +62,10 @@ def generate_bnn_robustness(
     contamination_levels: Sequence[float],
     *,
     accuracy_ci_by_config: Mapping[str, Sequence[Sequence[float]]] | None = None,
+    selection_disclosure: str = (
+        "Peak contamination selected within the displayed contamination sweep; "
+        "q and points per class per client are configured inputs"
+    ),
     project_root: Path | None = None,
     filename: str = "bnn_robustness.png",
 ) -> Path:
@@ -48,11 +73,14 @@ def generate_bnn_robustness(
 
     Args:
         accuracy_by_config: ``{config_label: [accuracy per contamination level]}``.
-            Labels containing ``"nll"`` or ``"standard"`` are drawn as the naive
-            baseline; any other label is drawn as a robust curve.
+            Labels containing ``"nll"`` or ``"standard"`` use the neutral
+            reference-condition style; other labels use neutral comparison or
+            additional-operating-point styles.
         contamination_levels: Per-client label-flip fractions, in order.
         accuracy_ci_by_config: Optional ``{config_label: [[lo, hi], ...]}``
             intervals for shaded uncertainty bands.
+        selection_disclosure: Source-owned description limiting within-sweep
+            selection to the displayed peak-contamination summary.
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -69,26 +97,31 @@ def generate_bnn_robustness(
         raise ValueError("contamination_levels must be non-empty")
     for label, curve in accuracy_by_config.items():
         if len(curve) != len(levels):
-            raise ValueError(
-                f"curve for {label!r} has length {len(curve)}, expected {len(levels)}"
-            )
+            raise ValueError(f"curve for {label!r} has length {len(curve)}, expected {len(levels)}")
     if accuracy_ci_by_config is not None:
         for label, intervals in accuracy_ci_by_config.items():
             if label not in accuracy_by_config:
                 raise ValueError(f"CI supplied for unknown curve {label!r}")
             if len(intervals) != len(levels):
-                raise ValueError(
-                    f"CI for {label!r} has length {len(intervals)}, expected {len(levels)}"
-                )
+                raise ValueError(f"CI for {label!r} has length {len(intervals)}, expected {len(levels)}")
             if any(len(pair) != 2 for pair in intervals):
                 raise ValueError(f"CI for {label!r} must contain [lo, hi] pairs")
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(6.0, 4.2))
+    # The canonical manuscript embeds this figure at 80% width. A compact
+    # seven-inch canvas keeps the 9.5-point annotations above the effective
+    # 7-point floor without reducing typography.
+    fig, ax = plt.subplots(figsize=(7.0, 6.4))
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.14, right=0.94, top=0.76, bottom=0.34)
+    comparison_index = 0
+    style_by_label = {}
     for label, curve in accuracy_by_config.items():
-        is_naive = "nll" in label.lower() or "standard" in label.lower()
-        # Robust curve drawn on top so it stays visible where the curves coincide.
-        color = COLOR_NAIVE if is_naive else COLOR_ROBUST
+        role, is_reference = _configuration_style_role(label, comparison_index)
+        style = semantic_style(role)
+        style_by_label[label] = style
+        if not is_reference:
+            comparison_index += 1
         if accuracy_ci_by_config is not None and label in accuracy_ci_by_config:
             intervals = accuracy_ci_by_config[label]
             lo = [float(pair[0]) for pair in intervals]
@@ -97,7 +130,7 @@ def generate_bnn_robustness(
                 levels,
                 lo,
                 hi,
-                color=color,
+                color=style.color,
                 alpha=0.14,
                 linewidth=0.0,
                 zorder=1,
@@ -105,11 +138,14 @@ def generate_bnn_robustness(
         ax.plot(
             levels,
             [float(v) for v in curve],
-            marker="o",
-            linewidth=2.4 if is_naive else 1.8,
-            color=color,
+            marker=style.marker,
+            linestyle=style.dash,
+            linewidth=style.linewidth,
+            color=style.color,
+            markeredgecolor=style.keyline,
+            markerfacecolor=style.color if is_reference else "white",
             label=label,
-            zorder=2 if is_naive else 3,
+            zorder=2 if is_reference else 3,
         )
     ax.set_xlabel("per-client label contamination fraction", labelpad=6)
     ax.set_ylabel("held-out test accuracy", labelpad=6)
@@ -117,27 +153,91 @@ def generate_bnn_robustness(
     ax.set_ylim(0.0, 1.05)
     # This is the NumPy logistic-regression anchor, not the optional PyTorch
     # BNN complement — the title must not claim otherwise.
-    ax.set_title("FedGVI client loss resists label contamination", pad=8)
-    ax.legend(fontsize=9.5, loc="lower left")
+    ax.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.23), ncol=2)
 
-    # Peak gap annotation: find contamination level with largest robust-standard
-    # margin. The margin is reported in the stats box only — a between-curve
-    # arrow glyph is illegible at percent-level gaps and has no legend entry.
-    curves = {k: [float(v) for v in c] for k, c in accuracy_by_config.items()}
-    std_candidates = [k for k in curves if "nll" in k.lower() or "standard" in k.lower()]
-    if len(curves) >= 2 and std_candidates:
-        std_key = std_candidates[0]
-        rob_key = [k for k in curves if k != std_key][0]
-        gaps = [r - s for r, s in zip(curves[rob_key], curves[std_key])]
-        peak_idx = max(range(len(gaps)), key=lambda i: gaps[i])
-        peak_gap = gaps[peak_idx]
-        annotate_stats_box(
-            ax,
-            f"Peak margin: {peak_gap:.1%}\nat {levels[peak_idx]:.0%} contamination",
-            loc="upper right",
+    # Direct labels preserve identity when the figure is printed in grayscale
+    # or the legend is cropped. Use the penultimate operating point when
+    # available: the displayed curves converge at the final point, so labeling
+    # that endpoint would make the two names collide and obscure the data.
+    label_index = -2 if len(levels) > 1 else -1
+    for endpoint_index, (label, curve) in enumerate(accuracy_by_config.items()):
+        style = style_by_label[label]
+        ax.annotate(
+            _direct_condition_label(label),
+            xy=(levels[label_index], float(curve[label_index])),
+            xytext=(8, -10 if endpoint_index % 2 == 0 else 10),
+            textcoords="offset points",
+            ha="left",
+            va="center",
+            fontsize=9.5,
+            color=style.keyline,
+            clip_on=False,
         )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    # Peak gap annotation: find the contamination level with the largest
+    # comparison-minus-reference margin. The margin is reported in the stats box only — a between-curve
+    # arrow glyph is illegible at percent-level gaps and has no legend entry.
+    curves = {k: [float(v) for v in c] for k, c in accuracy_by_config.items()}
+    reference_candidates = [key for key in curves if "nll" in key.lower() or "standard" in key.lower()]
+    peak_note = "No reference-versus-comparison peak contrast available."
+    if len(curves) >= 2 and reference_candidates:
+        reference_key = reference_candidates[0]
+        comparison_key = [key for key in curves if key != reference_key][0]
+        gaps = [
+            comparison - reference
+            for comparison, reference in zip(
+                curves[comparison_key],
+                curves[reference_key],
+                strict=True,
+            )
+        ]
+        peak_idx = max(range(len(gaps)), key=lambda i: gaps[i])
+        peak_gap = gaps[peak_idx]
+        peak_note = f"Largest displayed margin: {peak_gap:.1%} at {levels[peak_idx]:.0%} contamination."
+        annotate_stats_box(
+            ax,
+            f"Largest displayed margin: {peak_gap:.1%}\nat {levels[peak_idx]:.0%} contamination",
+            loc="lower left",
+        )
+
+    fig.suptitle(
+        "Client-loss comparison under label contamination",
+        y=0.985,
+        fontsize=15,
+        fontweight="bold",
+    )
+    fig.text(
+        0.5,
+        0.91,
+        "Composite NLL/L2=0.05 versus RCCE/L2=0.10 point-estimate proxy",
+        ha="center",
+        va="center",
+        fontsize=10,
+        color=COLOR_MUTED,
+    )
+    fig.text(
+        0.5,
+        0.035,
+        selection_disclosure
+        + ".\nThe joint change cannot identify an RCCE-only effect; no Alpha-Renyi objective, "
+        "calibration, universal robustness, posterior uncertainty, or source-protocol replication "
+        "is established.",
+        ha="center",
+        va="bottom",
+        fontsize=9.5,
+        color=COLOR_MUTED,
+        wrap=True,
+    )
+
+    path = save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
+    from ._presentation_studies import bnn_presentation
+
+    bnn_presentation(path, accuracy_by_config, levels, accuracy_ci_by_config, selection_disclosure, peak_note)
+    return path
 
 
 __all__ = ["generate_bnn_robustness"]

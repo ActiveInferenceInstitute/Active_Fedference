@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from PIL import Image
+
 from figures.sensitivity_heatmap import generate_sensitivity_heatmap
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
@@ -18,6 +20,8 @@ def test_sensitivity_heatmap_happy_path(tmp_path: Path) -> None:
     )
     assert path.exists(), "PNG file was not created"
     assert path.read_bytes()[:8] == _PNG_MAGIC, "file is not a valid PNG"
+    with Image.open(path) as image:
+        assert image.height > image.width, "signed heatmaps must remain vertically stacked"
 
 
 def test_sensitivity_heatmap_custom_filename(tmp_path: Path) -> None:

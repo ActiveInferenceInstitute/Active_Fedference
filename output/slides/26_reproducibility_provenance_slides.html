@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Reproducibility: producer provenance and recovery checks — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:repro-production"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0c064f568ab2">
+<h1 class="section-divider" id="slide-heading-0c064f568ab2">Reproducibility: producer provenance and
+recovery checks</h1>
+
+</section>
+<section id="sec:repro-provenance-map" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e68383b55784">
+<h2 class="prose-slide" id="slide-heading-e68383b55784">Producer order, stale invalidation, and
+publication authority</h2>
+<p>The provenance map in <span class="cross-reference">Figure 20</span>
+records the source-owned producer contract rather than inferring it from
+the release manifest.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ded4377c59b9">
+<h2 class="prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 2" id="slide-heading-ded4377c59b9">Producer
+order, stale… (part 2)</h2>
+<p>Panel A places the non-sequential fan-in dependencies in a labeled
+matrix, then orders the temporal, gate, receipt, and authorization
+dependencies in a crossing-free process path. Source, configuration,
+lockfile,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fda594ecb2dd">
+<h2 class="prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 3" id="slide-heading-fda594ecb2dd">Producer
+order, stale… (part 3)</h2>
+<p>figure-accessibility registries, and the exact clean Template commit
+remain explicit inputs.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c8c375369f1a">
+<h2 class="prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 4" id="slide-heading-c8c375369f1a">Producer
+order, stale… (part 4)</h2>
+<p>Panel B’s fourteen coded dashed cards make reverse invalidation
+explicit without crossing the forward process path. Each arrow starts at
+one or more immediate stale targets on the right and points back to its
+changed owner on the left.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-df7167efaf0e">
+<h2 class="prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 5" id="slide-heading-df7167efaf0e">Producer
+order, stale… (part 5)</h2>
+<p>A changed owner makes the named immediate targets and their
+downstream reports, figures, hydrated text, rendered surfaces,
+provenance, and release receipts stale; previously green bytes are not
+carried forward.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7495cd6c9f01">
+<h2 class="prose-slide"
+aria-label="Producer order, stale invalidation, and publication authority, part 6" id="slide-heading-7495cd6c9f01">Producer
+order, stale… (part 6)</h2>
+<p>GitHub and Zenodo are terminal authorization states, not automatic
+products of a green build. The figure itself is generated from the
+source-owned pipeline contract and never reads the downstream release
+manifest that later inventories it, avoiding a circular dependency.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-25317332ecf3">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 7" id="slide-heading-25317332ecf3">Producer
+order, stale… (part 7)</h2>
+<figure id="fig:source-render-provenance-slide-panel-1">
+<img
+src="../figures/source_render_provenance.slide-producer-source-reports.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bdae2e7893a09fb272061b0f1b9e3a3d747c74c8fb4bb4315c5881af27c18c28"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I1  Source · tests · manuscript → P1 Typed reports: P · execute; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0f6a5737e45">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 8" id="slide-heading-d0f6a5737e45">Producer
+order, stale… (part 8)</h2>
+<figure id="fig:source-render-provenance-slide-panel-2">
+<img
+src="../figures/source_render_provenance.slide-producer-config-reports.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f68b8726e8df23085731ded6ab7359a1d80c28d4aff3f19dcaf57e8b3a2fa7c9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I2  Configuration · claim contracts → P1 Typed reports: P · configure; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2e2b1fb63f7c">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 9" id="slide-heading-2e2b1fb63f7c">Producer
+order, stale… (part 9)</h2>
+<figure id="fig:source-render-provenance-slide-panel-3">
+<img
+src="../figures/source_render_provenance.slide-producer-lockfile-reports.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="adbc7015d8b23a74c4993c8fa83048cc5dd01c6eeb8bbb8d26b00af4b06422d1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I3  Lockfile · runtime metadata → P1 Typed reports: P · bind environment; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ac56f72059d0">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 10" id="slide-heading-ac56f72059d0">Producer
+order, stale… (part 10)</h2>
+<figure id="fig:source-render-provenance-slide-panel-4">
+<img
+src="../figures/source_render_provenance.slide-producer-source-figures.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4ffb1bc410a82a03d9a36769377baccd48e63674870cd72a6dd37ddda8f37704"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I1  Source · tests · manuscript → P2 Figures + a11y: P · run generators; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3bd5d1202db9">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 11" id="slide-heading-3bd5d1202db9">Producer
+order, stale… (part 11)</h2>
+<figure id="fig:source-render-provenance-slide-panel-5">
+<img
+src="../figures/source_render_provenance.slide-producer-reports-figures.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b399fd8c451993cec8005ff8dc292e7b618c4699d64d856edea300265b8cdc54"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P1 Typed reports → P2 Figures + a11y: P · render typed values; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-671b21e52732">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 12" id="slide-heading-671b21e52732">Producer
+order, stale… (part 12)</h2>
+<figure id="fig:source-render-provenance-slide-panel-6">
+<img
+src="../figures/source_render_provenance.slide-producer-registry-figures.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="14376530f71f866ce3f305655e922d2926ec321850965a7a539ffe51afc8befc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I4  Figure · accessibility registry → P2 Figures + a11y: P · bind semantics; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2ebb15caad82">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 13" id="slide-heading-2ebb15caad82">Producer
+order, stale… (part 13)</h2>
+<figure id="fig:source-render-provenance-slide-panel-7">
+<img
+src="../figures/source_render_provenance.slide-producer-source-provisional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6ef19d413c92ecbfb97f6c0b8875d57a6732abac6aac022edb57799bf80bbda6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I1  Source · tests · manuscript → P3 Provisional hydration: P · hydrate manuscript; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4b89b2394295">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 14" id="slide-heading-4b89b2394295">Producer
+order, stale… (part 14)</h2>
+<figure id="fig:source-render-provenance-slide-panel-8">
+<img
+src="../figures/source_render_provenance.slide-producer-config-provisional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="05d70c5c554021e4b6e53958e9ecb0e374cc1bfc418062a836499b71dd78e5b2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I2  Configuration · claim contracts → P3 Provisional hydration: P · bind tokens; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8ef774562aa4">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 15" id="slide-heading-8ef774562aa4">Producer
+order, stale… (part 15)</h2>
+<figure id="fig:source-render-provenance-slide-panel-9">
+<img
+src="../figures/source_render_provenance.slide-producer-reports-provisional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="aecdd24557514f2631e67a8f1bbd23a09dd634b1985c395dba19c9aa1a034b38"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P1 Typed reports → P3 Provisional hydration: P · supply values; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ebab9b993a69">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 16" id="slide-heading-ebab9b993a69">Producer
+order, stale… (part 16)</h2>
+<figure id="fig:source-render-provenance-slide-panel-10">
+<img
+src="../figures/source_render_provenance.slide-producer-source-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0d94fdaaded2978d26921de420674cbee00b06fff62542bd311dae9e9021a20e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I1  Source · tests · manuscript → G4 Tests + coverage: G · test source; gate." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8bf8cbc14fc7">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 17" id="slide-heading-8bf8cbc14fc7">Producer
+order, stale… (part 17)</h2>
+<figure id="fig:source-render-provenance-slide-panel-11">
+<img
+src="../figures/source_render_provenance.slide-producer-config-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="01165a02c73e4cb92450bd33a7e2148a11022749aa6affbbb4ed0a50d29361ec"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I2  Configuration · claim contracts → G4 Tests + coverage: G · test configuration; gate." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3b249f03dca8">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 18" id="slide-heading-3b249f03dca8">Producer
+order, stale… (part 18)</h2>
+<figure id="fig:source-render-provenance-slide-panel-12">
+<img
+src="../figures/source_render_provenance.slide-producer-lockfile-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7554bcd1976cc9b327bd6529ad8a35bbff5a95597cb943e5f1b74d59b26739fc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I3  Lockfile · runtime metadata → G4 Tests + coverage: G · lock test runtime; gate." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-209671215a2f">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 19" id="slide-heading-209671215a2f">Producer
+order, stale… (part 19)</h2>
+<figure id="fig:source-render-provenance-slide-panel-13">
+<img
+src="../figures/source_render_provenance.slide-producer-provisional-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="841dff2294bbce08296eb5d72ebe8da37f924741806546f538c713c9ffd6ee30"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P3 Provisional hydration → G4 Tests + coverage: G · test provisional surface; gate." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0182521feb94">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 20" id="slide-heading-0182521feb94">Producer
+order, stale… (part 20)</h2>
+<figure id="fig:source-render-provenance-slide-panel-14">
+<img
+src="../figures/source_render_provenance.slide-producer-coverage-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b238c9bba74e417cbf92d14a8e3501709b16934c7004bf993ecad00160b8423c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G4 Tests + coverage → P5 Final hydration: G · bind receipt; gate." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0fc450042e03">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 21" id="slide-heading-0fc450042e03">Producer
+order, stale… (part 21)</h2>
+<figure id="fig:source-render-provenance-slide-panel-15">
+<img
+src="../figures/source_render_provenance.slide-producer-source-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="51b7f337e961a2e9c3c9907ea490c4309cbbbe180bd80322e78c369c3c3a73c0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I1  Source · tests · manuscript → P5 Final hydration: P · hydrate final source; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b161eb83620e">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 22" id="slide-heading-b161eb83620e">Producer
+order, stale… (part 22)</h2>
+<figure id="fig:source-render-provenance-slide-panel-16">
+<img
+src="../figures/source_render_provenance.slide-producer-config-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="733bed2f17d6574d801ee160d0881fe3b742eecf5d32aaa5c14a6727a8bb986a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I2  Configuration · claim contracts → P5 Final hydration: P · bind final tokens; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3f919e504a18">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 23" id="slide-heading-3f919e504a18">Producer
+order, stale… (part 23)</h2>
+<figure id="fig:source-render-provenance-slide-panel-17">
+<img
+src="../figures/source_render_provenance.slide-producer-reports-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a6049527fb7cf1fe761839576b43b457a92c01bc68d3bef51988307ab40e8ce6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P1 Typed reports → P5 Final hydration: P · supply final values; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bf5b36005872">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 24" id="slide-heading-bf5b36005872">Producer
+order, stale… (part 24)</h2>
+<figure id="fig:source-render-provenance-slide-panel-18">
+<img
+src="../figures/source_render_provenance.slide-producer-final-hydration-render.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e02b3067765951c88b4c4beb3979949191454040933a6ba430218377116da756"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P5 Final hydration → E6 Clean render: P · render manuscript; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b672514efc80">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 25" id="slide-heading-b672514efc80">Producer
+order, stale… (part 25)</h2>
+<figure id="fig:source-render-provenance-slide-panel-19">
+<img
+src="../figures/source_render_provenance.slide-producer-figures-render.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="76b3e2b5cc6f0aba3690894ddbfadb59f1563e60eef179af6c130060795f9d8f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P2 Figures + a11y → E6 Clean render: P · embed figures; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1280d2448be6">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 26" id="slide-heading-1280d2448be6">Producer
+order, stale… (part 26)</h2>
+<figure id="fig:source-render-provenance-slide-panel-20">
+<img
+src="../figures/source_render_provenance.slide-producer-template-renderer-render.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="434e5eba6f12d331822d51d19fbb76b1820cfd9861f7450d6cc257b5afb6217e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="I5  Exact clean Template commit → E6 Clean render: P · execute exact renderer; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c469e13f94ea">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 27" id="slide-heading-c469e13f94ea">Producer
+order, stale… (part 27)</h2>
+<figure id="fig:source-render-provenance-slide-panel-21">
+<img
+src="../figures/source_render_provenance.slide-producer-render-surfaces.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9552c79216bf548dfee4bcb9c9945396a5da717e5e0d97139e3aa3c583d804bc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="E6 Clean render → S7 PDF · HTML slides: P · produce; producer." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f6df88d878e2">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 28" id="slide-heading-f6df88d878e2">Producer
+order, stale… (part 28)</h2>
+<figure id="fig:source-render-provenance-slide-panel-22">
+<img
+src="../figures/source_render_provenance.slide-producer-surfaces-surface-validation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6e296c9791f826914f7cca7c56ecdc5e161d3e679b0156d537c336292e978460"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="S7 PDF · HTML slides → G8 Surface QA: G · validate; gate." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-27dff6e93597">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 29" id="slide-heading-27dff6e93597">Producer
+order, stale… (part 29)</h2>
+<figure id="fig:source-render-provenance-slide-panel-23">
+<img
+src="../figures/source_render_provenance.slide-producer-surface-validation-provenance.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e653bbbfd4bacc349b69417b61584582b4faa58d0131300b0789165ced152b6d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G8 Surface QA → R9 Provenance: R · record; receipt." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3af26111f450">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 30" id="slide-heading-3af26111f450">Producer
+order, stale… (part 30)</h2>
+<figure id="fig:source-render-provenance-slide-panel-24">
+<img
+src="../figures/source_render_provenance.slide-producer-surfaces-release-manifest.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4295b09325ff0664405711206c37a075a6ee95d3f6ac60ce8ea37f61c4ddc5a5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="S7 PDF · HTML slides → R10 Manifest + checksums: R · inventory bytes; receipt." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-70a7c63ae577">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 31" id="slide-heading-70a7c63ae577">Producer
+order, stale… (part 31)</h2>
+<figure id="fig:source-render-provenance-slide-panel-25">
+<img
+src="../figures/source_render_provenance.slide-producer-provenance-release-manifest.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f386d0eae16c3e8fdf8d0f13d2ff72b84064f8afc12a589b6e23e2d394832fbf"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="R9 Provenance → R10 Manifest + checksums: R · seal receipts; receipt." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-00f877b71345">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 32" id="slide-heading-00f877b71345">Producer
+order, stale… (part 32)</h2>
+<figure id="fig:source-render-provenance-slide-panel-26">
+<img
+src="../figures/source_render_provenance.slide-producer-release-manifest-github.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="88e08d2ed57ab05d167ac8473e90e856ca251b857191e04385d24284bd25b135"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="R10 Manifest + checksums → A1  GitHub tag · release: A · review + authorize; authorization." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d745dff98f88">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 33" id="slide-heading-d745dff98f88">Producer
+order, stale… (part 33)</h2>
+<figure id="fig:source-render-provenance-slide-panel-27">
+<img
+src="../figures/source_render_provenance.slide-producer-github-zenodo.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="909d7c33c547d15ca2efdfa773827c9de82f5609dfdceac060354ef559653916"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="A1  GitHub tag · release → A2  Zenodo publication: A · verify + fresh approval; authorization." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-541947a5524d">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 34" id="slide-heading-541947a5524d">Producer
+order, stale… (part 34)</h2>
+<figure id="fig:source-render-provenance-slide-panel-28">
+<img
+src="../figures/source_render_provenance.slide-invalidation-source-reports.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="be409c24cc92a4bcd462417e9173d091e1be5ddc414102a912e69bead98a8219"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P1 Typed reports → I1  Source · tests · manuscript: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-37c222b706b1">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 35" id="slide-heading-37c222b706b1">Producer
+order, stale… (part 35)</h2>
+<figure id="fig:source-render-provenance-slide-panel-29">
+<img
+src="../figures/source_render_provenance.slide-invalidation-config-reports.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b2f736958bef713b11fc1fd2b02934e5e341fe3f776fb44d0a502974224fb7c1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P1 Typed reports → I2  Configuration · claim contracts: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 36" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3d839e336b6">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 36" id="slide-heading-d3d839e336b6">Producer
+order, stale… (part 36)</h2>
+<figure id="fig:source-render-provenance-slide-panel-30">
+<img
+src="../figures/source_render_provenance.slide-invalidation-lockfile-reports.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0fc060b4c034fd974d9c95d02c2e84e74e4b004b8c5d7558bbe5182d70ad1e71"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P1 Typed reports → I3  Lockfile · runtime metadata: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 37" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-839a851882cf">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 37" id="slide-heading-839a851882cf">Producer
+order, stale… (part 37)</h2>
+<figure id="fig:source-render-provenance-slide-panel-31">
+<img
+src="../figures/source_render_provenance.slide-invalidation-source-figures.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="17728617ac81e75ca39bbca55acc297c64f6dc4e5042bc14ffd1612b4eeb3ea1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P2 Figures + a11y → I1  Source · tests · manuscript: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 38" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8a196176e06">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 38" id="slide-heading-e8a196176e06">Producer
+order, stale… (part 38)</h2>
+<figure id="fig:source-render-provenance-slide-panel-32">
+<img
+src="../figures/source_render_provenance.slide-invalidation-reports-figures.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="33ad672c36be8bb94aae54c83a6cdedde55ea6a26d5a19b779e3eb5ce989bcee"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P2 Figures + a11y → P1 Typed reports: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 39" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fa2c73a66065">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 39" id="slide-heading-fa2c73a66065">Producer
+order, stale… (part 39)</h2>
+<figure id="fig:source-render-provenance-slide-panel-33">
+<img
+src="../figures/source_render_provenance.slide-invalidation-registry-figures.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9873fe7c845191fd073ad835db895ad384276f85dc8ae2455c4f56b00720ec46"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P2 Figures + a11y → I4  Figure · accessibility registry: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 40" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-24e8be5ed597">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 40" id="slide-heading-24e8be5ed597">Producer
+order, stale… (part 40)</h2>
+<figure id="fig:source-render-provenance-slide-panel-34">
+<img
+src="../figures/source_render_provenance.slide-invalidation-source-provisional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9ffe796db6226057ae51248a12e9030fd5f482a858feff14ecfb121ec1035379"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P3 Provisional hydration → I1  Source · tests · manuscript: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 41" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f1aa960c1b22">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 41" id="slide-heading-f1aa960c1b22">Producer
+order, stale… (part 41)</h2>
+<figure id="fig:source-render-provenance-slide-panel-35">
+<img
+src="../figures/source_render_provenance.slide-invalidation-config-provisional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7ea6feca1cfc7f59bb4437b39790bb9a6fa2acacccbfa4f1d6628db6010722cb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P3 Provisional hydration → I2  Configuration · claim contracts: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 42" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2751732585d7">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 42" id="slide-heading-2751732585d7">Producer
+order, stale… (part 42)</h2>
+<figure id="fig:source-render-provenance-slide-panel-36">
+<img
+src="../figures/source_render_provenance.slide-invalidation-reports-provisional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8ba9cc332fa5ab7de0f2a9bda14d096fdf5f47102ed0c8ebdb9661761a2abffd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P3 Provisional hydration → P1 Typed reports: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 43" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-790d2095abec">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 43" id="slide-heading-790d2095abec">Producer
+order, stale… (part 43)</h2>
+<figure id="fig:source-render-provenance-slide-panel-37">
+<img
+src="../figures/source_render_provenance.slide-invalidation-source-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="89cd8682a2b81b7bc576edb9d5baed7eceb28700bbad1ed49d93abc732e9f9f8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G4 Tests + coverage → I1  Source · tests · manuscript: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 44" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5bcbd302d4bd">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 44" id="slide-heading-5bcbd302d4bd">Producer
+order, stale… (part 44)</h2>
+<figure id="fig:source-render-provenance-slide-panel-38">
+<img
+src="../figures/source_render_provenance.slide-invalidation-config-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0fa2ab6a497305dc2b5d4b0ac074d752c28fa23fdb395b0013088cd32f117405"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G4 Tests + coverage → I2  Configuration · claim contracts: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 45" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ab0807d2ea06">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 45" id="slide-heading-ab0807d2ea06">Producer
+order, stale… (part 45)</h2>
+<figure id="fig:source-render-provenance-slide-panel-39">
+<img
+src="../figures/source_render_provenance.slide-invalidation-lockfile-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2f44ec044b943568b446fa25f5091e752656bfa955f32ddd28d69498419ac467"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G4 Tests + coverage → I3  Lockfile · runtime metadata: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 46" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cd801c9b0c3d">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 46" id="slide-heading-cd801c9b0c3d">Producer
+order, stale… (part 46)</h2>
+<figure id="fig:source-render-provenance-slide-panel-40">
+<img
+src="../figures/source_render_provenance.slide-invalidation-provisional-coverage.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5ad1694dbc8b09f15e9ebe8c00ab44ab87a0ae62764cababf04d4aed318d00b8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G4 Tests + coverage → P3 Provisional hydration: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 47" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-93bf8b22e0a2">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 47" id="slide-heading-93bf8b22e0a2">Producer
+order, stale… (part 47)</h2>
+<figure id="fig:source-render-provenance-slide-panel-41">
+<img
+src="../figures/source_render_provenance.slide-invalidation-coverage-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4a9941454feced9bf708ce692460004e00cbb4c8d2aea3eac1f24f849aeca23b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P5 Final hydration → G4 Tests + coverage: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 48" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c0ae3121ea39">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 48" id="slide-heading-c0ae3121ea39">Producer
+order, stale… (part 48)</h2>
+<figure id="fig:source-render-provenance-slide-panel-42">
+<img
+src="../figures/source_render_provenance.slide-invalidation-source-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="3601b1625afe88c55b8bc7c2acb3061ccbb63f4e331d6a9f3188b8ef5916e817"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P5 Final hydration → I1  Source · tests · manuscript: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 49" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2b9d4baf79cd">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 49" id="slide-heading-2b9d4baf79cd">Producer
+order, stale… (part 49)</h2>
+<figure id="fig:source-render-provenance-slide-panel-43">
+<img
+src="../figures/source_render_provenance.slide-invalidation-config-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="622abf050f100c5bd864c0736852359d4c643e041b6d98d843585343a3b7887d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P5 Final hydration → I2  Configuration · claim contracts: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 50" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-223bddccfa34">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 50" id="slide-heading-223bddccfa34">Producer
+order, stale… (part 50)</h2>
+<figure id="fig:source-render-provenance-slide-panel-44">
+<img
+src="../figures/source_render_provenance.slide-invalidation-reports-final-hydration.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d1021dd75c8578ad1f799ad42a3237b4efcdaf9de2df2ea4e42f6ba69c50cd9a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="P5 Final hydration → P1 Typed reports: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 51" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-02bc5c20b906">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 51" id="slide-heading-02bc5c20b906">Producer
+order, stale… (part 51)</h2>
+<figure id="fig:source-render-provenance-slide-panel-45">
+<img
+src="../figures/source_render_provenance.slide-invalidation-final-hydration-render.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a9781588d9b30ad53f83a3ceb2b0003f09f3ccba2818442d35f58649239c168b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="E6 Clean render → P5 Final hydration: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 52" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d2bbd5ea8570">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 52" id="slide-heading-d2bbd5ea8570">Producer
+order, stale… (part 52)</h2>
+<figure id="fig:source-render-provenance-slide-panel-46">
+<img
+src="../figures/source_render_provenance.slide-invalidation-figures-render.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="123b8611a0c8c2f08e75137adcd3a2dc54ee7dbd468e7c321862177e4b187145"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="E6 Clean render → P2 Figures + a11y: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 53" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c565f8a55c29">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 53" id="slide-heading-c565f8a55c29">Producer
+order, stale… (part 53)</h2>
+<figure id="fig:source-render-provenance-slide-panel-47">
+<img
+src="../figures/source_render_provenance.slide-invalidation-template-renderer-render.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="3958d450ed74971ab5539fd93806e6841f3a9d8c3b6fd6f09c623e5eeb73e5d1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="E6 Clean render → I5  Exact clean Template commit: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 54" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e46dd8c5dece">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 54" id="slide-heading-e46dd8c5dece">Producer
+order, stale… (part 54)</h2>
+<figure id="fig:source-render-provenance-slide-panel-48">
+<img
+src="../figures/source_render_provenance.slide-invalidation-render-surfaces.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="140186c811f0b807aeb2fc24c0b904dcdd809039a35ec127a46950e936e7b3ca"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="S7 PDF · HTML slides → E6 Clean render: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 55" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-065d3f9906a3">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 55" id="slide-heading-065d3f9906a3">Producer
+order, stale… (part 55)</h2>
+<figure id="fig:source-render-provenance-slide-panel-49">
+<img
+src="../figures/source_render_provenance.slide-invalidation-surfaces-surface-validation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bd30ec1fc9c34e935e8e3f3f8dc9c390b39e7911756b33db5e33278b43e54da3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="G8 Surface QA → S7 PDF · HTML slides: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 56" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1a660121820">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 56" id="slide-heading-c1a660121820">Producer
+order, stale… (part 56)</h2>
+<figure id="fig:source-render-provenance-slide-panel-50">
+<img
+src="../figures/source_render_provenance.slide-invalidation-surface-validation-provenance.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c5e746adb9df5b6d519d6de39b5b7012e5c044ea81f7689eaf81159a7ed68b60"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="R9 Provenance → G8 Surface QA: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 57" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-24961a44762c">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 57" id="slide-heading-24961a44762c">Producer
+order, stale… (part 57)</h2>
+<figure id="fig:source-render-provenance-slide-panel-51">
+<img
+src="../figures/source_render_provenance.slide-invalidation-surfaces-release-manifest.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="367ffc637a29f11a4f177a2e4c74ea6e48000136112a517f840e242efecdc5fc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="R10 Manifest + checksums → S7 PDF · HTML slides: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 58" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dd270613cdb0">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 58" id="slide-heading-dd270613cdb0">Producer
+order, stale… (part 58)</h2>
+<figure id="fig:source-render-provenance-slide-panel-52">
+<img
+src="../figures/source_render_provenance.slide-invalidation-provenance-release-manifest.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ff2550318d94d950726b4c58578547e6aee00b0365b8b85dab48520843380c75"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="R10 Manifest + checksums → R9 Provenance: Stale dependency after change; invalidation." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 59" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-739056a8c867">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 59" id="slide-heading-739056a8c867">Producer
+order, stale… (part 59)</h2>
+<figure id="fig:source-render-provenance-slide-panel-53">
+<img
+src="../figures/source_render_provenance.slide-authorization-boundary.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="3a47d8fde18482e3ba5207bf58d8bec0fd35f204e7ce25f8451155ff89f40651"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1168"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.8768473"
+alt="green engineering and rendering gates are necessary inputs to review; they do not automatically authorize a merge, tag, GitHub release, or Zenodo publication" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 60" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e98298f9b7b3">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 60" id="slide-heading-e98298f9b7b3">Producer
+order, stale… (part 60)</h2>
+<figure id="fig:source-render-provenance-slide-panel-54">
+<img
+src="../figures/source_render_provenance.slide-manifest-cycle-boundary.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="30cebead4b7e100a8708696a6892281d6b3fd38e7c9a7afd9fdb94eaacc9e885"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1170"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.5454545"
+alt="this figure is generated from this source-owned contract and never reads the downstream release manifest that later inventories it" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 61" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4a5f58e2e0c3">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 61" id="slide-heading-4a5f58e2e0c3">Producer
+order, stale… (part 61)</h2>
+<figure id="fig:source-render-provenance-slide-panel-55">
+<img src="../figures/source_render_provenance.slide-no-claim-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e858cebbbfc3f36cddc2fc142281148dffabdd4ca8eaf522817deedd5c628f9a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1005"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="5.6779661"
+alt="a green build is not scientific validation" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 62" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8a8c8e5d2563">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 62" id="slide-heading-8a8c8e5d2563">Producer
+order, stale… (part 62)</h2>
+<figure id="fig:source-render-provenance-slide-panel-56">
+<img src="../figures/source_render_provenance.slide-no-claim-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="21153fd7dd434d19925a94240a35aff03c43368058a456d0f81d3b7ec4c00a52"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1228"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.9378531"
+alt="tagged PDF structure is not PDF/UA conformance" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 63" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f600db2f06d">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 63" id="slide-heading-9f600db2f06d">Producer
+order, stale… (part 63)</h2>
+<figure id="fig:source-render-provenance-slide-panel-57">
+<img src="../figures/source_render_provenance.slide-no-claim-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bc86163deab93b7a5a7b7dfa31ed12c744f45046c58223bc313c2ac72a2f7768"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1305"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7.3728814"
+alt="HTML accessibility enhancements are not a WCAG conformance claim" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 64" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0580b5ac634f">
+<h2 class="figure-led"
+aria-label="Producer order, stale invalidation, and publication authority, part 64" id="slide-heading-0580b5ac634f">Producer
+order, stale… (part 64)</h2>
+<figure id="fig:source-render-provenance-slide-panel-58">
+<img src="../figures/source_render_provenance.slide-no-claim-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9b46ef67d4046bc95b2f3b732da430e73d0aef9d6f2b1b7e39e59095b1d0179d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1214"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.8587571"
+alt="a GitHub release or DOI does not enlarge the scientific claim surface" />
+</figure>
+</section>
+<section id="sec:repro-recovery" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-05aa15f14c85">
+<h2 class="prose-slide" id="slide-heading-05aa15f14c85">Recovery-limit certificate for the client and
+project-pool corners</h2>
+<p>The recovery identities are reproducibility checks: the client
+machinery must return to standard Bayes at its KL/NLL loss limits,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-31141fff6b6c">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 2" id="slide-heading-31141fff6b6c">Recovery-limit
+certificate… (part 2)</h2>
+<p>and the server heuristic must return to the project’s log-linear pool
+at zero robustness (<span class="cross-reference">Equation (10)</span>,
+<span class="cross-reference">Equation (11)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c8f16472c5f8">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 3" id="slide-heading-c8f16472c5f8">Recovery-limit
+certificate… (part 3)</h2>
+<p>Under the explicit shared-support, posterior-log-potential, and
+fixed-weight assumptions of <span class="cross-reference">Section 5.8</span>,
+that pool specializes Eq. 7’s message-combination term; it does not
+reproduce the complete source protocol. These deviations are computed on
+every build.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1c27de583b81">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 4" id="slide-heading-1c27de583b81">Recovery-limit
+certificate… (part 4)</h2>
+<p><strong>Server recovery:</strong>
+<code>robust_aggregate(robustness=0)</code> versus
+<code>log_linear_pool</code> (<span class="cross-reference">9</span>)
+has maximum difference 0.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-894602cf0ec6">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 5" id="slide-heading-894602cf0ec6">Recovery-limit
+certificate… (part 5)</h2>
+<p><strong>Posterior recovery:</strong>
+<code>generalized_posterior(KLD, NLL)</code> versus closed-form Bayes
+has maximum difference 5.55e-17.</p>
+<p><strong>Divergence recovery:</strong> Rényi divergence versus KL as
+<span class="math inline">\(\alpha\to 1\)</span> has maximum difference
+0.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0e0d2399d4c2">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 6" id="slide-heading-0e0d2399d4c2">Recovery-limit
+certificate… (part 6)</h2>
+<p><strong>Loss recoveries:</strong> <span
+class="math inline">\(\beta\)</span>-loss versus NLL as <span
+class="math inline">\(\beta\to 0\)</span> has maximum difference 0,
+while rcce versus NLL as <span class="math inline">\(q_{\text{loss}}\to
+0\)</span> has maximum difference 0.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-91047f0c0c2a">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 7" id="slide-heading-91047f0c0c2a">Recovery-limit
+certificate… (part 7)</h2>
+<p>Any drift in these limits beyond machine precision would mean the
+robust generalization no longer contains its standard-Bayes client limit
+and project-local log-linear-pool server limit (<span class="cross-reference">Section 7.1</span>)
+— and would fail the core test suite before this certificate could
+render.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c5a26d002506">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 8" id="slide-heading-c5a26d002506">Recovery-limit
+certificate… (part 8)</h2>
+<p>The certificate covers the recovery identity and the client-side
+result under the cited source theorem’s matching assumptions only; the
+server-side <code>robust_aggregate</code> heuristic is certified here
+for its recovery limit alone, not for any bounded-influence property
+(<span class="cross-reference">Section 8.13</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7733d9e920f">
+<h2 class="prose-slide"
+aria-label="Recovery-limit certificate for the client and project-pool corners, part 9" id="slide-heading-d7733d9e920f">Recovery-limit
+certificate… (part 9)</h2>
+<p>All code is authored by Daniel Ari Friedman and licensed under the
+MIT license. This is project version 1.1.0.dev0.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

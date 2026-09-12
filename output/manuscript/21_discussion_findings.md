@@ -14,14 +14,18 @@ The coherence of the framework rests on the KL/NLL client limits and the
 zero-robustness project-pool identity
 ([@eq:robust-identity], [@eq:standard-bayes]). This is an identity of the stated
 categorical implementation, not an asymptotic claim about every generalized
-Bayesian model or a reconstruction of the complete source protocol. The server
+Bayesian model or a reconstruction of the complete source protocol.
+
+The server
 aggregator returns the log-linear pool ([@eq:log-linear-pool]) with maximum
 deviation 0;
 the generalized posterior returns the closed-form Bayes update with deviation
 5.55e-17; and the Rényi divergence, $\beta$-loss, and
 robust cross-entropy recover their KL/NLL limits with residuals
 0, 0, and
-0. Theorem
+0.
+
+Theorem
 \ref{thm:belief-sharing-recovery}, Corollary \ref{cor:closed-form-bayes},
 Lemma \ref{lem:renyi-kl-limit}, and Proposition
 \ref{prop:robust-loss-recovery} state the formal limits; the recovery checks in
@@ -34,29 +38,37 @@ hold exactly at the standard corner, and performance contrasts that are explicit
 conditional on the operating regime. The distinction is the point of the joint
 reading — it says which claims travel and which are tied to the declared world.
 
-Studies 1–3 sit at the standard corner. In the reduced categorical
-source-mechanism analogue protocol,
-belief sharing lowers mean variational free energy by
-$\Delta \bar F = 3.3109$ nats
-([@sec:results-belief_sharing], [@fig:free-energy]); Dirichlet language learning
-reduces KL from 3.4231 to 0.0027 nats
-([@sec:results-language], [@fig:language-kl]); and Bayesian model reduction
-accepts the redundant-pruning candidate while rejecting the supported-column
-control ([@sec:results-emergence], [@fig:emergence-bmr]). These are
-mechanistic checks, not evidence that the implementation matches every detail
-of the source simulations.
+Studies 1–3 sit at the standard corner. In the reduced categorical analogue,
+the paired difference
+$\Delta \bar F=\bar F_{\text{solo}}-\bar F_{\text{share}}$ is
+3.3109 nats, so its positive sign indicates lower mean free
+energy with communication ([@sec:results-belief_sharing], [@fig:free-energy]).
+Seeds are the independent unit; agents remain nested within seed.
+
+Dirichlet learning reduces KL from 3.4231 to
+0.0027 nats ([@sec:results-language], [@fig:language-kl]). The
+configured BMR sign control favors redundant-column pruning and rejects the
+supported-column reduction ([@sec:results-emergence],
+[@fig:emergence-bmr]). These are bounded mechanistic checks, not exact
+source-protocol replications or general structure-discovery results.
 
 Study 4 steps away from the corner by holding the hidden state and attack target
 fixed while redrawing matched contaminated colonies. The standard pool
-degrades across the declared rate grid. The server-side heuristic is not
+degrades across the declared rate grid.
+
+The server-side heuristic is not
 uniformly better: its robust members are similar to or slightly below the
 standard pool at low contamination, then the selected pooled display member separates in its favor
-under severe contamination. At the largest swept rate,
+under severe contamination.
+
+At the largest swept rate,
 AR reaches 0.9880 against
 0.6928 for the standard pool
-([@tbl:robustness_sweep]; the sweep figure [@fig:robustness-sweep] plots the
+([@tbl:robustness_sweep]; the sweep plot in [@fig:robustness-sweep] shows the
 separate matched-trial gallery colony, whose largest-rate separation is
-smaller). This regime dependence is a
+smaller).
+
+This regime dependence is a
 result, not a nuisance to be hidden: robustness can cost efficiency when the
 attack is weak and pay off when the declared contamination is severe.
 
@@ -64,15 +76,22 @@ The structural extension studies (Studies 5–9) sharpen the conditional half of
 that split rather than adding further corner checks, and they are reported with
 their negative contrasts intact. Communication is not uniformly beneficial: the
 cross-study summary ([@fig:cross-study-summary]) reports each study's federation
-benefit in its native units with seed-level intervals — several studies clearly
-positive, the moving-world EFE and two-level hierarchical studies approximately
-zero — so pooling helps when views are
+headline signed contrast or estimand in its native units. Its intervals come
+from the separate harmonized seed-level rerun, including rows whose primary
+figure is a deterministic diagnostic; several rows are positive, while the
+moving-world EFE and two-level hierarchical rows are approximately zero.
+
+Pooling helps when views are
 complementary and can be unnecessary or mildly costly when the agents already
-agree. Adding hierarchical depth is held to the same standard — the two-level
+agree.
+
+Adding hierarchical depth is held to the same standard — the two-level
 stack does not beat the flat baseline on location accuracy (the paired gap is
 a small, statistically reliable cost)
 ([@sec:results-hierarchical]), earning its place only by additionally resolving
-the context latent above chance. The joint lesson is therefore not that
+the context latent above chance.
+
+The joint lesson is therefore not that
 federation or depth is always worth its cost, but that the suite measures the
 regimes in which each one is.
 
@@ -82,9 +101,13 @@ The primary robustness estimand is the matched-trial mean difference in consensu
 accuracy conditional on the seeded true state and attack geometry. The
 960 paired trials quantify Monte Carlo variation for that
 estimand; they do not average over hidden states, attack targets, adaptive
-adversaries, or real deployments. The cross-study layer reduces its matched
+adversaries, or real deployments.
+
+The cross-study layer reduces its matched
 trials within seed before seed-level summaries, so clients and within-seed trials
-are not silently counted as independent replicates. This follows simulation
+are not silently counted as independent replicates.
+
+This follows simulation
 study guidance to declare the estimand and Monte Carlo unit explicitly
 [@morris2019simulation; @koehler2009mcse], and the bootstrap interval follows
 the declared resampling unit rather than treating nested observations as a flat
@@ -93,15 +116,19 @@ sample [@loy2021lmeresampler].
 The consequence is a more informative claim boundary. The sweep supports a
 conditional statement about this contamination mechanism and these categorical
 beliefs; it does not establish universal Byzantine tolerance, calibration, or
-truth recovery. The result also does not identify a single universally best robustness
+truth recovery.
+
+The result also does not identify a single universally best robustness
 parameter independent of the operating regime: the standard pool is preferable
 at the low-contamination cells in this run, while at least one robust member has
 a BH-rejected positive contrast in the declared high-contamination verdict; the
-tied display set and deterministic tie-break are reported separately. Those are
+tied display set and deterministic tie-break are reported separately.
+
+Those are
 precisely the conditions a future
 adaptive or deployment study must vary.
 
-## The robustness verdict is conditional and statistically qualified {#sec:discussion-verdict}
+## The robustness comparison is conditional and statistically qualified {#sec:discussion-verdict}
 
 The headline comparison is computed by the statistics module
 ([@sec:results-verdict]), not typed into the prose. Across
@@ -109,7 +136,9 @@ The headline comparison is computed by the statistics module
 at contamination rate 0.800, each robust server member is compared with the standard
 pool by a Wilcoxon signed-rank test [@wilcoxon1945individual] and the declared
 family of p-values is adjusted by Benjamini–Hochberg FDR
-[@benjamini1995controlling]. A method wins only when the adjusted null is
+[@benjamini1995controlling].
+
+A method wins only when the adjusted null is
 rejected and its effect is positive, here at $q = 1.11 \times 10^{-158}$ with
 effect size 1.0000 (large). The
 observed-effect power and prospective sample-size calculation are planning
@@ -120,7 +149,9 @@ condition shares the seed, true state, and attack geometry. Its interpretation
 remains limited: the signed-rank test concerns the distribution of paired
 differences, not equality of raw means, and BH controls expected false-discovery
 proportion within the declared family rather than the probability of any false
-positive. The confidence intervals are percentile bootstrap intervals over the
+positive.
+
+The confidence intervals are percentile bootstrap intervals over the
 matched-trial unit. Seed-level review-grid results are reported separately and
 do not treat the primary trial count as a population of independent worlds.
 These qualifications make the verdict narrower, but also
@@ -128,19 +159,20 @@ make it reproducible and falsifiable.
 
 ## Three robustness axes remain separate {#sec:discussion-axes}
 
-The unifying narrative would be dishonest if it let the aggregation heuristic
-inherit the guarantees of the client update or variational server objective.
-The **client-side** $\beta$/rcce generalized-Bayes update is the FedGVI-faithful
-axis [@mildner2025fedgvi]: it is derived from the generalized-Bayes objective
-([@eq:gen-bayes]), limits to NLL/Bayes as its loss parameter tends to zero, and
-carries the loss-specific bounded-influence result
-([@eq:beta-loss], [@eq:rcce-loss]). The **server-side** `robust_aggregate`
-divergence-reweighting is a complementary heuristic whose proven property is
-the recovery limit only ([@eq:robust-identity]). The **variational server** axis
-is objective-backed and supplies a proven raw effective-weight bound, with
-conservative accuracy behavior. No figure, statistic, or sentence transfers a
-client guarantee to the heuristic or a variational weight bound to the
-heuristic's accuracy verdict; [@sec:limitations] states the boundary in full.
+The authoritative theorem–heuristic–objective taxonomy is
+[@sec:robustness-axes]. The results preserve it: the client theorem remains
+source-conditional [@mildner2025fedgvi], `robust_aggregate` carries only its
+proved recovery identity plus conditional empirical contrasts, and
+`variational_aggregate` carries the stated objective and raw-weight bound. No
+figure or statistic moves a guarantee between these operators; [@sec:limitations]
+records the complete boundary.
+
+The map in [@fig:evidence-replication-map] is the compact ledger for that separation.
+Its fourteen rows align headline result families and public boundaries with
+their estimands and independent units, while its nesting strip prevents seeds,
+trials, agents, and ordered states from being treated as interchangeable
+evidence. Exact estimates and intervals remain in their typed reports and the
+native-unit cross-study summary ([@fig:cross-study-summary]).
 
 ## Accuracy and effective-weight control can be traded explicitly {#sec:discussion-tempered}
 
@@ -150,7 +182,9 @@ within the tested objective family. At
 $\lambda = 1.0$ the implementation recovers the
 current variational objective bit-for-bit; lower explored temperatures sharpen
 the consensus toward the heuristic while preserving the stated raw-weight bound
-under its assumptions. This is not a derivation of the heuristic from an
+under its assumptions.
+
+This is not a derivation of the heuristic from an
 objective. The open problem is to identify an objective whose minimizer is both
 competitive across contamination regimes and accompanied by a theorem that
 survives beyond the present categorical construction.
@@ -160,7 +194,9 @@ survives beyond the present categorical construction.
 The practical lesson is not that every robust rule should replace belief
 sharing. It is that a multi-agent active-inference system can expose separate
 controls for client updating, server reweighting, and objective-backed consensus,
-while retaining a tested route back to the ordinary pool. That separation tells a
+while retaining a tested route back to the ordinary pool.
+
+That separation tells a
 builder what can be promised: exact recovery at the named corner, conditional
 empirical behavior under the declared attack, and no silent transfer of a
 client-side or variational theorem to a different server heuristic. The result is

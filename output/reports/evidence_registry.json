@@ -1,21 +1,21 @@
 {
   "claim_boundary": "Compact evidence summary for manuscript validation; full fact dumps are opt-in debug output.",
-  "fact_count": 788329,
+  "fact_count": 820170,
   "freshness_warnings": [],
   "kind_counts": {
-    "artifact": 292,
+    "artifact": 2672,
     "citation": 65,
-    "equation": 80,
-    "figure": 190,
-    "number": 787409,
-    "section": 265,
-    "table": 28
+    "equation": 86,
+    "figure": 2526,
+    "number": 814507,
+    "section": 278,
+    "table": 36
   },
-  "omitted_fact_count": 788129,
+  "omitted_fact_count": 819970,
   "sample_facts": [
     {
       "active": true,
-      "checked_at": "2026-08-02T01:00:15Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "data/claim_ledger.yaml:$.claims[0].value",
       "source_field": "$.claims[0].value",
@@ -27,7 +27,151 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[61].ci_hi (numeric variant)",
+      "source_field": "$.tables[5].rows[61].ci_hi",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[61].ci_lo (numeric variant)",
+      "source_field": "$.tables[5].rows[61].ci_lo",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[61].mean_contrast (numeric variant)",
+      "source_field": "$.tables[5].rows[61].mean_contrast",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[64].ci_hi (numeric variant)",
+      "source_field": "$.tables[5].rows[64].ci_hi",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[64].ci_lo (numeric variant)",
+      "source_field": "$.tables[5].rows[64].ci_lo",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[64].mean_contrast (numeric variant)",
+      "source_field": "$.tables[5].rows[64].mean_contrast",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[125].ci_hi (numeric variant)",
+      "source_field": "$.tables[5].rows[125].ci_hi",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[125].ci_lo (numeric variant)",
+      "source_field": "$.tables[5].rows[125].ci_lo",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[125].mean_contrast (numeric variant)",
+      "source_field": "$.tables[5].rows[125].mean_contrast",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[128].ci_hi (numeric variant)",
+      "source_field": "$.tables[5].rows[128].ci_hi",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[128].ci_lo (numeric variant)",
+      "source_field": "$.tables[5].rows[128].ci_lo",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
+      "kind": "number",
+      "source": "output/figures/figure_exact_values.json:$.tables[5].rows[128].mean_contrast (numeric variant)",
+      "source_field": "$.tables[5].rows[128].mean_contrast",
+      "source_path": "output/figures/figure_exact_values.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/belief_quality.json:$.by_scenario.s0_t1_o70_clean_full.paired_log_score_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_clean_full.paired_log_score_test.effect_size",
@@ -39,7 +183,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/belief_quality.json:$.by_scenario.s0_t1_o70_confident_wrong_full.paired_log_score_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_confident_wrong_full.paired_log_score_test.effect_size",
@@ -51,7 +195,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/belief_quality.json:$.by_scenario.s0_t1_o70_uniform_full.paired_log_score_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_uniform_full.paired_log_score_test.effect_size",
@@ -63,7 +207,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/belief_quality.json:$.by_scenario.s1_t2_o70_clean_full.paired_log_score_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_clean_full.paired_log_score_test.effect_size",
@@ -75,7 +219,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/belief_quality.json:$.by_scenario.s1_t2_o70_confident_wrong_full.paired_log_score_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_confident_wrong_full.paired_log_score_test.effect_size",
@@ -87,7 +231,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/belief_quality.json:$.by_scenario.s1_t2_o70_uniform_full.paired_log_score_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_uniform_full.paired_log_score_test.effect_size",
@@ -99,7 +243,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_clean_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_clean_full.paired_error_test.effect_size",
@@ -111,7 +255,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_clean_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_clean_half.paired_error_test.effect_size",
@@ -123,7 +267,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_confident_wrong_full.paired_error_test.effect_size",
@@ -135,7 +279,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_confident_wrong_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_confident_wrong_half.paired_error_test.effect_size",
@@ -147,7 +291,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_label_noise_full.paired_error_test.effect_size",
@@ -159,7 +303,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_label_noise_half.paired_error_test.effect_size",
@@ -171,7 +315,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_uniform_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_uniform_full.paired_error_test.effect_size",
@@ -183,7 +327,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o45_uniform_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o45_uniform_half.paired_error_test.effect_size",
@@ -195,7 +339,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_clean_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_clean_full.paired_error_test.effect_size",
@@ -207,7 +351,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_clean_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_clean_half.paired_error_test.effect_size",
@@ -219,7 +363,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_confident_wrong_full.paired_error_test.effect_size",
@@ -231,7 +375,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_label_noise_full.paired_error_test.effect_size",
@@ -243,7 +387,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_label_noise_half.paired_error_test.effect_size",
@@ -255,7 +399,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_uniform_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_uniform_full.paired_error_test.effect_size",
@@ -267,7 +411,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s0_t1_o70_uniform_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s0_t1_o70_uniform_half.paired_error_test.effect_size",
@@ -279,7 +423,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_clean_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_clean_full.paired_error_test.effect_size",
@@ -291,7 +435,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_clean_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_clean_half.paired_error_test.effect_size",
@@ -303,7 +447,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_confident_wrong_full.paired_error_test.effect_size",
@@ -315,7 +459,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_confident_wrong_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_confident_wrong_half.paired_error_test.effect_size",
@@ -327,7 +471,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_label_noise_full.paired_error_test.effect_size",
@@ -339,7 +483,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_label_noise_half.paired_error_test.effect_size",
@@ -351,7 +495,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_uniform_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_uniform_full.paired_error_test.effect_size",
@@ -363,7 +507,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o45_uniform_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o45_uniform_half.paired_error_test.effect_size",
@@ -375,7 +519,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_clean_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_clean_full.paired_error_test.effect_size",
@@ -387,7 +531,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_clean_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_clean_half.paired_error_test.effect_size",
@@ -399,7 +543,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_confident_wrong_full.paired_error_test.effect_size",
@@ -411,7 +555,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_label_noise_full.paired_error_test.effect_size",
@@ -423,7 +567,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_label_noise_half.paired_error_test.effect_size",
@@ -435,7 +579,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_uniform_full.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_uniform_full.paired_error_test.effect_size",
@@ -447,7 +591,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/conditional_world.json:$.by_scenario.s1_t2_o70_uniform_half.paired_error_test.effect_size",
       "source_field": "$.by_scenario.s1_t2_o70_uniform_half.paired_error_test.effect_size",
@@ -459,7 +603,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-16T00:48:14Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/disjoint_fov_world.json:$.multiseed.communicating_vs_isolated.paired_test.effect_size",
       "source_field": "$.multiseed.communicating_vs_isolated.paired_test.effect_size",
@@ -471,7 +615,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_clean_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_clean_full.paired_error_test.effect_size",
@@ -483,7 +627,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_clean_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_clean_half.paired_error_test.effect_size",
@@ -495,7 +639,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_confident_wrong_full.paired_error_test.effect_size",
@@ -507,7 +651,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_confident_wrong_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_confident_wrong_half.paired_error_test.effect_size",
@@ -519,7 +663,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_label_noise_full.paired_error_test.effect_size",
@@ -531,7 +675,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_label_noise_half.paired_error_test.effect_size",
@@ -543,7 +687,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_uniform_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_uniform_full.paired_error_test.effect_size",
@@ -555,7 +699,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o45_uniform_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o45_uniform_half.paired_error_test.effect_size",
@@ -567,7 +711,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_clean_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_clean_full.paired_error_test.effect_size",
@@ -579,7 +723,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_clean_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_clean_half.paired_error_test.effect_size",
@@ -591,7 +735,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_confident_wrong_full.paired_error_test.effect_size",
@@ -603,7 +747,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_label_noise_full.paired_error_test.effect_size",
@@ -615,7 +759,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_label_noise_half.paired_error_test.effect_size",
@@ -627,7 +771,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_uniform_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_uniform_full.paired_error_test.effect_size",
@@ -639,7 +783,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s0_t1_o70_uniform_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s0_t1_o70_uniform_half.paired_error_test.effect_size",
@@ -651,7 +795,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_clean_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_clean_full.paired_error_test.effect_size",
@@ -663,7 +807,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_clean_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_clean_half.paired_error_test.effect_size",
@@ -675,7 +819,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:41Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_confident_wrong_full.paired_error_test.effect_size",
@@ -687,7 +831,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_confident_wrong_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_confident_wrong_half.paired_error_test.effect_size",
@@ -699,7 +843,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_label_noise_full.paired_error_test.effect_size",
@@ -711,7 +855,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_label_noise_half.paired_error_test.effect_size",
@@ -723,7 +867,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_uniform_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_uniform_full.paired_error_test.effect_size",
@@ -735,7 +879,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o45_uniform_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o45_uniform_half.paired_error_test.effect_size",
@@ -747,7 +891,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_clean_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_clean_full.paired_error_test.effect_size",
@@ -759,7 +903,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_clean_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_clean_half.paired_error_test.effect_size",
@@ -771,7 +915,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_confident_wrong_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_confident_wrong_full.paired_error_test.effect_size",
@@ -783,7 +927,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_label_noise_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_label_noise_full.paired_error_test.effect_size",
@@ -795,7 +939,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_label_noise_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_label_noise_half.paired_error_test.effect_size",
@@ -807,7 +951,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_uniform_full.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_uniform_full.paired_error_test.effect_size",
@@ -819,7 +963,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.conditional_world.by_scenario.s1_t2_o70_uniform_half.paired_error_test.effect_size",
       "source_field": "$.conditional_world.by_scenario.s1_t2_o70_uniform_half.paired_error_test.effect_size",
@@ -831,7 +975,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.methods.AR.paired_test.effect_size",
@@ -843,7 +987,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.methods.RKL.paired_test.effect_size",
@@ -855,7 +999,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.methods.beta.paired_test.effect_size",
@@ -867,7 +1011,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.methods.rcce.paired_test.effect_size",
@@ -879,7 +1023,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.AR.paired_test.effect_size",
@@ -891,7 +1035,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.RKL.paired_test.effect_size",
@@ -903,7 +1047,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[5] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[5]",
@@ -915,7 +1059,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[11] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[11]",
@@ -927,7 +1071,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[12] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[12]",
@@ -939,7 +1083,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[13] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[13]",
@@ -951,7 +1095,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[17] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[17]",
@@ -963,7 +1107,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[21] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[21]",
@@ -975,7 +1119,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[23] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[23]",
@@ -987,7 +1131,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[24] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[24]",
@@ -999,7 +1143,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[32] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[32]",
@@ -1011,7 +1155,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[33] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[33]",
@@ -1023,7 +1167,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[35] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[35]",
@@ -1035,7 +1179,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[37] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[37]",
@@ -1047,7 +1191,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[41] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[41]",
@@ -1059,7 +1203,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[45] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[45]",
@@ -1071,7 +1215,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[46] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[46]",
@@ -1083,7 +1227,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[52] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[52]",
@@ -1095,7 +1239,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[54] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[54]",
@@ -1107,7 +1251,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[55] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[55]",
@@ -1119,7 +1263,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[67] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[67]",
@@ -1131,7 +1275,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[72] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[72]",
@@ -1143,7 +1287,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[74] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[74]",
@@ -1155,7 +1299,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[79] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[79]",
@@ -1167,7 +1311,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[81] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[81]",
@@ -1179,7 +1323,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[82] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[82]",
@@ -1191,7 +1335,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[83] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[83]",
@@ -1203,7 +1347,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[87] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[87]",
@@ -1215,7 +1359,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[93] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[93]",
@@ -1227,7 +1371,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[95] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[95]",
@@ -1239,7 +1383,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[98] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[98]",
@@ -1251,7 +1395,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[100] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[100]",
@@ -1263,7 +1407,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[108] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[108]",
@@ -1275,7 +1419,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[110] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[110]",
@@ -1287,7 +1431,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[112] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[112]",
@@ -1299,7 +1443,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[113] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[113]",
@@ -1311,7 +1455,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[118] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[118]",
@@ -1323,7 +1467,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[121] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[121]",
@@ -1335,7 +1479,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[124] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[124]",
@@ -1347,7 +1491,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[128] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[128]",
@@ -1359,7 +1503,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[129] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[129]",
@@ -1371,7 +1515,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[131] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[131]",
@@ -1383,7 +1527,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[133] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[133]",
@@ -1395,7 +1539,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[136] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[136]",
@@ -1407,7 +1551,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[147] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[147]",
@@ -1419,7 +1563,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[149] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[149]",
@@ -1431,7 +1575,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[150] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[150]",
@@ -1443,7 +1587,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[151] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[151]",
@@ -1455,7 +1599,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[158] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.contrast_by_seed[158]",
@@ -1467,7 +1611,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.paired_test.effect_size",
@@ -1479,7 +1623,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.summary.min (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.beta.summary.min",
@@ -1491,7 +1635,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.2.methods.rcce.paired_test.effect_size",
@@ -1503,7 +1647,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.AR.paired_test.effect_size (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.AR.paired_test.effect_size",
@@ -1515,7 +1659,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.RKL.paired_test.effect_size (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.RKL.paired_test.effect_size",
@@ -1527,7 +1671,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.beta.contrast_by_seed[16] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.beta.contrast_by_seed[16]",
@@ -1539,7 +1683,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.beta.contrast_by_seed[134] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.beta.contrast_by_seed[134]",
@@ -1551,7 +1695,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.rcce.contrast_by_seed[143] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.6.methods.rcce.contrast_by_seed[143]",
@@ -1563,7 +1707,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.AR.paired_test.effect_size",
@@ -1575,7 +1719,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.RKL.paired_test.effect_size",
@@ -1587,7 +1731,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.beta.paired_test.effect_size",
@@ -1599,7 +1743,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.7.methods.rcce.paired_test.effect_size",
@@ -1611,7 +1755,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.AR.paired_test.effect_size",
@@ -1623,7 +1767,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.RKL.paired_test.effect_size",
@@ -1635,7 +1779,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.beta.paired_test.effect_size",
@@ -1647,7 +1791,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.8.methods.rcce.paired_test.effect_size",
@@ -1659,7 +1803,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.AR.paired_test.effect_size",
@@ -1671,7 +1815,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.RKL.paired_test.effect_size",
@@ -1683,7 +1827,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.beta.paired_test.effect_size",
@@ -1695,7 +1839,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.byzantine.by_rate.0.9.methods.rcce.paired_test.effect_size",
@@ -1707,7 +1851,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.AR.paired_test.effect_size",
@@ -1719,7 +1863,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.RKL.paired_test.effect_size",
@@ -1731,7 +1875,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.beta.paired_test.effect_size",
@@ -1743,7 +1887,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.methods.rcce.paired_test.effect_size",
@@ -1755,7 +1899,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.AR.paired_test.effect_size",
@@ -1767,7 +1911,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.RKL.paired_test.effect_size",
@@ -1779,7 +1923,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.beta.paired_test.effect_size",
@@ -1791,7 +1935,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.rcce.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.2.methods.rcce.paired_test.effect_size",
@@ -1803,7 +1947,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.AR.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.AR.paired_test.effect_size",
@@ -1815,7 +1959,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.RKL.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.RKL.paired_test.effect_size",
@@ -1827,7 +1971,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.beta.paired_test.effect_size",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.beta.paired_test.effect_size",
@@ -1839,7 +1983,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[0] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[0]",
@@ -1851,7 +1995,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[1] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[1]",
@@ -1863,7 +2007,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[2] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[2]",
@@ -1875,7 +2019,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[3] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[3]",
@@ -1887,7 +2031,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[4] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[4]",
@@ -1899,7 +2043,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[5] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[5]",
@@ -1911,7 +2055,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[6] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[6]",
@@ -1923,7 +2067,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[7] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[7]",
@@ -1935,7 +2079,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[8] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[8]",
@@ -1947,7 +2091,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[9] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[9]",
@@ -1959,7 +2103,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[10] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[10]",
@@ -1971,7 +2115,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[11] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[11]",
@@ -1983,7 +2127,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[12] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[12]",
@@ -1995,7 +2139,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[13] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[13]",
@@ -2007,7 +2151,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[14] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[14]",
@@ -2019,7 +2163,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[15] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[15]",
@@ -2031,7 +2175,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[16] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[16]",
@@ -2043,7 +2187,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[17] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[17]",
@@ -2055,7 +2199,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[18] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[18]",
@@ -2067,7 +2211,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[19] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[19]",
@@ -2079,7 +2223,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[20] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[20]",
@@ -2091,7 +2235,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[21] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[21]",
@@ -2103,7 +2247,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[22] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[22]",
@@ -2115,7 +2259,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[23] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[23]",
@@ -2127,7 +2271,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[24] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[24]",
@@ -2139,7 +2283,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[25] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[25]",
@@ -2151,7 +2295,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[26] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[26]",
@@ -2163,7 +2307,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[27] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[27]",
@@ -2175,7 +2319,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[28] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[28]",
@@ -2187,7 +2331,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[29] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[29]",
@@ -2199,7 +2343,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[30] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[30]",
@@ -2211,7 +2355,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[31] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[31]",
@@ -2223,7 +2367,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[32] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[32]",
@@ -2235,7 +2379,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[33] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[33]",
@@ -2247,7 +2391,7 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[34] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[34]",
@@ -2259,154 +2403,10 @@
     },
     {
       "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
+      "checked_at": "2026-09-08T04:27:07Z",
       "kind": "number",
       "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[35] (numeric variant)",
       "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[35]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[36] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[36]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[37] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[37]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[38] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[38]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[39] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[39]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[40] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[40]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[41] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[41]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[42] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[42]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[43] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[43]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[44] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[44]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-07-31T03:18:10Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[45] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[45]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[46] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[46]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-08-02T01:14:42Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[47] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[47]",
       "source_path": "output/reports/robustness_review_grid.json",
       "source_tier": "generated_metric",
       "stale": false,
@@ -2416,11 +2416,11 @@
   ],
   "schema": "template-evidence-registry-report-v1",
   "source_tiers": {
-    "artifact": 855,
+    "artifact": 5598,
     "bibliography": 65,
     "claim_ledger": 46,
-    "configuration": 220,
+    "configuration": 232,
     "data_source": 2640,
-    "generated_metric": 784503
+    "generated_metric": 811589
   }
 }

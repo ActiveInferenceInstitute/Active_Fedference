@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
+import matplotlib.image as mpimg
 import numpy as np
 import pytest
 
@@ -27,6 +28,17 @@ def test_bounded_influence_happy_path(tmp_path: Path) -> None:
     assert path.exists()
     assert path.read_bytes()[:8] == _PNG_MAGIC
     assert path.stat().st_size > 0
+
+    pixels = mpimg.imread(path)[..., :3]
+    dark_ink = np.min(pixels, axis=2) < 0.35
+    rows, columns = np.where(dark_ink)
+    margins = (
+        int(columns.min()),
+        int(rows.min()),
+        int(pixels.shape[1] - 1 - columns.max()),
+        int(pixels.shape[0] - 1 - rows.max()),
+    )
+    assert min(margins) >= 8
 
 
 def test_bounded_influence_from_real_aggregator(tmp_path: Path) -> None:

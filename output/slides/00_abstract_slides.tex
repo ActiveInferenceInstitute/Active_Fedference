@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -234,108 +276,366 @@
 
 \section{Abstract}\label{sec:abstract}
 
-\begin{frame}[fragile,allowframebreaks]{Abstract}
+\begin{frame}{Abstract}
 Multi-agent active inference gives a natural account of belief sharing:
 agents hold local posteriors over a shared latent state, communicate
 those beliefs, and pool them into a colony-level consensus. The same
 mechanism is fragile when a member is miscalibrated, corrupted, or
-strategically wrong. Because the standard pool multiplies the reports
-together, a single confident-but-wrong broadcast that puts near-zero
-mass on the true state can pull the whole consensus off it, outweighing
-many honest members. The colony therefore needs a way to preserve the
-useful structure of belief sharing while limiting the influence of
-contaminated beliefs.
-
+strategically wrong.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Abstract}
+\begin{frame}{Abstract (part 2)}
+Because the standard pool multiplies the reports together, a single
+confident-but-wrong broadcast that puts near-zero mass on the true state
+can pull the whole consensus off it, outweighing many honest members.
+\end{frame}
+
+\begin{frame}{Abstract (part 3)}
+The colony therefore needs a way to preserve the useful structure of
+belief sharing while limiting the influence of contaminated beliefs.
+\end{frame}
+
+\begin{frame}{Abstract (part 4)}
 This paper presents Active Fedference, a discrete-categorical framework
 that connects robust federated generalized variational inference with
 active inference belief sharing. The main bridge is structural: standard
 belief sharing appears as the non-robust corner of a broader
-generalized-Bayes family, while robust losses, conservative server
-fusion, and explicit aggregation diagnostics describe how the system
-moves away from that corner under declared contamination mechanisms. The
-result is not a replacement for belief sharing, but a containment
+generalized-Bayes family,
+\end{frame}
+
+\begin{frame}{Abstract (part 5)}
+while robust losses, conservative server fusion, and explicit
+aggregation diagnostics describe how the system moves away from that
+corner under declared contamination mechanisms.
+\end{frame}
+
+\begin{frame}{Abstract (part 6)}
+The result is not a replacement for belief sharing, but a containment
 result: ordinary belief sharing is recovered when robustness is turned
 off. Bounded-loss theory applies on the client axis, while the
 variational-server axis supplies an objective-backed redescending weight
 update.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Abstract}
-The manuscript separates three robustness axes that are often conflated.
-First, client-side generalized-Bayes updates change how each agent
-absorbs evidence; this is the rigorous axis, carrying FedGVI's
-bounded-influence result only under the source theorem's loss, model,
-and contamination assumptions. Second, a sharp server-side reweighting
-heuristic suppresses beliefs that pull away from the emerging consensus,
-while carrying only its recovery-limit guarantee --- no proven objective
-and no bounded-influence bound. Third, a variational aggregation rule
-supplies a more conservative objective-backed server alternative, with a
-raw effective-weight bound but not an estimator-level bounded-influence
-proof for the normalized consensus. Keeping these axes separate lets the
-paper state exactly which claims are proven, which are empirical, and
-which remain engineering extensions.
-
+\begin{frame}{Abstract (part 7)}
+Following the manuscript's authoritative three-axis guarantee map, the
+paper keeps source-conditional client updates, a recovery-only heuristic
+server rule, and an objective-backed variational server rule as separate
+claim owners, with no robustness guarantee transferred between them.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Abstract}
+\begin{frame}{Abstract (part 8)}
 The study suite then exercises the framework as an end-to-end research
 system: recovery checks anchor the standard-Bayes limit, belief-sharing
 studies verify the communication baseline, contamination experiments
 test robust consensus, and extension studies probe moving agents,
-hierarchical latent structure, sensitivity to acuity and colony size,
-parameter recovery, and single-host socket-backed federation traces. All
-reported quantities are generated from deterministic analysis artifacts
-and injected into the manuscript by token, so the paper, figures,
-release package, and validation reports remain tied to the same
-execution record.
-
+hierarchical latent structure,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Abstract}
+\begin{frame}{Abstract (part 9)}
+sensitivity to acuity and colony size, parameter recovery, and
+single-host socket-backed federation traces.
+\end{frame}
+
+\begin{frame}{Abstract (part 10)}
+All reported quantities are generated from deterministic analysis
+artifacts and injected into the manuscript by token, so the paper,
+figures, release package, and validation reports remain tied to the same
+execution record.
+\end{frame}
+
+\begin{frame}{Abstract (part 11)}
 The open-source repository is
 ActiveInferenceInstitute/Active\_Fedference. This development manuscript
 has no assigned version DOI; published versions bind their reserved DOI,
 deposited PDF, and repository URL only after the release gates close.
+\end{frame}
 
+\begin{frame}{Abstract (part 12)}
 \textbf{Keywords:} active inference, federated learning, generalised
 variational inference, belief sharing, robustness, FedGVI
 
 The complete system schematic is shown in
-fig.~\ref{fig:graphical-abstract}.
-
+fig.~1.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Abstract}
-\newpage
-
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Abstract}
+\begin{frame}{Abstract (part 13)}
 \begin{figure}
 \centering
-\includegraphics[width=1\linewidth,height=0.40\textheight,keepaspectratio,alt={Graphical abstract. Source relation: original project schematic; estimand: component relationships and recovery boundaries; uncertainty: none. Recovery ribbon: the zero-robustness identity anchors the construction at the standard log-linear belief-sharing pool. Network panel: the federated diagram shows 5 agents (3 honest, 2 adversarial) transmitting categorical beliefs to a central server. x-axis is agent position in the ring layout (left to right); y-axis/rows: each per-agent mini-bar glyph indexes posterior probability mass over hidden states. Consensus panel: deterministic outcome cards under 40\% adversarial contamination compare the naive pool with canonical robust\_aggregate heuristic reweighting; the displayed 39\% and 50\% are computed from the schematic beliefs. Axis strip: client-side FedGVI, server-side heuristic, and variational-server claims are shown as separate routes with non-transferable guarantees. This deterministic formal/mechanistic schematic has no CI, error band, or significance marker; it does not assign the variational server's objective-backed property to robust\_aggregate.}]{../figures/graphical_abstract.png}
-\caption{Graphical abstract. Source relation: original project
-schematic; estimand: component relationships and recovery boundaries;
-uncertainty: none. \textbf{Recovery ribbon:} the zero-robustness
-identity anchors the construction at the standard log-linear
-belief-sharing pool. \textbf{Network panel:} the federated diagram shows
-5 agents (3 honest, 2 adversarial) transmitting categorical beliefs to a
-central server. x-axis is agent position in the ring layout (left to
-right); y-axis/rows: each per-agent mini-bar glyph indexes posterior
-probability mass over hidden states. \textbf{Consensus panel:}
-deterministic outcome cards under 40\% adversarial contamination compare
-the naive pool with canonical \protect\breaktt{robust\_aggregate}
-heuristic reweighting; the displayed 39\% and 50\% are computed from the
-schematic beliefs. \textbf{Axis strip:} client-side FedGVI, server-side
-heuristic, and variational-server claims are shown as separate routes
-with non-transferable guarantees. This deterministic formal/mechanistic
-schematic has no CI, error band, or significance marker; it does not
-assign the variational server's objective-backed property to
-\protect\breaktt{robust\_aggregate}.}\label{fig:graphical-abstract}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-1-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-1-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 15)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-1-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-2-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-2-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-2-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-3-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 20)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-3-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 21)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-3-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 22)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-4-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-10}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 23)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-4-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-11}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 24)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-4-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-12}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 25)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-5-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-13}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 26)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-5-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-14}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 27)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-5-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-15}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 28)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-6-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-16}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 29)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-6-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-17}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 30)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-6-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-18}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 31)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-7-states-1-3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-19}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 32)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-7-states-4-6.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-20}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 33)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-7-states-7-8.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-21}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 34)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/graphical_abstract.slide-weights-1-2.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-22}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 35)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/graphical_abstract.slide-weights-3-4.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-23}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 36)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/graphical_abstract.slide-weights-5-5.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-24}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 37)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40\%. True state: 3.}]{../figures/graphical_abstract.slide-colony.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-25}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 38)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive equal-weight log pool: true-state mass 39\%; argmax state 6.}]{../figures/graphical_abstract.slide-naive.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-26}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 39)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic robust aggregation: true-state mass 50\%; argmax state 3. Robustness 1.5.}]{../figures/graphical_abstract.slide-heuristic.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-27}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 40)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A / crosshatching: adversarial; H / plain: honest. All probability panels share a 0--1 scale. The true state is green; other states are gray.}]{../figures/graphical_abstract.slide-key.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-28}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 41)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One deterministic configured colony, not a replicated benchmark. True-state mass percentages are not deployment accuracy estimates. No uncertainty interval applies.}]{../figures/graphical_abstract.slide-scope.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-29}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 42)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent A1 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-a1.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-30}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 43)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent A2 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-a2.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-31}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 44)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent H1 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-h1.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-32}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 45)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent H2 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-h2.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-33}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 46)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent H3 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-h3.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-34}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Abstract (part 47)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={The variational server is a separate objective-backed route. The displayed naive-versus-heuristic colony values do not measure its performance.}]{../figures/graphical_abstract.slide-variational-scope.png}
+\refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-35}
 \end{figure}
 \end{frame}
 

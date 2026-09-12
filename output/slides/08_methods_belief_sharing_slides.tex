@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,102 +259,136 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing: the standard
-aggregation corner}
+\begin{frame}[fragile]{Belief sharing: the standard aggregation corner}
 \protect\phantomsection\label{sec:method-belief-sharing}
-\breaktt{belief\_sharing.share\_round} lifts the aggregation rule of
+\texttt{belief\_sharing.share\_round} lifts the aggregation rule of
 sec.~5.8 to a colony of categorical sentinel
-agents. Each agent has a private sensory outcome and a local posterior
-over the same shared latent location; it broadcasts the posterior, not
-its raw observation. Following the sensory attenuation that the
-active-inference formulation of belief sharing imposes (Friston et al.
-2024) --- ``agents do not hear themselves'' --- an agent's heard
-consensus excludes its own message:
-
+agents.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing: the standard
-aggregation corner}
-\begin{equation}\protect\phantomsection\label{eq:belief-round}{
+\begin{frame}{Belief sharing (part 2)}
+Each agent has a private sensory outcome and a local posterior over the
+same shared latent location; it broadcasts the posterior, not its raw
+observation.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 3)}
+Following the sensory attenuation that the active-inference formulation
+of belief sharing imposes (Friston et al. 2024) --- ``agents do not hear
+themselves'' --- an agent's heard consensus excludes its own message:
+\end{frame}
+
+\begin{frame}{Belief sharing (part 4)}
+\begin{equation}\tag{14}\protect\phantomsection\label{eq:belief-round}{
 q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),
 }\end{equation}
-
-so the round in eq.~\ref{eq:belief-round} implements the declared
-categorical colony-hive-mind mechanism. With the naive fusion rule of
-eq.~6, eq.~\ref{eq:belief-round} is the project's
-standard log-linear-pool consensus. Under the explicit shared-support,
-posterior-log-potential, and fixed-weight assumptions of
-sec.~5.8, it specializes Eq. 7's
-message-combination term; it does not reconstruct the complete source
-protocol. With the server-side robust rule it yields a hive-mind that
-can down-weight a contaminated sentinel --- an effect the contamination
-sweep of sec.~7.5 measures rather than assumes,
-and one that carries no guarantee beyond the recovery limit. The
-per-round diagnostics --- the post-sharing belief matrix, the global
-consensus, and the mean surprise and accuracy against a known
-ground-truth state --- are returned by \texttt{share\_round} and drive
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing: the standard
-aggregation corner}
-Studies 1 and 4.
+\begin{frame}{Belief sharing (part 5)}
+so the round in eq.~14 implements the declared
+categorical colony-hive-mind mechanism. With the naive fusion rule of
+eq.~9, eq.~14 is the project's
+standard log-linear-pool consensus.
+\end{frame}
 
+\begin{frame}{Belief sharing (part 6)}
+Under the explicit shared-support, posterior-log-potential, and
+fixed-weight assumptions of sec.~5.8, it
+specializes Eq. 7's message-combination term; it does not reconstruct
+the complete source protocol.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 7)}
+With the server-side robust rule it yields a hive-mind that can
+down-weight a contaminated sentinel --- an effect the contamination
+sweep of sec.~7.5 measures rather than assumes,
+and one that carries no guarantee beyond the recovery limit.
+\end{frame}
+
+\begin{frame}[fragile]{Belief sharing (part 8)}
+The per-round diagnostics --- the post-sharing belief matrix, the global
+consensus, and the mean surprise and accuracy against a known
+ground-truth state --- are returned by \texttt{share\_round} and drive
+Studies 1 and 4.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 9)}
 fig.~3 makes this concrete: three sentinel cards
 begin with different private categorical views of the nine-cell world,
 convert those views into local posteriors, and send only those
-posteriors to a fusion route. The return path is a cavity message, so
-the consensus heard by agent \(n\) excludes the local posterior \(q_n\).
+posteriors to a fusion route. The return path is a cavity message,
+\end{frame}
+
+\begin{frame}{Belief sharing (part 10)}
+so the consensus heard by agent \(n\) excludes the local posterior
+\(q_n\).
+\end{frame}
+
+\begin{frame}{Belief sharing (part 11)}
 The figure remains a protocol map rather than a new result; the
 empirical belief matrix and free-energy comparison remain the evidence
-surfaces in fig.~9 and
-fig.~8.
-
+surfaces in fig.~10 and
+fig.~9.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing: the standard
-aggregation corner}
-Because eq.~\ref{eq:belief-round} calls the aggregation rule of
-eq.~6 or its robust generalization, the recovery
-identity of eq.~7 propagates upward: a colony
+\begin{frame}[fragile]{Belief sharing (part 12)}
+Because eq.~14 calls the aggregation rule of
+eq.~9 or its robust generalization, the recovery
+identity of eq.~10 propagates upward: a colony
 running \texttt{share\_round} at zero server robustness is bit-identical
-to a colony running the project's standard log-linear-pool round. Under
-the qualified categorical bridge, the pool realizes only the source
-message-combination specialization; the robust round is a project
+to a colony running the project's standard log-linear-pool round.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 13)}
+Under the qualified categorical bridge, the pool realizes only the
+source message-combination specialization; the robust round is a project
 extension, not a reconstruction of the active-inference ensemble
 literature (Friston et al. 2024; Heins et al. 2024).
+\end{frame}
+
+\begin{frame}{Belief sharing (part 14)}
 sec.~7.2 reports that communicating
 colonies reach a mean variational free energy of 13.2190 nats against
-16.5298 nats for incommunicado colonies across 480 seeds, with the
-per-agent belief matrix before and after a round shown in
-fig.~9 and the colony comparison in
-fig.~8.
-
+16.5298 nats for incommunicado colonies across 480 seeds,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing: the standard
-aggregation corner}
+\begin{frame}{Belief sharing (part 15)}
+with the per-agent belief matrix before and after a round shown in
+fig.~10 and the colony comparison in
+fig.~9.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 16)}
 The honesty boundary of sec.~3.3 carries through
-the lift unchanged. The robustness that eq.~\ref{eq:belief-round}
+the lift unchanged. The robustness that eq.~14
 inherits when the colony fuses with the server-side heuristic is the
 divergence-reweighting device of sec.~5.8,
-whose positive property is the naive-recovery limit and whose declared
-separable objective class has a scoped no-go result; the per-agent
-FedGVI bounded-influence result enters the colony only through the
-rcce/AR client losses of sec.~5.7, under the source
-theorem's matching assumptions, applied inside each agent's local
-generalized-Bayes update. The robustness sweep in
-sec.~7.5 and the variational supplement in
-sec.~11 keep the three axes distinct. The
-federation transport (sec.~12.4) realizes this
-sharing over queue-backed worker channels; by Proposition
-12, the federation bit-identity result,
-the consensus is bit-identical to the in-process call, so the channel
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing: the standard
-aggregation corner}
-adds no precision loss while leaving multi-machine network transport as
-future work.
+\begin{frame}{Belief sharing (part 17)}
+whose positive property is the naive-recovery limit and whose declared
+separable objective class has a scoped no-go result.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 18)}
+The per-agent FedGVI bounded-influence result enters the colony only
+through the rcce/AR client losses of sec.~5.7, under
+the source theorem's matching assumptions, applied inside each agent's
+local generalized-Bayes update.
+\end{frame}
+
+\begin{frame}{Belief sharing (part 19)}
+The robustness sweep in sec.~7.5 and the
+variational supplement in sec.~12 keep the three
+axes distinct. The federation transport (sec.~13.4)
+realizes this sharing over queue-backed worker channels;
+\end{frame}
+
+\begin{frame}{Belief sharing (part 20)}
+by Proposition 12, the federation
+bit-identity result, the consensus is bit-identical to the in-process
+call, so the channel adds no precision loss while leaving multi-machine
+network transport as future work.
 \end{frame}
 
 \end{document}

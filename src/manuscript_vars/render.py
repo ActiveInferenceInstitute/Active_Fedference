@@ -7,10 +7,42 @@ import re
 import shutil
 import uuid
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 from .loaders import _EXCLUDED_MANUSCRIPT_DOCS
 
 _TOKEN_RE = re.compile(r"\{\{([A-Z][A-Z0-9_]*)\}\}")
+
+
+def _resolve_config_value(value: Any, variables: dict[str, str]) -> Any:
+    """Substitute YAML string values without interpreting replacement syntax."""
+    if isinstance(value, str):
+        return _TOKEN_RE.sub(lambda match: variables.get(match.group(1), match.group(0)), value)
+    if isinstance(value, list):
+        return [_resolve_config_value(item, variables) for item in value]
+    if isinstance(value, dict):
+        return {key: _resolve_config_value(item, variables) for key, item in value.items()}
+    return value
+
+
+def _hydrate_config(source: Path, destination: Path, variables: dict[str, str]) -> None:
+    """Hydrate a token-bearing configuration, rejecting unresolved placeholders."""
+    text = source.read_text(encoding="utf-8")
+    if not _TOKEN_RE.search(text):
+        shutil.copy2(source, destination)
+        return
+    config = yaml.safe_load(text)
+    if not isinstance(config, dict):
+        raise ValueError("manuscript config.yaml must contain a mapping")
+    resolved = yaml.safe_dump(
+        _resolve_config_value(config, variables), sort_keys=False, allow_unicode=True,
+    )
+    unresolved = sorted(set(_TOKEN_RE.findall(resolved)))
+    if unresolved:
+        raise ValueError(f"unresolved manuscript config.yaml tokens: {', '.join(unresolved)}")
+    destination.write_text(resolved, encoding="utf-8")
 
 
 def save_variables(variables: dict[str, str], output_path: Path) -> Path:
@@ -30,9 +62,12 @@ def save_variables(variables: dict[str, str], output_path: Path) -> Path:
 def render_manuscript_tree(project_root: Path, variables: dict[str, str]) -> Path:
     """Hydrate manuscript tokens into a guarded ``output/manuscript`` tree.
 
-    Existing hydrated Markdown and auxiliary files are replaced, while the
-    symlink and project-root checks prevent a render from writing through an
-    unintended checkout boundary.
+    Markdown sections and configuration string values are hydrated before the
+    replacement becomes visible. YAML serialization keeps quotes, colons,
+    newlines, and non-string values intact. Unresolved config tokens reject the
+    transaction. Preamble and BibTeX files remain source-owned auxiliaries for
+    the renderer. The symlink and project-root checks prevent a render from
+    writing through an unintended checkout boundary.
     """
     root = Path(project_root)
     manuscript_dir = root / "manuscript"
@@ -58,16 +93,18 @@ def render_manuscript_tree(project_root: Path, variables: dict[str, str]) -> Pat
 
     try:
         for md_file in sorted(manuscript_dir.glob("*.md")):
-            if md_file.name in _EXCLUDED_MANUSCRIPT_DOCS:
+            if md_file.name in _EXCLUDED_MANUSCRIPT_DOCS or md_file.name == "preamble.md":
                 continue
             text = md_file.read_text(encoding="utf-8")
             resolved = _TOKEN_RE.sub(replace_token, text)
             (staging_dir / md_file.name).write_text(resolved, encoding="utf-8")
 
-        for aux_name in ("config.yaml", "preamble.md"):
-            aux = manuscript_dir / aux_name
-            if aux.is_file():
-                shutil.copy2(aux, staging_dir / aux_name)
+        config = manuscript_dir / "config.yaml"
+        if config.is_file():
+            _hydrate_config(config, staging_dir / config.name, variables)
+        preamble = manuscript_dir / "preamble.md"
+        if preamble.is_file():
+            shutil.copy2(preamble, staging_dir / preamble.name)
         for bib_file in sorted(manuscript_dir.glob("*.bib")):
             shutil.copy2(bib_file, staging_dir / bib_file.name)
 

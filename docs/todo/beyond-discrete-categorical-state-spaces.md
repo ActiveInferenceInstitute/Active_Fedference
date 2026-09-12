@@ -6,6 +6,8 @@
 
 - Priority class: Major
 - State: Open
+- Queue position: post-v1.1 research lane after its recovery and calibration
+  prerequisites; blocks MAJ-5 confirmation
 - Owner surface: representation, aggregation identities, methods prose
 
 ## Rationale
@@ -18,26 +20,24 @@ not carry into the new representation.
 
 ## Scope
 
-Current capability: `continuous_recovery.py` provides a one-dimensional
-Gaussian recovery surface; `hybrid.py` provides mixed categorical/Gaussian
-belief fusion; and `hybrid_tracking.py` exercises discrete context gating over
-continuous position/velocity dynamics. `run_hybrid_tracking_comparison` now
-executes matched naive, robust, discrete-only, continuous-only, and
-oracle-context controls, records a next-position held-out predictive score, and
-rejects singular covariance as a negative control. The executable task is a
-bounded pilot, not a confirmatory benchmark.
+The open scope is a preregistered confirmatory hybrid-tracking benchmark:
 
-Residual scope:
+- freeze the matched naive, robust, discrete-only, continuous-only, and
+  oracle-context comparison family, proper-score estimand, budget, method
+  settings, and multiple-comparison policy before evaluation;
+- promote Gaussian, zero-robustness, strictly-positive-covariance,
+  discrete-only, continuous-only, and outlier-toggle recovery controls into
+  source-bound gates with an explicit singular-covariance failure receipt; and
+- execute independently seeded held-out tracking worlds, retain every solver
+  failure, and generate the report, receipt, exact-value table, figures, long
+  descriptions, tokens, and bounded manuscript interpretation.
 
-- Complete the comparison family: naive and robust hybrid fusion against
-  discrete-only, continuous-only, and oracle-context controls under matched
-  worlds and budgets.
-- Promote the existing one-component Gaussian, zero-robustness,
-  strictly-positive-covariance, and outlier-toggle unit checks into
-  independently seeded publication gates; add the still-missing discrete-only
-  equivalence and explicit singular-covariance failure receipt.
-- Freeze pilot-selected budgets and robustness parameters before a
-  confirmatory run.
+Confirmatory implementation remains blocked until a versioned pilot artifact
+freezes the numerical held-out log-score SOEI, world-level MCSE target,
+comparison/multiplicity rule, tracking horizon, number and schedule of worlds,
+per-world episode budget, solver ceiling, and total compute budget. Recovery
+fixtures may continue before that freeze, but they cannot be counted as a
+confirmatory run or used to select thresholds from held-out outcomes.
 
 ## Implementation Notes
 
@@ -55,6 +55,9 @@ estimator-level B-robustness claim.
   generated tracking worlds.
 - Independent replication unit: one seeded continuous-state active-inference
   trial (fixed world configuration and seed), replicated across seeds.
+- A source-addressed design artifact fixes the numeric SOEI/MCSE, horizon,
+  world/episode schedule, multiplicity rule, solver budget, and stop rule before
+  confirmatory worlds are generated.
 - Falsifier: any failed recovery identity, singular-covariance failure, or a
   locked proper-score contrast below or opposite the preregistered effect
   prohibits a hybrid-robustness claim.
@@ -65,6 +68,10 @@ estimator-level B-robustness claim.
 - Documentation changes: regenerated methods and limitations prose marking the
   new assumptions and recovery limits, with every numeric result carried by an
   existing `{{TOKEN}}` resolved by `src/manuscript_variables.py`.
+- Required acceptance evidence: frozen design/configuration digest, recovery
+  and singular-covariance records, complete matched-world table, locked proper-
+  score inference, solver-health and provenance summary, source-bound visual
+  artifacts, public PR checks, and merged public-main SHA.
 
 ## Verification Probes
 
@@ -72,6 +79,8 @@ estimator-level B-robustness claim.
   tests/fedference/test_hybrid_tracking.py -q`
 - Singular-covariance, zero-robustness, discrete-only, and Gaussian-only
   negative controls.
+- Design-schema controls reject placeholder numeric thresholds, post-outcome
+  budget edits, horizon/world drift, and receipts with the wrong design digest.
 - Regenerated methods and limitations prose.
 
 ## Claim-Boundary Constraints
@@ -86,5 +95,9 @@ estimator-level B-robustness claim.
 
 ## Dependencies
 
-The confirmatory task depends on the recovery gates and the MAJ-8 calibration
-boundary. MAJ-5 remains blocked until those recovery tests pass.
+The one-dimensional Gaussian, mixed categorical/Gaussian fusion, and hybrid-
+tracking pilot code are prerequisite contracts recorded in source tests and
+`ISA.md`, not active TODO subitems. Confirmation depends on their recovery
+gates and a MAJ-8-style calibration/freeze boundary. MAJ-5 remains blocked
+until those gates pass. The hybrid confirmatory run remains blocked until its
+pilot-derived numeric design freeze is tracked and digest-verified.

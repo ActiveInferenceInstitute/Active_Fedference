@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>18_results_emergence.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,75 +619,77 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h2 id="sec:results-emergence">Bayesian model reduction selects
-supported structure</h2>
-<p>The first two studies fixed the model’s structure and asked how well
-its beliefs and learned parameters track the world; the third asks
-whether the model can also shed structure it never needed. The estimand
-is a Bayesian-model-reduction free-energy difference; the design is a
-categorical BMR diagnostic related to the structure-emergence mechanism
-discussed by Friston et al. <span class="citation">(Friston et al. 2024)</span>, through the
-Bayesian-model-reduction lineage <span class="citation">(Friston and Penny 2011)</span>. A full Dirichlet
-model carries a redundant state — one column the data never support —
-ranging over <span class="math inline">\(n = 4\)</span> candidate
-states. Bayesian model reduction scores swapping the prior for a
-<em>reduced</em> prior that prunes that column; the free-energy
-difference <span class="math inline">\(\Delta F\)</span> is the
-model-reduction objective <a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a>. This is a single
-deterministic evidence comparison, so there is no resampled sample and,
-by design, no confidence interval or paired test. The structure-learning
-frame here is the discrete-state model-selection thread the
-active-inference community has developed <span class="citation">(Smith et al. 2022)</span>, applied to a
-colony’s shared generative model.</p>
+<h2 id="sec:results-emergence">Configured BMR sign control passed</h2>
+<p>The first two studies fixed the model structure. This third study
+instead checks the sign of a configured Bayesian-model-reduction
+comparison. Its estimand is the BMR free-energy difference for two
+candidate likelihood-column prunings. The categorical diagnostic is
+related to the model-reduction mechanism discussed by Friston et
+al. <span class="citation">(Friston et al. 2024)</span> and the post-hoc BMR lineage
+<span class="citation">(Friston and Penny 2011)</span>. It is not a discovery claim about structure
+emergence.</p>
+<p>The fixed posterior ranges over <span class="math inline">\(n =
+4\)</span> candidate states. One likelihood column is unsupported by the
+configured evidence; another is a supported control. BMR substitutes a
+reduced prior for each candidate and computes <span
+class="math inline">\(\Delta F\)</span> <a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a>. This is one
+deterministic closed-form comparison, so no resampled sample, confidence
+interval, or paired test applies <span class="citation">(Smith et al. 2022)</span>.</p>
 <p><span class="math inline">\(\Delta F\)</span> is positive for the
-correct (redundant) pruning — the simpler model has more evidence and
-the run converges on it — and negative for the control pruning of a
-well-supported column, which is correctly rejected:</p>
-<ul>
-<li><span class="math inline">\(\Delta F\)</span>, pruning the
-<strong>redundant</strong> column: 3.68 (positive — reduction
-accepted)</li>
-<li><span class="math inline">\(\Delta F\)</span>, pruning a
-<strong>supported</strong> column (control): -27.67 (negative —
-reduction rejected)</li>
-<li>Emergence converged (redundant accepted, supported rejected):
-Yes</li>
-</ul>
-<p>The sign pattern <span class="math inline">\(\Delta
-F_{\text{redundant}} &gt; 0 &gt; \Delta F_{\text{supported}}\)</span> is
-the demonstrated emergence verdict: the colony’s generative model prunes
-the structure its data never support and retains the structure they
-do.</p>
+declared redundant-column pruning, so the reduced candidate is favored
+for this fixed posterior. <strong>Redundant-column result:</strong>
+<span class="math inline">\(\Delta F=3.68\)</span>; the configured
+reduction is accepted.</p>
+<p>It is negative for the declared supported-column control.
+<strong>Supported-column control:</strong> <span
+class="math inline">\(\Delta F=-27.67\)</span>; that reduction is
+rejected.</p>
+<p><strong>Configured sign-control disposition:</strong> redundant
+accepted and supported rejected, recorded as Yes.</p>
+<p>The observed sign pattern <span class="math inline">\(\Delta
+F_{\text{redundant}} &gt; 0 &gt; \Delta F_{\text{supported}}\)</span>
+passes the configured control: this fixed posterior favors pruning the
+declared redundant column and rejects pruning the declared supported
+column. It does not show that arbitrary data or model families will
+discover, prune, or retain the correct structure.</p>
 <figure id="fig:emergence-bmr">
-<a class="figure-full-size-link" href="../figures/emergence_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/emergence_bmr.png" style="width:80.0%"
-alt="Two bars show Bayesian model-reduction free-energy differences for pruning a redundant versus a supported likelihood column. The redundant-pruning control is positive and the supported-column control is negative." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Bayesian-model-reduction (BMR)
-free-energy difference. Source relation: source-mechanism analogue to
-the model-reduction mechanism in Friston et al. (2024), Fig. 9;
-estimand: BMR <span class="math inline">\(\Delta F\)</span> in nats;
-uncertainty: deterministic closed-form comparison. <span
-class="math inline">\(\Delta F\)</span> for two candidate
-likelihood-column prunings in a colony with <span
-class="math inline">\(n = 4\)</span> hidden states. x-axis: the
-candidate pruning (redundant column vs. supported-column control);
-y-axis: <span class="math inline">\(\Delta F\)</span> in nats, where a
-positive value means the reduced model has more evidence and the pruning
-is accepted. The redundant-column bar is positive (<span
-class="math inline">\(\Delta F = 3.68\)</span> nats) — the data never
-supported this structure, so pruning it is the correct decision — while
-the supported-column control bar is negative (<span
-class="math inline">\(\Delta F = -27.67\)</span> nats), correctly
-rejected. The opposing signs constitute the emergence verdict (Yes). No
-error bar applies: BMR is a deterministic closed-form comparison on a
-single posterior.</figcaption>
+<a class="figure-full-size-link" href="../figures/emergence_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Configured Bayesian-model-reduction sign control."><img src="../figures/emergence_bmr.png" style="width:80.0%"
+data-slide-manifest="../figures/emergence_bmr.slides.json"
+alt="Dotted- and cross-hatched bars show Bayesian model-reduction free-energy differences for pruning a redundant versus supported likelihood column. Direct signed labels and a dotted zero rule show that the configured redundant-pruning control is positive and supported-column pruning is negative." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Configured Bayesian-model-reduction sign
+control. Source relation: source-mechanism analogue to the
+model-reduction mechanism in Friston et al. (2024), Fig. 9; estimand:
+BMR <span class="math inline">\(\Delta F\)</span> in nats for two
+declared pruning candidates. The x-axis is candidate likelihood-column
+pruning, ordered as the redundant column and supported-column control;
+the y-axis is <span class="math inline">\(\Delta F\)</span>, where
+positive values favor the reduced model and negative values reject it.
+Dotted hatching and a dark teal keyline identify the favored
+redundant-column control, while cross-hatching and a dark neutral
+keyline identify rejected supported-column pruning; direct signed value
+labels and a dark dotted zero rule duplicate color. On the fixed
+posterior, redundant-column pruning gives <span
+class="math inline">\(\Delta F = 3.68\)</span> and supported-column
+pruning gives <span class="math inline">\(\Delta F = -27.67\)</span>, so
+the configured sign control passes (Yes). This is one deterministic
+closed-form comparison with no independent replication unit, resampling
+interval, confidence interval, or error bar. The configured signs do not
+establish universal structure emergence, consistent recovery of true
+structure, or exact reproduction of the source simulation.</figcaption>
 </figure>
-<p><a class="xref" href="index.html#fig:emergence-bmr">Figure 11</a> contrasts the
-two prunings and annotates the convergence verdict.</p>
+<p><a class="xref" href="index.html#fig:emergence-bmr">Figure 12</a> contrasts the
+two configured prunings and reports the sign control.</p>
 <p>Studies 1–3 all ran in a <em>trusting</em> world, where every
 broadcast belief is honest. The contamination sweep that follows removes
 that assumption, and it is the point at which the three robustness axes

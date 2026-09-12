@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>12_methods_experimental_design.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -472,22 +636,24 @@ estimands, determinism, and power</h2>
 the learning operators of <a class="xref" href="index.html#sec:methods-learning">Section 5.15</a>, and
 the corruption process of <a class="xref" href="index.html#sec:methods-contamination">Section 5.19</a>
 are exercised by 9 studies, including the contaminated-sentinel
-robustness sweep (Study 4). The shared configuration (seed budget,
-colony size, contamination rates, divergences, trial counts, and the
-statistics settings) is read from <code>experiment:</code> in <a
+robustness sweep (Study 4).</p>
+<p>The shared configuration (seed budget, colony size, contamination
+rates, divergences, trial counts, and the statistics settings) is read
+from <code>experiment:</code> in <a
 href="https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/config.yaml">manuscript
 rendering configuration</a>; the remaining per-study parameters are
-tested code defaults in <code>src/fedference/experiments/</code>. No
-value is hard-coded in the manuscript, and each token below resolves to
-the same configuration the code executed.</p>
+tested code defaults in <code>src/fedference/experiments/</code>.</p>
+<p>No value is hard-coded in the manuscript, and each token below
+resolves to the same configuration the code executed.</p>
 <h2 id="sec:methods-determinism">Determinism through fixed seeds and
 generated variables</h2>
 <p>All stochastic steps draw from explicitly seeded generators
 (<code>np.random.default_rng</code>); the global <code>np.random</code>
 state is never touched. The single-run studies use the first configured
 seed (0), and the across-seed studies enumerate the deterministic seed
-list <span class="math inline">\(0,\ldots,n_{\text{seeds}}-1\)</span>.
-Re-running with the same seed reproduces every number in the results
+list <span
+class="math inline">\(0,\ldots,n_{\text{seeds}}-1\)</span>.</p>
+<p>Re-running with the same seed reproduces every number in the results
 bit-for-bit, so the bootstrap confidence intervals and paired-test
 p-values of <a class="xref" href="index.html#sec:methods-statistics">Section 5.27</a> are
 themselves deterministic functions of the seed.</p>
@@ -503,206 +669,230 @@ source-mechanism analogues of the belief-sharing, language-acquisition,
 and model-reduction mechanisms discussed by Friston et
 al. <span class="citation">(Friston et al. 2024)</span> on the sentinel POMDP; they are not exact
 source-protocol figure replications. The sweep adds the FedGVI
-robustness contribution <span class="citation">(Mildner et al. 2025)</span>. Unless a study specifies
-otherwise, the global defaults are <span
+robustness contribution <span class="citation">(Mildner et al. 2025)</span>.</p>
+<p>Unless a study specifies otherwise, the global defaults are <span
 class="math inline">\(n_{\text{seeds}} = 480\)</span> independent seeds
 and <span class="math inline">\(n_{\text{trials}} = 960\)</span> matched
 trials per condition.</p>
-<table id="tbl:study_params">
-<caption>Per-study configuration, read from <code>experiment:</code> in
-<code>config.yaml</code> and surfaced as manuscript tokens by
-<code>src/manuscript_variables.generate_variables</code>. The sample
-sizes carried into the statistics — the across-seed belief-sharing
-sample (<span class="math inline">\(n = 480\)</span> seeds), the
-language trajectory (25 ordered points summarized over <span
-class="math inline">\(n = 480\)</span> independent seeds), and the
-paired robustness trials (<span class="math inline">\(n = 960\)</span>
-per condition) — are reported with their respective results.</caption>
+<p>The inventories in <span class="citation"
+data-cites="tbl:study-measures tbl:study_params">[@tbl:study-measures;
+@tbl:study_params]</span> separate each study’s declared measure from
+its compact execution parameters so neither meaning is compressed at
+presentation scale.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Study-to-estimand map for the five declared protocols. Studies 1–3 are source-mechanism analogues, Study 4 is the ser…"><table id="tbl:study-measures" data-responsive-table="true">
+<caption>Study-to-estimand map for the five declared protocols. Studies
+1–3 are source-mechanism analogues, Study 4 is the server-robustness
+extension, and Study 5 is the moving-world supplement (<a class="xref" href="index.html#sec:results-moving">Section 14.7</a>).</caption>
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 50%" />
+<col style="width: 50%" />
 </colgroup>
 <thead>
 <tr>
 <th>Study</th>
-<th>What it measures</th>
+<th>Declared measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 — Belief sharing</td>
+<td>Communicating versus incommunicado colony free energy</td>
+</tr>
+<tr>
+<td>2 — Language acquisition</td>
+<td>Dirichlet-learning KL descent (<a class="xref" href="index.html#eq:dirichlet-kl">Eq. (19)</a>)</td>
+</tr>
+<tr>
+<td>3 — Emergence / BMR</td>
+<td>Reduced-versus-full model evidence (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a>)</td>
+</tr>
+<tr>
+<td>4 — Robustness sweep</td>
+<td>Robust versus naive consensus under contamination</td>
+</tr>
+<tr>
+<td>5 — Disjoint-FOV world</td>
+<td>Communication necessity with non-overlapping fields of view</td>
+</tr>
+</tbody>
+</table></div>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Per-study configuration, read from experiment: in config.yaml and surfaced as manuscript tokens by src/manuscript_var…"><table id="tbl:study_params" data-responsive-table="true">
+<caption>Per-study configuration, read from <code>experiment:</code> in
+<code>config.yaml</code> and surfaced as manuscript tokens by
+<code>src/manuscript_variables.generate_variables</code>. The samples
+carried into statistics are the belief-sharing sample (<span
+class="math inline">\(n = 480\)</span> seeds), the language trajectory
+(25 ordered points over <span class="math inline">\(n = 480\)</span>
+independent seeds), and the paired robustness trials (<span
+class="math inline">\(n = 960\)</span> per condition).</caption>
+<thead>
+<tr>
+<th>Study</th>
 <th>Key parameters</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>1 — Belief sharing</td>
-<td>Communicating vs. incommunicado colony free energy</td>
-<td><code>n_agents = 7</code>, <code>acuity = 0.55</code></td>
+<td><code>n_agents = 7</code>; <code>acuity = 0.55</code></td>
 </tr>
 <tr>
 <td>2 — Language acquisition</td>
-<td>Dirichlet-learning KL descent (<a class="xref" href="index.html#eq:dirichlet-kl">Eq. (14)</a>)</td>
 <td><code>num_steps = 24</code></td>
 </tr>
 <tr>
 <td>3 — Emergence / BMR</td>
-<td>Reduced-vs-full model evidence (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a>)</td>
 <td>candidate states <code>n = 4</code></td>
 </tr>
 <tr>
 <td>4 — Robustness sweep</td>
-<td>Robust vs. naive consensus under contamination</td>
-<td><code>n_agents = 7</code>, <code>n_contaminated = 2</code></td>
+<td><code>n_agents = 7</code>; <code>n_contaminated = 2</code></td>
 </tr>
 <tr>
-<td>5 — Disjoint-FOV moving world</td>
-<td>Communication necessity with non-overlapping fields of view</td>
-<td><code>n_agents = 3</code>, <code>fov_width = 2</code> (Supplement,
-<a class="xref" href="index.html#sec:results-moving">Section 13.7</a>)</td>
+<td>5 — Disjoint-FOV world</td>
+<td><code>n_agents = 3</code>; <code>fov_width = 2</code></td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p><strong>Study 1 — belief sharing.</strong> A colony of 7 sentinels at
-the deliberately low acuity 0.55 each infer the creature location (<span
-class="citation"
-data-cites="eq:state-inference"><a class="xref" href="index.html#eq:state-inference">Eq. (11)</a></span>) and share
-beliefs through the log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>). We
+the deliberately low acuity 0.55 each infer the creature location (<a class="xref" href="index.html#eq:state-inference">Eq. (16)</a>) and share
+beliefs through the log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>). We
 compare a <em>communicating</em> colony against an
 <em>incommunicado</em> one of the same size and seed, scoring each by
-the mean variational free energy of <a class="xref" href="index.html#eq:variational-free-energy">Eq. (12)</a>.
-Two protocol details: state inference in this study substitutes a flat
-(uniform) prior for <span class="math inline">\(D\)</span>, and each
-belief’s free energy is scored against the pooled evidence of all
+the mean variational free energy of <a class="xref" href="index.html#eq:variational-free-energy">Eq. (17)</a>.</p>
+<p>Two protocol details: state inference in this study substitutes a
+flat (uniform) prior for <span class="math inline">\(D\)</span>, and
+each belief’s free energy is scored against the pooled evidence of all
 agents’ observations (the disclosure carried in <a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>).
 The across-seed sample is <span class="math inline">\(n = 480\)</span>
-seeds, one colony-mean free energy per seed (<a class="xref" href="index.html#fig:free-energy">Figure 8</a>, <span
-class="citation"
-data-cites="fig:belief-heatmap"><a class="xref" href="index.html#fig:belief-heatmap">Figure 9</a></span>).</p>
+seeds, one colony-mean free energy per seed (<a class="xref" href="index.html#fig:free-energy">Figure 9</a>, <a class="xref" href="index.html#fig:belief-heatmap">Figure 10</a>).</p>
 <p><strong>Study 2 — language acquisition.</strong> Each configured seed
-runs one sentinel trajectory using the conjugate Dirichlet update (<span
-class="citation"
-data-cites="eq:dirichlet-update"><a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a></span>) over 24
-steps. We record the KL descent of <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (14)</a> at each ordered
+runs one sentinel trajectory using the conjugate Dirichlet update (<a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a>) over 24
+steps. We record the KL descent of <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (19)</a> at each ordered
 step, giving 25 points per trajectory and <span class="math inline">\(n
 =
 480\)</span> independent seed trajectories for the pointwise interval in
-<a class="xref" href="index.html#fig:language-kl">Figure 10</a>.</p>
-<p><strong>Study 3 — emergence.</strong> A redundant model reduction and
-a supported one are scored by the BMR free energy of <span
-class="citation" data-cites="eq:bmr-deltaf"><a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a></span> over
-<span class="math inline">\(n = 4\)</span> candidate states (<span
-class="citation"
-data-cites="fig:emergence-bmr"><a class="xref" href="index.html#fig:emergence-bmr">Figure 11</a></span>).</p>
+<a class="xref" href="index.html#fig:language-kl">Figure 11</a>.</p>
+<p><strong>Study 3 — configured BMR sign control.</strong> A redundant
+model reduction and a supported one are scored by the BMR free energy of
+<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a> over <span
+class="math inline">\(n = 4\)</span> candidate states (<a class="xref" href="index.html#fig:emergence-bmr">Figure 12</a>). This
+fixed-posterior comparison tests the expected signs for two declared
+prunings; it is not a structure-discovery experiment.</p>
 <p><strong>Study 4 — robustness sweep.</strong> The sweep varies two
 factors on a colony of 7 sentinels of which 2 are saboteurs
 (<code>confident_wrong</code>, <a class="xref" href="index.html#sec:methods-corruption">Section 5.20</a>):</p>
-<ul>
-<li><strong>Contamination rate</strong> over <span
-class="math inline">\(\{0, 0.225, 0.45, 0.675, 0.9\}\)</span> — the
-convex-mix weight of <a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a> toward
-the confident-wrong delta.</li>
-<li><strong>Server robustness setting</strong>, named with FedGVI
-client-loss/ divergence vocabulary for cross-reference only <span
-class="math inline">\(\{KLD, RKL, AR, beta, rcce\}\)</span>.
-<code>KLD</code> is the non-robust Friston / standard-Bayes baseline
-(server robustness 0, <a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>) and serves
-as the design’s negative control: the recovery identity guarantees it
-reproduces the naive log-linear pool exactly, so every
-robust-versus-naive contrast is scored against a comparator that is
-provably the un-robustified server rather than a separately tuned
-competitor. The remaining labels <span class="math inline">\(\{RKL, AR,
-beta, rcce\}\)</span> each select a fixed <code>robust_aggregate</code>
-down-weighting constant (the executed mapping is KLD (c=0.00), RKL
-(c=1.50), AR (c=1.30), beta (c=1.70), rcce (c=1.60); defined in
-<code>fedference.experiments._common</code>). None of these labels
-invoke the client-side <code>generalized_posterior</code> update of
-<a class="xref" href="index.html#sec:method-genbayes">Section 5.3</a> or the
-divergence family of <a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>;
-this sweep therefore exercises only the server-side heuristic axis of
-<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>
-(<code>robust_aggregate</code>), never the per-agent rigorous axis. The
-executed per-divergence down-weighting strengths are fixed constants
-defined in <code>fedference.experiments._common</code> and recorded in
-the run reports.</li>
-</ul>
+<h3 id="contamination-rate">Contamination rate</h3>
+<p>The contamination rate spans <span class="math inline">\(\{0, 0.225,
+0.45, 0.675, 0.9\}\)</span> and is the convex-mix weight of <a class="xref" href="index.html#eq:contamination-mix">Eq. (21)</a> toward
+the confident-wrong delta.</p>
+<h3 id="server-robustness-setting">Server robustness setting</h3>
+<p>The server robustness setting is named with FedGVI
+client-loss/divergence vocabulary for cross-reference only: <span
+class="math inline">\(\{KLD, RKL, AR, beta, rcce\}\)</span>.</p>
+<p><code>KLD</code> is the non-robust Friston / standard-Bayes baseline
+(server robustness 0, <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>) and serves
+as the design’s negative control. The recovery identity guarantees that
+it reproduces the naive log-linear pool exactly, so every contrast uses
+the proved un-robustified server rather than a separately tuned
+competitor.</p>
+<p>The remaining labels <span class="math inline">\(\{RKL, AR, beta,
+rcce\}\)</span> each select a fixed <code>robust_aggregate</code>
+down-weighting constant. The executed mapping is KLD (c=0.00), RKL
+(c=1.50), AR (c=1.30), beta (c=1.70), rcce (c=1.60), defined in
+<code>fedference.experiments._common</code>.</p>
+<p>None of these labels invoke the client-side
+<code>generalized_posterior</code> update of <a class="xref" href="index.html#sec:method-genbayes">Section 5.3</a> or the
+divergence family of <a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>.
+This sweep exercises only the server-side heuristic axis of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>
+(<code>robust_aggregate</code>), never the client-side
+source-conditional theorem lane.</p>
+<p>The executed per-divergence down-weighting strengths are fixed
+constants defined in <code>fedference.experiments._common</code> and
+recorded in the run reports.</p>
 <p>The headline verdict pairs 960 independent trials at the fixed
 contamination rate 0.800 — heavy contamination that degrades the naive
-pool while staying below the pure-veto cliff (<a class="xref" href="index.html#fig:robustness-sweep">Figure 12</a>, <span
-class="citation"
-data-cites="fig:robust-weights"><a class="xref" href="index.html#fig:robust-weights">Figure 13</a></span>). Each
+pool while staying below the pure-veto cliff (<a class="xref" href="index.html#fig:robustness-sweep">Figure 13</a>, <a class="xref" href="index.html#fig:robust-weights">Figure 15</a>). Each
 trial contributes one matched (naive, robust) accuracy pair, so the
 replication unit is the trial and the estimand is the within-trial
-accuracy difference at that single rate. A complementary federated
-logistic-regression baseline applies the same client-side robust loss to
-flipped-label contamination, isolating the rigorous axis (<span
-class="citation"
-data-cites="fig:bnn-robustness"><a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a></span>).</p>
+accuracy difference at that single rate.</p>
+<p>A complementary exploratory point-estimate logistic-regression proxy
+compares joint NLL/L2 and RCCE/L2 configurations under flipped-label
+contamination (<a class="xref" href="index.html#fig:bnn-robustness">Figure 18</a>). Because
+both loss and shrinkage change, this is a composite loss-and-L2 contrast
+rather than an RCCE-only effect; it represents no weight-space posterior
+and does not implement a FedGVI generalized-posterior objective.</p>
 <p><strong>Study 5 — disjoint-FOV moving world.</strong> This extension
-(<a class="xref" href="index.html#sec:results-moving">Section 13.7</a>) places 3
+(<a class="xref" href="index.html#sec:results-moving">Section 14.7</a>) places 3
 agents on a 2-slot disjoint-FOV track to test the necessity of
 communication when agents cannot observe the same positions. Isolated
 agents are compared against EFE-guided communicating agents on accuracy
-across the moving sentinel’s trajectory. Five structural extension
-studies (Studies 5–9, Supplementary sections) build on the same POMDP
-substrate and are described there: the moving disjoint-FOV sentinel
-(<a class="xref" href="index.html#sec:results-moving">Section 13.7</a>), the
-2-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>),
-the <span class="math inline">\(N\)</span>-level extension (<span
-class="citation"
-data-cites="sec:results-3level"><a class="xref" href="index.html#sec:results-3level">Section 13.11</a></span>), the 2-D
-sensitivity sweep (<a class="xref" href="index.html#sec:results-sensitivity">Section 13.13</a>),
-and parameter recovery (<a class="xref" href="index.html#sec:results-parameter-recovery">Section 14</a>).</p>
+across the moving sentinel’s trajectory.</p>
+<p>Five structural extension studies (Studies 5–9, Supplementary
+sections) build on the same POMDP substrate and are described there: the
+moving disjoint-FOV sentinel (<a class="xref" href="index.html#sec:results-moving">Section 14.7</a>), the
+2-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-hierarchical">Section 14.9</a>),
+the <span class="math inline">\(N\)</span>-level extension (<a class="xref" href="index.html#sec:results-3level">Section 14.11</a>), the 2-D
+sensitivity sweep (<a class="xref" href="index.html#sec:results-sensitivity">Section 14.13</a>),
+and parameter recovery (<a class="xref" href="index.html#sec:results-parameter-recovery">Section 15</a>).</p>
 <h2 id="sec:methods-power">Sample size and prospective statistical
 power</h2>
 <p>The verdict design answers a deliberate question: pair <em>many</em>
 trials at <em>one</em> high contamination rate rather than spread few
-trials across the rate curve. A matched-pairs Wilcoxon test gains power
-from the number of matched pairs, so concentrating <span
-class="math inline">\(n = 960\)</span> paired trials at the single rate
-0.800 gives the test the resolution to detect the robustness effect;
-scattering the same budget across 5 rates would dilute every contrast.
-The across-seed studies are powered separately, with <span
+trials across the rate curve.</p>
+<p>A matched-pairs Wilcoxon test gains power from the number of matched
+pairs, so concentrating <span class="math inline">\(n = 960\)</span>
+paired trials at the single rate 0.800 gives the test the resolution to
+detect the robustness effect; scattering the same budget across 5 rates
+would dilute every contrast.</p>
+<p>The across-seed studies are powered separately, with <span
 class="math inline">\(n =
 480\)</span> seeds for belief sharing and <span class="math inline">\(n
 =
-480\)</span> independent seed trajectories for language acquisition. The
-25 ordered learning points are repeated measures within each seed, not
-additional independent replicates, so the language interval does not
-count time points as samples. The structural-extension and cross-study
-summary tier uses <span class="math inline">\(n = 128\)</span>
-independent seeds and <span class="math inline">\(n = 40\)</span>
-matched trials per contamination rate for its robustness row. Trials and
-clients are nested within a seed and are reduced before across-seed
-inference; they are not additional independent replicates.</p>
+480\)</span> independent seed trajectories for language acquisition.</p>
+<p>The 25 ordered learning points are repeated measures within each
+seed, not additional independent replicates, so the language interval
+does not count time points as samples.</p>
+<p>The structural-extension and cross-study summary tier uses <span
+class="math inline">\(n = 128\)</span> independent seeds and <span
+class="math inline">\(n = 40\)</span> matched trials per contamination
+rate for its robustness row. Trials and clients are nested within a seed
+and are reduced before across-seed inference; they are not additional
+independent replicates.</p>
 <p>The bounded red-team review grid is a separate source-bound analysis
 profile. It uses 160 deterministic seed replicates, with 24 trials
 nested within each seed and scenario/rate cell, and retains the
 registered rates 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 across the finite
 attack union clean, confident wrong, permutation, byzantine, drift,
-label noise, uniform. Its independent unit is the configured seed within
-a declared cell; cells that share design structure are not treated as
-independent worlds. Robust operating points, method settings, and rate
-profiles are fixed before the review run. The grid reports
-selection-free contrasts and keeps clean, uniform, label-noise,
-permutation, confident-wrong, Byzantine, and drift controls visible.
-Completion of this finite review does not close server-heuristic
-characterization, leakage-free calibration, external-data, or
-protocol-reconstruction phases.</p>
+label noise, uniform.</p>
+<p>Its independent unit is the configured seed within a declared cell;
+cells that share design structure are not treated as independent worlds.
+Robust operating points, method settings, and rate profiles are fixed
+before the review run.</p>
+<p>The grid reports selection-free contrasts and keeps clean, uniform,
+label-noise, permutation, confident-wrong, Byzantine, and drift controls
+visible. Completion of this finite review does not close
+server-heuristic characterization, leakage-free calibration,
+external-data, or protocol-reconstruction phases.</p>
 <p>We do not merely assert adequacy — we compute the design power
-implied by the observed effect. For the headline robust method (RKL) the
-observed-effect design power of the paired Wilcoxon at the run’s <span
-class="math inline">\(n = 960\)</span>, computed at <span
-class="math inline">\(\alpha = 0.05\)</span> against the directional
-alternative <code>greater</code> (robust accuracy exceeds naive), is
-1.0000. The power approximation uses the deterministic noncentral-normal
+implied by the observed effect.</p>
+<p>For the headline robust method (RKL) the observed-effect design power
+of the paired Wilcoxon at the run’s <span class="math inline">\(n =
+960\)</span>, computed at <span class="math inline">\(\alpha =
+0.05\)</span> against the directional alternative <code>greater</code>
+(robust accuracy exceeds naive), is 1.0000.</p>
+<p>The power approximation uses the deterministic noncentral-normal
 approximation of <a class="xref" href="index.html#sec:methods-statistics">Section 5.27</a>,
 deflated by the Wilcoxon’s Pitman asymptotic relative efficiency, so it
 is approximately calibrated for the signed-rank test actually run (exact
 under a normal-shift alternative; the power computation is one-sided
-while the reported p-values are two-sided). To bound a confirmatory
-replication, the prospective sample size needed to reach the target
-power 0.80 at the observed effect is <span class="math inline">\(n =
-5\)</span> matched trials — the explicit sample-size budget a follow-up
-study should adopt. These power quantities characterize the
-<em>server-side</em> aggregation contrast; per the honesty contract of
-<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> they do
+while the reported p-values are two-sided).</p>
+<p>To bound a confirmatory replication, the prospective sample size
+needed to reach the target power 0.80 at the observed effect is <span
+class="math inline">\(n = 5\)</span> matched trials — the explicit
+sample-size budget a follow-up study should adopt.</p>
+<p>These power quantities characterize the <em>server-side</em>
+aggregation contrast; per the honesty contract of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> they do
 not certify the per-client <span
 class="math inline">\(\beta\)</span>/rcce guarantees, which are pinned
 by the locked core (<a class="xref" href="index.html#sec:formalism">Section 6</a>) rather than by these
@@ -716,9 +906,9 @@ additionally uses PyTorch (CPU); the analysis pipeline executes it and
 emits its numbers as tokens exactly like every other result when the
 <code>torch</code> optional extra is installed, and otherwise records a
 skipped status with unavailable-value sentinels instead of silently
-fabricating neural results. Versions and platform — including the
-PyTorch version used for the MLP complement — are recorded automatically
-in <a class="xref" href="index.html#sec:reproducibility">Section 10</a>.</p>
+fabricating neural results.</p>
+<p>Versions and platform — including the PyTorch version used for the
+MLP complement — are recorded automatically in <a class="xref" href="index.html#sec:reproducibility">Section 10</a>.</p>
 </main>
 </body>
 </html>

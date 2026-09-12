@@ -1,15 +1,14 @@
-"""Disjoint-FOV world figure (V4): communication necessity and EFE navigation benefit.
+"""Disjoint-FOV world figure (V4): communication and movement-policy contrasts.
 
 Headless (``Agg``) matplotlib only; no ``infrastructure.*`` imports (layer
 contract). Shares the project palette via :mod:`figures._common`.
 
 Two-panel figure:
 
-* Left: grouped bar chart comparing isolated vs communicating accuracy across
-  seeds, illustrating that communication is necessary when agents have
-  disjoint fields of view.
-* Right: grouped bar chart comparing EFE-guided vs random movement accuracy
-  across seeds, illustrating the benefit of active inference navigation.
+* Left: grouped bars compare isolated and communicating accuracy across seeds
+  in the declared disjoint-view configuration.
+* Right: grouped bars report the configured near-ceiling, null contrast between
+  EFE-guided and random movement.
 """
 
 from __future__ import annotations
@@ -35,11 +34,7 @@ from figures._common import (
 def _load_disjoint_report(report: dict | None, project_root: Path | None) -> dict:
     if report is not None:
         return report
-    root = (
-        Path(project_root)
-        if project_root is not None
-        else Path(__file__).resolve().parent.parent.parent
-    )
+    root = Path(project_root) if project_root is not None else Path(__file__).resolve().parent.parent.parent
     path = root / "output" / "reports" / "disjoint_fov_world.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
@@ -80,11 +75,10 @@ def generate_disjoint_fov_figure(
     means_right = [float(efe_ms["mean"]), float(rnd_ms["mean"])]
     stds_right = [float(efe_ms["std"]), float(rnd_ms["std"])]
 
-    fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(11.5, 5.0), facecolor="white")
-    fig.subplots_adjust(left=0.10, right=0.98, top=0.78, bottom=0.18, wspace=0.28)
+    fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(6.8, 5.0), facecolor="white")
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.83, bottom=0.18, wspace=0.34)
     fig.suptitle(
-        "Disjoint-FOV extension: communication necessity and EFE navigation\n"
-        "source-inspired original project protocol",
+        "Disjoint field-of-view protocol",
         fontsize=15,
         fontweight="bold",
         y=0.98,
@@ -95,8 +89,8 @@ def generate_disjoint_fov_figure(
     colors_left = [COLOR_NAIVE, COLOR_ROBUST]
     labels_left = ["Isolated", "Communicating"]
 
-    for x, mean, std, color, label in zip(
-        x_left, means_left, stds_left, colors_left, labels_left
+    for x, mean, std, color, label, hatch in zip(
+        x_left, means_left, stds_left, colors_left, labels_left, ("", "//"), strict=True
     ):
         ax_left.bar(
             x,
@@ -104,6 +98,9 @@ def generate_disjoint_fov_figure(
             width=bar_width,
             color=color,
             label=label,
+            hatch=hatch,
+            edgecolor=COLOR_AXIS,
+            linewidth=0.8,
             yerr=std,
             capsize=4,
             error_kw={"elinewidth": 1.5, "ecolor": COLOR_AXIS},
@@ -112,24 +109,24 @@ def generate_disjoint_fov_figure(
     ax_left.set_xticks(x_left)
     ax_left.set_xticklabels(labels_left)
     ax_left.set_xlabel("Condition", labelpad=6)
-    ax_left.set_ylabel("Mean accuracy (fraction correct)", labelpad=6)
-    ax_left.set_title("Communication necessity", pad=8)
+    ax_left.set_ylabel("Accuracy (fraction correct)", labelpad=6)
+    ax_left.set_title("A  Communication contrast", loc="left", pad=8)
     ax_left.set_ylim(0.0, min(1.05, max(means_left) * 1.4 + 0.05))
     # No legend: the x tick labels already name the two conditions.
     comm_gain = float(comm_ms["mean"]) - float(iso_ms["mean"])
     annotate_stats_box(
-                        ax_left,
-                        f"comm gain = {comm_gain:+.3f}\niso = {float(iso_ms['mean']):.3f}\ncomm = {float(comm_ms['mean']):.3f}",  # noqa: E501
-                        loc="lower right",
-                        fontsize=9.5,
-                    )
+        ax_left,
+        f"comm gain = {comm_gain:+.3f}\niso = {float(iso_ms['mean']):.3f}\ncomm = {float(comm_ms['mean']):.3f}",  # noqa: E501
+        loc="lower right",
+        fontsize=9.5,
+    )
 
     x_right = np.array([0.0, 1.0])
     colors_right = [COLOR_ROBUST, COLOR_MUTED]
     labels_right = ["EFE-guided", "Random"]
 
-    for x, mean, std, color, label in zip(
-        x_right, means_right, stds_right, colors_right, labels_right
+    for x, mean, std, color, label, hatch in zip(
+        x_right, means_right, stds_right, colors_right, labels_right, ("..", "xx"), strict=True
     ):
         ax_right.bar(
             x,
@@ -137,6 +134,9 @@ def generate_disjoint_fov_figure(
             width=bar_width,
             color=color,
             label=label,
+            hatch=hatch,
+            edgecolor=COLOR_AXIS,
+            linewidth=0.8,
             yerr=std,
             capsize=4,
             error_kw={"elinewidth": 1.5, "ecolor": COLOR_AXIS},
@@ -145,28 +145,24 @@ def generate_disjoint_fov_figure(
     ax_right.set_xticks(x_right)
     ax_right.set_xticklabels(labels_right)
     ax_right.set_xlabel("Movement policy", labelpad=6)
-    ax_right.set_ylabel("Final accuracy (fraction correct)", labelpad=6)
-    ax_right.set_title("EFE vs random navigation\n(null result)", pad=8)
+    ax_right.set_ylabel("Accuracy (fraction correct)", labelpad=6)
+    ax_right.set_title("B  Movement-policy contrast", loc="left", pad=8)
     ax_right.set_ylim(0.0, min(1.05, max(means_right) * 1.4 + 0.05))
-    # Legend in the empty column between the two near-ceiling bars so it never
-    # occludes the EFE-guided bar or its error bar.
-    ax_right.legend(
-        fontsize=9.5,
-        loc="upper center",
-        handlelength=1.2,
-        handletextpad=0.5,
-        borderpad=0.3,
-    )
+    # The x labels identify both policies directly; a redundant legend would
+    # cover the near-ceiling error bars at the declared manuscript scale.
     efe_gain = float(efe_ms["mean"]) - float(rnd_ms["mean"])
     annotate_stats_box(
-                        ax_right,
-                        f"EFE gain = {efe_gain:+.3f}\nefe = {float(efe_ms['mean']):.3f}\nrandom = {float(rnd_ms['mean']):.3f}",  # noqa: E501
-                        loc="lower right",
-                        fontsize=9.5,
-                    )
+        ax_right,
+        f"EFE gain = {efe_gain:+.3f}\nefe = {float(efe_ms['mean']):.3f}\nrandom = {float(rnd_ms['mean']):.3f}",  # noqa: E501
+        loc="lower right",
+        fontsize=9.5,
+    )
 
     out_path = figures_dir(Path(project_root) if project_root else None) / filename
-    save_figure(fig, out_path)
+    save_figure(fig, out_path, manuscript_width_fraction=0.80)
+    from ._presentation_worlds import disjoint_presentation
+
+    disjoint_presentation(out_path, ms)
     return out_path
 
 

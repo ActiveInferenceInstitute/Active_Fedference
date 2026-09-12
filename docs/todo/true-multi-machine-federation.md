@@ -6,6 +6,8 @@
 
 - Priority class: Major
 - State: Open
+- Queue position: post-v1.1 transport lane; MAJ-4A precedes the external
+  MAJ-4B distinct-host campaign
 - Owner surface: cross-host federation transport, long-running workers, deployment docs
 
 ## Rationale
@@ -17,26 +19,31 @@ multi-machine federation is warranted.
 
 ## Scope
 
-Residual scope is explicitly split:
+The open scope is explicitly split:
 
 - **MAJ-4A:** a Docker-based local multi-node emulator with mTLS by default,
   HMAC compatibility mode, checkpoint/restart, and reproducible drop,
   duplicate, delay, replay, tamper, timeout, and out-of-order controls.
 - **MAJ-4B:** validation receipts from physically distinct hosts, including
   deployment-grade key management and long-running restart behavior. This is
-  an external v1.x lane.
+  a separately authorized external lane with no preassigned version.
 
-Current capability: loopback TCP now binds each payload to a versioned envelope
-containing protocol version, round, worker, aggregation-configuration hash,
-payload digest, and authentication mode. Optional HMAC framing, lossless
-serialization, file-backed digest-verified replay, configuration-aware
-aggregation, enforced loopback-only binding, an in-memory guard, a
-SQLite-backed round-ID guard that survives local process restarts, and an
-in-process reference are tested. The SQLite primitive is not a shared
-multi-host replay domain. Containers, mTLS, certificate lifecycle, network
-fault injection, long-running orchestration, and physical hosts remain open.
-The prerequisite abuse paths and trust assumptions are recorded in the
+Protocol-v1 frames remain unchanged. MAJ-4A must wrap the existing local server
+and worker contract in a Docker-based, mTLS-default emulator with certificate
+lifecycle, worker identity, checkpoint/restart, shared replay-domain semantics,
+and deterministic drop/duplicate/delay/replay/tamper/timeout/out-of-order fault
+controls. MAJ-4B then runs the frozen contract on physically distinct hosts
+with approved key management and long-running restart behavior. The abuse paths
+and trust assumptions are owned by the
 [repository threat model](../security/active_fedference-threat-model.md).
+
+Execution of either tranche remains blocked until its versioned protocol design
+freezes the exact round count, serialized-consensus comparison metric and
+tolerance, timeout/delay/drop/duplicate/replay/tamper/out-of-order schedules,
+restart points, certificate lifetime/rotation cases, retry policy, and maximum
+runtime/resource budget. The MAJ-4B design additionally freezes host topology,
+clock-skew envelope, network path assumptions, and key custody/rotation
+procedure. A placeholder “within tolerance” cannot authorize either campaign.
 
 ## Implementation Notes
 
@@ -50,40 +57,55 @@ per-worker identity or confidentiality.
 
 ## Acceptance Criteria
 
-- Primary estimand: the consensus belief produced by cross-host transport is
-  identical (within serialization tolerance) to the in-process reference
-  consensus over the same serialized input beliefs.
-- Independent replication unit for MAJ-4A: one replicated local container
-  round under a declared fault schedule. For MAJ-4B it is one federation run
-  on physically distinct hosts. These units are never conflated.
-- Falsifier: any host pair whose reconstructed consensus diverges from the
-  in-process reference beyond serialization tolerance, or any replay that fails
-  to reproduce a persisted log across a process restart, refutes the claim.
-- An mTLS-default local emulator reproduces the in-process reference and fails
-  closed under every declared network fault.
-- A long-running worker/server runtime replays persisted logs across process
-  restarts, makes the persistent replay guard mandatory, and defines retention,
-  backup, permission, and multi-container replay-domain semantics.
-- The mTLS profile requires and validates client certificates, binds one
-  certificate identity to each declared worker, and rejects wrong trust roots,
-  expired/not-yet-valid certificates, wrong usage or identity, and plaintext or
-  HMAC downgrade attempts.
-- Required artifacts and tests: end-to-end cross-host federation transport tests;
-  replay-validation tests across restarts; docs-contract tests for qualified
-  true multi-machine claims.
-- Documentation changes: a deployment guide describing transport and key
-  management, and updated claim-boundary language distinguishing transport
-  fidelity from mathematical novelty.
+### MAJ-4A — authenticated local-container emulator
+
+- Primary estimand: local-container transported consensus minus the in-process
+  reference for identical serialized beliefs, reported under the frozen metric
+  and tolerance for every declared no-fault and fault condition.
+- Replication unit: one independently initialized local container round under a
+  frozen schedule; messages and retry attempts within a round are nested.
+- The mTLS-default emulator binds certificates to worker identities, rejects
+  wrong roots, validity periods, usage/identity, plaintext, and HMAC downgrade,
+  and reproduces the in-process reference or fails closed as preregistered.
+- Restart-durable replay covers the frozen server/worker restart points and
+  defines replay-state retention, backup, permissions, and multi-container
+  replay domains.
+- Required evidence: digest-bound design, pinned images, certificate policy,
+  complete local fault matrix, restart/replay receipts, equivalence table,
+  deployment guide, green PR checks, and merged public-main SHA.
+- Falsifier: any accepted frame/round beyond the frozen consensus tolerance,
+  unauthorized identity, replay acceptance, missing persistent state, or fault
+  disposition contrary to the design blocks MAJ-4A.
+- Physical hosts are not required to close MAJ-4A and local containers can
+  support only the explicitly labeled local-emulator claim.
+
+### MAJ-4B — physical distinct-host validation
+
+- Primary estimand: physical-host transported consensus minus the same
+  in-process reference, under the separately frozen metric/tolerance and host,
+  clock, network, fault, restart, and key-management design.
+- Replication unit: one federation deployment run spanning the declared set of
+  physically distinct hosts; rounds/messages within a deployment are nested.
+- Required evidence: exact host identities and software images, topology and
+  clock records, measured network assumptions, external key custody/rotation,
+  cross-host fault/restart receipts, reference comparisons, and external review.
+- Falsifier: an undeclared topology or clock/network drift, key-custody failure,
+  cross-host replay/restart failure, or accepted consensus beyond the frozen
+  tolerance blocks the physical-host claim.
+- MAJ-4B depends on completed MAJ-4A but is a distinct campaign; emulator
+  receipts cannot be relabeled as physical multi-host evidence.
 
 ## Verification Probes
 
-- End-to-end cross-host federation transport tests.
-- Docker emulator tests with mTLS-default and HMAC-compatibility profiles.
+- MAJ-4A Docker emulator tests with mTLS-default and HMAC-compatibility profiles.
 - Wrong-key, tamper, replay, duplicate, drop, delay, timeout, restart, and
   out-of-order controls.
 - Replay-validation tests across process restarts.
 - Persistent-state omission, divergent-state, corruption, and retention tests.
 - Certificate-path, identity, key-rotation, and downgrade-negative tests.
+- Design-lock tests reject missing round counts/tolerances, fault-schedule or
+  restart drift, and resource-budget changes. MAJ-4B additionally exercises
+  physical-host topology, clock-skew, network-path, and key-custody controls.
 - Docs-contract tests for qualified true multi-machine claims.
 
 ## Claim-Boundary Constraints
@@ -103,6 +125,9 @@ evidence of mathematical novelty in the aggregation rules.
 ## Dependencies
 
 MAJ-4A depends on the stable configuration hash, transport-envelope schema,
-and reviewed threat model.
+reviewed threat model, and the existing loopback/HMAC/digest-replay primitives
+recorded in source tests and `ISA.md`; those local primitives are not active
+TODO subitems.
 MAJ-4B depends on MAJ-4A plus external hosts and an approved key-management
-boundary.
+boundary. No cross-host execution is required for MAJ-4A acceptance, and no
+MAJ-4A result can satisfy MAJ-4B.

@@ -47,21 +47,33 @@ of these boundaries from [`examples/README.md`](../../examples/README.md).
 ## Dependency direction
 
 ```mermaid
-flowchart LR
-    scripts[scripts/] --> analysis[src/analysis/workflow.py]
-    scripts --> vars[scripts/z_generate_manuscript_variables.py]
-    analysis --> fedference[src/fedference/]
+flowchart TB
+    accTitle: Dependency direction across source packages
+    accDescr: Thin scripts depend on analysis and hydration entry points, analysis and CLI modules depend on the domain package, and manuscript variables read validated reports without an upward domain import.
+    scripts["scripts/"] --> analysis["src/analysis/workflow.py"]
+    scripts --> vars["scripts/z_generate_manuscript_variables.py"]
+    analysis --> fedference["src/fedference/"]
     cli_facade["src/fedference_cli/__init__.py"] --> cli_parser["_parser.py"]
     cli_parser --> cli_commands["_commands.py"]
     cli_commands --> cli_support["_support.py"]
     cli_commands --> fedference
     cli_support --> fedference
-    analysis --> figures[src/figures/]
-    vars --> manuscript_vars[src/manuscript_variables.py]
+    analysis --> figures["src/figures/"]
+    vars --> manuscript_vars["src/manuscript_variables.py"]
     manuscript_vars --> fedference
-    manuscript_vars --> reports[output/reports/*.json]
-    infra[infrastructure/ at repo root] --> scripts
+    manuscript_vars --> reports["output/reports/*.json"]
+    infra["Template infrastructure at the sibling repository boundary"] --> scripts
 ```
+
+**Text equivalent.**
+
+| Upstream module | Downstream module | Constraint |
+| --- | --- | --- |
+| `scripts/` | analysis and hydration entry points | Scripts remain thin process boundaries. |
+| `analysis.workflow` | `fedference` and figure generators | Analysis delegates domain mathematics and then renders validated reports. |
+| CLI facade | parser → commands → support | Installed command concerns are split before commands call domain operations. |
+| manuscript-variable entry point | manuscript-variable package, `fedference`, and reports | Hydration reads current typed evidence; it does not rerun experiments. |
+| sibling Template infrastructure | scripts | Rendering is an external, source-locked boundary and never an import into `src/fedference/`. |
 
 Nothing in `src/fedference/` imports upward to scripts or infrastructure.
 Default imports remain Torch-free; boundary effects require an explicit path,
@@ -101,6 +113,8 @@ does not transfer a guarantee from one surface to another.
 
 ```mermaid
 flowchart TB
+    accTitle: Separate robustness methods and evidence owners
+    accDescr: Client losses, the robust server heuristic, and the variational server rule each lead to their own bounded evidence statement before entering a claim-bounded manuscript.
     data["categorical likelihoods and beliefs"] --> client["Client update\nβ/rcce loss + Alpha-Rényi\nstated FedGVI objective"]
     data --> heuristic["Server heuristic\nrobust_aggregate\nreverse-KL reweighting"]
     data --> variational["Server objective rule\nvariational_aggregate\nblock-coordinate descent"]
@@ -111,6 +125,15 @@ flowchart TB
     heuristic_evidence --> manuscript
     variational_evidence --> manuscript
 ```
+
+**Text equivalent.**
+
+| Method lane | Evidence owner | Permitted interpretation | Prohibited transfer |
+| --- | --- | --- | --- |
+| Client update with β/rcce and Alpha-Rényi | Source-conditional bounded-loss statement and KLD/NLL recovery | A result about the declared client objective under its assumptions | No automatic guarantee for either server rule |
+| `robust_aggregate` server heuristic | Recovery at robustness zero plus conditional empirical evidence | A scoped project heuristic with tested recovery | No global objective or universal robustness theorem |
+| `variational_aggregate` server rule | Objective descent and raw effective-weight bound | An objective-backed property on declared paths | No estimator-level B-robustness claim |
+| All three lanes | Claim-bounded manuscript and source-backed figures | Synthesis may compare results while retaining their evidence classes | Arrows do not migrate guarantees between lanes |
 
 ## Module map (`src/fedference/`)
 
@@ -218,7 +241,7 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `protocol_parity.py` | Strict FedGVI and Friston protocol matrices; unresolved rows force a source-constrained implementation label for FedGVI or paper-constrained reconstruction label for Friston |
 | `hybrid_tracking.py` | Discrete-context position/velocity tracking pilot with Gaussian observations, bounded actions, matched naive/robust/discrete-only/continuous-only/oracle-context controls, and a singular-covariance falsifier; not confirmatory evidence |
 | `experiments/` (subpackage) | JSON-serialisable study and report producers: three reduced categorical source-mechanism analogues related to Friston Figs. 5/7/9, plus robustness sweep, moving world, hierarchical POMDPs, sensitivity, parameter recovery, complexity scaling, and the source-bound all-method review grid; modules: `_common`, `belief_sharing`, `complexity`, `conditional_world`, `cross_study`, `diagnostics`, `gallery`, `heuristic_characterization`, `navigation`, `parameter_recovery`, `report_bundle`, `review_grid`, `robustness`, `sensitivity`, `worlds` |
-| `bnn_baseline.py` | NumPy mean-field FedGVI logistic regression under label contamination |
+| `bnn_baseline.py` | Exploratory NumPy generalized-Bayes point-estimate logistic-regression baseline under label contamination; it compares joint NLL/L2 and RCCE/L2 configurations, so it does not isolate an RCCE-only effect, and legacy `KLD`/`AR` arguments select L2 coefficients rather than weight-space divergences |
 | `bnn_baseline_torch.py` | Executed PyTorch point-mass deterministic `torch.nn.Module` complement (`run_bnn_torch_experiment`) |
 | `bnn_variational_torch.py` | Optional mean-field variational MLP with device-aware sampling, closed-form KL, MC-ELBO, cavity export/load, and a cavity-conditioned synthetic optimizer; source-dataset protocol parity remains open |
 | `bnn_fedgvi.py` | NumPy diagonal-Gaussian site factors, cavity construction, factor replacement, schedules, and atomic round checkpoints exercised by a synthetic CPU/MPS pilot; no source-dataset or source-scale claim |
@@ -251,7 +274,7 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `scripts/02_run_analysis.py` | Pipeline stage 4 | Calls `analysis.workflow.run_analysis_pipeline()` |
 | `scripts/z_generate_manuscript_variables.py` | Before PDF render | Reads current reports and writes `output/data/manuscript_variables.json`; it does not rerun experiments |
 | `scripts/01_run_invariants.py` | Optional | Runs invariant suite |
-| `scripts/00_preflight.py` | Optional pre-render | Environment / Chrome checks |
+| `scripts/00_preflight.py` | Required before each render pass | Environment / Chrome diagnostics and exact clean Template renderer-lock enforcement |
 | `scripts/generate_api_docs.py` | Aesthetic | Writes `output/docs/api_reference.md` |
 | `scripts/prepare_web_package.py` | Publication package | Mirrors figures, resolves numbered cross-format references, and rejects broken fragments or leaked figure markup |
 | `scripts/validate_web_package.py` | Publication package | Validates generated web output without mutating it |

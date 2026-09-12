@@ -56,14 +56,54 @@ def test_bnn_robustness_seed_is_base_of_data_replicates():
     shifted = run_bnn_robustness_report(10, **kwargs)
     assert first["seed"] == 0
     assert shifted["seed"] == 10
-    assert first["accuracy_seed_values_by_config"] != shifted[
-        "accuracy_seed_values_by_config"
-    ]
+    assert first["accuracy_seed_values_by_config"] != shifted["accuracy_seed_values_by_config"]
+
+
+def test_bnn_robustness_discloses_point_estimate_and_selection_scope():
+    report = run_bnn_robustness_report(
+        0,
+        n_seeds=2,
+        n_per=12,
+        contamination_levels=(0.0, 0.3),
+    )
+    assert report["schema_version"] == "1.0"
+    assert report["model_family"] == "point_estimate_logistic_regression"
+    assert report["study_status"] == "exploratory_conditional_synthetic_sweep"
+    assert "peak_margin_contamination is selected within" in report["selection_disclosure"]
+    assert "configured inputs, not selected by this report" in report["selection_disclosure"]
+    assert report["analysis_unit"] == ("synthetic-data seed within contamination operating point")
+    assert report["replication_unit"] == "synthetic-data seed"
+    assert report["interval_method"] == ("percentile bootstrap across synthetic-data seeds")
+    assert "no posterior-uncertainty BNN" in report["claim_boundary"]
+    assert "composite two-configuration contrast" in report["configuration_boundary"]
+    assert "cannot identify an RCCE-only effect" in report["configuration_boundary"]
+    gaps = report["robust_minus_standard"]
+    peak_index = max(range(len(gaps)), key=lambda index: gaps[index])
+    assert report["peak_margin"] == gaps[peak_index]
+    assert report["peak_margin_contamination"] == report["contamination_levels"][peak_index]
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    (
+        ({"n_seeds": 1}, "n_seeds"),
+        ({"n_per": 0}, "n_per"),
+        ({"robust_loss_param": float("nan")}, "robust_loss_param"),
+        ({"robust_loss_param": 1.01}, "robust_loss_param"),
+        ({"contamination_levels": ()}, "contamination_levels"),
+        ({"contamination_levels": (0.1, 0.1)}, "duplicates"),
+        ({"contamination_levels": (-0.1, 0.2)}, r"\[0, 1\]"),
+    ),
+)
+def test_bnn_robustness_rejects_invalid_report_design(kwargs, message):
+    with pytest.raises(ValueError, match=message):
+        run_bnn_robustness_report(0, **kwargs)
 
 
 # ===========================================================================
 # run_belief_sharing — Fig. 5 (ISC-23)
 # ===========================================================================
+
 
 @pytest.mark.parametrize("seed", SEEDS)
 def test_belief_sharing_communicating_has_lower_free_energy(seed):
@@ -79,8 +119,13 @@ def test_belief_sharing_result_shape_and_json():
     result = run_belief_sharing(0, communicate=True)
     # Back-compat keys must all survive (subset, not exact — enrichment adds more).
     assert {
-        "mean_free_energy", "mean_surprise", "mean_accuracy",
-        "communicate", "n_agents", "true_state", "seed",
+        "mean_free_energy",
+        "mean_surprise",
+        "mean_accuracy",
+        "communicate",
+        "n_agents",
+        "true_state",
+        "seed",
     } <= set(result)
     assert result["communicate"] is True
     assert result["seed"] == 0
@@ -98,9 +143,7 @@ def test_belief_sharing_enrichment_keys():
     assert result["n"] == result["n_agents"]
     assert len(result["free_energies"]) == 6
     # The headline mean is the mean of the per-agent sample.
-    assert result["mean_free_energy"] == pytest.approx(
-        float(np.mean(result["free_energies"])), abs=1e-12
-    )
+    assert result["mean_free_energy"] == pytest.approx(float(np.mean(result["free_energies"])), abs=1e-12)
     lo, hi = result["mean_free_energy_ci"]
     assert lo <= hi
     # The mean lies inside its own bootstrap 95% CI for this seeded colony.
@@ -162,6 +205,7 @@ def test_belief_sharing_two_agents_is_minimum_valid_colony():
 # ===========================================================================
 # run_language_acquisition — Fig. 7 (ISC-24)
 # ===========================================================================
+
 
 @pytest.mark.parametrize("seed", SEEDS)
 def test_language_acquisition_kl_declines(seed):
@@ -240,6 +284,7 @@ def test_language_acquisition_respects_num_steps():
 # run_emergence — Fig. 9 (ISC-25)
 # ===========================================================================
 
+
 @pytest.mark.parametrize("seed", SEEDS)
 def test_emergence_reduces_redundant_structure(seed):
     """ISC-25: redundant prune wins (dF>0), supported prune loses (dF<0)."""
@@ -255,8 +300,11 @@ def test_emergence_result_json_and_shape():
     result = run_emergence(0)
     # Back-compat keys survive as a subset; enrichment adds the sample size ``n``.
     assert {
-        "convergence", "delta_F_redundant", "delta_F_supported",
-        "n_states", "seed",
+        "convergence",
+        "delta_F_redundant",
+        "delta_F_supported",
+        "n_states",
+        "seed",
     } <= set(result)
     assert result["n_states"] == 4
     # Sample size mirrors the number of candidate states.
@@ -271,6 +319,7 @@ def test_emergence_is_deterministic():
 # ===========================================================================
 # run_robustness_sweep — ISC-27 / ISC-30
 # ===========================================================================
+
 
 @pytest.mark.parametrize("seed", SEEDS)
 def test_robustness_naive_degrades_and_robust_holds(seed):
@@ -287,10 +336,7 @@ def test_robustness_naive_degrades_and_robust_holds(seed):
     assert naive_curve[0] - naive_curve[-1] > 0.1
     # At least one robust method beats the naive pool at the worst rate.
     worst = f"{max(rates):g}"
-    assert any(
-        acc[d][worst] > acc["KLD"][worst]
-        for d in result["divergences"] if d != "KLD"
-    )
+    assert any(acc[d][worst] > acc["KLD"][worst] for d in result["divergences"] if d != "KLD")
 
 
 def test_sweep_fdr_alpha_is_consumed_not_decorative():
@@ -325,8 +371,12 @@ def test_sweep_runs_under_other_mechanisms_with_same_schema(kind):
     result = run_robustness_sweep(0, n_trials=12, kind=kind)
     assert result["kind"] == kind
     assert set(result) >= {
-        "accuracy_by_method_and_rate", "naive_degrades_with_rate",
-        "verdict", "any_robust_wins", "paired_tests_by_rate", "headline_power",
+        "accuracy_by_method_and_rate",
+        "naive_degrades_with_rate",
+        "verdict",
+        "any_robust_wins",
+        "paired_tests_by_rate",
+        "headline_power",
     }
     assert result["naive_degrades_with_rate"] is True
     # Additive 'drift' keeps a robust member above threshold at the worst rate;
@@ -345,10 +395,7 @@ def test_robustness_verdict_is_earned_from_statistics(seed):
     """
     result = run_robustness_sweep(seed)
     assert result["any_robust_wins"] is True
-    winners = [
-        d for d in result["divergences"]
-        if d != "KLD" and result["verdict"][d]["wins"]
-    ]
+    winners = [d for d in result["divergences"] if d != "KLD" and result["verdict"][d]["wins"]]
     assert winners  # at least one confirmed robust winner
     for d in winners:
         v = result["verdict"][d]
@@ -393,6 +440,7 @@ def test_robustness_custom_divergence_subset():
 
 
 # ---- robustness enrichment (n, CIs, raw+adjusted p, effect sizes) ----------
+
 
 def test_robustness_top_level_sample_size():
     """``n`` mirrors the per-condition trial count behind every paired contrast."""
@@ -497,9 +545,7 @@ def test_robustness_accuracy_at_verdict_rate_means_and_cis():
         assert 0.0 <= lo <= hi <= 1.0
         assert lo <= block["mean"] <= hi
     # Consistency: the naive mean equals the back-compat naive_verdict_rate_mean.
-    assert avr["KLD"]["mean"] == pytest.approx(
-        result["naive_verdict_rate_mean"], abs=1e-12
-    )
+    assert avr["KLD"]["mean"] == pytest.approx(result["naive_verdict_rate_mean"], abs=1e-12)
 
 
 def test_robustness_verdict_carries_effect_size_and_raw_p():
@@ -528,18 +574,13 @@ def test_robustness_verdict_carries_effect_size_and_raw_p():
         assert lo <= hi
         # The diff equals robust mean minus naive mean (paired).
         avr = result["accuracy_at_verdict_rate"]
-        assert v["mean_accuracy_diff"] == pytest.approx(
-            avr[d]["mean"] - avr["KLD"]["mean"], abs=1e-12
-        )
+        assert v["mean_accuracy_diff"] == pytest.approx(avr[d]["mean"] - avr["KLD"]["mean"], abs=1e-12)
 
 
 def test_robustness_winner_has_large_positive_effect():
     """A confirmed winner has positive effect size and a non-negligible label."""
     result = run_robustness_sweep(0)
-    winners = [
-        d for d in result["divergences"]
-        if d != "KLD" and result["verdict"][d]["wins"]
-    ]
+    winners = [d for d in result["divergences"] if d != "KLD" and result["verdict"][d]["wins"]]
     assert winners
     for d in winners:
         v = result["verdict"][d]
@@ -559,8 +600,14 @@ def test_robustness_per_rate_paired_tests_structure():
         assert set(ptr[d]) == rate_keys
         for rk, cell in ptr[d].items():
             assert set(cell) == {
-                "statistic", "pvalue", "raw_pvalue", "qvalue", "rejected",
-                "effect_size", "d_equivalent", "effect_label",
+                "statistic",
+                "pvalue",
+                "raw_pvalue",
+                "qvalue",
+                "rejected",
+                "effect_size",
+                "d_equivalent",
+                "effect_label",
             }
             assert 0.0 <= cell["pvalue"] <= 1.0
             assert 0.0 <= cell["qvalue"] <= 1.0
@@ -570,7 +617,10 @@ def test_robustness_per_rate_paired_tests_structure():
             assert -1.0 <= cell["effect_size"] <= 1.0
             assert isinstance(cell["rejected"], bool)
             assert cell["effect_label"] in {
-                "negligible", "small", "medium", "large",
+                "negligible",
+                "small",
+                "medium",
+                "large",
             }
 
 
@@ -612,6 +662,7 @@ def test_robustness_report_is_strict_standards_json():
 
 
 # ---- error paths ----------------------------------------------------------
+
 
 def test_robustness_rejects_empty_rates():
     with pytest.raises(ValueError, match="rates must be non-empty"):
@@ -659,6 +710,7 @@ def test_robustness_unknown_divergence_label():
 # ===========================================================================
 # internal helpers (kept covered explicitly)
 # ===========================================================================
+
 
 def test_divergence_to_robustness_mapping():
     assert _divergence_to_robustness("KLD") == 0.0

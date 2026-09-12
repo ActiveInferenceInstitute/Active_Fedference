@@ -36,3 +36,27 @@ def test_free_energy_comparison_rejects_empty(tmp_path: Path) -> None:
 def test_free_energy_comparison_rejects_length_mismatch(tmp_path: Path) -> None:
     with pytest.raises(ValueError):
         generate_free_energy_comparison([1.0, 2.0], [1.0], project_root=tmp_path)
+
+
+def test_free_energy_comparison_accepts_report_owned_paired_interval(tmp_path: Path) -> None:
+    incom = [3.1, 3.0, 3.2, 2.9]
+    comm = [2.1, 2.0, 2.2, 1.9]
+    path = generate_free_energy_comparison(
+        incom,
+        comm,
+        paired_difference_mean=1.0,
+        paired_difference_ci=(0.8, 1.2),
+        project_root=tmp_path,
+    )
+    assert path.exists()
+
+
+def test_free_energy_comparison_cross_checks_paired_summary(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="disagrees"):
+        generate_free_energy_comparison(
+            [3.0, 4.0],
+            [2.0, 3.0],
+            paired_difference_mean=0.5,
+            paired_difference_ci=(0.2, 0.8),
+            project_root=tmp_path,
+        )

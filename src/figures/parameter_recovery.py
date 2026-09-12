@@ -1,10 +1,8 @@
 """Parameter recovery figure: recovered vs true acuity (Study 9).
 
-Two-panel figure that validates generative-model identifiability by showing
-how well the inference procedure recovers the true sensor acuity parameter
-from simulated data.  A well-identified model produces a tight scatter on the
-identity line (left panel) and uniformly small absolute errors across the full
-acuity range (right panel).
+Two-panel diagnostic of sensor-acuity recovery from the declared simulated
+data. The scatter and absolute errors describe recovery on the configured
+acuity grid; they do not establish global model identifiability.
 
 Left panel  — scatter of recovered acuity (y) vs true acuity (x) with
               per-point 95 % empirical percentile-interval error bars and the
@@ -23,17 +21,15 @@ from pathlib import Path
 import numpy as np
 
 from figures._common import (
-    COLOR_AXIS,
     COLOR_GRID,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
-    COLOR_VARIATE,
-    annotate_stats_box,
+    COLOR_MUTED,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+from figures._presentation_estimates import recovery_presentation
 
 __all__ = ["generate_parameter_recovery"]
 
@@ -56,9 +52,9 @@ def generate_parameter_recovery(
 ) -> Path:
     """Generate a two-panel parameter-recovery figure for sensor acuity.
 
-    Validates generative-model identifiability: if the model is identified,
-    recovered acuity tracks true acuity along the identity line and absolute
-    errors are uniformly small across the acuity range.
+    Describes recovery on the configured simulation grid. Proximity to the
+    identity line and observed absolute errors do not by themselves establish
+    global model identifiability.
 
     Args:
         true_acuity: True (ground-truth) acuity values, one per condition.
@@ -71,7 +67,7 @@ def generate_parameter_recovery(
             matching length.
         r_squared: Optional coefficient of determination (R²) of the
             recovered-vs-true regression; shown in the scatter title and
-            stats box when provided.
+            summary line when provided.
         mean_abs_error: Optional global mean absolute error across all levels;
             drawn as a horizontal reference line on the error bar chart when
             provided.
@@ -102,8 +98,7 @@ def generate_parameter_recovery(
     ):
         if len(seq) != n:
             raise ValueError(
-                f"Length mismatch: true_acuity has {n} elements but "
-                f"{name} has {len(seq)} elements."
+                f"Length mismatch: true_acuity has {n} elements but {name} has {len(seq)} elements."
             )
 
     # --- numpy arrays -------------------------------------------------------
@@ -113,16 +108,18 @@ def generate_parameter_recovery(
     ci_hi = np.asarray(recovered_acuity_ci_hi, dtype=np.float64)
     ae = np.asarray(abs_error, dtype=np.float64)
 
-    lo_err = ra - ci_lo   # downward error bar lengths (non-negative)
-    hi_err = ci_hi - ra   # upward error bar lengths (non-negative)
+    lo_err = ra - ci_lo  # downward error bar lengths (non-negative)
+    hi_err = ci_hi - ra  # upward error bar lengths (non-negative)
 
     # --- style --------------------------------------------------------------
     apply_style()
+    recovery_style = semantic_style("estimate")
+    reference_style = semantic_style("reference_rule")
+    error_style = semantic_style("operating_point_1")
 
-    fig, (ax_scatter, ax_error) = plt.subplots(
-        1, 2, figsize=(11.2, 5.3), facecolor="white"
-    )
-    fig.subplots_adjust(left=0.13, right=0.98, top=0.80, bottom=0.18, wspace=0.30)
+    fig, (ax_scatter, ax_error) = plt.subplots(1, 2, figsize=(7.8, 5.7), facecolor="white")
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.10, right=0.98, top=0.73, bottom=0.32, wspace=0.30)
 
     # ========================================================================
     # LEFT PANEL — scatter: recovered vs true
@@ -131,8 +128,10 @@ def generate_parameter_recovery(
         ta,
         ra,
         yerr=[lo_err, hi_err],
-        fmt="o",
-        color=COLOR_ROBUST,
+        fmt=recovery_style.marker,
+        color=recovery_style.color,
+        markerfacecolor="white",
+        markeredgecolor=recovery_style.keyline,
         ecolor=COLOR_GRID,
         elinewidth=1.2,
         capsize=3,
@@ -149,11 +148,11 @@ def generate_parameter_recovery(
     ax_scatter.plot(
         id_range,
         id_range,
-        color=COLOR_AXIS,
-        linewidth=1.2,
-        linestyle="--",
+        color=reference_style.color,
+        linewidth=reference_style.linewidth,
+        linestyle=reference_style.dash,
         zorder=2,
-        label="identity",
+        label="identity reference",
     )
 
     ax_scatter.set_xlabel("True acuity $\\alpha$", labelpad=5)
@@ -161,25 +160,26 @@ def generate_parameter_recovery(
 
     scatter_title = "Acuity recovery"
     if r_squared is not None:
-        scatter_title += f"\nR² = {r_squared:.3f}"
+        scatter_title += f"\nR² = {r_squared:.4f}"
     ax_scatter.set_title(scatter_title)
 
-    ax_scatter.legend(fontsize=9.5, loc="lower right")
+    ax_scatter.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.28))
 
-    # Stats text box — upper left
+    # Keep the study summary outside the data axes so intervals stay visible.
     stats_lines: list[str] = []
     if n_trials is not None:
-        stats_lines.append(f"trials = {n_trials}")
+        stats_lines.append(f"independent trials/acuity = {n_trials}")
     if n_observations is not None:
-        stats_lines.append(f"observations = {n_observations}")
+        stats_lines.append(f"observations/trial = {n_observations}")
     if mean_abs_error is not None:
         stats_lines.append(f"MAE = {mean_abs_error:.4f}")
     if r_squared is not None:
-        stats_lines.append(f"R² = {r_squared:.3f}")
+        stats_lines.append(f"R² = {r_squared:.4f}")
 
     if stats_lines:
-        stats_text = "\n".join(stats_lines)
-        annotate_stats_box(ax_scatter, stats_text, loc="upper left", fontsize=10)
+        stats_text = "\n".join("; ".join(stats_lines[i:i + 2])
+                               for i in range(0, len(stats_lines), 2))
+        fig.text(0.5, 0.915, stats_text, ha="center", va="top", fontsize=9.5)
 
     # ========================================================================
     # RIGHT PANEL — bar chart of absolute error per acuity level
@@ -189,7 +189,10 @@ def generate_parameter_recovery(
         ta,
         ae,
         width=bar_width,
-        color=COLOR_NAIVE,
+        color="white",
+        edgecolor=error_style.keyline,
+        hatch=error_style.hatch,
+        linewidth=1.1,
         alpha=0.80,
         zorder=3,
         label="|recovered − true|",
@@ -198,24 +201,40 @@ def generate_parameter_recovery(
     if mean_abs_error is not None:
         ax_error.axhline(
             mean_abs_error,
-            color=COLOR_VARIATE,
-            linewidth=1.4,
-            linestyle="--",
+            color=reference_style.color,
+            linewidth=reference_style.linewidth,
+            linestyle=reference_style.dash,
             zorder=4,
             label=f"mean MAE = {mean_abs_error:.4f}",
         )
-    ax_error.legend(fontsize=9.5, loc="upper right")
+    ax_error.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.28))
 
     ax_error.set_xlabel("True acuity $\\alpha$", labelpad=5)
     ax_error.set_ylabel("|recovered − true| (mean absolute error)", labelpad=5)
     ax_error.set_title("Absolute recovery error\nper acuity level", pad=8)
     fig.suptitle("Parameter recovery: sensor acuity", fontsize=15, fontweight="bold", y=0.98)
+    fig.text(
+        0.5,
+        0.035,
+        "Intervals vary independent simulation trials within each acuity condition;\n"
+        "observations are nested within trial.",
+        ha="center",
+        va="bottom",
+        fontsize=9.5,
+        color=COLOR_MUTED,
+    )
 
     # ========================================================================
     # Save
     # ========================================================================
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename)
+    path = save_figure(
+        fig,
+        out / filename,
+        manuscript_width_fraction=0.90,
+    )
+    recovery_presentation(path, ta, ra, ci_lo, ci_hi, ae, mean_abs_error, "\n".join(stats_lines))
+    return path
 
 
 if __name__ == "__main__":

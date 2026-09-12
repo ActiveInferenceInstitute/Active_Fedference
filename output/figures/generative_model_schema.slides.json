@@ -1,0 +1,137 @@
+{
+  "panels": [
+    {
+      "alt": "Hidden location s: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7c9f21cf73514ca8a8d70392547bff70ab45a1ab9db94a42a223e27123d808b6",
+      "src": "../figures/generative_model_schema.slide-hidden-location.png"
+    },
+    {
+      "alt": "Private outcome o: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0c0c5fa03c54b46051aef31fd977dd086106a00450690b80992827d56a4d44bd",
+      "src": "../figures/generative_model_schema.slide-outcome.png"
+    },
+    {
+      "alt": "Hidden location s \u2192 Private outcome o: A[o,s] = P(o|s); data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "70751889781ec1dd5ba4d0354e99b30733984d8560f99f16e3be8515e5fb16dd",
+      "src": "../figures/generative_model_schema.slide-sensor.png"
+    },
+    {
+      "alt": "A: sensory likelihood \u2192 Local posterior q(s): Model factor; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d00cb7a72b075d38cc0ed4100e37763eb65428e3debb68e6137e7ec84e4906f5",
+      "src": "../figures/generative_model_schema.slide-likelihood.png"
+    },
+    {
+      "alt": "B: state transition \u2192 Local inference / action: Model factor; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c7dfcc67f5b65dab06b246441e21fb83bae1b5f3c4f2ea07cb8525e9b4379bfb",
+      "src": "../figures/generative_model_schema.slide-dynamics.png"
+    },
+    {
+      "alt": "C: preferred outcomes \u2192 Local inference / action: Model factor; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "22dc6cd91312190d3eb94f6c6da3644d456e952b25805692400c1495d7d2e5bb",
+      "src": "../figures/generative_model_schema.slide-preferences.png"
+    },
+    {
+      "alt": "D0: initial prior \u2192 Local posterior q(s): Model factor; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a64356a9b19a79b24fb5ebc6f4a2fcad9b98d885ea1908b298d122c829db49c3",
+      "src": "../figures/generative_model_schema.slide-prior.png"
+    },
+    {
+      "alt": "Hidden state s(t) \u2192 Private report o(t): Observation; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "243f63c13d7c0c791a32ccfebd21181e231441579294b7baab5878c806649db9",
+      "src": "../figures/generative_model_schema.slide-time-sensing.png"
+    },
+    {
+      "alt": "Private report o(t) \u2192 Posterior q(t): Inference; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a91b6ea470dae27689cede429b53ad1901c848f33c2199ce54123dd28c697158",
+      "src": "../figures/generative_model_schema.slide-time-inference.png"
+    },
+    {
+      "alt": "Posterior q(t) \u2192 Control u(t): EFE-guided action; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "98b6069076049b1f13c73072264d51ff2ecb3f8feccc2dbff53d62cfd4fa37c1",
+      "src": "../figures/generative_model_schema.slide-time-control.png"
+    },
+    {
+      "alt": "Control u(t) \u2192 Next state s(t+1): B = P(s\u2032|s,u); data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0468d78ea60dd10ca17c7b353a19896b886c7953dd528c64c254c656bba336e6",
+      "src": "../figures/generative_model_schema.slide-time-transition.png"
+    },
+    {
+      "alt": "Meta-context s(L) \u2192 Context s(2): Top-down context; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ba9028ab303de34eaa0dbc0989d5dda4204df68a416e1e0f1ac08c4575b6d92f",
+      "src": "../figures/generative_model_schema.slide-meta-context.png"
+    },
+    {
+      "alt": "Context s(2) \u2192 Location s(1): Conditional prior; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fd965f82ca9366e3a1fd1e3ab25fea6660e6438ea40a5468d77ab693b92a7de9",
+      "src": "../figures/generative_model_schema.slide-context-location.png"
+    },
+    {
+      "alt": "Location s(1) \u2192 Local posterior q1: Location evidence; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "56f7e4a40c80dbf862bb51616c24588f7ec35e9c8039965b8600cab5fb9702c4",
+      "src": "../figures/generative_model_schema.slide-location-posterior.png"
+    },
+    {
+      "alt": "Context s(2) \u2192 Local posterior q1: Context conditions prior; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1683519b4669f46e9871c847e3119a5d0b31ed5d1ab013b1f8a000e51bc370fa",
+      "src": "../figures/generative_model_schema.slide-context-posterior.png"
+    },
+    {
+      "alt": "Meta-context s(L) \u2192 Local posterior q1: Optional higher context; retained_warning.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6f64c87114ef7da26dda7852bca38339afb92b8c405039a4032e1313f8943187",
+      "src": "../figures/generative_model_schema.slide-meta-posterior.png"
+    },
+    {
+      "alt": "Diagonal mass is sensor acuity; residual mass is categorical noise. Raw outcomes remain private; only posteriors are broadcast.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "cc5f9a6d163d01c473e625bd1d29e34f120d3a692ca62d4d8c3004272466e3c4",
+      "src": "../figures/generative_model_schema.slide-sensor-key.png"
+    },
+    {
+      "alt": "$q(s)=\\mathrm{softmax}(\\ln D_0+\\ln A[o,\\cdot])$",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "594a6e87ee7d82bcfa7283b07e0cab1a573b4fbc3a651bdafc13c0a0564f90b6",
+      "src": "../figures/generative_model_schema.slide-local-equation.png"
+    },
+    {
+      "alt": "Project recovery identity: robust_aggregate(0) = log_linear_pool. This limit does not reconstruct the full source protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8f5f9d3b116a998e7b473d2e2b504f9b69f1fd0d2197bede12da9e8eccceabda",
+      "src": "../figures/generative_model_schema.slide-recovery.png"
+    },
+    {
+      "alt": "$\\bar q_1=\\sum_kq_2[k]D_{1|k}$",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1aafe03feedb852763b7286e42d9cd723b6abad438419e274e8f230f86fc5105",
+      "src": "../figures/generative_model_schema.slide-mixture-equation.png"
+    },
+    {
+      "alt": "Flat studies stop after posterior sharing. Moving-world studies execute B and EFE-guided control. Hierarchy is an optional extension.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7b9db538b62e7968a6184bb4541159942f4fecb46877f0127e1c7e98836d4a78",
+      "src": "../figures/generative_model_schema.slide-optional.png"
+    },
+    {
+      "alt": "Schematic formalization, not an empirical estimate. Private sensory outcomes become posterior messages; fusion uses the shared categorical state.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "303f30b9a5b4a36712c892ffbb7363e093d40f09a3a065cb9e9ad12589c0c9cb",
+      "src": "../figures/generative_model_schema.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

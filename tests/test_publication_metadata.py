@@ -541,6 +541,15 @@ def test_zenodo_description_is_the_hydrated_manuscript_abstract() -> None:
     assert "Keywords:" not in zenodo["description"]
     assert "tested, reproducible research package" not in zenodo["description"]
     assert "{{PUBLICATION_" not in zenodo["description"]
+    assert "[@" not in zenodo["description"]
+
+
+def test_repository_metadata_does_not_expose_manuscript_cross_reference_syntax() -> None:
+    """Standalone discovery metadata must remain readable outside Pandoc."""
+
+    emitted = build_metadata(_PROJECT_ROOT)
+    for relative_path in ("CITATION.cff", ".zenodo.json", "codemeta.json"):
+        assert "[@" not in emitted[relative_path], relative_path
 
 
 def test_real_abstract_hypothetical_final_identity_never_retains_development_prose(

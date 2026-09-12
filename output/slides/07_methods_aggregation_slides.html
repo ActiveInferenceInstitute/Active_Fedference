@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Aggregation and message passing: standard pool, heuristic, and variational server — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-9f2e5283ec76">
+<h1 id="presentation-title-9f2e5283ec76" class="visually-hidden">Aggregation and message passing: standard pool, heuristic, and variational server — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:method-aggregation"
+class="slide level2 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec6530c8a650">
+<h2 class="section-divider" id="slide-heading-ec6530c8a650">Aggregation and message passing: standard
+pool, heuristic, and variational server</h2>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1648a301ca46">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 2" id="slide-heading-1648a301ca46">Aggregation
+and message… (part 2)</h2>
+<p>The server step lives in <code>aggregation.py</code>, where a
+categorical specialization of the active-inference belief-sharing
+relation <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span> and the
+FedGVI objective <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span> meet. Each
+agent <span class="math inline">\(n\)</span> broadcasts a categorical
+local posterior <span class="math inline">\(q_n(s)\)</span> over the
+shared latent factor,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bd50ebfaf41f">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 3" id="slide-heading-bd50ebfaf41f">Aggregation
+and message… (part 3)</h2>
+<p>optionally with a scalar base weight <span
+class="math inline">\(w_n\)</span>.</p>
+<p>Two fusion rules act directly on these broadcasts, and a third — the
+objective-backed <code>variational_aggregate</code> of <a class="cross-reference" href="#sec:method-variational">Section 5.8.2</a>
+— refines the second into descent on a stated objective.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7bf56a8d18e6">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 4" id="slide-heading-7bf56a8d18e6">Aggregation
+and message… (part 4)</h2>
+<p>The first is the <strong>log-linear pool</strong>, a project-local
+product-of-experts consensus. In the terminology of opinion pooling it
+is the logarithmic pool,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-152699be3239">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 5" id="slide-heading-152699be3239">Aggregation
+and message… (part 5)</h2>
+<p>a weighted geometric aggregation rule whose Bayesian-coherence
+assumptions have been studied independently of active inference <span
+class="citation"
+data-cites="genest1986combining genest1986externally carvalho2023logpooling">(Genest
+and Zidek 1986; Genest et al. 1986; Carvalho et al. 2023)</span>; in
+machine-learning terms it is the product-of-experts normalization of
+local posteriors <span class="citation"
+data-cites="hinton2002products">(Hinton 2002)</span>:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f80be0122f44">
+<h2 class="equation-led"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 6" id="slide-heading-f80be0122f44">Aggregation
+and message… (part 6)</h2>
+<p><span class="math display" id="eq:log-linear-pool">\[
+\begin{aligned}
+&amp;\operatorname{log\_linear\_pool}(\{q_n\})\\
+&amp;\qquad = \mathrm{softmax}\!\Big(\textstyle\sum_n w_n \log q_n\Big).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7dc4eb501c95">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 7" id="slide-heading-7dc4eb501c95">Aggregation
+and message… (part 7)</h2>
+<p>In the floating-point implementation, <span
+class="math inline">\(q_n\)</span> denotes the admitted posterior after
+input validation, lower flooring of masses, and row normalization. The
+floor acts before normalization and applies to small positive masses as
+well as exact zeros. The pooling formula uses those admitted
+posteriors;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-807e95de0a75">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 8" id="slide-heading-807e95de0a75">Aggregation
+and message… (part 8)</h2>
+<p>rescaling sufficiently small raw masses can change them.</p>
+<p>For the source bridge, fix one finite shared support <span
+class="math inline">\(\mathcal S\)</span> with <span
+class="math inline">\(q_n(s)&gt;0\)</span> for every agent and
+state.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0faf03972678">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 9" id="slide-heading-0faf03972678">Aggregation
+and message… (part 9)</h2>
+<p>Suppose the inputs to Eq. 7’s softmax message-combination term can be
+represented as posterior log potentials <span
+class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span>, where <span
+class="math inline">\(\kappa_n\)</span> is constant in <span
+class="math inline">\(s\)</span>, and use declared fixed weights <span
+class="math inline">\(w_n\)</span> that do not depend on the emerging
+consensus (the unweighted case sets each <span
+class="math inline">\(w_n=1\)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b7ed701c4a95">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 10" id="slide-heading-b7ed701c4a95">Aggregation
+and message… (part 10)</h2>
+<p>Additive constants then cancel under softmax, giving exactly <a class="cross-reference" href="#eq:log-linear-pool">Equation (9)</a>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0649a11584a4">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 11" id="slide-heading-0649a11584a4">Aggregation
+and message… (part 11)</h2>
+<p>This is a categorical posterior-log-potential specialization of the
+source equation’s message-combination term, not a reconstruction of
+source message construction, self-exclusion/cavity policy, scheduling,
+generative factors, or the complete protocol.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5da577320c20">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 12" id="slide-heading-5da577320c20">Aggregation
+and message… (part 12)</h2>
+<p>The code alias <code>friston_belief_share</code> names this qualified
+specialization only.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2b5a5056adb2">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 13" id="slide-heading-2b5a5056adb2">Aggregation
+and message… (part 13)</h2>
+<p>The second rule is <strong><code>robust_aggregate</code></strong>, an
+iteratively-reweighted pool that discounts each agent by <span
+class="math inline">\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\)</span>
+against the emerging consensus <span class="math inline">\(q\)</span>. A
+confidently-wrong (contaminated) agent sits far from the consensus,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6564591e2b56">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 14" id="slide-heading-6564591e2b56">Aggregation
+and message… (part 14)</h2>
+<p>can earn a small effective weight and be suppressed in the declared
+diagnostic regimes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5f9f236a5e76">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 15" id="slide-heading-5f9f236a5e76">Aggregation
+and message… (part 15)</h2>
+<p>This independently motivated rule does not transfer FedGVI’s client
+theorem to the server side: it is the <strong>heuristic robustness
+axis</strong> of <span class="cross-reference">Section 3.3</span>,
+distinct from the per-agent rigorous axis of <span class="cross-reference">Section 5.7</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea6f6ae2dad0">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 16" id="slide-heading-ea6f6ae2dad0">Aggregation
+and message… (part 16)</h2>
+<p>It is also only an analogy to robust federated aggregation methods
+such as divergence-weighted gamma-mean aggregation, geometric-median
+robust aggregation, or Byzantine-tolerant gradient aggregation <span
+class="citation"
+data-cites="li2022gammafl pillutla2022robust blanchard2017krum">(Li et
+al. 2022; Pillutla et al. 2022; Blanchard et al. 2017)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-71ae9723c3d1">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 17" id="slide-heading-71ae9723c3d1">Aggregation
+and message… (part 17)</h2>
+<p>Those methods motivate the risk surface, but they do not supply this
+rule’s guarantee.</p>
+<p>The defining identity is bit-level: at zero robustness the reweighted
+pool is the log-linear pool unchanged.</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4fd6445f29d4">
+<h2 class="equation-led"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 18" id="slide-heading-4fd6445f29d4">Aggregation
+and message… (part 18)</h2>
+<p><span class="math display" id="eq:robust-identity">\[
+\operatorname{robust\_aggregate}(0)
+\;\equiv\;
+\operatorname{log\_linear\_pool}.
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a32df273588">
+<h2 class="prose-slide"
+aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 19" id="slide-heading-5a32df273588">Aggregation
+and message… (part 19)</h2>
+<p>This is an exact project-local code identity. Under the stated
+posterior-log-potential assumptions, its right-hand side specializes the
+message-combination term of Eq. 7; the identity itself neither recovers
+nor certifies the complete source protocol <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>.</p>
+</section>
+<section id="sec:method-message-passing"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-77677dd1de30">
+<h2 class="prose-slide" id="slide-heading-77677dd1de30">Protocol map: local updates, broadcast, and
+server fusion</h2>
+<p>The visual map in <span class="cross-reference">Figure 3</span>
+makes the protocol boundary explicit: each client updates and broadcasts
+a categorical posterior; the server chooses the standard pool,
+heuristic, or variational route.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-728384022d4e">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 2" id="slide-heading-728384022d4e">Protocol
+map (part 2)</h2>
+<p>This is a mechanistic schematic, not an additional benchmark:
+client-side FedGVI is source- conditional, server-heuristic accuracy is
+conditional on declared contamination,</p>
+<p>and the variational route owns objective/descent/raw-weight
+properties.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-61a9126678e8">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 3" id="slide-heading-61a9126678e8">Protocol
+map (part 3)</h2>
+<figure id="fig:message-passing-slide-panel-1">
+<img src="../figures/message_passing.slide-posterior-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="489fb41121f880f2ba860dbbea4a6a9d7ba6cae2e585bc3378c642f405bd6ec7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="835"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="1.7616034"
+alt="Private update: local q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b19be00aaf47">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 4" id="slide-heading-b19be00aaf47">Protocol
+map (part 4)</h2>
+<figure id="fig:message-passing-slide-panel-2">
+<img src="../figures/message_passing.slide-broadcast-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1d23a913c76fcc729b3d8c5a1ee2ac31e546e6b4d933bad8a09e9d0baf3ace49"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior q1 → Posterior-only broadcast: Private outcome stays local; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0fb353896f36">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 5" id="slide-heading-0fb353896f36">Protocol
+map (part 5)</h2>
+<figure id="fig:message-passing-slide-panel-3">
+<img src="../figures/message_passing.slide-posterior-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="250ff4e725c1e1d854258e9a532de7c02f83285cb7370cf480de829bdfd6039e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="835"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="1.7616034"
+alt="Private update: local q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-53bc0bf36c16">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 6" id="slide-heading-53bc0bf36c16">Protocol
+map (part 6)</h2>
+<figure id="fig:message-passing-slide-panel-4">
+<img src="../figures/message_passing.slide-broadcast-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ef658522de8637bba01c300185bf510999fb6418b1a0fc9cf9b2e4afc5ae2a70"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior q2 → Posterior-only broadcast: Private outcome stays local; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-782e6adc6226">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 7" id="slide-heading-782e6adc6226">Protocol
+map (part 7)</h2>
+<figure id="fig:message-passing-slide-panel-5">
+<img src="../figures/message_passing.slide-posterior-n.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5e75ca3efe958c510de249bb685f334723d81526aeb99ea7e2508198d9c1ef35"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="835"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="1.7616034"
+alt="Private update: local qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-69dc5bc0c240">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 8" id="slide-heading-69dc5bc0c240">Protocol
+map (part 8)</h2>
+<figure id="fig:message-passing-slide-panel-6">
+<img src="../figures/message_passing.slide-broadcast-n.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d1dd808e16fae211cb0067ee4d1f11a856364013e3c023672ccb565d073c731d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior qn → Posterior-only broadcast: Private outcome stays local; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3959a9b208aa">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 9" id="slide-heading-3959a9b208aa">Protocol
+map (part 9)</h2>
+<figure id="fig:message-passing-slide-panel-7">
+<img src="../figures/message_passing.slide-client-recovery.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e643458f6b9af2c8008e9ea7282a5b1e655ce952b0980537039d94963130319a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1099"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.2090395"
+alt="Client route: NLL/KLD/β = 0 is a project recovery identity." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b69aeb282c05">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 10" id="slide-heading-b69aeb282c05">Protocol
+map (part 10)</h2>
+<figure id="fig:message-passing-slide-panel-8">
+<img src="../figures/message_passing.slide-client-theorem.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8e55f88d85f5ee7a59415c3f01333e6a76898debf2b691f7f09b419afe790792"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1274"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8606061"
+alt="Robust client losses: source theorem under its assumptions. Client guarantees do not transfer to server routes." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2cb00bc96a8d">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 11" id="slide-heading-2cb00bc96a8d">Protocol
+map (part 11)</h2>
+<figure id="fig:message-passing-slide-panel-9">
+<img src="../figures/message_passing.slide-transport.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="47c1c47c6baa0111069fa06f3c941d01da1723f55df9c910ae484938f5a3c0c5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1206"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7480315"
+alt="Protocol-v1 payload: categorical posterior q(n). No private outcome o(n) is broadcast." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c696c831f0a0">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 12" id="slide-heading-c696c831f0a0">Protocol
+map (part 12)</h2>
+<figure id="fig:message-passing-slide-panel-10">
+<img src="../figures/message_passing.slide-route-naive.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6c11db6eff8fcbe8e37365df4c0f75c12729a7a9a06ad6dc8c6b5ec096b2ae43"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Posterior-only broadcast → Log-linear pool: N · Server route; naive." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8fba649f2b3f">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 13" id="slide-heading-8fba649f2b3f">Protocol
+map (part 13)</h2>
+<figure id="fig:message-passing-slide-panel-11">
+<img src="../figures/message_passing.slide-owner-naive.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="14ef519313c8891a26068a83b7e7aab53bcffbe8b7d6eec28ec9c3952f3d14ef"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1202"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7322835"
+alt="N: softmax of the weighted sum of log posteriors. Qualified categorical Eq. 7 specialization." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-988a73b865c5">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 14" id="slide-heading-988a73b865c5">Protocol
+map (part 14)</h2>
+<figure id="fig:message-passing-slide-panel-12">
+<img src="../figures/message_passing.slide-return-naive.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c9a8231b20c97360190161045cfcff693271d18b79999cac3a7c35633d180bf1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Log-linear pool → Recipient n: N · Senders m ≠ n only; naive." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a591af7a00ea">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 15" id="slide-heading-a591af7a00ea">Protocol
+map (part 15)</h2>
+<figure id="fig:message-passing-slide-panel-13">
+<img
+src="../figures/message_passing.slide-route-heuristic-robust.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="18b19c4e6dc64917c8e267557bc9ec7fb97ab772d35b9dc5c00382dbef3bffe2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Posterior-only broadcast → Heuristic robust: H · Server route; heuristic_robust." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f812261a19d4">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 16" id="slide-heading-f812261a19d4">Protocol
+map (part 16)</h2>
+<figure id="fig:message-passing-slide-panel-14">
+<img
+src="../figures/message_passing.slide-owner-heuristic-robust.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8fbfdaf49241ec9f75e65f8b20f5c8343f4ee0487d80c7ac4c462648c07d5921"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="256"
+data-slide-figure-intrinsic-aspect="4.9960938"
+alt="H: robust_aggregate uses configured divergence reweighting. Conditional heuristic evidence." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c692380346b7">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 17" id="slide-heading-c692380346b7">Protocol
+map (part 17)</h2>
+<figure id="fig:message-passing-slide-panel-15">
+<img
+src="../figures/message_passing.slide-return-heuristic-robust.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8bd9faf85c9bbb4faefe29c7fd1b81294c55f046d4c7ce211c1757d0a2ab1a86"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Heuristic robust → Recipient n: H · Senders m ≠ n only; heuristic_robust." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db56fd63e8a8">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 18" id="slide-heading-db56fd63e8a8">Protocol
+map (part 18)</h2>
+<figure id="fig:message-passing-slide-panel-16">
+<img src="../figures/message_passing.slide-route-variational.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5a0f7efa36c5a28bf5ac0cb2074e5c66c0cfc60d6730c50216ecad24708328f7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Posterior-only broadcast → Variational server: V · Server route; variational." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a5d4d8290bd9">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 19" id="slide-heading-a5d4d8290bd9">Protocol
+map (part 19)</h2>
+<figure id="fig:message-passing-slide-panel-17">
+<img src="../figures/message_passing.slide-owner-variational.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="65f93e5c40e91b0bed48e86c519b600eaacfe3b0ca0c0bfe5ecb79e3c24d52cb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1189"
+data-slide-figure-intrinsic-height="256"
+data-slide-figure-intrinsic-aspect="4.6445312"
+alt="V: variational_aggregate uses q,a block updates of F(q,a). Objective-backed weight property." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7972123b9b7">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 20" id="slide-heading-d7972123b9b7">Protocol
+map (part 20)</h2>
+<figure id="fig:message-passing-slide-panel-18">
+<img src="../figures/message_passing.slide-return-variational.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="637f3283cec5e7c8afd42dd49f65290a86c74d0209863d54ca251c12d2da3b43"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Variational server → Recipient n: V · Senders m ≠ n only; variational." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8cb51bfc162a">
+<h2 class="figure-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 21" id="slide-heading-8cb51bfc162a">Protocol
+map (part 21)</h2>
+<figure id="fig:message-passing-slide-panel-19">
+<img src="../figures/message_passing.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="091179f9fe1d75fae467e20f1e62423b8913799f8a07ede1d922be2983e8f630"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1284"
+data-slide-figure-intrinsic-height="483"
+data-slide-figure-intrinsic-aspect="2.6583851"
+alt="Deterministic protocol schematic; no empirical estimate or uncertainty interval. Self-exclusion is preserved. The Eq. 7 bridge does not reconstruct the full source protocol." />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-efdb47f87a4b">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 22" id="slide-heading-efdb47f87a4b">Protocol
+map (part 22)</h2>
+<div class="formal-statement formal-theorem" data-formal-kind="theorem" id="thm:belief-sharing-recovery"><p class="formal-statement-label"><strong>Theorem</strong> <span class="formal-statement-name">(Categorical combination and recovery)</span></p><p>For finite <span class="math inline">\(\mathcal S\)</span> and <span class="math inline">\(q_n(s)&gt;0\)</span>, take Eq. 7 inputs <span class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span>, with state-constant <span class="math inline">\(\kappa_n\)</span> and fixed <span class="math inline">\(w_n\)</span>. <span class="math inline">\(\operatorname{softmax}(\sum_n w_n m_n)\)</span> equals (<a class="cross-reference" href="#eq:log-linear-pool">9</a>). At <span class="math inline">\(c=0\)</span>, the server returns it by (<a class="cross-reference" href="#eq:robust-identity">10</a>). This identifies categorical combination and recovery only, not the protocol or <span class="math inline">\(c&gt;0\)</span> behavior.</p></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8ed171d4c7f4">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 23" id="slide-heading-8ed171d4c7f4">Protocol
+map (part 23)</h2>
+<p>At <span class="math inline">\(c=0\)</span>, every reweighting
+multiplier is <span class="math inline">\(\exp(0)=1\)</span>, the
+iteration is skipped, and the same pool code path returns.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cc789fd32af1">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 24" id="slide-heading-cc789fd32af1">Protocol
+map (part 24)</h2>
+<div class="formal-statement formal-corollary" data-formal-kind="corollary" id="cor:closed-form-bayes"><p class="formal-statement-label"><strong>Corollary</strong> <span class="formal-statement-name">(Closed-form Bayes recovery)</span></p><p>With KL/NLL, the posterior of (<span class="cross-reference">2</span>) is the prior-times-likelihood product in (<a class="cross-reference" href="#eq:standard-bayes">11</a>). Thus <code>generalized_posterior(KLD, NLL)</code> reproduces Bayes. Under Theorem <a class="cross-reference" href="#thm:belief-sharing-recovery">5</a>, pooling those posteriors specializes Eq. 7&#x27;s categorical combination term, not its complete protocol.</p></div>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-96d7ebd48aa4">
+<h2 class="equation-led"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 25" id="slide-heading-96d7ebd48aa4">Protocol
+map (part 25)</h2>
+<p><span class="math display" id="eq:standard-bayes">\[
+q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0503a4b2ac4c">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 26" id="slide-heading-0503a4b2ac4c">Protocol
+map (part 26)</h2>
+<p>Pooling gives the project log-linear pool of <a class="cross-reference" href="#eq:log-linear-pool">Equation (9)</a>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-16cdc73e8d03">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 27" id="slide-heading-16cdc73e8d03">Protocol
+map (part 27)</h2>
+<p>The largest observed discrepancy between
+<code>robust_aggregate(robustness=0)</code> and
+<code>log_linear_pool</code> is 0 — bit-identical, since the
+zero-robustness branch runs the same code path — and between
+<code>generalized_posterior(KLD, NLL)</code> and the analytic Bayes
+posterior is 5.55e-17,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-afc042ac497e">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 28" id="slide-heading-afc042ac497e">Protocol
+map (part 28)</h2>
+<p>exact to machine precision (about one ULP); both are reported in
+<span class="cross-reference">Section 7.1</span>,
+so <a class="cross-reference" href="#eq:robust-identity">Equation (10)</a>
+and <a class="cross-reference" href="#eq:standard-bayes">Equation (11)</a>
+are verified identities rather than approximations.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-247caf89e24b">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 29" id="slide-heading-247caf89e24b">Protocol
+map (part 29)</h2>
+<p>The honesty contract binds at exactly this point. The recovery
+theorem and its corollary cover only the recovery identity and the
+per-agent rigorous axis of <span class="cross-reference">Section 5.7</span>;
+no statement <em>about <code>robust_aggregate</code></em> transfers a
+bounded-influence guarantee to that divergence-reweighting,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-78c0bfa0b8ab">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 30" id="slide-heading-78c0bfa0b8ab">Protocol
+map (part 30)</h2>
+<p>whose positive property is the <span
+class="math inline">\(\texttt{robustness}=0\)</span> limit of <a class="cross-reference" href="#eq:robust-identity">Equation (10)</a>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d256a4cbdf3c">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 31" id="slide-heading-d256a4cbdf3c">Protocol
+map (part 31)</h2>
+<p>A scoped no-go rejects a declared separable objective class without
+supplying a broader objective certificate. The per-agent influence
+weights that the heuristic produces under contamination are
+<em>illustrated</em>, not guaranteed, in <span class="cross-reference">Figure 15</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f99bdbb196f3">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 32" id="slide-heading-f99bdbb196f3">Protocol
+map (part 32)</h2>
+<p>The separate <span class="cross-reference">Figure 18</span>
+is an exploratory generalized-Bayes point-estimate logistic-regression
+baseline comparing joint NLL/L2 and RCCE/L2 configurations. Because both
+loss and shrinkage differ, it does not isolate an RCCE-only effect or
+test the genuine per-client FedGVI property,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d6cd86652ef5">
+<h2 class="prose-slide"
+aria-label="Protocol map: local updates, broadcast, and server fusion, part 33" id="slide-heading-d6cd86652ef5">Protocol
+map (part 33)</h2>
+<p>which remains source-conditional in <span class="cross-reference">Section 5.7</span>.</p>
+<p>The next subsection closes this exact gap on the server side with a
+<em>different</em>, objective-backed aggregator.</p>
+</section>
+<section id="sec:method-variational" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cf225bf7f324">
+<h2 class="prose-slide" id="slide-heading-cf225bf7f324">Variational aggregation with objective-backed
+weight control</h2>
+<p>The related server construction becomes a genuinely variational rule
+by replacing the heuristic’s reverse-KL weight update with a forward
+cross-entropy update. For <span class="math inline">\(c&gt;0\)</span>
+and <span class="math inline">\(\lambda&gt;0\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b50c861e2a9f">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 2" id="slide-heading-b50c861e2a9f">Variational
+aggregation with… (part 2)</h2>
+<p>treat the consensus <span class="math inline">\(q\)</span> and a
+vector of effective weights <span class="math inline">\(a =
+(a_n)\)</span> as joint variational parameters and define the
+<strong>aggregation free energy</strong></p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Variational aggregation with objective-backed weight control, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-943483eb5352">
+<h2 class="equation-led"
+aria-label="Variational aggregation with objective-backed weight control, part 3" id="slide-heading-943483eb5352">Variational
+aggregation with… (part 3)</h2>
+<p><span class="math display" id="eq:agg-free-energy">\[
+\begin{aligned}
+F_\lambda(q, a)
+&amp;= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
+&amp;\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-96959c1e64ca">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 4" id="slide-heading-96959c1e64ca">Variational
+aggregation with… (part 4)</h2>
+<p>where <span class="math inline">\(\mathrm{CE}(q, q_n) = -\sum_i q_i
+\log q_{n,i}\)</span> is the cross-entropy of the consensus relative to
+agent <span class="math inline">\(n\)</span>, <span
+class="math inline">\(H(q)\)</span> is the consensus entropy, <span
+class="math inline">\(c\)</span> is the robustness, and <span
+class="math inline">\(\lambda&gt;0\)</span> is the
+<code>entropy_weight</code> coefficient (default <span
+class="math inline">\(\lambda=1.0\)</span>);</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-32ad98eb2a99">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 5" id="slide-heading-32ad98eb2a99">Variational
+aggregation with… (part 5)</h2>
+<p><span class="math inline">\(\mathrm{KL_{gen}}(a \,\|\, w) = \sum_n
+[a_n \log(a_n/w_n) - a_n + w_n]\)</span> is the generalized KL between
+the effective and base weights.</p>
+<p>Each block of <span class="math inline">\(F_\lambda\)</span> has a
+closed-form minimizer, so alternating</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Variational aggregation with objective-backed weight control, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a616a18b9d54">
+<h2 class="equation-led"
+aria-label="Variational aggregation with objective-backed weight control, part 6" id="slide-heading-a616a18b9d54">Variational
+aggregation with… (part 6)</h2>
+<p><span class="math display" id="eq:agg-updates">\[
+\begin{aligned}
+q
+&amp;\leftarrow \mathrm{softmax}\!\Big(
+  \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
+a_n
+&amp;\leftarrow w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a70baac2cd71">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 7" id="slide-heading-a70baac2cd71">Variational
+aggregation with… (part 7)</h2>
+<p>is exact block-coordinate descent on <a class="cross-reference" href="#eq:agg-free-energy">Equation (12)</a>
+(<code>variational_aggregate</code>) for <span
+class="math inline">\(c&gt;0\)</span> and <span
+class="math inline">\(\lambda&gt;0\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-79b733b8521d">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 8" id="slide-heading-79b733b8521d">Variational
+aggregation with… (part 8)</h2>
+<p>The implementation defines the <span
+class="math inline">\(\lambda\downarrow0\)</span> endpoint separately as
+a deterministic tied-argmax rule; <span
+class="math inline">\(\lambda=0\)</span> is not substituted into the
+objective or its <span class="math inline">\(q\)</span>-update.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-74edfb5d45a7">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 9" id="slide-heading-74edfb5d45a7">Variational
+aggregation with… (part 9)</h2>
+<p>This substitution changes both orientation and scale: <span
+class="math inline">\(\mathrm{CE}(q,q_n)=\mathrm{KL}(q\|q_n)+H(q)\)</span>,
+and its common <span class="math inline">\(H(q)\)</span> term scales all
+raw weights, which changes the entropy of the subsequent unnormalized
+weighted log pool.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f2f79ff3a074">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 10" id="slide-heading-f2f79ff3a074">Variational
+aggregation with… (part 10)</h2>
+<p>The paired <span class="math inline">\(q\)</span>- and <span
+class="math inline">\(a\)</span>-updates in <a class="cross-reference" href="#eq:agg-updates">Equation (13)</a>
+are exact block minimizers of the stated objective; that fact does not
+derive the reverse-KL heuristic.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8949405ce4f4">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 11" id="slide-heading-8949405ce4f4">Variational
+aggregation with… (part 11)</h2>
+<p>Because <span class="math inline">\(F\)</span> is biconvex, we run
+the descent <strong>multi-start</strong> (pool, uniform, and
+arithmetic-mean seeds, lowest observed <span
+class="math inline">\(F\)</span> among converged starts;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4d41b89b5552">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 12" id="slide-heading-4d41b89b5552">Variational
+aggregation with… (part 12)</h2>
+<p>otherwise the lowest unfinished trace is returned with
+<code>converged=False</code>) so a near-one-hot adversary is not left at
+the product-of-experts seed in the tested contamination regimes — the
+detail that supports the effective-weight diagnostic (<span class="cross-reference">Section 12</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7116c9589ef">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 13" id="slide-heading-d7116c9589ef">Variational
+aggregation with… (part 13)</h2>
+<p>The full derivation, the formal statement (block descent, <span
+class="math inline">\(c\to0\)</span> recovery, and the raw
+effective-weight bound), and the numerical witnesses are in <span class="cross-reference">Section 12</span>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-759ac51970a1">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 14" id="slide-heading-759ac51970a1">Variational
+aggregation with… (part 14)</h2>
+<p>the empirical descent and influence collapse are shown in <span class="cross-reference">Figure 16</span>
+and <span class="cross-reference">Figure 17</span>
+and reported in <span class="cross-reference">Section 7.5.3</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5bf74684e6c0">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 15" id="slide-heading-5bf74684e6c0">Variational
+aggregation with… (part 15)</h2>
+<p>The authoritative notation supplement records the complete objective
+contract in <span class="cross-reference">Equation (34)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f252607b16a5">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 16" id="slide-heading-f252607b16a5">Variational
+aggregation with… (part 16)</h2>
+<p>This upgrades the server side from an untracked heuristic to a
+derived generalized-Bayes aggregation with an explicit redescending
+raw-weight property: a single confidently-wrong agent earns raw weight
+<span class="math inline">\(a_n = w_n\exp(-c\,\mathrm{CE}(q,q_n)) \le
+w_n\)</span> that vanishes as it diverges,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-37e01d4b86bb">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 17" id="slide-heading-37e01d4b86bb">Variational
+aggregation with… (part 17)</h2>
+<p>whereas the naive pool grants every agent the fixed weight <span
+class="math inline">\(w_n\)</span> however wrong it is.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bdde5c2f7f4b">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 18" id="slide-heading-bdde5c2f7f4b">Variational
+aggregation with… (part 18)</h2>
+<p>The trade is conservatism — the <span
+class="math inline">\(-H(q)\)</span> term makes the stationary point a
+maximum-entropy-biased consensus consistent with the weighted
+cross-entropies, so <code>variational_aggregate</code> is deliberately
+flatter than the product-of-experts and does <em>not</em> maximize peak
+point-accuracy.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aca58af2389a">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 19" id="slide-heading-aca58af2389a">Variational
+aggregation with… (part 19)</h2>
+<p>The two server-side rules therefore play complementary,
+never-conflated roles, both reported:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-01c0a817a798">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 20" id="slide-heading-01c0a817a798">Variational
+aggregation… (part 20)</h2>
+<p>the sharp <code>robust_aggregate</code> heuristic for accuracy under
+contamination (<span class="cross-reference">Section 7.5.2</span>)
+and the conservative <code>variational_aggregate</code> for a
+server-side objective with stated weight control (<span class="cross-reference">Section 7.5.3</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db202172bff8">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 21" id="slide-heading-db202172bff8">Variational
+aggregation with… (part 21)</h2>
+<p>A temperature parameter <span
+class="math inline">\(\lambda&gt;0\)</span> (controlled by
+<code>entropy_weight</code>, default <span class="math inline">\(\lambda
+= 1.0\)</span>) generalizes the objective to <span
+class="math inline">\(F_\lambda\)</span>; lower <span
+class="math inline">\(\lambda\)</span> sharpens the variational <span
+class="math inline">\(q\)</span>-block toward a maximizing state for its
+current weighted log pool.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4529dec21e34">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 22" id="slide-heading-4529dec21e34">Variational
+aggregation… (part 22)</h2>
+<p>The tempered family (<span class="cross-reference">Section 12.5</span>;
+objective <span class="cross-reference">Equation (30)</span>)
+recovers the full-entropy variational aggregator at <span
+class="math inline">\(\lambda = 1.0\)</span> and has a separately
+implemented deterministic tied-argmax endpoint as <span
+class="math inline">\(\lambda\downarrow0\)</span>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-30f480561037">
+<h2 class="prose-slide"
+aria-label="Variational aggregation with objective-backed weight control, part 23" id="slide-heading-30f480561037">Variational
+aggregation… (part 23)</h2>
+<p>neither endpoint is guaranteed accurate and neither is an algebraic
+recovery of <code>robust_aggregate</code>.</p>
+<p>The effective-weight <span class="math inline">\(a\)</span>-update is
+unchanged for every <span class="math inline">\(\lambda&gt;0\)</span>,
+so the raw-weight bound holds over the objective-defined family.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import matplotlib.image as mpimg
 import pytest
 
 from figures.cross_study_summary import (
+    _UNIT_TITLES,
+    _display_label,
     _value_annotation_position,
     generate_cross_study_summary,
 )
@@ -39,6 +42,25 @@ def test_cross_study_summary_happy_path(tmp_path: Path) -> None:
     path = generate_cross_study_summary(_report(), project_root=tmp_path, n_seeds=2)
     assert path.exists(), "PNG file was not created"
     assert path.read_bytes()[:8] == _PNG_MAGIC, "file is not a valid PNG"
+    pixels = mpimg.imread(path)
+    assert pixels.shape[1] > pixels.shape[0]
+
+
+def test_cross_study_titles_use_signed_estimands_not_benefit_vocabulary() -> None:
+    visible_titles = " ".join(_UNIT_TITLES.values()).casefold()
+    assert "benefit" not in visible_titles
+    assert "signed" in visible_titles
+
+
+def test_study_four_label_discloses_within_run_display_selection() -> None:
+    label = _display_label({"study": 4, "label": "Study 4\nRobustness sweep"})
+    assert "within-run display-selected maximum" in " ".join(label.casefold().split())
+    caption = (
+        Path(__file__).resolve().parents[2] / "manuscript" / "S13_results_sensitivity.md"
+    ).read_text(encoding="utf-8")
+    assert "Study 4 row is the within-run" in caption
+    assert "display-selected maximum" in caption
+    assert "neither a preselected method nor an inferential winner" in caption
 
 
 def test_cross_study_summary_custom_filename(tmp_path: Path) -> None:

@@ -135,7 +135,15 @@ def test_render_receipt_cli_refuses_an_unvalidated_render_tree(tmp_path: Path) -
     recorder = _load_script("record_pipeline_stage.py")
 
     with pytest.raises(ValueError, match="cannot record render before rendered-surface validation passes"):
-        recorder.main(["render", "--project-root", str(tmp_path)])
+        recorder.main(
+            [
+                "render",
+                "--project-root",
+                str(tmp_path),
+                "--template-root",
+                str(tmp_path / "missing-template"),
+            ]
+        )
 
 
 def test_render_receipt_cli_requires_producer_logs(tmp_path: Path) -> None:
@@ -153,7 +161,15 @@ def test_render_receipt_cli_requires_producer_logs(tmp_path: Path) -> None:
     shutil.copytree(_PROJECT_ROOT / "output" / "web", root / "output" / "web")
 
     with pytest.raises(ValueError) as exc_info:
-        recorder.main(["render", "--project-root", str(root)])
+        recorder.main(
+            [
+                "render",
+                "--project-root",
+                str(root),
+                "--template-root",
+                str(tmp_path / "missing-template"),
+            ]
+        )
     detail = str(exc_info.value)
     assert "missing combined manuscript logs" in detail
     assert "missing generated slide logs" in detail

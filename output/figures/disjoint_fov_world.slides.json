@@ -1,0 +1,47 @@
+{
+  "panels": [
+    {
+      "alt": "communication: both condition means with seed standard-deviation whiskers on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "6e2c49a22d06cafced4de55b9ec03ea14ac3a40c92070eaf1022e1fdb9fea335",
+      "src": "../figures/disjoint_fov_world.slide-communication.png"
+    },
+    {
+      "alt": "ISO mean 0.3262, SD 0.03472; COM mean 0.4928, SD 0.0349. COM\u2212ISO = +0.1666.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f9d0d14adca3377618e1132413bdc014de68dd99a355e7cdadb90278ec4ab763",
+      "src": "../figures/disjoint_fov_world.slide-communication-values.png"
+    },
+    {
+      "alt": "movement: both condition means with seed standard-deviation whiskers on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e3e9548b210a26da64e12d7b49d78df341a40acea465666f82c949a1dab7a06d",
+      "src": "../figures/disjoint_fov_world.slide-movement.png"
+    },
+    {
+      "alt": "EFE mean 0.9749, SD 0.01134; RND mean 0.9768, SD 0.01019. EFE\u2212RND = -0.001953.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f60b235e37dcbe059452a18f546e8dd578f2dfea81478146c7491d05af93a9e8",
+      "src": "../figures/disjoint_fov_world.slide-movement-values.png"
+    },
+    {
+      "alt": "ISO: isolated; COM: communicating; EFE: EFE-guided; RND: random movement. Hatches preserve condition identity.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a354eea881ffa38de5ee0df2d27b4ee60f168d13c43c9721713dbc03653a38f2",
+      "src": "../figures/disjoint_fov_world.slide-key.png"
+    },
+    {
+      "alt": "Whiskers show standard deviations across configured seeds, not confidence intervals. Accuracy is a fraction correct.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6e91f2ef9f4719e57487cc2a76a357898b8b5a6fbaaf6c3586bf25dedc949a18",
+      "src": "../figures/disjoint_fov_world.slide-uncertainty.png"
+    },
+    {
+      "alt": "Separate communication and movement-policy contrasts in the declared disjoint-view worlds. A near-ceiling movement contrast does not imply a general navigation advantage.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "19e3904064921f7adb7e257ae1255252327fc4c3571a866a8b6050a792983c57",
+      "src": "../figures/disjoint_fov_world.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

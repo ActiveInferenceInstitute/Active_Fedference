@@ -1,0 +1,83 @@
+{
+  "panels": [
+    {
+      "alt": "byzantine: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "45c842132584803449a4a5374f9ef3008935168677e752f8df8a81a9fdc7e0e9",
+      "src": "../figures/contamination_gallery.slide-mechanism-1.png"
+    },
+    {
+      "alt": "byzantine: selected preset beta; descriptive win fraction 0.62; below bar.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3c88f7a9a874902f7a1fcfbe390629e69278695b55d7e966994b4f7be1ee1d27",
+      "src": "../figures/contamination_gallery.slide-mechanism-1-selection.png"
+    },
+    {
+      "alt": "confident_wrong: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "a21d414f290b6751007b2746c698024dcecbdabc90c0d525677f493a70d8564e",
+      "src": "../figures/contamination_gallery.slide-mechanism-2.png"
+    },
+    {
+      "alt": "confident wrong: selected preset AR; descriptive win fraction 1.00; flagged.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bc4435b47d695a3efaa27c7e35845d35fe989265cd4262487d3084957fcc2897",
+      "src": "../figures/contamination_gallery.slide-mechanism-2-selection.png"
+    },
+    {
+      "alt": "drift: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "9c1d81018fda5da2f02e59b9aae38e375fa396a3b253fa227d75f2e58058f0af",
+      "src": "../figures/contamination_gallery.slide-mechanism-3.png"
+    },
+    {
+      "alt": "drift: selected preset AR; descriptive win fraction 1.00; flagged.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "55d3c9eb06580261f158c27d5b08b29d449639308107d7fab81a18ae35b2b0a9",
+      "src": "../figures/contamination_gallery.slide-mechanism-3-selection.png"
+    },
+    {
+      "alt": "label_noise: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "2c6aeb838a9733b9ce10c0e12039712156d97dc67c14dcfd042605615cb99110",
+      "src": "../figures/contamination_gallery.slide-mechanism-4.png"
+    },
+    {
+      "alt": "label noise: selected preset AR; descriptive win fraction 0.00; below bar.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3f607b33c0421a2d80c79c2cb3bdc7d9a24c7796d399c12f58540b6a74c6ada0",
+      "src": "../figures/contamination_gallery.slide-mechanism-4-selection.png"
+    },
+    {
+      "alt": "uniform: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "73f9e937ac3b7c93f2b75a3075a0051ec318bc5aca26539b22e4e4f858c5ab74",
+      "src": "../figures/contamination_gallery.slide-mechanism-5.png"
+    },
+    {
+      "alt": "uniform: selected preset AR; descriptive win fraction 0.00; below bar.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0e7bab7b72253937d615de3d4f7a9a22e87a750c20b2bf36b49c79a6784f2728",
+      "src": "../figures/contamination_gallery.slide-mechanism-5-selection.png"
+    },
+    {
+      "alt": "Open reference bars retain their hatch. Selected presets use full fill when flagged and pale dotted fill below the display bar. Color is not the sole flag encoding.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "42d579e6dc5ef843bc930ea45f4cd948a54d34f533a8efb328882cec9c06dc50",
+      "src": "../figures/contamination_gallery.slide-key.png"
+    },
+    {
+      "alt": "Each bar has its own 95% seed-bootstrap interval.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7eee8e928d01a5b4ee48ca235e5e45927b6e61ac48c59a773ae400e6eb025842",
+      "src": "../figures/contamination_gallery.slide-uncertainty.png"
+    },
+    {
+      "alt": "Display flags: 2/5. Win fractions are descriptive, not p-values. Selected presets do not define fixed-preset confirmatory contrasts.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f25eafd825089950b7eb414aae7bc426df82efb0dac1ace1e05d7fa5017fb0dd",
+      "src": "../figures/contamination_gallery.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

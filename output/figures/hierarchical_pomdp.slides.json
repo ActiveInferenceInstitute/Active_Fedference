@@ -1,0 +1,125 @@
+{
+  "panels": [
+    {
+      "alt": "two-level posterior, states 0 to 2: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "8767c82520aedb2ad62d5b4d86a1fc571ed45945c85e8579e465ba9869793f15",
+      "src": "../figures/hierarchical_pomdp.slide-panel-1-states-0-2.png"
+    },
+    {
+      "alt": "two-level posterior, states 3 to 5: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ba3997a484bc066bf3b365b92ef38c98a9f39a5183995013079b559af5ec9bb0",
+      "src": "../figures/hierarchical_pomdp.slide-panel-1-states-3-5.png"
+    },
+    {
+      "alt": "two-level posterior, states 6 to 8: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f9eeb2c8f8f8130940e21f94164ba14dad1abe25d1771cf0c3fa0f535815360d",
+      "src": "../figures/hierarchical_pomdp.slide-panel-1-states-6-8.png"
+    },
+    {
+      "alt": "Two-Level Posterior: flat peak state 4, mass 0.85; hierarchical peak state 4, mass 0.9795.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "149ef346a3b0d8aa26457026710c56398cbe00070eae5366967852ac732b616a",
+      "src": "../figures/hierarchical_pomdp.slide-panel-1-peaks.png"
+    },
+    {
+      "alt": "colony consensus, states 0 to 2: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "bb8b9bf035e394ea6e779c2a9441331ff145e288d8f0011d7866133a14993928",
+      "src": "../figures/hierarchical_pomdp.slide-panel-2-states-0-2.png"
+    },
+    {
+      "alt": "colony consensus, states 3 to 5: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "757fa76a67edfa2ff1dc99ece4a8c5e3a408414129a2b31d2d6c2f9eb89f7fbc",
+      "src": "../figures/hierarchical_pomdp.slide-panel-2-states-3-5.png"
+    },
+    {
+      "alt": "colony consensus, states 6 to 8: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c7abe7b8593f5a7877e4d35da28b31caca50cf8420d215ca6e9faf1d3a956d73",
+      "src": "../figures/hierarchical_pomdp.slide-panel-2-states-6-8.png"
+    },
+    {
+      "alt": "Colony Consensus: flat peak state 4, mass 0.9551; hierarchical peak state 4, mass 0.9999.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f01ebfe4f0155e0c5e2b5195d01cf6f12a31b30bf36e698d6eb75c9d98f622f1",
+      "src": "../figures/hierarchical_pomdp.slide-panel-2-peaks.png"
+    },
+    {
+      "alt": "three-level posterior, states 0 to 2: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c0d50c7543be9577d458d10037274ab50afeb34517f3eb79cb5734f31e595946",
+      "src": "../figures/hierarchical_pomdp.slide-panel-3-states-0-2.png"
+    },
+    {
+      "alt": "three-level posterior, states 3 to 5: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "b25a9db60774c416220662e2ffeb215b9b03c3ddf7a5f38c1c25f8faa9cee30e",
+      "src": "../figures/hierarchical_pomdp.slide-panel-3-states-3-5.png"
+    },
+    {
+      "alt": "three-level posterior, states 6 to 8: plain flat versus hatched hierarchical probabilities with the declared state reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ce7d83b6690b14b91d909b3035bfe6899c71d9d21ef0aee90f851d62ecf9eae0",
+      "src": "../figures/hierarchical_pomdp.slide-panel-3-states-6-8.png"
+    },
+    {
+      "alt": "Three-Level Posterior: flat peak state 4, mass 0.85; hierarchical peak state 4, mass 0.9802.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5f1b1c1b951c99e5df29ec786c7e83d6442057e2405fecef44d3bb111c7ef285",
+      "src": "../figures/hierarchical_pomdp.slide-panel-3-peaks.png"
+    },
+    {
+      "alt": "Two-level context: all alternating-minimization iterations with the half-probability reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e3c3f1c579bb0fb2994bc634e74773b13ee53ac66e3c2e0a9bdac66aba3d9651",
+      "src": "../figures/hierarchical_pomdp.slide-context-1.png"
+    },
+    {
+      "alt": "Two-level context: quiet (o, -); alert (s, -). Ordered iterations are not independent replications.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8fce851d00b7286033b94bd765887e576f6064dcf787fb5d438d3b875fa74335",
+      "src": "../figures/hierarchical_pomdp.slide-context-1-key.png"
+    },
+    {
+      "alt": "Three-level context: all alternating-minimization iterations with the half-probability reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "bbfe7305a8c4c2dfe5fd495de25b5d45d7eab9bfdbf613a10d13fc9efa71ef5c",
+      "src": "../figures/hierarchical_pomdp.slide-context-2.png"
+    },
+    {
+      "alt": "Three-level context: L2 alert (s, -); L3 high threat (^, --). Ordered iterations are not independent replications.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "325defe1af8bce4197375f53ce5cf8e2fb3e3ec4b91b6fe716adf789071b3923",
+      "src": "../figures/hierarchical_pomdp.slide-context-2-key.png"
+    },
+    {
+      "alt": "Final signed hierarchical-minus-flat location accuracy for both hierarchy depths; zero reference retained.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "181ebd6d1c4aece490e393d9a5b658bc93a7cfc82c8a3967ffe8051d1a91b78e",
+      "src": "../figures/hierarchical_pomdp.slide-gaps.png"
+    },
+    {
+      "alt": "Hierarchical minus flat: 2L -0.01354; 3L -0.01875. n = 960 nested trials. No per-trial trajectory or interval is inferred from these scalar gaps.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d2b3cca360b4468519c3ba2177f61ef95c518dde4f2049ed923e0eb9693dc45f",
+      "src": "../figures/hierarchical_pomdp.slide-gap-values.png"
+    },
+    {
+      "alt": "Acuity 0.85; observed state 4; colony true state 4; 4 agents. Plain left bars: flat; hatched right bars: hierarchical.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a3dcde76893bb1a223e59aecd325386d822ff9d5335c1dfe1167feb746f8bab4",
+      "src": "../figures/hierarchical_pomdp.slide-configuration.png"
+    },
+    {
+      "alt": "Gap bars use the executed reports. Other panels are seeded diagnostic posterior calculations. No universal hierarchical benefit or calibrated uncertainty is established.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d9c8463073c17d59459c26a9f1a96dba00395dafb93083e439ddbf3a1a5e8099",
+      "src": "../figures/hierarchical_pomdp.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

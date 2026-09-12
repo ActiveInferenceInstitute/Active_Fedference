@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,126 +259,129 @@
 
 \begin{document}
 
-\subsection{Supplement: hierarchical POMDP methods and
-parameters}\label{sec:supp-hierarchical}
-
-\begin{frame}[allowframebreaks]{Supplement: hierarchical POMDP methods
-and parameters}
+\begin{frame}{Supplement: hierarchical POMDP methods and parameters}
+\protect\phantomsection\label{sec:supp-hierarchical}
 This supplement makes the two-level construction of
-sec.~13.9 concrete: how location (L1) is
-coupled to context (L2) through context-conditioned priors, what the
-alternating-minimization update actually computes, and the exact
-parameters of the executed run. It answers the question the main section
-brackets --- \emph{by what mechanism does a second latent level enter
-the inference at all} --- and thereby fixes why the hierarchy resolves
-context above chance while leaving location accuracy statistically
-unchanged.
+sec.~14.9 concrete: how location (L1) is
+coupled to context (L2) through context-conditioned priors,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model for
-context-gated location inference}
+\begin{frame}{Supplement: hierarchical\ldots{} (part 2)}
+what the alternating-minimization update actually computes, and the
+exact parameters of the executed run.
+\end{frame}
+
+\begin{frame}{Supplement: hierarchical\ldots{} (part 3)}
+It answers the question the main section brackets --- \emph{by what
+mechanism does a second latent level enter the inference at all} --- and
+thereby fixes why the hierarchy resolves context above chance while
+retaining the separate location-accuracy contrast reported in
+sec.~14.9.
+\end{frame}
+
+\begin{frame}[fragile]{Generative model for context-gated location
+inference}
 \protect\phantomsection\label{generative-model-for-context-gated-location-inference}
-The two-level POMDP implemented in
-\breaktt{fedference.pomdp.build\_hierarchical\_world} couples the
-sentinel's 9-location L1 factor to a 2-state L2 context factor via
-\textbf{context-conditioned L1 priors}:
-
+The two-level POMDP is built by \texttt{build\_hierarchical\_world} in
+the \texttt{fedference.pomdp} module.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model for
-context-gated location inference}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{L1 (location)} --- the standard 3x3 grid of
-  \breaktt{build\_sentinel\_world} with \texttt{n\_s\ =} 9 states and
-  sensor acuity 0.85;
-\item
-  \textbf{L2 (context)} --- a binary state (\texttt{quiet} /
-  \texttt{alert}) with a symmetric transition matrix (persistence 0.90)
-  and an initial uniform prior;
-\item
-  \textbf{L1 priors given context} --- \texttt{quiet}: uniform over all
-  9 cells; \texttt{alert}: mass 0.60 at the center cell (the den), the
-  residual spread uniformly.
-\end{itemize}
+\begin{frame}[fragile]{Generative model for\ldots{} (part 2)}
+It couples the sentinel's 9-location L1 factor to a 2-state L2 context
+factor via \textbf{context-conditioned L1 priors}.
+
+\textbf{L1 (location).} The standard 3x3 grid of
+\texttt{build\_sentinel\_world} has \texttt{n\_s\ =} 9 states and sensor
+acuity 0.85.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Inference algorithm for top-down
-empirical priors}
+\begin{frame}[fragile]{Generative model for\ldots{} (part 3)}
+\textbf{L2 (context).} A binary \texttt{quiet} / \texttt{alert} state
+has a symmetric transition matrix with persistence 0.90 and an initial
+uniform prior.
+\end{frame}
+
+\begin{frame}[fragile]{Generative model for\ldots{} (part 4)}
+\textbf{L1 priors given context.} \texttt{quiet} is uniform over all 9
+cells. \texttt{alert} places mass 0.60 at the center cell (the den) and
+spreads the residual uniformly.
+\end{frame}
+
+\begin{frame}[fragile]{Inference algorithm for top-down empirical
+priors}
 \protect\phantomsection\label{inference-algorithm-for-top-down-empirical-priors}
-\breaktt{fedference.pomdp.hierarchical\_infer} performs 4 passes of
+The module's \texttt{hierarchical\_infer} function performs 4 passes of
 alternating minimization:
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Inference algorithm for top-down
-empirical priors}
-\begin{enumerate}
-\tightlist
-\item
-  \textbf{L2 → L1 empirical prior}: \(\widetilde{\pi}_{0,\mathrm{L1}} =
-  \sum_c q_{\text{ctx}}[c]\,\pi_{0,\mathrm{L1}\mid c}\) (a soft mixture
-  of the two context-conditioned priors).
-\item
-  \textbf{L1 update}: one-step variational posterior
-  \(q_{\text{loc}} = \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
-  \log A[\text{obs},\,\cdot])\).
-\item
-  \textbf{L1 → L2 marginal evidence}:
-  \(\ell_c = \log\bigl(\pi_{0,\mathrm{L1}\mid c}^{\top}
-  A[\text{obs},\,\cdot]\bigr)\) (evidence for context \(c\) from the
-  observed location likelihood).
-\item
-  \textbf{L2 update}:
-  \(q_{\text{ctx}} = \operatorname{softmax}(\log \pi_{0,\mathrm{L2}} + \ell)\).
-\end{enumerate}
-
+\begin{frame}{Inference algorithm for\ldots{} (part 2)}
+\textbf{1. L2 \texorpdfstring{\ensuremath{\to}}{->} L1 empirical prior.} \(\widetilde{\pi}_{0,\mathrm{L1}} =
+\sum_c q_{\text{ctx}}[c]\,\pi_{0,\mathrm{L1}\mid c}\), a soft mixture of
+the two context-conditioned priors.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Inference algorithm for top-down
-empirical priors}
+\begin{frame}{Inference algorithm for\ldots{} (part 3)}
+\textbf{2. L1 update.} The one-step variational posterior is
+\(q_{\text{loc}} = \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
+\log A[\text{obs},\,\cdot])\).
+\end{frame}
+
+\begin{frame}{Inference algorithm for\ldots{} (part 4)}
+\textbf{3. L1 \texorpdfstring{\ensuremath{\to}}{->} L2 marginal evidence.}
+\(\ell_c = \log\bigl(\pi_{0,\mathrm{L1}\mid c}^{\top}
+A[\text{obs},\,\cdot]\bigr)\), the evidence for context \(c\) from the
+observed location likelihood.
+\end{frame}
+
+\begin{frame}{Inference algorithm for\ldots{} (part 5)}
+\textbf{4. L2 update.}
+\(q_{\text{ctx}} = \operatorname{softmax}(\log \pi_{0,\mathrm{L2}} + \ell)\).
+\end{frame}
+
+\begin{frame}{Inference algorithm for\ldots{} (part 6)}
 After 4 iterations the agent broadcasts both \(q_{\text{loc}}\) and
 \(q_{\text{ctx}}\); the colony federates each level independently via a
-log-linear pool (eq.~6).
+log-linear pool (eq.~9).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Study parameters for the hierarchical
-condition}
+\begin{frame}{Study parameters for the hierarchical condition}
 \protect\phantomsection\label{study-parameters-for-the-hierarchical-condition}
-\end{frame}
-
-\begin{frame}[allowframebreaks]{Study parameters for the hierarchical
-condition}
-\begin{longtable}[]{@{}ll@{}}
-\caption{Study 6 hierarchical POMDP execution parameters: agent count,
-seeded trial budget, observation acuity, alternating-minimization
-iterations, and the L2/L1 state cardinalities used by the two-level
-condition.}\label{tbl:hier-params}\tabularnewline
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.6842}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.3158}}@{}}
+\label{tbl:hier-params}\tabularnewline
 \toprule\noalign{}
-Parameter & Value \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Value
+\end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Parameter & Value \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Value
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 Agents & 4 \\
 Trials & 960 \\
 Acuity & 0.85 \\
-Alternating-min iterations & 4 \\
-L2 context states & 2 \\
-L1 location states & 9 \\
-Seed & 0 \\
 \bottomrule\noalign{}
 \end{longtable}
-
+\endgroup
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Study parameters for the hierarchical
-condition}
+\begin{frame}{Study parameters for the\ldots{} (part 2)}
 The executed hierarchical configuration is summarized in
-tbl.~\ref{tbl:hier-params}.
+tbl.~17.
 \end{frame}
 
 \end{document}

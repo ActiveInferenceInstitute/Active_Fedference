@@ -104,8 +104,12 @@ uv run --locked --extra dev pytest tests/ \
 Full probe list: [`reference/verification-commands.md`](reference/verification-commands.md).
 
 Mermaid diagrams are deliberately kept in the Markdown source for GitHub and
-local readers. Every block in `README.md` and `docs/` must pass the static
-contract and, before a release render, an actual Mermaid CLI SVG probe:
+local readers. Every block in `README.md` and `docs/` has one non-empty
+`accTitle`, one non-empty `accDescr`, quoted punctuation-bearing labels, and an
+immediately adjacent plain-language text equivalent. The validator discovers
+the live diagram count rather than relying on a fixed inventory. Every block
+must pass the static contract and, before a release render, an actual Mermaid
+CLI SVG probe:
 
 ```bash
 uv run --locked python scripts/validate_mermaid.py

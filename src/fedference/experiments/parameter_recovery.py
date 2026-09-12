@@ -16,7 +16,7 @@ def run_parameter_recovery(
     n_trials: int = 20,
     fit_resolution: int = 40,
 ) -> dict[str, Any]:
-    """Validate generative-model identifiability by fitting acuity from synthetic data.
+    """Measure finite-grid acuity recovery on the configured synthetic world.
 
     For each ``true_acuity`` in ``acuity_grid`` the function:
 
@@ -30,13 +30,16 @@ def run_parameter_recovery(
        ``[0.51, 0.99]``; for each candidate it builds a world, computes the
        marginal log-likelihood ``sum_obs log(mean_col(A_c[obs, :]) + eps)``, and
        picks the argmax.
-    3. Collects the per-trial recovered acuity, its mean, and the 2.5th / 97.5th
-       empirical percentile interval across independent trials. These are
-       descriptive trial-distribution quantiles, not bootstrap confidence or
-       Bayesian credible intervals.
+    3. Collects every per-trial recovered acuity, its mean, and the 2.5th /
+       97.5th empirical percentile interval across independent trials. These
+       are descriptive trial-distribution quantiles, not bootstrap confidence
+       or Bayesian credible intervals.
 
-    The headline statistics are the mean absolute error across the grid and the
-    R² of mean-recovered vs true acuity (a measure of calibration).
+    The headline statistics are the mean absolute error across the configured
+    grid and the R² of mean-recovered versus true acuity at those same grid
+    points. They characterize this finite simulation and estimator only; they
+    do not establish continuous-parameter identifiability, real-data
+    calibration, or recovery for another generative model.
 
     Returns a JSON-serialisable dict with keys:
 
@@ -47,11 +50,32 @@ def run_parameter_recovery(
     * ``abs_error`` — list of mean absolute error per grid point.
     * ``mean_abs_error`` — mean of ``abs_error`` across the grid.
     * ``r_squared`` — R² of mean recovered vs true acuity.
+    * ``recovered_acuity_by_trial`` — ordered trial estimates for each true
+      acuity, making the independent analysis units inspectable.
+    * ``fit_grid``, ``fit_resolution``, and ``fit_bounds`` — the complete
+      finite estimator search space.
     * ``n_trials``, ``n_observations``, ``acuity_grid``, ``seed``.
     * ``interval_method`` and ``interval_percent`` — provenance for the plotted
       empirical percentile interval.
+    * explicit estimator, analysis-unit, seed-role, scope, and no-claim fields.
     """
     from fedference.pomdp import build_sentinel_world
+
+    if isinstance(n_agents, bool) or not isinstance(n_agents, int) or n_agents < 1:
+        raise ValueError("n_agents must be a positive integer")
+    if isinstance(n_observations, bool) or not isinstance(n_observations, int) or n_observations < 1:
+        raise ValueError("n_observations must be a positive integer")
+    if isinstance(n_trials, bool) or not isinstance(n_trials, int) or n_trials < 1:
+        raise ValueError("n_trials must be a positive integer")
+    if isinstance(fit_resolution, bool) or not isinstance(fit_resolution, int) or fit_resolution < 2:
+        raise ValueError("fit_resolution must be an integer >= 2")
+    if not acuity_grid:
+        raise ValueError("acuity_grid must be non-empty")
+    if any(
+        isinstance(value, bool) or not np.isfinite(float(value)) or not 0.0 < float(value) < 1.0
+        for value in acuity_grid
+    ):
+        raise ValueError("acuity_grid values must be finite numbers in (0, 1)")
 
     rng = np.random.default_rng(seed)
     fit_grid = np.linspace(0.51, 0.99, fit_resolution)
@@ -61,6 +85,7 @@ def run_parameter_recovery(
     ci_lo_list: list[float] = []
     ci_hi_list: list[float] = []
     abs_error_list: list[float] = []
+    trial_recovered_by_acuity: list[list[float]] = []
 
     for true_acuity in acuity_grid:
         # Keep the likelihood grid fixed across trials and candidate fits. A
@@ -110,6 +135,7 @@ def run_parameter_recovery(
         ci_lo_list.append(ci_lo)
         ci_hi_list.append(ci_hi)
         abs_error_list.append(abs_err)
+        trial_recovered_by_acuity.append([float(value) for value in trial_recovered])
 
     true_arr = np.array(true_acuity_list, dtype=np.float64)
     rec_arr_means = np.array(recovered_acuity_list, dtype=np.float64)
@@ -118,8 +144,10 @@ def run_parameter_recovery(
     r_squared = float(max(0.0, 1.0 - ss_res / ss_tot)) if ss_tot > 0.0 else 1.0
 
     return {
+        "schema_version": "1.0",
         "true_acuity": true_acuity_list,
         "recovered_acuity": recovered_acuity_list,
+        "recovered_acuity_by_trial": trial_recovered_by_acuity,
         "recovered_acuity_ci_lo": ci_lo_list,
         "recovered_acuity_ci_hi": ci_hi_list,
         "abs_error": abs_error_list,
@@ -128,6 +156,20 @@ def run_parameter_recovery(
         "n_trials": int(n_trials),
         "n_observations": int(n_observations),
         "acuity_grid": list(acuity_grid),
+        "fit_grid": [float(value) for value in fit_grid],
+        "fit_resolution": int(fit_resolution),
+        "fit_bounds": [float(fit_grid[0]), float(fit_grid[-1])],
+        "estimator": "finite_grid_maximum_marginal_likelihood",
+        "analysis_unit": "independent synthetic trial within true-acuity grid point",
+        "replication_unit": "synthetic trial",
+        "seed_role": "base RNG stream; seed is not the independent analysis unit",
+        "scope": "configured finite true-acuity and fit grids in the sentinel likelihood",
+        "claim_boundary": (
+            "descriptive finite-grid synthetic recovery only; no continuous-parameter "
+            "identifiability, real-data calibration, or cross-model generalization"
+        ),
+        "n_grid_points": len(true_acuity_list),
+        "n_independent_trials": len(true_acuity_list) * int(n_trials),
         "interval_method": "empirical_percentile_across_independent_trials",
         "interval_percent": 95,
         "seed": int(seed),

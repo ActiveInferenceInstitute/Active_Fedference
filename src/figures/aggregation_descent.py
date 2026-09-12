@@ -1,15 +1,16 @@
-"""Variational-aggregation free-energy descent figure (the rigor, shown).
+"""Objective-backed variational-aggregation free-energy descent figure (axis 3).
 
 Visualizes that :func:`fedference.aggregation.variational_aggregate` is genuine
 block-coordinate descent on the stated objective
 :func:`fedference.aggregation.aggregation_free_energy`: the recorded
 ``free_energy_history`` falls monotonically; a converged fixed point is
-coordinatewise stationary. This is the
-"show, not tell" companion to the axis-2-made-rigorous claim — the heuristic
-:func:`fedference.aggregation.robust_aggregate` has no such curve because the
-declared separable block-objective class is ruled out, while a broader objective
-certificate is not claimed. Pure ``matplotlib`` (Agg); the history comes from
-the analysis workflow, this module only draws.
+coordinatewise stationary. This is the "show, not tell" diagnostic for the
+objective-backed third robustness axis. It is intentionally not evidence for
+the second-axis :func:`fedference.aggregation.robust_aggregate` heuristic: that
+rule has no such curve because the declared separable block-objective class is
+ruled out, while a broader objective certificate is not claimed. Pure
+``matplotlib`` (Agg); the history comes from the analysis workflow, and this
+module only draws.
 """
 
 from __future__ import annotations
@@ -19,17 +20,16 @@ from pathlib import Path
 import numpy as np
 
 from ._common import (
-    COLOR_CORRECT,
     COLOR_DARK,
-    COLOR_MUTED,
-    COLOR_ROBUST,
-    COLOR_VARIATE,
     annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+
+MANUSCRIPT_WIDTH_FRACTION = 0.80
 
 
 def generate_aggregation_descent(
@@ -70,35 +70,49 @@ def generate_aggregation_descent(
 
     apply_style()
     fig, ax = plt.subplots(figsize=(6.2, 4.2))
+    variational_style = semantic_style("variational")
+    reference_rule = semantic_style("reference_rule")
 
-    # Main descent line
+    # This is a variational-aggregation trajectory, so its line, marker, and
+    # keyline come from the project-wide method registry.  The triangle and
+    # dash-dot path preserve identity without colour.
     ax.plot(
         iters,
         fe,
-        marker="o",
+        marker=variational_style.marker,
         markersize=5,
-        linewidth=1.8,
-        color=COLOR_ROBUST,
+        linewidth=variational_style.linewidth,
+        linestyle=variational_style.dash,
+        color=variational_style.color,
+        markerfacecolor="white",
+        markeredgecolor=variational_style.keyline,
         label="Variational free energy $F(q, a)$",
         zorder=3,
     )
 
-    # Highlight the converged point with COLOR_CORRECT
+    # A filled triangle marks the terminus while retaining the same method
+    # identity as the open trajectory markers.
     ax.scatter(
         [iters[-1]],
         [fe[-1]],
-        color=COLOR_CORRECT,
+        marker=variational_style.marker,
+        facecolor=variational_style.color,
+        edgecolor=variational_style.keyline,
         s=60,
         zorder=5,
-        label=f"Stationary point  $F^* = {fe[-1]:.4g}$ nats",
+        label=f"Final iterate  $F_{{end}} = {fe[-1]:.4g}$ nats",
     )
 
-    # Highlight the largest-descent step with COLOR_VARIATE
+    # The largest observed step is an annotation on the same trajectory, not a
+    # second method.  Larger open triangles distinguish it locally without
+    # introducing a new semantic colour.
     if fe.size > 1:
         ax.scatter(
             [iters[big_step_idx], iters[big_step_idx + 1]],
             [fe[big_step_idx], fe[big_step_idx + 1]],
-            color=COLOR_VARIATE,
+            marker=variational_style.marker,
+            facecolor="white",
+            edgecolor=variational_style.keyline,
             s=45,
             zorder=4,
             label=f"Largest descent step  (Δ = {float(diffs[big_step_idx]):.3g})",
@@ -108,9 +122,9 @@ def generate_aggregation_descent(
     # already carries the F* value, a second entry would duplicate it.
     ax.axhline(
         fe[-1],
-        color=COLOR_MUTED,
-        linestyle="--",
-        linewidth=1.0,
+        color=reference_rule.color,
+        linestyle=reference_rule.dash,
+        linewidth=reference_rule.linewidth,
         zorder=2,
     )
 
@@ -149,7 +163,18 @@ def generate_aggregation_descent(
     # converged tail of the curve along the bottom.
     ax.legend(fontsize=10, loc="center right")
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    canonical = save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
+    from ._presentation_diagnostics import objective_presentation
+
+    objective_presentation(
+        canonical, iters, fe,
+        largest_step_index=big_step_idx if diffs.size else None, stats_text=stats_text,
+    )
+    return canonical
 
 
 __all__ = ["generate_aggregation_descent"]

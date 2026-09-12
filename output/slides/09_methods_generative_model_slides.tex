@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,247 +274,618 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model: categorical
-states, observations, actions, and hierarchy}
+\begin{frame}{Generative model: categorical states, observations,
+actions, and hierarchy}
 \protect\phantomsection\label{sec:methods-generative-model}
 The 9 studies --- including the contaminated-sentinel robustness sweep
 (Study 4) --- run on one shared sentinel world (Studies 5--7 use its
-moving and hierarchical variants): a discrete sentinel
-partially-observable Markov decision process (POMDP) using the
-categorical world structure illustrated by Friston et al. (2024),
-Figures 1 and 4. We adopt the discrete-state active-inference
-formulation that the community has standardized around --- the
-categorical \(A/B/C/D_0\) generative model of da Costa et al. (2020),
-the same object the \texttt{pymdp} (Heins et al. 2022) and RxInfer
-(Bagaev et al. 2023) toolboxes operate on --- and reimplement it in pure
-NumPy in \texttt{pomdp.py} so the colony, its sensors, and its dynamics
-are exactly the ones the analysis executes. A colony of sentinels
-watches a single hidden creature whose location is the shared latent
+moving and hierarchical variants):
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model: categorical
-states, observations, actions, and hierarchy}
-factor they federate beliefs about.
+\begin{frame}{Generative model (part 2)}
+a discrete sentinel partially-observable Markov decision process (POMDP)
+using the categorical world structure illustrated by Friston et al.
+(2024), Figures 1 and 4.
+\end{frame}
 
-The structural map in fig.~\ref{fig:generative-model-schema} follows the
+\begin{frame}[fragile]{Generative model (part 3)}
+We adopt the discrete-state active-inference formulation that the
+community has standardized around --- the categorical \(A/B/C/D_0\)
+generative model of da Costa et al. (2020), the same object the
+\texttt{pymdp} (Heins et al. 2022) and RxInfer (Bagaev et al. 2023)
+toolboxes operate on.
+\end{frame}
+
+\begin{frame}[fragile]{Generative model (part 4)}
+We reimplement it in pure NumPy in \texttt{pomdp.py} so the colony, its
+sensors, and its dynamics are exactly the ones the analysis executes.
+
+A colony of sentinels watches a single hidden creature whose location is
+the shared latent factor they federate beliefs about.
+\end{frame}
+
+\begin{frame}{Generative model (part 5)}
+The structural map in fig.~4 follows the
 same generative-model vocabulary while making the implementation
 boundary visible: Panel A shows what one agent actually sees --- one
-noisy categorical report over the 9 possible locations --- while Panel B
-identifies the \(A/B/C/D_0\) factors that turn that report into a local
-posterior. Temporal depth then describes state, observation, posterior,
-and control order; hierarchical depth describes conditioned priors. It
-is a formal schematic, not an assertion that every displayed dependency
-is simultaneously estimated in every study.
-
+noisy categorical report over the 9 possible locations ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model: categorical
-states, observations, actions, and hierarchy}
+\begin{frame}{Generative model (part 6)}
+while Panel B identifies the \(A/B/C/D_0\) factors that turn that report
+into a local posterior.
+\end{frame}
+
+\begin{frame}{Generative model (part 7)}
+Temporal depth then describes state, observation, posterior, and control
+order; hierarchical depth describes conditioned priors. It is a formal
+schematic, not an assertion that every displayed dependency is
+simultaneously estimated in every study.
+\end{frame}
+
+\begin{frame}{Generative model (part 8)}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.40\textheight,keepaspectratio,alt={Formal categorical generative-model schema. Source relation: source-inspired original schematic related to Friston et al.~(2024), Figs. 1 and 4; estimand: categorical dependency structure; uncertainty: none. The x-axis is the dependency or role order within each panel; the y-axis positions hidden states, observations, model factors, and optional context levels. Panel A shows a hidden 9-cell location and the corresponding categorical likelihood row A{[}o,s{]}, making the private sensory report explicit. Panel B shows A, B, C, and D\_0 feeding the local posterior q(s); Panel C shows temporal state, observation, posterior, and action order; Panel D shows optional top-down conditioned priors. The equation ribbon records the implemented state-inference form and the zero-robustness recovery identity. This deterministic formal schematic contains no fitted values, empirical sample, error band, or confidence interval.}]{../figures/generative_model_schema.png}
-\caption{Formal categorical generative-model schema. Source relation:
-source-inspired original schematic related to Friston et al.~(2024),
-Figs. 1 and 4; estimand: categorical dependency structure; uncertainty:
-none. The x-axis is the dependency or role order within each panel; the
-y-axis positions hidden states, observations, model factors, and
-optional context levels. Panel A shows a hidden 9-cell location and the
-corresponding categorical likelihood row \(A[o,s]\), making the private
-sensory report explicit. Panel B shows \(A\), \(B\), \(C\), and \(D_0\)
-feeding the local posterior \(q(s)\); Panel C shows temporal state,
-observation, posterior, and action order; Panel D shows optional
-top-down conditioned priors. The equation ribbon records the implemented
-state-inference form and the zero-robustness recovery identity. This
-deterministic formal schematic contains no fitted values, empirical
-sample, error band, or confidence
-interval.}\label{fig:generative-model-schema}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden location s: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/generative_model_schema.slide-hidden-location.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-1}
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{State space: one shared latent
-factor}
+\begin{frame}{Generative model (part 9)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private outcome o: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/generative_model_schema.slide-outcome.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 10)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden location s \texorpdfstring{\ensuremath{\to}}{->} Private outcome o: A{[}o,s{]} = P(o\textbar s); data\_dependency.}]{../figures/generative_model_schema.slide-sensor.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 11)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A: sensory likelihood → Local posterior q(s): Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-likelihood.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 12)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={B: state transition → Local inference / action: Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-dynamics.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 13)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={C: preferred outcomes → Local inference / action: Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-preferences.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={D0: initial prior → Local posterior q(s): Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-prior.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 15)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden state s(t) → Private report o(t): Observation; data\_dependency.}]{../figures/generative_model_schema.slide-time-sensing.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private report o(t) → Posterior q(t): Inference; data\_dependency.}]{../figures/generative_model_schema.slide-time-inference.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior q(t) → Control u(t): EFE-guided action; data\_dependency.}]{../figures/generative_model_schema.slide-time-control.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-10}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Control u(t) → Next state s(t+1): B = P(s′\textbar s,u); data\_dependency.}]{../figures/generative_model_schema.slide-time-transition.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-11}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Meta-context s(L) → Context s(2): Top-down context; data\_dependency.}]{../figures/generative_model_schema.slide-meta-context.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-12}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 20)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Context s(2) → Location s(1): Conditional prior; data\_dependency.}]{../figures/generative_model_schema.slide-context-location.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-13}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 21)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Location s(1) → Local posterior q1: Location evidence; data\_dependency.}]{../figures/generative_model_schema.slide-location-posterior.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-14}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 22)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Context s(2) → Local posterior q1: Context conditions prior; data\_dependency.}]{../figures/generative_model_schema.slide-context-posterior.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-15}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 23)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Meta-context s(L) → Local posterior q1: Optional higher context; retained\_warning.}]{../figures/generative_model_schema.slide-meta-posterior.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-16}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 24)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Diagonal mass is sensor acuity; residual mass is categorical noise. Raw outcomes remain private; only posteriors are broadcast.}]{../figures/generative_model_schema.slide-sensor-key.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-17}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 25)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={\$q(s)=\textbackslash mathrm\{softmax\}(\textbackslash ln D\_0+\textbackslash ln A{[}o,\textbackslash cdot{]})\$}]{../figures/generative_model_schema.slide-local-equation.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-18}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 26)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Project recovery identity: robust\_aggregate(0) = log\_linear\_pool. This limit does not reconstruct the full source protocol.}]{../figures/generative_model_schema.slide-recovery.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-19}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 27)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={\$\textbackslash bar q\_1=\textbackslash sum\_kq\_2{[}k{]}D\_\{1\textbar k\}\$}]{../figures/generative_model_schema.slide-mixture-equation.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-20}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 28)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Flat studies stop after posterior sharing. Moving-world studies execute B and EFE-guided control. Hierarchy is an optional extension.}]{../figures/generative_model_schema.slide-optional.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-21}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Generative model (part 29)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic formalization, not an empirical estimate. Private sensory outcomes become posterior messages; fusion uses the shared categorical state.}]{../figures/generative_model_schema.slide-scope.png}
+\refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-22}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{State space: one shared latent factor}
 \protect\phantomsection\label{sec:methods-state-space}
 The world holds one hidden factor: the creature's location on a square
 grid of side \(L\), giving \(n_s = L^2\) location states. Our sentinel
 world uses the \(3\times 3\) cardinality illustrated in Friston et al.
 (2024), Fig. 1, so \(n_s = 9\) --- the cardinality
-\breaktt{pomdp.N\_LOCATIONS} exposes and \breaktt{experiment\_config}
-carries as \texttt{n\_locations}. This single location factor is
-precisely the latent the colony gossips about: it is the shared argument
-of the log-linear pool (eq.~6) and of every
-belief-sharing round (eq.~10). Fixing one hidden
-factor keeps the recovery limits of sec.~6 closed-form
-and exactly testable, rather than approximated.
+\texttt{pomdp.N\_LOCATIONS} exposes and \texttt{experiment\_config}
+carries as \texttt{n\_locations}.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Four categorical tensors:
-likelihood, transitions, preferences, priors}
+\begin{frame}{State space: one shared\ldots{} (part 2)}
+This single location factor is precisely the latent the colony gossips
+about: it is the shared argument of the log-linear pool
+(eq.~9) and of every belief-sharing round
+(eq.~14). Fixing one hidden factor keeps the recovery
+limits of sec.~6 closed-form and exactly testable,
+\end{frame}
+
+\begin{frame}{State space: one shared\ldots{} (part 3)}
+rather than approximated.
+\end{frame}
+
+\begin{frame}{Four categorical tensors: likelihood, transitions,
+preferences, priors}
 \protect\phantomsection\label{sec:methods-abcd}
 The generative model is the tuple \((A, B, C, D_0)\) in the discrete
 active-inference convention: a categorical probability mass function is
-a non-negative vector summing to one, and a likelihood matrix is shape
-\((n_o, n_s)\) whose columns (indexed by hidden state) are categorical.
+a non-negative vector summing to one,
+\end{frame}
 
+\begin{frame}{Four categorical tensors (part 2)}
+and a likelihood matrix is shape \((n_o, n_s)\) whose columns (indexed
+by hidden state) are categorical.
+\end{frame}
+
+\begin{frame}[fragile]{Four categorical tensors (part 3)}
 \textbf{Observation likelihood \(A = P(o\mid s)\).} Each sentinel
 observes the creature's cell through a noisy sensor. With probability
 \texttt{acuity} the sensor reports the true cell; the residual mass
 \(1-\text{acuity}\) spreads uniformly over the other \(n_s-1\) cells.
-With outcome cardinality \(n_o = n_s\), the single location modality is
-one \((n_s, n_s)\) matrix:
-
+With outcome cardinality \(n_o = n_s\),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Four categorical tensors:
-likelihood, transitions, preferences, priors}
-\begin{equation}\protect\phantomsection\label{eq:observation-likelihood}{
-A_{o s} \;=\;
-\begin{cases}
-\text{acuity}, & o = s,\\
-\dfrac{1-\text{acuity}}{n_s - 1}, & o \neq s,
-\end{cases}
-\qquad \textstyle\sum_{o} A_{o s} = 1 .
-}\end{equation}
+\begin{frame}{Four categorical tensors (part 4)}
+the single location modality is one \((n_s, n_s)\) matrix:
+\end{frame}
 
-The acuity in eq.~\ref{eq:observation-likelihood} tunes how peaked the
+\begin{frame}{Four categorical tensors (part 5)}
+\begin{equation}\tag{15}\protect\phantomsection\label{eq:observation-likelihood}{
+\begin{aligned}
+A_{o s} &= \text{acuity}
+&& \text{if }o=s,\\
+A_{o s} &= \frac{1-\text{acuity}}{n_s-1}
+&& \text{if }o\neq s,\\
+\sum_o A_{o s} &= 1.
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Four categorical tensors (part 6)}
+The acuity in eq.~15 tunes how peaked the
 sensor is: high acuity gives a near-diagonal \(A\) that pins the
 creature; the belief-sharing study deliberately runs the colony at the
 low acuity \(\text{acuity} = 0.55\), where no single sentinel can
 resolve the location alone and the colony must pool evidence to do so.
+\end{frame}
+
+\begin{frame}{Four categorical tensors (part 7)}
 When a seeded generator is supplied, each sentinel's acuity is jittered
 by a small non-negative perturbation, so a colony carries slightly
 heterogeneous likelihoods while every column remains a proper pmf.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Four categorical tensors:
-likelihood, transitions, preferences, priors}
+\begin{frame}[fragile]{Four categorical tensors (part 8)}
 \textbf{Transition tensor \(B = P(s'\mid s, u)\).} The creature moves on
 the grid under three control paths --- \texttt{still}, \texttt{left},
 \texttt{right} --- so \(B\) has shape \((n_s, n_s, n_u)\) with
 \(n_u = 3\). \texttt{still} is the deterministic self-loop;
 \texttt{left} and \texttt{right} decrement and increment the grid
-column, saturating at the walls (a wall-adjacent move in the wall's
-direction is a self-loop). All three controls act on the column index
-alone, so the creature's row is preserved and its motion is confined to
-the horizontal axis of the grid --- a deliberate one-dimensional control
-over the two-dimensional location factor. Every slice
-\(B_{\cdot\,\cdot\,u}\) is column-normalized by construction, so the
-transition is a valid categorical for each action.
-
+column,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Four categorical tensors:
-likelihood, transitions, preferences, priors}
+\begin{frame}{Four categorical tensors (part 9)}
+saturating at the walls (a wall-adjacent move in the wall's direction is
+a self-loop).
+\end{frame}
+
+\begin{frame}{Four categorical tensors (part 10)}
+All three controls act on the column index alone, so the creature's row
+is preserved and its motion is confined to the horizontal axis of the
+grid --- a deliberate one-dimensional control over the two-dimensional
+location factor. Every slice \(B_{\cdot\,\cdot\,u}\) is
+column-normalized by construction,
+\end{frame}
+
+\begin{frame}{Four categorical tensors (part 11)}
+so the transition is a valid categorical for each action.
+\end{frame}
+
+\begin{frame}{Four categorical tensors (part 12)}
 \textbf{Log-preference \(C\).} The sentinel prefers to \emph{see} the
 creature near the den (the center cell), encoded as a log-preference
 vector of shape \((n_o, 1)\) with a positive bump on the center outcome
-and zero elsewhere. The preferred-outcome distribution that the
-expected-free-energy decomposition of sec.~5.15
-uses is \(p_C(o) = \mathrm{softmax}(C)[o]\).
+and zero elsewhere.
+\end{frame}
 
+\begin{frame}{Four categorical tensors (part 13)}
+The preferred-outcome distribution that the expected-free-energy
+decomposition of sec.~5.15 uses is
+\(p_C(o) = \mathrm{softmax}(C)[o]\).
+\end{frame}
+
+\begin{frame}{Four categorical tensors (part 14)}
 \textbf{Initial prior \(D_0\).} The creature is believed to start at the
 grid center, so \(D_0\) of shape \((n_s, 1)\) places unit mass on the
 center cell. \(D_0\) enters state inference as the log-prior of the
-one-step variational update (eq.~\ref{eq:state-inference} below).
-
+one-step variational update (eq.~16 below).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Four categorical tensors:
-likelihood, transitions, preferences, priors}
+\begin{frame}{Four categorical tensors (part 15)}
 The columns-are-pmfs invariant is not assumed --- it is pinned by
 ISC-15, which checks that every column of \(A\) and of each
 \(B_{\cdot\,\cdot\,u}\) sums to one.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{One-step variational state
-inference in the grid world}
+\begin{frame}{One-step variational state inference in the grid world}
 \protect\phantomsection\label{sec:methods-state-inference}
 Given an observation \(o\), a sentinel forms a posterior over the
 creature's location by a single softmax step (Friston et al. (2024), Eq.
-4): the log-prior plus the additive log-likelihood message, summed over
-any conditionally independent modalities \(m\),
+4): the log-prior plus the additive log-likelihood message,
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:state-inference}{
-q(s) \;=\; \mathrm{softmax}\!\Big(\ln D_0(s) \;+\; \textstyle\sum_m \ln A_m[o_m, s]\Big).
+\begin{frame}{One-step variational state\ldots{} (part 2)}
+summed over any conditionally independent modalities \(m\),
+\end{frame}
+
+\begin{frame}{One-step variational state\ldots{} (part 3)}
+\begin{equation}\tag{16}\protect\phantomsection\label{eq:state-inference}{
+q(s)
+= \mathrm{softmax}\!\left(
+\begin{aligned}
+&\ln D_0(s)\\
+&\quad + \textstyle\sum_m \ln A_m[o_m, s]
+\end{aligned}
+\right).
 }\end{equation}
+\end{frame}
 
+\begin{frame}{One-step variational state\ldots{} (part 4)}
 The message \(\ln A_m[o_m, \cdot]\) is the row of \(A_m\) that the
 observed outcome selects; summing messages over modalities makes each
 modality an additive evidence term --- the categorical
 product-of-experts. The companion variational free energy, the scalar
-eq.~\ref{eq:state-inference} minimizes, is
-
+eq.~16 minimizes, is
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{One-step variational state
-inference in the grid world}
-\begin{equation}\protect\phantomsection\label{eq:variational-free-energy}{
-F[q] \;=\; \mathbb{E}_q\!\big[\ln q(s) - \ln D_0(s) - \textstyle\sum_m \ln A_m[o_m, s]\big]
-\;=\; \mathrm{KL}\big(q \,\|\, D_0\big) \;-\; \mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big],
+\begin{frame}{One-step variational state\ldots{} (part 5)}
+\begin{equation}\tag{17}\protect\phantomsection\label{eq:variational-free-energy}{
+\begin{aligned}
+F[q]
+&= \mathbb{E}_q\!\left[
+\begin{aligned}
+&\ln q(s) - \ln D_0(s)\\
+&\quad - \textstyle\sum_m \ln A_m[o_m, s]
+\end{aligned}
+\right]\\
+&= \mathrm{KL}\big(q \,\|\, D_0\big)
+   - \mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big].
+\end{aligned}
 }\end{equation}
+\end{frame}
 
-reported in nats. The one-step posterior of eq.~\ref{eq:state-inference}
+\begin{frame}{One-step variational state\ldots{} (part 6)}
+reported in nats. The one-step posterior of eq.~16
 is its unique minimizer, where \(F\) equals the negative log model
-evidence. Both live in \breaktt{belief\_updating.infer\_states} and
-\breaktt{belief\_updating.vfe}, and the free energy of
-eq.~\ref{eq:variational-free-energy} is the quantity the
+evidence.
+\end{frame}
+
+\begin{frame}[fragile]{One-step variational state\ldots{} (part 7)}
+Both live in \texttt{belief\_updating.infer\_states} and
+\texttt{belief\_updating.vfe}, and the free energy of
+eq.~17 is the quantity the
 communicating-versus-incommunicado colony comparison of
 sec.~5.22 scores.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{One-step variational state
-inference in the grid world}
+\begin{frame}{One-step variational state\ldots{} (part 8)}
 This inference step is not a separate mechanism bolted onto the colony:
 it is the \(L=\mathrm{NLL}\), learning-rate-1 special case of the
-generalized-Bayes posterior eq.~1, reusing the same
-locked softmax. That client identity recovers the stated categorical
-Bayes substrate at its trusting limits. The separate server identity in
+generalized-Bayes posterior eq.~2, reusing the same
+locked softmax.
+\end{frame}
+
+\begin{frame}{One-step variational state\ldots{} (part 9)}
+That client identity recovers the stated categorical Bayes substrate at
+its trusting limits. The separate server identity in
 sec.~5.8 then yields the project log-linear
-pool under its qualified Eq. 7 message-combination bridge; together
-these do not recover the complete Friston protocol
+pool under its qualified Eq. 7 message-combination bridge;
+\end{frame}
+
+\begin{frame}{One-step variational state\ldots{} (part 10)}
+together these do not recover the complete Friston protocol
 (sec.~6).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Hidden-state to action loop: the POMDP
-substrate}
+\begin{frame}{Hidden-state to action loop: the POMDP substrate}
 \protect\phantomsection\label{sec:methods-pomdp-loop}
-The categorical POMDP loop in fig.~\ref{fig:pomdp-loop} separates the
+The categorical POMDP loop in fig.~5 separates the
 common latent-state substrate from the federation transport. In the
-sentinel interpretation, an agent is a location-sensitive observer: the
-hidden state is one of 9 cells, the private outcome is a noisy
-categorical report of that location, and the agent sends its posterior
-over the location rather than the report itself. The flat belief-sharing
-studies use the observation, posterior, and communication subset; the
-moving-world extension also executes transition and EFE-guided action
-paths. The diagram therefore gives readers the active-inference context
-without turning a conceptual loop into a claim that every study
-estimates every latent or policy quantity.
-
+sentinel interpretation, an agent is a location-sensitive observer:
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Hidden-state to action loop: the POMDP
-substrate}
+\begin{frame}{Hidden-state to action loop (part 2)}
+the hidden state is one of 9 cells, the private outcome is a noisy
+categorical report of that location, and the agent sends its posterior
+over the location rather than the report itself.
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 3)}
+The flat belief-sharing studies use the observation, posterior, and
+communication subset; the moving-world extension also executes
+transition and EFE-guided action paths.
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 4)}
+The diagram therefore gives readers the active-inference context without
+turning a conceptual loop into a claim that every study estimates every
+latent or policy quantity.
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 5)}
 \begin{figure}
 \centering
-\includegraphics[width=0.95\linewidth,height=0.40\textheight,keepaspectratio,alt={Sentinel-world and active-inference loop. Source relation: source-inspired original schematic related to Friston et al.~(2024), Figs. 1 and 4; estimand: POMDP message-and-action sequence; uncertainty: none. The x-axis is the POMDP cycle in Panel C from hidden state through observation, posterior, action, and next state; the y-axis separates the shared-world, belief-sharing, and temporal-loop panels. Panel A shows three agents viewing the same 9-cell hidden world through private, noisy categorical observations; raw observations remain local. Panel B shows those local posteriors entering a log-linear-pool or robust server and returning as a cavity-excluded consensus. Panel C gives the POMDP cycle from hidden state s\_t through observation o\_t, posterior q\_t(s), action u\_t, and transition to s\_\{t+1\}, with A, B, and C marking the likelihood, transition, and preference factors. The flat studies execute the inference-sharing branch; the moving-world extension also executes transitions and EFE-guided actions. This is a deterministic model schematic, not an uncertainty-bearing empirical result.}]{../figures/pomdp_loop.png}
-\caption{Sentinel-world and active-inference loop. Source relation:
-source-inspired original schematic related to Friston et al.~(2024),
-Figs. 1 and 4; estimand: POMDP message-and-action sequence; uncertainty:
-none. The x-axis is the POMDP cycle in Panel C from hidden state through
-observation, posterior, action, and next state; the y-axis separates the
-shared-world, belief-sharing, and temporal-loop panels. Panel A shows
-three agents viewing the same 9-cell hidden world through private, noisy
-categorical observations; raw observations remain local. Panel B shows
-those local posteriors entering a log-linear-pool or robust server and
-returning as a cavity-excluded consensus. Panel C gives the POMDP cycle
-from hidden state \(s_t\) through observation \(o_t\), posterior
-\(q_t(s)\), action \(u_t\), and transition to \(s_{t+1}\), with \(A\),
-\(B\), and \(C\) marking the likelihood, transition, and preference
-factors. The flat studies execute the inference-sharing branch; the
-moving-world extension also executes transitions and EFE-guided actions.
-This is a deterministic model schematic, not an uncertainty-bearing
-empirical result.}\label{fig:pomdp-loop}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Shared world; D = den: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-world.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 6)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel 1 → Shared hidden location: Visual field; retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-1.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 7)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel 2 → Shared hidden location: Visual field; retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-2.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 8)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel n → Shared hidden location: Visual field; retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-n.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 9)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic local posterior q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-local-posterior-1.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 10)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic local posterior q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-local-posterior-2.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 11)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic local posterior qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-local-posterior-n.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 12)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q1 → Server: Posterior message; data\_dependency.}]{../figures/pomdp_loop.slide-message-1.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 13)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q2 → Server: Posterior message; data\_dependency.}]{../figures/pomdp_loop.slide-message-2.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior qn → Server: Posterior message; data\_dependency.}]{../figures/pomdp_loop.slide-message-n.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-10}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 15)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Qualified Eq. 7 pool / robust route → Posterior excluding recipient: Server return; data\_dependency.}]{../figures/pomdp_loop.slide-return.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-11}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior excluding recipient → Recipient n; m ≠ n: Self-exclusion; retained\_warning.}]{../figures/pomdp_loop.slide-recipient.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-12}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden location s(t) → Private outcome o(t): A = P(o\textbar s); data\_dependency.}]{../figures/pomdp_loop.slide-sensing.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-13}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private outcome o(t) → Local posterior q(t): Local inference; data\_dependency.}]{../figures/pomdp_loop.slide-inference.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-14}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q(t) → Action: still / left / right: C preferences / EFE; data\_dependency.}]{../figures/pomdp_loop.slide-policy.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-15}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 20)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Action u(t) → Next hidden state s(t+1): B = P(s′\textbar s,u); data\_dependency.}]{../figures/pomdp_loop.slide-transition.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-16}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 21)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Next hidden state s(t+1) → Hidden location next step: Temporal loop; data\_dependency.}]{../figures/pomdp_loop.slide-next-step.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-17}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 22)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents share beliefs about one hidden location. Private outcomes and controls remain local; no raw sensory data are pooled.}]{../figures/pomdp_loop.slide-privacy.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-18}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 23)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Flat federation uses inference and communication. The moving-world extension also executes B and EFE-guided control.}]{../figures/pomdp_loop.slide-optional-control.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-19}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hidden-state to action loop (part 24)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Model schematic, not an empirical result. Hatched cells only illustrate topology or posterior emphasis; they are not measured probability values.}]{../figures/pomdp_loop.slide-scope.png}
+\refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-20}
 \end{figure}
 \end{frame}
 

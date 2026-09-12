@@ -1,0 +1,35 @@
+{
+  "panels": [
+    {
+      "alt": "Complete ordered seed-mean KL learning trajectory with the supplied pointwise seed interval.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "3365b2e4d314e8da4565bf21cd2508f92e54812ad4f7c515307cf9b0aef7df67",
+      "src": "../figures/language_kl_decay.slide-trajectory.png"
+    },
+    {
+      "alt": "KL(true A || learned A), in nats. Circles / solid: seed mean. The ordered x-axis is the Dirichlet count batch.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8728edcdd8cdff8663c3cd9326341bf19ba1688bd8d3f3129f11cd5f04304707",
+      "src": "../figures/language_kl_decay.slide-estimand.png"
+    },
+    {
+      "alt": "Pointwise 95% percentile-bootstrap interval over independent configured seeds. Ordered steps are not independent replicates.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "477376308d7f74b9f1a5e070b343ab98bb9201a4917b0c9cc28e6387c1cdf40f",
+      "src": "../figures/language_kl_decay.slide-uncertainty.png"
+    },
+    {
+      "alt": "Initial mean: 3.423 nats. Final mean: 0.00269 nats. Steps: 25. Seeds: 480.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f38e2334223182eb4de7754ee4645999e23a4b8151daf00f19ce7e5c51739b21",
+      "src": "../figures/language_kl_decay.slide-endpoints.png"
+    },
+    {
+      "alt": "Source monotonicity check: True. This is a source-mechanism analogue, not exact protocol replication.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "510c8356e62696aa3bb410d2f101d0144f930fdec98e479588fbb15c44cb0bb2",
+      "src": "../figures/language_kl_decay.slide-pattern.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

@@ -4,8 +4,8 @@ Single loader for ``manuscript/config.yaml`` -> ``experiment:`` block. The
 parameters here drive the categorical source-mechanism analogues of Friston et al. (2024),
 *Federated inference and belief sharing* (Neurosci. Biobehav. Rev. 156:105500),
 run by :mod:`fedference.experiments`: the colony size and noisy-sensor grid of
-Fig. 1/4, the contamination rates and FedGVI client divergences of the
-robustness sweep (Fig. 5 / FedGVI client weighting, Mildner et al. 2025), and
+Fig. 1/4, the contamination rates and legacy-named server presets of the
+robustness sweep, and
 the seed budget consumed by the paired/BH-FDR robustness report.
 
 Pure ``numpy`` / ``pyyaml``; no ``infrastructure.*`` imports (layer contract).
@@ -24,8 +24,10 @@ import yaml
 
 from fedference.complexity import ComplexityBenchmarkConfig
 
-#: Default FedGVI client divergences, project log-linear-pool baseline ``KLD``
-#: first (Fig. 5 / FedGVI client weighting). Under the separately documented
+#: Legacy compatibility labels for Study 4 server presets. ``KLD`` denotes the
+#: project log-linear-pool baseline; the non-KLD labels denote distinct configured
+#: ``robust_aggregate`` robustness operating points, not client divergences or
+#: client-loss theorem owners. Under the separately documented
 #: categorical posterior-log-potential assumptions, that baseline specializes
 #: Friston Eq. 7's message-combination term; it is not the complete protocol.
 _DEFAULT_DIVERGENCES: tuple[str, ...] = ("KLD", "RKL", "AR", "beta", "rcce")
@@ -72,8 +74,11 @@ class ExperimentConfig:
             (9 locations), so the default matches :data:`fedference.pomdp.N_LOCATIONS`.
         contamination_rates: Convex-mix rates toward a confident-wrong delta
             swept in the robustness experiment.
-        divergences: FedGVI client divergence labels; ``"KLD"`` is the naive
-            Friston pool, the rest are robust pools.
+        divergences: Legacy compatibility labels for Study 4 server presets;
+            ``"KLD"`` is the project log-linear-pool reference, while the other
+            labels select distinct configured ``robust_aggregate`` robustness
+            operating points. They do not denote executed client divergences or
+            transfer client-loss theorems to the server.
         n_seeds: Number of independent seeds for the across-seed studies
             (belief sharing). Raised to a defensible default so the across-seed
             colony means and their bootstrap CIs carry real sample size.
@@ -265,7 +270,7 @@ class ExperimentConfig:
 
     @property
     def robust_divergences(self) -> tuple[str, ...]:
-        """The non-``KLD`` (robust) divergence labels."""
+        """Non-``KLD`` legacy labels for configured robust-server presets."""
         return tuple(d for d in self.divergences if d != "KLD")
 
 

@@ -1,0 +1,422 @@
+{
+  "authorization_boundary": "green engineering and rendering gates are necessary inputs to review; they do not automatically authorize a merge, tag, GitHub release, or Zenodo publication",
+  "inputs": [
+    {
+      "id": "source",
+      "label": "Source + tests + manuscript",
+      "role": "upstream input"
+    },
+    {
+      "id": "config",
+      "label": "Configuration + claim contracts",
+      "role": "upstream input"
+    },
+    {
+      "id": "lockfile",
+      "label": "uv.lock + runtime metadata",
+      "role": "upstream input"
+    },
+    {
+      "id": "registry",
+      "label": "Figure / accessibility registry source",
+      "role": "upstream input"
+    },
+    {
+      "id": "template_renderer",
+      "label": "Exact clean Template renderer commit",
+      "role": "upstream input"
+    }
+  ],
+  "invalidation_edges": [
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "source",
+      "target": "reports"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "config",
+      "target": "reports"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "lockfile",
+      "target": "reports"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "source",
+      "target": "figures"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "reports",
+      "target": "figures"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "registry",
+      "target": "figures"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "source",
+      "target": "provisional"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "config",
+      "target": "provisional"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "reports",
+      "target": "provisional"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "source",
+      "target": "coverage"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "config",
+      "target": "coverage"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "lockfile",
+      "target": "coverage"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "provisional",
+      "target": "coverage"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "coverage",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "source",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "config",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "reports",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "final_hydration",
+      "target": "render"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "figures",
+      "target": "render"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "template_renderer",
+      "target": "render"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "render",
+      "target": "surfaces"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "surfaces",
+      "target": "surface_validation"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "surface_validation",
+      "target": "provenance"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "surfaces",
+      "target": "release_manifest"
+    },
+    {
+      "disposition": "invalidation",
+      "label": "change invalidates",
+      "source": "provenance",
+      "target": "release_manifest"
+    }
+  ],
+  "manifest_cycle_boundary": "this figure is generated from this source-owned contract and never reads the downstream release manifest that later inventories it",
+  "no_claims": [
+    "a green build is not scientific validation",
+    "tagged PDF structure is not PDF/UA conformance",
+    "HTML accessibility enhancements are not a WCAG conformance claim",
+    "a GitHub release or DOI does not enlarge the scientific claim surface"
+  ],
+  "producer_edges": [
+    {
+      "disposition": "producer",
+      "label": "execute",
+      "source": "source",
+      "target": "reports"
+    },
+    {
+      "disposition": "producer",
+      "label": "configure",
+      "source": "config",
+      "target": "reports"
+    },
+    {
+      "disposition": "producer",
+      "label": "bind environment",
+      "source": "lockfile",
+      "target": "reports"
+    },
+    {
+      "disposition": "producer",
+      "label": "run generators",
+      "source": "source",
+      "target": "figures"
+    },
+    {
+      "disposition": "producer",
+      "label": "render typed values",
+      "source": "reports",
+      "target": "figures"
+    },
+    {
+      "disposition": "producer",
+      "label": "bind semantics",
+      "source": "registry",
+      "target": "figures"
+    },
+    {
+      "disposition": "producer",
+      "label": "hydrate manuscript",
+      "source": "source",
+      "target": "provisional"
+    },
+    {
+      "disposition": "producer",
+      "label": "bind tokens",
+      "source": "config",
+      "target": "provisional"
+    },
+    {
+      "disposition": "producer",
+      "label": "supply values",
+      "source": "reports",
+      "target": "provisional"
+    },
+    {
+      "disposition": "gate",
+      "label": "test source",
+      "source": "source",
+      "target": "coverage"
+    },
+    {
+      "disposition": "gate",
+      "label": "test configuration",
+      "source": "config",
+      "target": "coverage"
+    },
+    {
+      "disposition": "gate",
+      "label": "lock test runtime",
+      "source": "lockfile",
+      "target": "coverage"
+    },
+    {
+      "disposition": "gate",
+      "label": "test provisional surface",
+      "source": "provisional",
+      "target": "coverage"
+    },
+    {
+      "disposition": "gate",
+      "label": "bind receipt",
+      "source": "coverage",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "producer",
+      "label": "hydrate final source",
+      "source": "source",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "producer",
+      "label": "bind final tokens",
+      "source": "config",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "producer",
+      "label": "supply final values",
+      "source": "reports",
+      "target": "final_hydration"
+    },
+    {
+      "disposition": "producer",
+      "label": "render manuscript",
+      "source": "final_hydration",
+      "target": "render"
+    },
+    {
+      "disposition": "producer",
+      "label": "embed figures",
+      "source": "figures",
+      "target": "render"
+    },
+    {
+      "disposition": "producer",
+      "label": "execute exact renderer",
+      "source": "template_renderer",
+      "target": "render"
+    },
+    {
+      "disposition": "producer",
+      "label": "produce",
+      "source": "render",
+      "target": "surfaces"
+    },
+    {
+      "disposition": "gate",
+      "label": "validate",
+      "source": "surfaces",
+      "target": "surface_validation"
+    },
+    {
+      "disposition": "receipt",
+      "label": "record",
+      "source": "surface_validation",
+      "target": "provenance"
+    },
+    {
+      "disposition": "receipt",
+      "label": "inventory bytes",
+      "source": "surfaces",
+      "target": "release_manifest"
+    },
+    {
+      "disposition": "receipt",
+      "label": "seal receipts",
+      "source": "provenance",
+      "target": "release_manifest"
+    },
+    {
+      "disposition": "authorization",
+      "label": "review + authorize",
+      "source": "release_manifest",
+      "target": "github"
+    },
+    {
+      "disposition": "authorization",
+      "label": "verify + fresh approval",
+      "source": "github",
+      "target": "zenodo"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_relation": "producer-order and stale-invalidation map derived from source-owned pipeline contracts",
+  "stages": [
+    {
+      "id": "reports",
+      "label": "Typed analysis reports",
+      "role": "producer"
+    },
+    {
+      "id": "figures",
+      "label": "Figure pairs + accessibility metadata",
+      "role": "producer"
+    },
+    {
+      "id": "provisional",
+      "label": "Provisional hydration",
+      "role": "producer"
+    },
+    {
+      "id": "coverage",
+      "label": "Full tests + coverage receipt",
+      "role": "gate"
+    },
+    {
+      "id": "final_hydration",
+      "label": "Final receipt-backed hydration",
+      "role": "producer"
+    },
+    {
+      "id": "render",
+      "label": "Clean source-locked Template render",
+      "role": "external producer"
+    },
+    {
+      "id": "surfaces",
+      "label": "PDF + HTML + reveal.js + Beamer",
+      "role": "rendered surface"
+    },
+    {
+      "id": "surface_validation",
+      "label": "Structure + text + visual + accessibility validation",
+      "role": "gate"
+    },
+    {
+      "id": "provenance",
+      "label": "Pipeline provenance + artifact manifests",
+      "role": "receipt"
+    },
+    {
+      "id": "release_manifest",
+      "label": "Release manifest + staged checksums",
+      "role": "receipt"
+    }
+  ],
+  "study_status": "source_owned_pipeline_contract",
+  "terminals": [
+    {
+      "authorization_required": true,
+      "id": "github",
+      "label": "GitHub tag and release",
+      "role": "authorization-gated terminal"
+    },
+    {
+      "authorization_required": true,
+      "id": "zenodo",
+      "label": "Zenodo publication",
+      "role": "irreversible authorization-gated terminal"
+    }
+  ]
+}

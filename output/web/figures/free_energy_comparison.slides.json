@@ -1,0 +1,59 @@
+{
+  "panels": [
+    {
+      "alt": "Every seed connects its isolated and communicating colony mean; dark line with open diamonds marks condition means.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "1c941580467c8a07d845a31e35efe4ea38e37dc75760db24ef396dc38b339781",
+      "src": "../figures/free_energy_comparison.slide-paired-seeds.png"
+    },
+    {
+      "alt": "All paired seed differences with jitter and descriptive violin, zero reference, and paired mean with the available report interval.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "cdd9e9c97c1790197e7f96d4d727149b82f54cbf6495ebcde5795fec576f207b",
+      "src": "../figures/free_energy_comparison.slide-seed-differences.png"
+    },
+    {
+      "alt": "\u0394F = isolated minus communicating. Positive values indicate lower F with communication in this reduced categorical protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d84b76a4f00bdb1835381b8ffb7f17c0fc1b840cb286b35972e66597e24907c4",
+      "src": "../figures/free_energy_comparison.slide-direction.png"
+    },
+    {
+      "alt": "Filled circles: isolated. Open diamonds: sharing. Fine lines preserve pairing. Dark line / open diamonds: condition means.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8b80c36d86282bba9aa34ac2bdf2995fb071f63ca39ba968deb8582c36baa64d",
+      "src": "../figures/free_energy_comparison.slide-pair-key.png"
+    },
+    {
+      "alt": "One open diamond per seed; vertical jitter carries no outcome meaning. Violin is descriptive. Dark dotted rule marks zero contrast.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2ba1fd55db9fcfb5436a8e84cc2df355ad9a685c817d33b8096fbc8c89d93799",
+      "src": "../figures/free_energy_comparison.slide-difference-key.png"
+    },
+    {
+      "alt": "Paired mean \u0394F: +3.311 nats. Independent unit: configured seed; n = 480.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4208c919f4ac265e85571aec4602b12d2875b39b3e53909446b44979cf0309cf",
+      "src": "../figures/free_energy_comparison.slide-mean.png"
+    },
+    {
+      "alt": "Report-owned 95% interval: [3.186, 3.433] nats.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e5d1318662d6fcefa50dae117ce1ccd206ab9818b6c6592a8f81e729e065ff2a",
+      "src": "../figures/free_energy_comparison.slide-interval.png"
+    },
+    {
+      "alt": "Analysis unit: configured seed with within-seed paired conditions. Agents and ordered steps remain nested within seed.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1ec6d08522aecfe08ae4723345e4a935b583ec94648cfe3e2cf418197a91d4b9",
+      "src": "../figures/free_energy_comparison.slide-unit.png"
+    },
+    {
+      "alt": "Reduced-protocol comparison. It does not establish a general communication benefit or reconstruct the complete source protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3420ab00dfba1fc11b4ddc18018e8698589c1d467d3bb79df7e9884210a82725",
+      "src": "../figures/free_energy_comparison.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

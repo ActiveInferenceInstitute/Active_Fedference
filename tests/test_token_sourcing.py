@@ -75,6 +75,29 @@ _REPORTS = _PROJECT_ROOT / "output" / "reports"
 _CENTER = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
 
 
+def test_sweep_headline_tokens_follow_report_after_json_serialization() -> None:
+    """A tied display choice must survive sorted report serialization intact."""
+    report = json.loads((_REPORTS / "robustness_sweep.json").read_text(encoding="utf-8"))
+    selected = report["headline_method"]
+    stats = report["verdict"][selected]
+    worst_key = f"{float(report['worst_rate']):g}"
+    methods = [method for method in report["divergences"] if method != "KLD"]
+    mechanistic = max(methods, key=lambda method: report["accuracy_by_method_and_rate"][method][worst_key])
+    for candidate in (report, json.loads(json.dumps(report, sort_keys=True))):
+        tokens = _sweep_variables(candidate)
+        assert tokens["SWEEP_BEST_ROBUST_METHOD"] == selected
+        assert tokens["SWEEP_HEADLINE_METHOD"] == selected
+        assert tokens["SWEEP_BEST_MEAN_ACC_DIFF"] == f"{stats['mean_accuracy_diff']:.4f}"
+        assert tokens["SWEEP_BEST_MEAN_ACC_DIFF_CI_LO"] == f"{stats['mean_accuracy_diff_ci'][0]:.4f}"
+        assert tokens["SWEEP_BEST_MEAN_ACC_DIFF_CI_HI"] == f"{stats['mean_accuracy_diff_ci'][1]:.4f}"
+        assert tokens["SWEEP_BEST_POWER"] == f"{stats['power']:.4f}"
+        assert tokens["SWEEP_BEST_N_FOR_TARGET_POWER"] == str(stats["n_for_target_power"])
+        assert tokens["SWEEP_MECHANISTIC_BEST_METHOD"] == mechanistic
+        assert tokens["SWEEP_MECHANISTIC_BEST_ACCURACY"] == (
+            f"{report['accuracy_by_method_and_rate'][mechanistic][worst_key]:.4f}"
+        )
+
+
 # ---- (a) FEDERATION_BIT_IDENTICAL is computed, not asserted -----------------
 
 

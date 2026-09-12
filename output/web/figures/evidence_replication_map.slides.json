@@ -1,0 +1,335 @@
+{
+  "panels": [
+    {
+      "alt": "FE: Formal / executable. proved or exactly tested in the project model.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a93d856ebd6bb65042e478c7fe941ef9165bd5083763c26410244e0c64463ff8",
+      "src": "../figures/evidence_replication_map.slide-class-formal-executable.png"
+    },
+    {
+      "alt": "SC: Source-conditional. inherits only under the cited paper's assumptions.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "dc4b9d7e5c1439447511eed05b8a80b3edad26e9269ecb592e35b4d759dd86ce",
+      "src": "../figures/evidence_replication_map.slide-class-source-conditional.png"
+    },
+    {
+      "alt": "CE: Conditional empirical. estimated in the declared finite design.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b1abd993a9d5e1892bed2596855236ab96934e6bd19c68eab89d17adbf14585c",
+      "src": "../figures/evidence_replication_map.slide-class-conditional-empirical.png"
+    },
+    {
+      "alt": "SI: Scoped implementation. checks one software or protocol boundary.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d49fa2785634797f0ae57c391782ce9422b1de91473a8250b8c9837ab53c2aab",
+      "src": "../figures/evidence_replication_map.slide-class-scoped-implementation.png"
+    },
+    {
+      "alt": "O: Open. not established by the current evidence.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bd66e5abb8c8f249e4ea670abf32fc915fdf6ca9f00d0196975c146805773d03",
+      "src": "../figures/evidence_replication_map.slide-class-open.png"
+    },
+    {
+      "alt": "1. Project identity at c=0 [FE]\nEstimand / unit: paired outputs [categorical posterior]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2aa0b01a953164818f58b8d61e3af68e0df24fd50fdb960b98bea3112c9ef45e",
+      "src": "../figures/evidence_replication_map.slide-lane-1-estimand.png"
+    },
+    {
+      "alt": "1. Project identity at c=0 [FE]\nIndependent unit: exact identity. Nesting: input \u2192 paired functions",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "681b9f5b11720de6f5cbe38d33aa317688622804985975416bd0b4aa69825e52",
+      "src": "../figures/evidence_replication_map.slide-lane-1-replication.png"
+    },
+    {
+      "alt": "1. Project identity at c=0 [FE]\nMay support: project limit. Does not support: full source protocol",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b2216642a99f9c7bea40053ab4cbbf1b2b26990c88538ca739c225ba2be259b3",
+      "src": "../figures/evidence_replication_map.slide-lane-1-claims.png"
+    },
+    {
+      "alt": "2. Client-loss robustness [SC]\nEstimand / unit: generalized posterior [client update]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2f47ca4bc18086baf880947311e8814c38423518978af6cb6dbe952221f56f9d",
+      "src": "../figures/evidence_replication_map.slide-lane-2-estimand.png"
+    },
+    {
+      "alt": "2. Client-loss robustness [SC]\nIndependent unit: theorem; no empirical unit. Nesting: assumptions \u2192 update \u2192 posterior",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f0d9d483ef41d41026c57ae844e0b7c7351e0641e5d733d67bbbb2b35534dcae",
+      "src": "../figures/evidence_replication_map.slide-lane-2-replication.png"
+    },
+    {
+      "alt": "2. Client-loss robustness [SC]\nMay support: source theorem. Does not support: server theorem; performance; calibration",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bd89ef566398d5e554f7d00c8e0026310c31f5a6d90b4fb6a4125f8e48349ddc",
+      "src": "../figures/evidence_replication_map.slide-lane-2-claims.png"
+    },
+    {
+      "alt": "3. Paired free-energy contrast [CE]\nEstimand / unit: isolated \u2212 shared colony F [nats]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c527fc0af344b19431d7d5fcf5e9d58e0caa49fd3a54f3543ca733c98de8e11d",
+      "src": "../figures/evidence_replication_map.slide-lane-3-estimand.png"
+    },
+    {
+      "alt": "3. Paired free-energy contrast [CE]\nIndependent unit: configured seed. Nesting: study \u2192 seed \u2192 condition \u2192 agents",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7309335885abd5859e19c8cd39d7cb9d7f6a3b53c3f483e4b3f26b1f70fee4a3",
+      "src": "../figures/evidence_replication_map.slide-lane-3-replication.png"
+    },
+    {
+      "alt": "3. Paired free-energy contrast [CE]\nMay support: paired protocol contrast. Does not support: general benefit; exact replication",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ffe9581101b40355d6d357769a4b916a6f2ab279d43a782947103a2113c8f4f4",
+      "src": "../figures/evidence_replication_map.slide-lane-3-claims.png"
+    },
+    {
+      "alt": "4. Dirichlet likelihood learning [CE]\nEstimand / unit: KL(true A || learned A) [nats]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d775367ba122f627a82cddb6adc8bb8558955e25a135cbf5c6f70af5a6ae0bff",
+      "src": "../figures/evidence_replication_map.slide-lane-4-estimand.png"
+    },
+    {
+      "alt": "4. Dirichlet likelihood learning [CE]\nIndependent unit: configured seed. Nesting: study \u2192 seed \u2192 steps \u2192 A rows",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1cdceb7a2923717e88c13dfcd9e0e5e022d8c31900759ea02c247a0943ef869f",
+      "src": "../figures/evidence_replication_map.slide-lane-4-replication.png"
+    },
+    {
+      "alt": "4. Dirichlet likelihood learning [CE]\nMay support: executed conjugate path. Does not support: universal rate; continuous model",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ebf81ddb244dca05c0c7a9f123d6158fb103801b7b07d491da88210a329dc82d",
+      "src": "../figures/evidence_replication_map.slide-lane-4-claims.png"
+    },
+    {
+      "alt": "5. Configured BMR sign control [FE]\nEstimand / unit: pruning delta F [nats]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2c1fb81f28316a21a8027e08ca878c3f311fb904af6f90d3d0236f094abacd68",
+      "src": "../figures/evidence_replication_map.slide-lane-5-estimand.png"
+    },
+    {
+      "alt": "5. Configured BMR sign control [FE]\nIndependent unit: closed-form comparison. Nesting: posterior \u2192 pruning \u2192 signed delta",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f5660e637da0c56525eac239baad0902c97ad39e316a83086df3b7957d14d486",
+      "src": "../figures/evidence_replication_map.slide-lane-5-replication.png"
+    },
+    {
+      "alt": "5. Configured BMR sign control [FE]\nMay support: configured sign control. Does not support: universal emergence",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "eecba0c8cece615cee479b2150a7f02e8c6a4cebc66f027a8f6db5e3cc8c59c7",
+      "src": "../figures/evidence_replication_map.slide-lane-5-claims.png"
+    },
+    {
+      "alt": "6. Exploratory client baseline [CE]\nEstimand / unit: joint-config accuracy [fraction]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "94a216bfc4f5382b0b2a9619fe0d0d8c52ab3ed1b1f0b11a860cc6359fe62f39",
+      "src": "../figures/evidence_replication_map.slide-lane-6-estimand.png"
+    },
+    {
+      "alt": "6. Exploratory client baseline [CE]\nIndependent unit: synthetic seed. Nesting: sweep \u2192 seed \u2192 client \u2192 row",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ab41cc890cf949a477b5734b90c610fea76f830781b94e809cdf59d8a305f220",
+      "src": "../figures/evidence_replication_map.slide-lane-6-replication.png"
+    },
+    {
+      "alt": "6. Exploratory client baseline [CE]\nMay support: composite configuration contrast. Does not support: RCCE-only; calibration; BNN claims",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b5ea293ee6654a74f6f70269722e687d368623de0642c4db31f1857a1c085abd",
+      "src": "../figures/evidence_replication_map.slide-lane-6-claims.png"
+    },
+    {
+      "alt": "7. Server reweighting heuristic [CE]\nEstimand / unit: robust \u2212 naive [p or fraction]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "18e84218f8dd259e0a14256801252ad4d3fecf55b81b3ad208d786da2a9a6b85",
+      "src": "../figures/evidence_replication_map.slide-lane-7-estimand.png"
+    },
+    {
+      "alt": "7. Server reweighting heuristic [CE]\nIndependent unit: seed or matched trial. Nesting: study \u2192 seed/world \u2192 trial \u2192 agents",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1477a5f082d6b786f8313a94eba8112943c70bda66a0d152a7a406d643b4d3fd",
+      "src": "../figures/evidence_replication_map.slide-lane-7-replication.png"
+    },
+    {
+      "alt": "7. Server reweighting heuristic [CE]\nMay support: finite mechanism behavior. Does not support: influence bound; Byzantine tol.; universal win",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e57afc43e4650510c79606d99a3c96d433768e5df54c777204a801548355a8b6",
+      "src": "../figures/evidence_replication_map.slide-lane-7-claims.png"
+    },
+    {
+      "alt": "8. Variational server rule [FE]\nEstimand / unit: descent, weights, transfer [mixed]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "003427422941ac0b49568e35426d3b895e9c9a497a0870d325ccc5f6b54cdba4",
+      "src": "../figures/evidence_replication_map.slide-lane-8-estimand.png"
+    },
+    {
+      "alt": "8. Variational server rule [FE]\nIndependent unit: identity or seeded path. Nesting: config \u2192 start \u2192 iterates",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "cb417d1c2470ceeb12bb14b23525861aad3f102e61ecef9e39fbfa8d379c1158",
+      "src": "../figures/evidence_replication_map.slide-lane-8-replication.png"
+    },
+    {
+      "alt": "8. Variational server rule [FE]\nMay support: objective + tested transfer. Does not support: global or universal claim",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "433eba1f1de05284fcee86bb0307f8b5a630fc8811a62a77981d24f7077c75b0",
+      "src": "../figures/evidence_replication_map.slide-lane-8-claims.png"
+    },
+    {
+      "alt": "9. Moving / disjoint-FOV contrasts [CE]\nEstimand / unit: policy/sharing [fraction, nats, steps]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5ffd952b7a0ec823249375721cebd8cfa654dc528f263243994fa3ac3e324d57",
+      "src": "../figures/evidence_replication_map.slide-lane-9-estimand.png"
+    },
+    {
+      "alt": "9. Moving / disjoint-FOV contrasts [CE]\nIndependent unit: seed or fixed world. Nesting: world \u2192 seed \u2192 condition \u2192 agents/steps",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "931795b7771319f9574b937d29545a6f9fd823f7afd55e7a2b77f7657979c499",
+      "src": "../figures/evidence_replication_map.slide-lane-9-replication.png"
+    },
+    {
+      "alt": "9. Moving / disjoint-FOV contrasts [CE]\nMay support: executed-world behavior. Does not support: universal claim; physical multi-host",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "69812d36218f55a3d6c4108d309f47c2870584ff26a5870b72cf444656838ba2",
+      "src": "../figures/evidence_replication_map.slide-lane-9-claims.png"
+    },
+    {
+      "alt": "10. Hierarchy / sensitivity diagnostics [CE]\nEstimand / unit: posterior/gap/gate [probability, fraction, nats]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "15c2ddd253372a0c0d02b5f0b25b482929368e326cdadbf8e15d4cfc43573f39",
+      "src": "../figures/evidence_replication_map.slide-lane-10-estimand.png"
+    },
+    {
+      "alt": "10. Hierarchy / sensitivity diagnostics [CE]\nIndependent unit: seed or fixed diagnostic. Nesting: world \u2192 seed \u2192 level \u2192 agents/states",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8e2ca97930ce23f274e8defde4480e705b0dd8478f7b35bca64b161421c2ce0e",
+      "src": "../figures/evidence_replication_map.slide-lane-10-replication.png"
+    },
+    {
+      "alt": "10. Hierarchy / sensitivity diagnostics [CE]\nMay support: executed hierarchy design. Does not support: universal benefit, depth, or emergence",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fb35c43c1f6872cde531607d06b90237f4abd5e3216391a4068f6a81cb2fcf1c",
+      "src": "../figures/evidence_replication_map.slide-lane-10-claims.png"
+    },
+    {
+      "alt": "11. Acuity recovery diagnostic [CE]\nEstimand / unit: acuity, error, R\u00b2 [p or unitless]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "715f1cb33d6b4638d7ce650e13a1dce0ff95ad3e799b3cdaf109debf6505409f",
+      "src": "../figures/evidence_replication_map.slide-lane-11-estimand.png"
+    },
+    {
+      "alt": "11. Acuity recovery diagnostic [CE]\nIndependent unit: trial within acuity cell. Nesting: grid point \u2192 trial \u2192 rows \u2192 estimate",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0d2b1a9691ec6966e5471ea33b50e36b703ce031e38faec0019c45bca7bb732f",
+      "src": "../figures/evidence_replication_map.slide-lane-11-replication.png"
+    },
+    {
+      "alt": "11. Acuity recovery diagnostic [CE]\nMay support: finite-grid recovery. Does not support: global structural identifiability",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "114a86b9939933aa9ebaae248a59b2f362002f2b49b6d4dc35be046c6ef14e9a",
+      "src": "../figures/evidence_replication_map.slide-lane-11-claims.png"
+    },
+    {
+      "alt": "12. Protocol-v1 / replay integrity [SI]\nEstimand / unit: frame/replay match [frame or round]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "74de811346b20ce211f6ae99c91b8446e756927dd99023e9e2c2bdd8cc83c7a0",
+      "src": "../figures/evidence_replication_map.slide-lane-12-estimand.png"
+    },
+    {
+      "alt": "12. Protocol-v1 / replay integrity [SI]\nIndependent unit: local round. Nesting: round \u2192 workers \u2192 frames \u2192 fields",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5f228e748ec678a86db21b92d9f8bd916f4a23e1b460e5f363c7ce76f6bc1302",
+      "src": "../figures/evidence_replication_map.slide-lane-12-replication.png"
+    },
+    {
+      "alt": "12. Protocol-v1 / replay integrity [SI]\nMay support: protocol-v1 local integrity. Does not support: encryption/mTLS; multi-host; Byzantine tol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b976e0a6aa6103e927a2c51d8f21b5a59b708312c1702a4edc223790ff649fe1",
+      "src": "../figures/evidence_replication_map.slide-lane-12-claims.png"
+    },
+    {
+      "alt": "13. Application receipt [SI]\nEstimand / unit: hash/source agreement [artifact]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "cc1a18d6ed5e4a5f1010ef812a7029e32b4de8ec68b3caeb3ba2284d2116c4b7",
+      "src": "../figures/evidence_replication_map.slide-lane-13-estimand.png"
+    },
+    {
+      "alt": "13. Application receipt [SI]\nIndependent unit: application invocation. Nesting: invocation \u2192 artifacts \u2192 levels",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0e39dc9609ef64ab06c9e2af7796c503830799a9fd51877ddfc7b3f675509516",
+      "src": "../figures/evidence_replication_map.slide-lane-13-replication.png"
+    },
+    {
+      "alt": "13. Application receipt [SI]\nMay support: hashes; requested source match. Does not support: validity; decision; acceptance",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5f2e4a97875592da76ea021e19860e7dfe2c5823cc2183975358bb6b0b035696",
+      "src": "../figures/evidence_replication_map.slide-lane-13-claims.png"
+    },
+    {
+      "alt": "14. External calibration / confirmation [O]\nEstimand / unit: paired log score [nats/observation]",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4a492d3de1a4a87290f086ceb62e17e81e7a94f6bb50a14094b43981be97fd5d",
+      "src": "../figures/evidence_replication_map.slide-lane-14-estimand.png"
+    },
+    {
+      "alt": "14. External calibration / confirmation [O]\nIndependent unit: dataset highest; seeds nested. Nesting: dataset \u2192 seed \u2192 clients \u2192 rows",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "79145b635037fbec3018ea81170b04e83cf43ddbeec2cd5478ab47b52f71a382",
+      "src": "../figures/evidence_replication_map.slide-lane-14-replication.png"
+    },
+    {
+      "alt": "14. External calibration / confirmation [O]\nMay support: none before design + report. Does not support: retrospective or pooled-dataset claim",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "00b7c031ed61fae4450196b9b7970cd686df1524c77c1a385ba998152335a72e",
+      "src": "../figures/evidence_replication_map.slide-lane-14-claims.png"
+    },
+    {
+      "alt": "Configured study or source-bound run \u2192 Seed when present; independence is lane-specific: contains; nesting.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a84dd8408b76f4dfcac8b1e15932717c41152ae51853092eeed3f4fab2f23e1e",
+      "src": "../figures/evidence_replication_map.slide-nesting-1.png"
+    },
+    {
+      "alt": "Seed when present; independence is lane-specific \u2192 Matched trial or condition: contains or pairs; nesting.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2b6c566e8ee78b2bf904bc2ec8e626012017e3d2912b35122739ec808a12e605",
+      "src": "../figures/evidence_replication_map.slide-nesting-2.png"
+    },
+    {
+      "alt": "Matched trial or condition \u2192 Agent / contamination role: contains; nesting.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "27d3a6c80f9d111fced43f7a238e7fa03c773200ca17054a474604bc128127b3",
+      "src": "../figures/evidence_replication_map.slide-nesting-3.png"
+    },
+    {
+      "alt": "Agent / contamination role \u2192 Ordered step / posterior state: repeats over; nesting.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "00c92544a2341623be022fd59067a9576a6f15334e2138b38fffcb1c7ad998cc",
+      "src": "../figures/evidence_replication_map.slide-nesting-4.png"
+    },
+    {
+      "alt": "Nesting grammar: arrows mean contains, pairs, or repeats. Use only the levels declared in each evidence row.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "80f3e6a7425cade4e2846d35649d99c9e4d7ddc03d574b49c9b2ec2f5984f75f",
+      "src": "../figures/evidence_replication_map.slide-nesting-scope.png"
+    },
+    {
+      "alt": "NT1: guarantees do not transfer between client, server, protocol, and application lanes",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f80c88852fd21e250147a370b6afc76ead8a55326eaea7c8fd1cb09898ec8bf0",
+      "src": "../figures/evidence_replication_map.slide-no-transfer-1.png"
+    },
+    {
+      "alt": "NT2: nested agents, trials, and time steps are not promoted to independent datasets",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "65a4128a6712d2464c85deff38060d079a3d1d0cd3683bcf69db54ddcb19ebf9",
+      "src": "../figures/evidence_replication_map.slide-no-transfer-2.png"
+    },
+    {
+      "alt": "NT3: open external confirmation is not implied by formal or software evidence",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b696c187f50ee8ec8c33030542c48281784b87d7bbcd4f28d1b28ba65e246bda",
+      "src": "../figures/evidence_replication_map.slide-no-transfer-3.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

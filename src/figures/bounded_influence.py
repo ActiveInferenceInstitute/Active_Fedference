@@ -20,16 +20,12 @@ import numpy as np
 
 from ._common import (
     COLOR_ADVERSARY,
-    COLOR_CORRECT,
     COLOR_DARK,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
-    COLOR_VARIATE,
-    annotate_stats_box,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
 
 
@@ -71,18 +67,27 @@ def generate_bounded_influence(
         raise ValueError("all inputs must be finite")
 
     apply_style()
-    # Wide enough that the long title and y-label render un-clipped.
-    fig, ax = plt.subplots(figsize=(7.4, 4.4))
+    # Reserve a direct-label lane on the right and explicit perimeter margins.
+    # Methodological qualifications and repeated numeric summaries live in the
+    # self-contained caption rather than obscuring the plotted path.
+    fig, ax = plt.subplots(figsize=(7.0, 5.0))
+    fig.set_layout_engine("none")
+    fig.subplots_adjust(left=0.14, right=0.96, top=0.84, bottom=0.19)
+    variational_style = semantic_style("variational")
+    naive_style = semantic_style("naive")
+    adversarial_style = semantic_style("adversarial")
 
-    # Variational curve (suppression in COLOR_ROBUST)
+    # Variational curve: marker and dash distinguish it without colour.
     ax.plot(
         x,
         y,
-        marker="o",
-        markersize=5,
-        linewidth=1.8,
-        color=COLOR_ROBUST,
-        label="Variational  (redescending weight)",
+        marker=variational_style.marker,
+        markerfacecolor="white",
+        markeredgecolor=variational_style.keyline,
+        linestyle=variational_style.dash,
+        markersize=5.5,
+        linewidth=variational_style.linewidth,
+        color=variational_style.color,
         zorder=3,
     )
 
@@ -95,40 +100,29 @@ def generate_bounded_influence(
             [x[cross_i]],
             [y[cross_i]],
             color=COLOR_ADVERSARY,
+            edgecolor=adversarial_style.keyline,
+            marker=adversarial_style.marker,
             s=60,
             zorder=5,
-            label=f"Drops below 50% of naive  (drift ≥ {x[cross_i]:.2f})",
+        )
+        ax.annotate(
+            f"below 0.5 × naive\nat drift {x[cross_i]:.2f}",
+            xy=(x[cross_i], y[cross_i]),
+            xytext=(12, 26),
+            textcoords="offset points",
+            arrowprops={"arrowstyle": "-", "color": adversarial_style.keyline, "lw": 0.9},
+            fontsize=9.5,
+            color=adversarial_style.keyline,
+            ha="left",
+            va="bottom",
         )
 
-    # Highlight initial (consensus) point with COLOR_CORRECT
-    ax.scatter(
-        [x[0]],
-        [y[0]],
-        color=COLOR_CORRECT,
-        s=60,
-        zorder=5,
-        label=f"At consensus  (influence = {y[0]:.3g})",
-    )
-
-    # Highlight minimum influence point
-    min_idx = int(np.argmin(y))
-    if min_idx != 0 and y[min_idx] < y[0] * 0.8:
-        ax.scatter(
-            [x[min_idx]],
-            [y[min_idx]],
-            color=COLOR_VARIATE,
-            s=50,
-            zorder=5,
-            label=f"Minimum influence = {y[min_idx]:.3g}",
-        )
-
-    # Naive floor reference (COLOR_NAIVE)
+    # Naive fixed-weight reference.
     ax.axhline(
         float(naive_influence),
-        color=COLOR_NAIVE,
-        linestyle="--",
-        linewidth=1.6,
-        label=f"Naive pool  (fixed $1/n$ = {naive_influence:.3g})",
+        color=naive_style.color,
+        linestyle=naive_style.dash,
+        linewidth=naive_style.linewidth,
         zorder=2,
     )
 
@@ -138,72 +132,80 @@ def generate_bounded_influence(
         y,
         float(naive_influence),
         where=(y <= naive_influence).tolist(),
-        color=COLOR_ROBUST,
+        color=variational_style.color,
         alpha=0.12,
-        label="Robustness gap  (variational below naive)",
         zorder=1,
     )
 
-    # Arrow annotation: final influence vs naive
-    ax.annotate(
-        f"Final influence\n{y[-1]:.3g}",
-        xy=(x[-1], y[-1]),
-        xytext=(-18, 36),
-        textcoords="offset points",
-        arrowprops={"arrowstyle": "->", "color": COLOR_ROBUST, "lw": 1.0},
-        fontsize=9.5,
-        color=COLOR_ROBUST,
-        ha="right",
+    x_span = max(float(np.max(x) - np.min(x)), 1.0)
+    y_top = max(float(np.max(y)), float(naive_influence), 1e-6) * 1.18
+    label_x = float(np.max(x)) + 0.08 * x_span
+    label_end_x = float(np.max(x)) + 0.31 * x_span
+    variational_label_y = max(float(y[-1]), 0.09 * y_top)
+    ax.plot(
+        [float(x[-1]), label_x - 0.015 * x_span],
+        [float(y[-1]), variational_label_y],
+        color=variational_style.keyline,
+        linewidth=0.9,
+        clip_on=False,
     )
-    # Label the flat naive line mid-axis, in the robustness gap below it,
-    # well clear of the upper-right stats box.
-    _label_x = x[0] + 0.45 * (x[-1] - x[0])
-    ax.annotate(
-        f"Naive fixed\n{naive_influence:.3g}",
-        xy=(_label_x, naive_influence),
-        xytext=(_label_x - 0.12 * (x[-1] - x[0]), naive_influence * 0.72),
-        arrowprops={"arrowstyle": "->", "color": COLOR_NAIVE, "lw": 1.0},
+    ax.text(
+        label_x,
+        variational_label_y,
+        f"variational weight\n{y[-1]:.3g} at final drift",
+        ha="left",
+        va="center",
         fontsize=9.5,
-        color=COLOR_NAIVE,
-        ha="center",
-        va="top",
+        color=variational_style.keyline,
+    )
+    ax.plot(
+        [float(x[-1]), label_x - 0.015 * x_span],
+        [float(naive_influence), float(naive_influence)],
+        color=naive_style.keyline,
+        linewidth=0.9,
+        clip_on=False,
+    )
+    ax.text(
+        label_x,
+        float(naive_influence),
+        f"naive fixed weight\n1/n = {naive_influence:.3g}",
+        ha="left",
+        va="center",
+        fontsize=9.5,
+        color=naive_style.keyline,
     )
 
     ax.set_xlabel(
-        "Outlier drift toward confidently-wrong state  (0 = consensus, 1 = delta)",
+        "Outlier drift (0 = consensus; 1 = confidently wrong)",
         labelpad=6,
         color=COLOR_DARK,
     )
     ax.set_ylabel(
-        "Normalized server weight of the probed agent",
+        "Normalized weight of probed agent",
         labelpad=6,
         color=COLOR_DARK,
     )
-    ax.set_ylim(bottom=0.0)
+    ax.set_xlim(float(np.min(x)) - 0.03 * x_span, label_end_x)
+    ax.set_xticks(np.linspace(float(np.min(x)), float(np.max(x)), 6))
+    # Leave room below zero so near-zero endpoint markers remain whole.
+    ax.set_ylim(-0.03 * y_top, y_top)
     ax.set_title(
-        "Variational server weight redescends on this path",
+        "Normalized server weight along the configured drift path",
         pad=12,
         color=COLOR_DARK,
     )
-
-    # Suppression factor (naive / diverged influence) for the stats box.
-    total_gap = float(naive_influence - y[-1])
-    if y[-1] > 0:
-        suppression_line = (
-            f"Influence suppressed {naive_influence / y[-1]:.0f}× vs naive"
-        )
-    else:
-        suppression_line = "Influence fully suppressed (zero weight)"
-    stats_text = (
-        f"Naive fixed weight:  {naive_influence:.3g}\n"
-        f"Variational @ max drift:  {y[-1]:.3g}\n"
-        f"{suppression_line}\n"
-        f"Max deterministic gap:  {total_gap:.3g}"
+    canonical = save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=0.80,
     )
-    annotate_stats_box(ax, stats_text, loc="upper right", fontsize=10)
+    from ._presentation_diagnostics import influence_path_presentation
 
-    ax.legend(fontsize=10, loc="lower left")
-    return save_figure(fig, figures_dir(project_root) / filename)
+    influence_path_presentation(
+        canonical, x, y, naive_influence,
+        crossing_index=int(crossings[0]) if crossings.size else None,
+    )
+    return canonical
 
 
 __all__ = ["generate_bounded_influence"]

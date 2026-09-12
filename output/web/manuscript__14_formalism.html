@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>14_formalism.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -469,61 +633,62 @@ mjx-container[display="true"] {
 <h1 id="sec:formalism">Formalism: recovery limits, EFE, and tempered
 aggregation</h1>
 <p>The primitives of <a class="xref" href="index.html#sec:methods">Section 5</a> are governed by a compact
-set of machine-checkable identities. Their counter is monotone across
-the methods and this section: <a class="xref" href="index.html#def:generalized-bayes">Definition 1</a> and <a class="xref" href="index.html#def:cavity">Definition 2</a> (posterior and cavity /
-PVI update, <a class="xref" href="index.html#sec:method-genbayes">Section 5.3</a>); <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a> (Rényi KL
-limit, <a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>);
-<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a> (<span
-class="math inline">\(\beta\)</span>-loss and rcce NLL limits, <span
-class="citation"
-data-cites="sec:method-losses"><a class="xref" href="index.html#sec:method-losses">Section 5.7</a></span>); <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>
-and Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>
-(belief-sharing and Bayes recovery, <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>);
-and <a class="xref" href="index.html#prop:efe-decomposition">Proposition 7</a> below
-(expected-free-energy identity). Each carries a tested residual. None
-grants a bounded-influence guarantee to the server-side
-<code>robust_aggregate</code> heuristic; that boundary is stated in
-<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>.</p>
+set of machine-checkable identities.</p>
+<p>Their counter is monotone across the methods and this section.
+<a class="xref" href="index.html#def:generalized-bayes">Definition 1</a> and <a class="xref" href="index.html#def:cavity">Definition 2</a> cover the posterior and
+cavity / PVI update (<a class="xref" href="index.html#sec:method-genbayes">Section 5.3</a>). <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a> gives the
+Rényi KL limit (<a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>).</p>
+<p><a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a> gives the
+<span class="math inline">\(\beta\)</span>-loss and rcce NLL limits
+(<a class="xref" href="index.html#sec:method-losses">Section 5.7</a>). <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>
+and Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> give
+belief-sharing and Bayes recovery (<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>).
+<a class="xref" href="index.html#prop:efe-decomposition">Proposition 7</a> below gives
+the expected-free-energy identity.</p>
+<p>Each carries a tested residual. None grants a bounded-influence
+guarantee to the server-side <code>robust_aggregate</code> heuristic;
+that boundary is stated in <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>.</p>
 <h2 id="sec:formalism-recovery">Recovery limits as the proof
 surface</h2>
 <p>The recovery limits separate client and server claims. The divergence
 and loss limits recover the standard-Bayes client update; the
-independently tested
-<code>robust_aggregate(robustness=0) == log_linear_pool</code> identity
-recovers the project’s standard server pool. Under the explicit
-shared-support, posterior-log-potential, and fixed-weight assumptions in
-<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+independently tested identity equates <code>robust_aggregate</code> with
+<code>log_linear_pool</code> when <code>robustness=0</code>, recovering
+the project’s standard server pool. Under the explicit shared-support,
+posterior-log-potential, and fixed-weight assumptions in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 that pool is a categorical specialization of Eq. 7’s message-combination
 term, not recovery of the complete source protocol
-<span class="citation">(Friston et al. 2024)</span>. We collect the five residuals that pin those
-limited claims, each emitted by the test-suite and reported in <span
-class="citation"
-data-cites="sec:results-recovery"><a class="xref" href="index.html#sec:results-recovery">Section 7.1</a></span>, never
-hardcoded. Read each row of the table below as a triple: the robust
-primitive, the trusting knob value at which it must collapse onto its
+<span class="citation">(Friston et al. 2024)</span>.</p>
+<p>We collect the five residuals that pin those limited claims, each
+emitted by the test-suite and reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>, never
+hardcoded.</p>
+<p>Read each row of the table below as a triple: the robust primitive,
+the trusting knob value at which it must collapse onto its
 standard-Bayes or project-local counterpart, and the tested residual
 measuring whatever gap survives at that value. The rows differ in what
-kind of check they are. The divergence and loss rows evaluate inside the
-implementation’s closed-form switch band, so their zeros are exact
-branch identities — guaranteed by construction, not measurements that
-could have come out otherwise. Their genuine falsifiers are the
-<em>off-switch</em> convergence residuals, evaluated just outside the
-band (at <span class="math inline">\(\alpha = 1.00001\)</span>, <span
+kind of check they are.</p>
+<p>The divergence and loss rows evaluate inside the implementation’s
+closed-form switch band, so their zeros are exact branch identities —
+guaranteed by construction, not measurements that could have come out
+otherwise.</p>
+<p>Their genuine falsifiers are the <em>off-switch</em> convergence
+residuals, evaluated just outside the band (at <span
+class="math inline">\(\alpha = 1.00001\)</span>, <span
 class="math inline">\(\beta = 1.00 \times 10^{-6}\)</span>, <span
-class="math inline">\(q_{\rm loss} = 1.00 \times 10^{-6}\)</span>) where
-the general formulas run and a nonzero gap is possible: those residuals
-are <span class="math inline">\(1.66 \times 10^{-5}\)</span>, <span
-class="math inline">\(1.24 \times 10^{-5}\)</span>, and <span
+class="math inline">\(q_{\text{loss}} = 1.00 \times 10^{-6}\)</span>)
+where the general formulas run and a nonzero gap is possible: those
+residuals are <span class="math inline">\(1.66 \times 10^{-5}\)</span>,
+<span class="math inline">\(1.24 \times 10^{-5}\)</span>, and <span
 class="math inline">\(1.12 \times 10^{-5}\)</span> respectively, and any
 failure of those quantities to shrink toward the limit would falsify the
-containment claim. The posterior row is a measured identity on the
-general code path, so its near-zero residual is itself the falsification
-surface. The aggregate row’s zero at exactly <span
-class="math inline">\(c=0\)</span> is likewise branch-exact; the
-identity is additionally exercised on the iterative code path at
-near-zero robustness, where the consensus must still land on the
-log-linear pool to tight tolerance.</p>
-<table>
+containment claim.</p>
+<p>The posterior row is a measured identity on the general code path, so
+its near-zero residual is itself the falsification surface. The
+aggregate row’s zero at exactly <span class="math inline">\(c=0\)</span>
+is likewise branch-exact; the identity is additionally exercised on the
+iterative code path at near-zero robustness, where the consensus must
+still land on the log-linear pool to tight tolerance.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Recovery residuals: the largest observed discrepancy between each robust primitive and its standard-Bayes limit, over…"><table data-responsive-table="true">
 <caption>Recovery residuals: the largest observed discrepancy between
 each robust primitive and its standard-Bayes limit, over the recovery
 band. Each is a maximum absolute difference in the natural units of the
@@ -547,83 +712,72 @@ approximations. The labeled presentation of these residuals lives in
 </thead>
 <tbody>
 <tr>
-<td>Rényi <span class="math inline">\(\to\)</span> KL (<a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>, <span
-class="citation"
-data-cites="eq:renyi-limit"><a class="xref" href="index.html#eq:renyi-limit">Eq. (2)</a></span>)</td>
+<td>Rényi <span class="math inline">\(\to\)</span> KL (<a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>, <a class="xref" href="index.html#eq:renyi-limit">Eq. (6)</a>)</td>
 <td><span class="math inline">\(\alpha \to 1\)</span></td>
 <td>0</td>
 </tr>
 <tr>
-<td>rcce <span class="math inline">\(\to\)</span> NLL (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>, <span
-class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>)</td>
-<td><span class="math inline">\(q_{\rm loss} \to 0\)</span></td>
+<td>rcce <span class="math inline">\(\to\)</span> NLL (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (8)</a>)</td>
+<td><span class="math inline">\(q_{\text{loss}} \to 0\)</span></td>
 <td>0</td>
 </tr>
 <tr>
 <td><span class="math inline">\(\beta\)</span>-loss <span
-class="math inline">\(\to\)</span> NLL (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>, <span
-class="citation" data-cites="eq:beta-loss"><a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a></span>)</td>
+class="math inline">\(\to\)</span> NLL (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>, <a class="xref" href="index.html#eq:beta-loss">Eq. (7)</a>)</td>
 <td><span class="math inline">\(\beta \to 0\)</span></td>
 <td>0</td>
 </tr>
 <tr>
 <td>generalized posterior <span class="math inline">\(\to\)</span> Bayes
-(Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>, <span
-class="citation"
-data-cites="eq:standard-bayes"><span class="xref">Eq. 6</span></span>)</td>
+(Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>, <a class="xref" href="index.html#eq:standard-bayes">Eq. (11)</a>)</td>
 <td>KL, NLL</td>
 <td>5.55e-17</td>
 </tr>
 <tr>
 <td><code>robust_aggregate</code> <span
-class="math inline">\(\to\)</span> log-linear pool (<a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>, <span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>)</td>
+class="math inline">\(\to\)</span> log-linear pool (<a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>, <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>)</td>
 <td><span class="math inline">\(c = 0\)</span></td>
 <td>0</td>
 </tr>
 </tbody>
-</table>
-<p>The central project identity is the aggregation collapse of <span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>:
+</table></div>
+<p>The central project identity is the aggregation collapse of <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>:
 <code>robust_aggregate(robustness=0)</code> equals the log-linear pool
-<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>. Its source
-bridge is deliberately narrow. Take a finite common support with <span
-class="math inline">\(q_n(s)&gt;0\)</span> and represent each Eq. 7
+<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>. Its source
+bridge is deliberately narrow.</p>
+<p>Take the admitted posteriors defined in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>, on
+a finite common support with <span
+class="math inline">\(q_n(s)&gt;0\)</span>, and represent each Eq. 7
 softmax input as a posterior log potential <span
 class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span>, with <span
 class="math inline">\(\kappa_n\)</span> constant in <span
 class="math inline">\(s\)</span> and fixed declared weights <span
 class="math inline">\(w_n\)</span> independent of the emerging
 consensus. Softmax then cancels the additive constants and yields the
-project pool. This identifies only the source equation’s
-message-combination term; it does not identify source message
-construction, cavity/exclusion policy, scheduling, generative factors,
-or the complete protocol. <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a> (<span
-class="citation"
-data-cites="sec:method-aggregation"><a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a></span>)
+project pool.</p>
+<p>This identifies only the source equation’s message-combination term;
+it does not identify source message construction, cavity/exclusion
+policy, scheduling, generative factors, or the complete protocol.
+<a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a> (<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>)
 states that specialization and the local <span
 class="math inline">\(c=0\)</span> identity; the residual 0 above pins
-the latter. Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> establishes
+the latter.</p>
+<p>Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> establishes
 the separate client result: <code>generalized_posterior(KLD, NLL)</code>
 reproduces the closed-form prior-times-likelihood Bayes posterior of
-<span class="xref">Eq. 6</span> to residual
+<a class="xref" href="index.html#eq:standard-bayes">Eq. (11)</a> to residual
 5.55e-17. Pooling such local posteriors has the stated categorical
-specialization only under the theorem’s assumptions. The honesty
-contract binds here: the theorem and corollary cover only the recovery
-identity and the per-agent rigorous axis (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>); no
+specialization only under the theorem’s assumptions.</p>
+<p>The honesty contract binds here: the theorem and corollary cover only
+the recovery identity and the per-agent rigorous axis (<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>); no
 statement transfers the bounded-influence guarantee to the server-side
 divergence-reweighting heuristic, whose positive property is the <span
-class="math inline">\(\texttt{robustness}=0\)</span> limit of <span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>. A scoped
+class="math inline">\(\texttt{robustness}=0\)</span> limit of <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>. A scoped
 no-go rejects a declared separable objective class without certifying
 another.</p>
 <h2 id="sec:formalism-efe">Expected-free-energy identity as an algebraic
 check</h2>
-<p>The active-inference substrate that drives the studies of <span
-class="citation" data-cites="sec:results"><a class="xref" href="index.html#sec:results">Section 7</a></span> is a
+<p>The active-inference substrate that drives the studies of <a class="xref" href="index.html#sec:results">Section 7</a> is a
 categorical specialization of the expected-free-energy algebra discussed
 by Friston et al. <span class="citation">(Friston et al. 2024)</span>. It decomposes the expected
 free energy of a policy <span
@@ -633,59 +787,63 @@ pragmatic-plus-epistemic (value) view are the same scalar <span
 class="math inline">\(G(\boldsymbol{\pi})\)</span> rearranged
 <span class="citation">(Da Costa et al. 2020; Friston et al. 2024)</span>:</p>
 <p><span class="math display">\[
-G(\boldsymbol{\pi}) \;=\; \underbrace{\text{risk} +
-\text{ambiguity}}_{\text{cost view}}
-\;=\; -\big(\underbrace{\text{pragmatic} +
-\text{epistemic}}_{\text{value view}}\big).
+\begin{aligned}
+G(\boldsymbol{\pi})
+&amp;= \underbrace{\text{risk} + \text{ambiguity}}_{\text{cost view}}\\
+&amp;= -\underbrace{\big(\text{pragmatic} +
+\text{epistemic}\big)}_{\text{value view}}.
+\end{aligned}
 \]</span> {#eq:efe-decomposition}</p>
 <p>The two views are not approximations of one another; they are the
 same scalar rearranged. In the implementation the shared entropy term
 enters both sides of the rearrangement, so the identity residual is zero
 by construction — it is a definitional consistency check on the
-decomposition’s bookkeeping, not an independent measurement. The
-scientific content lives in the per-term semantics, which are pinned
-independently of the identity (see the closing clause of the proposition
-below):</p>
+decomposition’s bookkeeping, not an independent measurement.</p>
+<p>The scientific content lives in the per-term semantics, which are
+pinned independently of the identity (see the closing clause of the
+proposition below):</p>
 <p><span class="math display">\[
-\big(\text{risk} + \text{ambiguity}\big)
-\;+\;
-\big(\text{pragmatic} + \text{epistemic}\big)
-\;\equiv\; 0 .
+\begin{aligned}
+&amp;\big(\text{risk} + \text{ambiguity}\big)\\
+&amp;\quad + \big(\text{pragmatic} + \text{epistemic}\big)
+\equiv 0.
+\end{aligned}
 \]</span> {#eq:efe-identity}</p>
 <div id="prop:efe-decomposition" class="theorem-box proposition">
 <p><strong>Proposition 1</strong> (Expected-free-energy decomposition
-identity). For the categorical generative model of
-<code>expected_free_energy.py</code>, the cost decomposition and the
-negated value decomposition of (<a class="xref" href="index.html#eq:efe-decomposition">Eq. (17)</a>) yield the
-same <span class="math inline">\(G(\boldsymbol{\pi})\)</span>, so the
-identity (<a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a>)
-holds with a residual at machine precision. The risk term is <span
-class="math inline">\(\mathrm{KL}(q(o\mid\boldsymbol{\pi})\,\|\,p_C(o))\)</span>,
-the ambiguity term is the expected likelihood entropy <span
-class="math inline">\(\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span>, the
-pragmatic value is the expected log-preference <span
-class="math inline">\(\mathbb{E}_{q_{\boldsymbol{\pi}}(o)}[\ln
-p_C(o)]\)</span>, and the epistemic value is the state-outcome mutual
-information <span class="math inline">\(H[q_{\boldsymbol{\pi}}(o)] -
-\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span>; the identity follows from the
-cross-entropy split of the risk and the entropy split of the epistemic
-value. The residual of the decomposition is pinned to zero at a
-tolerance of <span class="math inline">\(10^{-9}\)</span>, and each
-term’s semantics is pinned independently (deterministic likelihoods give
-zero ambiguity; uninformative likelihoods give zero epistemic value;
-preference-matched predictions lower risk).</p>
+identity). For the categorical model in
+<code>expected_free_energy.py</code>, the cost and negated-value forms
+of (<a class="xref" href="index.html#eq:efe-decomposition">Eq. (22)</a>)
+give the same <span class="math inline">\(G(\boldsymbol{\pi})\)</span>;
+hence (<a class="xref" href="index.html#eq:efe-identity">Eq. (23)</a>) holds
+to machine precision. Cross-entropy and entropy splits establish the
+equality.</p>
 </div>
-<p>The executed formal-specialization diagnostic of <span
-class="citation" data-cites="fig:efe-decomp"><a class="xref" href="index.html#fig:efe-decomp">Figure 7</a></span>
+<p>The residual is pinned to <span
+class="math inline">\(10^{-9}\)</span>. Independent checks require
+deterministic likelihoods to give zero ambiguity, uninformative
+likelihoods zero epistemic value, and preference-matched predictions
+lower risk.</p>
+<p>Here risk is <span
+class="math inline">\(\mathrm{KL}(q(o\mid\boldsymbol{\pi})\,\|\,p_C(o))\)</span>,
+and ambiguity is expected likelihood entropy <span
+class="math inline">\(\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span>.</p>
+<p>Pragmatic value is expected log-preference <span
+class="math inline">\(\mathbb{E}_{q_{\boldsymbol{\pi}}(o)}[\ln
+p_C(o)]\)</span>. Epistemic value is the state-outcome mutual
+information <span class="math inline">\(H[q_{\boldsymbol{\pi}}(o)] -
+\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span>.</p>
+<p>The executed formal-specialization diagnostic of <a class="xref" href="index.html#fig:efe-decomp">Figure 8</a>
 uses a uniform prior over the nine locations. This is intentional: the
 canonical sentinel-world <span class="math inline">\(D_0\)</span> is a
 point mass at the den, and under that fully resolved prior the
 mutual-information term is zero because there is no state uncertainty
-for an observation to reduce. The uncertainty-bearing diagnostic makes
-the epistemic term visible without changing the canonical <span
-class="math inline">\(D_0\)</span> used by the inference and recovery
-studies. Thus a near-zero epistemic value is a meaningful null
-condition, not a missing term. <a class="xref" href="index.html#fig:efe-decomp">Figure 7</a> shows the additive
+for an observation to reduce.</p>
+<p>The uncertainty-bearing diagnostic makes the epistemic term visible
+without changing the canonical <span class="math inline">\(D_0\)</span>
+used by the inference and recovery studies. Thus a near-zero epistemic
+value is a meaningful null condition, not a missing term.</p>
+<p><a class="xref" href="index.html#fig:efe-decomp">Figure 8</a> shows the additive
 risk-plus-ambiguity view beside a signed pragmatic/epistemic waterfall
 whose terminal endpoint is <span
 class="math inline">\(G(\boldsymbol{\pi})\)</span>, labels epistemic
@@ -694,7 +852,8 @@ class="math inline">\(I(s;o\mid\boldsymbol{\pi})\)</span>, and annotates
 the identity residual; it visualizes <a class="xref" href="index.html#prop:efe-decomposition">Proposition 7</a>, not a
 fitted result, so it carries no error bars.</p>
 <figure id="fig:efe-decomp">
-<a class="figure-full-size-link" href="../figures/efe_decomposition.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/efe_decomposition.png" style="width:85.0%"
+<a class="figure-full-size-link" href="../figures/efe_decomposition.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Expected-free-energy decomposition for the categorical generative model"><img src="../figures/efe_decomposition.png" style="width:85.0%"
+data-slide-manifest="../figures/efe_decomposition.slides.json"
 alt="Two views of a categorical expected-free-energy identity in nats. The left stack shows risk plus ambiguity; the right signed waterfall shows pragmatic value and a negative epistemic correction ending at the same terminal value." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Expected-free-energy decomposition for
 the categorical generative model (expected_free_energy.py). Source
@@ -715,16 +874,16 @@ precision. This deterministic algebraic check has no error bars or
 independent sample size, and it does not reproduce every
 parameter-learning term in the source equation.</figcaption>
 </figure>
-<p>The expected-free-energy identity of <a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a> is the
+<p>The expected-free-energy identity of <a class="xref" href="index.html#eq:efe-identity">Eq. (23)</a> is the
 action-selection counterpart of the inference-side recovery limits
 collected above: both are exact, closed-form, machine-checkable
-identities over the same categorical generative model. Together they
-establish that the FedGVI-federated active-inference colony of this work
-is built on verified algebra throughout — the per-agent
-generalized-Bayes update recovers standard Bayes, the aggregation
-recovers the project log-linear pool under its qualified categorical
-bridge, and the policy scoring decomposes exactly — so every robustness
-result in <a class="xref" href="index.html#sec:results">Section 7</a> is a controlled departure
+identities over the same categorical generative model.</p>
+<p>Together they establish that the FedGVI-federated active-inference
+colony of this work is built on verified algebra throughout — the
+per-agent generalized-Bayes update recovers standard Bayes, the
+aggregation recovers the project log-linear pool under its qualified
+categorical bridge, and the policy scoring decomposes exactly — so every
+robustness result in <a class="xref" href="index.html#sec:results">Section 7</a> is a controlled departure
 from a known, tested fixed point rather than an unmoored claim.</p>
 <h2 id="sec:formalism-tempered">Tempered aggregation free energy and the
 accuracy-guarantee trade</h2>
@@ -732,74 +891,71 @@ accuracy-guarantee trade</h2>
 <em>endpoints</em> of the aggregation family; the remaining formal
 question is what a controlled departure from the unit-entropy server
 buys and what it costs. The objective-backed variational aggregator of
-<a class="xref" href="index.html#sec:supp-variational">Section 11</a> holds
-its consensus-entropy term at unit weight. Freeing that single
-coefficient produces a one-parameter family whose only moving part is
-the sharpness of the consensus, and whose raw effective-weight bound is
-provably untouched. The following proposition isolates exactly that
-separation — algebra that moves versus algebra that does not — before
-the interpretation subsections turn to the empirical accuracy question
-the algebra cannot settle on its own.</p>
+<a class="xref" href="index.html#sec:supp-variational">Section 12</a> holds
+its consensus-entropy term at unit weight.</p>
+<p>Freeing that single coefficient produces a one-parameter family whose
+only moving part is the sharpness of the consensus, and whose raw
+effective-weight bound is provably untouched. The following proposition
+isolates exactly that separation — algebra that moves versus algebra
+that does not — before the interpretation subsections turn to the
+empirical accuracy question the algebra cannot settle on its own.</p>
 <div id="prop:tempered-aggregation" class="theorem-box proposition">
 <p><strong>Proposition 2</strong> (Tempered aggregation free energy).
-Let <span class="math inline">\(\lambda &gt; 0\)</span> be an entropy
-weight and <span class="math inline">\(F_\lambda\)</span> the objective
-of equation~<a class="xref" href="index.html#eq:tempered-family">Eq. (24)</a>. For a fixed
-effective-weight vector <span class="math inline">\(a\)</span>, the
-<span class="math inline">\(q\)</span>-block minimizer of <span
-class="math inline">\(F_\lambda\)</span> is the tempered-softmax update
-in equation~<a class="xref" href="index.html#eq:tempered-updates">Eq. (25)</a>. At <span
-class="math inline">\(\lambda = 1.0\)</span> the objective, both block
-updates, and the endpoint-selection rule reduce to the standard
-variational aggregate (<a class="xref" href="index.html#def:aggregation-free-energy">Definition 10</a>,
-<a class="xref" href="index.html#sec:supp-variational">Section 11</a>)
-bit-for-bit. The <span class="math inline">\(a\)</span>-block update and
-its raw effective-weight bound <span class="math inline">\(a_n \le
-w_n\)</span> contain no <span class="math inline">\(\lambda\)</span> and
-are therefore unchanged for every <span class="math inline">\(\lambda
-&gt; 0\)</span>.</p>
+Let <span class="math inline">\(\lambda &gt; 0\)</span> and let <span
+class="math inline">\(F_\lambda\)</span> be (<a class="xref" href="index.html#eq:tempered-family">Eq. (30)</a>). At fixed <span
+class="math inline">\(a\)</span>, the <span
+class="math inline">\(q\)</span>-minimizer is (<a class="xref" href="index.html#eq:tempered-updates">Eq. (31)</a>). At <span
+class="math inline">\(\lambda = 1.0\)</span>, <span
+class="math inline">\(F_\lambda\)</span> and both updates equal the
+standard variational aggregate bit-for-bit. The <span
+class="math inline">\(a\)</span>-update and bound <span
+class="math inline">\(a_n \le w_n\)</span> omit <span
+class="math inline">\(\lambda\)</span> and hold for every <span
+class="math inline">\(\lambda &gt; 0\)</span>.</p>
 </div>
+<p>At that default, the endpoint-selection rule also reduces bit-for-bit
+to the standard variational aggregate (<a class="xref" href="index.html#def:aggregation-free-energy">Definition 10</a>; <a class="xref" href="index.html#sec:supp-variational">Section 12</a>).</p>
 <p>The proposition is intentionally more specific than the phrase
 “temperature improves robustness.” It identifies exactly which part of
 the variational server changes when the entropy coefficient changes, and
-it separates that algebra from the empirical accuracy question. The
-objective and its update rules are a generalized-Bayes construction in
-the sense of <span class="citation">(Bissiri et al. 2016; Knoblauch et al. 2022)</span>, while the
-particular client/server decomposition is the one implemented and tested
-here.</p>
+it separates that algebra from the empirical accuracy question.</p>
+<p>The objective and its update rules are a generalized-Bayes
+construction in the sense of <span class="citation">(Bissiri et al. 2016; Knoblauch et al. 2022)</span>, while the particular client/server
+decomposition is the one implemented and tested here.</p>
 <h3 id="sec:formalism-tempered-interpretation">What the entropy weight
 controls</h3>
 <p>For a fixed effective-weight vector <span
 class="math inline">\(a\)</span> and <span
 class="math inline">\(\lambda&gt;0\)</span>, the <span
-class="math inline">\(q\)</span>-block in <a class="xref" href="index.html#eq:tempered-updates">Eq. (25)</a> is a
+class="math inline">\(q\)</span>-block in <a class="xref" href="index.html#eq:tempered-updates">Eq. (31)</a> is a
 weighted geometric pool of the local posteriors with inverse temperature
 <span class="math inline">\(1/\lambda\)</span>. Lower <span
 class="math inline">\(\lambda\)</span> concentrates more sharply on
 states that receive consistent log-belief support; larger <span
 class="math inline">\(\lambda\)</span> spreads probability mass and
-retains more entropy. As <span
-class="math inline">\(\lambda\downarrow0\)</span>, the
+retains more entropy.</p>
+<p>As <span class="math inline">\(\lambda\downarrow0\)</span>, the
 positive-temperature expression approaches a winner-take-most consensus
 (subject to ties and finite numerical support), whereas large <span
 class="math inline">\(\lambda\)</span> approaches a flatter
 distribution. The implementation exposes that endpoint as a separately
 defined deterministic tied-argmax rule; it does not substitute <span
 class="math inline">\(\lambda=0\)</span> into the objective or
-coordinate update. This is a controlled change in the consensus
-geometry, not an automatic outlier detector.</p>
+coordinate update.</p>
+<p>This is a controlled change in the consensus geometry, not an
+automatic outlier detector.</p>
 <p>The coupling matters. Although the formula for the <span
 class="math inline">\(a\)</span>-block does not contain <span
 class="math inline">\(\lambda\)</span>, the fixed point can still change
 because <span class="math inline">\(a_n\)</span> is evaluated at the new
-<span class="math inline">\(q\)</span>. The correct statement is
-therefore conditional: for any current consensus, the effective-weight
-update and the raw bound <span class="math inline">\(a_n\leq
-w_n\)</span> are unchanged; after alternating updates, different
-temperatures can reach different coupled <span
-class="math inline">\((q,a)\)</span> fixed points. This distinction
-prevents the temperature result from being read as a theorem that the
-normalized influence or accuracy is invariant in <span
+<span class="math inline">\(q\)</span>.</p>
+<p>The correct statement is therefore conditional: for any current
+consensus, the effective-weight update and the raw bound <span
+class="math inline">\(a_n\leq w_n\)</span> are unchanged; after
+alternating updates, different temperatures can reach different coupled
+<span class="math inline">\((q,a)\)</span> fixed points. This
+distinction prevents the temperature result from being read as a theorem
+that the normalized influence or accuracy is invariant in <span
 class="math inline">\(\lambda\)</span>.</p>
 <h3 id="sec:formalism-tempered-recovery">Recovery at the qualified
 log-linear-pool corner</h3>
@@ -807,13 +963,13 @@ log-linear-pool corner</h3>
 class="math inline">\(\lambda=1.0\)</span>, the entropy coefficient is
 the unit coefficient used by the original variational aggregator. The
 implementation therefore recovers that aggregator bit-for-bit, including
-its block updates and its endpoint-selection rule. Turning the
-robustness strength <span class="math inline">\(c\)</span> to zero then
-sets every server weight to its base value and gives the tempered
-log-linear pool. At the default temperature this is the ordinary
-log-linear pool of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>. Under the
-shared-support, posterior-log-potential, and fixed-weight assumptions of
-<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+its block updates and its endpoint-selection rule.</p>
+<p>Turning the robustness strength <span
+class="math inline">\(c\)</span> to zero then sets every server weight
+to its base value and gives the tempered log-linear pool. At the default
+temperature this is the ordinary log-linear pool of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>.</p>
+<p>Under the shared-support, posterior-log-potential, and fixed-weight
+assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 that is the categorical specialization of Eq. 7’s message-combination
 term; it is not the complete belief-sharing protocol of
 <span class="citation">(Friston et al. 2024)</span>. Away from that default, the result is a tempered
@@ -823,8 +979,8 @@ generalization of the pool and should not be described as Friston’s Eq.
 class="math inline">\(c\to0\)</span> limit identifies the aggregation
 family with a known consensus operator; the <span
 class="math inline">\(\lambda=1.0\)</span> slice identifies the
-objective-backed implementation used in the main server comparison.
-Neither limit grants the server-side <code>robust_aggregate</code>
+objective-backed implementation used in the main server comparison.</p>
+<p>Neither limit grants the server-side <code>robust_aggregate</code>
 heuristic a variational objective or a bounded-influence guarantee. The
 FedGVI literature’s rate and robustness results remain attached to their
 stated loss, divergence, and sampling assumptions <span class="citation">(Mildner et al. 2025; Mildner et al. 2025)</span>.</p>
@@ -836,33 +992,36 @@ search over a continuous optimum. It asks whether any tested temperature
 narrows the point-accuracy gap to the sharp heuristic while retaining
 the same effective-weight update. The closest tested temperature is
 <span class="math inline">\(\lambda^{\ast}=0.3\)</span>, with observed
-gap <span class="math inline">\(0.0008\)</span>. These tokens are
-computed from the executed contaminated-colony trials and are reported
-with the grid definition so a reader can reproduce the selection
-rule.</p>
+gap <span class="math inline">\(0.0008\)</span>.</p>
+<p>These tokens are computed from the executed contaminated-colony
+trials and are reported with the grid definition so a reader can
+reproduce the selection rule.</p>
 <p>The result has two distinct readings. If a lower temperature improves
 the paired point-accuracy comparison, it provides design evidence that
 entropy regularization can be tuned rather than accepted as a fixed
-conservatism penalty. If no tested temperature closes the gap, that
-negative result is still informative: within this objective family, the
-same entropy mechanism that keeps consensus diffuse can limit exact
-point recovery under confident contamination. In either case, the grid
-does not identify a universally best temperature, establish minimax
-robustness, or transfer the variational raw weight bound to a different
-estimator. Generalized-Bayes calibration and robust-loss theory motivate
-the family, but only the executed categorical design supports the
-present finite-grid statement <span class="citation">(Bissiri et al. 2016; Knoblauch et al. 2022; Mildner et al. 2025)</span>.</p>
+conservatism penalty.</p>
+<p>If no tested temperature closes the gap, that negative result is
+still informative: within this objective family, the same entropy
+mechanism that keeps consensus diffuse can limit exact point recovery
+under confident contamination.</p>
+<p>In either case, the grid does not identify a universally best
+temperature, establish minimax robustness, or transfer the variational
+raw weight bound to a different estimator. Generalized-Bayes calibration
+and robust-loss theory motivate the family, but only the executed
+categorical design supports the present finite-grid statement
+<span class="citation">(Bissiri et al. 2016; Knoblauch et al. 2022; Mildner et al. 2025)</span>.</p>
 <h3
 id="sec:formalism-tempered-interpretation-summary">Publication-facing
 interpretation</h3>
 <p>The practical contract is consequently three-part. Use the default
 temperature when exact compatibility with the tested variational server
-is the priority. Explore the declared grid when the application can
-trade concentration against the same raw effective-weight control. Treat
-any selected temperature as a configuration-specific empirical choice
-until it is tested under a new contamination mechanism, colony size,
-sensor model, or loss. This is the appropriate bridge between the formal
-objective and the active-inference setting: it exposes a tunable
+is the priority.</p>
+<p>Explore the declared grid when the application can trade
+concentration against the same raw effective-weight control.</p>
+<p>Treat any selected temperature as a configuration-specific empirical
+choice until it is tested under a new contamination mechanism, colony
+size, sensor model, or loss. This is the appropriate bridge between the
+formal objective and the active-inference setting: it exposes a tunable
 consensus geometry while keeping recovery, guarantee, and accuracy
 claims on separate evidence tracks.</p>
 </main>

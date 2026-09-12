@@ -1,0 +1,59 @@
+{
+  "panels": [
+    {
+      "alt": "reference log pool (c=0): all configured contamination rates and source-owned uncertainty on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "efd6806f38ca58aa3917e6d173a3871a51759b374112c3e40367bd032b88c945",
+      "src": "../figures/robustness_sweep.slide-preset-1.png"
+    },
+    {
+      "alt": "server preset c=1.3: all configured contamination rates and source-owned uncertainty on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "22bebf6878441d244e759bf5c80e9b31ffdcbd4f3cfe893cd65d9a3b915aaf1e",
+      "src": "../figures/robustness_sweep.slide-preset-2.png"
+    },
+    {
+      "alt": "server preset c=1.5: all configured contamination rates and source-owned uncertainty on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c4e8a0c77bbe515c3380a4c4d2a3b1534eaa4ed7babbd314c0568bf90bb3a072",
+      "src": "../figures/robustness_sweep.slide-preset-3.png"
+    },
+    {
+      "alt": "server preset c=1.7: all configured contamination rates and source-owned uncertainty on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "4c3540ff4a1f2b8a44862ab6fc270777ecb3db0b1cbdc0dc2f0afaf5e70ce555",
+      "src": "../figures/robustness_sweep.slide-preset-4.png"
+    },
+    {
+      "alt": "server preset c=1.6: all configured contamination rates and source-owned uncertainty on a common probability scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "387dfff601091bc117ca3b10b841472cb0a366ca3686fcc8ad15a8f0d427d6b5",
+      "src": "../figures/robustness_sweep.slide-preset-5.png"
+    },
+    {
+      "alt": "960 matched trials per rate. Whiskers: each preset's own percentile-bootstrap interval.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "4effe85fa10ae1b31b3a82ab39eb80e2ff1d988e2b756114b0fada112d5b8b03",
+      "src": "../figures/robustness_sweep.slide-uncertainty.png"
+    },
+    {
+      "alt": "Predeclared floor: 0.5. The pale band lies below this reference.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9e6a7c7b2b680bba32093e732c41651cd7028b9e24dead70b3a795d616aa48db",
+      "src": "../figures/robustness_sweep.slide-threshold.png"
+    },
+    {
+      "alt": "Largest max-rate preset minus reference: +0.116. Max rate: 0.9.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d88629ebebaeea26edd0137416d6cc57e0ed233e12539f37d1d6beea674114d6",
+      "src": "../figures/robustness_sweep.slide-statistics.png"
+    },
+    {
+      "alt": "Consensus accuracy here means q(true state). These configured server presets are not client-loss implementations or a complete source protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b68534482684ff95c6942937764c53c33fc24a04d92811dedc161279e0523910",
+      "src": "../figures/robustness_sweep.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

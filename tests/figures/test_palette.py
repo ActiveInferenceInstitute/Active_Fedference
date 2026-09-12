@@ -54,8 +54,7 @@ def test_no_inline_colour_literals_outside_common() -> None:
 def test_common_palette_defines_the_named_colours() -> None:
     from figures import _common
 
-    for name in ("COLOR_NAIVE", "COLOR_ROBUST", "COLOR_ACCENT", "COLOR_MUTED",
-                 "COLOR_AXIS", "COLOR_GRID"):
+    for name in ("COLOR_NAIVE", "COLOR_ROBUST", "COLOR_ACCENT", "COLOR_MUTED", "COLOR_AXIS", "COLOR_GRID"):
         value = getattr(_common, name)
         assert isinstance(value, str) and _HEX.fullmatch(value), f"{name} must be a hex colour"
     assert len(_common.ROBUST_CYCLE) >= 5  # enough distinct robust-method colours
@@ -63,7 +62,7 @@ def test_common_palette_defines_the_named_colours() -> None:
 
 def _relative_luminance(hex_colour: str) -> float:
     """WCAG relative luminance of a #rrggbb colour (0=black .. 1=white)."""
-    r, g, b = (int(hex_colour[i:i + 2], 16) / 255.0 for i in (1, 3, 5))
+    r, g, b = (int(hex_colour[i : i + 2], 16) / 255.0 for i in (1, 3, 5))
 
     def _lin(c: float) -> float:
         return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
@@ -76,8 +75,7 @@ def test_naive_vs_robust_distinct_in_greyscale() -> None:
     # two headline colours must differ enough in luminance to survive a B&W print.
     from figures import _common
 
-    delta = abs(_relative_luminance(_common.COLOR_NAIVE)
-                - _relative_luminance(_common.COLOR_ROBUST))
+    delta = abs(_relative_luminance(_common.COLOR_NAIVE) - _relative_luminance(_common.COLOR_ROBUST))
     assert delta >= 0.12, f"naive vs robust luminance gap too small for greyscale: {delta:.3f}"
 
 
@@ -94,6 +92,95 @@ def test_robust_cycle_colours_are_luminance_separated() -> None:
     for i in range(len(lums)):
         for j in range(i + 1, len(lums)):
             assert abs(lums[i] - lums[j]) >= 0.025, (
-                f"ROBUST_CYCLE[{i}] vs [{j}] too close in luminance "
-                f"({abs(lums[i] - lums[j]):.4f})"
+                f"ROBUST_CYCLE[{i}] vs [{j}] too close in luminance ({abs(lums[i] - lums[j]):.4f})"
             )
+
+
+def test_simultaneous_semantic_series_have_distinct_non_colour_encodings() -> None:
+    from figures import _common
+
+    roles = (
+        "naive",
+        "heuristic_robust",
+        "variational",
+        "operating_point_1",
+        "operating_point_2",
+        "operating_point_3",
+        "operating_point_4",
+    )
+    encodings = {
+        (
+            _common.SEMANTIC_STYLES[role].marker,
+            repr(_common.SEMANTIC_STYLES[role].dash),
+            _common.SEMANTIC_STYLES[role].hatch,
+        )
+        for role in roles
+    }
+    assert len(encodings) == len(roles)
+
+
+def test_neutral_conditions_and_evidence_classes_have_distinct_non_colour_encodings() -> None:
+    from figures import _common
+
+    role_groups = (
+        ("condition_reference", "condition_comparison"),
+        ("favored", "rejected"),
+        (
+            "evidence_formal",
+            "evidence_source_conditional",
+            "evidence_conditional_empirical",
+            "evidence_scoped",
+            "evidence_open",
+        ),
+    )
+    for roles in role_groups:
+        encodings = {
+            (
+                _common.SEMANTIC_STYLES[role].marker,
+                repr(_common.SEMANTIC_STYLES[role].dash),
+                _common.SEMANTIC_STYLES[role].hatch,
+                _common.SEMANTIC_STYLES[role].keyline,
+            )
+            for role in roles
+        }
+        assert len(encodings) == len(roles), f"non-colour style collision in {roles}"
+
+
+def test_non_method_figures_do_not_borrow_aggregation_method_roles() -> None:
+    non_method_modules = {
+        "bnn_robustness.py": {"condition_reference", "condition_comparison"},
+        "emergence_bmr.py": {"favored", "rejected"},
+        "evidence_replication_map.py": {
+            "evidence_formal",
+            "evidence_source_conditional",
+            "evidence_conditional_empirical",
+            "evidence_scoped",
+            "evidence_open",
+        },
+        "free_energy_comparison.py": {"condition_reference", "condition_comparison"},
+        "hierarchical_bmr.py": {"condition_reference", "condition_comparison"},
+        "parameter_recovery.py": {"estimate"},
+    }
+    method_literals = {
+        'semantic_style("naive")',
+        'semantic_style("heuristic_robust")',
+        'semantic_style("variational")',
+    }
+    for filename, required_roles in non_method_modules.items():
+        source = (_FIGURES / filename).read_text(encoding="utf-8")
+        assert not any(literal in source for literal in method_literals), filename
+        assert all(f'"{role}"' in source for role in required_roles), filename
+
+
+def test_declared_role_styles_follow_the_visual_contract() -> None:
+    from figures import _common
+
+    naive = _common.SEMANTIC_STYLES["naive"]
+    robust = _common.SEMANTIC_STYLES["heuristic_robust"]
+    variational = _common.SEMANTIC_STYLES["variational"]
+    adversarial = _common.SEMANTIC_STYLES["adversarial"]
+    honest = _common.SEMANTIC_STYLES["honest"]
+    assert (naive.marker, naive.dash) == ("o", "-")
+    assert (robust.marker, robust.dash) == ("s", "--")
+    assert (variational.marker, variational.dash) == ("^", "-.")
+    assert adversarial.hatch and adversarial.hatch != honest.hatch

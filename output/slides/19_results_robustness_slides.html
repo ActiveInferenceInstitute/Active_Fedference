@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Contamination sweep: regime-dependent server behavior under declared attacks — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-945653a1003e">
+<h1 id="presentation-title-945653a1003e" class="visually-hidden">Contamination sweep: regime-dependent server behavior under declared attacks — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:results-robustness"
+class="slide level2 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-43fdf3d4c7ff">
+<h2 class="section-divider" id="slide-heading-43fdf3d4c7ff">Contamination sweep: regime-dependent server
+behavior under declared attacks</h2>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ae772463c992">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 2" id="slide-heading-ae772463c992">Contamination
+sweep (part 2)</h2>
+<p>This experiment compares server presets in one active-inference
+colony. Its legacy labels borrow FedGVI client-divergence vocabulary
+<span class="citation" data-cites="mildner2025fedgvi">(Mildner et al.
+2025)</span>, but the presets are not client losses or divergence
+theorems. <code>KLD</code> denotes the standard log-linear pool;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-77340a145b77">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 3" id="slide-heading-77340a145b77">Contamination
+sweep (part 3)</h2>
+<p>every other label denotes a <code>robust_aggregate</code> heuristic
+constant in KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta (c=1.70), rcce
+(c=1.60). The estimand is consensus mass <span
+class="math inline">\(q(\text{true state})\)</span> under the declared
+contamination mechanism.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ad941e0b66b2">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 4" id="slide-heading-ad941e0b66b2">Contamination
+sweep (part 4)</h2>
+<p>The colony contains 7 sentinels, of which 2 mix their broadcasts
+toward a confident-wrong delta at each contamination rate. The
+comparisons remain conditional on this fixed world, attack target, and
+preset grid.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7387ae556c0d">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 5" id="slide-heading-7387ae556c0d">Contamination
+sweep (part 5)</h2>
+<p>The evidence map in <span class="cross-reference">Figure 6</span>
+locates these comparisons in the conditional heuristic-server lane. It
+keeps the fixed-world matched trials distinct from the seed-level review
+below and prevents either result from inheriting client-loss or
+variational-server guarantees.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3af197c28fae">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 6" id="slide-heading-3af197c28fae">Contamination
+sweep (part 6)</h2>
+<p>As the contamination rate rises across <span
+class="math inline">\(\{0, 0.225, 0.45, 0.675, 0.9\}\)</span>, the
+<strong>standard</strong> (<code>KLD</code>) consensus accuracy degrades
+monotonically:</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-113272453dd6">
+<h2 class="table-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 7" id="slide-heading-113272453dd6">Contamination
+sweep (part 7)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:robustness_sweep" data-responsive-table="true">
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr>
+<th>Contamination rate</th>
+<th>KLD</th>
+<th>RKL</th>
+<th>AR</th>
+<th>beta</th>
+<th>rcce</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1.000</td>
+<td>0.997</td>
+<td>0.998</td>
+<td>0.996</td>
+<td>0.996</td>
+</tr>
+<tr>
+<td>0.225</td>
+<td>0.999</td>
+<td>0.993</td>
+<td>0.995</td>
+<td>0.990</td>
+<td>0.992</td>
+</tr>
+<tr>
+<td>0.45</td>
+<td>0.995</td>
+<td>0.987</td>
+<td>0.990</td>
+<td>0.984</td>
+<td>0.986</td>
+</tr>
+<tr>
+<td>0.675</td>
+<td>0.975</td>
+<td>0.985</td>
+<td>0.989</td>
+<td>0.981</td>
+<td>0.983</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-89a32cc412ba">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 8" id="slide-heading-89a32cc412ba">Contamination
+sweep (part 8)</h2>
+<p>As the saboteurs capture more belief mass, <code>KLD</code> falls
+monotonically while at least one non-reference preset remains above the
+stated accuracy threshold. <strong>Reference trend:</strong> standard
+accuracy degrades monotonically with rate, recorded as Yes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-660a1020a727">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 9" id="slide-heading-660a1020a727">Contamination
+sweep (part 9)</h2>
+<p><strong>Worst-rate display check:</strong> at rate 0.900, at least
+one non-reference preset remains at or above 0.50, recorded as Yes.
+Standard accuracy is 0.6928; the highest robust consensus mass in this
+single-world mechanistic sweep is 0.9880, attained by AR.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e1a3e7c1a977">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 10" id="slide-heading-e1a3e7c1a977">Contamination
+sweep (part 10)</h2>
+<p>The rate trend above is one deterministic sweep per cell. The paired
+profile reruns each rate over <span class="math inline">\(n_{\rm trial}
+= 960\)</span> matched trials nested within the fixed seeded world. Each
+non-reference preset is compared with the standard pool, and p-values
+are BH-adjusted within method <span class="citation"
+data-cites="benjamini1995controlling">(Benjamini and Hochberg
+1995)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cf657c8efa03">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 11" id="slide-heading-cf657c8efa03">Contamination
+sweep (part 11)</h2>
+<p>This is a finite, rate-resolved diagnostic, not a continuous-family
+result.</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4230bbcc65a7">
+<h2 class="table-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 12" id="slide-heading-4230bbcc65a7">Contamination
+sweep (part 12)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:paired-by-rate" data-responsive-table="true">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 37%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>Server preset</th>
+<th>Rate</th>
+<th>Rank-biserial-derived <span
+class="math inline">\(d\)</span>-equivalent</th>
+<th>Label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RKL</td>
+<td>0</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 table-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e467adfdd0c1">
+<h2 class="table-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 13" id="slide-heading-e467adfdd0c1">Contamination
+sweep (part 13)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:paired-by-rate-inference" data-responsive-table="true">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 15%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th>Server preset</th>
+<th>Rate</th>
+<th>Raw p</th>
+<th>q</th>
+<th>Reject</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RKL</td>
+<td>0</td>
+<td>1.11e-158</td>
+<td>1.85e-158</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.225</td>
+<td>1.11e-158</td>
+<td>1.85e-158</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.45</td>
+<td>1.11e-158</td>
+<td>1.85e-158</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.675</td>
+<td>1.88e-155</td>
+<td>2.35e-155</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6cc8dcfff1ef">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 14" id="slide-heading-6cc8dcfff1ef">Contamination
+sweep (part 14)</h2>
+<p>The <code>KLD</code> baseline is excluded from both projections
+because it is the standard reference, not a self-contrast. The displayed
+<span class="math inline">\(d\)</span>-equivalent is a
+rank-biserial-derived transform, not raw Cohen’s <span
+class="math inline">\(d\)</span>; the signed-saturation marker flags
+contrasts where the rank-biserial correlation saturates at <span
+class="math inline">\(\pm1\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8ed660b3824d">
+<h2 class="prose-slide"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 15" id="slide-heading-8ed660b3824d">Contamination
+sweep (part 15)</h2>
+<p>These contrasts decorate the server-side
+<code>robust_aggregate</code> heuristic only.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2aaba7a34298">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 16" id="slide-heading-2aaba7a34298">Contamination
+sweep (part 16)</h2>
+<figure id="fig:robustness-sweep-slide-panel-1">
+<img src="../figures/robustness_sweep.slide-preset-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="efd6806f38ca58aa3917e6d173a3871a51759b374112c3e40367bd032b88c945"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="reference log pool (c=0): all configured contamination rates and source-owned uncertainty on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-32526babb298">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 17" id="slide-heading-32526babb298">Contamination
+sweep (part 17)</h2>
+<figure id="fig:robustness-sweep-slide-panel-2">
+<img src="../figures/robustness_sweep.slide-preset-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="22bebf6878441d244e759bf5c80e9b31ffdcbd4f3cfe893cd65d9a3b915aaf1e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="server preset c=1.3: all configured contamination rates and source-owned uncertainty on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6505ce99d958">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 18" id="slide-heading-6505ce99d958">Contamination
+sweep (part 18)</h2>
+<figure id="fig:robustness-sweep-slide-panel-3">
+<img src="../figures/robustness_sweep.slide-preset-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="c4e8a0c77bbe515c3380a4c4d2a3b1534eaa4ed7babbd314c0568bf90bb3a072"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="server preset c=1.5: all configured contamination rates and source-owned uncertainty on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dad35357f891">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 19" id="slide-heading-dad35357f891">Contamination
+sweep (part 19)</h2>
+<figure id="fig:robustness-sweep-slide-panel-4">
+<img src="../figures/robustness_sweep.slide-preset-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="4c3540ff4a1f2b8a44862ab6fc270777ecb3db0b1cbdc0dc2f0afaf5e70ce555"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="server preset c=1.7: all configured contamination rates and source-owned uncertainty on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-671d3d0dc118">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 20" id="slide-heading-671d3d0dc118">Contamination
+sweep (part 20)</h2>
+<figure id="fig:robustness-sweep-slide-panel-5">
+<img src="../figures/robustness_sweep.slide-preset-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="387dfff601091bc117ca3b10b841472cb0a366ca3686fcc8ad15a8f0d427d6b5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="server preset c=1.6: all configured contamination rates and source-owned uncertainty on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-40cfa8915b43">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 21" id="slide-heading-40cfa8915b43">Contamination
+sweep (part 21)</h2>
+<figure id="fig:robustness-sweep-slide-panel-6">
+<img src="../figures/robustness_sweep.slide-uncertainty.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4effe85fa10ae1b31b3a82ab39eb80e2ff1d988e2b756114b0fada112d5b8b03"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1019"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.011811"
+alt="960 matched trials per rate. Whiskers: each preset&#39;s own percentile-bootstrap interval." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8fe143b91a5">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 22" id="slide-heading-e8fe143b91a5">Contamination
+sweep (part 22)</h2>
+<figure id="fig:robustness-sweep-slide-panel-7">
+<img src="../figures/robustness_sweep.slide-threshold.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9e6a7c7b2b680bba32093e732c41651cd7028b9e24dead70b3a795d616aa48db"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1090"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.1581921"
+alt="Predeclared floor: 0.5. The pale band lies below this reference." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7d56f86c6327">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 23" id="slide-heading-7d56f86c6327">Contamination
+sweep (part 23)</h2>
+<figure id="fig:robustness-sweep-slide-panel-8">
+<img src="../figures/robustness_sweep.slide-statistics.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d88629ebebaeea26edd0137416d6cc57e0ed233e12539f37d1d6beea674114d6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1162"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.5649718"
+alt="Largest max-rate preset minus reference: +0.116. Max rate: 0.9." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a84ad5857415">
+<h2 class="figure-led"
+aria-label="Contamination sweep: regime-dependent server behavior under declared attacks, part 24" id="slide-heading-a84ad5857415">Contamination
+sweep (part 24)</h2>
+<figure id="fig:robustness-sweep-slide-panel-9">
+<img src="../figures/robustness_sweep.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b68534482684ff95c6942937764c53c33fc24a04d92811dedc161279e0523910"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1371"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.3768473"
+alt="Consensus accuracy here means q(true state). These configured server presets are not client-loss implementations or a complete source protocol." />
+</figure>
+</section>
+<section id="sec:results-review-grid" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-38618dc3e167">
+<h2 class="prose-slide" id="slide-heading-38618dc3e167">Selection-free all-method robustness review</h2>
+<p>The comparison in <span class="cross-reference">Figure 14</span>
+is the principal comparative robustness surface.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-74f610ede751">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 2" id="slide-heading-74f610ede751">Selection-free
+all-method… (part 2)</h2>
+<p>It joins the conditional-world cells to the directional rate profiles
+while retaining every configured non-reference server preset. It uses
+160 deterministic seed replicates and 24 trials nested within each seed
+and cell.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ffd8ad259964">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 3" id="slide-heading-ffd8ad259964">Selection-free
+all-method… (part 3)</h2>
+<p>Read the portrait surface from top to bottom: Panel A is the
+full-width conditional heatmap, and Panels B–D stack the three rate
+profiles. Their elbow leaders terminate in reserved right-side label
+lanes so curve identity remains separate from the plotted endpoints.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ed8acc658ee8">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 4" id="slide-heading-ed8acc658ee8">Selection-free
+all-method… (part 4)</h2>
+<p>The finite attack union is clean, confident wrong, permutation,
+byzantine, drift, label noise, uniform. The rate-resolved directional
+mechanisms are confident wrong, byzantine, drift, with entropy controls
+uniform, label noise and registered rates <span
+class="math inline">\(\{0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8,
+0.9\}\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8c2b8fdd8430">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 5" id="slide-heading-8c2b8fdd8430">Selection-free
+all-method… (part 5)</h2>
+<p>The independent unit is seed within a declared scenario or rate cell;
+the nesting rule is n_trials nested within each seed/cell; no trial is
+promoted to an independent world.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-22816a327403">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 6" id="slide-heading-22816a327403">Selection-free
+all-method… (part 6)</h2>
+<p>The payload is selection-free source payload; every configured
+non-KLD method is reported at every directional rate and no winner is
+used for inference, and its statistics surface is selection-free. It
+retains seed-level contrasts, paired Wilcoxon/rank-biserial results,
+percentile-bootstrap intervals, MCSE,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-52f2030ba7a8">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 7" id="slide-heading-52f2030ba7a8">Selection-free
+all-method… (part 7)</h2>
+<p>an observed-effect MDE, and BH-adjusted rate families. BH ownership
+is BH is applied within each attack-mechanism × method rate family;
+cells sharing design structure are not treated as independent
+families.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-06812b8f19b1">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 8" id="slide-heading-06812b8f19b1">Selection-free
+all-method… (part 8)</h2>
+<p>The precision plan targets maximum MCSE 0.0100; the observed maximum
+is 0.0066 across 96. No method is selected by seed, rate, or pooled
+mean. Mixed and reversed cells remain visible, and the grid does not
+close the open calibration, external-data, or server-theory
+questions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Selection-free all-method robustness review, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a3440e705551">
+<h2 class="prose-slide"
+aria-label="Selection-free all-method robustness review, part 9" id="slide-heading-a3440e705551">Selection-free
+all-method… (part 9)</h2>
+<p>The source-generated exact-value fallback calls the same finite
+grouping helper as Panel A. For every displayed attack-by-weight cell it
+records the printed grouped mean and the printed half min–max span,
+preventing the numeric fallback from drifting from the renderer.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9e919d3881aa">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 10" id="slide-heading-9e919d3881aa">Selection-free
+all-method… (part 10)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-1">
+<img
+src="../figures/robustness_review_grid.slide-conditional-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bbe4f60294dbb6e05550c3ba60f37a06ef8ae5f59a9b5583e2c09b8d942b425f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1299"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.9363636"
+alt="Conditional preset-minus-reference means
+± half min–max span across declared cells; not a confidence interval." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-40b9fcecd56d">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 11" id="slide-heading-40b9fcecd56d">Selection-free
+all-method… (part 11)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-2">
+<img
+src="../figures/robustness_review_grid.slide-conditional-clean.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="916554e7ffcf79d81ad10c2f88b56add7f1bf3d2eb13f9bd386a057e614033d7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1500"
+data-slide-figure-intrinsic-height="588"
+data-slide-figure-intrinsic-aspect="2.5510204"
+alt="clean: both adversary weights; signed mass means and half min–max spans; common color scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e10c9e0d7066">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 12" id="slide-heading-e10c9e0d7066">Selection-free
+all-method… (part 12)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-3">
+<img
+src="../figures/robustness_review_grid.slide-conditional-confident-wrong.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="32c6cdee70c3b948155cb66e98e87029440e0fb9a20569e3a8e27ed8074040d2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1500"
+data-slide-figure-intrinsic-height="588"
+data-slide-figure-intrinsic-aspect="2.5510204"
+alt="confident wrong: both adversary weights; signed mass means and half min–max spans; common color scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c5987fee89ec">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 13" id="slide-heading-c5987fee89ec">Selection-free
+all-method… (part 13)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-4">
+<img
+src="../figures/robustness_review_grid.slide-conditional-label-noise.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="f3dfc905672b4f2ab78853ccd6364cf953698c4ead1abdab2974b2f258082330"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1500"
+data-slide-figure-intrinsic-height="588"
+data-slide-figure-intrinsic-aspect="2.5510204"
+alt="label noise: both adversary weights; signed mass means and half min–max spans; common color scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-595489327bac">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 14" id="slide-heading-595489327bac">Selection-free
+all-method… (part 14)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-5">
+<img
+src="../figures/robustness_review_grid.slide-conditional-permutation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="2de11e7b3b540823d70e79aedf4eafed63d997e1bd994c6fb373b7083ea08dc3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1500"
+data-slide-figure-intrinsic-height="588"
+data-slide-figure-intrinsic-aspect="2.5510204"
+alt="permutation: both adversary weights; signed mass means and half min–max spans; common color scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7b05e2d4d706">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 15" id="slide-heading-7b05e2d4d706">Selection-free
+all-method… (part 15)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-6">
+<img
+src="../figures/robustness_review_grid.slide-conditional-uniform.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="7ecf5793b6aeccc004d21ccdce5aa3159dca5b6ba8dc375f1adebbcfb2836f4d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1500"
+data-slide-figure-intrinsic-height="588"
+data-slide-figure-intrinsic-aspect="2.5510204"
+alt="uniform: both adversary weights; signed mass means and half min–max spans; common color scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fa2038ee82ed">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 16" id="slide-heading-fa2038ee82ed">Selection-free
+all-method… (part 16)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-7">
+<img
+src="../figures/robustness_review_grid.slide-conditional-scale.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="4802a0dfb54efcf540dda4bd151e7eab4ddee5de70983df2f1dfd95da2b7a27c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1654"
+data-slide-figure-intrinsic-height="483"
+data-slide-figure-intrinsic-aspect="3.4244306"
+alt="Common signed color scale for every conditional panel; zero is neutral." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cfa6225908ae">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 17" id="slide-heading-cfa6225908ae">Selection-free
+all-method… (part 17)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-8">
+<img
+src="../figures/robustness_review_grid.slide-directional-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f831bb4b636db0435beba1e97a972b5cab8850a0f15c48a5794f1fadb0d7f21c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1243"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.0615764"
+alt="Each preset retains its own 95% seed-bootstrap band.
+Y limits are shared within each mechanism. All predeclared presets are shown." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-46f9509746e2">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 18" id="slide-heading-46f9509746e2">Selection-free
+all-method… (part 18)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-9">
+<img
+src="../figures/robustness_review_grid.slide-directional-confident-wrong-rkl.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="60e36453004932cf51c4ef1c8d25e32d22b72e1508f4f0a8ee8f1d7a3808ec70"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="confident wrong, preset 1 (RKL): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-718df4883768">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 19" id="slide-heading-718df4883768">Selection-free
+all-method… (part 19)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-10">
+<img
+src="../figures/robustness_review_grid.slide-directional-confident-wrong-ar.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="2160e1c358103607462231f688792c3ff6a1fb43b528aed4944ddf57a03aff86"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="confident wrong, preset 2 (AR): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-57007ab4da8b">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 20" id="slide-heading-57007ab4da8b">Selection-free
+all-method… (part 20)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-11">
+<img
+src="../figures/robustness_review_grid.slide-directional-confident-wrong-beta.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e61b42bd9d477787e9f17d12337bcd9576b650666771316221f9c1206fe8dbb2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="confident wrong, preset 3 (beta): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ff8e11e973fb">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 21" id="slide-heading-ff8e11e973fb">Selection-free
+all-method… (part 21)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-12">
+<img
+src="../figures/robustness_review_grid.slide-directional-confident-wrong-rcce.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="3c2f93cac8ac3088e2d3ec3eb254f07fc52b85444ac853247df7a6f7dec1ceb4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="confident wrong, preset 4 (rcce): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-30fd740dcee4">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 22" id="slide-heading-30fd740dcee4">Selection-free
+all-method… (part 22)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-13">
+<img
+src="../figures/robustness_review_grid.slide-directional-byzantine-rkl.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="cd181b04d8a48e8a529815f16ccfc3e7e37c8d6af1a525c8770bd1296ecaf7a9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="byzantine, preset 1 (RKL): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5ae686743256">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 23" id="slide-heading-5ae686743256">Selection-free
+all-method… (part 23)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-14">
+<img
+src="../figures/robustness_review_grid.slide-directional-byzantine-ar.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="8a29cbb462e8b7f983a56b47d6083eab4a5d1ddbda3774c3ef067f32be5c3399"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="byzantine, preset 2 (AR): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a2db3bc8c753">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 24" id="slide-heading-a2db3bc8c753">Selection-free
+all-method… (part 24)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-15">
+<img
+src="../figures/robustness_review_grid.slide-directional-byzantine-beta.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="26d1842b1fc4f40eec46a4db289eee50642fb82d3fb2508a06609a5c6981191c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="byzantine, preset 3 (beta): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-604605d8781a">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 25" id="slide-heading-604605d8781a">Selection-free
+all-method… (part 25)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-16">
+<img
+src="../figures/robustness_review_grid.slide-directional-byzantine-rcce.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d379be72f29dc8279e0b141ed1087c16a11b1f8559287af3d4cc58be740a896a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="byzantine, preset 4 (rcce): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e0578152c967">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 26" id="slide-heading-e0578152c967">Selection-free
+all-method… (part 26)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-17">
+<img
+src="../figures/robustness_review_grid.slide-directional-drift-rkl.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="bd365bc6354a38e3557e357ff9ba2957a5c1f0ab31f56dc47f8c084ca1992d6a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="drift, preset 1 (RKL): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f835a4fdebc3">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 27" id="slide-heading-f835a4fdebc3">Selection-free
+all-method… (part 27)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-18">
+<img
+src="../figures/robustness_review_grid.slide-directional-drift-ar.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="28a96d37f19648c373e5fc0c7c228b5c5e559150af34b0ad880e42aa2e5a976c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="drift, preset 2 (AR): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a918c8f11812">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 28" id="slide-heading-a918c8f11812">Selection-free
+all-method… (part 28)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-19">
+<img
+src="../figures/robustness_review_grid.slide-directional-drift-beta.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e88f5503cb3493f519da014081c22b8e3890186a0fa1c30c28502b67c35156a3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="drift, preset 3 (beta): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Selection-free all-method robustness review, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6ac2d262622e">
+<h2 class="figure-led"
+aria-label="Selection-free all-method robustness review, part 29" id="slide-heading-6ac2d262622e">Selection-free
+all-method… (part 29)</h2>
+<figure id="fig:robustness-review-grid-slide-panel-20">
+<img
+src="../figures/robustness_review_grid.slide-directional-drift-rcce.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="7b04a318d4282fd1808781baae93f4cee70d425fd3318024fbfb1b061f053cf0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1565"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2880117"
+alt="drift, preset 4 (rcce): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits." />
+</figure>
+</section>
+<section id="sec:results-verdict" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6647f3d2cd4c">
+<h2 class="prose-slide" id="slide-heading-6647f3d2cd4c">Conditional matched-trial comparison at the
+declared rate</h2>
+<p>At contamination rate 0.800, each of 960 matched trials redraws the
+heterogeneous healthy colony while holding the seeded world’s true state
+and attack target fixed.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67a024eee5eb">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 2" id="slide-heading-67a024eee5eb">Conditional
+matched-trial… (part 2)</h2>
+<p>Each non-reference server preset is compared with the standard pool
+using the paired Wilcoxon signed-rank test <span class="citation"
+data-cites="wilcoxon1945individual">(Wilcoxon 1945)</span>.</p>
+<p>Benjamini–Hochberg FDR adjustment applies within the declared family
+<span class="citation" data-cites="benjamini1995controlling">(Benjamini
+and Hochberg 1995)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f1d9c98e9b61">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 3" id="slide-heading-f1d9c98e9b61">Conditional
+matched-trial… (part 3)</h2>
+<p>The generated <code>Wins</code> field is true only when the adjusted
+null is rejected and the paired effect is positive. It is conditional
+bookkeeping for this fixed world and rate, not a universal method
+ranking.</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ad80b8bd8c89">
+<h2 class="table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 4" id="slide-heading-ad80b8bd8c89">Conditional
+matched-trial… (part 4)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:robustness_verdict" data-responsive-table="true">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 22%" />
+<col style="width: 19%" />
+<col style="width: 19%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr>
+<th>Server preset</th>
+<th>Effect size</th>
+<th>Raw p</th>
+<th>q</th>
+<th>Wins</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AR</td>
+<td>1.0000</td>
+<td>1.11e-158</td>
+<td>1.11e-158</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>1.0000</td>
+<td>1.11e-158</td>
+<td>1.11e-158</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>1.0000</td>
+<td>1.11e-158</td>
+<td>1.11e-158</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>1.0000</td>
+<td>1.11e-158</td>
+<td>1.11e-158</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db30a4e21f55">
+<h2 class="table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 5" id="slide-heading-db30a4e21f55">Conditional
+matched-trial… (part 5)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:verdict-effect-estimates" data-responsive-table="true">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 23%" />
+<col style="width: 12%" />
+<col style="width: 25%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Method</th>
+<th>Derived <span class="math inline">\(d_{\rm eq}\)</span></th>
+<th>Label</th>
+<th>Mean <span class="math inline">\(\Delta\)</span> accuracy</th>
+<th>95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AR</td>
+<td>saturated (r=+1)</td>
+<td>large</td>
+<td>0.0846</td>
+<td>[0.0821, 0.0873]</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>saturated (r=+1)</td>
+<td>large</td>
+<td>0.0809</td>
+<td>[0.0783, 0.0834]</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4c31669b31f7">
+<h2 class="table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 6" id="slide-heading-4c31669b31f7">Conditional
+matched-trial… (part 6)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:verdict-inference-power" data-responsive-table="true">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 15%" />
+<col style="width: 21%" />
+<col style="width: 15%" />
+</colgroup>
+<thead>
+<tr>
+<th>Method</th>
+<th>Raw p</th>
+<th>q</th>
+<th>Power</th>
+<th>Target <span class="math inline">\(n_{\rm trial}\)</span></th>
+<th>Reject</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AR</td>
+<td>1.11e-158</td>
+<td>1.11e-158</td>
+<td>1.0000</td>
+<td>5</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>1.11e-158</td>
+<td>1.11e-158</td>
+<td>1.0000</td>
+<td>5</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2898b3c190ab">
+<h2 class="table-led"
+aria-label="Conditional matched-trial comparison at the declared rate, part 7" id="slide-heading-2898b3c190ab">Conditional
+matched-trial… (part 7)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:accuracy-at-verdict" data-responsive-table="true">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 14%" />
+<col style="width: 37%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr>
+<th>Method</th>
+<th>n</th>
+<th>Mean acc. @ verdict rate</th>
+<th>95% CI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KLD</td>
+<td>960</td>
+<td>0.9021</td>
+<td>[0.8993, 0.9049]</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>960</td>
+<td>0.9829</td>
+<td>[0.9827, 0.9832]</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-50d7bf2d6715">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 8" id="slide-heading-50d7bf2d6715">Conditional
+matched-trial… (part 8)</h2>
+<p><strong>Reference mean.</strong> Naive-pool mean accuracy at the
+verdict rate is 0.9021 (per-trial mean over 960 trials; the bootstrap CI
+is in <a class="cross-reference" href="#tbl:accuracy-at-verdict">Table 10</a>).</p>
+<p><strong>Positive contrasts.</strong> At least one non-reference
+preset is a BH-rejected positive contrast: Yes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2e00e406c1b2">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 9" id="slide-heading-2e00e406c1b2">Conditional
+matched-trial… (part 9)</h2>
+<p><strong>Headline display.</strong> The method is RKL (tied set: RKL,
+AR, beta, rcce), with rank-biserial-derived <span
+class="math inline">\(d\)</span>-equivalent saturated (r=+1) (large),
+mean accuracy difference 0.0809 (<span class="math inline">\([0.0783,
+0.0834]\)</span>), raw <span class="math inline">\(p = 1.11 \times
+10^{-158}\)</span>, and <span class="math inline">\(q = 1.11 \times
+10^{-158}\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-106135cd4837">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 10" id="slide-heading-106135cd4837">Conditional
+matched-trial… (part 10)</h2>
+<p>Its observed-effect design power is 1.0000. Prospective <span
+class="math inline">\(n\)</span> for power 0.80 is 5.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c549e4a2c25f">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 11" id="slide-heading-c549e4a2c25f">Conditional
+matched-trial… (part 11)</h2>
+<p><strong>Display rule.</strong> Under largest positive rank-biserial
+effect_size; stable method order tie-break (tie-break: first robust
+method in divergences order), observed-effect design power is 1.0000 at
+the run’s <span class="math inline">\(n_{\rm trial} = 960\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ab117932658a">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 12" id="slide-heading-ab117932658a">Conditional
+matched-trial… (part 12)</h2>
+<p>A confirmatory replication should budget <span
+class="math inline">\(n_{\rm trial} = 5\)</span> for power 0.80
+(prospective <span class="math inline">\(n = 7\)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7db108b8c02">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 13" id="slide-heading-d7db108b8c02">Conditional
+matched-trial… (part 13)</h2>
+<p>The standard pool degrades and some non-reference presets have
+positive conditional contrasts. The statistics module produces the
+paired tests, multiple-testing adjustment, bootstrap intervals, and
+planning analysis; the prose does not promote them beyond their
+matched-trial estimand.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c44c5c409690">
+<h2 class="prose-slide"
+aria-label="Conditional matched-trial comparison at the declared rate, part 14" id="slide-heading-c44c5c409690">Conditional
+matched-trial… (part 14)</h2>
+<p>The headline label is a deterministic display choice, not a unique
+scientific winner. The complete tied set is RKL, AR, beta, rcce, the
+largest paired mean-difference method is AR, and the worst-rate pooled
+display method is beta. These may differ because they answer different
+descriptive questions.</p>
+</section>
+<section
+id="server-side-heuristic-axis-conditional-contrasts-without-theorem-transfer"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b80d87de3dcc">
+<h2 class="prose-slide" id="slide-heading-b80d87de3dcc">Server-side heuristic axis: conditional
+contrasts without theorem transfer</h2>
+<p>The comparison above belongs to the heuristic server axis defined in
+<span class="cross-reference">Section 3.3</span>.
+<span class="cross-reference">Figure 15</span>
+visualizes the <code>robust_aggregate</code> divergence-reweighting that
+down-weights agents at pooling time.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-70c6cbd00c43">
+<h2 class="prose-slide"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 2" id="slide-heading-70c6cbd00c43">Server-side
+heuristic axis (part 2)</h2>
+<p>Its positive formal property is the naive-recovery limit of Theorem
+<span class="cross-reference">5</span>
+(<span class="cross-reference">Equation (10)</span>,
+the 0 residual of <span class="cross-reference">Section 7.1</span>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f1282313ff69">
+<h2 class="prose-slide"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 3" id="slide-heading-f1282313ff69">Server-side
+heuristic axis (part 3)</h2>
+<p>and it has a scoped no-go result for a declared separable objective
+class, not an objective certificate.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-72efeea2a56e">
+<h2 class="prose-slide"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 4" id="slide-heading-72efeea2a56e">Server-side
+heuristic axis (part 4)</h2>
+<p>The heuristic carries no bounded-influence guarantee. The effect
+sizes, intervals, and planning quantities characterize its conditional
+contrasts; they do not certify the per-agent generalized-Bayes claim,
+which remains separately source-conditional in <span class="cross-reference">Section 7.6</span>.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-26c056781892">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 5" id="slide-heading-26c056781892">Server-side
+heuristic axis (part 5)</h2>
+<figure id="fig:robust-weights-slide-panel-1">
+<img src="../figures/robust_influence_weights.slide-encoding.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0709e66a2d25ae87524866ec8b042f3838321e8764fe7adf555581bac0da300f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1153"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.8399015"
+alt="Open fill: honest. Cross-hatch: adversary.
+Dotted line: equal-weight pool.
+All panels share the same weight scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-693a3aee2499">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 6" id="slide-heading-693a3aee2499">Server-side
+heuristic axis (part 6)</h2>
+<figure id="fig:robust-weights-slide-panel-2">
+<img src="../figures/robust_influence_weights.slide-agents-1-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="aaf1e589ede35ae48e4e0493db47515ad51556e107e1f8c6e7cbef1a0e991944"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="686"
+data-slide-figure-intrinsic-aspect="2.1632653"
+alt="Agents 0 through 1: exact normalized heuristic weights; shared scale and equal-weight reference." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2630dffb8782">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 7" id="slide-heading-2630dffb8782">Server-side
+heuristic axis (part 7)</h2>
+<figure id="fig:robust-weights-slide-panel-3">
+<img src="../figures/robust_influence_weights.slide-agents-3-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e8656c45ad16531407a4a05fc055e30772aba6592de995735ae6f10636dd7fa9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="686"
+data-slide-figure-intrinsic-aspect="2.1632653"
+alt="Agents 2 through 3: exact normalized heuristic weights; shared scale and equal-weight reference." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f684efe0693">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 8" id="slide-heading-9f684efe0693">Server-side
+heuristic axis (part 8)</h2>
+<figure id="fig:robust-weights-slide-panel-4">
+<img src="../figures/robust_influence_weights.slide-agents-5-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="3168aee1aa995ea8b8699bed12d9c3e3c69e83e0306317d2f4666996acd21de7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="686"
+data-slide-figure-intrinsic-aspect="2.1632653"
+alt="Agents 4 through 5: exact normalized heuristic weights; shared scale and equal-weight reference." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ab7e45ce7724">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 9" id="slide-heading-ab7e45ce7724">Server-side
+heuristic axis (part 9)</h2>
+<figure id="fig:robust-weights-slide-panel-5">
+<img src="../figures/robust_influence_weights.slide-agents-7-7.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="f40c1888cb965361912cac2b8d1c667919e540399294b9545a7c9f535dada95d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="686"
+data-slide-figure-intrinsic-aspect="2.1632653"
+alt="Agents 6 through 6: exact normalized heuristic weights; shared scale and equal-weight reference." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b35dd5b2f137">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 10" id="slide-heading-b35dd5b2f137">Server-side
+heuristic axis (part 10)</h2>
+<figure id="fig:robust-weights-slide-panel-6">
+<img src="../figures/robust_influence_weights.slide-notes-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7c30c3f6079b35480b06329008f60f027c83cc9b035cc438660e5a5dcc6071d5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1132"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.4566929"
+alt="Agents contaminated: 2/7 (29%)
+Weight sum: 1.000
+Healthy mean weight: 0.199" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e0274561282a">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 11" id="slide-heading-e0274561282a">Server-side
+heuristic axis (part 11)</h2>
+<figure id="fig:robust-weights-slide-panel-7">
+<img src="../figures/robust_influence_weights.slide-notes-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2f3c3c7cf3eb2702445e61d54495068d7c6f550eb19cf09d529c98aae395ea01"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1143"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.4576271"
+alt="Adversary mean weight: 0.002
+Observed role-weight gap: 0.198" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6da6492809c5">
+<h2 class="figure-led"
+aria-label="Server-side heuristic axis: conditional contrasts without theorem transfer, part 12" id="slide-heading-6da6492809c5">Server-side
+heuristic axis (part 12)</h2>
+<figure id="fig:robust-weights-slide-panel-8">
+<img src="../figures/robust_influence_weights.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1a595935dc2c0374f8cd12dcc2e380d5c2a95a884c67e58a563067b4355678ad"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1192"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6121212"
+alt="Server heuristic weights support a recovery-limit diagnostic.
+They do not inherit client-loss robustness guarantees." />
+</figure>
+</section>
+<section id="sec:results-variational" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-096185ee1cff">
+<h2 class="prose-slide" id="slide-heading-096185ee1cff">Variational aggregator: conservative
+objective-backed weight control</h2>
+<p>The heuristic has the higher point accuracy in the configured verdict
+cell. The variational aggregator of <span class="cross-reference">Section 5.8.2</span>,
+derived in <span class="cross-reference">Section 12</span>,
+is its objective-backed complement.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e2bbcfe36b79">
+<h2 class="prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 2" id="slide-heading-e2bbcfe36b79">Variational
+aggregator (part 2)</h2>
+<p>Each exact block update does not increase the stated free energy
+<span class="cross-reference">Equation (12)</span>,
+and a converged fixed point is coordinatewise stationary. Two
+deterministic runs show its weight behavior at robustness 1.50.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-012f0a41ca32">
+<h2 class="prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 3" id="slide-heading-012f0a41ca32">Variational
+aggregator (part 3)</h2>
+<p>First, the descent. On a contaminated colony the free energy falls
+monotonically from 3.2458 to 2.3780 (a drop of 0.8678 over 11
+block-coordinate iterations, converged: Yes), with a largest single-step
+<em>increase</em> of 8.88e-16 — machine zero, the numerical witness of
+the descent theorem (<span class="cross-reference">Section 12.3</span>).</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e7ae7154b713">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 4" id="slide-heading-e7ae7154b713">Variational
+aggregator (part 4)</h2>
+<figure id="fig:aggregation-descent-slide-panel-1">
+<img src="../figures/aggregation_descent.slide-trajectory.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="fc389f038031d4978155ce09f78c7670620e456190b4b956642784004a886469"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="Variational objective in nats at every iteration; filled triangle is final iterate, large open triangles mark the largest observed step." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f98069d2d7fb">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 5" id="slide-heading-f98069d2d7fb">Variational
+aggregator (part 5)</h2>
+<figure id="fig:aggregation-descent-slide-panel-2">
+<img src="../figures/aggregation_descent.slide-encoding.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e889e8edf8ea34367cf92a423aa1ddf6be40ae3ec4b848d4060477915732faff"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1200"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.955665"
+alt="Triangles and dash-dot: variational objective.
+Filled triangle: final iterate.
+Large open triangles: largest observed step." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e6b3695e1757">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 6" id="slide-heading-e6b3695e1757">Variational
+aggregator (part 6)</h2>
+<figure id="fig:aggregation-descent-slide-panel-3">
+<img src="../figures/aggregation_descent.slide-notes-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f74745480c04401ca15ee4f9eacf4a66965b2cf9faddab0ad5fa03fc73d4d233"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1110"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.3700787" alt="Iterations: 11
+Total drop ΔF = 0.868 nats
+Max ascent step = 8.9e-16 nats" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3eb7c6c89b88">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 7" id="slide-heading-3eb7c6c89b88">Variational
+aggregator (part 7)</h2>
+<figure id="fig:aggregation-descent-slide-panel-4">
+<img src="../figures/aggregation_descent.slide-notes-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a056de48dcac01e0bf4deb73a7f21c3eb2123fabf8cb271f335c87856f21745d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1006"
+data-slide-figure-intrinsic-height="101"
+data-slide-figure-intrinsic-aspect="9.960396"
+alt="Monotone: yes  ✓ converged" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2c87b08d2c68">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 8" id="slide-heading-2c87b08d2c68">Variational
+aggregator (part 8)</h2>
+<figure id="fig:aggregation-descent-slide-panel-5">
+<img src="../figures/aggregation_descent.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a8eee6f8321f31dbf78088ef7ec95d11ee5b2be8f54b02d464235ad98a2d46b5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1111"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.3666667"
+alt="One deterministic trajectory; no sampling interval.
+A final iterate is not a global-optimum certificate." />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-694dc228e403">
+<h2 class="prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 9" id="slide-heading-694dc228e403">Variational
+aggregator (part 9)</h2>
+<p>Second, the effective-weight response. As one agent is drifted from
+healthy toward a confident-wrong delta, its normalized influence falls
+from 0.143 to below 0.001 — a factor of 267.1 below the fixed 0.143 the
+naive log-linear pool grants every agent regardless of how wrong it
+is.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a19ee91370a3">
+<h2 class="prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 10" id="slide-heading-a19ee91370a3">Variational
+aggregator (part 10)</h2>
+<p>The gap between the falling variational curve and the flat naive line
+is the empirical redescending weight response, drawn.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48d16f53bc15">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 11" id="slide-heading-48d16f53bc15">Variational
+aggregator (part 11)</h2>
+<figure id="fig:bounded-influence-slide-panel-1">
+<img src="../figures/bounded_influence.slide-weight-path.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="431ad6326cc90ba0f1041ddb5276e1839597ae5b649eda2afa26471fdff4ca8e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="Every configured drift: triangle/dash-dot variational weights, circle/solid naive weights; shaded gap is deterministic, not an interval." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-52bc796657f1">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 12" id="slide-heading-52bc796657f1">Variational
+aggregator (part 12)</h2>
+<figure id="fig:bounded-influence-slide-panel-2">
+<img src="../figures/bounded_influence.slide-encoding.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f10235fb927c94254ae5c8bb2c8cf078625a0e0aa97325207899c72cafea822c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1210"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7637795"
+alt="Triangle/dash-dot: variational.
+Circle/solid: naive fixed weight.
+Shading: deterministic weight gap." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-88f2d9130282">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 13" id="slide-heading-88f2d9130282">Variational
+aggregator (part 13)</h2>
+<figure id="fig:bounded-influence-slide-panel-3">
+<img src="../figures/bounded_influence.slide-drift-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1506e039e3c60e3092fe11d1dea7a2d09241035a4439ae9d815b97eafefbf7a8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1120"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.3939394"
+alt="Outlier drift: 0 is consensus; 1 is confidently wrong.
+This is a configured path, not estimator-level B-robustness." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f65ed3610a9">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 14" id="slide-heading-6f65ed3610a9">Variational
+aggregator (part 14)</h2>
+<figure id="fig:bounded-influence-slide-panel-4">
+<img src="../figures/bounded_influence.slide-endpoints.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="66ed26d3b005a6ba562673c210546dd7e6d3cc613cdc3b2568335eb0718c97ff"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1171"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.6158192"
+alt="Variational final weight: 0.000535
+Naive fixed weight: 1/n = 0.143" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3bffebb3203c">
+<h2 class="figure-led"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 15" id="slide-heading-3bffebb3203c">Variational
+aggregator (part 15)</h2>
+<figure id="fig:bounded-influence-slide-panel-5">
+<img src="../figures/bounded_influence.slide-crossing.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b8f75f14c31844d1c4daf8b1709ccfc4974f05024c4c02452963568dde35abc5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1154"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.5433071"
+alt="Cross: first configured drift below 0.5 × naive.
+Drift = 0.60" />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f69d7938623c">
+<h2 class="prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 16" id="slide-heading-f69d7938623c">Variational
+aggregator (part 16)</h2>
+<p>The honest trade is conservatism: because <span
+class="math inline">\(F\)</span> carries the <span
+class="math inline">\(-H(q)\)</span> entropy term, its consensus is the
+maximum-entropy distribution consistent with the weighted
+cross-entropies, deliberately flatter than the product-of-experts.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fbc8b397fc72">
+<h2 class="prose-slide"
+aria-label="Variational aggregator: conservative objective-backed weight control, part 17" id="slide-heading-fbc8b397fc72">Variational
+aggregator (part 17)</h2>
+<p>The variational aggregator therefore does <em>not</em> win the
+peak-accuracy verdict of <a class="cross-reference" href="#sec:results-verdict">Section 7.5.2</a>
+— that remains the sharp heuristic’s role — and the two are reported as
+complements, never conflated: rigor-with-conservatism on one side,
+accuracy-without-an-objective on the other.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

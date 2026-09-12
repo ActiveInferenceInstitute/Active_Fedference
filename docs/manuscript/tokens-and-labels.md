@@ -24,7 +24,7 @@ Active Fedference uses two registries. **Do not duplicate full tables in
 | Robustness sweep | `SWEEP_BEST_QVALUE`, `SWEEP_ANY_ROBUST_WINS`, `SWEEP_HEADLINE_POWER`, per-rate p/q tokens | `output/reports/robustness_sweep.json` |
 | Recovery residuals | `RECOVERY_*` (each with a `*_MATH` sibling — see below) | Deterministic checks in `src/manuscript_vars/` |
 | Variational diagnostics | `VARIATIONAL_F_INITIAL`, `VARIATIONAL_DELTA_F`, `VARIATIONAL_INFLUENCE_DROP_FACTOR`, `VARIATIONAL_CAPTURE_GAP` | `output/reports/variational_aggregation.json` |
-| Contamination gallery | `GALLERY_RATE`, `GALLERY_RELIABLE_KINDS`, `GALLERY_TABLE_ROWS` | `output/reports/contamination_gallery.json` |
+| Contamination gallery | `GALLERY_RATE`, `GALLERY_RELIABLE_KINDS`, `GALLERY_OPERATING_POINT_TABLE_ROWS`, `GALLERY_CONTRAST_DISPLAY_TABLE_ROWS`; legacy `GALLERY_TABLE_ROWS` remains available | `output/reports/contamination_gallery.json` |
 | Robustness onset | `ONSET_WIN_FRACTION`, `ONSET_TABLE_ROWS` | `output/reports/robustness_onset.json` |
 | Tempered aggregation (V1) | `TEMPERED_LAMBDA_STAR`, `TEMPERED_HONEST_EXIT_SENTENCE`, `TEMPERED_ENTROPY_WEIGHT_DEFAULT` | Computed at token-generation time |
 | Federation transport (V3) | `FEDERATION_N_WORKERS`, `FEDERATION_BIT_IDENTICAL`, `FEDERATION_TRANSPORT` | Compile-time constants |
@@ -40,6 +40,13 @@ results — never hand-authored (ISC-30). Power tokens are observed-effect
 design-planning quantities for the server-side heuristic contrast; they do not
 certify the per-client beta/rcce FedGVI guarantee.
 
+The paired-rate table tokens split the source row into effect and inference
+projections keyed by `(server preset, rate)`; the legacy
+`SWEEP_PAIRED_BY_RATE_TABLE_ROWS` token remains available and is reconstructed
+exactly by joining those projections. The gallery table tokens similarly split
+operating-point and contrast/display fields on the mechanism key while retaining
+the legacy `GALLERY_TABLE_ROWS` row.
+
 The variational tokens (`VARIATIONAL_*`) report objective descent and the
 redescending-weight diagnostic; `VARIATIONAL_CAPTURE_GAP` is the headline multi-start
 vs single-start descent-comparison number. The `GALLERY_*` tokens carry the
@@ -52,6 +59,23 @@ The `HIER_*` and `NLEVEL3_*` tokens are strict loads from
 `output/reports/hierarchical_world.json` and `output/reports/nlevel3_world.json`
 (Phase 1 outputs); hydration raises `FileNotFoundError` if either report is
 missing rather than rerunning the study or synthesizing values.
+
+### Robustness sweep selection and estimands
+
+`SWEEP_BEST_*` tokens retain their compatibility names but bind to the report's
+`headline_method` and that method's own verdict row. The producer owns its
+rank-biserial selection and stable tie-break; token generation must not repeat
+that selection from JSON object order. In particular, the headline label, paired
+mean difference, confidence interval, and power must all describe the same row.
+The verdict accuracy tokens describe that selected method, not necessarily the
+largest pooled accuracy.
+
+`SWEEP_MECHANISTIC_BEST_METHOD` and `SWEEP_MECHANISTIC_BEST_ACCURACY` instead
+identify the largest robust consensus mass at the worst rate in the single-world
+mechanistic sweep. `SWEEP_WORST_RATE_BEST_METHOD` and
+`SWEEP_PROFILE_BEST_ROBUST_ACCURACY` describe the worst-rate matched-trial
+profile. These selections answer different questions and must not exchange
+method labels or estimates in prose.
 
 ### `*_MATH` sibling tokens (scientific notation in math contexts)
 
@@ -69,6 +93,12 @@ Sibling-emitting groups: every `RECOVERY_*` residual (each key gets a
 `SWEEP_BEST_QVALUE_MATH`, and `SWEEP_BEST_RAW_PVALUE_MATH`. Rule: inside math
 mode use the `_MATH` sibling; outside math mode use the plain token. Never
 hand-format scientific notation in manuscript prose.
+
+The moving-world, disjoint-field-of-view, hierarchical, and three-level paired
+test p-values also have `_MATH` siblings. Positive values below `1e-4` use
+scientific notation rather than rounding to `0.0000`; ordinary probabilities
+retain four decimal places. These are display choices applied to the report's
+finite probability, with no change to its test statistic or significance rule.
 
 ### Hydration command
 
@@ -92,12 +122,16 @@ non-draft pre-test escape hatch and must not be used for the final manuscript.
 
 ### Unresolved token check
 
-Hydration applies to the Markdown reader surface. Auxiliary config, preamble,
-and BibTeX files remain source-exact; their consumer-specific producers resolve
-or validate any supported placeholders.
+Hydration applies to Markdown sections and configuration string values. The
+source `manuscript/config.yaml` remains unchanged; its generated copy resolves
+tokens before the pinned Template renderer consumes it. YAML serialization
+preserves quotes, colons, newlines, and non-string values without treating token
+replacements as YAML syntax. Unresolved configuration tokens reject the
+replacement transaction and leave the previous hydrated tree intact. Preamble
+and BibTeX files remain source-exact auxiliaries for their renderer consumers.
 
 ```bash
-if rg -n --glob '*.md' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
+if rg -n --glob '*.md' --glob '*.yaml' '\{\{[A-Z][A-Z0-9_]*\}\}' output/manuscript/; then
   echo UNRESOLVED
   exit 1
 else
@@ -111,6 +145,13 @@ fi
 | --- | --- |
 | [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md) | Canonical `{#eq:}`, `{#fig:}`, `{#tbl:}`, `{#sec:}`, `{#prop:}`, `{#thm:}`, `{#lem:}`, `{#cor:}`, `{#def:}` registry |
 | Manuscript `.md` files | Use `[@fig:label]` in prose; `{#fig:label}` on figure lines |
+
+The cross-reference renderer supplies the figure, table, equation, or section
+prefix. Write descriptive prose such as `the comparison in [@fig:label]` or
+`the inventories in [@tbl:first; @tbl:second]`; do not prepend another `Figure`,
+`Table`, or equivalent label to the reference. The same rule applies when prose
+and its reference wrap onto separate source lines. Inspect the rendered text
+for duplicate prefixes as part of final cross-reference review.
 
 Adding a figure:
 

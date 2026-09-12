@@ -12,8 +12,36 @@ import pytest
 from analysis.report_schemas import ReportSchemaError
 from fedference.experiments import run_review_grid
 from figures import generate_robustness_review_grid
+from figures.robustness_review_grid import _spread_endpoint_labels
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
+
+def test_review_grid_endpoint_lane_separates_dense_labels() -> None:
+    positions = _spread_endpoint_labels(
+        [0.48, 0.481, 0.482, 0.483],
+        minimum_separation=0.16,
+        lower=0.11,
+        upper=0.89,
+    )
+    ordered = sorted(positions)
+
+    assert ordered[0] >= 0.11
+    assert ordered[-1] <= 0.89
+    assert all(
+        current - previous >= 0.16 - 1e-12
+        for previous, current in zip(ordered, ordered[1:])
+    )
+
+
+def test_review_grid_endpoint_lane_rejects_impossible_density() -> None:
+    with pytest.raises(ValueError, match="too narrow"):
+        _spread_endpoint_labels(
+            [0.4, 0.5, 0.6],
+            minimum_separation=0.5,
+            lower=0.1,
+            upper=0.9,
+        )
 
 
 def test_review_grid_figure_import_does_not_cycle_through_analysis_workflow() -> None:

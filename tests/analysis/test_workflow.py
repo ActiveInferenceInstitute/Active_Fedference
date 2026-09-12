@@ -2,19 +2,27 @@
 
 No mocks: the pipeline runs the real fedference experiments into a throwaway
 ``tmp_path`` project root, then we assert the JSON reports and PNG figures
-exist and carry the expected headline properties.
+exist and carry the expected headline properties. Read-only property checks
+reuse one real run through separate per-test copies; direct orchestration,
+configuration, and source-mutation checks still invoke their own producers.
 """
 
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
 import yaml
 
 from analysis import workflow
-from analysis.workflow import main, resolve_analysis_profile, run_analysis_pipeline
+from analysis.workflow import (
+    _write_figure_registry,
+    main,
+    resolve_analysis_profile,
+    run_analysis_pipeline,
+)
 from experiment_config import ExperimentConfig
 
 pytestmark = [pytest.mark.slow, pytest.mark.publication]
@@ -115,6 +123,31 @@ def _make_project(root: Path) -> None:
         },
     }
     (manuscript / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
+    (manuscript / "16_results_belief_sharing.md").write_text(
+        "![Belief-sharing posterior mass in the bounded smoke fixture.]"
+        "(../output/figures/belief_heatmap.png)"
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
+        encoding="utf-8",
+    )
+
+
+@pytest.fixture(scope="module")
+def completed_analysis(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, dict[str, Path]]:
+    """Execute the declared smoke budget once for read-only report properties."""
+    root = tmp_path_factory.mktemp("workflow-analysis")
+    _make_project(root)
+    return root, run_analysis_pipeline(project_root=root)
+
+
+@pytest.fixture
+def pipeline_paths(
+    tmp_path: Path, completed_analysis: tuple[Path, dict[str, Path]],
+) -> dict[str, Path]:
+    """Give each consumer separate files without substituting a producer."""
+    root, paths = completed_analysis
+    shutil.copytree(root, tmp_path, dirs_exist_ok=True)
+    return {name: tmp_path / path.relative_to(root) for name, path in paths.items()}
 
 
 def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> None:
@@ -123,6 +156,7 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
 
     expected = {
         # reports
+        "application_integrity_flow_report",
         "belief_sharing_report",
         "language_report",
         "emergence_report",
@@ -137,7 +171,11 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
         "moving_world_report",
         "conditional_world_report",
         "belief_quality_report",
+        "evidence_replication_map_report",
+        "source_render_provenance_report",
+        "sensitivity_report",
         # figures
+        "application_integrity_flow",
         "belief_heatmap",
         "free_energy_comparison",
         "robustness_sweep",
@@ -151,6 +189,13 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
         "disjoint_fov_world",
         "conditional_world",
         "belief_quality",
+        "evidence_replication_map",
+        "source_render_provenance",
+        "system_overview",
+        "sensitivity_heatmap",
+        # accessibility support
+        "figure_exact_values",
+        "figure_exact_values_markdown",
         "figure_registry",
         "analysis_execution",
     }
@@ -174,9 +219,8 @@ def test_run_analysis_pipeline_writes_reports_and_figures(tmp_path: Path) -> Non
     }
 
 
-def test_world_reports_include_multiseed_block(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_world_reports_include_multiseed_block(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     for key in (
         "hierarchical_world_report",
         "nlevel3_world_report",
@@ -188,9 +232,8 @@ def test_world_reports_include_multiseed_block(tmp_path: Path) -> None:
         assert int(report["multiseed"]["n_seeds"]) >= 2
 
 
-def test_cross_study_report_has_nine_studies(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_cross_study_report_has_nine_studies(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["cross_study_report"].read_text())
     assert len(report["studies"]) == 9
     assert all("mean" in study and "ci_lo" in study for study in report["studies"])
@@ -210,9 +253,8 @@ def test_variational_report_descent_comparison_shows_real_capture() -> None:
     assert report["single_start_final_f"] > report["multi_start_final_f"]
 
 
-def test_belief_sharing_report_shows_communication_helps(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_belief_sharing_report_shows_communication_helps(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["belief_sharing_report"].read_text())
     # Two heads beat one: communicating colony has lower mean free energy.
     assert report["communicating_mean"] < report["incommunicado_mean"]
@@ -221,9 +263,8 @@ def test_belief_sharing_report_shows_communication_helps(tmp_path: Path) -> None
     assert len(report["communicating_free_energy"]) == 4
 
 
-def test_robustness_report_has_method_rate_grid(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_robustness_report_has_method_rate_grid(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["robustness_report"].read_text())
     grid = report["accuracy_by_method_and_rate"]
     assert set(grid) == {"KLD", "RKL", "beta"}
@@ -234,16 +275,14 @@ def test_robustness_report_has_method_rate_grid(tmp_path: Path) -> None:
     assert report["n_contaminated"] >= 1
 
 
-def test_language_report_kl_declines(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_language_report_kl_declines(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["language_report"].read_text())
     assert report["final_kl"] < report["initial_kl"]
 
 
-def test_figures_are_png(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_figures_are_png(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     for key in (
         "belief_heatmap",
         "free_energy_comparison",
@@ -264,15 +303,25 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
         "See [@fig:belief-heatmap].\n\n"
         "![Belief heatmap caption for {{BELIEF_SHARING_N_AGENTS}} agents.]"
         "(../output/figures/belief_heatmap.png)"
-        "{#fig:belief-heatmap width=80%}\n",
+        "{#fig:belief-heatmap width=80% "
+        'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
         encoding="utf-8",
     )
     paths = run_analysis_pipeline(project_root=tmp_path)
     registry = json.loads(paths["figure_registry"].read_text())
     figures = {item["label"]: item for item in registry["figures"]}
 
+    assert registry["schema_version"] == "1.2"
+    assert registry["exact_value_artifact"] == {
+        "identifiers": [],
+        "json_path": "output/figures/figure_exact_values.json",
+        "markdown_path": "output/figures/figure_exact_values.md",
+    }
     assert set(figures) == {"fig:belief-heatmap"}
     assert figures["fig:belief-heatmap"]["filename"] == "belief_heatmap.png"
+    assert figures["fig:belief-heatmap"]["presentation_manifest"] == (
+        "output/figures/belief_heatmap.slides.json"
+    )
     assert figures["fig:belief-heatmap"]["generated_by"] == "belief_heatmap"
     assert figures["fig:belief-heatmap"]["source_manuscript"] == "manuscript/16_results_belief_sharing.md"
     assert figures["fig:belief-heatmap"]["caption"] == (
@@ -281,18 +330,31 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
     assert (tmp_path / "output" / "figures" / figures["fig:belief-heatmap"]["filename"]).exists()
 
 
-def test_emergence_report_signs(tmp_path: Path) -> None:
+def test_figure_registry_rejects_duplicate_labels_and_files(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+    manuscript = tmp_path / "manuscript"
+    duplicate = (
+        "![First caption.](../output/figures/belief_heatmap.png)"
+        "{#fig:duplicate width=80% data-slide-manifest=\"../output/figures/belief_heatmap.slides.json\"}\n\n"
+        "![Second caption.](../output/figures/belief_heatmap.png)"
+        "{#fig:duplicate width=80% data-slide-manifest=\"../output/figures/belief_heatmap.slides.json\"}\n"
+    )
+    (manuscript / "16_results_belief_sharing.md").write_text(duplicate, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate manuscript figure label"):
+        _write_figure_registry(tmp_path, {})
+
+
+def test_emergence_report_signs(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["emergence_report"].read_text())
     # Pruning the redundant column wins; pruning a supported column is rejected.
     assert report["delta_F_redundant"] > 0.0 > report["delta_F_supported"]
     assert report["convergence"] is True
 
 
-def test_efe_report_identity_holds(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_efe_report_identity_holds(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["efe_report"].read_text())
     # risk + ambiguity == -(pragmatic + epistemic) to floating-point tolerance.
     lhs = report["risk"] + report["ambiguity"]
@@ -303,9 +365,8 @@ def test_efe_report_identity_holds(tmp_path: Path) -> None:
     assert report["epistemic_value"] > 0.0
 
 
-def test_influence_weights_downweight_saboteur(tmp_path: Path) -> None:
-    _make_project(tmp_path)
-    paths = run_analysis_pipeline(project_root=tmp_path)
+def test_influence_weights_downweight_saboteur(pipeline_paths: dict[str, Path]) -> None:
+    paths = pipeline_paths
     report = json.loads(paths["influence_weights_report"].read_text())
     weights = report["agent_weights"]
     contaminated = report["contaminated_indices"]
@@ -320,7 +381,10 @@ def test_bnn_report_robust_holds_under_contamination(tmp_path: Path) -> None:
     paths = run_analysis_pipeline(project_root=tmp_path)
     report = json.loads(paths["bnn_report"].read_text())
     configs = report["accuracy_by_config"]
-    assert set(configs) == {"nll / KLD (standard)", "rcce / AR (robust)"}
+    assert set(configs) == {
+        "nll / L2=0.05 (standard proxy)",
+        "rcce / L2=0.10 (exploratory proxy)",
+    }
     levels = report["contamination_levels"]
     for curve in configs.values():
         assert len(curve) == len(levels)
@@ -334,8 +398,8 @@ def test_bnn_report_robust_holds_under_contamination(tmp_path: Path) -> None:
     # exists rather than requiring robust >= standard at every level
     # (including the terminal point, where advisor review confirmed there is
     # no principled reason to expect or require it).
-    standard = configs["nll / KLD (standard)"]
-    robust = configs["rcce / AR (robust)"]
+    standard = configs["nll / L2=0.05 (standard proxy)"]
+    robust = configs["rcce / L2=0.10 (exploratory proxy)"]
     gaps = [r - s for r, s in zip(robust, standard)]
     assert max(gaps) > 0.025, (
         "robust client must show a real (not noise-level) margin over "

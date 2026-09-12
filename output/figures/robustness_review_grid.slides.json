@@ -1,0 +1,125 @@
+{
+  "panels": [
+    {
+      "alt": "Conditional preset-minus-reference means\n\u00b1 half min\u2013max span across declared cells; not a confidence interval.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bbe4f60294dbb6e05550c3ba60f37a06ef8ae5f59a9b5583e2c09b8d942b425f",
+      "src": "../figures/robustness_review_grid.slide-conditional-key.png"
+    },
+    {
+      "alt": "clean: both adversary weights; signed mass means and half min\u2013max spans; common color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "916554e7ffcf79d81ad10c2f88b56add7f1bf3d2eb13f9bd386a057e614033d7",
+      "src": "../figures/robustness_review_grid.slide-conditional-clean.png"
+    },
+    {
+      "alt": "confident wrong: both adversary weights; signed mass means and half min\u2013max spans; common color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "32c6cdee70c3b948155cb66e98e87029440e0fb9a20569e3a8e27ed8074040d2",
+      "src": "../figures/robustness_review_grid.slide-conditional-confident-wrong.png"
+    },
+    {
+      "alt": "label noise: both adversary weights; signed mass means and half min\u2013max spans; common color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f3dfc905672b4f2ab78853ccd6364cf953698c4ead1abdab2974b2f258082330",
+      "src": "../figures/robustness_review_grid.slide-conditional-label-noise.png"
+    },
+    {
+      "alt": "permutation: both adversary weights; signed mass means and half min\u2013max spans; common color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "2de11e7b3b540823d70e79aedf4eafed63d997e1bd994c6fb373b7083ea08dc3",
+      "src": "../figures/robustness_review_grid.slide-conditional-permutation.png"
+    },
+    {
+      "alt": "uniform: both adversary weights; signed mass means and half min\u2013max spans; common color scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "7ecf5793b6aeccc004d21ccdce5aa3159dca5b6ba8dc375f1adebbcfb2836f4d",
+      "src": "../figures/robustness_review_grid.slide-conditional-uniform.png"
+    },
+    {
+      "alt": "Common signed color scale for every conditional panel; zero is neutral.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "4802a0dfb54efcf540dda4bd151e7eab4ddee5de70983df2f1dfd95da2b7a27c",
+      "src": "../figures/robustness_review_grid.slide-conditional-scale.png"
+    },
+    {
+      "alt": "Each preset retains its own 95% seed-bootstrap band.\nY limits are shared within each mechanism. All predeclared presets are shown.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f831bb4b636db0435beba1e97a972b5cab8850a0f15c48a5794f1fadb0d7f21c",
+      "src": "../figures/robustness_review_grid.slide-directional-key.png"
+    },
+    {
+      "alt": "confident wrong, preset 1 (RKL): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "60e36453004932cf51c4ef1c8d25e32d22b72e1508f4f0a8ee8f1d7a3808ec70",
+      "src": "../figures/robustness_review_grid.slide-directional-confident-wrong-rkl.png"
+    },
+    {
+      "alt": "confident wrong, preset 2 (AR): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "2160e1c358103607462231f688792c3ff6a1fb43b528aed4944ddf57a03aff86",
+      "src": "../figures/robustness_review_grid.slide-directional-confident-wrong-ar.png"
+    },
+    {
+      "alt": "confident wrong, preset 3 (beta): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e61b42bd9d477787e9f17d12337bcd9576b650666771316221f9c1206fe8dbb2",
+      "src": "../figures/robustness_review_grid.slide-directional-confident-wrong-beta.png"
+    },
+    {
+      "alt": "confident wrong, preset 4 (rcce): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "3c2f93cac8ac3088e2d3ec3eb254f07fc52b85444ac853247df7a6f7dec1ceb4",
+      "src": "../figures/robustness_review_grid.slide-directional-confident-wrong-rcce.png"
+    },
+    {
+      "alt": "byzantine, preset 1 (RKL): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "cd181b04d8a48e8a529815f16ccfc3e7e37c8d6af1a525c8770bd1296ecaf7a9",
+      "src": "../figures/robustness_review_grid.slide-directional-byzantine-rkl.png"
+    },
+    {
+      "alt": "byzantine, preset 2 (AR): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "8a29cbb462e8b7f983a56b47d6083eab4a5d1ddbda3774c3ef067f32be5c3399",
+      "src": "../figures/robustness_review_grid.slide-directional-byzantine-ar.png"
+    },
+    {
+      "alt": "byzantine, preset 3 (beta): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "26d1842b1fc4f40eec46a4db289eee50642fb82d3fb2508a06609a5c6981191c",
+      "src": "../figures/robustness_review_grid.slide-directional-byzantine-beta.png"
+    },
+    {
+      "alt": "byzantine, preset 4 (rcce): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "d379be72f29dc8279e0b141ed1087c16a11b1f8559287af3d4cc58be740a896a",
+      "src": "../figures/robustness_review_grid.slide-directional-byzantine-rcce.png"
+    },
+    {
+      "alt": "drift, preset 1 (RKL): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "bd365bc6354a38e3557e357ff9ba2957a5c1f0ab31f56dc47f8c084ca1992d6a",
+      "src": "../figures/robustness_review_grid.slide-directional-drift-rkl.png"
+    },
+    {
+      "alt": "drift, preset 2 (AR): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "28a96d37f19648c373e5fc0c7c228b5c5e559150af34b0ad880e42aa2e5a976c",
+      "src": "../figures/robustness_review_grid.slide-directional-drift-ar.png"
+    },
+    {
+      "alt": "drift, preset 3 (beta): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e88f5503cb3493f519da014081c22b8e3890186a0fa1c30c28502b67c35156a3",
+      "src": "../figures/robustness_review_grid.slide-directional-drift-beta.png"
+    },
+    {
+      "alt": "drift, preset 4 (rcce): signed mass contrast and its own 95% seed-bootstrap band; shared mechanism limits.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "7b04a318d4282fd1808781baae93f4cee70d425fd3318024fbfb1b061f053cf0",
+      "src": "../figures/robustness_review_grid.slide-directional-drift-rcce.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

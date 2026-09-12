@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>02_gap.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -459,6 +617,12 @@ mjx-container[display="true"] {
   color: #4b5563;
   margin-top: 10px;
   text-align: center;
+}
+
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 </style>
@@ -517,87 +681,77 @@ with a loss–divergence pair <span class="citation">(Bissiri et al. 2016; Knobl
 class="math inline">\(\beta\)</span>-divergence <span class="citation">(Basu et al. 1998)</span> and
 generalized cross-entropy <span class="citation">(Zhang and Sabuncu 2018)</span> — deliver bounded
 influence; and FedGVI <span class="citation">(Mildner et al. 2025)</span> federates the robust objective
-with provable guarantees. <em>Boundary:</em> the cited robust-Bayes
-apparatus does not evaluate active-inference POMDP belief consensus. Its
-behavior in the discrete categorical regime of the worked belief-sharing
-example <span class="citation">(Friston et al. 2024)</span> is the scoped setting evaluated here.</p>
+with provable guarantees.</p>
+<p><em>Boundary:</em> the cited robust-Bayes apparatus does not evaluate
+active-inference POMDP belief consensus. Its behavior in the discrete
+categorical regime of the worked belief-sharing example
+<span class="citation">(Friston et al. 2024)</span> is the scoped setting evaluated here.</p>
 <h2 id="sec:gap-bridge">The belief-fusion bridge evaluated here</h2>
-<p>Across these five reviewed threads, the missing intersection is
-specific: the active-inference sources provide belief fusion but not the
-contamination analysis used here, while the robust-Bayes sources provide
+<p>Across these reviewed threads, the missing intersection is specific.
+The cited active-inference sources provide belief fusion but not the
+contamination analysis used here. The cited robust-Bayes sources provide
 robust inference but not this acting-agent categorical consensus. We
-evaluate the bridge with robust, generalized-Bayes belief fusion for
-active-inference ensembles, comprising three components and one recovery
-anchor. (i) A per-agent, FedGVI-faithful generalized-Bayes update
-carrying bounded-influence robustness through the <span
-class="math inline">\(\beta\)</span>- and rcce-losses (<span
-class="citation" data-cites="eq:beta-loss"><a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a></span>, <span
-class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>). (ii)
-A complementary server-side divergence-reweighting <em>heuristic</em>
-that discounts each agent by its divergence from the emerging consensus
-(<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). (iii) A
-conservative server-side variational rule with a stated aggregation free
-energy and a redescending raw effective-weight bound (<span
-class="citation"
-data-cites="eq:agg-free-energy"><a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a></span>). The
-shared anchor is recovery of the standard-Bayes client limit and the
-project log-linear-pool server identity in their trusting limits (<span
-class="citation"
-data-cites="sec:formalism-recovery"><a class="xref" href="index.html#sec:formalism-recovery">Section 6.1</a></span>).
+evaluate a bridge comprising three distinct robustness axes and one
+recovery anchor.</p>
+<p>The client axis is a FedGVI-faithful generalized-Bayes update using
+the <span class="math inline">\(\beta\)</span>- and rcce-losses (<a class="xref" href="index.html#eq:beta-loss">Eq. (7)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (8)</a>). The
+heuristic server axis reweights each agent by divergence from the
+current consensus (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>). The
+objective-backed server axis is a conservative variational rule with a
+stated aggregation free energy and raw effective-weight bound (<a class="xref" href="index.html#eq:agg-free-energy">Eq. (12)</a>).</p>
+<p>The shared anchor recovers the standard-Bayes client limit and
+project log-linear-pool server identity (<a class="xref" href="index.html#sec:formalism-recovery">Section 6.1</a>).
 Under the qualified bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 the latter specializes Friston et al.’s Eq. 7 message-combination term
-<span class="citation">(Friston et al. 2024)</span>, not the complete source protocol. The algebraic
-result and machine-precision checks therefore identify a recovery
-boundary rather than a replacement. Headline comparisons use matched
-paired statistics — paired Wilcoxon <span class="citation">(Wilcoxon 1945)</span>,
-Benjamini–Hochberg FDR <span class="citation">(Benjamini and Hochberg 1995)</span>, bootstrap confidence
-intervals <span class="citation">(Efron and Tibshirani 1993)</span>, and observed-effect design-power
-planning — and are certified for reproducibility
-<span class="citation">(Peng 2011)</span>.</p>
+<span class="citation">(Friston et al. 2024)</span>, not the complete source protocol. The algebra
+and executable residuals identify a recovery boundary, not an
+equivalence of literatures.</p>
+<p>Declared comparisons use paired Wilcoxon statistics
+<span class="citation">(Wilcoxon 1945)</span>, Benjamini–Hochberg FDR
+<span class="citation">(Benjamini and Hochberg 1995)</span>, percentile-bootstrap intervals
+<span class="citation">(Efron and Tibshirani 1993)</span>, and observed-effect design-power planning.
+Source-bound reports make those analyses reproducible
+<span class="citation">(Peng 2011)</span>; they do not promote a conditional simulation
+into a theorem.</p>
 <h2 id="sec:robustness-axes">Guarantee map: three robustness axes</h2>
-<p>A red-team review surfaced a distinction we carry through the paper
-rather than paper over: robustness enters in <strong>three</strong>
-places, and they do not have the same theoretical standing.</p>
-<ol type="1">
-<li><p><strong>Client-side (rigorous).</strong> The per-agent
-generalized-Bayes update, driven by a bounded loss inside
-<code>generalized_posterior</code> (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a>). It is derived from
-the stated objective <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> and provably limits to
-negative-log-likelihood / Bayes — and hence to the standard pool — as
-the loss parameter goes to zero (Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a> + <a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>).
-This axis inherits FedGVI’s <span class="citation">(Mildner et al. 2025)</span> bounded-influence result
-only under the source theorem’s stated loss, model, and contamination
-assumptions.</p></li>
-<li><p><strong>Server-side (heuristic).</strong> The
-divergence-reweighting aggregator <code>robust_aggregate</code>, which
-discounts each agent by <span
-class="math inline">\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\)</span>. Only
-its <em>recovery</em> limit is proven — at <span
-class="math inline">\(c=0\)</span> it equals the standard log-linear
-pool (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>);
-it is <strong>not</strong> the closed-form minimizer of a FedGVI
-objective. We present it as a complementary heuristic and never claim it
-inherits the bounded-influence bound.</p></li>
-<li><p><strong>Server-side (objective-backed, conservative).</strong>
-The variational aggregator <code>variational_aggregate</code> applies
-exact block updates that do not increase the stated free energy <span
-class="citation"
-data-cites="eq:agg-free-energy"><a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a></span>, recovers
-the same log-linear pool in the trusting limit, and bounds each raw
-effective weight by its base weight. Its honest cost is conservatism: it
-is not the sharp accuracy-maximizing heuristic.</p></li>
-</ol>
-<p>The robustness sweep (<a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>)
-reports these axes, and <a class="xref" href="index.html#sec:limitations-scope">Section 8.15</a>
-states which claim rests on which. No figure, table, or sentence in this
-paper grants the server-side heuristic the guarantee that belongs to the
-client-side update or the variational server objective: the effect-size,
-confidence-interval, and power enrichment that decorate the sweep
-characterize the heuristic’s <em>behavior</em>, not a per-agent or
-variational guarantee. This honesty is the point: the client-side axis
-is source-theorem-backed, the sharp server heuristic is useful but
-clearly labeled, and the variational server axis is rigorous but
-conservative.</p>
+<p>A red-team review surfaced the paper’s authoritative robustness
+taxonomy. Robustness enters in <strong>three</strong> places, with
+different claim owners, evidence classes, and permitted
+interpretations.</p>
+<h3 id="client-side-source-theorem-backed">Client-side:
+source-theorem-backed</h3>
+<p>The per-agent generalized-Bayes update uses a bounded loss inside
+<code>generalized_posterior</code> (<a class="xref" href="index.html#eq:beta-loss">Eq. (7)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (8)</a>). It is derived from
+<a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a>
+and limits to NLL/Bayes as the loss parameter approaches zero (Corollary
+<a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>;
+<a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>).
+FedGVI’s bounded-influence result transfers only under the source
+theorem’s loss, model, and contamination assumptions
+<span class="citation">(Mildner et al. 2025)</span>.</p>
+<h3 id="server-side-heuristic">Server-side: heuristic</h3>
+<p><code>robust_aggregate</code> discounts an agent by <span
+class="math inline">\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\)</span>. Its
+proved positive property is the recovery limit: at <span
+class="math inline">\(c=0\)</span>, it equals the standard log-linear
+pool (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>).
+It is not a closed-form FedGVI-objective minimizer and does not inherit
+the client-side bounded-influence result.</p>
+<h3 id="server-side-objective-backed-and-conservative">Server-side:
+objective-backed and conservative</h3>
+<p><code>variational_aggregate</code> applies exact block updates that
+do not increase the stated free energy <a class="xref" href="index.html#eq:agg-free-energy">Eq. (12)</a>. It
+recovers the log-linear pool in the trusting limit and bounds each raw
+effective weight by its base weight. Its declared tradeoff is a
+conservative consensus; the objective-backed property does not imply
+peak-accuracy dominance.</p>
+<p>The robustness results (<a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>)
+apply this map, and <a class="xref" href="index.html#sec:limitations-scope">Section 8.15</a>
+states the complete boundary. Effect sizes, intervals, and planning
+quantities characterize the server heuristic’s conditional behavior;
+they do not transfer the client theorem or variational objective to that
+heuristic. Later sections refer back to this taxonomy rather than
+redefine it.</p>
 </main>
 </body>
 </html>

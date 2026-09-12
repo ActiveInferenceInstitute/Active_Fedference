@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Learning stack: EFE, Dirichlet updates, and BMR — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-88a10ebb53d5">
+<h1 id="presentation-title-88a10ebb53d5" class="visually-hidden">Learning stack: EFE, Dirichlet updates, and BMR — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:methods-learning" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90b0fb140ce8">
+<h2 class="prose-slide" id="slide-heading-90b0fb140ce8">Learning stack: EFE, Dirichlet updates, and
+BMR</h2>
+<p>Active-inference agents do more than infer states under a fixed
+model: they learn the parameters of the model, score policies by
+expected free energy, and revise model structure.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Learning stack: EFE, Dirichlet updates, and BMR, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-94a75317460f">
+<h2 class="prose-slide"
+aria-label="Learning stack: EFE, Dirichlet updates, and BMR, part 2" id="slide-heading-94a75317460f">Learning
+stack (part 2)</h2>
+<p>The active-inference community has standardized all three operations
+<span class="citation"
+data-cites="dacosta2020active smith2020active">(Da Costa et al. 2020;
+Smith et al. 2022)</span>, and Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span> place them at the heart
+of the federated belief-sharing scenario.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Learning stack: EFE, Dirichlet updates, and BMR, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e6006ecd8bad">
+<h2 class="prose-slide"
+aria-label="Learning stack: EFE, Dirichlet updates, and BMR, part 3" id="slide-heading-e6006ecd8bad">Learning
+stack (part 3)</h2>
+<p>We reimplement each in closed form so the language-acquisition,
+expected-free-energy, and emergence studies of <span class="cross-reference">Section 5.22</span>
+rest on machine-checkable quantities rather than fitted curves.</p>
+</section>
+<section id="sec:methods-dirichlet" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2ae70bf7e18e">
+<h2 class="prose-slide" id="slide-heading-2ae70bf7e18e">Conjugate Dirichlet learning from co-occurrence
+counts</h2>
+<p>A sentinel learns its observation model <span
+class="math inline">\(A\)</span> by placing a Dirichlet prior with
+concentration <span class="math inline">\(a\)</span> on each column and
+updating it conjugately from observation-state co-occurrence counts
+(Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>, their equations
+9–12).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ef9bc79993a1">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 2" id="slide-heading-ef9bc79993a1">Conjugate
+Dirichlet learning… (part 2)</h2>
+<p>One learning step adds the expected sufficient statistics for that
+step and reads off the column-normalized posterior mean,</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dac6450c6444">
+<h2 class="equation-led"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 3" id="slide-heading-dac6450c6444">Conjugate
+Dirichlet learning… (part 3)</h2>
+<p><span class="math display" id="eq:dirichlet-update">\[
+a \;\leftarrow\; a + \text{counts},
+\qquad
+\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o&#39;} a_{o&#39; s}},
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f3cfe858e37b">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 4" id="slide-heading-f3cfe858e37b">Conjugate
+Dirichlet learning… (part 4)</h2>
+<p>implemented by <code>learn_likelihood</code> in the
+<code>dirichlet_learning</code> module. Intuitively, each concentration
+vector is a running tally of how often each outcome was seen while the
+creature occupied a given state: the prior seeds that tally with
+pseudo-counts, every step adds the co-occurrences it witnessed,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ffb6c62a7ca6">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 5" id="slide-heading-ffb6c62a7ca6">Conjugate
+Dirichlet learning… (part 5)</h2>
+<p>and the posterior mean is simply the tally renormalized into a
+categorical.</p>
+<p>Likelihood learning is therefore bookkeeping — accumulate counts,
+then normalize — with no iterative optimization loop.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cef37b0b3531">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 6" id="slide-heading-cef37b0b3531">Conjugate
+Dirichlet learning… (part 6)</h2>
+<p>We drive <a class="cross-reference" href="#eq:dirichlet-update">Equation (18)</a>
+with the expected sufficient statistics under the true model — a fixed
+count batch <span class="math inline">\(\text{count\_scale}\cdot
+A^{\star}\)</span> per step, optionally jittered by a seeded generator.
+As the concentrations accumulate,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e27721aa6df">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 7" id="slide-heading-7e27721aa6df">Conjugate
+Dirichlet learning… (part 7)</h2>
+<p>the expected likelihood <span
+class="math inline">\(\mathbb{E}[A]\)</span> converges to the
+data-generating <span class="math inline">\(A^{\star}\)</span>;
+convergence is measured by the per-column KL divergence summed over
+hidden states,</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b417f5d13f39">
+<h2 class="equation-led"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 8" id="slide-heading-b417f5d13f39">Conjugate
+Dirichlet learning… (part 8)</h2>
+<p><span class="math display" id="eq:dirichlet-kl">\[
+\begin{aligned}
+\mathrm{KL}\big(A^{\star}\|\mathbb{E}[A]\big)
+&amp;= \sum_s\sum_o A^{\star}_{os}\\
+&amp;\quad\cdot\ln\frac{A^{\star}_{os}}{\mathbb{E}[A]_{os}}.
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1a6dbce93846">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 9" id="slide-heading-1a6dbce93846">Conjugate
+Dirichlet learning… (part 9)</h2>
+<p>which decreases monotonically toward zero — the standard-Bayes / KL
+fixed point. The learned likelihood always has full support (the
+Dirichlet prior is strictly positive), so <a class="cross-reference" href="#eq:dirichlet-kl">Equation (19)</a>
+is finite throughout. ISC-17 pins the monotone-decreasing KL
+trajectory,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec64c49d4852">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 10" id="slide-heading-ec64c49d4852">Conjugate
+Dirichlet learning… (part 10)</h2>
+<p>and the language-acquisition study of <span class="cross-reference">Section 5.22</span>
+reports the descent of <a class="cross-reference" href="#eq:dirichlet-kl">Equation (19)</a>
+across 24 steps.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6a7e0a9445c3">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 11" id="slide-heading-6a7e0a9445c3">Conjugate
+Dirichlet learning… (part 11)</h2>
+<p>The implementation also carries the <span
+class="math inline">\(\eta\)</span> forgetting hyperprior of Friston et
+al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>, their equation 12:
+before each conjugate addition the running concentration is decayed so
+the <em>total</em> concentration mass saturates at <span
+class="math inline">\(\eta\)</span> rather than growing without
+bound,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-044baa7e4f24">
+<h2 class="prose-slide"
+aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 12" id="slide-heading-044baa7e4f24">Conjugate
+Dirichlet learning… (part 12)</h2>
+<p>modeling an agent that stays adaptable instead of becoming infinitely
+confident. With <span class="math inline">\(\eta\)</span> unset the
+classical unbounded accumulation of <a class="cross-reference" href="#eq:dirichlet-update">Equation (18)</a>
+is recovered.</p>
+</section>
+<section id="sec:methods-efe" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-34d150352d9d">
+<h2 class="prose-slide" id="slide-heading-34d150352d9d">Expected free energy as the action-selection
+objective</h2>
+<p>A sentinel scores a candidate policy <span
+class="math inline">\(\boldsymbol{\pi}\)</span> by its expected free
+energy <span class="math inline">\(G(\boldsymbol{\pi})\)</span>, which
+the active-inference formulation decomposes two equivalent ways (Friston
+et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>, their equation 2):</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected free energy as the action-selection objective, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-44202fefd1f9">
+<h2 class="prose-slide"
+aria-label="Expected free energy as the action-selection objective, part 2" id="slide-heading-44202fefd1f9">Expected
+free energy as… (part 2)</h2>
+<p>a cost view of risk plus ambiguity, and a value view of pragmatic
+plus epistemic value.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected free energy as the action-selection objective, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-218db90412c7">
+<h2 class="prose-slide"
+aria-label="Expected free energy as the action-selection objective, part 3" id="slide-heading-218db90412c7">Expected
+free energy as… (part 3)</h2>
+<p>The two views are the same scalar rearranged, stated as <span class="cross-reference">Equation (22)</span>
+and pinned to a zero residual by the algebraic identity <span class="cross-reference">Equation (23)</span>
+in <span class="cross-reference">Section 6</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected free energy as the action-selection objective, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bac30eddfce6">
+<h2 class="prose-slide"
+aria-label="Expected free energy as the action-selection objective, part 4" id="slide-heading-bac30eddfce6">Expected
+free energy as… (part 4)</h2>
+<p>We compute every term in closed form from the categorical model <span
+class="math inline">\((A, B, C, D_0)\)</span> in
+<code>expected_free_energy.decompose</code>:</p>
+</section>
+<section id="risk" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0711a8d636e4">
+<h2 class="prose-slide" id="slide-heading-0711a8d636e4">Risk</h2>
+<p><em>Risk</em> is <span
+class="math inline">\(\mathrm{KL}\big(q(o\mid\boldsymbol{\pi})\,\|\,p_C(o)\big)\)</span>,
+the deviation of the policy-predicted outcomes from the
+preferred-outcome pmf <span
+class="math inline">\(p_C(o)=\mathrm{softmax}(C)[o]\)</span>. Write
+<span
+class="math inline">\(q_{\boldsymbol{\pi}}(o):=q(o\mid\boldsymbol{\pi})\)</span>
+for this scored-policy outcome predictive,</p>
+</section>
+<section class="slide level2 prose-slide" aria-label="Risk, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-50f13fe1da21">
+<h2 class="prose-slide" aria-label="Risk, part 2" id="slide-heading-50f13fe1da21">Risk (part 2)</h2>
+<p>used in the remaining terms.</p>
+</section>
+<section id="ambiguity" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a02b38e8fc75">
+<h2 class="prose-slide" id="slide-heading-a02b38e8fc75">Ambiguity</h2>
+<p><em>Ambiguity</em> is the expected likelihood entropy <span
+class="math inline">\(\mathbb{E}_{q(s)}\!\big[H[p(o\mid
+s)]\big]\)</span>, the outcome uncertainty given the state.</p>
+</section>
+<section id="pragmatic-value" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4aa517458401">
+<h2 class="prose-slide" id="slide-heading-4aa517458401">Pragmatic value</h2>
+<p><em>Pragmatic value</em> is the expected log-preference <span
+class="math inline">\(\mathbb{E}_{q_{\boldsymbol{\pi}}(o)}[\ln
+p_C(o)]\)</span> — the utility, exploitation term.</p>
+</section>
+<section id="epistemic-value" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-074422fd3b1c">
+<h2 class="prose-slide" id="slide-heading-074422fd3b1c">Epistemic value</h2>
+<p><em>Epistemic value</em> is the state-outcome mutual information
+<span class="math inline">\(H[q_{\boldsymbol{\pi}}(o)] -
+\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span> — the expected information
+gain that drives exploration.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Epistemic value, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3057c469216e">
+<h2 class="prose-slide" aria-label="Epistemic value, part 2" id="slide-heading-3057c469216e">Epistemic
+value (part 2)</h2>
+<p>Because there is no sampling, the identity of <span class="cross-reference">Equation (23)</span>
+holds to floating-point tolerance; ISC-19
+(<code>expected_free_energy</code>) pins the residual of the
+decomposition to zero and pins each term’s semantics independently
+(deterministic likelihoods give zero ambiguity;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Epistemic value, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b316bbde529d">
+<h2 class="prose-slide" aria-label="Epistemic value, part 3" id="slide-heading-b316bbde529d">Epistemic
+value (part 3)</h2>
+<p>uninformative likelihoods give zero epistemic value;
+preference-matched predictions lower risk).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Epistemic value, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-006ecfe8b520">
+<h2 class="prose-slide" aria-label="Epistemic value, part 4" id="slide-heading-006ecfe8b520">Epistemic
+value (part 4)</h2>
+<p><span class="cross-reference">Figure 8</span>
+visualizes the additive cost view and the signed pragmatic/epistemic
+waterfall terminating at <span
+class="math inline">\(G(\boldsymbol{\pi})\)</span> — a deterministic
+identity (Proposition <span class="cross-reference">7</span>),
+not a fitted result.</p>
+</section>
+<section id="sec:methods-bmr" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b10f543e955a">
+<h2 class="prose-slide" id="slide-heading-b10f543e955a">Bayesian model reduction for the configured
+pruning sign control</h2>
+<p>Sentinels also revise model <em>structure</em>. Bayesian model
+reduction (BMR) scores whether a reduced model — for example one that
+prunes a redundant location column by shrinking its concentration toward
+zero —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-64329ecd4067">
+<h2 class="prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 2" id="slide-heading-64329ecd4067">Bayesian
+model reduction… (part 2)</h2>
+<p>has more evidence than the full model, <em>without re-running
+inference</em> (Friston &amp; Penny via the post-hoc model optimization
+lineage <span class="citation" data-cites="friston2011post">(Friston and
+Penny 2011)</span>; the same Beta-function identity is their equation 13
+(Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>)).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-20477fc7d9fe">
+<h2 class="prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 3" id="slide-heading-20477fc7d9fe">Bayesian
+model reduction… (part 3)</h2>
+<p>Because the likelihood is shared, the reduced posterior is available
+in closed form, <span class="math inline">\(\text{reduced\_post} =
+\text{post} + \text{reduced\_prior} - \text{prior}\)</span>, and the
+change in (negative) variational free energy is a difference of log
+multivariate Beta functions,</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d32944f1bef8">
+<h2 class="equation-led"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 4" id="slide-heading-d32944f1bef8">Bayesian
+model reduction… (part 4)</h2>
+<p><span class="math display" id="eq:bmr-deltaf">\[
+\begin{aligned}
+\Delta F
+&amp;\;=\; \ln B(\text{prior}) - \ln B(\text{post})\\
+&amp;\qquad + \ln B(\text{reduced\_post})\\
+&amp;\qquad - \ln B(\text{reduced\_prior}),\\
+\ln B(a)
+&amp;\;=\; \textstyle\sum_k \ln\Gamma(a_k)
+- \ln\Gamma\!\big(\sum_k a_k\big).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3ce71406877">
+<h2 class="prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 5" id="slide-heading-d3ce71406877">Bayesian
+model reduction… (part 5)</h2>
+<p>computed in <code>bayesian_model_reduction.reduce</code>. A positive
+<span class="math inline">\(\Delta F\)</span> in <a class="cross-reference" href="#eq:bmr-deltaf">Equation (20)</a>
+means the reduced model carries more evidence — the pruned structure was
+redundant and should be adopted; a negative <span
+class="math inline">\(\Delta F\)</span> means the reduction destroyed
+support the data require.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0ab495da580c">
+<h2 class="prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 6" id="slide-heading-0ab495da580c">Bayesian
+model reduction… (part 6)</h2>
+<p>When the reduced prior equals the prior the score is identically zero
+in exact algebra, a zero point the suite pins to machine precision
+(ISC-20).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-390ae37bcd8c">
+<h2 class="prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 7" id="slide-heading-390ae37bcd8c">Bayesian
+model reduction… (part 7)</h2>
+<p>The configured BMR sign-control study of <span class="cross-reference">Section 5.22</span>
+uses this operation over <span class="math inline">\(n = 4\)</span>
+candidate states. It contrasts a redundant reduction (<span
+class="math inline">\(\Delta F = 3.68\)</span> nats; adopt) with a
+supported one (<span class="math inline">\(\Delta F = -27.67\)</span>
+nats; reject) in <span class="cross-reference">Figure 12</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-470cbd1bd682">
+<h2 class="prose-slide"
+aria-label="Bayesian model reduction for the configured pruning sign control, part 8" id="slide-heading-470cbd1bd682">Bayesian
+model reduction… (part 8)</h2>
+<p>This fixed-candidate algebraic comparison is deterministic, so it has
+no resampled sample or bootstrap interval and does not establish
+structure discovery or universal emergence.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

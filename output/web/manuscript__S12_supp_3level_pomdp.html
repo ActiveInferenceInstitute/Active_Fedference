@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>S12_supp_3level_pomdp.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -469,37 +633,31 @@ mjx-container[display="true"] {
 <h2 id="sec:supp-3level">Supplement: N-level hierarchical POMDP
 methods</h2>
 <p>This supplement specifies the generic <span
-class="math inline">\(N\)</span>-level architecture that <span
-class="citation"
-data-cites="sec:results-3level"><a class="xref" href="index.html#sec:results-3level">Section 13.11</a></span> exercises
+class="math inline">\(N\)</span>-level architecture that <a class="xref" href="index.html#sec:results-3level">Section 14.11</a> exercises
 at depth three: how the meta-context (L3), context (L2), and location
 (L1) factors are chained through conditioned priors, what the
 declarative <code>LayerSpec</code> interface fixes versus leaves free,
-and the top-down/bottom-up passes the inference runs. It answers
-<em>what the executed 3-level result is a special case of</em> — the
-reason the same code runs at other depths without new mathematics —
-while recording that only the declared 3-level configuration is
-empirically evaluated here.</p>
+and the top-down/bottom-up passes the inference runs.</p>
+<p>It answers <em>what the executed 3-level result is a special case
+of</em> — the reason the same code runs at other depths without new
+mathematics — while recording that only the declared 3-level
+configuration is empirically evaluated here.</p>
 <h3 id="generative-model-for-an-n-level-hierarchy">Generative model for
 an N-level hierarchy</h3>
-<p>The 3-level POMDP implemented in
-<code>fedference.pomdp.build_3level_world</code> extends the 2-level
-construction (<a class="xref" href="index.html#sec:supp-hierarchical">Section 13.10</a>) by
-adding a top-level meta-context factor:</p>
-<ul>
-<li><strong>L3 (meta-context)</strong> — 2 states
-(<code>low_threat</code> / <code>high_threat</code>) with initial
-uniform prior, gating the L2 context prior;</li>
-<li><strong>L2 (context)</strong> — 2 states (<code>quiet</code> /
-<code>alert</code>) with context-conditioned L1 location priors, gating
-the L1 prior;</li>
-<li><strong>L1 (location)</strong> — the standard 3x3 grid with 9 states
-and sensor acuity 0.85.</li>
-</ul>
-<p>The conditioned priors are (see <a class="xref" href="index.html#eq:l3-to-l2-message">Eq. (31)</a> and <span
-class="citation"
-data-cites="eq:l2-to-l1-message"><a class="xref" href="index.html#eq:l2-to-l1-message">Eq. (32)</a></span>):</p>
-<table>
+<p>The 3-level POMDP is built by <code>build_3level_world</code> in the
+<code>fedference.pomdp</code> module. It extends the 2-level
+construction (<a class="xref" href="index.html#sec:supp-hierarchical">Section 14.10</a>) by
+adding a top-level meta-context factor.</p>
+<p><strong>L3 (meta-context).</strong> 2 <code>low_threat</code> /
+<code>high_threat</code> states begin from a uniform prior and gate the
+L2 context prior.</p>
+<p><strong>L2 (context).</strong> 2 <code>quiet</code> /
+<code>alert</code> states gate the L1 prior through context-conditioned
+location priors.</p>
+<p><strong>L1 (location).</strong> The standard 3x3 grid has 9 states
+and sensor acuity 0.85.</p>
+<p>The conditioned priors are (see <a class="xref" href="index.html#eq:l3-to-l2-message">Eq. (38)</a> and <a class="xref" href="index.html#eq:l2-to-l1-message">Eq. (39)</a>):</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
 <thead>
 <tr>
 <th>L3 state</th>
@@ -516,8 +674,8 @@ data-cites="eq:l2-to-l1-message"><a class="xref" href="index.html#eq:l2-to-l1-me
 <td>(0.20, 0.80) — peaked at alert</td>
 </tr>
 </tbody>
-</table>
-<table>
+</table></div>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -538,44 +696,38 @@ data-cites="eq:l2-to-l1-message"><a class="xref" href="index.html#eq:l2-to-l1-me
 <td>mass 0.60 at center cell (flat index 4), residual uniform</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h3 id="generic-n-level-architecture">Generic N-level architecture</h3>
-<p><code>fedference.pomdp.LayerSpec</code> and
-<code>fedference.pomdp.build_nlevel_world</code> implement the generic
-N-level version. The declarative layer specification is stored at
-<code>src/fedference/config/hierarchical_layers.yaml</code> and mirrors
-the canonical 3-level defaults (a standalone documentation artifact not
-read by any code path, kept in sync with the
-<code>build_3level_world</code> defaults). The constructor accepts depth
-≥ 2; the executed empirical result in this manuscript is restricted to
-the declared 3-level configuration, and the leaf layer must carry
-<code>n_states == N_LOCATIONS</code>.</p>
+<p>The <code>LayerSpec</code> type and <code>build_nlevel_world</code>
+function in the <code>fedference.pomdp</code> module implement the
+generic N-level version. The declarative layer specification is
+<code>hierarchical_layers.yaml</code> under
+<code>src/fedference/config/</code>; it mirrors the canonical 3-level
+defaults (a standalone documentation artifact not read by any code path,
+kept in sync with the <code>build_3level_world</code> defaults).</p>
+<p>The constructor accepts depth ≥ 2; the executed empirical result in
+this manuscript is restricted to the declared 3-level configuration, and
+the leaf layer must carry <code>n_states == N_LOCATIONS</code>.</p>
 <h3 id="inference-algorithm-across-hierarchy-levels">Inference algorithm
 across hierarchy levels</h3>
 <p><code>fedference.pomdp.nlevel_infer</code> performs 4 passes of
 top-down / bottom-up alternating minimization over all N levels:</p>
-<ol type="1">
-<li><strong>Top-down pass</strong> — compute the empirical prior for
-each level by marginalizing over the level above (<a class="xref" href="index.html#eq:l3-to-l2-message">Eq. (31)</a>, <span
-class="citation"
-data-cites="eq:l2-to-l1-message"><a class="xref" href="index.html#eq:l2-to-l1-message">Eq. (32)</a></span>).</li>
-<li><strong>L1 update</strong> — one-step variational posterior on the
-observation: <span class="math inline">\(q_{\text{loc}} =
+<p><strong>1. Top-down pass.</strong> Compute the empirical prior for
+each level by marginalizing over the level above (<a class="xref" href="index.html#eq:l3-to-l2-message">Eq. (38)</a>, <a class="xref" href="index.html#eq:l2-to-l1-message">Eq. (39)</a>).</p>
+<p><strong>2. L1 update.</strong> The one-step variational posterior on
+the observation is <span class="math inline">\(q_{\text{loc}} =
 \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
-\log A[\text{obs},\,\cdot])\)</span>.</li>
-<li><strong>Bottom-up pass</strong> — update each non-leaf level’s
+\log A[\text{obs},\,\cdot])\)</span>.</p>
+<p><strong>3. Bottom-up pass.</strong> Update each non-leaf level’s
 belief from the marginal evidence contributed by the level below: <span
 class="math inline">\(\ell_j =
 \log(\tilde{p}_{\text{child|parent=}j}^\top
-q_{\text{child}})\)</span>.</li>
-</ol>
+q_{\text{child}})\)</span>.</p>
 <p>After 4 iterations the agent broadcasts all N level beliefs; the
-colony federates each level independently via a log-linear pool (<span
-class="citation"
-data-cites="eq:log-linear-pool"><a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a></span>).</p>
+colony federates each level independently via a log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>).</p>
 <h3 id="study-parameters-for-the-three-level-run">Study parameters for
 the three-level run</h3>
-<table id="tbl:nlevel3-params">
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Study 7 three-level hierarchical POMDP execution parameters: agent count, seeded trial budget, observation acuity, al…"><table id="tbl:nlevel3-params" data-responsive-table="true">
 <caption>Study 7 three-level hierarchical POMDP execution parameters:
 agent count, seeded trial budget, observation acuity,
 alternating-minimization iterations, and the L3/L2/L1 state
@@ -620,10 +772,8 @@ cardinalities used by the three-level condition.</caption>
 <td>0</td>
 </tr>
 </tbody>
-</table>
-<p>The executed three-level configuration is summarized in <span
-class="citation"
-data-cites="tbl:nlevel3-params"><a class="xref" href="index.html#tbl:nlevel3-params">Table 13</a></span>.</p>
+</table></div>
+<p>The executed three-level configuration is summarized in <a class="xref" href="index.html#tbl:nlevel3-params">Table 17</a>.</p>
 </main>
 </body>
 </html>

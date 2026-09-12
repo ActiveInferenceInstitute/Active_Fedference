@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Research gap and claim boundary — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:gap" class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-29b874617e9d">
+<h1 class="section-divider" id="slide-heading-29b874617e9d">Research gap and claim boundary</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Research gap and claim boundary, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-29b874617e9d-2">
+<h2 class="section-overview prose-slide"
+aria-label="Research gap and claim boundary, part 2" id="slide-heading-29b874617e9d-2">Research gap and
+claim boundary</h2>
+<p>The two communities of <span class="cross-reference">Section 2</span>
+provide substantial pieces of the problem, but the cited threads do not
+answer the same question. The gap is not a claim that either field is
+incomplete; it is the untested intersection between active-inference
+belief sharing and robust generalized Bayes.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Research gap and claim boundary, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-84e813336082">
+<h2 class="section-overview prose-slide"
+aria-label="Research gap and claim boundary, part 2" id="slide-heading-84e813336082">Research gap and
+claim… (part 2)</h2>
+<p>This section describes that intersection thread by thread, states the
+scoped bridge evaluated here, and records the evidence boundary that
+travels with it.</p>
+</section>
+<section id="sec:gap-threads" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fdc4efed68d9">
+<h2 class="prose-slide" id="slide-heading-fdc4efed68d9">Five reviewed threads and their open
+intersection</h2>
+<p>Five threads in the reviewed literature run toward the gap but do
+not, in the sources cited here, cross it — three from active inference
+and two from robust Bayes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ef77cf69139e">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 2" id="slide-heading-ef77cf69139e">Five
+reviewed threads and… (part 2)</h2>
+<p><strong>Thread 1 — Generative modeling and action</strong> (active
+inference). Discrete active inference is a mature,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cf5305ee8273">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 3" id="slide-heading-cf5305ee8273">Five
+reviewed threads and… (part 3)</h2>
+<p>synthesized formalism with standardized tensors and an
+expected-free-energy action rule <span class="citation"
+data-cites="friston2010free dacosta2020active">(Friston 2010; Da Costa
+et al. 2020)</span>, and it is executable at scale through pymdp <span
+class="citation" data-cites="heins2022pymdp">(Heins et al. 2022)</span>
+and RxInfer <span class="citation"
+data-cites="bagaev2023rxinfer">(Bagaev et al. 2023)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1666b5fd86f5">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 4" id="slide-heading-1666b5fd86f5">Five
+reviewed threads and… (part 4)</h2>
+<p><em>Boundary:</em> these sources do not by themselves equip the
+active-inference inference step with the contamination mechanism
+evaluated here.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dedb404b05a5">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 5" id="slide-heading-dedb404b05a5">Five
+reviewed threads and… (part 5)</h2>
+<p><strong>Thread 2 — Collective belief coordination</strong> (active
+inference). Colonies coordinate by sharing beliefs and minimizing
+collective surprise, reproducing flocking <span class="citation"
+data-cites="heins2023collective">(Heins et al. 2024)</span>,
+epistemic-community formation <span class="citation"
+data-cites="albarracin2022epistemic">(Albarracin et al. 2022)</span>,
+and collective intelligence <span class="citation"
+data-cites="kaufmann2021collective">(Kaufmann et al. 2021)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-976b9bc14f51">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 6" id="slide-heading-976b9bc14f51">Five
+reviewed threads and… (part 6)</h2>
+<p><em>Boundary:</em> the cited collective-belief studies treat the
+broadcast posteriors as trusted and do not evaluate the robustness of
+fusion to misspecified or intentionally wrong members.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f1f045decd8">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 7" id="slide-heading-1f1f045decd8">Five
+reviewed threads and… (part 7)</h2>
+<p><strong>Thread 3 — Belief sharing and structure growth</strong>
+(active inference). Federated belief sharing fuses posteriors into a
+hive-mind consensus <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0758e644e603">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 8" id="slide-heading-0758e644e603">Five
+reviewed threads and… (part 8)</h2>
+<p>and post-hoc Bayesian model reduction <span class="citation"
+data-cites="friston2011post">(Friston and Penny 2011)</span> together
+with optimal-design-flavored model selection <span class="citation"
+data-cites="smith2020active">(Smith et al. 2022)</span> grow and prune
+the generative model. <em>Boundary:</em> in the cited belief-sharing
+line, fusion is exact-Bayes and trusting;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-440e65b5ae5a">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 9" id="slide-heading-440e65b5ae5a">Five
+reviewed threads and… (part 9)</h2>
+<p>its connection to the robustness theory developed for federated
+learning is not evaluated.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1df038e44ff">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 10" id="slide-heading-c1df038e44ff">Five
+reviewed threads and… (part 10)</h2>
+<p><strong>Thread 4 — Federated and partitioned inference</strong>
+(robust Bayes). Federated learning aggregates decentralized models <span
+class="citation" data-cites="mcmahan2017communication">(McMahan et al.
+2017)</span>, and partitioned variational inference gives the
+factor-algebra framework that unifies federated and continual learning
+<span class="citation"
+data-cites="bui2018partitioned ashman2022partitioned">(Bui et al. 2018;
+Ashman et al. 2022)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-92de4f2570f0">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 11" id="slide-heading-92de4f2570f0">Five
+reviewed threads and… (part 11)</h2>
+<p><em>Boundary:</em> the cited examples target parameter or
+predictive-model factors rather than the generative-model-bearing,
+action-selecting POMDP belief consensus used here.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-46ae4cc20d4e">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 12" id="slide-heading-46ae4cc20d4e">Five
+reviewed threads and… (part 12)</h2>
+<p><strong>Thread 5 — Generalized and robust Bayes</strong> (robust
+Bayes). Generalized Bayesian updating replaces the likelihood–KL pair
+with a loss–divergence pair <span class="citation"
+data-cites="bissiri2016general knoblauch2022generalized">(Bissiri et al.
+2016; Knoblauch et al. 2022)</span>; bounded losses —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-585d632a9a0f">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 13" id="slide-heading-585d632a9a0f">Five
+reviewed threads and… (part 13)</h2>
+<p>the density-power <span
+class="math inline">\(\beta\)</span>-divergence <span class="citation"
+data-cites="basu1998robust">(Basu et al. 1998)</span> and generalized
+cross-entropy <span class="citation"
+data-cites="zhang2018generalized">(Zhang and Sabuncu 2018)</span> —
+deliver bounded influence; and FedGVI <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span> federates
+the robust objective with provable guarantees.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7bb3192227d1">
+<h2 class="prose-slide"
+aria-label="Five reviewed threads and their open intersection, part 14" id="slide-heading-7bb3192227d1">Five
+reviewed threads and… (part 14)</h2>
+<p><em>Boundary:</em> the cited robust-Bayes apparatus does not evaluate
+active-inference POMDP belief consensus. Its behavior in the discrete
+categorical regime of the worked belief-sharing example <span
+class="citation" data-cites="friston2024federated">(Friston et al.
+2024)</span> is the scoped setting evaluated here.</p>
+</section>
+<section id="sec:gap-bridge" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-430d8373affe">
+<h2 class="prose-slide" id="slide-heading-430d8373affe">The belief-fusion bridge evaluated here</h2>
+<p>Across these reviewed threads, the missing intersection is specific.
+The cited active-inference sources provide belief fusion but not the
+contamination analysis used here. The cited robust-Bayes sources provide
+robust inference but not this acting-agent categorical consensus.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5e5d35c795d1">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 2" id="slide-heading-5e5d35c795d1">The
+belief-fusion bridge… (part 2)</h2>
+<p>We evaluate a bridge comprising three distinct robustness axes and
+one recovery anchor.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6207ced86007">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 3" id="slide-heading-6207ced86007">The
+belief-fusion bridge… (part 3)</h2>
+<p>The client axis is a FedGVI-faithful generalized-Bayes update using
+the <span class="math inline">\(\beta\)</span>- and rcce-losses (<span class="cross-reference">Equation (7)</span>, <span class="cross-reference">Equation (8)</span>). The
+heuristic server axis reweights each agent by divergence from the
+current consensus (<span class="cross-reference">10</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2fe71d7bad87">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 4" id="slide-heading-2fe71d7bad87">The
+belief-fusion bridge… (part 4)</h2>
+<p>The objective-backed server axis is a conservative variational rule
+with a stated aggregation free energy and raw effective-weight bound
+(<span class="cross-reference">12</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0d3aafa3bc29">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 5" id="slide-heading-0d3aafa3bc29">The
+belief-fusion bridge… (part 5)</h2>
+<p>The shared anchor recovers the standard-Bayes client limit and
+project log-linear-pool server identity (<span class="cross-reference">Section 6.1</span>).
+Under the qualified bridge of <span class="cross-reference">Section 5.8</span>,
+the latter specializes Friston et al.’s Eq.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-106c1fd25b8b">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 6" id="slide-heading-106c1fd25b8b">The
+belief-fusion bridge… (part 6)</h2>
+<p>7 message-combination term <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>, not the
+complete source protocol. The algebra and executable residuals identify
+a recovery boundary, not an equivalence of literatures.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7c085b5a5f63">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 7" id="slide-heading-7c085b5a5f63">The
+belief-fusion bridge… (part 7)</h2>
+<p>Declared comparisons use paired Wilcoxon statistics <span
+class="citation" data-cites="wilcoxon1945individual">(Wilcoxon
+1945)</span>, Benjamini–Hochberg FDR <span class="citation"
+data-cites="benjamini1995controlling">(Benjamini and Hochberg
+1995)</span>, percentile-bootstrap intervals <span class="citation"
+data-cites="efron1993bootstrap">(Efron and Tibshirani 1993)</span>, and
+observed-effect design-power planning. Source-bound reports make those
+analyses reproducible <span class="citation"
+data-cites="peng2011reproducible">(Peng 2011)</span>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f7d12bf7fac">
+<h2 class="prose-slide"
+aria-label="The belief-fusion bridge evaluated here, part 8" id="slide-heading-9f7d12bf7fac">The
+belief-fusion bridge… (part 8)</h2>
+<p>they do not promote a conditional simulation into a theorem.</p>
+</section>
+<section id="sec:robustness-axes" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c14541ede556">
+<h2 class="prose-slide" id="slide-heading-c14541ede556">Guarantee map: three robustness axes</h2>
+<p>A red-team review surfaced the paper’s authoritative robustness
+taxonomy. Robustness enters in <strong>three</strong> places, with
+different claim owners, evidence classes, and permitted
+interpretations.</p>
+</section>
+<section id="client-side-source-theorem-backed"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d95df4fdf7e8">
+<h2 class="prose-slide" id="slide-heading-d95df4fdf7e8">Client-side: source-theorem-backed</h2>
+<p>The per-agent generalized-Bayes update uses a bounded loss inside
+<code>generalized_posterior</code> (<span class="cross-reference">Equation (7)</span>, <span class="cross-reference">Equation (8)</span>). It
+is derived from <span class="cross-reference">Equation (2)</span> and
+limits to NLL/Bayes as the loss parameter approaches zero (Corollary
+<span class="cross-reference">6</span>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Client-side: source-theorem-backed, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-82862a7e5913">
+<h2 class="prose-slide"
+aria-label="Client-side: source-theorem-backed, part 2" id="slide-heading-82862a7e5913">Client-side…
+(part 2)</h2>
+<p>Proposition <span class="cross-reference">4</span>).
+FedGVI’s bounded-influence result transfers only under the source
+theorem’s loss, model, and contamination assumptions <span
+class="citation" data-cites="mildner2025fedgvi">(Mildner et al.
+2025)</span>.</p>
+</section>
+<section id="server-side-heuristic" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8e846601f8b">
+<h2 class="prose-slide" id="slide-heading-e8e846601f8b">Server-side: heuristic</h2>
+<p><code>robust_aggregate</code> discounts an agent by <span
+class="math inline">\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\)</span>. Its
+proved positive property is the recovery limit: at <span
+class="math inline">\(c=0\)</span>, it equals the standard log-linear
+pool (<span class="cross-reference">Equation (10)</span>,
+Theorem <span class="cross-reference">5</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side: heuristic, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2505fe895847">
+<h2 class="prose-slide"
+aria-label="Server-side: heuristic, part 2" id="slide-heading-2505fe895847">Server-side: heuristic (part
+2)</h2>
+<p>It is not a closed-form FedGVI-objective minimizer and does not
+inherit the client-side bounded-influence result.</p>
+</section>
+<section id="server-side-objective-backed-and-conservative"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b7586a9bb50c">
+<h2 class="prose-slide" id="slide-heading-b7586a9bb50c">Server-side: objective-backed and
+conservative</h2>
+<p><code>variational_aggregate</code> applies exact block updates that
+do not increase the stated free energy <span class="cross-reference">Equation (12)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side: objective-backed and conservative, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-779270333540">
+<h2 class="prose-slide"
+aria-label="Server-side: objective-backed and conservative, part 2" id="slide-heading-779270333540">Server-side…
+(part 2)</h2>
+<p>It recovers the log-linear pool in the trusting limit and bounds each
+raw effective weight by its base weight. Its declared tradeoff is a
+conservative consensus;</p>
+<p>the objective-backed property does not imply peak-accuracy
+dominance.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side: objective-backed and conservative, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a3943276e2e4">
+<h2 class="prose-slide"
+aria-label="Server-side: objective-backed and conservative, part 3" id="slide-heading-a3943276e2e4">Server-side…
+(part 3)</h2>
+<p>The robustness results (<span class="cross-reference">Section 7.5</span>)
+apply this map, and <span class="cross-reference">Section 8.15</span>
+states the complete boundary. Effect sizes, intervals, and planning
+quantities characterize the server heuristic’s conditional behavior;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server-side: objective-backed and conservative, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-539b852962ed">
+<h2 class="prose-slide"
+aria-label="Server-side: objective-backed and conservative, part 4" id="slide-heading-539b852962ed">Server-side…
+(part 4)</h2>
+<p>they do not transfer the client theorem or variational objective to
+that heuristic. Later sections refer back to this taxonomy rather than
+redefine it.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

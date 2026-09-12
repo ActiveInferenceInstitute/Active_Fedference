@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>22_discussion_related_work.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -459,6 +617,12 @@ mjx-container[display="true"] {
   color: #4b5563;
   margin-top: 10px;
   text-align: center;
+}
+
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 </style>
@@ -476,114 +640,79 @@ reviewed sources and their assumptions, not against an absolute claim
 about everything the field has or has not done.</p>
 <h2 id="sec:related-historical">Pre-modern probability, inverse
 probability, and collective judgment</h2>
-<p>The pre-modern sources in this manuscript are not evidence that early
-probability theorists anticipated KL minimization or federated learning.
-They serve a narrower role: they show that the paper’s recurring
-problems — expected uncertain outcomes, inverse inference from effects
-to causes, utility-sensitive action, and collective judgment — are old
-problems now implemented with modern variational machinery.</p>
-<p>The probability-calculus line begins with Pascal and Fermat’s
-correspondence on the problem of points <span class="citation">(Pascal and Fermat 1654)</span>,
-Huygens’ printed treatment of reasoning in games of chance
-<span class="citation">(Huygens 1657)</span>, Montmort’s combinatorial analysis of games
-<span class="citation">(Montmort 1708)</span>, Bernoulli’s <em>Ars conjectandi</em> and its
-law-of-large-numbers logic <span class="citation">(Bernoulli 1713)</span>, and de Moivre’s
-systematic probability textbook <span class="citation">(de Moivre 1718)</span>. For this paper,
-their relevance is not that they contain active inference, but that they
-make expectation and uncertain evidence objects of calculation.</p>
-<p>The inverse-probability line is closer to the manuscript’s formal
-spine. Bayes and Price frame the problem of inferring an unknown chance
-from observed events <span class="citation">(Bayes 1763)</span>, and Laplace generalizes the
-probability of causes given events <span class="citation">(Laplace 1774)</span>. Read beside
-modern active inference, these sources support the vocabulary of
-generative-model inversion: data are effects, latent states or
-parameters are causes, and a posterior belief reconciles prior
-commitments with observed evidence. That is a conceptual bridge only;
-the actual identity with the FedGVI recovery corner is the modern result
-of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> and
+<p>These historical sources provide conceptual lineage, not evidence
+that early authors anticipated KL minimization, active inference, or
+federation. Pascal and Fermat, Huygens, Montmort, Bernoulli, and de
+Moivre made expectation and uncertain evidence objects of calculation
+<span class="citation">(Pascal and Fermat 1654; Huygens 1657; Montmort 1708; Bernoulli 1713; de Moivre 1718)</span>.</p>
+<p>Bayes and Price framed inference from observed events to an unknown
+chance, and Laplace generalized inference about causes <span class="citation">(Bayes 1763; Laplace 1774)</span>. Their relevance here is vocabulary for
+generative-model inversion. The executable recovery identity is instead
+a modern, project-local result of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> and
 <a class="xref" href="index.html#sec:formalism">Section 6</a>.</p>
-<p>Decision and aggregation enter through Daniel Bernoulli’s
-expected-utility treatment of risk <span class="citation">(Bernoulli 1738)</span> and the
-voting-theoretic work of Borda and Condorcet <span class="citation">(Borda 1784; Condorcet 1785)</span>. They help name the problem this paper revisits in a
-categorical active-inference colony: local judgments must be combined,
-and the chosen aggregation rule encodes assumptions about competence,
-independence, weights, and stakes. Those assumptions are exactly what
-the modern log-pool and robustness literature make explicit.</p>
+<p>Daniel Bernoulli’s expected-utility treatment and the aggregation
+work of Borda and Condorcet connect uncertain judgment to action and
+collective choice <span class="citation">(Bernoulli 1738; Borda 1784; Condorcet 1785)</span>. They motivate questions about competence,
+independence, weights, and stakes. They do not formally support this
+paper’s log-pool, generalized-Bayes, or robustness claims; the full
+genealogy remains documented in the source audit.</p>
 <h2 id="sec:related-aif">Active inference: generative agents, EFE, and
 colonies</h2>
-<p>The free-energy principle <span class="citation">(Friston 2010)</span> and its discrete
-state-space process theory <span class="citation">(Friston et al. 2017)</span> gave the field a unified
-account of perception and action: hand-built generative models with
-<span class="math inline">\(A\)</span>/<span
-class="math inline">\(B\)</span>/<span
-class="math inline">\(C\)</span>/<span class="math inline">\(D\)</span>
-matrices, variational free energy for inference, and expected free
-energy for principled action selection. The discrete state-space
-synthesis <span class="citation">(Da Costa et al. 2020)</span> and toolboxes turned that account into
-scalable machinery — the pymdp discrete-state library <span class="citation">(Heins et al. 2022)</span>
-and the RxInfer reactive message-passing engine <span class="citation">(Bagaev et al. 2023)</span>.
-<em>Yes:</em> this substrate is exactly what we reimplement, and our EFE
-decomposition into risk and ambiguity (<a class="xref" href="index.html#eq:efe-decomposition">Eq. (17)</a>, <span
-class="citation" data-cites="eq:efe-identity"><a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a></span>,
-<a class="xref" href="index.html#fig:efe-decomp">Figure 7</a>) is the community’s
-own action-selection objective. <em>And:</em> we add a robustness knob
-to its belief-fusion step without leaving the framework.</p>
+<p>The free-energy principle <span class="citation">(Friston 2010)</span> and discrete state-space
+process theory <span class="citation">(Friston et al. 2017)</span> connect generative models,
+variational inference, and expected-free-energy action selection. The
+discrete synthesis <span class="citation">(Da Costa et al. 2020)</span>, pymdp <span class="citation">(Heins et al. 2022)</span>, and
+RxInfer <span class="citation">(Bagaev et al. 2023)</span> provide executable machinery. This project
+reimplements the categorical substrate and its risk–ambiguity
+decomposition (<a class="xref" href="index.html#eq:efe-decomposition">Eq. (22)</a>, <a class="xref" href="index.html#eq:efe-identity">Eq. (23)</a>,
+<a class="xref" href="index.html#fig:efe-decomp">Figure 8</a>), then evaluates
+explicit robustness controls at belief fusion.</p>
 <p>The fusion operator itself is not new as a mathematical object. Under
 the explicit categorical posterior-log-potential and fixed-weight bridge
 of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 the message-combination term of Friston’s belief-sharing equation is
 represented by a logarithmic opinion pool <span class="citation">(Genest and Zidek 1986; Genest et al. 1986)</span> and a product-of-experts consensus
-<span class="citation">(Hinton 2002)</span>. That limited representation is not a statement
-that the complete source protocol is a log pool. Abbas’ KL view of
-linear and log-linear pools makes the same point in scoring-rule
-language: log-pooling can be justified as a KL aggregation rule for
-expert distributions, not as a contamination-robust estimator
-<span class="citation">(Abbas 2009)</span>. The Bayesian Committee Machine adds the
-distributed-learning analogue: independent estimators trained on data
-subsets can be combined by a product-style Bayesian rule, with
-assumptions about conditional independence and prior accounting made
-explicit <span class="citation">(Tresp 2000)</span>. Fully Bayesian aggregation gives the
-social-choice counterpart: geometric pooling of beliefs is singled out
-by dynamic Bayesian rationality conditions, not by robustness to
-contaminated reports <span class="citation">(Dietrich 2021)</span>. That classical literature is
-useful precisely because it names the hidden commitments — shared
-support, weight choice, prior accounting, and external-Bayes coherence —
-that are easy to overlook when the same operation appears as a colony
-update.</p>
+<span class="citation">(Hinton 2002)</span>.</p>
+<p>That limited representation is not a statement that the complete
+source protocol is a log pool. Abbas’ KL view of linear and log-linear
+pools makes the same point in scoring-rule language: log-pooling can be
+justified as a KL aggregation rule for expert distributions, not as a
+contamination-robust estimator <span class="citation">(Abbas 2009)</span>.</p>
+<p>The Bayesian Committee Machine adds the distributed-learning
+analogue: independent estimators trained on data subsets can be combined
+by a product-style Bayesian rule, with assumptions about conditional
+independence and prior accounting made explicit <span class="citation">(Tresp 2000)</span>.</p>
+<p>Fully Bayesian aggregation gives the social-choice counterpart:
+geometric pooling of beliefs is singled out by dynamic Bayesian
+rationality conditions, not by robustness to contaminated reports
+<span class="citation">(Dietrich 2021)</span>.</p>
+<p>That classical literature is useful precisely because it names the
+hidden commitments — shared support, weight choice, prior accounting,
+and external-Bayes coherence — that are easy to overlook when the same
+operation appears as a colony update.</p>
 <p>A parallel thread studies how active-inference agents coordinate as
 ensembles — collective behavior and surprise minimization across a
 colony <span class="citation">(Heins et al. 2024)</span>, epistemic communities
 <span class="citation">(Albarracin et al. 2022)</span>, and collective intelligence
-<span class="citation">(Kaufmann et al. 2021)</span>. The belief-sharing thread
-<span class="citation">(Friston et al. 2024)</span> is one member of this family: agents reach
-consensus by exact-Bayes fusion of one another’s beliefs, and the colony
-belief-sharing scenario we implement as a reduced categorical
-standard-Bayes-limit analogue (<a class="xref" href="index.html#eq:belief-round">Eq. (9)</a>, <span
-class="citation"
-data-cites="sec:results-belief_sharing"><a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a></span>)
-is related to its worked example. Structure learning rounds out the
-picture: active inference with Bayesian optimal design selects and
-reduces models within the same frame <span class="citation">(Smith et al. 2022)</span>, and post-hoc
-Bayesian model reduction <span class="citation">(Friston and Penny 2011)</span> is the engine behind our
-emergence study (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a>, <span
-class="citation"
-data-cites="sec:results-emergence"><a class="xref" href="index.html#sec:results-emergence">Section 7.4</a></span>). The
-cited active-inference line has rich generative models, principled
-action, and ensembles that coordinate by sharing beliefs. In the sources
-reviewed here, the belief-fusion rule is not systematically
-characterized under explicit contamination or intentionally wrong
-broadcasts, nor connected to the robustness theory used here. Fusion is
-treated as exact-Bayes and trusting in that scoped comparison.</p>
-<p>Friston et al. <span class="citation">(Friston et al. 2024)</span> crystallized these ideas into
-three worked simulations: (1) communicating-colony free-energy
-convergence, (2) Dirichlet language acquisition, and (3) Bayesian model
-reduction structure emergence. We use reduced categorical
-standard-Bayes-limit analogues of all three mechanisms (<span
-class="citation"
-data-cites="sec:results-recovery"><a class="xref" href="index.html#sec:results-recovery">Section 7.1</a></span>) under
-the declared protocol before building the robust extension. This is a
-mechanism-level comparison, not an exact source-protocol or figure
-reproduction.</p>
+<span class="citation">(Kaufmann et al. 2021)</span>.</p>
+<p>The belief-sharing thread <span class="citation">(Friston et al. 2024)</span> is one member of
+this family. Agents fuse beliefs, and our colony scenario is a reduced
+categorical standard- Bayes-limit analogue of its worked example (<a class="xref" href="index.html#eq:belief-round">Eq. (14)</a>,
+<a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>).</p>
+<p>Structure learning completes the conceptual frame. Active inference
+with Bayesian optimal design selects and reduces models
+<span class="citation">(Smith et al. 2022)</span>, while post-hoc BMR <span class="citation">(Friston and Penny 2011)</span> motivates our
+configured sign control (<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a>, <a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>).</p>
+<p>Among the active-inference sources reviewed here, belief fusion is
+not systematically characterized under explicit contamination or
+intentionally wrong broadcasts, nor connected to the robustness theory
+used here. Fusion is treated as trusting in that scoped comparison.</p>
+<p>Friston et al. <span class="citation">(Friston et al. 2024)</span> present communicating-colony
+free-energy convergence, Dirichlet language acquisition, and Bayesian
+model reduction. We use reduced categorical standard-Bayes-limit
+analogues of those mechanisms (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>) before
+the robust extension. The third is a configured sign control on a fixed
+posterior. None is an exact source-protocol or figure reproduction.</p>
 <h2 id="sec:related-fl">Robust and federated Bayes outside active
 inference</h2>
 <p>Federated learning aggregates models trained on decentralized data
@@ -594,33 +723,33 @@ predecessor <span class="citation">(Bui et al. 2018)</span>. This is a different
 <em>federated</em> from Friston et al.’s federated inference: Friston
 federates hidden-state beliefs among agents sharing a world model, while
 machine-learning federated learning usually federates parameter or
-predictive-model updates over decentralized datasets. The bridge claimed
-here is therefore algebraic and variational — a shared normalized
-product/log-pool operator at the KL/NLL recovery corner — not a claim
-that either source paper already solved the other’s problem.</p>
+predictive-model updates over decentralized datasets.</p>
+<p>The bridge claimed here is therefore algebraic and variational — a
+shared normalized product/log-pool operator at the KL/NLL recovery
+corner — not a claim that either source paper already solved the other’s
+problem.</p>
 <p>Robustness, meanwhile, has a mature Bayesian theory: general Bayesian
 updating through a loss <span class="citation">(Bissiri et al. 2016)</span>, Gibbs posterior inference
 <span class="citation">(Jiang and Tanner 2008)</span>, safe learning-rate selection under misspecification
 <span class="citation">(Grunwald 2012)</span>, coarsened posteriors for robustness to exact-data
 conditioning <span class="citation">(Miller and Dunson 2018)</span>, divergence-criteria posterior
 updating <span class="citation">(Jewson et al. 2018)</span>, Bayesian misspecification asymptotics
-<span class="citation">(Kleijn and van der Vaart 2012)</span>, the optimization-centric generalized
-variational inference view <span class="citation">(Knoblauch et al. 2022)</span>, recent
-closed-form characterizations of unrestricted generalized variational
-objectives <span class="citation">(Nguyen and Westerhout 2026)</span>, and the bounded-influence losses
-that make updates robust — density-power and gamma-divergence estimation
-<span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span>, robust-divergence
-variational inference <span class="citation">(Futami et al. 2018)</span>, and generalized
-cross-entropy <span class="citation">(Zhang and Sabuncu 2018)</span>. Huber and Ronchetti supply the
-robust-statistics vocabulary of influence and breakdown
-<span class="citation">(Huber and Ronchetti 2009)</span>, which we use as vocabulary for boundedness and
-empirical failure modes rather than as a theorem transfer. FedGVI
-<span class="citation">(Mildner et al. 2025)</span> is the synthesis we use per agent: a robust
-generalized- Bayes objective with client and server divergence choices.
-This community provides decentralized aggregation and theorem-backed
-results in its stated settings. The cited papers do not evaluate
-active-inference POMDP belief consensus — the generative-model-bearing,
-action-selecting setting where beliefs drive behavior.</p>
+<span class="citation">(Kleijn and van der Vaart 2012)</span>.</p>
+<p>The optimization-centric GVI view <span class="citation">(Knoblauch et al. 2022)</span> and
+recent closed-form characterizations <span class="citation">(Nguyen and Westerhout 2026)</span> connect
+objectives to approximating families. Bounded-influence approaches
+include density-power and gamma-divergence estimation <span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span>, robust-divergence variational
+inference <span class="citation">(Futami et al. 2018)</span>, and generalized cross-entropy
+<span class="citation">(Zhang and Sabuncu 2018)</span>. Huber and Ronchetti supply the robust-statistics
+vocabulary of influence and breakdown <span class="citation">(Huber and Ronchetti 2009)</span>, used here for
+boundedness and empirical failure modes rather than theorem transfer.
+FedGVI <span class="citation">(Mildner et al. 2025)</span> supplies the per-agent generalized-Bayes
+synthesis with client and server divergence choices.</p>
+<p>This literature provides decentralized aggregation and theorem-backed
+results in its stated settings. Among the sources reviewed here, it does
+not evaluate active-inference POMDP belief consensus—the
+generative-model-bearing, action-selecting setting where beliefs drive
+behavior.</p>
 <p>The 2025 preprint on convergence rates under prior misspecification
 <span class="citation">(Mildner et al. 2025)</span> sharpens the current GVI context: bounded divergences
 can support concentration and rates under explicit assumptions, but the
@@ -632,67 +761,54 @@ negative space for this paper. Byzantine-tolerant gradient aggregation
 <span class="citation">(Pillutla et al. 2022)</span>, and divergence-weighted gamma-mean aggregation
 <span class="citation">(Li et al. 2022)</span> attack corrupted client updates directly. A recent
 Bayesian robust-aggregation preprint likewise models unknown client
-honesty for federated model updates <span class="citation">(Karakulev et al. 2025)</span>. Those are
-close comparators for adversarial federation, but the object being
-aggregated differs: they aggregate model-update vectors or posterior
-measures, while this paper attacks categorical belief fusion and
-generalized-Bayes client updates. Robust subset-posterior combination is
-another nearby Bayesian route <span class="citation">(Minsker et al. 2017)</span>, but it combines
-posterior measures across data shards rather than active-inference
-belief broadcasts with a shared latent state. We use those sources to
-position the problem, not to import their guarantees into
-<code>robust_aggregate</code>.</p>
+honesty for federated model updates <span class="citation">(Karakulev et al. 2025)</span>.</p>
+<p>Those are close comparators for adversarial federation, but the
+object being aggregated differs: they aggregate model-update vectors or
+posterior measures, while this paper attacks categorical belief fusion
+and generalized-Bayes client updates.</p>
+<p>Robust subset-posterior combination is another nearby Bayesian route
+<span class="citation">(Minsker et al. 2017)</span>, but it combines posterior measures across data
+shards rather than active-inference belief broadcasts with a shared
+latent state.</p>
+<p>We use those sources to position the problem, not to import their
+guarantees into <code>robust_aggregate</code>.</p>
 <h2 id="sec:related-gap">The specific bridge added here</h2>
-<p>The gap this manuscript fills is robust, generalized-Bayes belief
-fusion for active-inference ensembles. Concretely:</p>
-<ul>
-<li><strong>Per-agent bounded-influence updates.</strong>
-FedGVI-faithful <span class="math inline">\(\beta\)</span>/rcce updates
-that carry provable bounded influence (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a>).</li>
-<li><strong>Server-side divergence-reweighting heuristic.</strong> A
-complementary aggregation heuristic (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>) with a
-stated recovery limit, positioned alongside robust federated aggregation
-work without borrowing its theorems.</li>
-<li><strong>Provable recovery of the standard-Bayes client
-limit.</strong> The client KL/NLL loss limits recover Bayes, and the
-separate zero-robustness server identity returns the project log-linear
-pool (<span class="xref">Eq. 6</span>, <span
-class="citation" data-cites="eq:renyi-limit"><a class="xref" href="index.html#eq:renyi-limit">Eq. (2)</a></span>,
-<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). Under the
-stated categorical bridge, that pool specializes only the Eq. 7
-message-combination term <span class="citation">(Friston et al. 2024)</span>.</li>
-<li><strong>Additional executed studies beyond the Friston et al. (2024)
-baseline.</strong> The three Friston simulations motivate
-source-mechanism analogues rather than serving as source-protocol
-recovery checks; beyond them we contribute: (4) a contamination sweep in
-which a fraction of colony members are adversarial or misspecified
-(<a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>);
-(5) a moving-world scenario with active expected-free-energy movement
-(<a class="xref" href="index.html#sec:results-moving">Section 13.7</a>);
-(6) a two-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>);
-(7) a three-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-3level">Section 13.11</a>); (8) a
-sensitivity sweep over acuity <span
-class="math inline">\(\times\)</span> colony size (<span
-class="citation"
-data-cites="sec:results-sensitivity"><a class="xref" href="index.html#sec:results-sensitivity">Section 13.13</a></span>);
-and (9) finite-grid parameter recovery for the declared acuity family
-(<a class="xref" href="index.html#sec:results-parameter-recovery">Section 14</a>).</li>
-<li><strong>Rigorous statistics.</strong> Every verdict is produced by
-matched-pairs Wilcoxon signed-rank tests <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span> deflated with Benjamini–Hochberg FDR
-<span class="citation">(Benjamini and Hochberg 1995)</span>, reported with bootstrap confidence intervals
+<p>The scoped bridge evaluated by this manuscript is generalized-Bayes
+belief fusion for active-inference ensembles. Concretely:</p>
+<p><strong>Per-agent bounded-loss updates.</strong> FedGVI-faithful
+<span class="math inline">\(\beta\)</span>/rcce updates carry the cited
+bounded-influence result only under its source assumptions (<a class="xref" href="index.html#eq:beta-loss">Eq. (7)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (8)</a>).</p>
+<p><strong>Server-side divergence reweighting.</strong> The
+complementary heuristic has a stated recovery limit (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>). Its
+finite empirical behavior does not borrow theorems from robust federated
+aggregation.</p>
+<p><strong>Recovery of the standard-Bayes corner.</strong> The KL/NLL
+client limits recover Bayes, while the separate zero-robustness server
+identity returns the project log-linear pool (<a class="xref" href="index.html#eq:standard-bayes">Eq. (11)</a>, <a class="xref" href="index.html#eq:renyi-limit">Eq. (6)</a>,
+<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>). Under the
+categorical bridge, that pool specializes only the Eq. 7
+message-combination term <span class="citation">(Friston et al. 2024)</span>.</p>
+<p><strong>Additional executed studies.</strong> The source simulations
+motivate mechanism analogues, not protocol recovery checks. Added
+studies cover declared contamination (<a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>),
+active movement (<a class="xref" href="index.html#sec:results-moving">Section 14.7</a>), two- and
+three-level POMDPs (<a class="xref" href="index.html#sec:results-hierarchical">Section 14.9</a>,
+<a class="xref" href="index.html#sec:results-3level">Section 14.11</a>), finite
+acuity-by-colony sensitivity, and finite-grid acuity recovery (<a class="xref" href="index.html#sec:results-sensitivity">Section 14.13</a>,
+<a class="xref" href="index.html#sec:results-parameter-recovery">Section 15</a>).</p>
+<p><strong>Declared paired analysis.</strong> The configured comparison
+uses matched-pairs Wilcoxon tests <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span>, Benjamini–Hochberg FDR adjustment
+<span class="citation">(Benjamini and Hochberg 1995)</span>, percentile-bootstrap intervals
 <span class="citation">(Efron and Tibshirani 1993)</span>, rank/effect-size caveats <span class="citation">(Nakagawa and Cuthill 2007)</span>, and
-an observed-effect design-power approximation — none of which appear in
-Friston et al. (2024).</li>
-<li><strong>An objective-backed server-side aggregator with redescending
-weights.</strong> The <code>variational_aggregate</code> rule descends a
-stated aggregation free energy (<a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>)
-monotonically; any converged fixed point is coordinatewise stationary.
-The rule carries a proven raw effective-weight bound and empirical
-redescending response (<a class="xref" href="index.html#fig:bounded-influence">Figure 15</a>),
-while leaving open whether the sharper reverse-KL server heuristic is
-itself the closed-form minimizer of an equally defensible
-objective.</li>
-</ul>
+an observed-effect planning approximation. These additions are project
+analyses, not claims about the source paper.</p>
+<p><strong>Objective-backed server control.</strong>
+<code>variational_aggregate</code> descends its stated free energy
+(<a class="xref" href="index.html#eq:agg-free-energy">Eq. (12)</a>); a
+converged fixed point is coordinatewise stationary. The rule has a raw
+effective-weight bound and a finite redescending diagnostic (<a class="xref" href="index.html#fig:bounded-influence">Figure 17</a>).
+Whether an equally defensible objective has the sharper reverse-KL
+heuristic as its minimizer remains open.</p>
 <p>The contribution is the bridge: an explicit connection between
 active-inference belief consensus and robust federated generalized
 Bayes, with the standard pool recovered exactly at the corner and the

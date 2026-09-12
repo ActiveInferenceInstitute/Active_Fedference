@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>19_results_robustness.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -468,35 +632,36 @@ mjx-container[display="true"] {
 <main id="main-content" tabindex="-1">
 <h2 id="sec:results-robustness">Contamination sweep: regime-dependent
 server behavior under declared attacks</h2>
-<p>This contamination experiment compares an active-inference colony
-with server operating points named for the FedGVI client-divergence
-vocabulary <span class="citation">(Mildner et al. 2025)</span>; the cited sources do not make this
-categorical belief-fusion comparison. A colony of 7 sentinels broadcasts
-soft beliefs about a shared state, while 2 saboteurs mix toward a
-confident-wrong delta at each contamination <code>rate</code>.
-<code>KLD</code> is the standard log-linear pool (server robustness 0,
-<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>); the other
-labels denote <code>robust_aggregate</code> heuristic settings with
-constants KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta (c=1.70), rcce
-(c=1.60), not literal client losses or divergences. The estimand is
-consensus mass <span class="math inline">\(q(\text{true
-state})\)</span>.</p>
+<p>This experiment compares server presets in one active-inference
+colony. Its legacy labels borrow FedGVI client-divergence vocabulary
+<span class="citation">(Mildner et al. 2025)</span>, but the presets are not client losses or divergence
+theorems. <code>KLD</code> denotes the standard log-linear pool; every
+other label denotes a <code>robust_aggregate</code> heuristic constant
+in KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta (c=1.70), rcce
+(c=1.60). The estimand is consensus mass <span
+class="math inline">\(q(\text{true state})\)</span> under the declared
+contamination mechanism.</p>
+<p>The colony contains 7 sentinels, of which 2 mix their broadcasts
+toward a confident-wrong delta at each contamination rate. The
+comparisons remain conditional on this fixed world, attack target, and
+preset grid.</p>
+<p>The evidence map in <a class="xref" href="index.html#fig:evidence-replication-map">Figure 6</a>
+locates these comparisons in the conditional heuristic-server lane. It
+keeps the fixed-world matched trials distinct from the seed-level review
+below and prevents either result from inheriting client-loss or
+variational-server guarantees.</p>
 <p>As the contamination rate rises across <span
 class="math inline">\(\{0, 0.225, 0.45, 0.675, 0.9\}\)</span>, the
 <strong>standard</strong> (<code>KLD</code>) consensus accuracy degrades
 monotonically:</p>
-<table id="tbl:robustness_sweep">
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Consensus accuracy \(q(\text{true state})\) by contamination rate and configured server operating point ( \(n = 1\) d…"><table id="tbl:robustness_sweep" data-responsive-table="true">
 <caption>Consensus accuracy <span class="math inline">\(q(\text{true
 state})\)</span> by contamination rate and configured server operating
 point (<span class="math inline">\(n = 1\)</span> deterministic sweep
-per cell). <code>KLD</code> is the standard log-linear pool (<span
-class="citation"
-data-cites="eq:log-linear-pool"><a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a></span>); the other
+per cell). <code>KLD</code> is the standard log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>); the other
 columns use the fixed heuristic constants listed above in the same
-seeded colony. As the saboteurs capture more belief mass,
-<code>KLD</code> falls monotonically while at least one robust member
-remains above the stated accuracy threshold. This table is descriptive;
-inferential paired evidence appears below.</caption>
+seeded colony. This table is descriptive; inferential paired evidence
+appears below.</caption>
 <thead>
 <tr>
 <th>Contamination rate</th>
@@ -549,54 +714,174 @@ inferential paired evidence appears below.</caption>
 <td>0.982</td>
 </tr>
 </tbody>
-</table>
-<ul>
-<li>Standard accuracy degrades monotonically with rate: Yes</li>
-<li>At the worst rate (0.900), at least one robust member stays at or
-above the accuracy threshold 0.50: Yes (standard accuracy there is
-0.6928, highest pooled robust mean 0.9880; worst-rate display method
-beta)</li>
-</ul>
-<p>The rate trend above is a single deterministic sweep per cell. To
-attach a per-rate paired test, each contamination rate is re-run as
-<span class="math inline">\(n_{\rm trial} = 960\)</span> matched trial
-replicates nested within the fixed seeded world, and every robust member
-is compared against the standard pool at that rate; the resulting
-p-values are BH-deflated per method (<span class="citation">(Benjamini and Hochberg 1995)</span>; <span
-class="math inline">\(\alpha = 0.05\)</span>). This table is a
-rate-resolved diagnostic, not a continuous-family proof: only the
-displayed method-rate cells with <code>Reject = Yes</code> survive their
-own per-method BH family:</p>
-<table id="tbl:paired-by-rate" style="width:100%;">
-<caption>Per-contamination-rate standard-vs-robust paired tests
-(matched-pairs Wilcoxon, <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span>,
-<span class="math inline">\(n_{\rm trial} = 960\)</span> matched trial
-replicates per cell), BH-deflated within each method’s rate family. The
-trial-level result is conditional on the fixed seeded world and is not a
-claim about 960 independent worlds. The <code>KLD</code> baseline is
-excluded because it is the standard reference, not a self-contrast. The
-displayed <span class="math inline">\(d\)</span>-equivalent is a
-rank-biserial-derived transform, not raw Cohen’s <span
-class="math inline">\(d\)</span>; the signed-saturation marker flags
-contrasts where the rank-biserial correlation saturates at <span
-class="math inline">\(\pm1\)</span>. These contrasts decorate the
-server-side <code>robust_aggregate</code> heuristic only.</caption>
-<colgroup>
-<col style="width: 14%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
-<col style="width: 14%" />
-</colgroup>
+</table></div>
+<p>As the saboteurs capture more belief mass, <code>KLD</code> falls
+monotonically while at least one non-reference preset remains above the
+stated accuracy threshold. <strong>Reference trend:</strong> standard
+accuracy degrades monotonically with rate, recorded as Yes.</p>
+<p><strong>Worst-rate display check:</strong> at rate 0.900, at least
+one non-reference preset remains at or above 0.50, recorded as Yes.
+Standard accuracy is 0.6928; the highest robust consensus mass in this
+single-world mechanistic sweep is 0.9880, attained by AR.</p>
+<p>The rate trend above is one deterministic sweep per cell. The paired
+profile reruns each rate over <span class="math inline">\(n_{\rm trial}
+= 960\)</span> matched trials nested within the fixed seeded world. Each
+non-reference preset is compared with the standard pool, and p-values
+are BH-adjusted within method <span class="citation">(Benjamini and Hochberg 1995)</span>. This is a
+finite, rate-resolved diagnostic, not a continuous-family result.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Effect-size projection of the per-contamination-rate standard-versus-preset paired tests, keyed by (server preset, ra…"><table id="tbl:paired-by-rate" data-responsive-table="true">
+<caption>Effect-size projection of the per-contamination-rate
+standard-versus-preset paired tests, keyed by
+<code>(server preset, rate)</code>. Each cell uses 960 matched trial
+replicates nested within the fixed seeded world. Joining this projection
+to <a class="xref" href="index.html#tbl:paired-by-rate-inference">Table 5</a>
+on the displayed key reconstructs every source row exactly; the label
+and <span class="math inline">\(d\)</span>-equivalent do not add an
+independent world-level estimand.</caption>
 <thead>
 <tr>
-<th>Method</th>
+<th>Server preset</th>
 <th>Rate</th>
 <th>Rank-biserial-derived <span
 class="math inline">\(d\)</span>-equivalent</th>
 <th>Label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RKL</td>
+<td>0</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.225</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.45</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.675</td>
+<td>13.79</td>
+<td>large</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>0.9</td>
+<td>-0.37</td>
+<td>small</td>
+</tr>
+<tr>
+<td>AR</td>
+<td>0</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>AR</td>
+<td>0.225</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>AR</td>
+<td>0.45</td>
+<td>-303.73</td>
+<td>large</td>
+</tr>
+<tr>
+<td>AR</td>
+<td>0.675</td>
+<td>160.07</td>
+<td>large</td>
+</tr>
+<tr>
+<td>AR</td>
+<td>0.9</td>
+<td>-1.57</td>
+<td>large</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>0</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>0.225</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>0.45</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>0.675</td>
+<td>2.81</td>
+<td>large</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>0.9</td>
+<td>0.61</td>
+<td>medium</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>0</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>0.225</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>0.45</td>
+<td>saturated (r=-1)</td>
+<td>large</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>0.675</td>
+<td>5.67</td>
+<td>large</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>0.9</td>
+<td>0.14</td>
+<td>negligible</td>
+</tr>
+</tbody>
+</table></div>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Inference projection of the same per-rate matched-pairs Wilcoxon tests (Wilcoxon 1945; Fay and Proschan 2010), key…"><table id="tbl:paired-by-rate-inference" data-responsive-table="true">
+<caption>Inference projection of the same per-rate matched-pairs
+Wilcoxon tests <span class="citation">(Wilcoxon 1945; Fay and Proschan 2010)</span>, keyed by
+<code>(server preset, rate)</code> and BH-deflated within each preset’s
+rate family. <code>Reject</code> is the report-owned family decision.
+The 960 trials are nested within one fixed seeded world, not 960
+independent worlds; this table must be read with <a class="xref" href="index.html#tbl:paired-by-rate">Table 4</a> to recover
+the complete source row.</caption>
+<thead>
+<tr>
+<th>Server preset</th>
+<th>Rate</th>
 <th>Raw p</th>
 <th>q</th>
 <th>Reject</th>
@@ -606,8 +891,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>RKL</td>
 <td>0</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -615,8 +898,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>RKL</td>
 <td>0.225</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -624,8 +905,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>RKL</td>
 <td>0.45</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -633,8 +912,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>RKL</td>
 <td>0.675</td>
-<td>13.79</td>
-<td>large</td>
 <td>1.88e-155</td>
 <td>2.35e-155</td>
 <td>Yes</td>
@@ -642,8 +919,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>RKL</td>
 <td>0.9</td>
-<td>-0.37</td>
-<td>small</td>
 <td>1.06e-06</td>
 <td>1.06e-06</td>
 <td>Yes</td>
@@ -651,8 +926,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>AR</td>
 <td>0</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.47e-158</td>
 <td>Yes</td>
@@ -660,8 +933,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>AR</td>
 <td>0.225</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.47e-158</td>
 <td>Yes</td>
@@ -669,8 +940,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>AR</td>
 <td>0.45</td>
-<td>-303.73</td>
-<td>large</td>
 <td>1.13e-158</td>
 <td>1.47e-158</td>
 <td>Yes</td>
@@ -678,8 +947,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>AR</td>
 <td>0.675</td>
-<td>160.07</td>
-<td>large</td>
 <td>1.17e-158</td>
 <td>1.47e-158</td>
 <td>Yes</td>
@@ -687,8 +954,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>AR</td>
 <td>0.9</td>
-<td>-1.57</td>
-<td>large</td>
 <td>1.62e-61</td>
 <td>1.62e-61</td>
 <td>Yes</td>
@@ -696,8 +961,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>beta</td>
 <td>0</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -705,8 +968,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>beta</td>
 <td>0.225</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -714,8 +975,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>beta</td>
 <td>0.45</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -723,8 +982,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>beta</td>
 <td>0.675</td>
-<td>2.81</td>
-<td>large</td>
 <td>6.29e-106</td>
 <td>7.86e-106</td>
 <td>Yes</td>
@@ -732,8 +989,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>beta</td>
 <td>0.9</td>
-<td>0.61</td>
-<td>medium</td>
 <td>6.04e-15</td>
 <td>6.04e-15</td>
 <td>Yes</td>
@@ -741,8 +996,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>rcce</td>
 <td>0</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -750,8 +1003,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>rcce</td>
 <td>0.225</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -759,8 +1010,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>rcce</td>
 <td>0.45</td>
-<td>saturated (r=-1)</td>
-<td>large</td>
 <td>1.11e-158</td>
 <td>1.85e-158</td>
 <td>Yes</td>
@@ -768,8 +1017,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>rcce</td>
 <td>0.675</td>
-<td>5.67</td>
-<td>large</td>
 <td>2.37e-141</td>
 <td>2.96e-141</td>
 <td>Yes</td>
@@ -777,80 +1024,144 @@ class="math inline">\(d\)</span>-equivalent</th>
 <tr>
 <td>rcce</td>
 <td>0.9</td>
-<td>0.14</td>
-<td>negligible</td>
 <td>6.54e-02</td>
 <td>6.54e-02</td>
 <td>No</td>
 </tr>
 </tbody>
-</table>
+</table></div>
+<p>The <code>KLD</code> baseline is excluded from both projections
+because it is the standard reference, not a self-contrast. The displayed
+<span class="math inline">\(d\)</span>-equivalent is a
+rank-biserial-derived transform, not raw Cohen’s <span
+class="math inline">\(d\)</span>; the signed-saturation marker flags
+contrasts where the rank-biserial correlation saturates at <span
+class="math inline">\(\pm1\)</span>. These contrasts decorate the
+server-side <code>robust_aggregate</code> heuristic only.</p>
 <figure id="fig:robustness-sweep">
-<a class="figure-full-size-link" href="../figures/robustness_sweep.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robustness_sweep.png" style="width:80.0%"
-alt="Consensus accuracy curves for naive KLD and four robust client operating points across contamination rates. Lines and markers show matched-trial means with 95-percent seed-bootstrap intervals; a horizontal line marks the predeclared accuracy floor." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<a class="figure-full-size-link" href="../figures/robustness_sweep.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Consensus accuracy: probability mass assigned to the true hidden state."><img src="../figures/robustness_sweep.png" style="width:80.0%"
+data-slide-manifest="../figures/robustness_sweep.slides.json"
+alt="Consensus true-state-mass curves compare the standard log-linear pool with four actual robust-aggregate server presets. Distinct markers and dashes show matched-trial means with 95-percent percentile-bootstrap intervals; the horizontal rule is the declared accuracy floor." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Consensus accuracy: probability mass
 assigned to the true hidden state. The plotted estimand is <span
 class="math inline">\(q(\text{true state})\)</span>. Source relation:
 original project robustness extension; estimand: true-state probability
 mass; uncertainty: matched-trial percentile-bootstrap intervals over
-configured trials. The colony of <span class="math inline">\(7\)</span>
-sentinel agents (acuity <span class="math inline">\(0.55\)</span>, of
-which <span class="math inline">\(2\)</span> are saboteurs) as a
-function of contamination rate. x-axis: saboteur convex-mix
-contamination rate, sampled over <span class="math inline">\(\{0, 0.225,
-0.45, 0.675, 0.9\}\)</span>; y-axis: consensus accuracy <span
-class="math inline">\(q(\text{true state})\)</span> (probability mass on
-the true hidden state). One curve per configured server operating point:
-standard <code>KLD</code> plus the robust <code>robust_aggregate</code>
-settings <span class="math inline">\(KLD (c=0.00), RKL (c=1.50), AR
-(c=1.30), beta (c=1.70), rcce (c=1.60)\)</span>; these curves do not
-apply the named client losses or divergences. The dashed floor is the
-predeclared accuracy threshold <span
-class="math inline">\(0.50\)</span>; the in-figure box reports the
-matched-trial sample size and the largest-rate pooled robust-minus-naive
-separation, where the standard <code>KLD</code> log-linear pool reaches
-0.6697 and the highest pooled robust mean reaches 0.7857. Robust means
-are similar to or slightly below the standard pool at low contamination
-and some pooled robust operating points separate in favor of the robust
-family under severe contamination; individual robust members can still
-fall below the floor at the largest rate. The linear y-axis is
-deliberately truncated just below the threshold band so the curves,
-floor, and CIs remain legible. The plotted curve is the matched-trial
-mean over 960 trials per rate with percentile-bootstrap 95% CIs;
-intervals are conditional on the fixed seeded true state and attack
-geometry, not alternate world models. The single-colony mechanistic
-table above remains descriptive and deterministic. The formal
-verdict-rate statistical test is reported immediately
-below.</figcaption>
+configured trials. The x-axis is saboteur convex-mix contamination rate
+over <span class="math inline">\(\{0, 0.225, 0.45, 0.675,
+0.9\}\)</span>; the y-axis is consensus probability mass on the true
+state. Curves compare the standard <code>KLD</code> log-linear pool with
+<code>robust_aggregate</code> server presets <span
+class="math inline">\(KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta
+(c=1.70), rcce (c=1.60)\)</span> for <span
+class="math inline">\(7\)</span> agents, including <span
+class="math inline">\(2\)</span> saboteurs; they are not named client
+losses. Distinct markers, dashes, direct labels, and the dark dotted
+threshold at 0.50 duplicate color. The independent replication unit is a
+matched synthetic trial within the fixed seeded true state and attack
+target, with 960 trials per rate. Curves show trial means with 95%
+percentile-bootstrap confidence intervals. At the largest rate, the
+standard pool reaches 0.6697 and the within-sweep highest pooled robust
+mean reaches 0.7857. That operating point is a disclosed display
+selection: low-rate robust means can match or trail the standard pool,
+and individual presets can fall below the threshold. The truncated
+linear y-axis enlarges the declared threshold region. This fixed-world
+sweep does not establish a universal method ranking, alternate-world
+generalization, a client-loss theorem, bounded influence, or Byzantine
+tolerance; the selection-free seed-level review is reported
+separately.</figcaption>
 </figure>
-<h3 id="sec:results-verdict">Earned robustness verdict at the decisive
-rate</h3>
-<p>The headline “robust beats standard” claim is <em>computed</em>,
-never asserted. Across 960 matched trial replicates nested within the
-fixed seeded world at contamination rate 0.800 — each redrawing the
-heterogeneous healthy colony while holding the run’s true state and
-attack target fixed — every robust divergence’s per-trial consensus
-accuracy is compared against the standard pool’s by the matched-pairs
-Wilcoxon signed-rank test (<span class="citation">(Wilcoxon 1945)</span>), and the family of
-p-values is deflated with Benjamini–Hochberg FDR
-(<span class="citation">(Benjamini and Hochberg 1995)</span>; <span class="math inline">\(\alpha =
-0.05\)</span>). A method wins if and only if BH rejects its null and its
-effect size is positive.</p>
-<table id="tbl:robustness_verdict">
-<caption>Per-method paired verdict against the standard pool at verdict
-rate 0.800 (<span class="math inline">\(n_{\rm trial} = 960\)</span>
-matched trial replicates, signed-rank test under the paired-difference
+<h3 id="sec:results-review-grid">Selection-free all-method robustness
+review</h3>
+<p>The comparison in <a class="xref" href="index.html#fig:robustness-review-grid">Figure 14</a>
+is the principal comparative robustness surface. It joins the
+conditional-world cells to the directional rate profiles while retaining
+every configured non-reference server preset. It uses 160 deterministic
+seed replicates and 24 trials nested within each seed and cell.</p>
+<p>Read the portrait surface from top to bottom: Panel A is the
+full-width conditional heatmap, and Panels B–D stack the three rate
+profiles. Their elbow leaders terminate in reserved right-side label
+lanes so curve identity remains separate from the plotted endpoints.</p>
+<p>The finite attack union is clean, confident wrong, permutation,
+byzantine, drift, label noise, uniform. The rate-resolved directional
+mechanisms are confident wrong, byzantine, drift, with entropy controls
+uniform, label noise and registered rates <span
+class="math inline">\(\{0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9\}\)</span>.
+The independent unit is seed within a declared scenario or rate cell;
+the nesting rule is n_trials nested within each seed/cell; no trial is
+promoted to an independent world.</p>
+<p>The payload is selection-free source payload; every configured
+non-KLD method is reported at every directional rate and no winner is
+used for inference, and its statistics surface is selection-free. It
+retains seed-level contrasts, paired Wilcoxon/rank-biserial results,
+percentile-bootstrap intervals, MCSE, an observed-effect MDE, and
+BH-adjusted rate families. BH ownership is BH is applied within each
+attack-mechanism × method rate family; cells sharing design structure
+are not treated as independent families.</p>
+<p>The precision plan targets maximum MCSE 0.0100; the observed maximum
+is 0.0066 across 96. No method is selected by seed, rate, or pooled
+mean. Mixed and reversed cells remain visible, and the grid does not
+close the open calibration, external-data, or server-theory
+questions.</p>
+<p>The source-generated exact-value fallback calls the same finite
+grouping helper as Panel A. For every displayed attack-by-weight cell it
+records the printed grouped mean and the printed half min–max span,
+preventing the numeric fallback from drifting from the renderer.</p>
+<figure id="fig:robustness-review-grid">
+<a class="figure-full-size-link" href="../figures/robustness_review_grid.png" target="_blank" rel="noopener" aria-label="Open full-size figure, The robustness review retains every server preset"><img src="../figures/robustness_review_grid.png" style="width:98.0%"
+data-slide-manifest="../figures/robustness_review_grid.slides.json"
+alt="Portrait robustness review with a full-width top heatmap and three rate profiles stacked below for confident-wrong, Byzantine, and drift attacks. Every predeclared server preset uses a distinct marker and dash; elbow leaders route endpoints into a dedicated right label lane. Heatmap second lines are finite-grid spans, not confidence intervals." aria-details="fig-robustness-review-grid-long-description" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>The robustness review retains every
+server preset and preserves mixed signs across the attack grid. Source
+relation: original project conditional simulation review joining
+registered conditional-world and directional-rate reports; study status:
+selection-free, all-method finite-grid evidence; estimand: seed-level
+robust-minus-standard true-state probability-mass contrast. Read the
+portrait figure from top to bottom: Panel A is a full-width heatmap of
+conditional attack cells by adversarial-weight setting; Panels B–D stack
+confident-wrong, Byzantine, and drift rate profiles. The x-axis is
+adversarial weight in Panel A and contamination rate in Panels B–D; the
+y-axis is contrast in probability units. Printed cell signs, distinct
+markers and dashes, and elbow leaders into reserved right-side
+endpoint-label lanes duplicate color; the dark dotted rule marks zero.
+The independent replication unit is the configured seed (<span
+class="math inline">\(n=160\)</span>), with 24 trials plus agents and
+conditions nested within each cell. Rate-profile bands are 95%
+percentile-bootstrap intervals over seeds. The second heatmap line is
+half the finite-grid min–max span, not a confidence interval. No curve
+is selected by pooled mean. The figure supports only mechanism- and
+grid-conditional contrasts; it does not establish a universal winner,
+bounded influence, Byzantine tolerance, a causal effect, independent
+shared-design cells, or generalization beyond the registered
+worlds.</figcaption>
+<details id="fig-robustness-review-grid-long-description" class="figure-long-description" data-figure-label="fig:robustness-review-grid"><summary>Detailed description of figure robustness review grid</summary><p>Read the portrait figure from top to bottom. Panel A is a full-width conditional-world heatmap; each cell prints a signed robust-minus-standard true-state-mass mean and, on its second line, half the finite-grid min-max span. Panels B, C, and D then stack confident-wrong, Byzantine, and drift rate profiles. Every predeclared server preset has a distinct marker and dash. Elbow leaders route curve endpoints into a reserved right-side label lane, while a dark dotted rule marks zero. The standard pool is the circle-solid reference; no result-dependent method selection is applied.</p><p>The estimand is the signed difference in true-state probability mass, measured in probability units. Rate-profile points are seed means with 95-percent percentile-bootstrap intervals over independent configured seeds; trials and agents remain nested within each declared cell. The conditional summary uses its declared finite-grid span. The exact-value fallback repeats every displayed grouped mean and half min-max span from the renderer&#x27;s shared helper. Mixed signs are retained: the map does not establish a universal winner, bounded influence, Byzantine tolerance, or generalization beyond the reviewed grid.</p></details><p class="figure-exact-values"><a href="../figures/figure_exact_values.md#fig-values-robustness-review-grid">Open exact values for figure robustness review grid (fig-values:robustness-review-grid)</a></p></figure>
+<h3 id="sec:results-verdict">Conditional matched-trial comparison at the
+declared rate</h3>
+<p>At contamination rate 0.800, each of 960 matched trials redraws the
+heterogeneous healthy colony while holding the seeded world’s true state
+and attack target fixed. Each non-reference server preset is compared
+with the standard pool using the paired Wilcoxon signed-rank test
+<span class="citation">(Wilcoxon 1945)</span>. Benjamini–Hochberg FDR adjustment applies
+within the declared family <span class="citation">(Benjamini and Hochberg 1995)</span>.</p>
+<p>The generated <code>Wins</code> field is true only when the adjusted
+null is rejected and the paired effect is positive. It is conditional
+bookkeeping for this fixed world and rate, not a universal method
+ranking.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Per-preset paired comparison against the standard pool at rate 0.800 ( \(n_{\rm trial} = 960\) matched trial replicat…"><table id="tbl:robustness_verdict" data-responsive-table="true">
+<caption>Per-preset paired comparison against the standard pool at rate
+0.800 (<span class="math inline">\(n_{\rm trial} = 960\)</span> matched
+trial replicates, signed-rank test under the paired-difference
 assumptions of <a class="xref" href="index.html#sec:methods-paired">Section 5.28</a>). This is a
 fixed-world conditional diagnostic; seed-level inference is reported
-separately in <a class="xref" href="index.html#sec:supp-review-grid">Section 12.2.4</a>. Effect
-size is the matched-pairs rank-biserial correlation; positive values
-mean the robust member exceeds the standard pool. A <code>Wins</code>
-value is true only when the BH-deflated null is rejected <em>and</em>
-the effect is positive, with FDR scoped to this verdict
-family.</caption>
+separately in <a class="xref" href="index.html#sec:results-review-grid">Section 7.5.1</a>.
+Effect size is the matched-pairs rank-biserial correlation; positive
+values mean the non-reference preset exceeds the standard pool. A
+<code>Wins</code> value is true only when the BH-adjusted null is
+rejected <em>and</em> the effect is positive, with FDR scoped to this
+declared family.</caption>
 <thead>
 <tr>
-<th>Robust divergence</th>
+<th>Server preset</th>
 <th>Effect size</th>
 <th>Raw p</th>
 <th>q</th>
@@ -887,46 +1198,36 @@ family.</caption>
 <td>Yes</td>
 </tr>
 </tbody>
-</table>
-<table id="tbl:verdict-effects" style="width:100%;">
-<caption>Standardized-effect verdict at rate 0.800 (<span
+</table></div>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Effect estimates at rate 0.800 ( \(n_{\rm trial} = 960\) matched trial replicates). Source relation and study status:…"><table id="tbl:verdict-effect-estimates" data-responsive-table="true">
+<caption>Effect estimates at rate 0.800 (<span
 class="math inline">\(n_{\rm trial} = 960\)</span> matched trial
-replicates): the rank-biserial effect and its derived <span
-class="math inline">\(d\)</span>-equivalent display label, the mean
-robust-minus-standard accuracy difference with its 95% bootstrap CI, raw
-and BH-deflated p-values, the observed-effect design power of the paired
-Wilcoxon at <span class="math inline">\(\alpha = 0.05\)</span>
-(alternative greater), and the prospective <span
-class="math inline">\(n_{\rm trial}\)</span> a confirmatory fixed-world
-replication should budget for power 0.80. The signed-saturation marker
-replaces a misleading literal where the rank-biserial effect saturates;
-the power calculation is a planning approximation, not independent
-evidence.</caption>
+replicates). Source relation and study status: these rows are generated
+from the typed primary-sweep report and constitute a conditional
+fixed-world diagnostic. Each row gives the rank-biserial-derived <span
+class="math inline">\(d\)</span>-equivalent and display label, followed
+by the mean non-reference-minus-standard accuracy difference in
+accuracy-proportion units and its 95% percentile-bootstrap CI. The
+matched trial is the resampling unit; all trials remain nested within
+the one seeded world. Row order is preserved in <a class="xref" href="index.html#tbl:verdict-inference-power">Table 8</a>.
+The signed-saturation marker replaces a misleading finite literal where
+the rank-biserial transform diverges. These estimates do not identify an
+independently replicated world effect, calibration result, or universal
+server ranking.</caption>
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
 </colgroup>
 <thead>
 <tr>
 <th>Method</th>
-<th>Rank-biserial-derived <span
-class="math inline">\(d\)</span>-equivalent</th>
+<th>Derived <span class="math inline">\(d_{\rm eq}\)</span></th>
 <th>Label</th>
-<th>Mean acc. diff</th>
+<th>Mean <span class="math inline">\(\Delta\)</span> accuracy</th>
 <th>95% CI</th>
-<th>Raw p</th>
-<th>q</th>
-<th>Design power</th>
-<th>n for power</th>
-<th>Reject</th>
 </tr>
 </thead>
 <tbody>
@@ -936,6 +1237,58 @@ class="math inline">\(d\)</span>-equivalent</th>
 <td>large</td>
 <td>0.0846</td>
 <td>[0.0821, 0.0873]</td>
+</tr>
+<tr>
+<td>RKL</td>
+<td>saturated (r=+1)</td>
+<td>large</td>
+<td>0.0809</td>
+<td>[0.0783, 0.0834]</td>
+</tr>
+<tr>
+<td>beta</td>
+<td>saturated (r=+1)</td>
+<td>large</td>
+<td>0.0764</td>
+<td>[0.0738, 0.0790]</td>
+</tr>
+<tr>
+<td>rcce</td>
+<td>saturated (r=+1)</td>
+<td>large</td>
+<td>0.0787</td>
+<td>[0.0761, 0.0814]</td>
+</tr>
+</tbody>
+</table></div>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Inference and planning diagnostics for the same ordered method rows and matched trials as [@tbl:verdict-effect-estima…"><table id="tbl:verdict-inference-power" data-responsive-table="true">
+<caption>Inference and planning diagnostics for the same ordered method
+rows and matched trials as <a class="xref" href="index.html#tbl:verdict-effect-estimates">Table 7</a>.
+Source relation and study status: the typed primary-sweep report
+supplies every cell for this conditional fixed-world comparison. Raw
+paired-Wilcoxon p-values are accompanied by BH-deflated q-values and the
+resulting rejection indicator for the declared method family.
+Observed-effect design power uses <span class="math inline">\(\alpha =
+0.05\)</span> and alternative <code>greater</code>; the prospective
+<span class="math inline">\(n_{\rm trial}\)</span> targets power 0.80.
+The matched trial is the inferential and planning unit within one seeded
+world. Power and target sample size are conditional approximations
+derived from the observed effect, not independent confirmation,
+calibration, a guarantee of future power, or evidence beyond the
+declared world and rate.</caption>
+<thead>
+<tr>
+<th>Method</th>
+<th>Raw p</th>
+<th>q</th>
+<th>Power</th>
+<th>Target <span class="math inline">\(n_{\rm trial}\)</span></th>
+<th>Reject</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AR</td>
 <td>1.11e-158</td>
 <td>1.11e-158</td>
 <td>1.0000</td>
@@ -944,10 +1297,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 </tr>
 <tr>
 <td>RKL</td>
-<td>saturated (r=+1)</td>
-<td>large</td>
-<td>0.0809</td>
-<td>[0.0783, 0.0834]</td>
 <td>1.11e-158</td>
 <td>1.11e-158</td>
 <td>1.0000</td>
@@ -956,10 +1305,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 </tr>
 <tr>
 <td>beta</td>
-<td>saturated (r=+1)</td>
-<td>large</td>
-<td>0.0764</td>
-<td>[0.0738, 0.0790]</td>
 <td>1.11e-158</td>
 <td>1.11e-158</td>
 <td>1.0000</td>
@@ -968,10 +1313,6 @@ class="math inline">\(d\)</span>-equivalent</th>
 </tr>
 <tr>
 <td>rcce</td>
-<td>saturated (r=+1)</td>
-<td>large</td>
-<td>0.0787</td>
-<td>[0.0761, 0.0814]</td>
 <td>1.11e-158</td>
 <td>1.11e-158</td>
 <td>1.0000</td>
@@ -979,15 +1320,15 @@ class="math inline">\(d\)</span>-equivalent</th>
 <td>Yes</td>
 </tr>
 </tbody>
-</table>
-<table id="tbl:accuracy-at-verdict">
+</table></div>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Per-method consensus accuracy at the verdict rate 0.800 with 95% percentile-bootstrap CI, including the standard KLD…"><table id="tbl:accuracy-at-verdict" data-responsive-table="true">
 <caption>Per-method consensus accuracy at the verdict rate 0.800 with
 95% percentile-bootstrap CI, including the standard <code>KLD</code>
 baseline. The CI is conditional on the seeded matched-trial design and
 resamples trials, not alternate world models. The standard pool sits at
 0.9021 (<span class="math inline">\([0.8993, 0.9049]\)</span>); the
-highest pooled robust mean among the configured members is 0.9867 (<span
-class="math inline">\([0.9865, 0.9869]\)</span>).</caption>
+headline display method RKL has pooled mean 0.9829 (<span
+class="math inline">\([0.9827, 0.9832]\)</span>).</caption>
 <thead>
 <tr>
 <th>Method</th>
@@ -1028,56 +1369,56 @@ class="math inline">\([0.9865, 0.9869]\)</span>).</caption>
 <td>[0.9806, 0.9810]</td>
 </tr>
 </tbody>
-</table>
-<ul>
-<li>Naive pool mean accuracy at the verdict rate: 0.9021 (per-trial mean
-over 960 trials; the bootstrap CI is in <a class="xref" href="index.html#tbl:accuracy-at-verdict">Table 6</a>)</li>
-<li>At least one robust method is a BH-rejected positive contrast:
-Yes</li>
-<li>Headline display method: RKL (tied set: RKL, AR, beta, rcce),
-rank-biserial-derived <span class="math inline">\(d\)</span>-equivalent
-= saturated (r=+1) (large), mean accuracy difference 0.0846 (<span
-class="math inline">\([0.0821, 0.0873]\)</span>), raw <span
-class="math inline">\(p = 1.11 \times 10^{-158}\)</span>, <span
-class="math inline">\(q = 1.11 \times 10^{-158}\)</span>,
-observed-effect design power 1.0000, prospective <span
-class="math inline">\(n\)</span> for power 0.80 is 5</li>
-<li>Headline display rule (largest positive rank-biserial effect_size;
-stable method order tie-break; tie-break: first robust method in
-divergences order): observed-effect design power 1.0000 at the run’s
-<span class="math inline">\(n_{\rm trial} = 960\)</span>; a confirmatory
-replication should budget <span class="math inline">\(n_{\rm trial} =
-5\)</span> for power 0.80 (prospective <span class="math inline">\(n =
-7\)</span>)</li>
-</ul>
-<p>The standard pool degrades, the robust family has conditional
-contrasts, and the verdict carries paired statistics with
-multiple-testing deflation, bootstrap intervals, and a power analysis —
-all produced by the statistics module, not typed into the prose.</p>
+</table></div>
+<p><strong>Reference mean.</strong> Naive-pool mean accuracy at the
+verdict rate is 0.9021 (per-trial mean over 960 trials; the bootstrap CI
+is in <a class="xref" href="index.html#tbl:accuracy-at-verdict">Table 9</a>).</p>
+<p><strong>Positive contrasts.</strong> At least one non-reference
+preset is a BH-rejected positive contrast: Yes.</p>
+<p><strong>Headline display.</strong> The method is RKL (tied set: RKL,
+AR, beta, rcce), with rank-biserial-derived <span
+class="math inline">\(d\)</span>-equivalent saturated (r=+1) (large),
+mean accuracy difference 0.0809 (<span class="math inline">\([0.0783,
+0.0834]\)</span>), raw <span class="math inline">\(p = 1.11 \times
+10^{-158}\)</span>, and <span class="math inline">\(q = 1.11 \times
+10^{-158}\)</span>.</p>
+<p>Its observed-effect design power is 1.0000. Prospective <span
+class="math inline">\(n\)</span> for power 0.80 is 5.</p>
+<p><strong>Display rule.</strong> Under largest positive rank-biserial
+effect_size; stable method order tie-break (tie-break: first robust
+method in divergences order), observed-effect design power is 1.0000 at
+the run’s <span class="math inline">\(n_{\rm trial} = 960\)</span>. A
+confirmatory replication should budget <span
+class="math inline">\(n_{\rm trial} = 5\)</span> for power 0.80
+(prospective <span class="math inline">\(n = 7\)</span>).</p>
+<p>The standard pool degrades and some non-reference presets have
+positive conditional contrasts. The statistics module produces the
+paired tests, multiple-testing adjustment, bootstrap intervals, and
+planning analysis; the prose does not promote them beyond their
+matched-trial estimand.</p>
 <p>The headline label is a deterministic display choice, not a unique
 scientific winner. The complete tied set is RKL, AR, beta, rcce, the
 largest paired mean-difference method is AR, and the worst-rate pooled
 display method is beta. These may differ because they answer different
 descriptive questions.</p>
 <h4
-id="server-side-heuristic-axis-accurate-but-not-guaranteed">Server-side
-heuristic axis: accurate but not guaranteed</h4>
-<p>The verdict above is reported on the <strong>server-side heuristic
-axis</strong>. <a class="xref" href="index.html#fig:robust-weights">Figure 13</a> visualizes
+id="server-side-heuristic-axis-conditional-contrasts-without-theorem-transfer">Server-side
+heuristic axis: conditional contrasts without theorem transfer</h4>
+<p>The comparison above belongs to the heuristic server axis defined in
+<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>. <a class="xref" href="index.html#fig:robust-weights">Figure 15</a> visualizes
 the <code>robust_aggregate</code> divergence-reweighting that
 down-weights agents at pooling time. Its positive formal property is the
-naive-recovery limit of <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a> (<span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>, the 0
+naive-recovery limit of <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a> (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>, the 0
 residual of <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>), and
 it has a scoped no-go result for a declared separable objective class,
-not an objective certificate. It carries <em>no</em> bounded-influence
-guarantee. The effect sizes, CIs, and power above decorate this
-heuristic’s contrasts; they do not certify the per-agent
-generalized-Bayes guarantee, which is established separately on the
-per-client axis in <a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>.</p>
+not an objective certificate.</p>
+<p>The heuristic carries no bounded-influence guarantee. The effect
+sizes, intervals, and planning quantities characterize its conditional
+contrasts; they do not certify the per-agent generalized-Bayes claim,
+which remains separately source-conditional in <a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>.</p>
 <figure id="fig:robust-weights">
-<a class="figure-full-size-link" href="../figures/robust_influence_weights.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/robust_influence_weights.png" style="width:80.0%"
+<a class="figure-full-size-link" href="../figures/robust_influence_weights.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Server-side influence weights assigned by robust_aggregate ."><img src="../figures/robust_influence_weights.png" style="width:80.0%"
+data-slide-manifest="../figures/robust_influence_weights.slides.json"
 alt="Bar chart of server weights for two contaminated and five honest agents. The heuristic assigns near-zero weight to contaminated broadcasts and larger, near-equal weights to honest agents; the dotted line is equal weight." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Server-side influence weights assigned by
 <code>robust_aggregate</code>. Source relation: original project
@@ -1094,33 +1435,30 @@ upward), with each agent’s role (honest / adversary) shown beneath its
 label; y-axis: normalized pooling weight, with weights summing to one
 and the dotted reference marking the equal-weight pool (<span
 class="math inline">\(1/n\)</span>). The <span
-class="math inline">\(2\)</span> contaminated saboteur agents are
-highlighted, with downward arrows marking their suppression below the
-equal-weight reference. The heuristic down-weights saboteurs relative to
-both the equal-weight reference and the <span class="math inline">\(7 -
-2\)</span> healthy agents. Important limitation: this is the
-<strong>server-side heuristic axis only</strong> — the reweighting is
-proven solely at the <code>robustness=0</code> recovery limit and does
-not carry the bounded-influence guarantee of the per-client FedGVI
-losses. Single deterministic run; no error band.</figcaption>
+class="math inline">\(2\)</span> contaminated agents use cross-hatching
+and direct role labels; downward arrows mark suppression below the
+equal-weight reference. No resampling interval applies to this
+deterministic run. This server-heuristic display establishes neither the
+per-client bounded-influence theorem, Byzantine tolerance, nor a
+universal influence bound.</figcaption>
 </figure>
 <h3 id="sec:results-variational">Variational aggregator: conservative
 objective-backed weight control</h3>
-<p>The heuristic axis above is the empirically sharp rule. The
-variational aggregator of <a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a>
-(derived in full in <a class="xref" href="index.html#sec:supp-variational">Section 11</a>) is its
-objective-backed complement: each exact block update does not increase
-the stated free energy <a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>, and a
-converged fixed point is coordinatewise stationary. Two diagnostics make
-the weight behavior concrete, both genuine
-<code>variational_aggregate</code> runs at robustness 1.50.</p>
+<p>The heuristic has the higher point accuracy in the configured verdict
+cell. The variational aggregator of <a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a>,
+derived in <a class="xref" href="index.html#sec:supp-variational">Section 12</a>, is its
+objective-backed complement. Each exact block update does not increase
+the stated free energy <a class="xref" href="index.html#eq:agg-free-energy">Eq. (12)</a>, and a
+converged fixed point is coordinatewise stationary. Two deterministic
+runs show its weight behavior at robustness 1.50.</p>
 <p>First, the descent. On a contaminated colony the free energy falls
 monotonically from 3.2458 to 2.3780 (a drop of 0.8678 over 11
 block-coordinate iterations, converged: Yes), with a largest single-step
 <em>increase</em> of 8.88e-16 — machine zero, the numerical witness of
-the descent theorem (<a class="xref" href="index.html#sec:supp-theorem">Section 11.3</a>).</p>
+the descent theorem (<a class="xref" href="index.html#sec:supp-theorem">Section 12.3</a>).</p>
 <figure id="fig:aggregation-descent">
-<a class="figure-full-size-link" href="../figures/aggregation_descent.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/aggregation_descent.png" style="width:80.0%"
+<a class="figure-full-size-link" href="../figures/aggregation_descent.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Variational free energy F(q, a) as a function of block-coordinate descent iteration."><img src="../figures/aggregation_descent.png" style="width:80.0%"
+data-slide-manifest="../figures/aggregation_descent.slides.json"
 alt="Line plot of variational free energy versus block-coordinate iteration. The trace drops steeply at first, then remains flat through convergence." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Variational free energy <span
 class="math inline">\(F(q, a)\)</span> as a function of block-coordinate
@@ -1129,16 +1467,23 @@ diagnostic; estimand: free energy in nats by iteration; uncertainty:
 none for the deterministic seeded run. The trace is a single
 <code>variational_aggregate</code> fusion of a <span
 class="math inline">\(7\)</span>-agent contaminated colony (robustness
-<span class="math inline">\(1.50\)</span>). x-axis: block-coordinate
-iteration number; y-axis: <span class="math inline">\(F(q, a)\)</span>
-in nats. The curve is monotone non-increasing across all recorded
-iterations (largest single-step increase: <span
+<span class="math inline">\(1.50\)</span>). The x-axis is
+block-coordinate iteration number and the y-axis is <span
+class="math inline">\(F(q, a)\)</span> in nats. Open triangles joined by
+a dash-dot path identify the variational trajectory, a filled triangle
+marks the terminal iterate, enlarged open triangles mark the endpoints
+of the largest observed descent step, and a dark dotted horizontal rule
+marks the final stationary level; these shapes and line patterns
+duplicate color. The curve is monotone non-increasing across all
+recorded iterations (largest single-step increase: <span
 class="math inline">\(8.88 \times 10^{-16}\)</span> nats, at machine
-precision) and the implementation reports converged status Yes at value
-<span class="math inline">\(2.3780\)</span> nats. This verifies
-objective descent on the executed run — a diagnostic the
-<code>robust_aggregate</code> heuristic does not provide. Deterministic
-seeded run; no error band.</figcaption>
+precision), and the implementation reports converged status Yes at <span
+class="math inline">\(F=2.3780\)</span> nats. Iterations are ordered
+states of one deterministic run, not independent replicates, so no
+resampling interval applies. This trace verifies descent only for the
+executed path; it does not certify a global optimum, exhaustive basin
+search, or the separate <code>robust_aggregate</code>
+heuristic.</figcaption>
 </figure>
 <p>Second, the effective-weight response. As one agent is drifted from
 healthy toward a confident-wrong delta, its normalized influence falls
@@ -1147,28 +1492,30 @@ naive log-linear pool grants every agent regardless of how wrong it is.
 The gap between the falling variational curve and the flat naive line is
 the empirical redescending weight response, drawn.</p>
 <figure id="fig:bounded-influence">
-<a class="figure-full-size-link" href="../figures/bounded_influence.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/bounded_influence.png" style="width:80.0%"
-alt="Line plot of a variational server&#x27;s normalized influence weight as one agent drifts toward a confident-wrong belief. The variational weight falls below the flat naive-pool reference; the plot is a tested-path diagnostic." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<a class="figure-full-size-link" href="../figures/bounded_influence.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Normalized influence weight of one probed agent."><img src="../figures/bounded_influence.png" style="width:80.0%"
+data-slide-manifest="../figures/bounded_influence.slides.json"
+alt="An open-triangle dash-dot path shows a variational server&#x27;s normalized influence weight falling as one agent drifts toward a confident-wrong belief. A circle-solid naive reference stays flat, direct endpoint labels identify both rules, and an X marks the first displayed half-weight crossing." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Normalized influence weight of one probed
 agent. Source relation: original project variational-server diagnostic;
-estimand: normalized influence weight; uncertainty: deterministic seeded
-sweep. The weight is shown as a function of the agent’s drift toward a
-confident-wrong belief (delta distribution on the wrong state), under
-<code>variational_aggregate</code> versus the naive log-linear pool.
-x-axis: outlier drift — the mixing parameter carrying the probed agent’s
-belief from the consensus posterior (zero, at consensus) to the
-confidently-wrong delta (one, full delta), increasing left to right;
-y-axis: normalized influence weight of the probed agent in the server
-weight vector. Under <code>variational_aggregate</code> (falling curve)
-the weight collapses below <span class="math inline">\(0.001\)</span> as
-the agent goes extreme, while the naive pool holds it fixed at <span
-class="math inline">\(1/n = 0.143\)</span> regardless (flat line). This
-demonstrates redescending normalized-weight behavior on the tested path;
-the algebraic theorem bounds the raw effective weight, but the figure is
-not an estimator-level B-robustness proof. Deterministic seeded sweep
-over <span class="math inline">\(n = 7\)</span> agents; no error band,
-and no claim that the sharper <code>robust_aggregate</code> heuristic
-inherits this bound.</figcaption>
+estimand: the probed agent’s normalized server weight as its posterior
+drifts toward a confident-wrong delta. The x-axis is outlier drift from
+consensus at zero to the wrong-state delta at one; the y-axis is
+normalized influence weight. The open-triangle dash-dot path is
+<code>variational_aggregate</code>; the circle-solid horizontal
+reference is the naive log-linear pool. Direct endpoint labels name both
+rules and values, shaded separation shows their tested-path gap, and an
+adversarial X with an arrow marks the first displayed point below
+one-half of the naive weight. As drift becomes extreme, the variational
+weight falls below <span class="math inline">\(0.001\)</span>, whereas
+the naive pool remains fixed at <span
+class="math inline">\(1/n=0.143\)</span>. This deterministic seeded
+sweep contains <span class="math inline">\(n=7\)</span> agents in one
+configured colony; drift points are ordered evaluations, not independent
+replications, so no confidence interval or error band applies. The
+pattern is redescending normalized weight along this path, while the
+algebraic property bounds raw effective weight; the figure is not an
+estimator-level B-robustness proof and does not transfer the property to
+the sharper <code>robust_aggregate</code> heuristic.</figcaption>
 </figure>
 <p>The honest trade is conservatism: because <span
 class="math inline">\(F\)</span> carries the <span
@@ -1176,7 +1523,7 @@ class="math inline">\(-H(q)\)</span> entropy term, its consensus is the
 maximum-entropy distribution consistent with the weighted
 cross-entropies, deliberately flatter than the product-of-experts. The
 variational aggregator therefore does <em>not</em> win the peak-accuracy
-verdict of <a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a> — that
+verdict of <a class="xref" href="index.html#sec:results-verdict">Section 7.5.2</a> — that
 remains the sharp heuristic’s role — and the two are reported as
 complements, never conflated: rigor-with-conservatism on one side,
 accuracy-without-an-objective on the other.</p>

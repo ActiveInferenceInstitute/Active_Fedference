@@ -1,0 +1,35 @@
+{
+  "panels": [
+    {
+      "alt": "Every configured drift: triangle/dash-dot variational weights, circle/solid naive weights; shaded gap is deterministic, not an interval.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "431ad6326cc90ba0f1041ddb5276e1839597ae5b649eda2afa26471fdff4ca8e",
+      "src": "../figures/bounded_influence.slide-weight-path.png"
+    },
+    {
+      "alt": "Triangle/dash-dot: variational.\nCircle/solid: naive fixed weight.\nShading: deterministic weight gap.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f10235fb927c94254ae5c8bb2c8cf078625a0e0aa97325207899c72cafea822c",
+      "src": "../figures/bounded_influence.slide-encoding.png"
+    },
+    {
+      "alt": "Outlier drift: 0 is consensus; 1 is confidently wrong.\nThis is a configured path, not estimator-level B-robustness.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1506e039e3c60e3092fe11d1dea7a2d09241035a4439ae9d815b97eafefbf7a8",
+      "src": "../figures/bounded_influence.slide-drift-key.png"
+    },
+    {
+      "alt": "Variational final weight: 0.000535\nNaive fixed weight: 1/n = 0.143",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "66ed26d3b005a6ba562673c210546dd7e6d3cc613cdc3b2568335eb0718c97ff",
+      "src": "../figures/bounded_influence.slide-endpoints.png"
+    },
+    {
+      "alt": "Cross: first configured drift below 0.5 \u00d7 naive.\nDrift = 0.60",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b8f75f14c31844d1c4daf8b1709ccfc4974f05024c4c02452963568dde35abc5",
+      "src": "../figures/bounded_influence.slide-crossing.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

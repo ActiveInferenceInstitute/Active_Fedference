@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -235,8 +277,8 @@
 \section{Supplement: variational aggregation objective and weight
 control}\label{sec:supp-variational}
 
-\begin{frame}[fragile,allowframebreaks]{Supplement: variational
-aggregation objective and weight control}
+\begin{frame}[fragile]{Supplement: variational aggregation objective and
+weight control}
 \ifcsname proposition\endcsname
 \else
 \newtheorem{proposition}{Proposition}
@@ -244,416 +286,560 @@ aggregation objective and weight control}
 
 This supplement gives the full derivation behind
 sec.~5.8.2: the server-side aggregator
-\breaktt{robust\_aggregate} is a heuristic, and a single change of
-divergence direction turns it into block-coordinate descent on a stated
-free energy with a derived, redescending effective-weight update. We
-work throughout with categorical local posteriors \(q_n(s)\) over the
+\texttt{robust\_aggregate} is a heuristic,
+\end{frame}
+
+\begin{frame}{Supplement: variational\ldots{} (part 2)}
+and a single change of divergence direction turns it into
+block-coordinate descent on a stated free energy with a derived,
+redescending effective-weight update.
+\end{frame}
+
+\begin{frame}{Supplement: variational\ldots{} (part 3)}
+We work throughout with categorical local posteriors \(q_n(s)\) over the
 shared latent factor, base weights \(w_n > 0\), robustness \(c > 0\),
 and the consensus \(q\) on the probability simplex. Let \(\lambda>0\) be
 the entropy-weight coefficient, with the current default at
 \(\lambda=1.0\).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Why the sharp heuristic is not
-yet variational}
+\begin{frame}{Why the sharp heuristic is not yet variational}
 \protect\phantomsection\label{sec:supp-why-heuristic}
 The sharp server rule is empirically strong, but this repository has not
-established a variational certificate for it. The heuristic of
-eq.~7 alternates a \emph{reverse-KL} weight
-update \(a_n \leftarrow w_n\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\) with
-the log-linear consensus
+established a variational certificate for it.
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 2)}
+The heuristic of eq.~10 alternates a
+\emph{reverse-KL} weight update
+\(a_n \leftarrow w_n\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\).
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 3)}
+It couples that update with the log-linear consensus
 \(q \leftarrow \mathrm{softmax}(\sum_n a_n \log q_n)\). For the natural
 direct objective \(\sum_n a_n \mathrm{KL}(q_n \,\|\, q) +
 \tfrac{1}{c}\mathrm{KL_{gen}}(a\,\|\,w)\), the reverse-KL rule is the
-\(a\)-minimizer, but the \(q\)-minimizer is the \emph{arithmetic}
-(linear) pool \(q \propto \sum_n a_n q_n\), not the log-linear pool. The
-executable orientation witness confirms this finite-simplex mismatch.
-The following proposition goes further, while retaining a deliberately
-narrow scope.
-
+\(a\)-minimizer.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Why the sharp heuristic is not
-yet variational}
-\begin{equation}\protect\phantomsection\label{eq:raw-log-pool-block}{
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 4)}
+The \(q\)-minimizer is the \emph{arithmetic} (linear) pool
+\(q \propto \sum_n a_n q_n\), not the log-linear pool. The executable
+orientation witness confirms this finite-simplex mismatch. The following
+proposition goes further, while retaining a deliberately narrow scope.
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 5)}
+\begin{equation}\tag{24}\protect\phantomsection\label{eq:raw-log-pool-block}{
 Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)
 }\end{equation}
-
-The proposed raw \(q\)-block is the map in
-eq.~\ref{eq:raw-log-pool-block}.
-
-\begin{equation}\protect\phantomsection\label{eq:separable-server-objective}{
-F(q,a;s,w) \;=\; \sum_n a_n\,\mathrm{KL}(q\,\|\,s_n) + R(a,w) + G(q).
-}\end{equation}
-
-\begin{proposition}[Scoped separable raw-log-pool no-go]\label{prop:raw-log-pool-no-go}
-For categorical state dimension \(K\geq2\), no objective of the declared displayed form
-with \(G\) continuously differentiable,
-\(R\) independent of \(q\) and the \(s_n\), and \(G\) independent of \(a\) and
-the \(s_n\), has \(Q(a;s)\) as its \(q\)-coordinate minimizer for every interior
-raw \(a\in\mathbb{R}_{>0}^N\) and every interior local-posterior collection
-\(s\). Consequently, this objective class cannot realize both block maps of the
-implemented raw-weight heuristic.
-\end{proposition}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Why the sharp heuristic is not
-yet variational}
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 6)}
+The proposed raw \(q\)-block is the map in
+eq.~24.
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 7)}
+\begin{equation}\tag{25}\protect\phantomsection\label{eq:separable-server-objective}{
+\begin{aligned}
+F(q,a;s,w)
+&= \sum_n a_n\,\mathrm{KL}(q\,\|\,s_n)\\
+&\quad + R(a,w) + G(q).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 8)}
+\begin{proposition}[Scoped separable raw-log-pool no-go]\label{prop:raw-log-pool-no-go}
+For \(K\geq2\), no objective in (25) satisfying
+the declared separability and differentiability conditions has \(Q(a;s)\) as
+its \(q\)-coordinate minimizer for every positive interior \(a\) and \(s\).
+\end{proposition}
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 9)}
+Precisely, \(G\) is continuously differentiable and independent of
+\(a,s\), while \(R\) is independent of \(q,s\). Under those conditions,
+this objective class cannot realize both block maps of the implemented
+raw-weight heuristic.
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 10)}
 \emph{Proof sketch.} Fix any non-uniform interior \(q\), a positive
 scalar \(\alpha\), and one local posterior constructed in
-eq.~\ref{eq:raw-log-pool-witness-source}:
+eq.~26:
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:raw-log-pool-witness-source}{
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 11)}
+\begin{equation}\tag{26}\protect\phantomsection\label{eq:raw-log-pool-witness-source}{
 s_i^{(\alpha)} \;=\;
 \frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.
 }\end{equation}
-
-Then \(Q(\alpha;s^{(\alpha)})=q\). Writing \(\Pi\) for projection onto
-the tangent space of the simplex, first-order stationarity of
-eq.~\ref{eq:separable-server-objective} at that same \(q\) requires
-\(\Pi[(\alpha-1)\log q+\nabla G(q)]=0\). The unit-scale construction
-forces \(\Pi\nabla G(q)=0\); any different positive scale then forces
-\(\Pi\log q=0\), contradicting the non-uniform choice of \(q\). The
-executable witness records both exact log-pool identities and the
-nonzero tangential contradiction.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Why the sharp heuristic is not
-yet variational}
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 12)}
+Then \(Q(\alpha;s^{(\alpha)})=q\). Writing \(\Pi\) for projection onto
+the tangent space of the simplex, first-order stationarity of
+eq.~25 at that same \(q\) requires
+\(\Pi[(\alpha-1)\log q+\nabla G(q)]=0\).
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 13)}
+The unit-scale construction forces \(\Pi\nabla G(q)=0\); any different
+positive scale then forces \(\Pi\log q=0\), contradicting the
+non-uniform choice of \(q\). The executable witness records both exact
+log-pool identities and the nonzero tangential contradiction.
+\end{frame}
+
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 14)}
 A companion witness also blocks the obvious normalized-weight escape
 within the same natural data-term class: two interior consensuses yield
 the same normalized reverse-KL weights but different forward-KL
-data-term differences, so a \(q\)-independent differentiable \(R(a,w)\)
-cannot satisfy both simplex-stationarity equations. The implementation
-itself uses raw effective weights, so this companion is a scope check
-rather than a description of the production update.
-
+data-term differences,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Why the sharp heuristic is not
-yet variational}
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 15)}
+so a \(q\)-independent differentiable \(R(a,w)\) cannot satisfy both
+simplex-stationarity equations. The implementation itself uses raw
+effective weights, so this companion is a scope check rather than a
+description of the production update.
+\end{frame}
+
+\begin{frame}[fragile]{Why the sharp heuristic is\ldots{} (part 16)}
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption{Formal MAJ-1 witness inventory. These are deterministic
-finite-simplex proof artifacts, not empirical estimates; no resampling
-interval or deployment claim is
-implied.}\label{tbl:server-theory-witness}\tabularnewline
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.3529}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.6471}}@{}}
+\label{tbl:server-theory-witness}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Formal artifact
+Artifact
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Executable source
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Scope
+Implementation surface and declared scope
 \end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Formal artifact
+Artifact
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Executable source
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Scope
+Implementation surface and declared scope
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-Raw-log-pool contradiction & \breaktt{server\_theory.py}: raw witness &
-The declared raw \(q\)-block map over every interior input \\
-Normalized-weight companion & \breaktt{server\_theory.py}: normalized
-witness & The normalized reparameterization of the same forward-KL
-data-term class \\
-Typed source report & report \texttt{formal\_no\_go} field &
-Deterministic witness metadata, separate from the empirical attack
-grid \\
+Raw contradiction & \texttt{server\_theory.py}; interior inputs and raw
+\(q\)-block \\
 \bottomrule\noalign{}
 \end{longtable}
-
+\endgroup
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Why the sharp heuristic is not
-yet variational}
-Table tbl.~\ref{tbl:server-theory-witness} records the deterministic
-implementation surfaces that bind this scoped result to the typed
-analysis report.
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 17)}
+The witness table in tbl.~13 records the
+deterministic implementation surfaces that bind this scoped result to
+the typed analysis report.
+\end{frame}
 
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 18)}
 The proposition does \textbf{not} say that no objective of any kind
 exists. It does not exclude nonseparable \(q\)--\(a\) couplings,
 source-dependent terms, non-differentiable constructions, or objectives
 that encode selected fixed points without reproducing the update blocks
-for all interior inputs. Thus sec.~5.8 retains
-the heuristic label and claims only the recovery limit, the scoped
-negative result above, and conditional empirical behavior --- never a
-bounded-influence property or an objective-backed status.
+for all interior inputs.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Aggregation free energy and its block
-minimizers}
+\begin{frame}{Why the sharp heuristic is\ldots{} (part 19)}
+Thus sec.~5.8 retains the heuristic label and
+claims only the recovery limit, the scoped negative result above, and
+conditional empirical behavior --- never a bounded-influence property or
+an objective-backed status.
+\end{frame}
+
+\begin{frame}{Aggregation free energy and its block minimizers}
 \protect\phantomsection\label{sec:supp-derivation}
 \begin{definition}[Aggregation free energy]\label{def:aggregation-free-energy}
-For \(c>0\), \(\lambda>0\), consensus \(q\), and effective weights
-\(a = (a_n)\), \(a_n \ge 0\), define \(F_\lambda(q,a)\) as in
-(8) with the forward cross-entropy
-\(\mathrm{CE}(q, q_n) = -\sum_i q_i \log q_{n,i}\), the consensus entropy \(H(q)\),
-and the generalized KL \(\mathrm{KL_{gen}}(a\,\|\,w) = \sum_n[a_n\log(a_n/w_n)-a_n+w_n]\).
+For \(c,\lambda>0\), consensus \(q\), and nonnegative effective weights
+\(a=(a_n)\), define \(F_\lambda(q,a)\) by (12), where
+\(\mathrm{CE}(q,q_n)=-\sum_i q_i\log q_{n,i}\), \(H(q)\) is entropy, and
+\(\mathrm{KL}_{\rm gen}(a\|w)=\sum_n g_n\) for
+\(g_n=a_n\log(a_n/w_n)-a_n+w_n\).
 \end{definition}
-
-\textbf{The \(q\)-block.} For \(\lambda>0\), fixing \(a\), the
-\(q\)-dependent part of \(F_\lambda\) is
-\(\sum_n a_n \mathrm{CE}(q,q_n) - \lambda H(q) = \sum_i q_i\big[\lambda\log q_i - \sum_n a_n \log q_{n,i}\big]\).
-Adding a Lagrange multiplier for \(\sum_i q_i = 1\) and differentiating
-gives \(\lambda\log q_i + \lambda - \sum_n a_n \log q_{n,i} + \mu = 0\),
-i.e.
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Aggregation free energy and its block
-minimizers}
-\begin{equation}\protect\phantomsection\label{eq:agg-q-min}{
-q_i \;\propto\; \exp\!\Big(\tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_{n,i}\Big)
-\;=\; \mathrm{softmax}\!\Big(\tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big)_i,
-}\end{equation}
+\begin{frame}{Aggregation free energy\ldots{} (part 2)}
+\textbf{The \(q\)-block.} For \(\lambda>0\), fixing \(a\), the
+\(q\)-dependent part of \(F_\lambda\) is denoted \(J(q;a)\) and can be
+written in either of two equivalent forms:
+\end{frame}
 
+\begin{frame}{Aggregation free energy\ldots{} (part 3)}
+\begin{equation}\tag{27}\protect\phantomsection\label{eq:agg-q-objective}{
+\begin{aligned}
+J(q;a)
+&=\sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q),\\
+J(q;a)
+&=\lambda\sum_i q_i\log q_i\\
+&\quad-\sum_i\sum_n q_i a_n\log q_{n,i}.
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Aggregation free energy\ldots{} (part 4)}
+Adding a Lagrange multiplier to the block in
+eq.~27 for \(\sum_i q_i = 1\) and differentiating
+gives \(\lambda\log q_i + \lambda - \sum_n a_n \log q_{n,i} + \mu = 0\),
+i.e.
+\end{frame}
+
+\begin{frame}{Aggregation free energy\ldots{} (part 5)}
+\begin{equation}\tag{28}\protect\phantomsection\label{eq:agg-q-min}{
+\begin{aligned}
+q_i
+&\propto \exp\!\Big(
+  \tfrac{1}{\lambda}\sum_n a_n \log q_{n,i}\Big),\\
+q_i
+&= \mathrm{softmax}\!\Big(
+  \tfrac{1}{\lambda}\sum_n a_n \log q_n\Big)_i.
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Aggregation free energy\ldots{} (part 6)}
 the product of the weighted experts --- the consensus update of
-eq.~9. At the default \(\lambda=1.0\), the \(-H(q)\)
+eq.~13. At the default \(\lambda=1.0\), the \(-H(q)\)
 term sharpens the weighted geometric mean into the product-of-experts
 (the entropy bonus that makes the project's log-linear pool a product
 rather than a geometric average).
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Aggregation free energy and its block
-minimizers}
+\begin{frame}{Aggregation free energy\ldots{} (part 7)}
 \textbf{The \(a\)-block.} Fixing \(q\),
 \(\partial F/\partial a_n = \mathrm{CE}(q,q_n) + \tfrac{1}{c}\log(a_n/w_n) = 0\),
 so
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:agg-a-min}{
+\begin{frame}{Aggregation free energy\ldots{} (part 8)}
+\begin{equation}\tag{29}\protect\phantomsection\label{eq:agg-a-min}{
 a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),
 }\end{equation}
+\end{frame}
 
-the weight update of eq.~9. Because
+\begin{frame}{Aggregation free energy\ldots{} (part 9)}
+the weight update of eq.~13. Because
 \(\mathrm{CE}(q,q_n) = H(q) + \mathrm{KL}(q\,\|\,q_n)\), the forward
 direction \(\mathrm{KL}(q\,\|\,q_n)\) --- not the heuristic's reverse
 \(\mathrm{KL}(q_n\,\|\,q)\) --- is the one consistent with the consensus
 update.
+\end{frame}
 
+\begin{frame}{Aggregation free energy\ldots{} (part 10)}
 Each block update is the \emph{exact} minimizer of its block, so
 alternating them is block-coordinate descent: \(F\) is non-increasing at
 every half-step. When the iterates converge, their fixed point is
 coordinatewise stationary.
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Aggregation free energy and its block
-minimizers}
+\begin{frame}{Aggregation free energy\ldots{} (part 11)}
 The implementation keeps numerical failure handling outside that
 theorem. If finite-precision underflow collapses all effective weights,
 it records a fallback event, substitutes the declared base weights to
 return a valid probability vector, and does not certify the substituted
-trajectory as converged. Such a trace is diagnostic evidence about the
-solver boundary, not an instance of the exact block-descent result.
+trajectory as converged.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Formal properties of the
-conservative server rule}
+\begin{frame}{Aggregation free energy\ldots{} (part 12)}
+Such a trace is diagnostic evidence about the solver boundary, not an
+instance of the exact block-descent result.
+\end{frame}
+
+\begin{frame}{Conservative-server properties}
 \protect\phantomsection\label{sec:supp-theorem}
-\begin{theorem}[Variational aggregation: descent, recovery, and effective-weight bound]\label{thm:variational-aggregation}
-Let \(c>0\) and \(\lambda>0\). Each alternating update in
-(\ref{eq:agg-q-min})–(\ref{eq:agg-a-min}) never increases \(F\). Any converged
-fixed point is coordinatewise stationary. As \(c\to 0\) the generalized-KL penalty forces \(a_n \to w_n\)
-and the consensus is the tempered log-linear pool; at the default
-\(\lambda=1.0\) it is
-the log-linear pool (6) exactly, so the
-variational aggregator shares the project log-linear-pool corner of
-(7). Under the qualified bridge of
-Section~5.8, this is only the categorical
-message-combination specialization, not the complete source protocol. Finally,
-the effective weights satisfy
-\(a_n = w_n\exp(-c\,\mathrm{CE}(q,q_n)) \le w_n\) with \(a_n \to 0\) as
-\(\mathrm{KL}(q\,\|\,q_n)\to\infty\). Thus the raw effective-weight update is
-bounded and redescending relative to the realized consensus. This statement does
-not by itself establish a bounded influence function or finite gross-error
-sensitivity for the normalized consensus estimator.
+\begin{theorem}[Properties]
+\label{thm:variational-aggregation}
+For \(c,\lambda>0\), (28)–(29) make \(F\)
+non-increasing. At convergence, \((q^*,a^*)\) is coordinatewise stationary.
+As \(c\to0\), \(a_n\to w_n\) and \(q\) tends to the tempered log-linear pool;
+\(\lambda=1.0\) gives
+(9). Finally,
+\(a_n=w_n\exp[-c\,\mathrm{CE}(q,q_n)]\le w_n\), and
+\(\mathrm{KL}(q\,\|\,q_n)\to\infty\) gives \(a_n\to0\).
 \end{theorem}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Formal properties of the
-conservative server rule}
+\begin{frame}{Conservative-server\ldots{} (part 2)}
+The variational aggregator therefore shares the project log-linear-pool
+corner of (10). Under the qualified bridge of
+sec.~5.8, this is only the categorical
+message-combination specialization, not the complete source protocol.
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 3)}
+The final inequality makes the raw effective-weight update bounded and
+redescending relative to the realized consensus. It does not by itself
+establish a bounded influence function or finite gross-error sensitivity
+for the normalized consensus estimator.
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 4)}
 The objective \(F\) is biconvex (each block convex, the coupling
 \(\sum_n a_n\mathrm{CE}(q,q_n)\) bilinear), so the result concerns
 monotone block updates and converged coordinatewise fixed points, not
 guaranteed convergence to or certification of a global minimum.
+\end{frame}
 
+\begin{frame}{Conservative-server\ldots{} (part 5)}
 \textbf{The effective-weight regime, and why multi-start matters.} The
 weight bound \(a_n \le w_n\) is unconditional
 (\(\mathrm{CE}(q,q_n)\ge 0\) always). The \emph{collapse} \(a_n \to 0\)
 is driven by the agent's divergence \emph{from the realized consensus}
 \(\mathrm{KL}(q\,\|\,q_n)\), and the consensus itself depends on the
-weights. Because \(F\) is biconvex, this couples into a subtlety an
-adversarial review of this work surfaced: a \emph{near-one-hot} saboteur
+weights.
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 6)}
+Because \(F\) is biconvex, this couples into a subtlety an adversarial
+review of this work surfaced: a \emph{near-one-hot} saboteur
 (contamination rate \(\to 1\)) already captures the product-of-experts,
 so a descent seeded \emph{at} that pool stays in a consensus-capture
-basin (high \(F\)) where the saboteur keeps its weight --- even against
+basin (high \(F\)) where the saboteur keeps its weight ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Formal properties of the
-conservative server rule}
-an honest majority. The repair is to search the stated objective more
-carefully: \breaktt{variational\_aggregate} runs \textbf{multi-start}
+\begin{frame}{Conservative-server\ldots{} (part 7)}
+even against an honest majority.
+\end{frame}
+
+\begin{frame}[fragile]{Conservative-server\ldots{} (part 8)}
+The repair is to search the stated objective more carefully:
+\texttt{variational\_aggregate} runs \textbf{multi-start}
 block-coordinate descent (the pool, the uniform belief, and the
 arithmetic-mean seeds) and returns the lowest-observed-\(F\) converged
-candidate. In the configured colony, the uniform/arithmetic seeds reach
-a lower-\(F\) \emph{vetoing} basin, so the saboteur is suppressed even
-at the simplex vertex (pinned qualitatively by the near-vertex
-multi-start test) --- the 267.1\(\times\) suppression of
-fig.~15 is measured across the swept
-contamination grid, whose most extreme point sits just below rate \(1\).
+candidate.
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 9)}
+In the configured colony, the uniform/arithmetic seeds reach a
+lower-\(F\) \emph{vetoing} basin, so the saboteur is suppressed even at
+the simplex vertex (pinned qualitatively by the near-vertex multi-start
+test) --- the 267.1\(\times\) suppression of
+fig.~17 is measured across the swept
+contamination grid,
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 10)}
+whose most extreme point sits just below rate \(1\).
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 11)}
 What remains fundamental to \emph{every} robust fusion rule, and is not
 claimed away: with no honest majority --- a colony split with no
-anchoring plurality --- there is no truth to recover. The observed
-suppression is conditional on the tested colonies and the fixed point
+anchoring plurality --- there is no truth to recover.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Formal properties of the
-conservative server rule}
-selected by a finite multi-start heuristic.
+\begin{frame}{Conservative-server\ldots{} (part 12)}
+The observed suppression is conditional on the tested colonies and the
+fixed point selected by a finite multi-start heuristic.
+\end{frame}
 
-fig.~\ref{fig:descent-comparison} makes the capture and the escape
+\begin{frame}{Conservative-server\ldots{} (part 13)}
+fig.~21 makes the capture and the escape
 concrete on a near-vertex colony: the single (log-linear-pool) start
-settles at \(F = 1.3092\) (the capture basin, where the saboteur keeps
-its weight), while the multi-start descent reaches the genuinely lower
-\(F = -0.2305\) vetoing basin --- a gap of 1.5397 nats that is exactly
-the difference between trusting the natural seed and solving the stated
-objective properly.
-
+settles at \(F = 1.3092\) (the higher observed basin, where the saboteur
+keeps its weight), while one of the configured alternative starts
+reaches a lower observed basin at \(F = -0.2305\) ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Formal properties of the
-conservative server rule}
+\begin{frame}{Conservative-server\ldots{} (part 14)}
+a gap of 1.5397 nats. This finite multistart comparison shows that the
+natural seed can be captured; it neither exhausts all basins nor
+certifies a global optimum.
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Variational free-energy descent on a near-vertex adversarial colony. Source relation: original project objective-descent diagnostic; estimand: free energy F in nats by iteration; uncertainty: none for deterministic seeded runs. The figure compares the single (log-linear-pool) start versus the multi-start descent. The x-axis is the block-coordinate iteration; the y-axis is the free energy F in nats. The single-start trajectory settles in the high-F capture basin (F = 1.3092, the saboteur retains weight); the multi-start trajectory reaches the lower-F vetoing basin (F = -0.2305), a gap of 1.5397 nats. Deterministic seeded runs, so no error band.}]{../figures/descent_comparison.png}
-\caption{Variational free-energy descent on a near-vertex adversarial
-colony. Source relation: original project objective-descent diagnostic;
-estimand: free energy \(F\) in nats by iteration; uncertainty: none for
-deterministic seeded runs. The figure compares the single
-(log-linear-pool) start versus the multi-start descent. The x-axis is
-the block-coordinate iteration; the y-axis is the free energy \(F\) in
-nats. The single-start trajectory settles in the high-\(F\) capture
-basin (\(F = 1.3092\), the saboteur retains weight); the multi-start
-trajectory reaches the lower-\(F\) vetoing basin (\(F = -0.2305\)), a
-gap of 1.5397 nats. Deterministic seeded runs, so no error
-band.}\label{fig:descent-comparison}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Both complete objective trajectories, observed endpoints, lower final reference and terminal gap.}]{../figures/descent_comparison.slide-trajectories.png}
+\refstepcounter{figure}\label{fig:descent-comparison-slide-panel-1}
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Numerical witnesses for descent
-and influence bounds}
-\protect\phantomsection\label{sec:supp-witnesses}
-The analysis pipeline runs \breaktt{variational\_aggregate} at robustness
-\(c = 1.50\) on a contaminated colony and records the free energy after
-each iteration. The descent falls from \(F = 3.2458\) to \(F = 2.3780\)
-(a monotone drop of \(0.8678\) over 11 iterations, converged: Yes); the
-largest single-step \emph{increase} is \(8.88 \times 10^{-16}\), machine
-zero --- the monotonicity of the theorem, witnessed numerically and
-drawn in fig.~14.
-
+\begin{frame}{Conservative-server\ldots{} (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled circles / solid: single start. Open diamonds / dotted: multistart. Both use the same variational method.}]{../figures/descent_comparison.slide-key.png}
+\refstepcounter{figure}\label{fig:descent-comparison-slide-panel-2}
+\end{figure}
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Numerical witnesses for descent
-and influence bounds}
+\begin{frame}{Conservative-server\ldots{} (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Single-start final F: 1.31 nats
+Multi-start final F: -0.231 nats
+Basin gap ΔF: 1.54 nats}]{../figures/descent_comparison.slide-notes-1.png}
+\refstepcounter{figure}\label{fig:descent-comparison-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Iterations: single=10, multi=6}]{../figures/descent_comparison.slide-notes-2.png}
+\refstepcounter{figure}\label{fig:descent-comparison-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Conservative-server\ldots{} (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Two deterministic traces from one configured colony. No uncertainty interval applies. Observed basins do not certify a global optimum.}]{../figures/descent_comparison.slide-scope.png}
+\refstepcounter{figure}\label{fig:descent-comparison-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Numerical witnesses for descent and influence
+bounds}
+\protect\phantomsection\label{sec:supp-witnesses}
+The analysis pipeline runs \texttt{variational\_aggregate} at robustness
+\(c = 1.50\) on a contaminated colony and records the free energy after
+each iteration.
+\end{frame}
+
+\begin{frame}{Numerical witnesses for\ldots{} (part 2)}
+The descent falls from \(F = 3.2458\) to \(F = 2.3780\) (a monotone drop
+of \(0.8678\) over 11 iterations, converged: Yes); the largest
+single-step \emph{increase} is \(8.88 \times 10^{-16}\), machine zero
+--- the monotonicity of the theorem,
+\end{frame}
+
+\begin{frame}{Numerical witnesses for\ldots{} (part 3)}
+witnessed numerically and drawn in fig.~16.
+\end{frame}
+
+\begin{frame}{Numerical witnesses for\ldots{} (part 4)}
 For the effective-weight diagnostic, one agent is drifted from healthy
 toward a confident-wrong delta and its normalized influence is read at
 each drift. Clean, it carries \(0.143\) of the pool; at the most extreme
 swept drift it carries below \(0.001\) --- a factor of 267.1 (computed
-from the unrounded influences, not the display-rounded values above)
-below the fixed 0.143 the naive pool would still grant it
-(fig.~15). This makes the redescending
-normalized-weight behavior visible on the tested path; it is not an
-estimator-level B-robustness proof.
+from the unrounded influences,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Tempered aggregation family for the
-accuracy-guarantee trade}
+\begin{frame}{Numerical witnesses for\ldots{} (part 5)}
+not the display-rounded values above) below the fixed 0.143 the naive
+pool would still grant it (fig.~17).
+
+This makes the redescending normalized-weight behavior visible on the
+tested path; it is not an estimator-level B-robustness proof.
+\end{frame}
+
+\begin{frame}{Tempered aggregation family for the accuracy-guarantee
+trade}
 \protect\phantomsection\label{sec:supp-tempered}
-The aggregator of sec.~\breaktt{sec:supp-derivation} fixes the entropy term
+The aggregator of sec.~12.2 fixes the entropy term
 at unit weight. Relaxing that single coefficient generates a
 one-parameter \emph{tempered} family. Introduce an entropy weight
-\(\lambda > 0\) --- the \textbf{inverse temperature is} \(1/\lambda\)
---- and minimize
-
-\begin{equation}\protect\phantomsection\label{eq:tempered-family}{
-F_\lambda(q, a) \;=\; \sum_n a_n\,\mathrm{CE}(q, q_n)
-\;-\; \lambda\,H(q)
-\;+\; \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-}\end{equation}
-
+\(\lambda > 0\) ---
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Tempered aggregation family for the
-accuracy-guarantee trade}
-Repeating the \(q\)-block derivation of eq.~\ref{eq:agg-q-min} with the
+\begin{frame}{Tempered aggregation\ldots{} (part 2)}
+the \textbf{inverse temperature is} \(1/\lambda\) --- and minimize
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 3)}
+\begin{equation}\tag{30}\protect\phantomsection\label{eq:tempered-family}{
+\begin{aligned}
+F_\lambda(q, a)
+&= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
+&\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 4)}
+Repeating the \(q\)-block derivation of eq.~28 with the
 entropy scaled by \(\lambda\) leaves the \(a\)-block \textbf{untouched}
 and tempers only the consensus update:
-
-\begin{equation}\protect\phantomsection\label{eq:tempered-updates}{
-q \;\propto\; \exp\!\Big(\tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),
-\qquad
-a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-}\end{equation}
-
-The \(\lambda\downarrow0\) endpoint is separately implemented as a
-deterministic tied-argmax rule; it is not obtained by substituting
-\(\lambda=0\) into eq.~\ref{eq:tempered-family} or
-eq.~\ref{eq:tempered-updates}.
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Tempered aggregation family for the
-accuracy-guarantee trade}
+\begin{frame}{Tempered aggregation\ldots{} (part 5)}
+\begin{equation}\tag{31}\protect\phantomsection\label{eq:tempered-updates}{
+\begin{aligned}
+q
+&\propto \exp\!\Big(
+  \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
+a_n
+&= w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 6)}
+The \(\lambda\downarrow0\) endpoint is separately implemented as a
+deterministic tied-argmax rule; it is not obtained by substituting
+\(\lambda=0\) into eq.~30 or
+eq.~31.
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 7)}
 The weight update is \textbf{independent of \(\lambda\)}: the bound
 \(a_n \le w_n\) with collapse \(a_n \to 0\) as
 \(\mathrm{KL}(q\,\|\,q_n) \to \infty\) is unchanged, so the \textbf{raw
-effective-weight bound of sec.~\breaktt{sec:supp-theorem} holds for every}
-\(\lambda > 0\). At \(\lambda = 1.0\) the temperature is unity and
-eq.~\ref{eq:tempered-updates} is \textbf{identical} to the current
-axis-3 aggregator eq.~9 --- the default is
-bit-identical, not merely close. The \(c \to 0\) recovery of
-sec.~\breaktt{sec:supp-theorem} generalizes to the \emph{tempered}
-log-linear pool
+effective-weight bound of sec.~12.3 holds for every}
+\(\lambda > 0\).
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 8)}
+At \(\lambda = 1.0\) the temperature is unity and
+eq.~31 is \textbf{identical} to the current
+axis-3 aggregator eq.~13 --- the default is
+bit-identical, not merely close.
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 9)}
+The \(c \to 0\) recovery of sec.~12.3 generalizes to
+the \emph{tempered} log-linear pool
 \(q \propto \exp(\tfrac{1}{\lambda}\sum_n w_n \log q_n)\); at
 \(\lambda = 1.0\) this is exactly
 \(\mathrm{softmax}(\sum_n w_n \log q_n)\) --- the project's
-\textbf{log-linear pool} eq.~6. Under the
-shared-support, posterior-log-potential, and fixed-weight assumptions of
-sec.~5.8, that pool is a categorical
-specialization of Friston Eq. 7's message-combination term, not a
+\textbf{log-linear pool} eq.~9.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Tempered aggregation family for the
-accuracy-guarantee trade}
-reconstruction of the complete source protocol. Positive-temperature
-members away from that default are tempered pools, not Friston Eq. 7
-itself; the project recovery checks, including ISC-10, remain
-project-local.
+\begin{frame}{Tempered aggregation\ldots{} (part 10)}
+Under the shared-support, posterior-log-potential, and fixed-weight
+assumptions of sec.~5.8, that pool is a
+categorical specialization of Friston Eq. 7's message-combination term,
+not a reconstruction of the complete source protocol.
+\end{frame}
 
+\begin{frame}{Tempered aggregation\ldots{} (part 11)}
+Positive-temperature members away from that default are tempered pools,
+not Friston Eq. 7 itself; the project recovery checks, including ISC-10,
+remain project-local.
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 12)}
 A small empirical sweep over
 \(\lambda \in \{ 0.1, 0.2, 0.3, 0.5, 0.7, 1 \}\) on 10 contaminated
 colonies (5 agents, 2 adversarial) asks whether a single
 \(\lambda^{\ast}\) makes the conservative aggregator narrow the gap to
-the sharp \(\mathrm{robust\_aggregate}\) point-accuracy. The closest
-observed weight is \(\lambda^{\ast} = 0.3\) with an accuracy gap of
-0.0008. \textbf{A lambda* narrows the tested accuracy gap while
+the sharp \(\mathrm{robust\_aggregate}\) point-accuracy.
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 13)}
+The closest observed weight is \(\lambda^{\ast} = 0.3\) with an accuracy
+gap of 0.0008. \textbf{A lambda* narrows the tested accuracy gap while
 preserving the stated weight bound on this grid.} If no \(\lambda\)
 closes that gap while preserving the derived weight update, the result
-is the conservatism trade-off of sec.~8.13, not a
-defect to hide.
+is the conservatism trade-off of sec.~8.13,
+\end{frame}
+
+\begin{frame}{Tempered aggregation\ldots{} (part 14)}
+not a defect to hide.
 \end{frame}
 
 \end{document}

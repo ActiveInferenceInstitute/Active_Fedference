@@ -1,184 +1,142 @@
-# Active Fedference — Forward TODO
+# Active Fedference — Active Forward Backlog
 
-> This is a forward roadmap, not a snapshot of completed work. Test, coverage,
-> report, figure, render, and release counts are generated into `output/` and
-> refreshed by the validation pipeline; they are intentionally not duplicated
-> here because hard-coded counts become stale immediately after a source change.
+> This file contains only open work. Closed implementation and release evidence
+> is retained in [`ISA.md`](ISA.md), source-bound reports, release records, and
+> Git history. Generated counts and hashes are deliberately not copied here.
 
-This file is the top-level signpost for future work. Each open item has a scoped
-page under [`docs/todo/`](docs/todo/README.md) with the implementable details —
-the scoped page is the single owner of an item's scope; this index never
-duplicates it. The phase plan and source map are in
-[`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-plan.md)
-and [`docs/research/literature-audit.md`](docs/research/literature-audit.md).
-Completed work belongs in [`ISA.md`](ISA.md), generated validation reports,
-release notes, or git history — never in this file.
+The authoritative public integration repository is
+[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
+(`public`). The `origin` remote, `docxology/active_fedference`, remains the
+private/interim evidence repository. “Push to main” therefore means: fix an
+exact candidate SHA, pass the applicable confidentiality and verification
+gates, push a `codex/*` branch to the required remotes, obtain green review
+checks, and merge into public `main` with a normal merge commit. It never means
+a direct, forced, squashed, rebased, stale-head, or check-bypassing main push.
 
----
+Every open item has one owner page under
+[`docs/todo/`](docs/todo/README.md). Tiers describe the size and coordination
+surface of the remaining work, not whether its gate is optional: a Minor item
+can still block a release. The source-indexed dependency map is
+[`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-plan.md).
 
-## Baseline Contract
+## Non-negotiable scientific boundary
 
-Preserve the project's current scientific framing while taking any item below:
+1. Client-side FedGVI is the source-theorem-backed robustness axis only under
+   the cited loss, divergence, model, and contamination assumptions.
+2. `robust_aggregate` is a sharp server heuristic with exact recovery at zero
+   robustness and the scoped MAJ-1 no-go result for its declared separable
+   objective class. It has neither a general variational objective nor an
+   estimator-level bounded-influence guarantee.
+3. `variational_aggregate` is objective-backed and has the declared raw
+   effective-weight bound. It does not thereby acquire an estimator-level
+   B-robustness guarantee or a universal accuracy advantage.
+4. Transport integrity, application provenance, calibration, scientific
+   validity, deployment suitability, and downstream decisions are separate
+   claim classes. Passing one class cannot certify another.
 
-1. **Client-side FedGVI** is the source-theorem-backed robustness axis: under
-   the cited FedGVI loss, divergence, and regularity assumptions, bounded
-   β/rcce losses in the generalized posterior inherit the corresponding
-   bounded-influence result. This repository tests recovery and finite
-   empirical cases; it does not independently prove general accuracy or
-   robustness outside those assumptions.
-2. **`robust_aggregate`** is a sharp server heuristic with the recovery-limit
-   guarantee and a scoped no-go proposition: the declared continuously
-   differentiable separable block-objective class cannot produce its raw
-   log-pool update. This is not a universal no-objective theorem and does not
-   make the heuristic objective-backed.
-3. **`variational_aggregate`** is the objective-backed server rule: it minimizes
-   a stated free energy and carries a proven raw effective-weight bound with
-   empirical redescending behavior, but this is *not* an estimator-level
-   bounded-influence (B-robustness) proof for the normalized consensus — and it
-   is conservative in the declared comparison (where its more diffuse
-   consensus does not win peak accuracy), not universally dominated.
-4. No figure, table, README claim, or manuscript sentence grants axis 2 a guarantee
-   it does not have, claims axis 3 has a proven bounded-influence/B-robustness
-   guarantee it does not have, claims axis 3 wins on accuracy unless the
-   statistics show it, or implies true multi-machine federation before that
-   transport exists.
+## Execution order
 
-## Evidence Boundary
+The active critical path is:
 
-The current evidence supports only: conditional robustness under declared
-contamination and attack geometry, communication benefit under complementary
-views, proper-score controls without a demonstrated robust belief-quality
-advantage, the bounded source-bound review-grid slice with preserved negative
-controls, and the formal recovery identities. The mechanism gallery contains
-both positive and negative robust contrasts; the hierarchy runs do not improve
-location; and the BNN complement reverses at the terminal contamination level.
-The hybrid API is a tested representation slice, not a completed continuous
-active-inference task. Any new scientific phase therefore begins with a
-preregistered primary estimand, independent unit, falsifier, and no-claim
-boundary from the
-[scholarship-indexed phase plan](docs/todo/scholarship-and-phase-plan.md).
-No future phase may promote a larger model, a secure channel, a deeper diagram,
-or a positive single attack result into a theorem about `robust_aggregate`.
+1. complete the separate accessible Template renderer review in a clean
+   checkout, use its exact merged commit, and finish the source-only visual-
+   scholarship candidate;
+2. run the candidate-specific portion of MIN-2, push the exact visual branch to
+   both remotes, merge it normally into public `main`, and require green
+   post-merge CI;
+3. run MED-5A: create and inspect the linked Zenodo draft, bind the reserved DOI
+   to the release identity, merge the release-only PR normally, and require
+   green post-merge public-main CI;
+4. certify that exact final public-main merge commit through MIN-2's sequential
+   two-clone campaign and obtain the selected identified owner-author verdict;
+5. run MED-5B's publication phase: after an exact-SHA `pass`, create the
+   immutable tag and verified GitHub release, update and verify the Zenodo draft,
+   pause for fresh approval, then publish and independently verify Zenodo;
+6. complete and normally merge MIN-3's public documentation and repository-
+   discovery handoff, including removal of its closed forward-backlog entry;
+7. finish MED-5B by synchronizing that final public `main` into private
+   `origin/main` exactly once with an equal tree;
+8. execute MAJ-8 preregistration and calibration freeze before MAJ-6 may inspect
+   sealed confirmatory rows; and
+9. select any later scientific version only after the confirmatory result is
+   known and reviewed.
 
----
+ISC-89 and ISC-242 remain open. The exact-SHA owner-author verdict required for
+v1.1 tagging does not close the broader independent/cross-vendor reproduction
+lane, and Zenodo publication still requires a fresh explicit approval after
+the draft and GitHub release have been verified.
 
-## Gates For Any Item
+## Minor — bounded maintenance and evidence checks
 
-The authoritative bounded wrapper is `uv run --locked python scripts/validate_all.py
-full`; its embedded `source` profile runs Ruff, mypy, invariants, the domain
-layer check, and exact-set release build/verification before the full coverage
-suite. The test suite no longer touches the committed `output/` snapshot: the
-subprocess smoke tests redirect all pipeline writes into a temporary scaffold
-via `ACTIVE_FEDFERENCE_PROJECT_ROOT` (see `src/project_paths.py`). As general
-hygiene, still regenerate the publication outputs after source changes that
-alter results, so the committed snapshot stays derived from the declared
-configuration — `tests/test_report_scale_guard.py` verifies its scale. The
-release-grade end-to-end procedure (fresh clone, full ladder, rendered-surface
-count invariants, raster reads, fingerprint verification, and an eligible
-identified-human or genuinely different-vendor release verdict) is
-scoped in
-[`docs/todo/release-and-verification-ladder.md`](docs/todo/release-and-verification-ladder.md).
+| ID | Open item | Prerequisite | Acceptance evidence |
+| --- | --- | --- | --- |
+| MIN-2 | [Clone-correct integration and release verification](docs/todo/release-and-verification-ladder.md) | Exact candidate or final-public-main SHA; clean pinned renderer; safe external namespace and headroom where the clone phase applies | Candidate history audit; green source/render/package gates; two isolated final-SHA clone receipts; eligible structured verdict; ISC-242 remains open until its complete evidence set exists |
+| MIN-3 | [Release documentation and repository-discovery handoff](docs/todo/release-documentation-handoff.md) | Verified public tag, GitHub release, and published Zenodo version | Link and installed-artifact probes show the public repository, version, DOI, checksums, install path, application guide, and accessibility boundaries consistently; no stale development identity remains on current-release surfaces |
 
-```
-# Full source gate
+## Medium — cross-surface integration and publication
+
+| ID | Open item | Prerequisite | Acceptance evidence |
+| --- | --- | --- | --- |
+| MED-4 | [Visual scholarship and accessible-slide integration](docs/todo/visual-scholarship-integration.md) | Green public `main`; exact merged Template renderer commit in a separate clean checkout; source-bound reports; approved sanitized history with additive corrective commits based on refreshed public `main`; no use of the user-owned dirty Template checkout | Reviewed Template merge SHA; exact audited Fedference visual branch; all figure pairs, long descriptions, exact-value fallbacks, HTML/reveal/Beamer/PDF QA, confidentiality audit, green PR and post-merge public-main workflows |
+| MED-5 | [v1.1.0 release, GitHub/Zenodo publication, and private synchronization](docs/todo/v1-1-release-publication.md) | MED-4 merged and green; current metadata approvals for MED-5A; MIN-2 exact-final-SHA certification and `pass` only after the release PR merges and before MED-5B | Release-only normal-merge PR; immutable annotated tag; downloaded-and-reverified GitHub assets; verified linked Zenodo version after fresh publish approval; one tree-identical private-main merge; exact SHAs, URLs, and hashes recorded |
+| MED-6 | [Independent and cross-vendor reproduction](docs/todo/independent-reproduction.md) | Fixed final public artifact set and complete execution packet | Both an identified independent-human/Advisor review and a genuinely different-vendor execution record, with commands, environments, findings, and dispositions; ISC-89 closes only when the conjunctive final-bundle criterion is satisfied |
+
+## Major — scientific upgrades and external execution
+
+| ID | Open item | Prerequisite | Acceptance evidence |
+| --- | --- | --- | --- |
+| MAJ-8 | [Freeze robustness calibration without evaluation leakage](docs/todo/adaptive-robustness-calibration.md) | Published v1.1 application base; verified one-time private synchronization; completed MIN-3 documentation handoff; preregistered three-dataset policy; immutable source/data/split seals | Separate robust and variational selections; complete candidate and failure tables; stable hierarchical-bootstrap selection; frozen design digest and pilot-derived common confirmatory `N`; no final-test access |
+| MAJ-6 | [Run the three-dataset external confirmation](docs/todo/external-benchmark-domain-pilot.md) | Exact valid MAJ-8 frozen-design digest; unchanged source/lock/archive/member/partition seals; fresh write-once namespace | Twelve-cell paired primary family, separate clean noninferiority family, MCSE and Holm dispositions, solver/provenance matrix, exact-value tables, source-bound manuscript artifacts, and integrity-valid receipt regardless of outcome direction |
+| MAJ-2A | [Run portable protocol-faithful FedGVI BNN evidence](docs/todo/faithful-fedgvi-bnn-lane.md) | Source-revision parity matrix; required Torch lane; pilot-frozen local budget | Cavity/site-factor protocol on the declared source datasets; checkpoint/resume evidence; locked paired proper-score inference; explicit CPU/MPS fallback and parity receipts |
+| MAJ-2B | [Run exact source-scale CUDA replication](docs/todo/faithful-fedgvi-bnn-lane.md) | MAJ-2A plus suitable external CUDA resources | Source-configuration execution receipt and source-defined estimand/seed comparison; declarative configuration alone never counts as execution |
+| MAJ-7 | [Reconstruct the Friston source protocols](docs/todo/faithful-friston-protocol-replication.md) | Resolved Eq. 2 and Figures 5, 7, and 9 source matrices | Parameter, estimand, native-unit, and independent-unit parity plus a protocol negative control; unresolved rows retain the paper-constrained label |
+| MAJ-3 | [Confirm continuous/hybrid state-space behavior](docs/todo/beyond-discrete-categorical-state-spaces.md) | Recovery and covariance gates; MAJ-8-style frozen calibration/budget boundary | Matched confirmatory tracking worlds, complete discrete/continuous/oracle controls, proper-score inference, retained failures, and bounded representation claims |
+| MAJ-5 | [Confirm deeper hierarchy across richer tasks](docs/todo/deeper-hierarchy-task-family.md) | MAJ-3 recovery gates; preregistered task-family units and compute budget | Locked Four Rooms and Key-Door comparisons across task units, corrected secondary family, negative controls, source-bound figures/tables, and task-specific fallback language when replication fails |
+| MAJ-4A | [Build an authenticated local multi-node emulator](docs/todo/true-multi-machine-federation.md) | Stable protocol-v1 envelope and reviewed threat model | mTLS-default Docker execution, identity/certificate controls, restart-durable replay, declared network-fault matrix, and in-process consensus equivalence |
+| MAJ-4B | [Validate physical multi-host federation](docs/todo/true-multi-machine-federation.md) | MAJ-4A plus approved distinct hosts and key-management boundary | Receipts from physically distinct hosts with cross-host restart and fault evidence; local containers cannot satisfy this unit |
+
+## Parked, not authorized
+
+The following tracks are defined in the
+[phase plan](docs/todo/scholarship-and-phase-plan.md#parked-tracks) but are not
+active implementation items: a sharper objective-backed replacement for the
+server heuristic, streaming/nonstationary inference, multimodal missingness,
+privacy-preserving federation, and language-summary generation.
+Moving one into the active table first requires its source bundle, threat or
+evaluation protocol, primary estimand, independent unit, falsifier, and claim
+boundary to be reviewed. No parked track has a version, ordering priority, or
+implementation authority until a separate governance review promotes it.
+
+## Shared verification floor
+
+Each item runs the smallest relevant tests during implementation and the full
+applicable gate before integration. The command of record remains:
+
+```bash
+uv run --locked pytest tests/ -m "not slow" -q
+uv run --locked pytest tests/ -m integration -q
+uv run --locked pytest tests/ -m publication -q
+uv run --locked pytest tests/test_examples.py -q
 uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
-
-# Central identity gate
-uv run --locked python -c "
-from fedference.aggregation import robust_aggregate, variational_aggregate, log_linear_pool
-import numpy as np
-b = [[.7,.3],[.6,.4]]
-assert np.allclose(robust_aggregate(b, robustness=0).consensus, log_linear_pool(b))
-assert np.allclose(variational_aggregate(b, robustness=0).consensus, log_linear_pool(b))
-"
-
-# Manuscript provenance gate
-uv run --locked pytest tests/test_xref_integrity.py tests/test_caption_completeness.py \
-  tests/test_token_provenance.py tests/test_manuscript_variables.py -q
-
-# Layer-boundary gate
-! grep -rn "import infrastructure" src/fedference/
-
-# Publication package gate
-uv run --locked python scripts/validate_all.py package
-
-# TODO hygiene gate
-uv run --locked pytest tests/test_docs_contract.py -q
-
-# Ruff lint gate
-uv run --locked ruff check src/ tests/
-# Expected: 0 E501, 0 F401, 0 F811, 0 F841 (CI-clean)
-# line-length 110 in pyproject.toml — E501 spans >=111 trigger
+uv run --locked ruff check src/ tests/ scripts/ examples/ _fedference_build_backend.py
+uv run --locked mypy src/
+uv run --locked python scripts/validate_mermaid.py
+uv run --locked python scripts/validate_mermaid.py --render --renderer npx --output-dir .tmp/mermaid-render
+uv run --locked python scripts/validate_pipeline_freshness.py
+uv run --locked python scripts/build_release.py --verify
+uv run --locked python scripts/validate_all.py full
 ```
 
----
+Publication-facing work additionally requires the real renderer, browser,
+figure, PDF, slide, reproducible-build, installed-wheel/sdist, and
+candidate-history gates named by its scoped page. A green suite establishes
+only the boundary it tests.
 
-## Major — Scientific Upgrades & Deep Extensions
+## Removal and audit rule
 
-Research projects, not engineering tasks; each requires a mathematical design
-pass before implementation, and each begins from the preregistration
-requirements in the [Evidence Boundary](#evidence-boundary). Ordered by impact
-on the project's scientific standing. Residual scope lives in each scoped page.
-
-| # | Priority | TODO | Effort | Dependencies |
-|---|----------|------|--------|-------------|
-| MAJ-8 | 🔴 Critical | [Calibrate robustness without evaluation leakage](docs/todo/adaptive-robustness-calibration.md) — bounded pilot now exercises disjoint calibration/evaluation and overlap rejection; freeze `robustness` and `entropy_weight` before confirmatory evaluation | 1–3 months | Scoped MAJ-1 result; may develop in parallel |
-| MAJ-2A | 🔴 Critical | [Portable protocol-faithful FedGVI BNN](docs/todo/faithful-fedgvi-bnn-lane.md) — synthetic CPU/MPS cavity/site-factor/factor-replacement pilot is executable; extend to source datasets, locked M4 budget, checkpoints, and proper-score inference | 2–6 months | Public foundation |
-| MAJ-2B | 🟢 External | [Exact source-scale CUDA replication](docs/todo/faithful-fedgvi-bnn-lane.md) — preserve the source configuration declaratively and execute only when external CUDA resources exist | External lane | MAJ-2A and external CUDA |
-| MAJ-6 | 🟡 High | [Three-dataset external benchmark pack](docs/todo/external-benchmark-domain-pilot.md) — dataset-level summary and receipt controls are implemented; execute the pinned UCI pack confirmatorily with negative controls and source-bound manuscript artifacts | 2–6 months | Public foundation; calibration policy |
-| MAJ-7 | 🟡 High | [Friston source-protocol reconstruction](docs/todo/faithful-friston-protocol-replication.md) — parity audit and analogue negative control are executable; resolve the Eq. 2 and Figures 5, 7, and 9 matrices before any exact-replication claim | 5–9 months | Source-protocol extraction |
-| MAJ-3 | 🟡 High | [Continuous/hybrid state spaces](docs/todo/beyond-discrete-categorical-state-spaces.md) — matched hybrid controls and singular-covariance negative control are piloted; freeze a confirmatory benchmark with discrete, continuous, and oracle controls | 5–9 months | Hybrid recovery gates; scoped server-theory boundary |
-| MAJ-5 | 🟡 High | [Hierarchy and richer tasks](docs/todo/deeper-hierarchy-task-family.md) — deterministic Four Rooms and Key-Door controls are piloted; preregister task units before a general hierarchy claim | 5–9 months | MAJ-3 recovery gates |
-| MAJ-4A | 🟡 High | [Authenticated local multi-node emulator](docs/todo/true-multi-machine-federation.md) — Docker, mTLS by default, HMAC compatibility, checkpoint/restart, and deterministic network-fault controls | 7–12 months | Stable transport envelope |
-| MAJ-4B | 🟢 External | [Physical multi-host validation](docs/todo/true-multi-machine-federation.md) — require receipts from distinct hosts; never infer this claim from local containers | External v1.x lane | MAJ-4A and external hosts |
-
-## Staged release waves
-
-The release names are evidence gates, not deadlines or claims that the open
-research has already succeeded.
-
-| Wave | Target | Required outcome |
-| --- | --- | --- |
-| Application development | v1.1 development PR | Labeled own-data API/CLI, application receipts, solver-health propagation, replay findings, strict shape validation, installed-artifact smoke, a confidentiality pass over the approved sanitized public history before the public branch push, and hosted review checks; a green PR is not a release |
-| Application release | v1.1.0 | After development integration, a release-identity-only PR sets the approved DOI/date; once that PR is merged and public `main` is green, two clone ladders certify the exact final-main SHA before an eligible identified-human or genuinely different-vendor verdict, owner approvals, immutable tag, checksummed GitHub assets, and separately approved Zenodo publication; an owner-author verdict is not independent external replication |
-| Calibrated external evidence | post-v1.1 scientific version | MAJ-8 freezes leakage-free robust and variational settings before the MAJ-6 three-dataset confirmatory campaign; null or reversed outcomes remain publishable when integrity gates pass |
-| Protocol and task expansion | later v1.x | MAJ-2A/B, MAJ-7, controlled hybrid/hierarchy tasks, and MAJ-4A/B advance only under their separate evidence and external-resource gates |
-| Longer-horizon research | later v1.x | Streaming/nonstationary sharing first, then multimodal missingness; privacy and secure aggregation only after a threat model and leakage protocol |
-
-## Minor — Maintenance and Release Integrity
-
-| # | Priority | TODO | Effort | Dependencies |
-|---|----------|------|--------|-------------|
-| MIN-2 | 🔴 Critical | [Clone-correct integration/release verification ladder](docs/todo/release-and-verification-ladder.md) — run the approved sanitized-history confidentiality gate before any public branch push; after the development and release-identity PRs merge, provision safe headroom, verify wheel/sdist installation twice from isolated clones of exact final public `main`, obtain an eligible structured release verdict, and retain external release authority; owner-author review does not close broader independent reproduction | 1–3 days after headroom | None (hosted checks govern development integration; the history gate blocks public branch exposure, and the two-clone plus verdict gates block tagging and release publication) |
-
-## Roadmap control
-
-The [scholarship-indexed phase plan](docs/todo/scholarship-and-phase-plan.md) is
-an active governance document for the major phases, not an additional major
-item. It remains open because it must be updated whenever a phase changes its
-estimand, falsifier, source bundle, or claim boundary.
-
-## Parked Tracks
-
-On the long-term watchlist, not actively scoped. Their minimum estimand,
-falsifier, source bridge, and claim boundary are recorded in the
-[parked-track plan](docs/todo/scholarship-and-phase-plan.md#parked-tracks), so
-"parked" means "not yet authorized for implementation," not "scientifically
-undefined." Reconsider on community contribution or a relevant upstream FedGVI
-extension.
-
-- **Multi-modal beliefs** (beyond the sentinel world's location×proximity×pose×gaze;
-  prioritize explicit missingness after streaming)
-- **Privacy-preserving federation** (differential privacy, secure aggregation)
-- **Online / streaming active inference** (first v1.x priority; continuous
-  belief updating without episode boundaries)
-- **Natural language output generation** (LLM-based belief summaries, not
-  Friston's mechanical language emergence)
-
----
-
-## Removal Rule
-
-When an item is finished, move only the acceptance evidence to `ISA.md`,
-generated reports, or release notes, then delete its row here and its scoped page
-under `docs/todo/`. Do not leave finished TODO entries behind as status history.
+When an item closes, write its exact acceptance evidence to `ISA.md`, a
+source-bound receipt, release notes, or the relevant hosted record, then remove
+its row and scoped page from this active backlog in the same reviewed change.
+Do not keep closed checkboxes, retrospective narratives, stale pass counts, or
+old candidate hashes here. Git history and the durable evidence surfaces—not
+the forward queue—preserve the audit trail.

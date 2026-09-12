@@ -70,18 +70,10 @@ publication:
     client axis, while the variational-server axis supplies an objective-backed
     redescending weight update.
 
-    The manuscript separates three robustness axes that are often conflated.
-    First, client-side generalized-Bayes updates change how each agent absorbs
-    evidence; this is the rigorous axis, carrying FedGVI's bounded-influence
-    result only under the source theorem's loss, model, and contamination
-    assumptions. Second, a sharp server-side reweighting heuristic suppresses
-    beliefs that pull away from the emerging consensus, while carrying only its
-    recovery-limit guarantee — no proven objective and no bounded-influence
-    bound. Third, a variational aggregation rule supplies a more conservative
-    objective-backed server alternative, with a raw effective-weight bound but
-    not an estimator-level bounded-influence proof for the normalized consensus.
-    Keeping these axes separate lets the paper state exactly which claims are
-    proven, which are empirical, and which remain engineering extensions.
+    Following the manuscript's authoritative three-axis guarantee map, the
+    paper keeps source-conditional client updates, a recovery-only heuristic
+    server rule, and an objective-backed variational server rule as separate
+    claim owners, with no robustness guarantee transferred between them.
 
     The study suite then exercises the framework as an end-to-end research
     system: recovery checks anchor the standard-Bayes limit, belief-sharing
@@ -140,6 +132,15 @@ render:
     slides: true
     docx: false
     epub: false
+  slides:
+    profile: accessible
+    max_prose_words: 80
+    max_table_rows: 8
+    min_figure_area_percent: 70
+    title_font_pt: 28
+    body_font_pt: 20
+    figure_label_font_pt: 16
+    reader_href: ../web/index.html
 
 # Keep source fragments modular while allowing them to flow continuously in
 # the combined PDF. This avoids forced file-boundary page breaks, orphaned
@@ -147,6 +148,11 @@ render:
 # explicit in the manuscript source.
 rendering:
   section_breaks: false
+  template_renderer:
+    schema_version: "template-renderer-lock-v1"
+    repository: "docxology/template"
+    git_commit: "60ba9159124a1a1c91a7bfd51fba4f3b2da64ca6"
+    git_tree_state: "clean"
 
 # LLM review / translation toggles (optional; require Ollama).
 llm:
@@ -187,9 +193,11 @@ experiment:
   # it is kept separate from n_seeds so the compute budget is explicit.
   replicate_seeds: 128
 
-  # Study 4 — contaminated-sentinel robustness sweep (the FedGVI contribution).
-  # `divergences` lists the FedGVI client-divergence labels; KLD is the non-robust
-  # Friston / standard-Bayes baseline (robustness 0), the rest are robust members.
+  # Study 4 — contaminated-sentinel server-fusion robustness sweep.
+  # `divergences` is a legacy compatibility field for server-preset labels: KLD
+  # denotes the project log-linear-pool reference, while each non-KLD label maps
+  # to a distinct configured `robust_aggregate` robustness operating point. These
+  # labels do not denote executed client divergences or transfer client theorems.
   # `n_agents` here is the executed colony size for ALL studies (the sweep block
   # takes precedence in load_experiment_config).
   robustness_sweep:

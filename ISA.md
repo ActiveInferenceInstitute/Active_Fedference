@@ -2,12 +2,12 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 265/267
-iteration: 49-linked-zenodo-draft-semantics
-updated_by: iteration-49-2026-08-28
+progress: 266/268
+iteration: 50-measured-presentation-panels
+updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
 started: 2026-06-24
-updated: 2026-08-28
+updated: 2026-09-07
 algorithm_config:
   forge_not_applicable: "direct local Codex review; external cross-vendor verification was not rerun and ISC-89 remains deferred"
   cato_truncates_after_background_launch: true
@@ -421,7 +421,7 @@ Wave 9 (public research platform foundation):
 - [x] ISC-239: Linear pooling, the current heuristic, the finite-simplex variational family, and an experimental CLR geometric-median comparator have explicit mathematical boundaries; executable KL-orientation witnesses do not masquerade as the still-open MAJ-1 theorem or no-go proposition. Probe: comparator, objective, randomized-simplex, and server-theory tests plus the claim ledger.
 - [x] ISC-240: Machine-readable FedGVI and Friston parity matrices derive the permitted replication label from unresolved/deviating rows, while the hybrid tracking fixture pins discrete, one-component Gaussian, zero-robustness, and covariance-handling recovery boundaries without claiming the full benchmark. Probe: protocol-parity and hybrid-tracking tests.
 - [x] ISC-241: `TODO.md`, scoped roadmap pages, future-work prose, architecture/reference docs, API policy, clean-checkout tracking set, and claim/literature audits agree on v0.1–v1.x sequencing, MAJ-2A/B, MAJ-4A/B, MAJ-7, MAJ-8, null-result policy, local-compute limits, and external release authority. Probe: docs/manuscript contract and cross-reference suites.
-- [ ] ISC-242: Before any public development-branch push, the approved four-commit sanitized replay based on refreshed `public/main` passes the confidentiality gate over every newly reachable commit and blob, including deleted paths, with explicit size and publishability dispositions; the retained private evidence branch remains unchanged, and any further history-policy change requires new approval. Hosted checks govern development PR integration. After the separate release-identity PR merges and public `main` is green, that exact final-main commit passes the full coverage/type/lint/layer/package/publication-freshness/render/release ladder twice from isolated fresh clones with at least 40 GiB of safe headroom before tagging. Tagging then requires one structured `pass` from either an identified human or genuinely different-vendor reviewer; a local subagent is ineligible, and a Daniel Ari Friedman verdict is identified owner-author human review rather than independent external replication. This release checkpoint does not close ISC-89 or the broader independent-reproduction lane. Probe: sanitized-history audit record, two final-main commit-bound clone receipts, eligible verdict record, and explicit external-gate dispositions in the verification record.
+- [ ] ISC-242: Before any public development-branch push, the approved sanitized history, including additive corrective commits, based on refreshed `public/main` passes the confidentiality gate over every newly reachable commit and blob, including deleted paths, with explicit size and publishability dispositions; the retained private evidence branch remains unchanged, and any further history-policy change requires new approval. Hosted checks govern development PR integration. After the separate release-identity PR merges and public `main` is green, that exact final-main commit passes the full coverage/type/lint/layer/package/publication-freshness/render/release ladder twice from isolated fresh clones with at least 40 GiB of safe headroom before tagging. Tagging then requires one structured `pass` from either an identified human or genuinely different-vendor reviewer; a local subagent is ineligible, and a Daniel Ari Friedman verdict is identified owner-author human review rather than independent external replication. This release checkpoint does not close ISC-89 or the broader independent-reproduction lane. Probe: sanitized-history audit record, two final-main commit-bound clone receipts, eligible verdict record, and explicit external-gate dispositions in the verification record.
 
 Wave 10 (comprehensive public-platform correctness and claim audit):
 - [x] ISC-243: Run receipts use schema 1.1, bind one canonical configuration artifact plus Git tree disposition, validate UTC ordering and full revisions, reject path/symlink escape, and write atomically; the installed CLI validates runner/profile/seeds/output policy before creating files and supports strict clean-tree verification. Probe: evidence and installed-CLI tests plus a wheel-installed run/verify round trip.
@@ -1198,3 +1198,23 @@ them.
   malformed-success and semantic-echo response inspection,
   recovery/revalidation, negative HTTP, constructor, CLI-summary, and
   idempotent-reuse tests in `tests/test_zenodo.py`.
+
+### Iteration 50 — measured presentation panels
+
+- [x] ISC-273: Every required accessible-slide figure has a complete,
+  source-declared presentation inventory, a typed raster-digest/label manifest,
+  paired PNG/PDF artifacts, source-bound registry and freshness coverage, and
+  final embedded labels at or above 16 points. Canonical portrait figures,
+  every method-specific interval, common comparison scales, typed flow edges,
+  and no-claim boundaries are preserved. All 33 required figure families have
+  source-owned presentation producers and checked manuscript selectors. Source
+  `ab1e9bd1` with merged renderer `cea2904d` passed full publication production,
+  2,824 tests, and 90.58% combined line-and-branch coverage. Final placement
+  located all 562 panels with a minimum effective label size of 16.599 points.
+  Complete visual review covered the 90-page combined PDF, 44 slide PDFs
+  totaling 1,990 pages, and all 33 HTML figure/caption families; prior findings
+  were individually resolved. Tagged PDF structure and language passed;
+  PDF/UA conformance is not established. This local acceptance does not close
+  ISC-89 or ISC-242 or supply the final owner-author release verdict. Probe:
+  presentation boundary, figure/caption contracts, real paired renderer,
+  full artifact inventory, and complete final PDF/HTML visual inspection.

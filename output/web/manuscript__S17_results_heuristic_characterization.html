@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>S17_results_heuristic_characterization.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -471,45 +635,48 @@ influence and finite-breakdown characterization</h2>
 <p>The server-side <code>robust_aggregate</code> rule is the sharp
 heuristic axis of the three-axes design (<a class="xref" href="index.html#sec:robustness-axes-results">Section 7.2.1</a>).
 It has BH-rejected positive contrasts in the configured accuracy verdict
-in <a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a> but has
-declared reversals elsewhere. Unlike the objective-backed
-<code>variational_aggregate</code>, no closed-form free-energy
-derivation has been established for it in this repository. A separate
-scoped proposition in the aggregation-objective supplement rules out the
-declared continuously differentiable, separable forward-KL objective
-class for the implementation’s raw log-pool block; it does not rule out
-every broader coupled or fixed-point-only construction. The rule
-therefore remains a heuristic whose positive formal property is
-bit-identical recovery of the log-linear pool at
-<code>robustness = 0</code> (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). This
+in <a class="xref" href="index.html#sec:results-verdict">Section 7.5.2</a> but has
+declared reversals elsewhere.</p>
+<p>Unlike the objective-backed <code>variational_aggregate</code>, no
+closed-form free-energy derivation has been established for it in this
+repository. A separate scoped proposition in the aggregation-objective
+supplement rules out the declared continuously differentiable, separable
+forward-KL objective class for the implementation’s raw log-pool block;
+it does not rule out every broader coupled or fixed-point-only
+construction.</p>
+<p>The rule therefore remains a heuristic whose positive formal property
+is bit-identical recovery of the log-linear pool at
+<code>robustness = 0</code> (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>). This
 section does not promote the scoped negative result into an objective
 certificate; it <em>measures</em> the heuristic empirically, and the
 measurement makes its honesty boundary concrete.</p>
-<p>We measure two things (<a class="xref" href="index.html#fig:heuristic-breakdown">Figure 30</a>).
+<p>We measure two things (<a class="xref" href="index.html#fig:heuristic-breakdown">Figure 33</a>).
 First, a <strong>numerical influence function</strong>: we drag one
 agent’s belief a growing fraction toward a confident-wrong contamination
 point and read its converged pooling weight. At
 <code>robustness = 0</code> the weight is a flat <span
 class="math inline">\(1/n\)</span> at every perturbation — the naive
 pool never down-weights anyone — which anchors the instrument to the
-proven recovery corner. At positive robustness the dragged agent’s
-influence falls (not strictly monotonically — a tiny drag can briefly
-<em>raise</em> it before the divergence penalty dominates, an honest
-non-monotonicity we report rather than smooth away).</p>
+proven recovery corner.</p>
+<p>At positive robustness the dragged agent’s influence falls (not
+strictly monotonically — a tiny drag can briefly <em>raise</em> it
+before the divergence penalty dominates, an honest non-monotonicity we
+report rather than smooth away).</p>
 <p>Second, and more consequentially, a <strong>breakdown
 witness</strong>. We add colluding confident-wrong adversaries — all
 broadcasting the same false state — to a fixed colony of 5 honest
 sentinels until each aggregator’s consensus argmax is <em>captured</em>
 (flips to the adversaries’ target). The sharp heuristic is captured by 2
 colluders; the conservative objective-backed variational rule withstands
-more, capitulating only at 4. Both counts are <strong>finite</strong>
-(Yes): a colluding majority overwhelms either rule. That finite
-breakdown point is the honest headline: neither rule has an
-unconditional truth-recovery claim under coordinated collusion. The
-absence of an objective theorem for <code>robust_aggregate</code> is a
-separate derivational boundary, and the finite capture measurement
-neither establishes estimator-level B-robustness nor refutes the
-variational rule’s stated raw effective-weight result.</p>
+more, capitulating only at 4.</p>
+<p>Both counts are <strong>finite</strong> (Yes): a colluding majority
+overwhelms either rule. That finite breakdown point is the honest
+headline: neither rule has an unconditional truth-recovery claim under
+coordinated collusion. The absence of an objective theorem for
+<code>robust_aggregate</code> is a separate derivational boundary.</p>
+<p>The finite capture measurement neither establishes estimator-level
+B-robustness nor refutes the variational rule’s stated raw
+effective-weight result.</p>
 <p>The report also runs a declared diagnostic grid over state dimension,
 honest-agent count, robustness, four simple attack mechanisms, and
 balanced versus adversary-downweighted base weights. This is a coverage
@@ -518,35 +685,34 @@ and not a theorem search over all simplexes. A finite capture row is
 evidence against a universal guarantee; an uncaptured row is only “not
 found within this search budget.”</p>
 <figure id="fig:heuristic-breakdown">
-<a class="figure-full-size-link" href="../figures/heuristic_breakdown.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/heuristic_breakdown.png" style="width:95.0%"
-alt="Three-panel server-heuristic diagnostic: numerical influence along a probed contamination path, finite colluder counts needed to capture consensus for two aggregators, and the fraction of a declared attack grid with capture." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<a class="figure-full-size-link" href="../figures/heuristic_breakdown.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Three-panel empirical characterization of the server-side heuristic."><img src="../figures/heuristic_breakdown.png" style="width:95.0%"
+data-slide-manifest="../figures/heuristic_breakdown.slides.json"
+alt="Three-panel server-heuristic diagnostic: circle-solid versus square-dashed numerical influence, forward- versus dotted-hatch finite colluder counts for two aggregators, and directly labeled fractions of a declared attack grid with capture." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Three-panel empirical characterization of
 the server-side heuristic. Source relation: original project diagnostic
-of the server-side heuristic; estimand: numerical influence,
-finite-search breakdown count, and declared-grid capture fraction;
-uncertainty: deterministic seeded colonies, so no resampling interval is
-shown. Empirical characterization of the <code>robust_aggregate</code>
-heuristic (two panels plus an optional attack-grid diagnostic). Left
-panel (numerical influence): the x-axis is the perturbation fraction by
-which one agent’s belief is dragged toward a confident-wrong
-contamination point; the y-axis is that agent’s converged normalized
-pooling weight, plotted for the naive pool (flat at <span
-class="math inline">\(1/n\)</span>, dotted reference) and the robust
-heuristic (down-weighting). The inset reports the final
-naive-minus-robust weight gap at the end of the probed path. Labeled
-“empirical, at these settings — not a guarantee.” Right panel (measured
-breakdown point): the x-axis is the aggregator (robust heuristic vs
-objective-backed variational); the y-axis is the number of colluding
-confident-wrong adversaries that captures that aggregator’s consensus
-argmax — the robust heuristic at <span class="math inline">\(k =
-2\)</span> and the variational rule at <span class="math inline">\(k =
-4\)</span>. Both bars are finite, so neither rule has an unconditional
-truth-recovery guarantee against coordinated collusion; this does not
-negate the variational rule’s per-agent effective-weight theorem.
-Deterministic seeded colonies (no resampling), so no error band is
-applicable. The optional third panel reports the fraction of declared
-grid rows with finite capture within the configured adversary budget; it
-is not a probability or a global breakdown bound.</figcaption>
+of <code>robust_aggregate</code>; estimands: numerical influence,
+finite-search capture count, and declared-grid capture fraction. In
+Panel A, the x-axis is the perturbation fraction moving one agent toward
+a confident-wrong belief and the y-axis is its converged normalized
+pooling weight. Circle-solid and square-dashed paths distinguish the
+naive pool and robust heuristic; a dark dotted rule marks <span
+class="math inline">\(1/n\)</span>, and a direct arrow label gives the
+terminal gap. In Panel B, the x-axis is aggregator and the y-axis is
+colluding-adversary count at consensus-argmax capture: <span
+class="math inline">\(k=2\)</span> for the heuristic and <span
+class="math inline">\(k=4\)</span> for the objective-backed variational
+rule. Forward and dotted hatches, dark keylines, method names, and
+direct <code>captured at k</code> labels duplicate color. Panel C’s
+x-axis is declared attack mechanism and its y-axis is the fraction of
+searched rows with finite capture inside the configured budget; direct
+percentages identify each bar. Units are normalized weight, adversary
+count, and finite-grid fraction. This is a deterministic finite grid
+with no population resampling; each declared seeded scenario row is a
+computational unit, not an exchangeable population replicate, so no
+confidence interval is shown. The grid fraction is neither a probability
+nor a global breakdown bound, and these settings do not establish
+bounded influence, Byzantine tolerance, or universal
+robustness.</figcaption>
 </figure>
 </main>
 </body>

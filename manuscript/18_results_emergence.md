@@ -1,40 +1,41 @@
-## Bayesian model reduction selects supported structure {#sec:results-emergence}
+## Configured BMR sign control passed {#sec:results-emergence}
 
-The first two studies fixed the model's structure and asked how well its beliefs
-and learned parameters track the world; the third asks whether the model can also
-shed structure it never needed. The estimand is a Bayesian-model-reduction
-free-energy difference; the design is a categorical BMR diagnostic related to the
-structure-emergence mechanism discussed by Friston et al. [@friston2024federated],
-through the Bayesian-model-reduction lineage [@friston2011post]. A full Dirichlet
-model carries a redundant state — one column the data never support — ranging over
-$n = {{EMERGENCE_N}}$ candidate states. Bayesian model reduction scores swapping
-the prior for a *reduced* prior that prunes that column; the free-energy
-difference $\Delta F$ is the model-reduction objective [@eq:bmr-deltaf]. This is a
-single deterministic evidence comparison, so there is no resampled sample and, by
-design, no confidence interval or paired test. The structure-learning frame here
-is the discrete-state model-selection thread the active-inference community has
-developed [@smith2020active], applied to a colony's shared generative model.
+The first two studies fixed the model structure. This third study instead checks
+the sign of a configured Bayesian-model-reduction comparison. Its estimand is the
+BMR free-energy difference for two candidate likelihood-column prunings. The
+categorical diagnostic is related to the model-reduction mechanism discussed by
+Friston et al. [@friston2024federated] and the post-hoc BMR lineage
+[@friston2011post]. It is not a discovery claim about structure emergence.
 
-$\Delta F$ is positive for the correct (redundant) pruning — the simpler model
-has more evidence and the run converges on it — and negative for the control
-pruning of a well-supported column, which is correctly rejected:
+The fixed posterior ranges over $n = {{EMERGENCE_N}}$ candidate states. One
+likelihood column is unsupported by the configured evidence; another is a
+supported control. BMR substitutes a reduced prior for each candidate and
+computes $\Delta F$ [@eq:bmr-deltaf]. This is one deterministic closed-form
+comparison, so no resampled sample, confidence interval, or paired test applies
+[@smith2020active].
 
-- $\Delta F$, pruning the **redundant** column: {{EMERGENCE_DELTA_F_REDUNDANT}}
-  (positive — reduction accepted)
-- $\Delta F$, pruning a **supported** column (control):
-  {{EMERGENCE_DELTA_F_SUPPORTED}} (negative — reduction rejected)
-- Emergence converged (redundant accepted, supported rejected):
-  {{EMERGENCE_CONVERGENCE}}
+$\Delta F$ is positive for the declared redundant-column pruning, so the reduced
+candidate is favored for this fixed posterior. **Redundant-column result:**
+$\Delta F={{EMERGENCE_DELTA_F_REDUNDANT}}$; the configured reduction is accepted.
 
-The sign pattern
-$\Delta F_{\text{redundant}} > 0 > \Delta F_{\text{supported}}$ is the demonstrated
-emergence verdict: the colony's generative model prunes the structure its data
-never support and retains the structure they do.
+It is negative for the declared supported-column control. **Supported-column
+control:** $\Delta F={{EMERGENCE_DELTA_F_SUPPORTED}}$; that reduction is
+rejected.
 
-![Bayesian-model-reduction (BMR) free-energy difference. Source relation: source-mechanism analogue to the model-reduction mechanism in Friston et al. (2024), Fig. 9; estimand: BMR $\Delta F$ in nats; uncertainty: deterministic closed-form comparison. $\Delta F$ for two candidate likelihood-column prunings in a colony with $n = {{EMERGENCE_N}}$ hidden states. x-axis: the candidate pruning (redundant column vs. supported-column control); y-axis: $\Delta F$ in nats, where a positive value means the reduced model has more evidence and the pruning is accepted. The redundant-column bar is positive ($\Delta F = {{EMERGENCE_DELTA_F_REDUNDANT}}$ nats) — the data never supported this structure, so pruning it is the correct decision — while the supported-column control bar is negative ($\Delta F = {{EMERGENCE_DELTA_F_SUPPORTED}}$ nats), correctly rejected. The opposing signs constitute the emergence verdict ({{EMERGENCE_CONVERGENCE}}). No error bar applies: BMR is a deterministic closed-form comparison on a single posterior.](../output/figures/emergence_bmr.png){#fig:emergence-bmr width=80%}
+**Configured sign-control disposition:** redundant accepted and supported
+rejected, recorded as {{EMERGENCE_CONVERGENCE}}.
 
-[@fig:emergence-bmr] contrasts the two prunings and annotates the convergence
-verdict.
+The observed sign pattern
+$\Delta F_{\text{redundant}} > 0 > \Delta F_{\text{supported}}$ passes the
+configured control: this fixed posterior favors pruning the declared redundant
+column and rejects pruning the declared supported column. It does not show that
+arbitrary data or model families will discover, prune, or retain the correct
+structure.
+
+![Configured Bayesian-model-reduction sign control. Source relation: source-mechanism analogue to the model-reduction mechanism in Friston et al. (2024), Fig. 9; estimand: BMR $\Delta F$ in nats for two declared pruning candidates. The x-axis is candidate likelihood-column pruning, ordered as the redundant column and supported-column control; the y-axis is $\Delta F$, where positive values favor the reduced model and negative values reject it. Dotted hatching and a dark teal keyline identify the favored redundant-column control, while cross-hatching and a dark neutral keyline identify rejected supported-column pruning; direct signed value labels and a dark dotted zero rule duplicate color. On the fixed posterior, redundant-column pruning gives $\Delta F = {{EMERGENCE_DELTA_F_REDUNDANT}}$ and supported-column pruning gives $\Delta F = {{EMERGENCE_DELTA_F_SUPPORTED}}$, so the configured sign control passes ({{EMERGENCE_CONVERGENCE}}). This is one deterministic closed-form comparison with no independent replication unit, resampling interval, confidence interval, or error bar. The configured signs do not establish universal structure emergence, consistent recovery of true structure, or exact reproduction of the source simulation.](../output/figures/emergence_bmr.png){#fig:emergence-bmr width=80% data-slide-manifest="../output/figures/emergence_bmr.slides.json"}
+
+[@fig:emergence-bmr] contrasts the two configured prunings and reports the sign
+control.
 
 Studies 1–3 all ran in a *trusting* world, where every broadcast belief is
 honest. The contamination sweep that follows removes that assumption, and it is

@@ -1,0 +1,119 @@
+{
+  "panels": [
+    {
+      "alt": "log_linear_pool by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "1da6910db6cbe80c21a560d5dec1e4f9c8652c2f561ba5d89575ae77cb5bd925",
+      "src": "../figures/complexity_scaling.slide-group-1-log-linear-pool.png"
+    },
+    {
+      "alt": "log pool by agents. Expected exponent: 1. Observed log-log slope: 0.961.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8117461329ca71dbc5385f64582bd32e51f660ba8dce7d4a96f08c5f4119550a",
+      "src": "../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png"
+    },
+    {
+      "alt": "robust_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "300a1cf5ee8a42783dd6466abd880f1ee08e777f673387922885df912a4cd676",
+      "src": "../figures/complexity_scaling.slide-group-1-robust-aggregate.png"
+    },
+    {
+      "alt": "heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.9395.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d0a60195a8f540124ef81584c0ae946d00ecebe684f167a4f286485178148ab4",
+      "src": "../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png"
+    },
+    {
+      "alt": "variational_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e3539b2ef4d4f54aaf9f8a038e72e0a38a296942a967cee38eb45d3f73cfdde0",
+      "src": "../figures/complexity_scaling.slide-group-1-variational-aggregate.png"
+    },
+    {
+      "alt": "variational by agents. Expected exponent: 1. Observed log-log slope: 0.7973.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e46d4d5e33086f43ef0b11c5214ee464d321c694d1da08c91658cb406879fe5a",
+      "src": "../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png"
+    },
+    {
+      "alt": "share_round_naive by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ff6dde2dbb82aac1547c0efc4b49adf667062e0387945d2eaed649a766ed0021",
+      "src": "../figures/complexity_scaling.slide-group-2-share-round-naive.png"
+    },
+    {
+      "alt": "sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.665.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "78c24fa5b9bf9a5eb1a6daec4fe328f5690cdb82252cda18aef0fade3fab9cdd",
+      "src": "../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png"
+    },
+    {
+      "alt": "share_round_robust by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "1bd9e7a33cd294548a328ee2cfc8a0fa7585d877fe0dc05dabbc34f18ec90435",
+      "src": "../figures/complexity_scaling.slide-group-2-share-round-robust.png"
+    },
+    {
+      "alt": "sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.914.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1699908fd0b9de6bbb279ab48e71ff415afb5cd4c050e17f7c041f212750e6d8",
+      "src": "../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png"
+    },
+    {
+      "alt": "log_linear_pool by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "5bee9f0bb2e3c882f24da1c2984f30e1a35d34c4d4cd80f59fc009410934905a",
+      "src": "../figures/complexity_scaling.slide-group-3-log-linear-pool.png"
+    },
+    {
+      "alt": "log pool by states. Expected exponent: 1. Observed log-log slope: 0.9695.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "550268fcb846d84230c770dc4036e5054cea6f81229a739d7980f301f9a6ec18",
+      "src": "../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png"
+    },
+    {
+      "alt": "robust_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "98a03deec56e88aa2c2cdb647fd6d549a6c236f77d0668d917e8e545b3decadb",
+      "src": "../figures/complexity_scaling.slide-group-3-robust-aggregate.png"
+    },
+    {
+      "alt": "heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.963.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fd12e20352433c73d077d690699fc14efc107b27ac7c188ffa5b0f27496497c8",
+      "src": "../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png"
+    },
+    {
+      "alt": "variational_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "cb0e275f5054986bea9c6f1ee022d0b2ec9721057d7b40486a0942b0f6c58482",
+      "src": "../figures/complexity_scaling.slide-group-3-variational-aggregate.png"
+    },
+    {
+      "alt": "variational by states. Expected exponent: 1. Observed log-log slope: 0.9602.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7c12588fd0424e91274f8d402abe0890c6946766f558b1153517f41a5164282e",
+      "src": "../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png"
+    },
+    {
+      "alt": "infer_states by modalities: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e180bf47f1fa46a025a2ade077756801665715966ddcee0a2d1f2fcd3e6eee78",
+      "src": "../figures/complexity_scaling.slide-group-4-infer-states.png"
+    },
+    {
+      "alt": "state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.6413.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9d77b88d96fdbd6b124a32914dc8fe81c63857bb099225bd1c2625460db6cffd",
+      "src": "../figures/complexity_scaling.slide-group-4-infer-states-guide.png"
+    },
+    {
+      "alt": "Medians over 5 timing repeats; min\u2013max bars are observed ranges, not confidence intervals. Normalized dotted guides are symbolic-order references. Seed 20260728.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e3de38075813273102b7ae129fdd676a5e6c3abf50f213f87462f9b441ff559f",
+      "src": "../figures/complexity_scaling.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

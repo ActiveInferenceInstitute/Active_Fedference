@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Related work: active inference, federated Bayes, and the scoped bridge — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-8e416208c3b5">
+<h1 id="presentation-title-8e416208c3b5" class="visually-hidden">Related work: active inference, federated Bayes, and the scoped bridge — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:related-work" class="slide level2 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-339d38db27d9">
+<h2 class="section-divider" id="slide-heading-339d38db27d9">Related work: active inference, federated
+Bayes, and the scoped bridge</h2>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Related work: active inference, federated Bayes, and the scoped bridge, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-22edc929fbfe">
+<h2 class="prose-slide"
+aria-label="Related work: active inference, federated Bayes, and the scoped bridge, part 2" id="slide-heading-22edc929fbfe">Related
+work (part 2)</h2>
+<p>This work sits at the boundary between two research communities with
+different objects of inference. Each cited thread contributes a real
+component; this paper extends the intersection without claiming that
+either literature is exhausted. The positioning is therefore against the
+reviewed sources and their assumptions,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Related work: active inference, federated Bayes, and the scoped bridge, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a59ca1cb18ee">
+<h2 class="prose-slide"
+aria-label="Related work: active inference, federated Bayes, and the scoped bridge, part 3" id="slide-heading-a59ca1cb18ee">Related
+work (part 3)</h2>
+<p>not against an absolute claim about everything the field has or has
+not done.</p>
+</section>
+<section id="sec:related-historical" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7d49686d7418">
+<h2 class="prose-slide" id="slide-heading-7d49686d7418">Pre-modern probability, inverse probability, and
+collective judgment</h2>
+<p>These historical sources provide conceptual lineage, not evidence
+that early authors anticipated KL minimization, active inference, or
+federation. Pascal and Fermat, Huygens, Montmort, Bernoulli,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-faafc1a4fd3d">
+<h2 class="prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 2" id="slide-heading-faafc1a4fd3d">Pre-modern
+probability… (part 2)</h2>
+<p>and de Moivre made expectation and uncertain evidence objects of
+calculation <span class="citation"
+data-cites="pascal1654probability huygens1657ratiociniis montmort1708essay bernoulli1713ars demoivre1718doctrine">(Pascal
+and Fermat 1654; Huygens 1657; Montmort 1708; Bernoulli 1713; Moivre
+1718)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f845c0947cc6">
+<h2 class="prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 3" id="slide-heading-f845c0947cc6">Pre-modern
+probability… (part 3)</h2>
+<p>Bayes and Price framed inference from observed events to an unknown
+chance, and Laplace generalized inference about causes <span
+class="citation" data-cites="bayes1763essay laplace1774memoire">(Bayes
+1763; Laplace 1774)</span>. Their relevance here is vocabulary for
+generative-model inversion. The executable recovery identity is instead
+a modern,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e6ff789b6b7">
+<h2 class="prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 4" id="slide-heading-7e6ff789b6b7">Pre-modern
+probability… (part 4)</h2>
+<p>project-local result of <span class="cross-reference">Section 5.8</span>
+and <span class="cross-reference">Section 6</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67dd060bc72c">
+<h2 class="prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 5" id="slide-heading-67dd060bc72c">Pre-modern
+probability… (part 5)</h2>
+<p>Daniel Bernoulli’s expected-utility treatment and the aggregation
+work of Borda and Condorcet connect uncertain judgment to action and
+collective choice <span class="citation"
+data-cites="bernoulli1738mensura borda1784elections condorcet1785essai">(Bernoulli
+1738; Borda 1784; Condorcet 1785)</span>. They motivate questions about
+competence, independence, weights, and stakes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c8f8e503efb0">
+<h2 class="prose-slide"
+aria-label="Pre-modern probability, inverse probability, and collective judgment, part 6" id="slide-heading-c8f8e503efb0">Pre-modern
+probability… (part 6)</h2>
+<p>They do not formally support this paper’s log-pool,
+generalized-Bayes, or robustness claims; the full genealogy remains
+documented in the source audit.</p>
+</section>
+<section id="sec:related-aif" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-40ee0bf9d2da">
+<h2 class="prose-slide" id="slide-heading-40ee0bf9d2da">Active inference: generative agents, EFE, and
+colonies</h2>
+<p>The free-energy principle <span class="citation"
+data-cites="friston2010free">(Friston 2010)</span> and discrete
+state-space process theory <span class="citation"
+data-cites="friston2017active">(Friston et al. 2017)</span> connect
+generative models, variational inference, and expected-free-energy
+action selection.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7b498baf49b9">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 2" id="slide-heading-7b498baf49b9">Active
+inference (part 2)</h2>
+<p>The discrete synthesis <span class="citation"
+data-cites="dacosta2020active">(Da Costa et al. 2020)</span>, pymdp
+<span class="citation" data-cites="heins2022pymdp">(Heins et al.
+2022)</span>, and RxInfer <span class="citation"
+data-cites="bagaev2023rxinfer">(Bagaev et al. 2023)</span> provide
+executable machinery.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-125bd079ba40">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 3" id="slide-heading-125bd079ba40">Active
+inference (part 3)</h2>
+<p>This project reimplements the categorical substrate and its
+risk–ambiguity decomposition (<span class="cross-reference">Equation (22)</span>,
+<span class="cross-reference">Equation (23)</span>,
+<span class="cross-reference">Figure 8</span>),
+then evaluates explicit robustness controls at belief fusion.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cc64b82121e9">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 4" id="slide-heading-cc64b82121e9">Active
+inference (part 4)</h2>
+<p>The fusion operator itself is not new as a mathematical object. Under
+the explicit categorical posterior-log-potential and fixed-weight bridge
+of <span class="cross-reference">Section 5.8</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9367f5488420">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 5" id="slide-heading-9367f5488420">Active
+inference (part 5)</h2>
+<p>the message-combination term of Friston’s belief-sharing equation is
+represented by a logarithmic opinion pool <span class="citation"
+data-cites="genest1986combining genest1986externally">(Genest and Zidek
+1986; Genest et al. 1986)</span> and a product-of-experts consensus
+<span class="citation" data-cites="hinton2002products">(Hinton
+2002)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e300a77dd9ff">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 6" id="slide-heading-e300a77dd9ff">Active
+inference (part 6)</h2>
+<p>That limited representation is not a statement that the complete
+source protocol is a log pool. Abbas’ KL view of linear and log-linear
+pools makes the same point in scoring-rule language: log-pooling can be
+justified as a KL aggregation rule for expert distributions, not as a
+contamination-robust estimator <span class="citation"
+data-cites="abbas2009kullback">(Abbas 2009)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eb613715fc8f">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 7" id="slide-heading-eb613715fc8f">Active
+inference (part 7)</h2>
+<p>The Bayesian Committee Machine adds the distributed-learning
+analogue: independent estimators trained on data subsets can be combined
+by a product-style Bayesian rule, with assumptions about conditional
+independence and prior accounting made explicit <span class="citation"
+data-cites="tresp2000bayesian">(Tresp 2000)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0b63a9ee1b54">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 8" id="slide-heading-0b63a9ee1b54">Active
+inference (part 8)</h2>
+<p>Fully Bayesian aggregation gives the social-choice counterpart:
+geometric pooling of beliefs is singled out by dynamic Bayesian
+rationality conditions, not by robustness to contaminated reports <span
+class="citation" data-cites="dietrich2021fully">(Dietrich
+2021)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c0e873b83873">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 9" id="slide-heading-c0e873b83873">Active
+inference (part 9)</h2>
+<p>That classical literature is useful precisely because it names the
+hidden commitments — shared support, weight choice, prior accounting,
+and external-Bayes coherence — that are easy to overlook when the same
+operation appears as a colony update.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d078a18ffc1e">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 10" id="slide-heading-d078a18ffc1e">Active
+inference (part 10)</h2>
+<p>A parallel thread studies how active-inference agents coordinate as
+ensembles — collective behavior and surprise minimization across a
+colony <span class="citation" data-cites="heins2023collective">(Heins et
+al. 2024)</span>, epistemic communities <span class="citation"
+data-cites="albarracin2022epistemic">(Albarracin et al. 2022)</span>,
+and collective intelligence <span class="citation"
+data-cites="kaufmann2021collective">(Kaufmann et al. 2021)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dc99c8bd14f5">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 11" id="slide-heading-dc99c8bd14f5">Active
+inference (part 11)</h2>
+<p>The belief-sharing thread <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span> is one
+member of this family. Agents fuse beliefs, and our colony scenario is a
+reduced categorical standard- Bayes-limit analogue of its worked example
+(<span class="cross-reference">Equation (14)</span>,
+<span class="cross-reference">Section 7.2</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d38b93a0d226">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 12" id="slide-heading-d38b93a0d226">Active
+inference (part 12)</h2>
+<p>Structure learning completes the conceptual frame. Active inference
+with Bayesian optimal design selects and reduces models <span
+class="citation" data-cites="smith2020active">(Smith et al.
+2022)</span>, while post-hoc BMR <span class="citation"
+data-cites="friston2011post">(Friston and Penny 2011)</span> motivates
+our configured sign control (<span class="cross-reference">Equation (20)</span>,
+<span class="cross-reference">Section 7.4</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9d9235bca51b">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 13" id="slide-heading-9d9235bca51b">Active
+inference (part 13)</h2>
+<p>Among the active-inference sources reviewed here, belief fusion is
+not systematically characterized under explicit contamination or
+intentionally wrong broadcasts, nor connected to the robustness theory
+used here. Fusion is treated as trusting in that scoped comparison.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c227abb94002">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 14" id="slide-heading-c227abb94002">Active
+inference (part 14)</h2>
+<p>Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span> present
+communicating-colony free-energy convergence, Dirichlet language
+acquisition, and Bayesian model reduction. We use reduced categorical
+standard-Bayes-limit analogues of those mechanisms (<span class="cross-reference">Section 7.1</span>)
+before the robust extension.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0051f29c036a">
+<h2 class="prose-slide"
+aria-label="Active inference: generative agents, EFE, and colonies, part 15" id="slide-heading-0051f29c036a">Active
+inference (part 15)</h2>
+<p>The third is a configured sign control on a fixed posterior. None is
+an exact source-protocol or figure reproduction.</p>
+</section>
+<section id="sec:related-fl" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d00a0b59bdaa">
+<h2 class="prose-slide" id="slide-heading-d00a0b59bdaa">Robust and federated Bayes outside active
+inference</h2>
+<p>Federated learning aggregates models trained on decentralized data
+<span class="citation" data-cites="mcmahan2017communication">(McMahan et
+al. 2017)</span>, and the probabilistic-federation line recasts that
+aggregation as variational inference —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f9870f5a300e">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 2" id="slide-heading-f9870f5a300e">Robust
+and federated Bayes… (part 2)</h2>
+<p>partitioned variational inference <span class="citation"
+data-cites="ashman2022partitioned">(Ashman et al. 2022)</span> and its
+federated predecessor <span class="citation"
+data-cites="bui2018partitioned">(Bui et al. 2018)</span>. This is a
+different use of the word <em>federated</em> from Friston et al.’s
+federated inference:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-594b38870377">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 3" id="slide-heading-594b38870377">Robust
+and federated Bayes… (part 3)</h2>
+<p>Friston federates hidden-state beliefs among agents sharing a world
+model, while machine-learning federated learning usually federates
+parameter or predictive-model updates over decentralized datasets.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2470021a5c18">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 4" id="slide-heading-2470021a5c18">Robust
+and federated Bayes… (part 4)</h2>
+<p>The bridge claimed here is therefore algebraic and variational — a
+shared normalized product/log-pool operator at the KL/NLL recovery
+corner — not a claim that either source paper already solved the other’s
+problem.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-369b7eb85c78">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 5" id="slide-heading-369b7eb85c78">Robust
+and federated Bayes… (part 5)</h2>
+<p>Robustness, meanwhile, has a mature Bayesian theory: general Bayesian
+updating through a loss <span class="citation"
+data-cites="bissiri2016general">(Bissiri et al. 2016)</span>, Gibbs
+posterior inference <span class="citation"
+data-cites="jiang2008gibbs">(Jiang and Tanner 2008)</span>, safe
+learning-rate selection under misspecification <span class="citation"
+data-cites="grunwald2012safe">(Grünwald 2012)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3b7f2ab5a9f7">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 6" id="slide-heading-3b7f2ab5a9f7">Robust
+and federated Bayes… (part 6)</h2>
+<p>coarsened posteriors for robustness to exact-data conditioning <span
+class="citation" data-cites="miller2018coarsening">(Miller and Dunson
+2018)</span>, divergence-criteria posterior updating <span
+class="citation" data-cites="jewson2018divergence">(Jewson et al.
+2018)</span>, Bayesian misspecification asymptotics <span
+class="citation" data-cites="kleijn2012misspecification">(Kleijn and
+Vaart 2012)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2622ce4982ec">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 7" id="slide-heading-2622ce4982ec">Robust
+and federated Bayes… (part 7)</h2>
+<p>The optimization-centric GVI view <span class="citation"
+data-cites="knoblauch2022generalized">(Knoblauch et al. 2022)</span> and
+recent closed-form characterizations <span class="citation"
+data-cites="nguyen2026closedformgvi">(Nguyen and Westerhout 2026)</span>
+connect objectives to approximating families.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-596c366631e9">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 8" id="slide-heading-596c366631e9">Robust
+and federated Bayes… (part 8)</h2>
+<p>Bounded-influence approaches include density-power and
+gamma-divergence estimation <span class="citation"
+data-cites="basu1998robust fujisawa2008robust ghosh2015robust">(Basu et
+al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span>,
+robust-divergence variational inference <span class="citation"
+data-cites="futami2018robustvi">(Futami et al. 2018)</span>, and
+generalized cross-entropy <span class="citation"
+data-cites="zhang2018generalized">(Zhang and Sabuncu 2018)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67c74c086be2">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 9" id="slide-heading-67c74c086be2">Robust
+and federated Bayes… (part 9)</h2>
+<p>Huber and Ronchetti supply the robust-statistics vocabulary of
+influence and breakdown <span class="citation"
+data-cites="huber2009robust">(Huber and Ronchetti 2009)</span>, used
+here for boundedness and empirical failure modes rather than theorem
+transfer.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e69f84399a80">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 10" id="slide-heading-e69f84399a80">Robust
+and federated Bayes… (part 10)</h2>
+<p>FedGVI <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner, Hamelijnck, et al. 2025)</span>
+supplies the per-agent generalized-Bayes synthesis with client and
+server divergence choices.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9754b3cc246e">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 11" id="slide-heading-9754b3cc246e">Robust
+and federated Bayes… (part 11)</h2>
+<p>This literature provides decentralized aggregation and theorem-backed
+results in its stated settings. Among the sources reviewed here, it does
+not evaluate active-inference POMDP belief consensus—the
+generative-model-bearing, action-selecting setting where beliefs drive
+behavior.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-27bd3108ca3e">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 12" id="slide-heading-27bd3108ca3e">Robust
+and federated Bayes… (part 12)</h2>
+<p>The 2025 preprint on convergence rates under prior misspecification
+<span class="citation" data-cites="mildner2025rates">(Mildner,
+Giampouras, et al. 2025)</span> sharpens the current GVI context:
+bounded divergences can support concentration and rates under explicit
+assumptions,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1a83a4ea22da">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 13" id="slide-heading-1a83a4ea22da">Robust
+and federated Bayes… (part 13)</h2>
+<p>but the result does not transfer automatically to this repository’s
+finite categorical state space or to its server-side aggregation
+heuristic.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-288e947fd7ba">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 14" id="slide-heading-288e947fd7ba">Robust
+and federated Bayes… (part 14)</h2>
+<p>The federated-learning robustness literature also supplies important
+negative space for this paper. Byzantine-tolerant gradient aggregation
+<span class="citation" data-cites="blanchard2017krum">(Blanchard et al.
+2017)</span>, geometric-median robust aggregation <span class="citation"
+data-cites="pillutla2022robust">(Pillutla et al. 2022)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c25987d105e3">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 15" id="slide-heading-c25987d105e3">Robust
+and federated Bayes… (part 15)</h2>
+<p>and divergence-weighted gamma-mean aggregation <span class="citation"
+data-cites="li2022gammafl">(Li et al. 2022)</span> attack corrupted
+client updates directly. A recent Bayesian robust-aggregation preprint
+likewise models unknown client honesty for federated model updates <span
+class="citation" data-cites="karakulev2025bayesian">(Karakulev et al.
+2025)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1c91de9e55b8">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 16" id="slide-heading-1c91de9e55b8">Robust
+and federated Bayes… (part 16)</h2>
+<p>Those are close comparators for adversarial federation, but the
+object being aggregated differs: they aggregate model-update vectors or
+posterior measures, while this paper attacks categorical belief fusion
+and generalized-Bayes client updates.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b80f370e77e9">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 17" id="slide-heading-b80f370e77e9">Robust
+and federated Bayes… (part 17)</h2>
+<p>Robust subset-posterior combination is another nearby Bayesian route
+<span class="citation" data-cites="minsker2017median">(Minsker et al.
+2017)</span>, but it combines posterior measures across data shards
+rather than active-inference belief broadcasts with a shared latent
+state.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1e6d5bfa652c">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes outside active inference, part 18" id="slide-heading-1e6d5bfa652c">Robust
+and federated Bayes… (part 18)</h2>
+<p>We use those sources to position the problem, not to import their
+guarantees into <code>robust_aggregate</code>.</p>
+</section>
+<section id="sec:related-gap" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3bd4aee35ae8">
+<h2 class="prose-slide" id="slide-heading-3bd4aee35ae8">The specific bridge added here</h2>
+<p>The scoped bridge evaluated by this manuscript is generalized-Bayes
+belief fusion for active-inference ensembles. Concretely:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2c9f51752d49">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 2" id="slide-heading-2c9f51752d49">The specific bridge
+added… (part 2)</h2>
+<p><strong>Per-agent bounded-loss updates.</strong> FedGVI-faithful
+<span class="math inline">\(\beta\)</span>/rcce updates carry the cited
+bounded-influence result only under its source assumptions (<span class="cross-reference">Equation (7)</span>, <span class="cross-reference">Equation (8)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-977329d13d19">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 3" id="slide-heading-977329d13d19">The specific bridge
+added… (part 3)</h2>
+<p><strong>Server-side divergence reweighting.</strong> The
+complementary heuristic has a stated recovery limit (<span class="cross-reference">10</span>).
+Its finite empirical behavior does not borrow theorems from robust
+federated aggregation.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bc7a91a30cde">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 4" id="slide-heading-bc7a91a30cde">The specific bridge
+added… (part 4)</h2>
+<p><strong>Recovery of the standard-Bayes corner.</strong> The KL/NLL
+client limits recover Bayes, while the separate zero-robustness server
+identity returns the project log-linear pool (<span class="cross-reference">Equation (11)</span>,
+<span class="cross-reference">Equation (6)</span>,
+<span class="cross-reference">Equation (10)</span>).
+Under the categorical bridge, that pool specializes only the Eq.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eb267cc89313">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 5" id="slide-heading-eb267cc89313">The specific bridge
+added… (part 5)</h2>
+<p>7 message-combination term <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b84c4f42d141">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 6" id="slide-heading-b84c4f42d141">The specific bridge
+added… (part 6)</h2>
+<p><strong>Additional executed studies.</strong> The source simulations
+motivate mechanism analogues, not protocol recovery checks. Added
+studies cover declared contamination (<span class="cross-reference">Section 7.5</span>),
+active movement (<span class="cross-reference">Section 14.7</span>),
+two- and three-level POMDPs (<span class="cross-reference">Section 14.9</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ee9de3134e80">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 7" id="slide-heading-ee9de3134e80">The specific bridge
+added… (part 7)</h2>
+<p><span class="cross-reference">Section 14.11</span>),
+finite acuity-by-colony sensitivity, and finite-grid acuity recovery
+(<span class="cross-reference">Section 14.13</span>,
+<span class="cross-reference">Section 15</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e151e58b0e60">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 8" id="slide-heading-e151e58b0e60">The specific bridge
+added… (part 8)</h2>
+<p><strong>Declared paired analysis.</strong> The configured comparison
+uses matched-pairs Wilcoxon tests <span class="citation"
+data-cites="wilcoxon1945individual fay2010wilcoxon">(Wilcoxon 1945; Fay
+and Proschan 2010)</span>, Benjamini–Hochberg FDR adjustment <span
+class="citation" data-cites="benjamini1995controlling">(Benjamini and
+Hochberg 1995)</span>, percentile-bootstrap intervals <span
+class="citation" data-cites="efron1993bootstrap">(Efron and Tibshirani
+1993)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-24c43845bfef">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 9" id="slide-heading-24c43845bfef">The specific bridge
+added… (part 9)</h2>
+<p>rank/effect-size caveats <span class="citation"
+data-cites="nakagawa2007effect">(Nakagawa and Cuthill 2007)</span>, and
+an observed-effect planning approximation. These additions are project
+analyses, not claims about the source paper.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a9da5159e1da">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 10" id="slide-heading-a9da5159e1da">The specific bridge
+added… (part 10)</h2>
+<p><strong>Objective-backed server control.</strong>
+<code>variational_aggregate</code> descends its stated free energy
+(<span class="cross-reference">12</span>);
+a converged fixed point is coordinatewise stationary. The rule has a raw
+effective-weight bound and a finite redescending diagnostic (<span class="cross-reference">Figure 17</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-31f2d3f82a7e">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 11" id="slide-heading-31f2d3f82a7e">The specific bridge
+added… (part 11)</h2>
+<p>Whether an equally defensible objective has the sharper reverse-KL
+heuristic as its minimizer remains open.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4988419acfd2">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 12" id="slide-heading-4988419acfd2">The specific bridge
+added… (part 12)</h2>
+<p>The contribution is the bridge: an explicit connection between
+active-inference belief consensus and robust federated generalized
+Bayes,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The specific bridge added here, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-701ce64ba1ae">
+<h2 class="prose-slide"
+aria-label="The specific bridge added here, part 13" id="slide-heading-701ce64ba1ae">The specific bridge
+added… (part 13)</h2>
+<p>with the standard pool recovered exactly at the corner and the
+additional studies (the contamination sweep plus several structural
+extensions) showing how the bridge behaves beyond the Friston et
+al. baseline.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

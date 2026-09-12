@@ -5,6 +5,13 @@ Generated from top-level public functions and classes under `src/` using AST par
 | Module | Name | Kind | Summary |
 | --- | --- | --- | --- |
 | `analysis.artifacts` | `expected_artifacts` | function | Return the source-declared Stage-02 artifact paths. |
+| `analysis.figure_exact_values` | `ConditionalDisplaySummary` | class | One grouped descriptive cell shared by a figure and its fallback. |
+| `analysis.figure_exact_values` | `ExactValueTable` | class | One identifier-addressable table derived from a plotted report. |
+| `analysis.figure_exact_values` | `FigureExactValuesPayload` | class | Complete accessibility fallback artifact for the declared figure set. |
+| `analysis.figure_exact_values` | `build_figure_exact_values` | function | Build every declared exact-value fallback from the reports used to plot it. |
+| `analysis.figure_exact_values` | `conditional_display_summaries` | function | Return the review grid's grouped means and half min/max spans. |
+| `analysis.figure_exact_values` | `render_figure_exact_values_markdown` | function | Render deterministic, human-readable Markdown tables from exact values. |
+| `analysis.report_schemas` | `ApplicationIntegrityFlowReport` | class | Source-owned payload for the application integrity flow figure. |
 | `analysis.report_schemas` | `BeliefQualityReport` | class | Top-level payload written to ``belief_quality.json``. |
 | `analysis.report_schemas` | `BeliefSharingReport` | class | Top-level payload written to ``belief_sharing.json``. |
 | `analysis.report_schemas` | `BnnRobustnessReport` | class | Top-level payload written to ``bnn_robustness.json``. |
@@ -18,6 +25,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.report_schemas` | `DisjointFovWorldReport` | class | Top-level payload written to ``disjoint_fov_world.json``. |
 | `analysis.report_schemas` | `EfeDecompositionReport` | class | Top-level payload written to ``efe_decomposition.json``. |
 | `analysis.report_schemas` | `EmergenceReport` | class | Top-level payload written to ``emergence.json``. |
+| `analysis.report_schemas` | `EvidenceReplicationMapReport` | class | Source-owned payload for the evidence and replication map. |
 | `analysis.report_schemas` | `FigureDependencyContract` | class | Declared top-level report fields consumed by one figure generator. |
 | `analysis.report_schemas` | `FigureMetadataEntry` | class | Per-figure metadata payload written inside ``figure_registry.json``. |
 | `analysis.report_schemas` | `FigureRegistryPayload` | class | Top-level figure registry payload. |
@@ -35,9 +43,21 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.report_schemas` | `RobustnessOnsetReport` | class | Top-level payload written to ``robustness_onset.json``. |
 | `analysis.report_schemas` | `RobustnessSweepReport` | class | Top-level payload written to ``robustness_sweep.json``. |
 | `analysis.report_schemas` | `SchemaDefinition` | class | Shallow top-level schema definition. |
+| `analysis.report_schemas` | `SensitivityReport` | class | Source-bound payload for the two configured sensitivity grids. |
+| `analysis.report_schemas` | `SourceRenderProvenanceReport` | class | Source-owned payload for producer order and stale invalidation. |
 | `analysis.report_schemas` | `VariationalAggregationReport` | class | Top-level payload written to ``variational_aggregation.json``. |
 | `analysis.report_schemas` | `check_figure_contract` | function | Validate the declared report fields consumed by one figure generator. |
 | `analysis.report_schemas` | `validate_report` | function | Validate one report or figure-registry payload before it is written. |
+| `analysis.visual_contracts` | `ApplicationIntegrityFlowReport` | class | Typed payload for the application integrity and solver-health figure. |
+| `analysis.visual_contracts` | `EvidenceLane` | class | One claim-owner lane in the evidence and replication map. |
+| `analysis.visual_contracts` | `EvidenceReplicationMapReport` | class | Typed payload for the evidence-class and replication-unit map. |
+| `analysis.visual_contracts` | `FlowEdge` | class | One directed relation in a source-owned explanatory flow. |
+| `analysis.visual_contracts` | `FlowNode` | class | One labeled node in a source-owned explanatory flow. |
+| `analysis.visual_contracts` | `SourceRenderProvenanceReport` | class | Typed payload for the source-to-render provenance and invalidation map. |
+| `analysis.visual_contracts` | `VerificationLevel` | class | One application-receipt verification level and its interpretation. |
+| `analysis.visual_contracts` | `application_integrity_flow_contract` | function | Return a defensive copy of the application integrity flow contract. |
+| `analysis.visual_contracts` | `evidence_replication_map_contract` | function | Return a defensive copy of the evidence and replication map contract. |
+| `analysis.visual_contracts` | `source_render_provenance_contract` | function | Return a defensive copy of the source-to-render provenance contract. |
 | `analysis.workflow` | `BnnTorchOptions` | class | Validated optional keyword arguments for the Torch complement. |
 | `analysis.workflow` | `main` | function | Run the analysis pipeline and print every artifact path to stdout. |
 | `analysis.workflow` | `resolve_analysis_profile` | function | Return the effective workflow budget profile for a project root. |
@@ -154,8 +174,8 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.experiments.conditional_world` | `conditional_scenario_grid` | function | Return the source-owned finite grid before results are inspected. |
 | `fedference.experiments.conditional_world` | `run_belief_quality_sensitivity` | function | Score naive and robust consensus beliefs on a fixed conditional subset. |
 | `fedference.experiments.conditional_world` | `run_conditional_world_generalization` | function | Run the pre-registered world/target/observability attack grid. |
-| `fedference.experiments.cross_study` | `summarize_cross_study` | function | Collect per-study federation benefit across multiple seeds. |
-| `fedference.experiments.diagnostics` | `run_bnn_robustness_report` | function | BNN held-out accuracy vs label contamination for standard vs robust clients. |
+| `fedference.experiments.cross_study` | `summarize_cross_study` | function | Collect per-study signed contrasts across multiple seeds. |
+| `fedference.experiments.diagnostics` | `run_bnn_robustness_report` | function | Exploratory two-configuration point-estimate proxy under contamination. |
 | `fedference.experiments.diagnostics` | `run_efe_decomposition_report` | function | Closed-form EFE decomposition of one sentinel policy. |
 | `fedference.experiments.diagnostics` | `run_influence_weights_report` | function | Server-side robust pooling influence weights on a contaminated colony. |
 | `fedference.experiments.diagnostics` | `run_variational_aggregation_report` | function | Diagnostics for the objective-backed variational aggregator. |
@@ -167,7 +187,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.experiments.heuristic_characterization` | `run_heuristic_characterization` | function | JSON-serialisable characterization report: breakdown points plus a numerical influence sweep of one contaminating agent at the study settings. |
 | `fedference.experiments.navigation` | `run_disjoint_fov_world` | function | Multi-agent moving world: each agent sees only ``fov_width`` consecutive positions. |
 | `fedference.experiments.navigation` | `run_efe_navigation_test` | function | Compare EFE-guided vs. random movement combined with belief sharing. |
-| `fedference.experiments.parameter_recovery` | `run_parameter_recovery` | function | Validate generative-model identifiability by fitting acuity from synthetic data. |
+| `fedference.experiments.parameter_recovery` | `run_parameter_recovery` | function | Measure finite-grid acuity recovery on the configured synthetic world. |
 | `fedference.experiments.report_bundle` | `disjoint_fov_report` | function | Disjoint-FOV necessity contrast plus EFE-navigation multi-seed statistics. |
 | `fedference.experiments.report_bundle` | `hierarchical_world_report` | function | Point estimate at ``seed`` plus multi-seed location-accuracy statistics. |
 | `fedference.experiments.report_bundle` | `moving_world_report` | function | Moving-world report with multi-seed accuracy and EFE-vs-isolated statistics. |
@@ -177,7 +197,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.experiments.sensitivity` | `run_belief_sharing_sensitivity` | function | 2-D location-accuracy sweep over sensor acuity x colony size. |
 | `fedference.experiments.sensitivity` | `run_hierarchical_sensitivity` | function | 2-D location-accuracy sweep for the hierarchical POMDP. |
 | `fedference.experiments.worlds` | `run_3level_world` | function | Study 7 — 3-level hierarchical federation (L3=meta-context → L2=context → L1=location). |
-| `fedference.experiments.worlds` | `run_hierarchical_bmr` | function | Hierarchical structure learning by Bayesian model reduction (companion to the N-level study). |
+| `fedference.experiments.worlds` | `run_hierarchical_bmr` | function | Run a configured hierarchical surprise-threshold control. |
 | `fedference.experiments.worlds` | `run_hierarchical_world` | function | Study 6 — hierarchical federation at L1 (location) and L2 (context). |
 | `fedference.experiments.worlds` | `run_moving_world` | function | Moving-world federation: isolated vs communicating vs EFE-guided (V4). |
 | `fedference.experiments.worlds` | `run_nlevel_world` | function | Study 7 variant — generic N-level hierarchical federation. |
@@ -287,6 +307,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.trials` | `FlatVsNlevelMetrics` | class | Per-trial flat vs hierarchical location accuracy and free energy. |
 | `fedference.trials` | `compare_flat_vs_nlevel` | function | Compare flat log-linear pooling against an N-level infer + pool path. |
 | `figures.aggregation_descent` | `generate_aggregation_descent` | function | Render the variational free energy ``F`` against descent iteration. |
+| `figures.application_integrity_flow` | `generate_application_integrity_flow` | function | Render the source-owned labeled-application and receipt boundary map. |
 | `figures.belief_heatmap` | `generate_belief_heatmap` | function | Render a colony's per-agent beliefs plus consensus as a heatmap. |
 | `figures.belief_quality` | `generate_belief_quality` | function | Render control log scores and reliability curves from the score report. |
 | `figures.bnn_robustness` | `generate_bnn_robustness` | function | Render held-out accuracy curves vs contamination for client configurations. |
@@ -299,7 +320,8 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `figures.disjoint_fov_world` | `generate_disjoint_fov_figure` | function | Generate the disjoint-FOV two-panel figure for the V4 manuscript. |
 | `figures.efe_decomposition` | `generate_efe_decomposition` | function | Render the EFE identity as an additive stack and signed waterfall. |
 | `figures.emergence_bmr` | `generate_emergence_bmr` | function | Render the redundant-vs-supported model-reduction free-energy contrast. |
-| `figures.free_energy_comparison` | `generate_free_energy_comparison` | function | Render the free-energy gap between incommunicado and communicating colonies. |
+| `figures.evidence_replication_map` | `generate_evidence_replication_map` | function | Render an aligned evidence ledger plus nesting and no-transfer strips. |
+| `figures.free_energy_comparison` | `generate_free_energy_comparison` | function | Render paired free energies and their signed seed-level differences. |
 | `figures.generative_model_schema` | `generate_generative_model_schema` | function | Generate the formal categorical generative-model schematic. |
 | `figures.graphical_abstract` | `generate_graphical_abstract` | function | Generate the refreshed graphical abstract and manuscript cover. |
 | `figures.graphical_abstract` | `main` | function | Generate the graphical abstract and print its output paths. |
@@ -307,7 +329,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `figures.hierarchical_bmr` | `generate_hierarchical_bmr` | function | Render the per-level Bayesian-surprise comparison for two worlds. |
 | `figures.hierarchical_pomdp` | `generate_hierarchical_pomdp` | function | 2x3 six-panel figure for the V2 hierarchical POMDP study (2-level + 3-level). |
 | `figures.language_kl_decay` | `generate_language_kl_decay` | function | Render the language-acquisition KL learning curve. |
-| `figures.message_passing` | `generate_message_passing` | function | Generate the claim-bounded belief-sharing message-passing schematic. |
+| `figures.message_passing` | `generate_message_passing` | function | Generate the vertically ordered, claim-bounded message-path figure. |
 | `figures.moving_world` | `generate_moving_world` | function | Three-panel bar chart for the moving sentinel world. |
 | `figures.parameter_recovery` | `generate_parameter_recovery` | function | Generate a two-panel parameter-recovery figure for sensor acuity. |
 | `figures.pomdp_loop` | `generate_pomdp_loop` | function | Generate the sentinel-world and active-inference loop schematic. |
@@ -315,7 +337,8 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `figures.robustness_onset` | `generate_robustness_onset` | function | Render naive vs robust accuracy-vs-rate panels with onset markers. |
 | `figures.robustness_review_grid` | `generate_robustness_review_grid` | function | Render conditional cells and every predeclared directional method curve. |
 | `figures.robustness_sweep` | `generate_robustness_sweep` | function | Render consensus-accuracy curves over the contamination-rate sweep. |
-| `figures.sensitivity_heatmap` | `generate_sensitivity_heatmap` | function | 2-panel heatmap of federation accuracy gain over acuity x colony size. |
+| `figures.sensitivity_heatmap` | `generate_sensitivity_heatmap` | function | Render two signed accuracy-contrast heatmaps over acuity and colony size. |
+| `figures.source_render_provenance` | `generate_source_render_provenance` | function | Render the source-owned publication pipeline without reading its manifest. |
 | `figures.system_overview` | `SystemOverviewData` | class | Numerical arrays drawn by the system-overview and cover figures. |
 | `figures.system_overview` | `SystemOverviewMetadata` | class | Scalar provenance exported to manuscript tokens and the cover. |
 | `figures.system_overview` | `adversarial_belief` | function | Peaked categorical at wrong state. |
@@ -378,6 +401,11 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `publication.release_manifest` | `verify_release` | function | Verify the exact artifact set and every digest in ``manifest.json``. |
 | `publication.surface_validation` | `SurfaceValidation` | class | Aggregate result for generated reviewer-facing surfaces. |
 | `publication.surface_validation` | `validate_rendered_surfaces` | function | Validate manuscript, slides, optional local logs, and the HTML package. |
+| `publication.template_renderer` | `TemplateRendererIdentity` | class | Canonical, path-free identity for one clean Template checkout. |
+| `publication.template_renderer` | `inspect_template_renderer_checkout` | function | Inspect an explicit Template checkout and return a path-free identity. |
+| `publication.template_renderer` | `load_template_renderer_lock` | function | Load and strictly validate ``rendering.template_renderer``. |
+| `publication.template_renderer` | `renderer_receipt_findings` | function | Return stable findings for a persisted renderer identity payload. |
+| `publication.template_renderer` | `require_locked_template_renderer` | function | Require the runtime checkout to equal the source-owned renderer lock. |
 | `publication.validation_receipt` | `ValidationReceiptError` | class | Raised when a validation receipt is absent, malformed, or stale. |
 | `publication.validation_receipt` | `capture_validation_snapshot` | function | Capture a coherent source and analysis boundary immediately around a test run. |
 | `publication.validation_receipt` | `require_fresh_validation_receipt` | function | Return the receipt only when its test, source, and analysis evidence is fresh. |
@@ -388,7 +416,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `publication.validation_receipt` | `write_validation_receipt` | function | Atomically write a receipt for a successful, fresh full validation gate. |
 | `publication.web_package` | `WebPackageValidation` | class | Asset, reference, markup, and accessibility result for generated HTML. |
 | `publication.web_package` | `mirror_web_figures` | function | Mirror every generated figure into the web package, removing stale files. |
-| `publication.web_package` | `normalize_web_xrefs` | function | Replace raw citation/cross-reference markup with self-contained HTML links. |
+| `publication.web_package` | `normalize_web_xrefs` | function | Atomically replace visible references with self-contained HTML links. |
 | `publication.web_package` | `sanitize_machine_paths` | function | Replace local home, temporary, and volume prefixes in text artifacts. |
 | `publication.web_package` | `validate_web_package` | function | Check generated HTML assets, links, markup, and accessibility structure. |
 | `publication.zenodo` | `ZenodoClient` | class | Small standard-library Zenodo REST client for release boundaries. |

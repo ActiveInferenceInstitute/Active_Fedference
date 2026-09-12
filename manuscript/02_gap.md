@@ -51,6 +51,7 @@ Bayesian updating replaces the likelihood–KL pair with a loss–divergence pai
 density-power $\beta$-divergence [@basu1998robust] and generalized cross-entropy
 [@zhang2018generalized] — deliver bounded influence; and FedGVI
 [@mildner2025fedgvi] federates the robust objective with provable guarantees.
+
 *Boundary:* the cited robust-Bayes apparatus does not evaluate active-inference
 POMDP belief consensus. Its behavior in the discrete categorical regime of the
 worked belief-sharing example [@friston2024federated] is the scoped setting
@@ -58,68 +59,69 @@ evaluated here.
 
 ## The belief-fusion bridge evaluated here {#sec:gap-bridge}
 
-Across these five reviewed threads, the missing intersection is specific: the
+Across these reviewed threads, the missing intersection is specific. The cited
 active-inference sources provide belief fusion but not the contamination analysis
-used here, while the robust-Bayes sources provide robust inference but not this
-acting-agent categorical consensus. We evaluate the bridge with robust,
-generalized-Bayes belief fusion for active-inference ensembles, comprising three
-components and one recovery anchor. (i) A per-agent, FedGVI-faithful generalized-Bayes update carrying
-bounded-influence robustness through the $\beta$- and rcce-losses
-([@eq:beta-loss], [@eq:rcce-loss]). (ii) A complementary server-side
-divergence-reweighting *heuristic* that discounts each agent by its divergence
-from the emerging consensus ([@eq:robust-identity]). (iii) A conservative
-server-side variational rule with a stated aggregation free energy and a
-redescending raw effective-weight bound ([@eq:agg-free-energy]). The shared
-anchor is recovery of the standard-Bayes client limit and the project
-log-linear-pool server identity in their trusting limits
-([@sec:formalism-recovery]). Under the qualified bridge of
-[@sec:method-aggregation], the latter specializes Friston et al.'s Eq. 7
-message-combination term [@friston2024federated], not the complete source
-protocol. The algebraic result and machine-precision checks therefore identify
-a recovery boundary rather than a replacement. Headline comparisons
-use matched paired statistics —
-paired Wilcoxon [@wilcoxon1945individual], Benjamini–Hochberg FDR
-[@benjamini1995controlling], bootstrap confidence intervals
-[@efron1993bootstrap], and observed-effect design-power planning — and are
-certified for reproducibility [@peng2011reproducible].
+used here. The cited robust-Bayes sources provide robust inference but not this
+acting-agent categorical consensus. We evaluate a bridge comprising three
+distinct robustness axes and one recovery anchor.
+
+The client axis is a FedGVI-faithful generalized-Bayes update using the
+$\beta$- and rcce-losses ([@eq:beta-loss], [@eq:rcce-loss]). The heuristic
+server axis reweights each agent by divergence from the current consensus
+([@eq:robust-identity]). The objective-backed server axis is a conservative
+variational rule with a stated aggregation free energy and raw effective-weight
+bound ([@eq:agg-free-energy]).
+
+The shared anchor recovers the standard-Bayes client limit and project
+log-linear-pool server identity ([@sec:formalism-recovery]). Under the qualified
+bridge of [@sec:method-aggregation], the latter specializes Friston et al.'s
+Eq. 7 message-combination term [@friston2024federated], not the complete source
+protocol. The algebra and executable residuals identify a recovery boundary,
+not an equivalence of literatures.
+
+Declared comparisons use paired Wilcoxon statistics
+[@wilcoxon1945individual], Benjamini–Hochberg FDR
+[@benjamini1995controlling], percentile-bootstrap intervals
+[@efron1993bootstrap], and observed-effect design-power planning. Source-bound
+reports make those analyses reproducible [@peng2011reproducible]; they do not
+promote a conditional simulation into a theorem.
 
 ## Guarantee map: three robustness axes {#sec:robustness-axes}
 
-A red-team review surfaced a distinction we carry through the paper rather than
-paper over: robustness enters in **three** places, and they do not have the same
-theoretical standing.
+A red-team review surfaced the paper's authoritative robustness taxonomy.
+Robustness enters in **three** places, with different claim owners, evidence
+classes, and permitted interpretations.
 
-1. **Client-side (rigorous).** The per-agent generalized-Bayes update, driven by
-   a bounded loss inside `generalized_posterior` ([@eq:beta-loss],
-   [@eq:rcce-loss]). It is derived from the stated objective [@eq:gen-bayes] and
-   provably limits to negative-log-likelihood / Bayes — and hence to the standard
-   pool — as the loss parameter goes to zero
-   (Corollary \ref{cor:closed-form-bayes} +
-   Proposition \ref{prop:robust-loss-recovery}). This axis inherits
-   FedGVI's [@mildner2025fedgvi] bounded-influence result only under the source
-   theorem's stated loss, model, and contamination assumptions.
+### Client-side: source-theorem-backed
 
-2. **Server-side (heuristic).** The divergence-reweighting aggregator
-   `robust_aggregate`, which discounts each agent by
-   $\exp(-c\,\mathrm{KL}(q_n \,\|\, q))$. Only its *recovery* limit
-   is proven — at $c=0$ it equals the standard log-linear pool
-   ([@eq:robust-identity], Theorem \ref{thm:belief-sharing-recovery}); it is **not** the closed-form minimizer of
-   a FedGVI objective. We present it as a complementary heuristic and never claim
-   it inherits the bounded-influence bound.
+The per-agent generalized-Bayes update uses a bounded loss inside
+`generalized_posterior` ([@eq:beta-loss], [@eq:rcce-loss]). It is derived from
+[@eq:gen-bayes] and limits to NLL/Bayes as the loss parameter approaches zero
+(Corollary \ref{cor:closed-form-bayes}; Proposition
+\ref{prop:robust-loss-recovery}). FedGVI's bounded-influence result transfers
+only under the source theorem's loss, model, and contamination assumptions
+[@mildner2025fedgvi].
 
-3. **Server-side (objective-backed, conservative).** The variational aggregator
-   `variational_aggregate` applies exact block updates that do not increase the
-   stated free energy [@eq:agg-free-energy], recovers the same log-linear pool in
-   the trusting limit, and bounds each raw effective weight by its base weight.
-   Its honest cost is
-   conservatism: it is not the sharp accuracy-maximizing heuristic.
+### Server-side: heuristic
 
-The robustness sweep ([@sec:results-robustness]) reports these axes, and [@sec:limitations-scope]
-states which claim rests on which. No figure, table, or sentence in this paper
-grants the server-side heuristic the guarantee that belongs to the client-side
-update or the variational server objective: the effect-size, confidence-interval,
-and power enrichment that decorate the sweep characterize the heuristic's
-*behavior*, not a per-agent or variational guarantee. This honesty is the point:
-the client-side axis is source-theorem-backed, the sharp server heuristic is
-useful but clearly labeled, and the variational server axis is rigorous but
-conservative.
+`robust_aggregate` discounts an agent by
+$\exp(-c\,\mathrm{KL}(q_n \,\|\, q))$. Its proved positive property is the
+recovery limit: at $c=0$, it equals the standard log-linear pool
+([@eq:robust-identity], Theorem \ref{thm:belief-sharing-recovery}). It is not a
+closed-form FedGVI-objective minimizer and does not inherit the client-side
+bounded-influence result.
+
+### Server-side: objective-backed and conservative
+
+`variational_aggregate` applies exact block updates that do not increase the
+stated free energy [@eq:agg-free-energy]. It recovers the log-linear pool in the
+trusting limit and bounds each raw effective weight by its base weight. Its
+declared tradeoff is a conservative consensus; the objective-backed property
+does not imply peak-accuracy dominance.
+
+The robustness results ([@sec:results-robustness]) apply this map, and
+[@sec:limitations-scope] states the complete boundary. Effect sizes, intervals,
+and planning quantities characterize the server heuristic's conditional
+behavior; they do not transfer the client theorem or variational objective to
+that heuristic. Later sections refer back to this taxonomy rather than redefine
+it.

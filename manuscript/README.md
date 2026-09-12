@@ -12,6 +12,13 @@ manuscript-driven validation gates that bind every claim to generated outputs.
 - `AGENTS.md`: manuscript-specific editing contract.
 - `config.yaml.example`: local copy of the metadata template.
 
+The reproducibility material spans `26_reproducibility.md` and
+`26_reproducibility_provenance.md` in filename order. The first covers execution
+and application integrity; the second retains the producer/invalidation map
+and recovery checks. Each produces a separate complete slide deck within the
+renderer resource limits. Their figures, captions, tokens, and body reading
+order remain part of the combined manuscript.
+
 ## Build sequence
 
 1. Run the locked-core numerical invariants gate from the project root:
@@ -56,10 +63,8 @@ cd "$AF_REPO"
 uv run python scripts/prepare_web_package.py
 uv run python scripts/validate_web_package.py
 uv run python scripts/validate_rendered_surfaces.py
-TEMPLATE_COMMIT="$(git -C "$TEMPLATE_REPO" rev-parse HEAD)"
-TEMPLATE_DIFF_SHA256="$(git -C "$TEMPLATE_REPO" diff --no-ext-diff --binary HEAD | shasum -a 256 | awk '{print $1}')"
 uv run python scripts/record_pipeline_stage.py render \
-  --renderer "template-03-05 commit=$TEMPLATE_COMMIT diff_sha256=$TEMPLATE_DIFF_SHA256 source_date_epoch=$SOURCE_DATE_EPOCH"
+  --template-root "$TEMPLATE_REPO"
 uv run python scripts/validate_pipeline_freshness.py
 ~~~
 

@@ -1,0 +1,2835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Statistical protocol: matched comparisons, intervals, and bounded claims — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-dfeed9541ab0">
+<h1 id="presentation-title-dfeed9541ab0" class="visually-hidden">Statistical protocol: matched comparisons, intervals, and bounded claims — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:methods-statistics"
+class="slide level2 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a7eff4f5f12d">
+<h2 class="section-divider" id="slide-heading-a7eff4f5f12d">Statistical protocol: matched comparisons,
+intervals, and bounded claims</h2>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8b1cda4244bc">
+<h2 class="prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 2" id="slide-heading-8b1cda4244bc">Statistical
+protocol (part 2)</h2>
+<p>No “robust beats naive” claim is written before a statistical test
+produces it (Algorithm Gate I). Among the active-inference sources
+reviewed here, belief-fusion outcomes are typically reported as single
+illustrative runs; we treat every headline contrast as a paired
+hypothesis test with effect-size estimation,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-457129aaaafe">
+<h2 class="prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 3" id="slide-heading-457129aaaafe">Statistical
+protocol (part 3)</h2>
+<p>multiple-testing deflation, confidence intervals, and an
+observed-effect design-power calculation —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7a4b7efa51e9">
+<h2 class="prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 4" id="slide-heading-7a4b7efa51e9">Statistical
+protocol (part 4)</h2>
+<p>the reporting discipline expected by robust statistics and applied
+inference <span class="citation"
+data-cites="huber2009robust efron1993bootstrap koehler2009mcse morris2019simulation loy2021lmeresampler nakagawa2007effect benjamini1995controlling wasserstein2016asa">(Huber
+and Ronchetti 2009; Efron and Tibshirani 1993; Koehler et al. 2009;
+Morris et al. 2019; Loy and Korobova 2021; Nakagawa and Cuthill 2007;
+Benjamini and Hochberg 1995; Wasserstein and Lazar 2016)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4b746aad8c3e">
+<h2 class="prose-slide"
+aria-label="Statistical protocol: matched comparisons, intervals, and bounded claims, part 5" id="slide-heading-4b746aad8c3e">Statistical
+protocol (part 5)</h2>
+<p>The protocol lives in <code>statistics.py</code>, sits at the
+analysis tier above the locked FedGVI core, and emits every number the
+results sections report; nothing is hard-coded (ISC-30).</p>
+</section>
+<section id="sec:methods-paired" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0540d7e6ed16">
+<h2 class="prose-slide" id="slide-heading-0540d7e6ed16">Paired comparison and standardized effect
+size</h2>
+<p>The headline claim is <em>paired</em>: across matched scenarios —
+same seed, same contamination — does the robust aggregator raise
+consensus accuracy over the naive log-linear pool? For the expanded
+review grid,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b43b9415c1a7">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 2" id="slide-heading-b43b9415c1a7">Paired
+comparison and… (part 2)</h2>
+<p>the inferential unit is the seed: trials are nested within a
+seed/cell and are averaged before seed-level contrasts.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-762c4f171160">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 3" id="slide-heading-762c4f171160">Paired
+comparison and… (part 3)</h2>
+<p>The primary robustness sweep also retains a trial-level paired
+diagnostic, but its matched trial replicates are nested within one fixed
+seeded world and are not independent worlds. The seed-level review-grid
+estimand is therefore the robust-minus-naive accuracy difference after
+the declared trial reduction,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fb1124f2c3ff">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 4" id="slide-heading-fb1124f2c3ff">Paired
+comparison and… (part 4)</h2>
+<p>not a contrast of two independently drawn group means.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-830ade055422">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 5" id="slide-heading-830ade055422">Paired
+comparison and… (part 5)</h2>
+<p>Each configured robust method is retained in every review-grid rate
+panel and has its own seed-level contrast, interval, and test; no
+pooled-selected curve or pooled-selected inferential member enters that
+grid.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-01dfb293a25b">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 6" id="slide-heading-01dfb293a25b">Paired
+comparison and… (part 6)</h2>
+<p>The naive comparator is the project’s log-linear pool <span class="cross-reference">Equation (9)</span>.
+Under the shared-support, posterior-log-potential, and fixed-weight
+assumptions of <span class="cross-reference">Section 5.8</span>,
+it specializes the message-combination term of Friston et al.’s Eq. 7
+<span class="citation"
+data-cites="friston2024federated">(2024)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-621c2169a395">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 7" id="slide-heading-621c2169a395">Paired
+comparison and… (part 7)</h2>
+<p>rather than reconstructing the complete source protocol.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b15c46ff310b">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 8" id="slide-heading-b15c46ff310b">Paired
+comparison and… (part 8)</h2>
+<p>We test it with the matched-pairs Wilcoxon signed-rank test <span
+class="citation" data-cites="wilcoxon1945individual">(Wilcoxon
+1945)</span> (<code>statistics.paired_test</code>, ISC-28), interpreted
+under the usual signed-rank conditions: seed-level paired differences
+are independent across the declared seed schedule,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-afcdd33b2fc5">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 9" id="slide-heading-afcdd33b2fc5">Paired
+comparison and… (part 9)</h2>
+<p>while the primary sweep’s trial-level diagnostic remains conditional
+on its fixed world; the differences are ranked after zero differences
+are removed, and the null is a symmetric distribution of paired
+differences around zero rather than an equality-of-means claim <span
+class="citation" data-cites="fay2010wilcoxon">(Fay and Proschan
+2010)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67f1394c265c">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 10" id="slide-heading-67f1394c265c">Paired
+comparison and… (part 10)</h2>
+<p>This is the right comparison for bounded, often non-Gaussian accuracy
+deltas, but it is not assumption-free. The test reports the primary
+matched-pairs rank-biserial effect <span class="math inline">\(r_{\rm
+rb} = (T^{+} - T^{-})/(T^{+} + T^{-})\)</span>. We retain the monotone
+secondary transform <span class="math inline">\(d_{\rm eq}=2r_{\rm
+rb}/\sqrt{1-r_{\rm rb}^2}\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bb126867291c">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 11" id="slide-heading-bb126867291c">Paired
+comparison and… (part 11)</h2>
+<p>labeled a <em>rank-biserial-derived d-equivalent</em>, never raw
+Cohen’s <span class="math inline">\(d\)</span> and never a replacement
+for the mean contrast.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f6e79b660d11">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 12" id="slide-heading-f6e79b660d11">Paired
+comparison and… (part 12)</h2>
+<p>When <span class="math inline">\(r_{\rm rb}\)</span> saturates at
+<span class="math inline">\(\pm1\)</span>, the transform diverges;
+tables print a signed saturation marker rather than a finite
+million-scale value. The primary-sweep headline display method RKL has
+rank-biserial effect 1.0000, d-equivalent saturated (r=+1) (large),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Paired comparison and standardized effect size, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1041e3ca28a1">
+<h2 class="prose-slide"
+aria-label="Paired comparison and standardized effect size, part 13" id="slide-heading-1041e3ca28a1">Paired
+comparison and… (part 13)</h2>
+<p>with the paired mean difference and bootstrap interval reported
+alongside it.</p>
+</section>
+<section id="sec:methods-bootstrap" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b1227f274198">
+<h2 class="prose-slide" id="slide-heading-b1227f274198">Bootstrap interval estimates</h2>
+<p>Every inferential mean — colony free energy, learning-curve KL,
+per-method accuracy, and the robust-minus-naive accuracy difference —
+carries a 95% percentile-bootstrap confidence interval <span
+class="citation" data-cites="efron1993bootstrap">(Efron and Tibshirani
+1993)</span> from <code>statistics.bootstrap_ci</code>, resampled from
+the declared unit. For the review grid,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-830a596cf520">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 2" id="slide-heading-830a596cf520">Bootstrap interval
+estimates (part 2)</h2>
+<p>the unit is the seed after the nested trials have been reduced; for
+the primary fixed-world sweep, the interval is explicitly trial-level
+and conditional; for single-seed diagnostics, it is descriptive or
+trial-level.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4ff06daace05">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 3" id="slide-heading-4ff06daace05">Bootstrap interval
+estimates (part 3)</h2>
+<p>The single-colony mechanistic rate table is <span
+class="math inline">\(n=1\)</span> per cell and is descriptive, not an
+inferential mean; its companion profile uses the declared nested design.
+This separation follows simulation-reporting guidance to declare the
+estimand and the independent Monte Carlo unit <span class="citation"
+data-cites="morris2019simulation">(Morris et al. 2019)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6014a5280d7f">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 4" id="slide-heading-6014a5280d7f">Bootstrap interval
+estimates (part 4)</h2>
+<p>The interval quantifies variation over the declared resampling unit
+(seed, recorded step, or matched trial) and is conditional on this
+simulation design, not on unmodeled real-world deployment uncertainty or
+alternative contamination models.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e7b12a6df3e3">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 5" id="slide-heading-e7b12a6df3e3">Bootstrap interval
+estimates (part 5)</h2>
+<p>The headline mean robust-minus-naive accuracy difference is 0.0809
+with 95% CI <span class="math inline">\([0.0783, 0.0834]\)</span>.</p>
+<p>At the verdict rate, the naive pool has mean accuracy 0.9021 (95% CI
+<span class="math inline">\([0.8993, 0.9049]\)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1ce4586b9c21">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 6" id="slide-heading-1ce4586b9c21">Bootstrap interval
+estimates (part 6)</h2>
+<p>The headline display method RKL has mean accuracy 0.9829 (95% CI
+<span class="math inline">\([0.9827, 0.9832]\)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-304dc1c27f71">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 7" id="slide-heading-304dc1c27f71">Bootstrap interval
+estimates (part 7)</h2>
+<p>For every multi-seed summary we also report the Monte Carlo standard
+error (<span class="math inline">\(\mathrm{MCSE} = s/\sqrt{n_{\rm
+seed}}\)</span>) and an approximate two-sided minimum detectable effect
+(MDE) at the configured target power. These are precision diagnostics
+over independent seeds,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Bootstrap interval estimates, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a69f6e7a93f3">
+<h2 class="prose-slide"
+aria-label="Bootstrap interval estimates, part 8" id="slide-heading-a69f6e7a93f3">Bootstrap interval
+estimates (part 8)</h2>
+<p>not claims about sampling a real population.</p>
+<p>The MDE uses a normal approximation conditional on the observed
+seed-level standard deviation <span class="citation"
+data-cites="koehler2009mcse">(Koehler et al. 2009)</span>; it is
+reported alongside the non-parametric interval rather than used to
+replace the paired test.</p>
+</section>
+<section id="sec:methods-fdr" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f7b6272f1eba">
+<h2 class="prose-slide" id="slide-heading-f7b6272f1eba">Multiple-testing deflation by BH-FDR</h2>
+<p>The sweep compares each robust divergence against the naive pool, so
+an uncorrected <span class="math inline">\(p &lt; 0.05\)</span> across
+the family would manufacture false discoveries. We control the
+false-discovery rate with the Benjamini-Hochberg step-up procedure <span
+class="citation" data-cites="benjamini1995controlling">(Benjamini and
+Hochberg 1995)</span> (<code>statistics.bh_fdr</code>, ISC-29) at <span
+class="math inline">\(\alpha = 0.05\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-428f219e1976">
+<h2 class="prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 2" id="slide-heading-428f219e1976">Multiple-testing
+deflation by… (part 2)</h2>
+<p>The verdict family owns one robust-versus-naive contrast per robust
+method at the predeclared verdict rate; each rate table owns its own
+within-method rate family. Families are not pooled across figures or
+across the review-grid cells.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5d9c0d1fba45">
+<h2 class="prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 3" id="slide-heading-5d9c0d1fba45">Multiple-testing
+deflation by… (part 3)</h2>
+<p>The review-grid families retain all configured method contrasts and
+do not derive a selected member by pooled mean.</p>
+<p>The procedure returns both the rejection mask and the monotone BH
+q-values.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-372e467ee841">
+<h2 class="prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 4" id="slide-heading-372e467ee841">Multiple-testing
+deflation by… (part 4)</h2>
+<p>BH controls expected false discovery proportion within the stated
+family, not the family-wise probability of any false positive; the
+manuscript therefore states the family each table uses. The
+positive-contrast rule is strict and conjunctive:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9c3782163c39">
+<h2 class="prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 5" id="slide-heading-9c3782163c39">Multiple-testing
+deflation by… (part 5)</h2>
+<p>a method is a BH-rejected positive contrast <em>iff</em> BH rejects
+its null <strong>and</strong> its rank-biserial effect is positive. This
+is a statistical decision for the named family, not a unique scientific
+winner.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c4f1fbcf75ad">
+<h2 class="prose-slide"
+aria-label="Multiple-testing deflation by BH-FDR, part 6" id="slide-heading-c4f1fbcf75ad">Multiple-testing
+deflation by… (part 6)</h2>
+<p>The primary-sweep headline display method has raw <span
+class="math inline">\(p = 1.11 \times 10^{-158}\)</span>, deflating to
+BH <span class="math inline">\(q = 1.11 \times 10^{-158}\)</span>.</p>
+</section>
+<section id="sec:methods-statistics-power"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9a39f4ad2c72">
+<h2 class="prose-slide" id="slide-heading-9a39f4ad2c72">Prospective power analysis for the verdict
+rate</h2>
+<p>We report not only <em>that</em> the verdict rejected the null but
+the observed-effect planning power implied by the run and the number of
+pairs a confirmatory run could budget.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e2a34a870105">
+<h2 class="prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 2" id="slide-heading-e2a34a870105">Prospective
+power analysis… (part 2)</h2>
+<p>The observed-effect design power of the headline paired Wilcoxon at
+the primary sweep’s matched-trial unit, <span
+class="math inline">\(n_{\rm trial} = 960\)</span>, <span
+class="math inline">\(\alpha = 0.05\)</span>, alternative
+<code>greater</code>, is 1.0000;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-363ed6547eed">
+<h2 class="prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 3" id="slide-heading-363ed6547eed">Prospective
+power analysis… (part 3)</h2>
+<p>the prospective sample size for the target power 0.80 at the observed
+effect is <span class="math inline">\(n_{\rm trial} = 5\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5f569e9ba344">
+<h2 class="prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 4" id="slide-heading-5f569e9ba344">Prospective
+power analysis… (part 4)</h2>
+<p>The estimator is the deterministic noncentral-normal approximation to
+the matched-pairs <span class="math inline">\(t\)</span>-test, deflated
+by the Wilcoxon’s Pitman asymptotic relative efficiency <span
+class="math inline">\(3/\pi\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b509a51386d0">
+<h2 class="prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 5" id="slide-heading-b509a51386d0">Prospective
+power analysis… (part 5)</h2>
+<p>so the reported power is approximately calibrated for the signed-rank
+test the harness runs (the deflation is exact under a normal-shift
+alternative); note the power computation is directional for planning,
+while the reported p-values are two-sided.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5fccd2eb25c6">
+<h2 class="prose-slide"
+aria-label="Prospective power analysis for the verdict rate, part 6" id="slide-heading-5fccd2eb25c6">Prospective
+power analysis… (part 6)</h2>
+<p>This is an observed-effect planning approximation conditional on the
+observed effect size, not independent evidence for the result and not a
+confirmatory power guarantee.</p>
+</section>
+<section id="sec:methods-reporting" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e3e8d8079acc">
+<h2 class="prose-slide" id="slide-heading-e3e8d8079acc">Reporting tables and the honesty boundary</h2>
+<p>The results sections render six statistics tables straight from these
+tokens: the per-rate accuracy sweep (<span class="cross-reference">Table 4</span>),
+the robust-versus-naive verdict (<span class="cross-reference">Table 7</span>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-25edc79e51ab">
+<h2 class="prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 2" id="slide-heading-25edc79e51ab">Reporting
+tables and the… (part 2)</h2>
+<p>the standardized-effect estimates (<span class="cross-reference">Table 8</span>),
+their paired inference and observed-effect planning diagnostics (<span class="cross-reference">Table 9</span>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-95e8398085f3">
+<h2 class="prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 3" id="slide-heading-95e8398085f3">Reporting
+tables and the… (part 3)</h2>
+<p>the per-method accuracy with bootstrap CIs at the verdict rate (<span class="cross-reference">Table 10</span>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d37f5292612c">
+<h2 class="prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 4" id="slide-heading-d37f5292612c">Reporting
+tables and the… (part 4)</h2>
+<p>and the effect and inference projections of the
+per-contamination-rate paired tests (<span class="cross-reference">Table 5</span>; <span class="cross-reference">Table 6</span>).</p>
+<p>Every cell is a generated token, never hand-typed.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-582cdce3458e">
+<h2 class="prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 5" id="slide-heading-582cdce3458e">Reporting
+tables and the… (part 5)</h2>
+<p>The honesty contract binds at exactly this tier. The effect-size, CI,
+and power enrichment above decorates the <em>server-side</em>
+<code>robust_aggregate</code> divergence-reweighting contrasts only.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-70705f5254d0">
+<h2 class="prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 6" id="slide-heading-70705f5254d0">Reporting
+tables and the… (part 6)</h2>
+<p>It does not certify the per-client <span
+class="math inline">\(\beta\)</span>/rcce generalized-Bayes (FedGVI)
+guarantees, which are pinned by the locked core (Proposition <span class="cross-reference">4</span>
+of <span class="cross-reference">Section 6</span>)
+rather than by these aggregation-level statistics —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-25b89a5eb428">
+<h2 class="prose-slide"
+aria-label="Reporting tables and the honesty boundary, part 7" id="slide-heading-25b89a5eb428">Reporting
+tables and the… (part 7)</h2>
+<p>the three robustness axes of <span class="cross-reference">Section 3.3</span>
+kept distinct.</p>
+</section>
+<section id="sec:methods-evidence-map" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c5d13689d404">
+<h2 class="prose-slide" id="slide-heading-c5d13689d404">Evidence classes and replication hierarchy</h2>
+<p>The reporting map in <span class="cross-reference">Figure 6</span>
+makes the reporting rule explicit. Read each numbered row across its six
+fields: result and class, estimand and unit, independent unit,
+nesting,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a3e2b4a142a5">
+<h2 class="prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 2" id="slide-heading-a3e2b4a142a5">Evidence
+classes and… (part 2)</h2>
+<p>permitted support, and prohibited support. A formal identity,
+conditional server contrast, protocol check, and application receipt
+therefore cannot silently exchange evidentiary standing.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-25db8b308086">
+<h2 class="prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 3" id="slide-heading-25db8b308086">Evidence
+classes and… (part 3)</h2>
+<p>The top nesting strip supplies a shared reading grammar. A seed is
+independent only where its report declares it so; matched trials,
+agents, contamination roles, ordered steps, and posterior states
+otherwise remain nested. The three no-transfer boxes keep these
+ownership boundaries explicit.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ce5a75259449">
+<h2 class="prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 4" id="slide-heading-ce5a75259449">Evidence
+classes and… (part 4)</h2>
+<p>The external source-dataset lane stays open until a frozen design and
+source-bound confirmatory report exists. Fourteen rows cover the
+headline result families and public software boundaries;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d5131401851e">
+<h2 class="prose-slide"
+aria-label="Evidence classes and replication hierarchy, part 5" id="slide-heading-d5131401851e">Evidence
+classes and… (part 5)</h2>
+<p>exact estimates and intervals remain in their typed reports and the
+native-unit cross-study summary (<span class="cross-reference">Figure 30</span>).</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e09e04be38ea">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 6" id="slide-heading-e09e04be38ea">Evidence
+classes and… (part 6)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-1">
+<img
+src="../figures/evidence_replication_map.slide-class-formal-executable.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a93d856ebd6bb65042e478c7fe941ef9165bd5083763c26410244e0c64463ff8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1234"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.9717514"
+alt="FE: Formal / executable. proved or exactly tested in the project model." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cf91945f0566">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 7" id="slide-heading-cf91945f0566">Evidence
+classes and… (part 7)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-2">
+<img
+src="../figures/evidence_replication_map.slide-class-source-conditional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="dc4b9d7e5c1439447511eed05b8a80b3edad26e9269ecb592e35b4d759dd86ce"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1090"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.2913386"
+alt="SC: Source-conditional. inherits only under the cited paper&#39;s assumptions." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ad6ca6952695">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 8" id="slide-heading-ad6ca6952695">Evidence
+classes and… (part 8)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-3">
+<img
+src="../figures/evidence_replication_map.slide-class-conditional-empirical.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b1abd993a9d5e1892bed2596855236ab96934e6bd19c68eab89d17adbf14585c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1263"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7.1355932"
+alt="CE: Conditional empirical. estimated in the declared finite design." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2e8977ba3d37">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 9" id="slide-heading-2e8977ba3d37">Evidence
+classes and… (part 9)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-4">
+<img
+src="../figures/evidence_replication_map.slide-class-scoped-implementation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d49fa2785634797f0ae57c391782ce9422b1de91473a8250b8c9837ab53c2aab"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1218"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.8813559"
+alt="SI: Scoped implementation. checks one software or protocol boundary." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3692773798d9">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 10" id="slide-heading-3692773798d9">Evidence
+classes and… (part 10)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-5">
+<img src="../figures/evidence_replication_map.slide-class-open.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bd66e5abb8c8f249e4ea670abf32fc915fdf6ca9f00d0196975c146805773d03"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1106"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.2485876"
+alt="O: Open. not established by the current evidence." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3a88d0806c0">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 11" id="slide-heading-d3a88d0806c0">Evidence
+classes and… (part 11)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-6">
+<img
+src="../figures/evidence_replication_map.slide-lane-1-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2aa0b01a953164818f58b8d61e3af68e0df24fd50fdb960b98bea3112c9ef45e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1080"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.2519685"
+alt="1. Project identity at c=0 [FE]
+Estimand / unit: paired outputs [categorical posterior]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-02603678e94c">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 12" id="slide-heading-02603678e94c">Evidence
+classes and… (part 12)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-7">
+<img
+src="../figures/evidence_replication_map.slide-lane-1-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="681b9f5b11720de6f5cbe38d33aa317688622804985975416bd0b4aa69825e52"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1152"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.5354331"
+alt="1. Project identity at c=0 [FE]
+Independent unit: exact identity. Nesting: input → paired functions" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-56bb7f3842ad">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 13" id="slide-heading-56bb7f3842ad">Evidence
+classes and… (part 13)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-8">
+<img
+src="../figures/evidence_replication_map.slide-lane-1-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b2216642a99f9c7bea40053ab4cbbf1b2b26990c88538ca739c225ba2be259b3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1244"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.8976378"
+alt="1. Project identity at c=0 [FE]
+May support: project limit. Does not support: full source protocol" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-af1af356ab24">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 14" id="slide-heading-af1af356ab24">Evidence
+classes and… (part 14)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-9">
+<img
+src="../figures/evidence_replication_map.slide-lane-2-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2f47ca4bc18086baf880947311e8814c38423518978af6cb6dbe952221f56f9d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1022"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.023622"
+alt="2. Client-loss robustness [SC]
+Estimand / unit: generalized posterior [client update]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e5d2382fd714">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 15" id="slide-heading-e5d2382fd714">Evidence
+classes and… (part 15)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-10">
+<img
+src="../figures/evidence_replication_map.slide-lane-2-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f0d9d483ef41d41026c57ae844e0b7c7351e0641e5d733d67bbbb2b35534dcae"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1267"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8393939"
+alt="2. Client-loss robustness [SC]
+Independent unit: theorem; no empirical unit. Nesting: assumptions → update → posterior" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5bd3aa4e25b3">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 16" id="slide-heading-5bd3aa4e25b3">Evidence
+classes and… (part 16)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-11">
+<img
+src="../figures/evidence_replication_map.slide-lane-2-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bd89ef566398d5e554f7d00c8e0026310c31f5a6d90b4fb6a4125f8e48349ddc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1239"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7545455"
+alt="2. Client-loss robustness [SC]
+May support: source theorem. Does not support: server theorem; performance; calibration" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9a9de362f239">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 17" id="slide-heading-9a9de362f239">Evidence
+classes and… (part 17)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-12">
+<img
+src="../figures/evidence_replication_map.slide-lane-3-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c527fc0af344b19431d7d5fcf5e9d58e0caa49fd3a54f3543ca733c98de8e11d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1203"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7362205"
+alt="3. Paired free-energy contrast [CE]
+Estimand / unit: isolated − shared colony F [nats]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4af79c9695ea">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 18" id="slide-heading-4af79c9695ea">Evidence
+classes and… (part 18)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-13">
+<img
+src="../figures/evidence_replication_map.slide-lane-3-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7309335885abd5859e19c8cd39d7cb9d7f6a3b53c3f483e4b3f26b1f70fee4a3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1270"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8484848"
+alt="3. Paired free-energy contrast [CE]
+Independent unit: configured seed. Nesting: study → seed → condition → agents" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-046d48771bdb">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 19" id="slide-heading-046d48771bdb">Evidence
+classes and… (part 19)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-14">
+<img
+src="../figures/evidence_replication_map.slide-lane-3-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ffe9581101b40355d6d357769a4b916a6f2ab279d43a782947103a2113c8f4f4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1235"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7424242"
+alt="3. Paired free-energy contrast [CE]
+May support: paired protocol contrast. Does not support: general benefit; exact replication" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-46dbb9ccabe8">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 20" id="slide-heading-46dbb9ccabe8">Evidence
+classes and… (part 20)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-15">
+<img
+src="../figures/evidence_replication_map.slide-lane-4-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d775367ba122f627a82cddb6adc8bb8558955e25a135cbf5c6f70af5a6ae0bff"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1041"
+data-slide-figure-intrinsic-height="332"
+data-slide-figure-intrinsic-aspect="3.1355422"
+alt="4. Dirichlet likelihood learning [CE]
+Estimand / unit: KL(true A || learned A) [nats]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-74851745c12d">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 21" id="slide-heading-74851745c12d">Evidence
+classes and… (part 21)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-16">
+<img
+src="../figures/evidence_replication_map.slide-lane-4-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1cdceb7a2923717e88c13dfcd9e0e5e022d8c31900759ea02c247a0943ef869f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1219"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.0024631"
+alt="4. Dirichlet likelihood learning [CE]
+Independent unit: configured seed. Nesting: study → seed → steps → A rows" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3cc376550616">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 22" id="slide-heading-3cc376550616">Evidence
+classes and… (part 22)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-17">
+<img
+src="../figures/evidence_replication_map.slide-lane-4-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ebf81ddb244dca05c0c7a9f123d6158fb103801b7b07d491da88210a329dc82d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1162"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.862069"
+alt="4. Dirichlet likelihood learning [CE]
+May support: executed conjugate path. Does not support: universal rate; continuous model" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-98feb5cc5f36">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 23" id="slide-heading-98feb5cc5f36">Evidence
+classes and… (part 23)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-18">
+<img
+src="../figures/evidence_replication_map.slide-lane-5-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2c1fb81f28316a21a8027e08ca878c3f311fb904af6f90d3d0236f094abacd68"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1231"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.8464567"
+alt="5. Configured BMR sign control [FE]
+Estimand / unit: pruning delta F [nats]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0f4adcad2f1">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 24" id="slide-heading-d0f4adcad2f1">Evidence
+classes and… (part 24)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-19">
+<img
+src="../figures/evidence_replication_map.slide-lane-5-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f5660e637da0c56525eac239baad0902c97ad39e316a83086df3b7957d14d486"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1231"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.730303"
+alt="5. Configured BMR sign control [FE]
+Independent unit: closed-form comparison. Nesting: posterior → pruning → signed delta" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-87a7d9858797">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 25" id="slide-heading-87a7d9858797">Evidence
+classes and… (part 25)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-20">
+<img
+src="../figures/evidence_replication_map.slide-lane-5-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="eecba0c8cece615cee479b2150a7f02e8c6a4cebc66f027a8f6db5e3cc8c59c7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1243"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7666667"
+alt="5. Configured BMR sign control [FE]
+May support: configured sign control. Does not support: universal emergence" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-35127573bb30">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 26" id="slide-heading-35127573bb30">Evidence
+classes and… (part 26)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-21">
+<img
+src="../figures/evidence_replication_map.slide-lane-6-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="94a216bfc4f5382b0b2a9619fe0d0d8c52ab3ed1b1f0b11a860cc6359fe62f39"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1181"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.6496063"
+alt="6. Exploratory client baseline [CE]
+Estimand / unit: joint-config accuracy [fraction]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dd3e2398cc24">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 27" id="slide-heading-dd3e2398cc24">Evidence
+classes and… (part 27)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-22">
+<img
+src="../figures/evidence_replication_map.slide-lane-6-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ab41cc890cf949a477b5734b90c610fea76f830781b94e809cdf59d8a305f220"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1317"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.1850394"
+alt="6. Exploratory client baseline [CE]
+Independent unit: synthetic seed. Nesting: sweep → seed → client → row" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-204d4e767c31">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 28" id="slide-heading-204d4e767c31">Evidence
+classes and… (part 28)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-23">
+<img
+src="../figures/evidence_replication_map.slide-lane-6-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b5ea293ee6654a74f6f70269722e687d368623de0642c4db31f1857a1c085abd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1313"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.9787879"
+alt="6. Exploratory client baseline [CE]
+May support: composite configuration contrast. Does not support: RCCE-only; calibration; BNN claims" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f48c17111f23">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 29" id="slide-heading-f48c17111f23">Evidence
+classes and… (part 29)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-24">
+<img
+src="../figures/evidence_replication_map.slide-lane-7-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="18e84218f8dd259e0a14256801252ad4d3fecf55b81b3ad208d786da2a9a6b85"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1236"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.8661417"
+alt="7. Server reweighting heuristic [CE]
+Estimand / unit: robust − naive [p or fraction]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-429e6ace1356">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 30" id="slide-heading-429e6ace1356">Evidence
+classes and… (part 30)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-25">
+<img
+src="../figures/evidence_replication_map.slide-lane-7-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1477a5f082d6b786f8313a94eba8112943c70bda66a0d152a7a406d643b4d3fd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1243"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7666667"
+alt="7. Server reweighting heuristic [CE]
+Independent unit: seed or matched trial. Nesting: study → seed/world → trial → agents" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7b27a0ee23c">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 31" id="slide-heading-d7b27a0ee23c">Evidence
+classes and… (part 31)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-26">
+<img
+src="../figures/evidence_replication_map.slide-lane-7-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e57afc43e4650510c79606d99a3c96d433768e5df54c777204a801548355a8b6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1236"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.044335"
+alt="7. Server reweighting heuristic [CE]
+May support: finite mechanism behavior. Does not support: influence bound; Byzantine tol.; universal win" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e3efdec22b24">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 32" id="slide-heading-e3efdec22b24">Evidence
+classes and… (part 32)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-27">
+<img
+src="../figures/evidence_replication_map.slide-lane-8-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="003427422941ac0b49568e35426d3b895e9c9a497a0870d325ccc5f6b54cdba4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1182"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.6535433"
+alt="8. Variational server rule [FE]
+Estimand / unit: descent, weights, transfer [mixed]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-004c3bb95a65">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 33" id="slide-heading-004c3bb95a65">Evidence
+classes and… (part 33)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-28">
+<img
+src="../figures/evidence_replication_map.slide-lane-8-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="cb417d1c2470ceeb12bb14b23525861aad3f102e61ecef9e39fbfa8d379c1158"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1270"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8484848"
+alt="8. Variational server rule [FE]
+Independent unit: identity or seeded path. Nesting: config → start → iterates" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2b03d15c9ff3">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 34" id="slide-heading-2b03d15c9ff3">Evidence
+classes and… (part 34)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-29">
+<img
+src="../figures/evidence_replication_map.slide-lane-8-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="433eba1f1de05284fcee86bb0307f8b5a630fc8811a62a77981d24f7077c75b0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1166"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.5333333"
+alt="8. Variational server rule [FE]
+May support: objective + tested transfer. Does not support: global or universal claim" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8b9110de084c">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 35" id="slide-heading-8b9110de084c">Evidence
+classes and… (part 35)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-30">
+<img
+src="../figures/evidence_replication_map.slide-lane-9-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5ffd952b7a0ec823249375721cebd8cfa654dc528f263243994fa3ac3e324d57"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1167"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.5363636"
+alt="9. Moving / disjoint-FOV contrasts [CE]
+Estimand / unit: policy/sharing [fraction, nats, steps]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 36" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-851858498706">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 36" id="slide-heading-851858498706">Evidence
+classes and… (part 36)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-31">
+<img
+src="../figures/evidence_replication_map.slide-lane-9-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="931795b7771319f9574b937d29545a6f9fd823f7afd55e7a2b77f7657979c499"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1167"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.8743842"
+alt="9. Moving / disjoint-FOV contrasts [CE]
+Independent unit: seed or fixed world. Nesting: world → seed → condition → agents/steps" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 37" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-164f77252c05">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 37" id="slide-heading-164f77252c05">Evidence
+classes and… (part 37)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-32">
+<img
+src="../figures/evidence_replication_map.slide-lane-9-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="69812d36218f55a3d6c4108d309f47c2870584ff26a5870b72cf444656838ba2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1226"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.0197044"
+alt="9. Moving / disjoint-FOV contrasts [CE]
+May support: executed-world behavior. Does not support: universal claim; physical multi-host" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 38" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fa23e68fecdc">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 38" id="slide-heading-fa23e68fecdc">Evidence
+classes and… (part 38)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-33">
+<img
+src="../figures/evidence_replication_map.slide-lane-10-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="15c2ddd253372a0c0d02b5f0b25b482929368e326cdadbf8e15d4cfc43573f39"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1214"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6787879"
+alt="10. Hierarchy / sensitivity diagnostics [CE]
+Estimand / unit: posterior/gap/gate [probability, fraction, nats]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 39" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a1b9dc8f0c2f">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 39" id="slide-heading-a1b9dc8f0c2f">Evidence
+classes and… (part 39)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-34">
+<img
+src="../figures/evidence_replication_map.slide-lane-10-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8e2ca97930ce23f274e8defde4480e705b0dd8478f7b35bca64b161421c2ce0e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1248"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.0738916"
+alt="10. Hierarchy / sensitivity diagnostics [CE]
+Independent unit: seed or fixed diagnostic. Nesting: world → seed → level → agents/states" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 40" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6cee00baef6f">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 40" id="slide-heading-6cee00baef6f">Evidence
+classes and… (part 40)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-35">
+<img
+src="../figures/evidence_replication_map.slide-lane-10-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="fb35c43c1f6872cde531607d06b90237f4abd5e3216391a4068f6a81cb2fcf1c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1233"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.0369458"
+alt="10. Hierarchy / sensitivity diagnostics [CE]
+May support: executed hierarchy design. Does not support: universal benefit, depth, or emergence" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 41" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ff3296409474">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 41" id="slide-heading-ff3296409474">Evidence
+classes and… (part 41)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-36">
+<img
+src="../figures/evidence_replication_map.slide-lane-11-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="715f1cb33d6b4638d7ce650e13a1dce0ff95ad3e799b3cdaf109debf6505409f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1219"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7992126"
+alt="11. Acuity recovery diagnostic [CE]
+Estimand / unit: acuity, error, R² [p or unitless]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 42" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8ffb67439003">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 42" id="slide-heading-8ffb67439003">Evidence
+classes and… (part 42)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-37">
+<img
+src="../figures/evidence_replication_map.slide-lane-11-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0d2b1a9691ec6966e5471ea33b50e36b703ce031e38faec0019c45bca7bb732f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1219"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6939394"
+alt="11. Acuity recovery diagnostic [CE]
+Independent unit: trial within acuity cell. Nesting: grid point → trial → rows → estimate" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 43" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e137e43020d2">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 43" id="slide-heading-e137e43020d2">Evidence
+classes and… (part 43)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-38">
+<img
+src="../figures/evidence_replication_map.slide-lane-11-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="114a86b9939933aa9ebaae248a59b2f362002f2b49b6d4dc35be046c6ef14e9a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1219"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6939394"
+alt="11. Acuity recovery diagnostic [CE]
+May support: finite-grid recovery. Does not support: global structural identifiability" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 44" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1de204dc75bd">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 44" id="slide-heading-1de204dc75bd">Evidence
+classes and… (part 44)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-39">
+<img
+src="../figures/evidence_replication_map.slide-lane-12-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="74de811346b20ce211f6ae99c91b8446e756927dd99023e9e2c2bdd8cc83c7a0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1255"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8030303"
+alt="12. Protocol-v1 / replay integrity [SI]
+Estimand / unit: frame/replay match [frame or round]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 45" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e7c50ccd7d35">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 45" id="slide-heading-e7c50ccd7d35">Evidence
+classes and… (part 45)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-40">
+<img
+src="../figures/evidence_replication_map.slide-lane-12-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5f228e748ec678a86db21b92d9f8bd916f4a23e1b460e5f363c7ce76f6bc1302"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1307"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.2192118"
+alt="12. Protocol-v1 / replay integrity [SI]
+Independent unit: local round. Nesting: round → workers → frames → fields" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 46" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-37916f6bfd0e">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 46" id="slide-heading-37916f6bfd0e">Evidence
+classes and… (part 46)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-41">
+<img
+src="../figures/evidence_replication_map.slide-lane-12-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b976e0a6aa6103e927a2c51d8f21b5a59b708312c1702a4edc223790ff649fe1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1120"
+data-slide-figure-intrinsic-height="483"
+data-slide-figure-intrinsic-aspect="2.3188406"
+alt="12. Protocol-v1 / replay integrity [SI]
+May support: protocol-v1 local integrity. Does not support: encryption/mTLS; multi-host; Byzantine tol." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 47" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-179dfd204a23">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 47" id="slide-heading-179dfd204a23">Evidence
+classes and… (part 47)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-42">
+<img
+src="../figures/evidence_replication_map.slide-lane-13-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="cc1a18d6ed5e4a5f1010ef812a7029e32b4de8ec68b3caeb3ba2284d2116c4b7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="996"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="3.9212598"
+alt="13. Application receipt [SI]
+Estimand / unit: hash/source agreement [artifact]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 48" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9fa82247f6ba">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 48" id="slide-heading-9fa82247f6ba">Evidence
+classes and… (part 48)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-43">
+<img
+src="../figures/evidence_replication_map.slide-lane-13-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0e39dc9609ef64ab06c9e2af7796c503830799a9fd51877ddfc7b3f675509516"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1154"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.4969697"
+alt="13. Application receipt [SI]
+Independent unit: application invocation. Nesting: invocation → artifacts → levels" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 49" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f2ab1263b2b7">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 49" id="slide-heading-f2ab1263b2b7">Evidence
+classes and… (part 49)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-44">
+<img
+src="../figures/evidence_replication_map.slide-lane-13-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5f2e4a97875592da76ea021e19860e7dfe2c5823cc2183975358bb6b0b035696"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1138"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.4484848"
+alt="13. Application receipt [SI]
+May support: hashes; requested source match. Does not support: validity; decision; acceptance" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 50" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7032d178dde4">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 50" id="slide-heading-7032d178dde4">Evidence
+classes and… (part 50)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-45">
+<img
+src="../figures/evidence_replication_map.slide-lane-14-estimand.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4a492d3de1a4a87290f086ceb62e17e81e7a94f6bb50a14094b43981be97fd5d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1128"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.4181818"
+alt="14. External calibration / confirmation [O]
+Estimand / unit: paired log score [nats/observation]" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 51" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7768936f7996">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 51" id="slide-heading-7768936f7996">Evidence
+classes and… (part 51)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-46">
+<img
+src="../figures/evidence_replication_map.slide-lane-14-replication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="79145b635037fbec3018ea81170b04e83cf43ddbeec2cd5478ab47b52f71a382"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1205"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.9679803"
+alt="14. External calibration / confirmation [O]
+Independent unit: dataset highest; seeds nested. Nesting: dataset → seed → clients → rows" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 52" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4b89c56413f6">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 52" id="slide-heading-4b89c56413f6">Evidence
+classes and… (part 52)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-47">
+<img
+src="../figures/evidence_replication_map.slide-lane-14-claims.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="00b7c031ed61fae4450196b9b7970cd686df1524c77c1a385ba998152335a72e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1225"
+data-slide-figure-intrinsic-height="483"
+data-slide-figure-intrinsic-aspect="2.5362319"
+alt="14. External calibration / confirmation [O]
+May support: none before design + report. Does not support: retrospective or pooled-dataset claim" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 53" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90a9df817435">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 53" id="slide-heading-90a9df817435">Evidence
+classes and… (part 53)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-48">
+<img src="../figures/evidence_replication_map.slide-nesting-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a84dd8408b76f4dfcac8b1e15932717c41152ae51853092eeed3f4fab2f23e1e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Configured study or source-bound run → Seed when present; independence is lane-specific: contains; nesting." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 54" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3c33037c2e21">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 54" id="slide-heading-3c33037c2e21">Evidence
+classes and… (part 54)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-49">
+<img src="../figures/evidence_replication_map.slide-nesting-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2b6c566e8ee78b2bf904bc2ec8e626012017e3d2912b35122739ec808a12e605"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Seed when present; independence is lane-specific → Matched trial or condition: contains or pairs; nesting." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 55" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-837ad8a0a419">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 55" id="slide-heading-837ad8a0a419">Evidence
+classes and… (part 55)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-50">
+<img src="../figures/evidence_replication_map.slide-nesting-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="27d3a6c80f9d111fced43f7a238e7fa03c773200ca17054a474604bc128127b3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Matched trial or condition → Agent / contamination role: contains; nesting." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 56" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9d69fb663d09">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 56" id="slide-heading-9d69fb663d09">Evidence
+classes and… (part 56)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-51">
+<img src="../figures/evidence_replication_map.slide-nesting-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="00c92544a2341623be022fd59067a9576a6f15334e2138b38fffcb1c7ad998cc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Agent / contamination role → Ordered step / posterior state: repeats over; nesting." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 57" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-20d16eae0781">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 57" id="slide-heading-20d16eae0781">Evidence
+classes and… (part 57)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-52">
+<img
+src="../figures/evidence_replication_map.slide-nesting-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="80f3e6a7425cade4e2846d35649d99c9e4d7ddc03d574b49c9b2ec2f5984f75f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1105"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.3484848"
+alt="Nesting grammar: arrows mean contains, pairs, or repeats. Use only the levels declared in each evidence row." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 58" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9c05b54fcb1b">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 58" id="slide-heading-9c05b54fcb1b">Evidence
+classes and… (part 58)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-53">
+<img
+src="../figures/evidence_replication_map.slide-no-transfer-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f80c88852fd21e250147a370b6afc76ead8a55326eaea7c8fd1cb09898ec8bf0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1126"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.4330709"
+alt="NT1: guarantees do not transfer between client, server, protocol, and application lanes" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 59" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8fe1923d1403">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 59" id="slide-heading-8fe1923d1403">Evidence
+classes and… (part 59)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-54">
+<img
+src="../figures/evidence_replication_map.slide-no-transfer-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="65a4128a6712d2464c85deff38060d079a3d1d0cd3683bcf69db54ddcb19ebf9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1246"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.9055118"
+alt="NT2: nested agents, trials, and time steps are not promoted to independent datasets" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Evidence classes and replication hierarchy, part 60" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fc192e938aaf">
+<h2 class="figure-led"
+aria-label="Evidence classes and replication hierarchy, part 60" id="slide-heading-fc192e938aaf">Evidence
+classes and… (part 60)</h2>
+<figure id="fig:evidence-replication-map-slide-panel-55">
+<img
+src="../figures/evidence_replication_map.slide-no-transfer-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b696c187f50ee8ec8c33030542c48281784b87d7bbcd4f28d1b28ba65e246bda"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1201"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7283465"
+alt="NT3: open external confirmation is not implied by formal or software evidence" />
+</figure>
+</section>
+<section id="sec:methods-complexity" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4900343c801c">
+<h2 class="prose-slide" id="slide-heading-4900343c801c">Computational complexity and scaling
+diagnostic</h2>
+<p>The release now reports computational complexity from the
+implementation itself. Let <span class="math inline">\(N\)</span> be the
+number of agents, <span class="math inline">\(S\)</span> the number of
+categorical states, <span class="math inline">\(I\)</span> the
+solver-iteration budget, <span class="math inline">\(B\)</span> the
+number of variational starts,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9538de810f2c">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 2" id="slide-heading-9538de810f2c">Computational
+complexity… (part 2)</h2>
+<p>and <span class="math inline">\(M\)</span> the number of
+conditionally independent observation modalities.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-024291be8c7d">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 3" id="slide-heading-024291be8c7d">Computational
+complexity… (part 3)</h2>
+<p>The dominant dense work and the storage actually retained by the
+current NumPy paths are summarized separately so neither quantity is
+compressed at presentation scale. Here <code>LOO</code> means
+self-excluding leave-one-out sharing, and <code>server round</code>
+excludes queue and network wait.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9a4568eb4ee6">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 4" id="slide-heading-9a4568eb4ee6">Computational
+complexity… (part 4)</h2>
+<p><strong>Time, aggregation.</strong> The log, robust, and variational
+pools have orders <span class="math inline">\(\Theta(N S)\)</span>,
+<span class="math inline">\(\Theta(I N S)\)</span>, and <span
+class="math inline">\(\Theta(B I N S)\)</span>, respectively.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-23cd24d734da">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 5" id="slide-heading-23cd24d734da">Computational
+complexity… (part 5)</h2>
+<p><strong>Time, sharing and inference.</strong> Naive LOO, robust LOO,
+state inference, and a server round have orders <span
+class="math inline">\(\Theta(N^2 S)\)</span>, <span
+class="math inline">\(\Theta(I N^2 S)\)</span>, <span
+class="math inline">\(\Theta(M S)\)</span>, and <span
+class="math inline">\(\Theta(N log N + I N S)\)</span>,
+respectively.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48adef0bd5c2">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 6" id="slide-heading-48adef0bd5c2">Computational
+complexity… (part 6)</h2>
+<p><strong>Storage, aggregation.</strong> The log, robust, and
+variational pools retain or peak at <span class="math inline">\(\Theta(N
+S)\)</span>, <span class="math inline">\(\Theta(N S + I S)\)</span>, and
+<span class="math inline">\(\Theta(N S + I S + B S)\)</span>,
+respectively.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-40a53697334c">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 7" id="slide-heading-40a53697334c">Computational
+complexity… (part 7)</h2>
+<p><strong>Storage, sharing and inference.</strong> Naive LOO, robust
+LOO, state inference, and a server round retain or peak at <span
+class="math inline">\(\Theta(N S)\)</span>, <span
+class="math inline">\(\Theta(N S + I S)\)</span>, <span
+class="math inline">\(\Theta(S)\)</span>, and <span
+class="math inline">\(\Theta(N S)\)</span>, respectively.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3791e5fe3697">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 8" id="slide-heading-3791e5fe3697">Computational
+complexity… (part 8)</h2>
+<p>These are dominant interaction counts, not hardware-independent FLOP
+totals. The <span class="math inline">\(N^2\)</span> sharing term is
+material: with sensory attenuation enabled, one round computes one
+global pool and one leave-one-out pool per agent.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eb38710c4b41">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 9" id="slide-heading-eb38710c4b41">Computational
+complexity… (part 9)</h2>
+<p>The iterative server rules additionally retain their returned
+per-iteration histories, which is why their storage rows include <span
+class="math inline">\(I S\)</span>. The server row includes worker-ID
+sorting and dense aggregation; incoming serialized belief volume is
+linear in <span class="math inline">\(N S\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-26a4bb21edbc">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 10" id="slide-heading-26a4bb21edbc">Computational
+complexity… (part 10)</h2>
+<p>while queue and network latency are deliberately outside this
+local-compute accounting.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a0b92355e4dd">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 11" id="slide-heading-a0b92355e4dd">Computational
+complexity… (part 11)</h2>
+<p>The local path serializes one consensus-plus-weight result; if
+physical broadcast bytes are counted per recipient, that outgoing volume
+additionally has an <span class="math inline">\(N^2\)</span> term
+because each result carries the <span class="math inline">\(N\)</span>
+agent weights.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a319f16852d6">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 12" id="slide-heading-a319f16852d6">Computational
+complexity… (part 12)</h2>
+<p>The accompanying seeded benchmark measures the real public call paths
+on the declared grids <span class="math inline">\(N \in \{4, 8, 16, 32,
+64\}\)</span>, <span class="math inline">\(S \in
+\{256, 512, 1024, 2048, 4096\}\)</span>, self-excluding sharing <span
+class="math inline">\(N \in
+\{4, 8, 16, 32\}\)</span>, and <span class="math inline">\(M \in
+\{1, 2, 4, 8\}\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e3ed48644fb1">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 13" id="slide-heading-e3ed48644fb1">Computational
+complexity… (part 13)</h2>
+<p>The fixed dimensions are <span class="math inline">\(N=256\)</span>,
+<span class="math inline">\(S=64\)</span> for aggregation, and <span
+class="math inline">\(S=16384\)</span> for state inference; direct
+aggregation and server timings use <span
+class="math inline">\(I=6\)</span>, while the public robust
+self-excluding sharing path uses its solver budget <span
+class="math inline">\(I=32\)</span>; the default variational path uses
+<span class="math inline">\(B=3\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3e40c7b6f575">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 14" id="slide-heading-3e40c7b6f575">Computational
+complexity… (part 14)</h2>
+<p>Each grid point is warmed up <span class="math inline">\(1\)</span>
+time(s) and measured <span class="math inline">\(5\)</span> time(s),
+with median time plotted and the observed repeat range shown as a
+min–max bar.</p>
+<p>The fixed input seed is <span class="math inline">\(20260728\)</span>
+on the <span class="math inline">\(arm64\)</span> machine using Python
+<span class="math inline">\(3.10.19\)</span> and NumPy <span
+class="math inline">\(2.2.6\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1e31bfe358b">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 15" id="slide-heading-c1e31bfe358b">Computational
+complexity… (part 15)</h2>
+<p>The measured log–log slopes are descriptive checks of the expected
+orders, not performance guarantees: agent-axis slopes are 0.96
+(log-linear), 0.94 (iterative robust), 0.80 (variational), 1.66 (naive
+self-excluding sharing), and 1.91 (robust self-excluding sharing);
+state-axis slopes are 0.97, 0.96, and 0.96;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa236d58023e">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 16" id="slide-heading-aa236d58023e">Computational
+complexity… (part 16)</h2>
+<p>the modality-axis inference slope is 0.64.</p>
+<p>The slope fit is a timing diagnostic on this machine, not an
+inferential test and not evidence that the same constants hold under
+another BLAS, accelerator, process topology, or distributed network.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f95bfbd22d49">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 17" id="slide-heading-f95bfbd22d49">Computational
+complexity… (part 17)</h2>
+<p>A finite grid can also yield a sublinear fitted slope when
+validation, allocation, cache, and interpreter overheads are material;
+the implementation-derived order is the governing claim, not equality
+between a finite-grid slope and its exponent.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea92375789b0">
+<h2 class="prose-slide"
+aria-label="Computational complexity and scaling diagnostic, part 18" id="slide-heading-ea92375789b0">Computational
+complexity… (part 18)</h2>
+<p>The timing plot in <span class="cross-reference">Figure 7</span>
+visualizes the implementation-derived orders and the corresponding
+finite-grid timing diagnostic.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6c0e34daf543">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 19" id="slide-heading-6c0e34daf543">Computational
+complexity… (part 19)</h2>
+<figure id="fig:complexity-scaling-slide-panel-1">
+<img
+src="../figures/complexity_scaling.slide-group-1-log-linear-pool.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="1da6910db6cbe80c21a560d5dec1e4f9c8652c2f561ba5d89575ae77cb5bd925"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1711"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.501462"
+alt="log_linear_pool by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0da3c6d74ebd">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 20" id="slide-heading-0da3c6d74ebd">Computational
+complexity… (part 20)</h2>
+<figure id="fig:complexity-scaling-slide-panel-2">
+<img
+src="../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8117461329ca71dbc5385f64582bd32e51f660ba8dce7d4a96f08c5f4119550a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0354331"
+alt="log pool by agents. Expected exponent: 1. Observed log-log slope: 0.961." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-69d93865b7f2">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 21" id="slide-heading-69d93865b7f2">Computational
+complexity… (part 21)</h2>
+<figure id="fig:complexity-scaling-slide-panel-3">
+<img
+src="../figures/complexity_scaling.slide-group-1-robust-aggregate.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="300a1cf5ee8a42783dd6466abd880f1ee08e777f673387922885df912a4cd676"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1711"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.501462"
+alt="robust_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fc77a73b53ad">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 22" id="slide-heading-fc77a73b53ad">Computational
+complexity… (part 22)</h2>
+<figure id="fig:complexity-scaling-slide-panel-4">
+<img
+src="../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d0a60195a8f540124ef81584c0ae946d00ecebe684f167a4f286485178148ab4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0354331"
+alt="heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.9395." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e31e5bd5e888">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 23" id="slide-heading-e31e5bd5e888">Computational
+complexity… (part 23)</h2>
+<figure id="fig:complexity-scaling-slide-panel-5">
+<img
+src="../figures/complexity_scaling.slide-group-1-variational-aggregate.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e3539b2ef4d4f54aaf9f8a038e72e0a38a296942a967cee38eb45d3f73cfdde0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1711"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.501462"
+alt="variational_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ac0151f34d26">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 24" id="slide-heading-ac0151f34d26">Computational
+complexity… (part 24)</h2>
+<figure id="fig:complexity-scaling-slide-panel-6">
+<img
+src="../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e46d4d5e33086f43ef0b11c5214ee464d321c694d1da08c91658cb406879fe5a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0354331"
+alt="variational by agents. Expected exponent: 1. Observed log-log slope: 0.7973." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e54fe54a5d2a">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 25" id="slide-heading-e54fe54a5d2a">Computational
+complexity… (part 25)</h2>
+<figure id="fig:complexity-scaling-slide-panel-7">
+<img
+src="../figures/complexity_scaling.slide-group-2-share-round-naive.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="ff6dde2dbb82aac1547c0efc4b49adf667062e0387945d2eaed649a766ed0021"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1727"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.5248538"
+alt="share_round_naive by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cf915bd2819d">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 26" id="slide-heading-cf915bd2819d">Computational
+complexity… (part 26)</h2>
+<figure id="fig:complexity-scaling-slide-panel-8">
+<img
+src="../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="78c24fa5b9bf9a5eb1a6daec4fe328f5690cdb82252cda18aef0fade3fab9cdd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1140"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.488189"
+alt="sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.665." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-423e573d8b83">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 27" id="slide-heading-423e573d8b83">Computational
+complexity… (part 27)</h2>
+<figure id="fig:complexity-scaling-slide-panel-9">
+<img
+src="../figures/complexity_scaling.slide-group-2-share-round-robust.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="1bd9e7a33cd294548a328ee2cfc8a0fa7585d877fe0dc05dabbc34f18ec90435"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1727"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.5248538"
+alt="share_round_robust by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6fbf3ef6b5b0">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 28" id="slide-heading-6fbf3ef6b5b0">Computational
+complexity… (part 28)</h2>
+<figure id="fig:complexity-scaling-slide-panel-10">
+<img
+src="../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1699908fd0b9de6bbb279ab48e71ff415afb5cd4c050e17f7c041f212750e6d8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1278"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0314961"
+alt="sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.914." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-87972f788874">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 29" id="slide-heading-87972f788874">Computational
+complexity… (part 29)</h2>
+<figure id="fig:complexity-scaling-slide-panel-11">
+<img
+src="../figures/complexity_scaling.slide-group-3-log-linear-pool.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="5bee9f0bb2e3c882f24da1c2984f30e1a35d34c4d4cd80f59fc009410934905a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1762"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.5760234"
+alt="log_linear_pool by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3f595f1555f9">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 30" id="slide-heading-3f595f1555f9">Computational
+complexity… (part 30)</h2>
+<figure id="fig:complexity-scaling-slide-panel-12">
+<img
+src="../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="550268fcb846d84230c770dc4036e5054cea6f81229a739d7980f301f9a6ec18"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0354331"
+alt="log pool by states. Expected exponent: 1. Observed log-log slope: 0.9695." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-335fd87f038a">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 31" id="slide-heading-335fd87f038a">Computational
+complexity… (part 31)</h2>
+<figure id="fig:complexity-scaling-slide-panel-13">
+<img
+src="../figures/complexity_scaling.slide-group-3-robust-aggregate.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="98a03deec56e88aa2c2cdb647fd6d549a6c236f77d0668d917e8e545b3decadb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1762"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.5760234"
+alt="robust_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ca74d4c05481">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 32" id="slide-heading-ca74d4c05481">Computational
+complexity… (part 32)</h2>
+<figure id="fig:complexity-scaling-slide-panel-14">
+<img
+src="../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="fd12e20352433c73d077d690699fc14efc107b27ac7c188ffa5b0f27496497c8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0354331"
+alt="heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.963." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9545de22384e">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 33" id="slide-heading-9545de22384e">Computational
+complexity… (part 33)</h2>
+<figure id="fig:complexity-scaling-slide-panel-15">
+<img
+src="../figures/complexity_scaling.slide-group-3-variational-aggregate.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="cb0e275f5054986bea9c6f1ee022d0b2ec9721057d7b40486a0942b0f6c58482"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1762"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.5760234"
+alt="variational_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6e72e9baa055">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 34" id="slide-heading-6e72e9baa055">Computational
+complexity… (part 34)</h2>
+<figure id="fig:complexity-scaling-slide-panel-16">
+<img
+src="../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7c12588fd0424e91274f8d402abe0890c6946766f558b1153517f41a5164282e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1279"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0354331"
+alt="variational by states. Expected exponent: 1. Observed log-log slope: 0.9602." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-00aae540a9c3">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 35" id="slide-heading-00aae540a9c3">Computational
+complexity… (part 35)</h2>
+<figure id="fig:complexity-scaling-slide-panel-17">
+<img
+src="../figures/complexity_scaling.slide-group-4-infer-states.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e180bf47f1fa46a025a2ade077756801665715966ddcee0a2d1f2fcd3e6eee78"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1717"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.5102339"
+alt="infer_states by modalities: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 36" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dd832c8251b4">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 36" id="slide-heading-dd832c8251b4">Computational
+complexity… (part 36)</h2>
+<figure id="fig:complexity-scaling-slide-panel-18">
+<img
+src="../figures/complexity_scaling.slide-group-4-infer-states-guide.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9d77b88d96fdbd6b124a32914dc8fe81c63857bb099225bd1c2625460db6cffd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1140"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.488189"
+alt="state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.6413." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 37" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eca5cd2fd4bd">
+<h2 class="figure-led"
+aria-label="Computational complexity and scaling diagnostic, part 37" id="slide-heading-eca5cd2fd4bd">Computational
+complexity… (part 37)</h2>
+<figure id="fig:complexity-scaling-slide-panel-19">
+<img src="../figures/complexity_scaling.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e3de38075813273102b7ae129fdd676a5e6c3abf50f213f87462f9b441ff559f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1272"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.1330049"
+alt="Medians over 5 timing repeats; min–max bars are observed ranges, not confidence intervals. Normalized dotted guides are symbolic-order references. Seed 20260728." />
+</figure>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

@@ -323,18 +323,29 @@ def _gallery_variables(report: dict[str, Any]) -> dict[str, str]:
     out["GALLERY_DIRECTIONAL_KINDS"] = ", ".join(k.replace("_", " ") for k in report["directional_kinds"])
     out["GALLERY_ENTROPY_KINDS"] = ", ".join(k.replace("_", " ") for k in report["entropy_kinds"])
     rows = []
+    operating_point_rows = []
+    contrast_display_rows = []
     for kind, cell in report["by_kind"].items():
         lo, hi = cell["diff_ci"]
-        rows.append(
-            f"| {kind.replace('_', ' ')} | "
-            f"{'directional' if cell['directional'] else 'entropy'} | "
-            f"{_fmt(cell['naive_mean'])} | "
-            f"{_fmt(cell['robust_mean'])} ({cell['best_robust_method']}) | "
-            f"{_fmt(cell['mean_diff'])} | "
-            f"[{_fmt(lo)}, {_fmt(hi)}] | "
-            f"{_fmt(cell['win_fraction'], 2)} | "
-            f"{'Yes' if cell['reliably_beats'] else 'No'} |"
+        gallery_cells = (
+            kind.replace("_", " "),
+            "directional" if cell["directional"] else "entropy",
+            _fmt(cell["naive_mean"]),
+            f"{_fmt(cell['robust_mean'])} ({cell['best_robust_method']})",
+            _fmt(cell["mean_diff"]),
+            f"[{_fmt(lo)}, {_fmt(hi)}]",
+            _fmt(cell["win_fraction"], 2),
+            "Yes" if cell["reliably_beats"] else "No",
         )
+        rows.append(f"| {' | '.join(gallery_cells)} |")
+        operating_point_rows.append(f"| {' | '.join(gallery_cells[:4])} |")
+        contrast_display_rows.append(
+            f"| {' | '.join((gallery_cells[0], *gallery_cells[4:]))} |"
+        )
+    out["GALLERY_OPERATING_POINT_TABLE_ROWS"] = "\n".join(operating_point_rows)
+    out["GALLERY_CONTRAST_DISPLAY_TABLE_ROWS"] = "\n".join(contrast_display_rows)
+    # Compatibility token: downstream consumers may still require the original
+    # eight-column row. The manuscript uses the two keyed projections above.
     out["GALLERY_TABLE_ROWS"] = "\n".join(rows)
     return out
 
@@ -379,8 +390,8 @@ def _variational_variables(report: dict[str, Any]) -> dict[str, str]:
     out["VARIATIONAL_INFLUENCE_CLEAN"] = _fmt(clean, 3)
     out["VARIATIONAL_INFLUENCE_DIVERGED"] = _fmt(diverged, 3)
     out["VARIATIONAL_NAIVE_INFLUENCE"] = _fmt(naive, 3)
-    # How many times smaller the diverged outlier's influence is vs the naive pool
-    # (which would hold it at the fixed 1/n): the bounded-influence headline number.
+    # Descriptive ratio between the configured endpoint's effective weight and
+    # the naive 1/n reference. It is not an estimator-level influence bound.
     out["VARIATIONAL_INFLUENCE_DROP_FACTOR"] = _fmt(naive / diverged, 1) if diverged > 0 else ">1000"
     # Descent comparison: single-start capture vs multi-start escape (near-vertex).
     if "single_start_final_f" in report:
@@ -394,6 +405,8 @@ def _variational_variables(report: dict[str, Any]) -> dict[str, str]:
 
 
 _SWEEP_KEYS = (
+    "SWEEP_MECHANISTIC_BEST_METHOD",
+    "SWEEP_MECHANISTIC_BEST_ACCURACY",
     "SWEEP_NAIVE_ACCURACY",
     "SWEEP_BEST_ROBUST_ACCURACY",
     "SWEEP_PROFILE_NAIVE_ACCURACY",
@@ -438,7 +451,11 @@ _SWEEP_KEYS = (
     "SWEEP_BEST_VERDICT_ACCURACY_CI_LO",
     "SWEEP_BEST_VERDICT_ACCURACY_CI_HI",
     "SWEEP_ACCURACY_AT_VERDICT_TABLE_ROWS",
+    "SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS",
+    "SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS",
     "SWEEP_VERDICT_EFFECT_TABLE_ROWS",
+    "SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS",
+    "SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS",
     "SWEEP_PAIRED_BY_RATE_TABLE_ROWS",
     # --- power analysis (added) ---
     "SWEEP_POWER_ALPHA",
@@ -512,6 +529,12 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
     out["SWEEP_NAIVE_ACCURACY"] = _fmt(accuracy["KLD"][worst_key])
     operating_points = sweep.get("server_robustness_by_label", {})
     labels = sweep.get("divergences", operating_points)
+    mechanistic_methods = [label for label in labels if label != "KLD" and label in accuracy]
+    mechanistic_best = max(mechanistic_methods, key=lambda method: accuracy[method][worst_key], default="")
+    out["SWEEP_MECHANISTIC_BEST_METHOD"] = mechanistic_best or "N/A"
+    out["SWEEP_MECHANISTIC_BEST_ACCURACY"] = (
+        _fmt(accuracy[mechanistic_best][worst_key]) if mechanistic_best else "N/A"
+    )
     out["SWEEP_SERVER_OPERATING_POINTS"] = (
         ", ".join(
             f"{label} (c={_fmt(operating_points[label], 2)})" for label in labels if label in operating_points
@@ -535,12 +558,11 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
     else:
         out["SWEEP_PROFILE_BEST_ROBUST_ACCURACY"] = "N/A"
 
-    # Headline method = largest positive rank-biserial effect in the verdict
-    # panel. Ties and the stable display tie-break are explicit report fields.
-    best_method, best = "", None
-    for method, stats in verdict.items():
-        if best is None or stats["effect_size"] > best["effect_size"]:
-            best_method, best = method, stats
+    # The producer owns the headline selection and its stable tie-break.
+    # Re-selecting from this mapping would change tied choices after sorted
+    # JSON serialization and bind the displayed method to another row's values.
+    best_method = str(sweep["headline_method"])
+    best = verdict[best_method] if best_method else None
     if best is not None:
         out["SWEEP_BEST_ROBUST_METHOD"] = best_method
         out["SWEEP_BEST_ROBUST_ACCURACY"] = _fmt(accuracy[best_method][worst_key])
@@ -556,7 +578,7 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
         out["SWEEP_BEST_EFFECT_LABEL"] = str(best.get("effect_label", "N/A"))
         out["SWEEP_BEST_RAW_PVALUE"] = _format_residual(float(best["raw_pvalue"]))
         out["SWEEP_BEST_RAW_PVALUE_MATH"] = _format_residual_math(float(best["raw_pvalue"]))
-        # Mean naive-minus-robust accuracy difference and its 95% bootstrap CI.
+        # Mean robust-minus-naive accuracy difference and its 95% bootstrap CI.
         out["SWEEP_BEST_MEAN_ACC_DIFF"] = _fmt(best["mean_accuracy_diff"])
         diff_lo, diff_hi = best["mean_accuracy_diff_ci"]
         out["SWEEP_BEST_MEAN_ACC_DIFF_CI_LO"] = _fmt(diff_lo)
@@ -673,29 +695,44 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
         )
     out["SWEEP_VERDICT_TABLE_ROWS"] = "\n".join(verdict_rows)
 
-    # Standardized-effect verdict table (with planning power and prospective n):
-    # | method | d-equivalent | label | mean acc. diff | 95% CI | raw p | q | power |
-    # | n for target power | reject |
+    # The projection-safe manuscript presentation splits the original wide
+    # standardized-effect verdict across two source-bound tables. Construct all
+    # three row forms from one ordered cell vector so the split cannot change,
+    # round, or silently omit any field from the legacy ten-column contract.
     effect_rows = []
+    effect_estimate_rows = []
+    inference_power_rows = []
     for method, stats in verdict.items():
         diff_lo, diff_hi = stats["mean_accuracy_diff_ci"]
-        effect_rows.append(
-            f"| {method} | {_format_d_equivalent(stats.get('d_equivalent', stats.get('cohens_d')))} | "
-            f"{stats.get('effect_label', 'N/A')} | "
-            f"{_fmt(stats['mean_accuracy_diff'])} | "
-            f"[{_fmt(diff_lo)}, {_fmt(diff_hi)}] | "
-            f"{_format_residual(float(stats['raw_pvalue']))} | "
-            f"{_format_residual(float(stats['qvalue']))} | "
-            f"{_fmt(float(stats.get('power', 0.0)), 4)} | "
-            f"{stats.get('n_for_target_power', 'N/A')} | "
-            f"{'Yes' if stats['rejected'] else 'No'} |"
+        verdict_cells = (
+            method,
+            _format_d_equivalent(stats.get("d_equivalent", stats.get("cohens_d"))),
+            str(stats.get("effect_label", "N/A")),
+            _fmt(stats["mean_accuracy_diff"]),
+            f"[{_fmt(diff_lo)}, {_fmt(diff_hi)}]",
+            _format_residual(float(stats["raw_pvalue"])),
+            _format_residual(float(stats["qvalue"])),
+            _fmt(float(stats.get("power", 0.0)), 4),
+            str(stats.get("n_for_target_power", "N/A")),
+            "Yes" if stats["rejected"] else "No",
         )
+        effect_rows.append(f"| {' | '.join(verdict_cells)} |")
+        effect_estimate_rows.append(f"| {' | '.join(verdict_cells[:5])} |")
+        inference_power_rows.append(
+            f"| {' | '.join((verdict_cells[0], *verdict_cells[5:]))} |"
+        )
+    out["SWEEP_VERDICT_EFFECT_ESTIMATE_TABLE_ROWS"] = "\n".join(effect_estimate_rows)
+    out["SWEEP_VERDICT_INFERENCE_POWER_TABLE_ROWS"] = "\n".join(inference_power_rows)
+    # Retained as an additive compatibility token for downstream manuscript
+    # consumers; the shipped manuscript uses the two narrower projections.
     out["SWEEP_VERDICT_EFFECT_TABLE_ROWS"] = "\n".join(effect_rows)
 
     # Per-contamination-rate naive-vs-robust paired tests (BH-deflated per
     # method): | method | rate | d-equivalent | label | raw p | q | reject |.
     paired = sweep.get("paired_tests_by_rate", {})
     paired_rows = []
+    paired_effect_rows = []
+    paired_inference_rows = []
     for method in sweep["divergences"]:
         by_rate = paired.get(method)
         if by_rate is None:  # KLD is the naive baseline — no self-contrast.
@@ -704,13 +741,23 @@ def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:
             cell = by_rate.get(f"{float(rate):g}")
             if cell is None:  # pragma: no cover - every rate carries a cell
                 continue
-            paired_rows.append(
-                f"| {method} | {float(rate):g} | "
-                f"{_format_d_equivalent(cell.get('d_equivalent', cell.get('cohens_d')))} | "
-                f"{cell.get('effect_label', 'N/A')} | "
-                f"{_format_residual(float(cell['raw_pvalue']))} | "
-                f"{_format_residual(float(cell['qvalue']))} | "
-                f"{'Yes' if cell['rejected'] else 'No'} |"
+            paired_cells = (
+                method,
+                f"{float(rate):g}",
+                _format_d_equivalent(cell.get("d_equivalent", cell.get("cohens_d"))),
+                str(cell.get("effect_label", "N/A")),
+                _format_residual(float(cell["raw_pvalue"])),
+                _format_residual(float(cell["qvalue"])),
+                "Yes" if cell["rejected"] else "No",
             )
+            paired_rows.append(f"| {' | '.join(paired_cells)} |")
+            paired_effect_rows.append(f"| {' | '.join(paired_cells[:4])} |")
+            paired_inference_rows.append(
+                f"| {' | '.join((*paired_cells[:2], *paired_cells[4:]))} |"
+            )
+    out["SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS"] = "\n".join(paired_effect_rows)
+    out["SWEEP_PAIRED_BY_RATE_INFERENCE_TABLE_ROWS"] = "\n".join(paired_inference_rows)
+    # Compatibility token: the shipped manuscript uses the two narrower
+    # projections while external hydrators can retain the original row shape.
     out["SWEEP_PAIRED_BY_RATE_TABLE_ROWS"] = "\n".join(paired_rows)
     return out

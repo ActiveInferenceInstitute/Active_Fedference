@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -219,144 +261,206 @@
 
 \section{Results: recovery checks and study suite}\label{sec:results}
 
-\begin{frame}[fragile,allowframebreaks]{Results: recovery checks and
-study suite}
+\begin{frame}{Results: recovery checks and study suite}
 Every quantitative assertion in this and the following results sections
-is a generated token, hydrated by the manuscript-variable generator from
-analysis outputs produced by \breaktt{src/analysis/workflow.py} and
-\breaktt{src/fedference/experiments/} --- no number is transcribed by
-hand. The studies implement categorical source-mechanism analogues of
-the colony belief-sharing scenario (Friston et al. 2024) and add the
-contaminated-sentinel robustness sweep and the federated neural-network
-baseline that are this paper's robust-federated-learning contribution.
-All runs are deterministic under seed 0.
-
+is a generated token,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Results: recovery checks and
-study suite}
+\begin{frame}[fragile]{Results: recovery checks\ldots{} (part 2)}
+hydrated by the manuscript-variable generator from analysis outputs
+produced by \texttt{src/analysis/workflow.py} and
+\texttt{src/fedference/experiments/} --- no number is transcribed by
+hand.
+\end{frame}
+
+\begin{frame}{Results: recovery checks\ldots{} (part 3)}
+The studies implement categorical source-mechanism analogues of the
+colony belief-sharing scenario (Friston et al. 2024) and add the
+contaminated-sentinel robustness sweep and the federated neural-network
+baseline that are this paper's robust-federated-learning contribution.
+\end{frame}
+
+\begin{frame}{Results: recovery checks\ldots{} (part 4)}
+All runs are deterministic under seed 0.
+\end{frame}
+
+\begin{frame}{Results: recovery checks\ldots{} (part 5)}
 We lead with the recovery limits, not with a study, because they are
 what makes the studies a single coherent system rather than a collection
 of unrelated experiments. The generalized-Bayes machinery of
-sec.~5 contains the standard-Bayes client corner, while
-the server has the exact project-local zero-robustness log-linear-pool
-identity. Under the explicit bridge in
-sec.~5.8, that pool is a categorical
-specialization of Eq. 7's message-combination term rather than the
-complete source protocol. We verify those limited identities to machine
-precision before reporting anything built on top of them.
+sec.~5 contains the standard-Bayes client corner,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
-and project-pool corners are exact to machine precision}
+\begin{frame}{Results: recovery checks\ldots{} (part 6)}
+while the server has the exact project-local zero-robustness
+log-linear-pool identity.
+\end{frame}
+
+\begin{frame}{Results: recovery checks\ldots{} (part 7)}
+Under the explicit bridge in sec.~5.8, that
+pool is a categorical specialization of Eq. 7's message-combination term
+rather than the complete source protocol. We verify those limited
+identities to machine precision before reporting anything built on top
+of them.
+\end{frame}
+
+\begin{frame}{Recovery limits: standard-Bayes and project-pool corners
+are exact to machine precision}
 \protect\phantomsection\label{sec:results-recovery}
+\end{frame}
+
+\begin{frame}{Recovery limits (part 2)}
 The identities that anchor every result are the client recovery of
-standard Bayes at the KL/NLL/\(\beta\to0\) and \(q_{\rm loss}\to0\)
+standard Bayes at the KL/NLL/\(\beta\to0\) and \(q_{\text{loss}}\to0\)
 limits plus the project-local server recovery to the log-linear pool at
 \(c=0\) --- the scoped claims of sec.~6 (Corollary
-6, Lemma 3, Theorem
-5). These are not figures but exact
-equalities, pinned by the locked core test suite. Under the theorem's
-shared-support, posterior-log-potential, and fixed-weight assumptions,
-the server pool specializes Eq. 7's message-combination term; it does
-not reproduce the source construction in full. Robustness is a tested
-extension that vanishes at the stated recovery limits.
-
+6,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
-and project-pool corners are exact to machine precision}
+\begin{frame}{Recovery limits (part 3)}
+Lemma 3, Theorem
+5).
+
+These are not figures but exact equalities, pinned by the locked core
+test suite.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 4)}
+Under the theorem's shared-support, posterior-log-potential, and
+fixed-weight assumptions, the server pool specializes Eq. 7's
+message-combination term; it does not reproduce the source construction
+in full. Robustness is a tested extension that vanishes at the stated
+recovery limits.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 5)}
 The five residuals below are the maximum absolute deviations between
 each generalized-Bayes object and the standard object it must reproduce
-in the trusting limit. Each is a deterministic constant of the
-mathematics, not a per-run sample: it is reported as the maximum
-absolute deviation over the recovery band, which is exactly \(0\) where
-the implementation evaluates the closed form at the limit (the
-Rényi/loss switch) and otherwise a tiny floating-point residual:
-
+in the trusting limit.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
-and project-pool corners are exact to machine precision}
-\begin{itemize}
-\tightlist
-\item
-  The server-side aggregator at zero robustness equals the log-linear
-  pool (eq.~7, Theorem
-  5): maximum absolute deviation
-
-  0. This is the \emph{naive-recovery} limit of the server-side
-  heuristic --- the only property proven for that axis (see
-  sec.~3.3).
-\item
-  The generalized posterior under the KL divergence and the NLL loss
-  equals the closed-form prior\(\times\)likelihood Bayes posterior
-  (eq.~6, Corollary 6):
-  maximum absolute deviation 5.55e-17.
-\item
-  The Rényi divergence recovers KL as \(\alpha\to1\)
-  (eq.~3, Lemma 3): residual
-  0.
-\item
-  The \(\beta\)-loss recovers the NLL as \(\beta\to 0\)
-  (eq.~4, Proposition 4):
-  residual 0; and the robust categorical cross-entropy recovers the NLL
-  as \(q_{\rm loss}\to 0\) (eq.~5, Proposition
-  4): residual 0.
-\end{itemize}
-
+\begin{frame}{Recovery limits (part 6)}
+Each is a deterministic constant of the mathematics, not a per-run
+sample: it is reported as the maximum absolute deviation over the
+recovery band, which is exactly \(0\) where the implementation evaluates
+the closed form at the limit (the Rényi/loss switch) and otherwise a
+tiny floating-point residual:
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
-and project-pool corners are exact to machine precision}
+\begin{frame}{Recovery limits (part 7)}
+\textbf{Server recovery.} The server-side aggregator at zero robustness
+equals the log-linear pool (eq.~10, Theorem
+5): maximum absolute deviation 0. This
+is the \emph{naive-recovery} limit of the server-side heuristic ---
+\end{frame}
+
+\begin{frame}{Recovery limits (part 8)}
+the only property proven for that axis (see
+sec.~3.3).
+\end{frame}
+
+\begin{frame}{Recovery limits (part 9)}
+\textbf{Posterior recovery.} The generalized posterior under the KL
+divergence and the NLL loss equals the closed-form
+prior\(\times\)likelihood Bayes posterior (eq.~11,
+Corollary 6): maximum absolute deviation
+5.55e-17.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 10)}
+\textbf{Divergence recovery.} The Rényi divergence recovers KL as
+\(\alpha\to1\) (eq.~6, Lemma
+3): residual 0.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 11)}
+\textbf{Loss recoveries.} The \(\beta\)-loss recovers the NLL as
+\(\beta\to 0\) (eq.~7, Proposition
+4): residual 0. The robust categorical
+cross-entropy recovers the NLL as \(q_{\text{loss}}\to 0\)
+(eq.~8,
+\end{frame}
+
+\begin{frame}{Recovery limits (part 12)}
+Proposition 4): residual 0.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 13)}
 Because the Rényi divergence and the two categorical losses switch to
 their exact closed form inside narrow numerical-stability bands around
 the limit point (the Rényi switch band for \(\alpha\) and the
-categorical-loss switch band for \(q_{\rm loss}\) and \(\beta\)), the
-three zero residuals above confirm that branch equals the standard
+categorical-loss switch band for \(q_{\text{loss}}\) and \(\beta\)),
+\end{frame}
+
+\begin{frame}{Recovery limits (part 14)}
+the three zero residuals above confirm that branch equals the standard
 object --- not, by themselves, that the \emph{general} formula converges
-there. As a genuine (non-branch) convergence witness, evaluating each
-general formula strictly \emph{outside} its switch band ---
-\(q_{\rm loss} = \beta =
+there.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 15)}
+As a genuine (non-branch) convergence witness, evaluating each general
+formula strictly \emph{outside} its switch band ---
+\(q_{\text{loss}} = \beta =
 1.00 \times 10^{-6}\) for the categorical losses and
 \(\alpha = 1.00001\) for the Rényi divergence --- gives residuals
-1.12e-05 (rcce), 1.24e-05 (\(\beta\)-loss), and 1.66e-05 (Rényi):
-nonzero (a small multiple of the input offset itself, as the first-order
-Taylor behavior near the limit predicts) yet still several orders of
-magnitude below the \(O(1)\) scale of the loss/divergence values being
+1.12e-05 (rcce), 1.24e-05 (\(\beta\)-loss), and 1.66e-05 (Rényi).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
-and project-pool corners are exact to machine precision}
-compared, and shrinking monotonically as the offset shrinks toward the
-switch band (verified in
-\breaktt{tests/fedference/test\_core\_identities.py}). This is evidence
-that the general formula itself converges to the standard-Bayes limit,
-not merely that the implementation switches to it exactly at the corner.
+\begin{frame}{Recovery limits (part 16)}
+These residuals are nonzero---a small multiple of the input offset
+itself, as the first-order Taylor behavior near the limit predicts---yet
+remain several orders of magnitude below the \(O(1)\) scale of the
+loss/divergence values being compared, and shrinking monotonically as
+the offset shrinks toward the switch band.
+\end{frame}
 
+\begin{frame}[fragile]{Recovery limits (part 17)}
+The verification is in \texttt{test\_core\_identities.py} under
+\texttt{tests/fedference/}.
+
+This is evidence that the general formula itself converges to the
+standard-Bayes limit, not merely that the implementation switches to it
+exactly at the corner.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 18)}
 The first residual is the naive-aggregate limit of the
 \emph{server-side} heuristic (Theorem
-5); the latter four are the per-agent
-generalized-Bayes recoveries (Corollary 6 +
-Proposition 4) and the divergence-family
-recovery in the Rényi limit (Lemma 3,
-eq.~3) that define the theorem-bearing FedGVI axis
-under matching assumptions. Keeping the three axes distinct at the level
-of the recovery limits is what lets the robustness claims of
-sec.~7.5 and sec.~7.6
-rest on the per-agent axis without leaning on the heuristic.
-
+5);
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Recovery limits: standard-Bayes
-and project-pool corners are exact to machine precision}
-265 of 267 acceptance criteria are verified. The pure-NumPy/SciPy core
-carries project test coverage of 91.13\% (gate \(\ge 90\%\)), with every
+\begin{frame}{Recovery limits (part 19)}
+the latter four are the per-agent generalized-Bayes recoveries
+(Corollary 6 + Proposition
+4) and the divergence-family recovery in
+the Rényi limit (Lemma 3,
+\end{frame}
+
+\begin{frame}{Recovery limits (part 20)}
+eq.~6) that define the theorem-bearing FedGVI axis
+under matching assumptions.
+\end{frame}
+
+\begin{frame}{Recovery limits (part 21)}
+Keeping the three axes distinct at the level of the recovery limits is
+what lets the robustness claims of sec.~7.5 and
+sec.~7.6 rest on the per-agent axis without
+leaning on the heuristic.
+\end{frame}
+
+\begin{frame}[fragile]{Recovery limits (part 22)}
+266 of 268 acceptance criteria are verified. The pure-NumPy/SciPy core
+carries project test coverage of 90.58\% (gate \(\ge 90\%\)), with every
 stochastic step threaded through a single seeded
-\breaktt{np.random.default\_rng(0)}. sec.~10
-records the full environment fingerprint, and the expected-free-energy
-identity that underwrites the active-inference substrate is proven and
-visualized in sec.~6.2 (fig.~7).
+\texttt{np.random.default\_rng(0)}. sec.~10
+records the full environment fingerprint,
+\end{frame}
+
+\begin{frame}{Recovery limits (part 23)}
+and the expected-free-energy identity that underwrites the
+active-inference substrate is proven and visualized in
+sec.~6.2 (fig.~8).
 \end{frame}
 
 \end{document}

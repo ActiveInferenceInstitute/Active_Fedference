@@ -9,7 +9,7 @@ rendered surfaces changed without the dependent stage being rerun.
 
 The receipts are release-integrity metadata only. They are not scientific
 evidence and do not establish correctness, generalisation, or performance.
-Schema 3 omits wall-clock completion time by default so recording an unchanged
+Schema 4 omits wall-clock completion time by default so recording an unchanged
 stage is byte-idempotent. A canonical UTC timestamp remains an explicit input
 for an approved, externally anchored build.
 """
@@ -22,39 +22,24 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from analysis.artifacts import ANALYSIS_REPORT_FILENAMES
 from publication.release_manifest import validate_utc_timestamp
+from publication.template_renderer import (
+    renderer_receipt_findings,
+    require_locked_template_renderer,
+)
 
-PIPELINE_RECEIPT_SCHEMA_VERSION = 3
+PIPELINE_RECEIPT_SCHEMA_VERSION = 4
 PIPELINE_RECEIPT_PATH = Path("output/data/pipeline_provenance.json")
 ANALYSIS_EXECUTION_PATH = Path("output/data/analysis_execution.json")
 ANALYSIS_EXECUTION_SCHEMA_VERSION = 2
 PIPELINE_RECEIPT_GENERATOR = "src.publication.pipeline_freshness"
 
-_ANALYSIS_REPORT_NAMES: tuple[str, ...] = (
-    "belief_quality.json",
-    "belief_sharing.json",
-    "bnn_robustness.json",
-    "bnn_torch.json",
-    "contamination_gallery.json",
-    "complexity_scaling.json",
-    "conditional_world.json",
-    "cross_study_summary.json",
-    "disjoint_fov_world.json",
-    "efe_decomposition.json",
-    "emergence.json",
-    "heuristic_characterization.json",
-    "hierarchical_bmr.json",
-    "hierarchical_world.json",
-    "language_acquisition.json",
-    "moving_world.json",
-    "nlevel3_world.json",
-    "parameter_recovery.json",
-    "robust_influence_weights.json",
-    "robustness_onset.json",
-    "robustness_review_grid.json",
-    "robustness_sweep.json",
-    "variational_aggregation.json",
-)
+# The content boundary must agree exactly with Stage 02's source-owned artifact
+# declaration.  Importing the tuple prevents a newly added typed report from
+# being generated and released without entering freshness and hydration
+# invalidation receipts.
+_ANALYSIS_REPORT_NAMES: tuple[str, ...] = ANALYSIS_REPORT_FILENAMES
 
 
 @dataclass(frozen=True)
@@ -386,6 +371,13 @@ def _validate_stage_record(
         findings.append(f"{stage.name}: output pattern contract drift")
     if record.get("output_excluded_suffixes") != list(stage.output_excluded_suffixes):
         findings.append(f"{stage.name}: output exclusion contract drift")
+    if stage.name == "render":
+        findings.extend(
+            f"render: {finding}"
+            for finding in renderer_receipt_findings(root, record.get("renderer"))
+        )
+    elif "renderer" in record:
+        findings.append(f"{stage.name}: renderer identity is valid only for the render stage")
     recorded_at_present = "recorded_at" in record
     recorded_at = record.get("recorded_at")
     timestamp_policy = record.get("timestamp_policy")
@@ -430,23 +422,27 @@ def _record_pipeline_stage(
     project_root: Path,
     stage_name: str,
     *,
-    renderer: str | None = None,
+    template_root: Path | None = None,
     timestamp: str | None = None,
     analysis_execution: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Record one successful stage after its inputs and outputs exist.
 
-    Dependencies are checked before a new receipt is written. The external
-    template renderer is represented by the ``renderer`` label for audit
-    context; its implementation is outside this standalone repository and is
-    therefore not falsely presented as content-fingerprinted here. Recording
-    analysis under a newer schema replaces an incompatible older receipt, so
-    the downstream chain must then be regenerated in order.
+    Dependencies are checked before a new receipt is written. A render stage
+    requires an explicitly supplied, clean Template checkout whose canonical
+    repository and exact commit equal the source-owned lock. Only that path-free
+    identity is persisted. Recording analysis under a newer schema replaces an
+    incompatible older receipt, so the downstream chain must then be regenerated
+    in order.
     """
     root = Path(project_root).resolve()
     stage = _stage(stage_name)
     if analysis_execution is not None and stage.name != "analysis":
         raise ValueError("analysis execution metadata is valid only for the analysis stage")
+    if stage.name == "render" and template_root is None:
+        raise ValueError("render stage requires an explicit template_root")
+    if stage.name != "render" and template_root is not None:
+        raise ValueError("template_root is valid only for the render stage")
     receipt = _load_receipt(
         root,
         reset_unsupported=stage.name == "analysis",
@@ -460,6 +456,11 @@ def _record_pipeline_stage(
         raise ValueError(
             f"cannot record {stage.name} until upstream stages are fresh: " + "; ".join(dependency_findings)
         )
+    renderer_identity = (
+        require_locked_template_renderer(root, template_root)
+        if stage.name == "render" and template_root is not None
+        else None
+    )
     input_hashes = _hash_files(root, stage.input_patterns, role=f"{stage.name} inputs")
     if analysis_execution is not None:
         expected_snapshot = _normalized_analysis_input_snapshot(
@@ -490,8 +491,8 @@ def _record_pipeline_stage(
         "recorded_at": stamp,
         "timestamp_policy": "recorded" if stamp is not None else "omitted",
     }
-    if stage.name == "render":
-        record["renderer"] = renderer or "external-template-renderer (not content-fingerprinted)"
+    if renderer_identity is not None:
+        record["renderer"] = renderer_identity.as_dict()
     if analysis_execution is not None:
         record["analysis_execution"] = dict(analysis_execution)
     receipt["schema_version"] = PIPELINE_RECEIPT_SCHEMA_VERSION
@@ -509,7 +510,7 @@ def record_pipeline_stage(
     project_root: Path,
     stage_name: str,
     *,
-    renderer: str | None = None,
+    template_root: Path | None = None,
     timestamp: str | None = None,
 ) -> dict[str, Any]:
     """Record a generic stage receipt for internal fixtures or external rendering.
@@ -523,7 +524,7 @@ def record_pipeline_stage(
     return _record_pipeline_stage(
         project_root,
         stage_name,
-        renderer=renderer,
+        template_root=template_root,
         timestamp=timestamp,
     )
 

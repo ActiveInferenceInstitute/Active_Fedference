@@ -13,8 +13,25 @@ import pytest
 
 from fedference.experiments import run_contamination_gallery
 from figures import generate_contamination_gallery
+from figures._common import COLOR_NAIVE_LIGHT
+from figures.contamination_gallery import _robust_facecolors, _selected_preset_annotation
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
+
+def test_gallery_display_flag_controls_robust_bar_fill() -> None:
+    full_color = "#123456"
+
+    assert _robust_facecolors([False, True, False], full_color) == [
+        COLOR_NAIVE_LIGHT,
+        full_color,
+        COLOR_NAIVE_LIGHT,
+    ]
+
+
+def test_gallery_direct_annotation_is_compact_and_names_the_method_and_disposition() -> None:
+    assert _selected_preset_annotation("AR", 0.75, True) == "AR · win 0.75\nflagged"
+    assert _selected_preset_annotation("beta", 0.25, False) == "beta · win 0.25\nbelow bar"
 
 
 def test_gallery_figure_happy_path(tmp_path: Path) -> None:

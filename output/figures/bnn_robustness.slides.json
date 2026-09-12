@@ -1,0 +1,65 @@
+{
+  "panels": [
+    {
+      "alt": "nll / L2=0.05 (standard proxy): complete held-out accuracy curve and supplied interval band on shared axes.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "0d7872ee0e2eace274bc2ae7de9c988661f064f6cc83d54b9b455ba6b61583fc",
+      "src": "../figures/bnn_robustness.slide-configuration-1.png"
+    },
+    {
+      "alt": "nll / L2=0.05 (standard proxy)",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "442759196b94359e6b405814dfc9cb709dad02e6f8c524377986644f9798aad9",
+      "src": "../figures/bnn_robustness.slide-configuration-1-identity.png"
+    },
+    {
+      "alt": "rcce / L2=0.10 (exploratory proxy): complete held-out accuracy curve and supplied interval band on shared axes.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "78625fcf4ad0cc6a1982dbbe7e26e752d5ace501e18da19676475509cdcf040c",
+      "src": "../figures/bnn_robustness.slide-configuration-2.png"
+    },
+    {
+      "alt": "rcce / L2=0.10 (exploratory proxy)",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "47e69f632f39fc8100691403910b264c07e8ffd732a6988962dc3f881a216ffb",
+      "src": "../figures/bnn_robustness.slide-configuration-2-identity.png"
+    },
+    {
+      "alt": "Composite NLL/L2=0.05 versus\nRCCE/L2=0.10 point-estimate proxy.\nThe joint change cannot identify an\nRCCE-only effect.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6cd331300fd8bdbcca18e73ac6bbef7fdbc13ade5660e6ce747b8a4c16ab9e0f",
+      "src": "../figures/bnn_robustness.slide-composite-1.png"
+    },
+    {
+      "alt": "peak_margin_contamination is\nselected within the displayed\ncontamination sweep by maximum\ncomposite-configuration held-out",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8c01a9743b9c955e2913bdd82927593cb4753a2afde2116f6a7bec73a95f74fd",
+      "src": "../figures/bnn_robustness.slide-selection-1.png"
+    },
+    {
+      "alt": "accuracy margin; robust_loss_param\nand n_per are configured inputs, not\nselected by this report",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "59455de4a793b89a940f383c796725c25fcae41ad552b808f09cbeefa97c8c28",
+      "src": "../figures/bnn_robustness.slide-selection-2.png"
+    },
+    {
+      "alt": "Largest displayed margin: 2.8% at\n35% contamination.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "845637578fd3a39905a9d62baa34a7de6255416a9cf8568565275f1d7ff13568",
+      "src": "../figures/bnn_robustness.slide-peak-1.png"
+    },
+    {
+      "alt": "Shaded bands retain the\nsource-supplied intervals. They do\nnot represent FedGVI posterior\nuncertainty.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "236afbc40cbd4219d68e241a0724a77cf60fa8e5079ecf5be1becde14b69f739",
+      "src": "../figures/bnn_robustness.slide-uncertainty-1.png"
+    },
+    {
+      "alt": "Exploratory proxy only: no\nAlpha-Renyi objective, calibration,\nuniversal robustness, or exact\nsource-protocol replication.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "77454bf8693ccdef77c0160174a127d7234d19a217f9ffc8d72ceb7ce6fae907",
+      "src": "../figures/bnn_robustness.slide-scope-1.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

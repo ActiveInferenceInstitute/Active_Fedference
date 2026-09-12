@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,85 +274,146 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Structure learning: does the
-hierarchy earn its depth?}
+\begin{frame}{Hierarchical information-gating diagnostic}
 \protect\phantomsection\label{sec:results-hierarchical-bmr}
-Study 7 shows the 3-level agent runs and federates end to end, but a
-deeper model is only warranted if the extra level carries information.
-We close the loop with a structure-learning test: given a trained
-hierarchy and one leaf observation, does Bayesian model reduction
-correctly decide whether the top meta-context level should be
-\emph{kept} or \emph{pruned}?
-
-We reduce at the level granularity
-(:func:\breaktt{fedference.bayesian\_model\_reduction.hierarchical\_reduce}).
-For each non-leaf level we measure its \textbf{Bayesian surprise}
-\(\mathrm{KL}(q_i \,\|\, \tilde p_i)\) --- how far the leaf observation
-moves that level's belief \(q_i\) from its top-down prior
-\(\tilde p_i\). A level whose belief the data never move carries no
-structure and is prunable; an informative level moves and is kept. This
-is an inference-derived divergence, not a model re-fit, so it cannot
+Study 7 shows that the 3-level agent runs and federates end to end. This
+supplementary diagnostic asks a narrower question: under a configured
+surprise threshold,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Structure learning: does the
-hierarchy earn its depth?}
-manufacture a difference the generative model does not contain.
+\begin{frame}{Hierarchical\ldots{} (part 2)}
+does one leaf observation classify the top meta-context as informative
+or non-gating? The output is a thresholded information-gating
+diagnostic,
+\end{frame}
 
-The test is directional by construction. We build two 3-level worlds
-that differ \emph{only} in the top level's conditioned priors: a
-\textbf{degenerate} world whose meta-context is non-gating (both
+\begin{frame}{Hierarchical\ldots{} (part 3)}
+not a Bayesian-model-evidence comparison or a data-driven proof of the
+hierarchy's correct depth.
+\end{frame}
+
+\begin{frame}[fragile]{Hierarchical\ldots{} (part 4)}
+The implementation evaluates levels through
+\texttt{hierarchical\_reduce} in the \texttt{bayesian\_model\_reduction}
+module of \texttt{fedference}. For each non-leaf level we measure its
+\textbf{Bayesian surprise} \(\mathrm{KL}(q_i \,\|\, \tilde p_i)\) ---
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 5)}
+how far the leaf observation moves that level's belief \(q_i\) from its
+top-down prior \(\tilde p_i\).
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 6)}
+The routine labels a level below the configured threshold as prunable
+and a level above it as kept. Because this is an inference-derived
+divergence rather than a model re-fit, the labels are conditional on the
+specified worlds, observation, and threshold.
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 7)}
+The control is directional by construction. We build two 3-level worlds
+that differ \emph{only} in the top level's conditioned priors:
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 8)}
+a \textbf{degenerate} world whose meta-context is non-gating (both
 meta-context states predict the same context distribution) and an
 \textbf{informative} world whose meta-context sharply distinguishes the
-two contexts. On the degenerate world the top level earns a Bayesian
-surprise of 0.000 nats and is flagged prunable (recovers the two-level
-structure: Yes); on the informative world the same level earns 0.328
-nats and is kept (Yes); fig.~\ref{fig:hierarchical-bmr} shows the
-per-level surprise for both worlds side by side. Because the two worlds
-share every other parameter, the opposite verdict is attributable to the
-meta-context's information alone --- the reduction discovers the right
-depth rather than assuming it.
+two contexts.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Structure learning: does the
-hierarchy earn its depth?}
+\begin{frame}{Hierarchical\ldots{} (part 9)}
+In the degenerate world, the top level has Bayesian surprise 0.000 nats
+and is flagged prunable (recovers the two-level structure: Yes). In the
+informative world, it has 0.328 nats and is kept (Yes).
+\end{frame}
 
+\begin{frame}{Hierarchical\ldots{} (part 10)}
+fig.~32 shows both configured worlds side by
+side. Their shared lower-level parameters isolate the top-level gating
+contrast, but do not establish a generally correct depth-selection
+procedure.
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Per-level Bayesian surprise and prune/keep decisions for two hierarchical worlds. Source relation: original project BMR structure-learning diagnostic related to the mechanism in Friston et al.~Fig. 9; estimand: per-level Bayesian surprise in nats and the resulting prune/keep decision; uncertainty: deterministic schematic worlds, so no resampling interval is shown. Per-level Bayesian surprise for the two 3-level worlds. y-axis: the non-leaf reduction targets, indexed top-down from the reduction routine as level 0 = the meta-context (the topmost non-leaf level, L3 in the location-first L1/L2/L3 convention used elsewhere) and level 1 = the context (L2); the leaf location level (L1) is never a reduction target. x-axis: Bayesian surprise \textbackslash mathrm\{KL\}(q \textbackslash,\textbackslash\textbar\textbackslash, \textbackslash text\{prior\}) in nats --- the information the leaf observation added at that level. Blue bars: the informative world (top level kept). Grey bars: the degenerate world (top level prunable). The dashed red line is the prune threshold; a level whose surprise falls below it is structurally unnecessary. The degenerate meta-context (grey, level 0) sits at 0.000 nats and is pruned, recovering the two-level model, while the informative meta-context (blue, level 0) at 0.328 nats is retained; both worlds keep the context level (level 1). Deterministic schematic worlds (no resampling), so no error band is applicable.}]{../figures/hierarchical_bmr.png}
-\caption{Per-level Bayesian surprise and prune/keep decisions for two
-hierarchical worlds. Source relation: original project BMR
-structure-learning diagnostic related to the mechanism in Friston et
-al.~Fig. 9; estimand: per-level Bayesian surprise in nats and the
-resulting prune/keep decision; uncertainty: deterministic schematic
-worlds, so no resampling interval is shown. Per-level Bayesian surprise
-for the two 3-level worlds. y-axis: the non-leaf reduction targets,
-indexed top-down from the reduction routine as level 0 = the
-meta-context (the topmost non-leaf level, L3 in the location-first
-L1/L2/L3 convention used elsewhere) and level 1 = the context (L2); the
-leaf location level (L1) is never a reduction target. x-axis: Bayesian
-surprise \(\mathrm{KL}(q \,\|\, \text{prior})\) in nats --- the
-information the leaf observation added at that level. Blue bars: the
-informative world (top level kept). Grey bars: the degenerate world (top
-level prunable). The dashed red line is the prune threshold; a level
-whose surprise falls below it is structurally unnecessary. The
-degenerate meta-context (grey, level 0) sits at 0.000 nats and is
-pruned, recovering the two-level model, while the informative
-meta-context (blue, level 0) at 0.328 nats is retained; both worlds keep
-the context level (level 1). Deterministic schematic worlds (no
-resampling), so no error band is
-applicable.}\label{fig:hierarchical-bmr}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired Bayesian-surprise values: lower reference-world bar and upper informative-world bar, with the configured threshold.}]{../figures/hierarchical_bmr.slide-level-1.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-1}
 \end{figure}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Structure learning: does the
-hierarchy earn its depth?}
-This is the same Beta-function model-reduction machinery that drives the
-emergence study (sec.~7.4,
-eq.~16), lifted from pruning redundant \emph{states}
-within one level to pruning a redundant \emph{level} of the hierarchy
---- an honest, tested answer to ``how deep should the generative model
-be?'' that the data, not the modeler, decides.
+\begin{frame}{Hierarchical\ldots{} (part 12)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={non-gating world: L0 low\_threat. Bayesian surprise 0 nats; source flag: prunable.}]{../figures/hierarchical_bmr.slide-level-1-non-gating.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 13)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={informative world: L0 low\_threat. Bayesian surprise 0.3277 nats; source flag: kept.}]{../figures/hierarchical_bmr.slide-level-1-informative.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired Bayesian-surprise values: lower reference-world bar and upper informative-world bar, with the configured threshold.}]{../figures/hierarchical_bmr.slide-level-2.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 15)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={non-gating world: L1 quiet. Bayesian surprise 0.5796 nats; source flag: kept.}]{../figures/hierarchical_bmr.slide-level-2-non-gating.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={informative world: L1 quiet. Bayesian surprise 0.138 nats; source flag: kept.}]{../figures/hierarchical_bmr.slide-level-2-informative.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Declared surprise threshold: 0.001 nats. prunable iff bayesian\_surprise \textless{} surprise\_tol; recommend the deepest prunable non-leaf level}]{../figures/hierarchical_bmr.slide-threshold.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Lower bar: non-gating configured world. Upper hatched bar: informative configured world. All levels share the same surprise scale.}]{../figures/hierarchical_bmr.slide-key.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Bayesian surprise KL(posterior \textbar\textbar{} empirical prior). This configured information-gating diagnostic has no stochastic interval and is distinct from exact BMR evidence gain.}]{../figures/hierarchical_bmr.slide-scope.png}
+\refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical\ldots{} (part 20)}
+Unlike the Beta-function BMR sign control in
+sec.~7.4 and eq.~20, this
+routine thresholds per-level surprise. It therefore checks the intended
+gating contrast in the declared worlds; it does not let the data
+independently choose model depth.
 \end{frame}
 
 \end{document}

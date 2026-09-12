@@ -1,0 +1,344 @@
+{
+  "evidence_classes": [
+    {
+      "id": "formal_executable",
+      "label": "Formal / executable",
+      "meaning": "proved or exactly tested in the project model"
+    },
+    {
+      "id": "source_conditional",
+      "label": "Source-conditional",
+      "meaning": "inherits only under the cited paper's assumptions"
+    },
+    {
+      "id": "conditional_empirical",
+      "label": "Conditional empirical",
+      "meaning": "estimated in the declared finite design"
+    },
+    {
+      "id": "scoped_implementation",
+      "label": "Scoped implementation",
+      "meaning": "checks one software or protocol boundary"
+    },
+    {
+      "id": "open",
+      "label": "Open",
+      "meaning": "not established by the current evidence"
+    }
+  ],
+  "lanes": [
+    {
+      "display": {
+        "estimand_unit": "paired outputs [categorical posterior]",
+        "nesting": "input \u2192 paired functions",
+        "permitted": "project limit",
+        "prohibited": "full source protocol",
+        "replication": "exact identity"
+      },
+      "estimand": "robust_aggregate(c=0) versus log_linear_pool",
+      "evidence_class": "formal_executable",
+      "headline": "Project identity at c=0",
+      "id": "project_identity",
+      "nesting": "validated categorical inputs \u2192 paired function outputs",
+      "permitted_interpretation": "the project functions agree at the declared limit",
+      "prohibited_generalization": "complete Friston protocol reconstruction",
+      "replication_unit": "not applicable; exact executable identity",
+      "unit": "categorical posterior vector"
+    },
+    {
+      "display": {
+        "estimand_unit": "generalized posterior [client update]",
+        "nesting": "assumptions \u2192 update \u2192 posterior",
+        "permitted": "source theorem",
+        "prohibited": "server theorem; performance; calibration",
+        "replication": "theorem; no empirical unit"
+      },
+      "estimand": "client generalized posterior under the cited loss/divergence assumptions",
+      "evidence_class": "source_conditional",
+      "headline": "Client-loss robustness",
+      "id": "client_loss",
+      "nesting": "source assumptions \u2192 client update \u2192 posterior",
+      "permitted_interpretation": "source theorem under its stated assumptions",
+      "prohibited_generalization": "server robustness, empirical performance, or universal calibration",
+      "replication_unit": "not applicable; theorem-defined source statement",
+      "unit": "client update or posterior"
+    },
+    {
+      "display": {
+        "estimand_unit": "isolated \u2212 shared colony F [nats]",
+        "nesting": "study \u2192 seed \u2192 condition \u2192 agents",
+        "permitted": "paired protocol contrast",
+        "prohibited": "general benefit; exact replication",
+        "replication": "configured seed"
+      },
+      "estimand": "within-seed isolated-minus-communicating colony-mean variational free energy",
+      "evidence_class": "conditional_empirical",
+      "headline": "Paired free-energy contrast",
+      "id": "belief_sharing_free_energy",
+      "nesting": "study \u2192 seed \u2192 communication condition \u2192 agents",
+      "permitted_interpretation": "lower free energy with communication in the reduced declared protocol",
+      "prohibited_generalization": "general communication benefit or exact source-protocol replication",
+      "replication_unit": "independent configured seed",
+      "unit": "nats"
+    },
+    {
+      "display": {
+        "estimand_unit": "KL(true A || learned A) [nats]",
+        "nesting": "study \u2192 seed \u2192 steps \u2192 A rows",
+        "permitted": "executed conjugate path",
+        "prohibited": "universal rate; continuous model",
+        "replication": "configured seed"
+      },
+      "estimand": "seed-mean KL from true to learned categorical likelihood by ordered step",
+      "evidence_class": "conditional_empirical",
+      "headline": "Dirichlet likelihood learning",
+      "id": "likelihood_learning",
+      "nesting": "study \u2192 seed \u2192 ordered learning steps \u2192 likelihood rows",
+      "permitted_interpretation": "learning trajectory in the executed conjugate categorical design",
+      "prohibited_generalization": "universal convergence rate or continuous-model learning claim",
+      "replication_unit": "independent configured seed",
+      "unit": "nats"
+    },
+    {
+      "display": {
+        "estimand_unit": "pruning delta F [nats]",
+        "nesting": "posterior \u2192 pruning \u2192 signed delta",
+        "permitted": "configured sign control",
+        "prohibited": "universal emergence",
+        "replication": "closed-form comparison"
+      },
+      "estimand": "free-energy difference for redundant- and supported-column pruning",
+      "evidence_class": "formal_executable",
+      "headline": "Configured BMR sign control",
+      "id": "bmr_sign_control",
+      "nesting": "fixed posterior \u2192 candidate pruning \u2192 signed free-energy difference",
+      "permitted_interpretation": "the configured redundant/supported sign control passes",
+      "prohibited_generalization": "universal structure emergence or true-structure recovery",
+      "replication_unit": "not applicable; one deterministic closed-form comparison",
+      "unit": "nats"
+    },
+    {
+      "display": {
+        "estimand_unit": "joint-config accuracy [fraction]",
+        "nesting": "sweep \u2192 seed \u2192 client \u2192 row",
+        "permitted": "composite configuration contrast",
+        "prohibited": "RCCE-only; calibration; BNN claims",
+        "replication": "synthetic seed"
+      },
+      "estimand": "held-out accuracy for joint NLL/L2=0.05 and RCCE/L2=0.10 configurations by contamination rate",
+      "evidence_class": "conditional_empirical",
+      "headline": "Exploratory client baseline",
+      "id": "client_loss_baseline",
+      "nesting": "synthetic sweep \u2192 seed \u2192 client \u2192 observation",
+      "permitted_interpretation": "finite exploratory behavior of the two declared joint configurations",
+      "prohibited_generalization": "an RCCE-only effect, leakage-free calibration, universal robustness, or posterior-uncertainty BNN replication",
+      "replication_unit": "independent synthetic-data seed",
+      "unit": "accuracy fraction"
+    },
+    {
+      "display": {
+        "estimand_unit": "robust \u2212 naive [p or fraction]",
+        "nesting": "study \u2192 seed/world \u2192 trial \u2192 agents",
+        "permitted": "finite mechanism behavior",
+        "prohibited": "influence bound; Byzantine tol.; universal win",
+        "replication": "seed or matched trial"
+      },
+      "estimand": "robust-minus-naive consensus quantity in a declared attack cell",
+      "evidence_class": "conditional_empirical",
+      "headline": "Server reweighting heuristic",
+      "id": "server_heuristic",
+      "nesting": "study \u2192 seed/world \u2192 matched trial \u2192 agents and contamination condition",
+      "permitted_interpretation": "finite, mechanism-specific behavior and the exact zero-strength recovery",
+      "prohibited_generalization": "bounded influence, Byzantine tolerance, or a universal winner",
+      "replication_unit": "configured seed or matched trial, as declared per report",
+      "unit": "accuracy fraction or true-state probability mass"
+    },
+    {
+      "display": {
+        "estimand_unit": "descent, weights, transfer [mixed]",
+        "nesting": "config \u2192 start \u2192 iterates",
+        "permitted": "objective + tested transfer",
+        "prohibited": "global or universal claim",
+        "replication": "identity or seeded path"
+      },
+      "estimand": "declared free-energy descent, effective-weight property, and tempered-family recovery/API transfer",
+      "evidence_class": "formal_executable",
+      "headline": "Variational server rule",
+      "id": "variational_server",
+      "nesting": "configuration \u2192 initialization \u2192 ordered block-coordinate iterates",
+      "permitted_interpretation": "objective-backed properties and exact tested transfer points on the categorical rule",
+      "prohibited_generalization": "global optimality or universal robustness",
+      "replication_unit": "not applicable for identity; seeded path for diagnostics",
+      "unit": "nats, normalized server weight, or categorical posterior"
+    },
+    {
+      "display": {
+        "estimand_unit": "policy/sharing [fraction, nats, steps]",
+        "nesting": "world \u2192 seed \u2192 condition \u2192 agents/steps",
+        "permitted": "executed-world behavior",
+        "prohibited": "universal claim; physical multi-host",
+        "replication": "seed or fixed world"
+      },
+      "estimand": "communication or policy accuracy and free-energy contrasts in declared worlds",
+      "evidence_class": "conditional_empirical",
+      "headline": "Moving / disjoint-FOV contrasts",
+      "id": "moving_disjoint_fov",
+      "nesting": "world \u2192 seed when present \u2192 condition \u2192 agents \u2192 steps",
+      "permitted_interpretation": "condition-specific communication behavior in executed worlds",
+      "prohibited_generalization": "universal communication benefit or physical multi-host result",
+      "replication_unit": "configured seed where reported; otherwise deterministic world",
+      "unit": "accuracy fraction, nats, or steps"
+    },
+    {
+      "display": {
+        "estimand_unit": "posterior/gap/gate [probability, fraction, nats]",
+        "nesting": "world \u2192 seed \u2192 level \u2192 agents/states",
+        "permitted": "executed hierarchy design",
+        "prohibited": "universal benefit, depth, or emergence",
+        "replication": "seed or fixed diagnostic"
+      },
+      "estimand": "posterior, accuracy-gap, and information-gating quantities by hierarchy design",
+      "evidence_class": "conditional_empirical",
+      "headline": "Hierarchy / sensitivity diagnostics",
+      "id": "hierarchy_sensitivity",
+      "nesting": "world \u2192 seed when present \u2192 hierarchy level \u2192 agent/trial \u2192 ordered state",
+      "permitted_interpretation": "behavior of the executed two-/three-level and sensitivity designs",
+      "prohibited_generalization": "universal hierarchy benefit, depth recovery, or structure emergence",
+      "replication_unit": "configured seed when reported; otherwise deterministic diagnostic",
+      "unit": "probability, accuracy fraction, or nats"
+    },
+    {
+      "display": {
+        "estimand_unit": "acuity, error, R\u00b2 [p or unitless]",
+        "nesting": "grid point \u2192 trial \u2192 rows \u2192 estimate",
+        "permitted": "finite-grid recovery",
+        "prohibited": "global structural identifiability",
+        "replication": "trial within acuity cell"
+      },
+      "estimand": "recovered acuity, absolute error, and mean-recovery coefficient of determination",
+      "evidence_class": "conditional_empirical",
+      "headline": "Acuity recovery diagnostic",
+      "id": "parameter_recovery",
+      "nesting": "grid point \u2192 trial \u2192 observations \u2192 recovered estimate",
+      "permitted_interpretation": "finite-grid acuity recoverability in the executed design",
+      "prohibited_generalization": "global structural identifiability",
+      "replication_unit": "independent synthetic trial within each true-acuity grid point",
+      "unit": "probability units or unitless R-squared"
+    },
+    {
+      "display": {
+        "estimand_unit": "frame/replay match [frame or round]",
+        "nesting": "round \u2192 workers \u2192 frames \u2192 fields",
+        "permitted": "protocol-v1 local integrity",
+        "prohibited": "encryption/mTLS; multi-host; Byzantine tol.",
+        "replication": "local round"
+      },
+      "estimand": "byte/envelope consistency and deterministic replay recomputation",
+      "evidence_class": "scoped_implementation",
+      "headline": "Protocol-v1 / replay integrity",
+      "id": "protocol_integrity",
+      "nesting": "round \u2192 ordered workers \u2192 frames \u2192 payload fields",
+      "permitted_interpretation": "local transport and replay integrity for protocol v1",
+      "prohibited_generalization": "encryption, mTLS identity, physical multi-host operation, or Byzantine tolerance",
+      "replication_unit": "configured local process or loopback round",
+      "unit": "frame, worker round, or replay event"
+    },
+    {
+      "display": {
+        "estimand_unit": "hash/source agreement [artifact]",
+        "nesting": "invocation \u2192 artifacts \u2192 levels",
+        "permitted": "hashes; requested source match",
+        "prohibited": "validity; decision; acceptance",
+        "replication": "application invocation"
+      },
+      "estimand": "hash and provenance agreement for one labeled aggregation run",
+      "evidence_class": "scoped_implementation",
+      "headline": "Application receipt",
+      "id": "application_provenance",
+      "nesting": "invocation \u2192 request/result artifacts \u2192 receipt verification levels",
+      "permitted_interpretation": "declared artifact integrity and, when requested, source equivalence",
+      "prohibited_generalization": "scientific validity, domain suitability, decision correctness, or acceptance",
+      "replication_unit": "one completed application invocation",
+      "unit": "canonical request, result, and receipt artifact"
+    },
+    {
+      "display": {
+        "estimand_unit": "paired log score [nats/observation]",
+        "nesting": "dataset \u2192 seed \u2192 clients \u2192 rows",
+        "permitted": "none before design + report",
+        "prohibited": "retrospective or pooled-dataset claim",
+        "replication": "dataset highest; seeds nested"
+      },
+      "estimand": "future preregistered paired log-score contrasts on sealed external test partitions",
+      "evidence_class": "open",
+      "headline": "External calibration / confirmation",
+      "id": "external_confirmation",
+      "nesting": "dataset \u2192 seed \u2192 clients/conditions \u2192 observations",
+      "permitted_interpretation": "none before source-bound frozen design and confirmatory report",
+      "prohibited_generalization": "retrospective positive claim or pooled dataset-population inference",
+      "replication_unit": "dataset as highest external unit; seeds nested",
+      "unit": "nats per observation, summarized within dataset"
+    }
+  ],
+  "nesting": [
+    {
+      "id": "study",
+      "label": "Configured study or source-bound run",
+      "role": "highest configured scope"
+    },
+    {
+      "id": "seed",
+      "label": "Seed when present; independence is lane-specific",
+      "role": "possible nested unit"
+    },
+    {
+      "id": "trial",
+      "label": "Matched trial or condition",
+      "role": "nested comparison"
+    },
+    {
+      "id": "agent",
+      "label": "Agent / contamination role",
+      "role": "nested unit"
+    },
+    {
+      "id": "step",
+      "label": "Ordered step / posterior state",
+      "role": "repeated state"
+    }
+  ],
+  "nesting_edges": [
+    {
+      "disposition": "nesting",
+      "label": "contains",
+      "source": "study",
+      "target": "seed"
+    },
+    {
+      "disposition": "nesting",
+      "label": "contains or pairs",
+      "source": "seed",
+      "target": "trial"
+    },
+    {
+      "disposition": "nesting",
+      "label": "contains",
+      "source": "trial",
+      "target": "agent"
+    },
+    {
+      "disposition": "nesting",
+      "label": "repeats over",
+      "source": "agent",
+      "target": "step"
+    }
+  ],
+  "no_claims": [
+    "guarantees do not transfer between client, server, protocol, and application lanes",
+    "nested agents, trials, and time steps are not promoted to independent datasets",
+    "open external confirmation is not implied by formal or software evidence"
+  ],
+  "schema_version": "1.0",
+  "source_relation": "headline-result and claim-owner map separating mathematical identities, source-conditional results, conditional experiments, implementation checks, and open work",
+  "study_status": "source_owned_evidence_classification"
+}

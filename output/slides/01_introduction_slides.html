@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Introduction: from belief sharing to robust generalized Bayes — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:introduction"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b98583e23fcf">
+<h1 class="section-divider" id="slide-heading-b98583e23fcf">Introduction: from belief sharing to robust
+generalized Bayes</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b98583e23fcf-2">
+<h2 class="section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 2" id="slide-heading-b98583e23fcf-2">Introduction:
+from belief sharing to robust generalized Bayes</h2>
+<p>A colony of active-inference agents that shares beliefs inherits both
+the power and the fragility of the pool it uses: the same multiplication
+of reports that sharpens an honest consensus lets a single confident,
+wrong member capture it.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0f44da6d3e13">
+<h2 class="section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 2" id="slide-heading-0f44da6d3e13">Introduction
+(part 2)</h2>
+<p>Two research communities each hold part of the remedy but do not, on
+their own, close the gap.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-57a36ca4d9a8">
+<h2 class="section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 3" id="slide-heading-57a36ca4d9a8">Introduction
+(part 3)</h2>
+<p>The active-inference community gives agents generative models, action
+selection, and colony-level belief sharing. The robust- and
+federated-Bayes community gives generalized objectives and aggregation
+methods for inference under misspecification or contamination.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4d5739c2b302">
+<h2 class="section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 4" id="slide-heading-4d5739c2b302">Introduction
+(part 4)</h2>
+<p>The cited literatures do not, however, provide a single tested
+treatment of robust categorical belief fusion for active-inference
+agents. This introduction states the problem and its evidence boundary;
+<span class="cross-reference">Section 3</span> scopes the
+reviewed gap,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bcdf174ac7be">
+<h2 class="section-overview prose-slide"
+aria-label="Introduction: from belief sharing to robust generalized Bayes, part 5" id="slide-heading-bcdf174ac7be">Introduction
+(part 5)</h2>
+<p>and <span class="cross-reference">Section 4</span>
+lists the contributions together with what each result does not
+establish.</p>
+</section>
+<section id="sec:intro-active-inference"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-559d687f6e72">
+<h2 class="prose-slide" id="slide-heading-559d687f6e72">Active inference supplies generative agents and
+shared beliefs</h2>
+<p>Active inference casts perception, learning, and action as the
+minimization of variational free energy under a generative model,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c2e4ff68887b">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 2" id="slide-heading-c2e4ff68887b">Active
+inference supplies… (part 2)</h2>
+<p>a program that grew out of the free-energy principle <span
+class="citation" data-cites="friston2010free">(Friston 2010)</span> and
+its process-theory implementation <span class="citation"
+data-cites="friston2017active">(Friston et al. 2017)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bbd670d38658">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 3" id="slide-heading-bbd670d38658">Active
+inference supplies… (part 3)</h2>
+<p>In the discrete state-space setting the formalism is now
+standardized. An agent carries the categorical tensors <span
+class="math inline">\(A\)</span> (likelihood), <span
+class="math inline">\(B\)</span> (transitions), <span
+class="math inline">\(C\)</span> (preferences), and <span
+class="math inline">\(D_0\)</span> (initial priors), and infers hidden
+states by minimizing variational free energy. It selects actions by
+minimizing <em>expected</em> free energy —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3f5fb81595a4">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 4" id="slide-heading-3f5fb81595a4">Active
+inference supplies… (part 4)</h2>
+<p>the sum of a risk term and an ambiguity term that together trade off
+goal-seeking against uncertainty-resolving behavior <span
+class="citation" data-cites="dacosta2020active">(Da Costa et al.
+2020)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0e42e3edbcf0">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 5" id="slide-heading-0e42e3edbcf0">Active
+inference supplies… (part 5)</h2>
+<p>This synthesis is the substrate we build on. Mature toolboxes make it
+executable at scale: pymdp provides discrete-state active inference in
+Python <span class="citation" data-cites="heins2022pymdp">(Heins et al.
+2022)</span>, and RxInfer delivers reactive message passing for exact
+Bayesian inference <span class="citation"
+data-cites="bagaev2023rxinfer">(Bagaev et al. 2023)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0638001829fe">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 6" id="slide-heading-0638001829fe">Active
+inference supplies… (part 6)</h2>
+<p>The community has also moved from single agents to
+<em>collectives</em>. Surprise-minimizing ensembles reproduce collective
+animal behavior such as schooling and flocking <span class="citation"
+data-cites="heins2023collective">(Heins et al. 2024)</span>; epistemic
+communities form when agents share a generative model and exchange
+evidence <span class="citation"
+data-cites="albarracin2022epistemic">(Albarracin et al.
+2022)</span>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-43473712790d">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 7" id="slide-heading-43473712790d">Active
+inference supplies… (part 7)</h2>
+<p>and collective intelligence has been framed directly in
+active-inference terms <span class="citation"
+data-cites="kaufmann2021collective">(Kaufmann et al. 2021)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-de4279642b0d">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 8" id="slide-heading-de4279642b0d">Active
+inference supplies… (part 8)</h2>
+<p>The narrow bridge studied here starts from posterior broadcasts over
+one shared categorical factor — a predator’s location, say — and forms a
+project log-linear pool (<span class="cross-reference">9</span>).
+Under the explicit finite-shared-support, posterior-log-potential,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ecc8148fcaf3">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 9" id="slide-heading-ecc8148fcaf3">Active
+inference supplies… (part 9)</h2>
+<p>and fixed-weight assumptions of <span class="cross-reference">Section 5.8</span>,
+that weighted geometric pool is a specialization of Friston et al.’s Eq.
+7 message-combination term <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-52b1d0598252">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 10" id="slide-heading-52b1d0598252">Active
+inference supplies… (part 10)</h2>
+<p>It is not a reconstruction of the source message construction,
+scheduling, cavity policy, generative factors, or complete protocol.
+That representation connects the qualified categorical bridge to the
+classical logarithmic-pooling literature <span class="citation"
+data-cites="genest1986combining genest1986externally">(Genest and Zidek
+1986; Genest et al. 1986)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b7ed71f346a6">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 11" id="slide-heading-b7ed71f346a6">Active
+inference supplies… (part 11)</h2>
+<p>to modern Bayesian treatments of log-pool weights <span
+class="citation" data-cites="carvalho2023logpooling">(Carvalho et al.
+2023)</span>, to product-of-experts geometry in machine learning <span
+class="citation" data-cites="hinton2002products">(Hinton 2002)</span>,
+and to distributed Bayesian estimators <span class="citation"
+data-cites="tresp2000bayesian">(Tresp 2000)</span>. In the reproduced
+baseline,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5029556961bb">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 12" id="slide-heading-5029556961bb">Active
+inference supplies… (part 12)</h2>
+<p>communication lowers mean free energy relative to the matched
+incommunicado condition (<span class="cross-reference">Section 7.2</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-859bf9277b34">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 13" id="slide-heading-859bf9277b34">Active
+inference supplies… (part 13)</h2>
+<p>Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span> crystallized the colony
+mechanism into three worked simulations — communicating-colony
+free-energy convergence, Dirichlet language acquisition, and Bayesian
+model reduction structure emergence —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ae2a1127f39f">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 14" id="slide-heading-ae2a1127f39f">Active
+inference supplies… (part 14)</h2>
+<p>whose mechanisms motivate three reduced categorical analogues in this
+repository (<span class="cross-reference">Section 7.1</span>).
+They are not numerical or exact protocol replications; a source-parity
+reconstruction remains future work before evaluating source-level
+equivalence.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f5a8a8d6f830">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 15" id="slide-heading-f5a8a8d6f830">Active
+inference supplies… (part 15)</h2>
+<p>Alongside fusion, the community has tools for growing the model
+itself: active inference connects naturally to Bayesian optimal
+experimental design and model selection <span class="citation"
+data-cites="smith2020active">(Smith et al. 2022)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-df143949f63c">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 16" id="slide-heading-df143949f63c">Active
+inference supplies… (part 16)</h2>
+<p>and post-hoc Bayesian model reduction prunes redundant structure by
+comparing free-energy bounds <span class="citation"
+data-cites="friston2011post">(Friston and Penny 2011)</span> — the
+algebra used by our configured BMR sign control (<span class="cross-reference">Section 7.4</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-01f48373f606">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 17" id="slide-heading-01f48373f606">Active
+inference supplies… (part 17)</h2>
+<p>The reviewed active-inference belief-sharing work does not
+systematically characterize fusion under explicit contamination or
+intentionally wrong belief broadcasts.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90dada01f090">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 18" id="slide-heading-90dada01f090">Active
+inference supplies… (part 18)</h2>
+<p>The log-linear pool assumes reports are compatible with the shared
+generative model, while the opinion-pooling literature makes the
+assumptions about independence, weights, and external Bayesian coherence
+explicit <span class="citation"
+data-cites="genest1986combining genest1986externally">(Genest and Zidek
+1986; Genest et al. 1986)</span>. Fully Bayesian aggregation sharpens
+the point:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bdc2bc091b5a">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 19" id="slide-heading-bdc2bc091b5a">Active
+inference supplies… (part 19)</h2>
+<p>geometric pooling is normatively compelling under dynamic-Bayesian
+rationality assumptions, not an assumption-free robustness procedure
+<span class="citation" data-cites="dietrich2021fully">(Dietrich
+2021)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f80d05256c61">
+<h2 class="prose-slide"
+aria-label="Active inference supplies generative agents and shared beliefs, part 20" id="slide-heading-f80d05256c61">Active
+inference supplies… (part 20)</h2>
+<p>The same product geometry can be brittle: if a report assigns zero or
+near-zero mass to the true state, the product can assign near-zero mass
+there too. That is the failure mode tested here, not a claim that every
+federation or every product pool behaves identically.</p>
+</section>
+<section id="sec:intro-robust-bayes" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b42ccdf7619a">
+<h2 class="prose-slide" id="slide-heading-b42ccdf7619a">Robust and federated Bayes supplies
+bounded-influence updating</h2>
+<p>A separate literature studies bounded-influence updating outside
+active inference. <strong>Federated learning</strong> aggregates models
+trained on decentralized data without pooling the data itself,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f9870f5a300e">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 2" id="slide-heading-f9870f5a300e">Robust
+and federated Bayes… (part 2)</h2>
+<p>the canonical algorithm being FedAvg <span class="citation"
+data-cites="mcmahan2017communication">(McMahan et al. 2017)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-594b38870377">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 3" id="slide-heading-594b38870377">Robust
+and federated Bayes… (part 3)</h2>
+<p>Cast probabilistically, federated and continual learning unify under
+<strong>partitioned variational inference</strong>, in which each client
+owns a factor of a global approximate posterior and the server combines
+factors in natural-parameter space <span class="citation"
+data-cites="bui2018partitioned ashman2022partitioned">(Bui et al. 2018;
+Ashman et al. 2022)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2470021a5c18">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 4" id="slide-heading-2470021a5c18">Robust
+and federated Bayes… (part 4)</h2>
+<p>This is a closely related factor algebra expressed in a different
+vocabulary; the implementation tests the correspondence in the
+categorical recovery limit rather than assuming that the two settings
+are interchangeable.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-369b7eb85c78">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 5" id="slide-heading-369b7eb85c78">Robust
+and federated Bayes… (part 5)</h2>
+<p>The robustness this paper needs comes from <strong>generalized
+Bayesian inference</strong>, which replaces the likelihood with a
+<em>loss</em> and the KL regularizer with a <em>general
+divergence</em>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3b7f2ab5a9f7">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 6" id="slide-heading-3b7f2ab5a9f7">Robust
+and federated Bayes… (part 6)</h2>
+<p>so that the posterior minimizes a generalized objective rather than
+applying Bayes’ rule literally <span class="citation"
+data-cites="bissiri2016general jewson2018divergence knoblauch2022generalized">(Bissiri
+et al. 2016; Jewson et al. 2018; Knoblauch et al. 2022)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2622ce4982ec">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 7" id="slide-heading-2622ce4982ec">Robust
+and federated Bayes… (part 7)</h2>
+<p>This includes Gibbs-posterior updates <span class="citation"
+data-cites="jiang2008gibbs">(Jiang and Tanner 2008)</span>, coarsened or
+tempered posteriors that condition on neighborhoods rather than exact
+data <span class="citation" data-cites="miller2018coarsening">(Miller
+and Dunson 2018)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-596c366631e9">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 8" id="slide-heading-596c366631e9">Robust
+and federated Bayes… (part 8)</h2>
+<p>and learning-rate/temperature choices designed for safe updating
+under misspecification <span class="citation"
+data-cites="grunwald2012safe kleijn2012misspecification">(Grünwald 2012;
+Kleijn and Vaart 2012)</span>. Choosing a loss or divergence with a
+bounded-influence property — for example,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67c74c086be2">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 9" id="slide-heading-67c74c086be2">Robust
+and federated Bayes… (part 9)</h2>
+<p>the density-power <span class="math inline">\(\beta\)</span>-loss
+<span class="citation"
+data-cites="basu1998robust fujisawa2008robust ghosh2015robust">(Basu et
+al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015)</span> or
+generalized cross-entropy <span class="citation"
+data-cites="zhang2018generalized">(Zhang and Sabuncu 2018)</span> — can
+cap the influence of a contaminated observation under the corresponding
+assumptions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e69f84399a80">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 10" id="slide-heading-e69f84399a80">Robust
+and federated Bayes… (part 10)</h2>
+<p><strong>FedGVI</strong> <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span> federates
+this idea: each client runs a robust generalized-Bayes update against a
+<em>cavity</em> (the global posterior with the client’s own factor
+removed), and the server aggregates the refreshed factors under a chosen
+server divergence.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9754b3cc246e">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 11" id="slide-heading-9754b3cc246e">Robust
+and federated Bayes… (part 11)</h2>
+<p>The result is federated inference with divergence- and loss-specific
+robustness guarantees, demonstrated on Bayesian neural networks under
+label contamination.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-27bd3108ca3e">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 12" id="slide-heading-27bd3108ca3e">Robust
+and federated Bayes… (part 12)</h2>
+<p>Crucially, standard Bayes is a <em>corner</em> of this generalized
+family — the case where the loss is the negative log-likelihood and the
+divergence is KL. Friston et al. do not claim FedGVI, generalized Bayes,
+<span class="math inline">\(\beta\)</span>-divergence, or robustness;
+this manuscript supplies the recasting.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1a83a4ea22da">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 13" id="slide-heading-1a83a4ea22da">Robust
+and federated Bayes… (part 13)</h2>
+<p>Robust generalized Bayes therefore does not replace exact-Bayes
+belief fusion; it contains the standard pool as a tested zero-robustness
+recovery limit. That containment is the hinge this paper tests,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-288e947fd7ba">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 14" id="slide-heading-288e947fd7ba">Robust
+and federated Bayes… (part 14)</h2>
+<p>and the recovery limits are stated formally as numbered results in
+<span class="cross-reference">Section 6</span> and
+the central identity in <span class="cross-reference">Section 5.8</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c25987d105e3">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 15" id="slide-heading-c25987d105e3">Robust
+and federated Bayes… (part 15)</h2>
+<p>The historical framing is deliberately modest. The manuscript uses
+early probability, inverse-probability, utility, and collective-judgment
+sources as a conceptual genealogy for belief, evidence, expectation,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1c91de9e55b8">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 16" id="slide-heading-1c91de9e55b8">Robust
+and federated Bayes… (part 16)</h2>
+<p>and aggregation <span class="citation"
+data-cites="pascal1654probability huygens1657ratiociniis bernoulli1713ars demoivre1718doctrine bayes1763essay laplace1774memoire bernoulli1738mensura condorcet1785essai">(Pascal
+and Fermat 1654; Huygens 1657; Bernoulli 1713; Moivre 1718; Bayes 1763;
+Laplace 1774; Bernoulli 1738; Condorcet 1785)</span>. These sources do
+not anticipate KL divergence, product-of-experts learning, variational
+Bayes, or federated optimization;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b80f370e77e9">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 17" id="slide-heading-b80f370e77e9">Robust
+and federated Bayes… (part 17)</h2>
+<p>the modern correspondence to FedGVI is the formal construction proved
+and tested here.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1e6d5bfa652c">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 18" id="slide-heading-1e6d5bfa652c">Robust
+and federated Bayes… (part 18)</h2>
+<p>Beyond this core, we evaluate a tempered objective family, a
+deterministic MLP aggregation transfer, and disjoint-field-of-view
+communication. These are boundary tests: the first probes the
+accuracy/weight-control trade-off, the second tests API portability in
+one additional model class,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6a9eb71effc4">
+<h2 class="prose-slide"
+aria-label="Robust and federated Bayes supplies bounded-influence updating, part 19" id="slide-heading-6a9eb71effc4">Robust
+and federated Bayes… (part 19)</h2>
+<p>and the third separates a binary-complement null result from a
+larger-state-space case where communication materially improves
+consensus.</p>
+</section>
+<section id="sec:intro-questions" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a665ece13fdf">
+<h2 class="prose-slide" id="slide-heading-a665ece13fdf">Questions, design, and evidence boundary</h2>
+<p>The paper answers four scoped questions. First, does turning
+robustness off recover the standard log-linear pool and closed-form
+Bayes update? Second, under the declared confident-wrong broadcast
+mechanism,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Questions, design, and evidence boundary, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-65daad00a324">
+<h2 class="prose-slide"
+aria-label="Questions, design, and evidence boundary, part 2" id="slide-heading-65daad00a324">Questions,
+design, and… (part 2)</h2>
+<p>how does the server heuristic change consensus accuracy across
+contamination rates? Third, what does the objective-backed variational
+server rule guarantee, and what accuracy does it trade away? Fourth,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Questions, design, and evidence boundary, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-81ab21848614">
+<h2 class="prose-slide"
+aria-label="Questions, design, and evidence boundary, part 3" id="slide-heading-81ab21848614">Questions,
+design, and… (part 3)</h2>
+<p>how do communication, hierarchy, sensitivity, and parameter recovery
+behave in the accompanying categorical extensions?</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Questions, design, and evidence boundary, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3205b31c9af3">
+<h2 class="prose-slide"
+aria-label="Questions, design, and evidence boundary, part 4" id="slide-heading-3205b31c9af3">Questions,
+design, and… (part 4)</h2>
+<p>The first question is answered algebraically and by machine-precision
+checks; the others are conditional simulation results. The independent
+unit, resampling scheme, and fixed hidden-state/attack-target estimand
+are specified in <span class="cross-reference">Section 5.22</span>
+and <span class="cross-reference">Section 5.27</span>.</p>
+</section>
+<section id="sec:intro-visual-map" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-504267ea8b89">
+<h2 class="prose-slide" id="slide-heading-504267ea8b89">How to read the visual architecture</h2>
+<p>The manuscript uses two complementary visual layers. The formal
+schematics adapt the generative-model and posterior-sharing perspective
+of Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span> to the categorical
+implementation: <span class="cross-reference">Figure 4</span>
+shows the private sensory report and <span
+class="math inline">\(A/B/C/D\)</span> substrate,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="How to read the visual architecture, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8dd7870a3403">
+<h2 class="prose-slide"
+aria-label="How to read the visual architecture, part 2" id="slide-heading-8dd7870a3403">How to read the
+visual… (part 2)</h2>
+<p><span class="cross-reference">Figure 3</span>
+shows how three local posterior messages become server inputs, and <span class="cross-reference">Figure 5</span>
+shows the hidden-state, agent, and active-control context. These
+diagrams are explanatory maps, not additional empirical
+observations.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="How to read the visual architecture, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1332cef27317">
+<h2 class="prose-slide"
+aria-label="How to read the visual architecture, part 3" id="slide-heading-1332cef27317">How to read the
+visual… (part 3)</h2>
+<p>The data-bearing figures then report the executed recovery checks,
+conditional contamination sweep, and objective/descent diagnostics;
+their captions identify the relevant uncertainty and resampling
+unit.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="How to read the visual architecture, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-79ee98a0e155">
+<h2 class="prose-slide"
+aria-label="How to read the visual architecture, part 4" id="slide-heading-79ee98a0e155">How to read the
+visual… (part 4)</h2>
+<p>The graphical abstract in <span class="cross-reference">Figure 1</span>
+compresses the same logic into a recovery anchor, a federation pathway,
+and three explicitly non-transferable robustness axes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="How to read the visual architecture, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1474e5f1a1b3">
+<h2 class="prose-slide"
+aria-label="How to read the visual architecture, part 5" id="slide-heading-1474e5f1a1b3">How to read the
+visual… (part 5)</h2>
+<p><span class="cross-reference">Figure 2</span>
+illustrates one configured failure-and-repair case: a partially
+contaminated colony broadcasts beliefs (Panel A), the equal-weight
+log-linear pool is pulled toward the attack target (Panel B), and the
+server-side heuristic reweights the broadcasts (Panel C). It is a
+deterministic schematic,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="How to read the visual architecture, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-da5d678dae4d">
+<h2 class="prose-slide"
+aria-label="How to read the visual architecture, part 6" id="slide-heading-da5d678dae4d">How to read the
+visual… (part 6)</h2>
+<p>not a universal robustness claim; the three axes and their distinct
+guarantees are defined in <span class="cross-reference">Section 3</span> and <span class="cross-reference">Section 3.3</span>.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d89e0dcd07d7">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 7" id="slide-heading-d89e0dcd07d7">How to read the
+visual… (part 7)</h2>
+<figure id="fig:system-overview-slide-panel-1">
+<img src="../figures/system_overview.slide-row-1-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="dc9397a6a2acb8b4921aeaa7c34562b99bf3a339e360b17bea5a756934231555"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A1: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7d32c6ba7b9d">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 8" id="slide-heading-7d32c6ba7b9d">How to read the
+visual… (part 8)</h2>
+<figure id="fig:system-overview-slide-panel-2">
+<img src="../figures/system_overview.slide-row-1-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d299311691b03cd54c303872ca16f390d44d574ee4ef0a15d11d533ff484ac18"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A1: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b8225eadef19">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 9" id="slide-heading-b8225eadef19">How to read the
+visual… (part 9)</h2>
+<figure id="fig:system-overview-slide-panel-3">
+<img src="../figures/system_overview.slide-row-1-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="f2cc245dfd741bc5d15e7449fbf0a11f14fe92b33ae489d4ffec63af30a4780b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A1: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-54cb63afe034">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 10" id="slide-heading-54cb63afe034">How to read
+the visual… (part 10)</h2>
+<figure id="fig:system-overview-slide-panel-4">
+<img src="../figures/system_overview.slide-row-2-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="8c606058b36c22722f0330bbf2044a8cd5864e983c105b11d9401882f1d54ac9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A2: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-73804846faa6">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 11" id="slide-heading-73804846faa6">How to read
+the visual… (part 11)</h2>
+<figure id="fig:system-overview-slide-panel-5">
+<img src="../figures/system_overview.slide-row-2-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="df5347a0e29eb83cee1ddd814e1b8f483405ba5d9e27fffadfbb573db1807808"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A2: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-586007025dd8">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 12" id="slide-heading-586007025dd8">How to read
+the visual… (part 12)</h2>
+<figure id="fig:system-overview-slide-panel-6">
+<img src="../figures/system_overview.slide-row-2-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="fcfac241369e6da4b0968423c0f5e2f4611aa769636223a510c17caccebcf718"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A2: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-56c7fcd4a663">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 13" id="slide-heading-56c7fcd4a663">How to read
+the visual… (part 13)</h2>
+<figure id="fig:system-overview-slide-panel-7">
+<img src="../figures/system_overview.slide-row-3-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="3a13185eb71357ce1751bb958b7bf21182095dee5d47f27ad381c5a5378be55a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H1: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1392759e1fd0">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 14" id="slide-heading-1392759e1fd0">How to read
+the visual… (part 14)</h2>
+<figure id="fig:system-overview-slide-panel-8">
+<img src="../figures/system_overview.slide-row-3-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="235cab8ba1be075fd357bcee79b46da7cb0aba5295616d9af9763120c2f53ee3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H1: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-687414343218">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 15" id="slide-heading-687414343218">How to read
+the visual… (part 15)</h2>
+<figure id="fig:system-overview-slide-panel-9">
+<img src="../figures/system_overview.slide-row-3-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="b504464849da3aafb4b949d4bcf677491c0562c2f3536f1ea695380be3cc5154"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H1: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-638cd9015049">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 16" id="slide-heading-638cd9015049">How to read
+the visual… (part 16)</h2>
+<figure id="fig:system-overview-slide-panel-10">
+<img src="../figures/system_overview.slide-row-4-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="fd7383790603394d8b2ac793e19ba7ad0e7516252381341cacc19b42b14e19b1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H2: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-56cd5412cea9">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 17" id="slide-heading-56cd5412cea9">How to read
+the visual… (part 17)</h2>
+<figure id="fig:system-overview-slide-panel-11">
+<img src="../figures/system_overview.slide-row-4-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d2555d0ca254c86bba8da0e1550b3f4c76f4bc9538b640d40f77df0d6664b6d5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H2: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-28a6d2d4808c">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 18" id="slide-heading-28a6d2d4808c">How to read
+the visual… (part 18)</h2>
+<figure id="fig:system-overview-slide-panel-12">
+<img src="../figures/system_overview.slide-row-4-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="3e938ce0c02d132183ac4f4340515e54bfce86f7cbda1fb466218c838e058d08"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H2: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c7a1818047fb">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 19" id="slide-heading-c7a1818047fb">How to read
+the visual… (part 19)</h2>
+<figure id="fig:system-overview-slide-panel-13">
+<img src="../figures/system_overview.slide-row-5-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e78c2bf4f2cf107917aa9904e97f73732cd029fefa9551bc6c0400972cc98783"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H3: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0002968038ca">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 20" id="slide-heading-0002968038ca">How to read
+the visual… (part 20)</h2>
+<figure id="fig:system-overview-slide-panel-14">
+<img src="../figures/system_overview.slide-row-5-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="b91f5c2b836932ffb2c5e969e60d0d610f5f9d5217820097b0db41716ec398fd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H3: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ca0dad4160aa">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 21" id="slide-heading-ca0dad4160aa">How to read
+the visual… (part 21)</h2>
+<figure id="fig:system-overview-slide-panel-15">
+<img src="../figures/system_overview.slide-row-5-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="81f65aaeb0b148509e058ab553e49ee06e3d337458bbe4145e92c68fec355e18"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H3: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-18c2ceb676ad">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 22" id="slide-heading-18c2ceb676ad">How to read
+the visual… (part 22)</h2>
+<figure id="fig:system-overview-slide-panel-16">
+<img src="../figures/system_overview.slide-row-6-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d66b46d4c9e07a8e8d898c3ebf3816f0f73e6096e321a443d5cbeebeddc7df0f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Naive consensus: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-694b5caf4895">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 23" id="slide-heading-694b5caf4895">How to read
+the visual… (part 23)</h2>
+<figure id="fig:system-overview-slide-panel-17">
+<img src="../figures/system_overview.slide-row-6-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="095a07815cce1616d598e40a58a2cb5375e7f343abffee94c1be2e64318bf0b7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Naive consensus: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-84a0dbeb030f">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 24" id="slide-heading-84a0dbeb030f">How to read
+the visual… (part 24)</h2>
+<figure id="fig:system-overview-slide-panel-18">
+<img src="../figures/system_overview.slide-row-6-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d7bae7151fe387ee2ed6d37c067cd70abe698f2e78bf7055c22ce6fd72b67b0e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Naive consensus: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ed036eebe5a0">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 25" id="slide-heading-ed036eebe5a0">How to read
+the visual… (part 25)</h2>
+<figure id="fig:system-overview-slide-panel-19">
+<img src="../figures/system_overview.slide-row-7-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="21de9739e95f186f18e63269c68808dbabd2eda4625198d96e73024991fc663f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Heuristic consensus: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-125bc42c1182">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 26" id="slide-heading-125bc42c1182">How to read
+the visual… (part 26)</h2>
+<figure id="fig:system-overview-slide-panel-20">
+<img src="../figures/system_overview.slide-row-7-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="2226eaca092f719d672cc27fe799f503b93f76bceb58bf67f9dea01a2995fd58"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Heuristic consensus: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5e057877957c">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 27" id="slide-heading-5e057877957c">How to read
+the visual… (part 27)</h2>
+<figure id="fig:system-overview-slide-panel-21">
+<img src="../figures/system_overview.slide-row-7-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="01b1331e0081298422c08bacc24235c732e09902f158d103acd11cba14f20f9e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Heuristic consensus: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-737b39f4f9d4">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 28" id="slide-heading-737b39f4f9d4">How to read
+the visual… (part 28)</h2>
+<figure id="fig:system-overview-slide-panel-22">
+<img src="../figures/system_overview.slide-weights-1-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="91df355f87e360fd771509108a85e06b96897ebcc64319ab838be4e8bf9422a6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1402"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0497076"
+alt="Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a4c75a11e136">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 29" id="slide-heading-a4c75a11e136">How to read
+the visual… (part 29)</h2>
+<figure id="fig:system-overview-slide-panel-23">
+<img src="../figures/system_overview.slide-weights-3-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="4b9ccc7e4edebff50c2a181941152a79b4fa1b3968971f785552dbe0ac2c3ee8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1402"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0497076"
+alt="Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-41a8478eac98">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 30" id="slide-heading-41a8478eac98">How to read
+the visual… (part 30)</h2>
+<figure id="fig:system-overview-slide-panel-24">
+<img src="../figures/system_overview.slide-weights-5-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="c4dfc82f511ecab30bd6b780e6178eb8a172dfcc57d06f6efdf51df3c6ae03d6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1402"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0497076"
+alt="Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-546360776ae3">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 31" id="slide-heading-546360776ae3">How to read
+the visual… (part 31)</h2>
+<figure id="fig:system-overview-slide-panel-25">
+<img src="../figures/system_overview.slide-colony.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a7edd999211c1d2b85f89071fe8975174d5db95dd2f71da4e802faed80736ef0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1209"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7598425"
+alt="Configured colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40%. True state: 3." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8d72e68da032">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 32" id="slide-heading-8d72e68da032">How to read
+the visual… (part 32)</h2>
+<figure id="fig:system-overview-slide-panel-26">
+<img src="../figures/system_overview.slide-naive.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="84d729f8ada59448ef1ee7637072045145480c266ae0def12cad390d236a3650"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1315"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7.4293785"
+alt="Naive equal-weight log pool: true-state mass 39%; argmax state 6." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7d89341fb45b">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 33" id="slide-heading-7d89341fb45b">How to read
+the visual… (part 33)</h2>
+<figure id="fig:system-overview-slide-panel-27">
+<img src="../figures/system_overview.slide-heuristic.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4d24d408e7c9000b9376855aaa249ec73ad67a3cb339acc74f576b0ef6ba2616"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1315"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.1771654"
+alt="Heuristic robust aggregation: true-state mass 50%; argmax state 3. Robustness 1.5." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bd533bb72ec5">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 34" id="slide-heading-bd533bb72ec5">How to read
+the visual… (part 34)</h2>
+<figure id="fig:system-overview-slide-panel-28">
+<img src="../figures/system_overview.slide-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4a78eda1cc42a25cc09240959744fa580ac3f9c8fcabf1066d4cb8e8bf44beb9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1189"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.9285714"
+alt="A / crosshatching: adversarial; H / plain: honest. All probability panels share a 0–1 scale. The true state is green; other states are gray." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="How to read the visual architecture, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-05666a646b55">
+<h2 class="figure-led"
+aria-label="How to read the visual architecture, part 35" id="slide-heading-05666a646b55">How to read
+the visual… (part 35)</h2>
+<figure id="fig:system-overview-slide-panel-29">
+<img src="../figures/system_overview.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0be74e9b3c1d88e1c1b6ac8967a8c3fb6dda4c6098ba162c89815793590a6a26"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1277"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.1453202"
+alt="One deterministic configured colony, not a replicated benchmark. True-state mass percentages are not deployment accuracy estimates. No uncertainty interval applies." />
+</figure>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

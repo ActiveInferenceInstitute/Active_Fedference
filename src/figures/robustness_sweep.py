@@ -18,16 +18,24 @@ from pathlib import Path
 from typing import Any
 
 from ._common import (
-    COLOR_ACCENT,
     COLOR_GRID,
-    COLOR_NAIVE,
     COLOR_PANEL_FAIL,
+    SemanticStyle,
     apply_style,
     figures_dir,
     plt,
-    robust_color,
     save_figure,
+    semantic_style,
 )
+
+_ROBUST_STYLE_ROLES = (
+    "heuristic_robust",
+    "operating_point_1",
+    "operating_point_2",
+    "operating_point_3",
+    "operating_point_4",
+)
+MANUSCRIPT_WIDTH_FRACTION = 0.80
 
 
 def generate_robustness_sweep(
@@ -36,6 +44,7 @@ def generate_robustness_sweep(
     *,
     accuracy_threshold: float | None = None,
     rate_summary: Mapping[str, Mapping[str, Any]] | None = None,
+    server_robustness_by_label: Mapping[str, float] | None = None,
     project_root: Path | None = None,
     filename: str = "robustness_sweep.png",
 ) -> Path:
@@ -44,13 +53,19 @@ def generate_robustness_sweep(
     Args:
         accuracy_by_method_and_rate: Nested ``{method: {rate_key: accuracy}}``
             mapping, where ``rate_key`` is ``f"{rate:g}"`` (the experiment's
-            JSON key convention).
+            JSON key convention). The reference is plotted first, followed by
+            presets in lexical report-label order; mapping insertion order
+            cannot change styles or presentation panel identifiers.
         rates: The contamination rates, in sweep order.
         accuracy_threshold: Optional horizontal reference line.
         rate_summary: Optional trial-level summary from
             ``run_robustness_sweep['per_rate_summary']``. When supplied, the
             plotted curves are trial means with percentile-bootstrap intervals;
             otherwise deterministic single-colony mechanistic curves are drawn.
+        server_robustness_by_label: Optional source-report mapping from legacy
+            cross-reference labels to the actual server robustness constants.
+            When present, visible labels use these constants rather than
+            client-loss vocabulary.
         project_root: Project root override.
         filename: Output PNG name under ``output/figures``.
 
@@ -67,7 +82,9 @@ def generate_robustness_sweep(
         raise ValueError("rates must be non-empty")
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(7.4, 5.1))
+    # Match the 80%-width manuscript embed at the validation boundary. The
+    # narrower canvas raises effective type size without shrinking any artist.
+    fig, ax = plt.subplots(figsize=(7.0, 5.5))
     fig.subplots_adjust(left=0.13, right=0.96, top=0.86, bottom=0.30)
     robust_idx = 0
     has_profile = rate_summary is not None
@@ -75,7 +92,10 @@ def generate_robustness_sweep(
         raise ValueError("rate_summary must be non-empty when provided")
     series: dict[str, list[float]] = {}
     intervals: dict[str, tuple[list[float], list[float]]] = {}
-    for method, by_rate in accuracy_by_method_and_rate.items():
+    styles: dict[str, SemanticStyle] = {}
+    labels: dict[str, str] = {}
+    for method in sorted(accuracy_by_method_and_rate, key=lambda key: (key != "KLD", key)):
+        by_rate = accuracy_by_method_and_rate[method]
         if rate_summary is not None:
             profile_blocks = [rate_summary[f"{r:g}"] for r in rate_vals]
             profile_methods = [block["methods"] for block in profile_blocks]
@@ -88,11 +108,19 @@ def generate_robustness_sweep(
         series[method] = ys
         is_naive = method == "KLD"
         if is_naive:
-            color = COLOR_NAIVE
+            style = semantic_style("naive")
+            label = "reference log pool (c=0)"
         else:
-            color = robust_color(robust_idx)
+            style = semantic_style(_ROBUST_STYLE_ROLES[robust_idx % len(_ROBUST_STYLE_ROLES)])
+            if server_robustness_by_label is None:
+                label = f"server preset {robust_idx + 1}"
+            else:
+                if method not in server_robustness_by_label:
+                    raise ValueError(f"missing server robustness for {method!r}")
+                label = f"server preset c={float(server_robustness_by_label[method]):g}"
             robust_idx += 1
-        label = f"{method} (naive)" if is_naive else f"{method} (robust)"
+        styles[method] = style
+        labels[method] = label
         if rate_summary is not None:
             lows, highs = intervals[method]
             ax.errorbar(
@@ -102,10 +130,13 @@ def generate_robustness_sweep(
                     [mean - low for mean, low in zip(ys, lows)],
                     [high - mean for mean, high in zip(ys, highs)],
                 ],
-                fmt="o-" if is_naive else "s--",
+                fmt=style.marker,
                 markersize=4.5,
-                linewidth=2.6 if is_naive else 1.7,
-                color=color,
+                linewidth=style.linewidth,
+                linestyle=style.dash,
+                color=style.color,
+                markeredgecolor=style.keyline,
+                markerfacecolor="white" if not is_naive else style.color,
                 capsize=2.5,
                 elinewidth=0.9,
                 label=label,
@@ -115,11 +146,13 @@ def generate_robustness_sweep(
             ax.plot(
                 rate_vals,
                 ys,
-                marker="o" if is_naive else "s",
+                marker=style.marker,
                 markersize=5,
-                linewidth=2.6 if is_naive else 1.7,
-                color=color,
-                linestyle="-" if is_naive else "--",
+                linewidth=style.linewidth,
+                color=style.color,
+                markeredgecolor=style.keyline,
+                markerfacecolor="white" if not is_naive else style.color,
+                linestyle=style.dash,
                 label=label,
                 zorder=3 if is_naive else 2,
             )
@@ -128,9 +161,9 @@ def generate_robustness_sweep(
         ax.axhspan(0.0, threshold, color=COLOR_PANEL_FAIL, alpha=0.45, zorder=0)
         ax.axhline(
             threshold,
-            color=COLOR_GRID,
-            linestyle="--",
-            linewidth=1.2,
+            color=semantic_style("reference_rule").color,
+            linestyle=semantic_style("reference_rule").dash,
+            linewidth=semantic_style("reference_rule").linewidth,
             label=f"predeclared floor = {threshold:g}",
         )
         ax.text(
@@ -142,40 +175,51 @@ def generate_robustness_sweep(
             fontsize=9.5,
             color=COLOR_GRID,
         )
-    if "KLD" in series:
-        ax.annotate(
-            "naive log-pool",
-            xy=(rate_vals[-1], series["KLD"][-1]),
-            xytext=(-72, 24),
-            textcoords="offset points",
-            arrowprops={"arrowstyle": "->", "color": COLOR_NAIVE, "lw": 1.0},
-            fontsize=9.5,
-            color=COLOR_NAIVE,
-            ha="right",
+    # Direct endpoint labels keep method roles readable in grayscale and avoid
+    # forcing a legend-only lookup.  Vertically separate near-tied endpoints.
+    endpoints = sorted(
+        ((float(values[-1]), method) for method, values in series.items()),
+        key=lambda item: item[0],
+    )
+    label_positions: dict[str, float] = {}
+    previous = 0.42
+    for endpoint, method in endpoints:
+        placed = max(endpoint, previous + 0.042)
+        label_positions[method] = min(placed, 1.005)
+        previous = label_positions[method]
+    x_span = max(rate_vals) - min(rate_vals) if len(rate_vals) > 1 else 1.0
+    label_x = rate_vals[-1] + 0.035 * x_span
+    for method, values in series.items():
+        style = styles[method]
+        endpoint = float(values[-1])
+        placed = label_positions[method]
+        ax.plot(
+            [rate_vals[-1], label_x],
+            [endpoint, placed],
+            color=style.keyline,
+            linewidth=0.8,
+            clip_on=False,
         )
-    robust_endpoints = {
-        method: ys[-1] for method, ys in series.items() if method != "KLD"
-    }
-    if robust_endpoints:
-        best_method = max(robust_endpoints, key=robust_endpoints.__getitem__)
-        ax.annotate(
-            f"highest max-rate pooled mean (display): {best_method}",
-            xy=(rate_vals[-1], series[best_method][-1]),
-            xytext=(-120, -28),
-            textcoords="offset points",
-            arrowprops={"arrowstyle": "->", "color": COLOR_ACCENT, "lw": 1.0},
+        ax.text(
+            label_x,
+            placed,
+            labels[method],
+            ha="left",
+            va="center",
             fontsize=9.5,
-            color=COLOR_ACCENT,
-            ha="right",
+            color=style.keyline,
+            clip_on=False,
         )
     ax.set_xlabel("contamination rate")
     ax.set_ylabel("consensus accuracy  q(true state)")
     # Truncate just below the threshold band: the executed curves live well
     # above zero, so a full [0, 1] range wastes panel area; the floor stays visible.
-    ax.set_ylim(0.4, 1.02)
+    minimum_value = min(min(values) for values in series.values())
+    ax.set_ylim(max(0.0, min(0.4, minimum_value - 0.05)), 1.02)
+    ax.set_xlim(rate_vals[0] - 0.02 * x_span, label_x + 0.23 * x_span)
     if rate_summary is not None:
         n_profile = int(next(iter(rate_summary.values())).get("n", 0))
-        ax.set_title("Contamination robustness profile: mean ± 95% bootstrap CI")
+        ax.set_title("Server-preset accuracy under contamination")
         final_rate = rate_vals[-1]
         naive_final = series.get("KLD", [float("nan")])[-1]
         best_final = max(
@@ -186,7 +230,7 @@ def generate_robustness_sweep(
             0.02,
             0.02,
             f"n = {n_profile} matched trials/rate\n"
-            f"max-rate robust-minus-naive = {best_final - naive_final:+.3f}\n"
+            f"largest max-rate preset-minus-reference = {best_final - naive_final:+.3f}\n"
             f"max rate = {final_rate:g}",
             transform=ax.transAxes,
             fontsize=9.5,
@@ -195,20 +239,46 @@ def generate_robustness_sweep(
             bbox={"boxstyle": "round,pad=0.3", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
         )
     else:
-        ax.set_title("Deterministic contamination sweep: statistics in tables")
+        ax.set_title("Deterministic server-preset contamination sweep")
     ax.legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=3)
     if len(rates) > 1 and rate_summary is None:
         # Mid-panel dead space (between the legend and the KLD descent), so the
         # note no longer sits on the curves in the upper-right corner.
         ax.text(
-            0.55, 0.33,
-            "single seeded curves\nlinear y-axis: 0.4 to 1.0\nverdict statistics in tables",
-            transform=ax.transAxes, fontsize=9.5, ha="center", va="center",
-            bbox={"boxstyle": "round,pad=0.35", "fc": "white",
-                  "ec": COLOR_GRID, "alpha": 0.85},
+            0.55,
+            0.33,
+            "single seeded curves\nlinear accuracy axis\ncomparative statistics in tables",
+            transform=ax.transAxes,
+            fontsize=9.5,
+            ha="center",
+            va="center",
+            bbox={"boxstyle": "round,pad=0.35", "fc": "white", "ec": COLOR_GRID, "alpha": 0.85},
         )
 
-    return save_figure(fig, figures_dir(project_root) / filename)
+    path = save_figure(
+        fig,
+        figures_dir(project_root) / filename,
+        manuscript_width_fraction=MANUSCRIPT_WIDTH_FRACTION,
+    )
+    from ._presentation_studies import sweep_presentation
+
+    presentation_notes = (
+        f"Largest max-rate preset minus reference: {best_final - naive_final:+.3f}. Max rate: {final_rate:g}."
+        if rate_summary is not None
+        else "Single seeded curves; linear accuracy axis."
+    )
+    sweep_presentation(
+        path,
+        rate_vals,
+        series,
+        intervals,
+        styles,
+        labels,
+        accuracy_threshold,
+        n_profile if rate_summary is not None else None,
+        presentation_notes,
+    )
+    return path
 
 
 __all__ = ["generate_robustness_sweep"]

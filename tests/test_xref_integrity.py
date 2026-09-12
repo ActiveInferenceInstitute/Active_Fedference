@@ -102,7 +102,9 @@ def test_notation_objective_is_canonical_and_referenced() -> None:
 def test_rcce_loss_parameter_is_distinct_from_posterior_q() -> None:
     """Reserve plain q for posterior notation and q_loss for the RCCE control."""
     text = _manuscript_text()
-    assert r"L_{q_{\rm loss}}" in text
+    assert r"L_{q_{\text{loss}}}" in text
+    # Text subscripts remain words in MathJax speech instead of SI-unit letters.
+    assert r"q_{\rm loss}" not in text
     assert "L_q" not in text
 
 
@@ -112,6 +114,20 @@ def test_raw_latex_proposition_uses_print_reference_not_pandoc_citation() -> Non
     assert "prop:federation-bit-identity" in defs
     assert r"Proposition \ref{prop:federation-bit-identity}" in text
     assert "@prop:" not in text
+
+
+def test_section_references_use_portable_pandoc_crossrefs() -> None:
+    """Raw section refs lose their label in HTML and can expose literal tildes."""
+    offenders: list[str] = []
+    for section in _section_paths():
+        text = section.read_text(encoding="utf-8")
+        for match in re.finditer(r"\\(?:ref|autoref|cref)\{sec:[A-Za-z0-9_\-]+\}", text):
+            line = text[: match.start()].count("\n") + 1
+            offenders.append(f"{section.name}:{line}: {match.group(0)}")
+    assert not offenders, (
+        "section references must use [@sec:...] so PDF, HTML, and slides share one portable label:\n"
+        + "\n".join(offenders)
+    )
 
 
 def test_live_cross_reference_labels_are_unique() -> None:
@@ -199,3 +215,26 @@ def test_every_citation_key_exists_and_every_bibliography_entry_is_used() -> Non
     )
     assert cited - defined == set(), f"citation keys absent from bibliography: {sorted(cited - defined)}"
     assert defined - cited == set(), f"bibliography entries never cited: {sorted(defined - cited)}"
+
+
+def test_bibliography_entries_do_not_repeat_field_names() -> None:
+    bibliography = (_MANUSCRIPT / "references.bib").read_text(encoding="utf-8")
+    duplicates: list[str] = []
+    entries = re.finditer(
+        r"^@(?!comment\b)[A-Za-z]+\{(?P<key>[^,\s]+),(?P<body>.*?)(?=^@|\Z)",
+        bibliography,
+        flags=re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    for entry in entries:
+        fields = [
+            field.casefold()
+            for field in re.findall(
+                r"^[ \t]+([A-Za-z][A-Za-z0-9_-]*)[ \t]*=",
+                entry.group("body"),
+                flags=re.MULTILINE,
+            )
+        ]
+        repeated = sorted({field for field in fields if fields.count(field) > 1})
+        if repeated:
+            duplicates.append(f"{entry.group('key')}: {', '.join(repeated)}")
+    assert not duplicates, "duplicate bibliography fields:\n" + "\n".join(duplicates)

@@ -1,5 +1,8 @@
 {
   "acuity": 0.85,
+  "claim_boundary": "configured implementation control only; no universal structure-emergence, model-selection-consistency, or unconfigured-world claim",
+  "configured_control_passed": true,
+  "decision_rule": "prunable iff bayesian_surprise < surprise_tol; recommend the deepest prunable non-leaf level",
   "degenerate": {
     "levels": [
       {
@@ -48,6 +51,14 @@
   },
   "informative_keeps_top": true,
   "informative_top_surprise": 0.3276713725058497,
+  "n_iters": 8,
   "n_levels": 3,
-  "obs": 4
+  "obs": 4,
+  "primary_control": "degenerate non-gating top level below threshold; informative top level at or above threshold",
+  "schema_version": "1.0",
+  "secondary_diagnostic": "within-level redundancy_delta_F is descriptive and does not determine the surprise-threshold prune recommendation",
+  "seed": 0,
+  "seed_role": "compatibility provenance only; configured control has no RNG draw",
+  "study_status": "configured_deterministic_control",
+  "surprise_tol": 0.001
 }

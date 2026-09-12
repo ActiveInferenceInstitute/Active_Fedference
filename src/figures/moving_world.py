@@ -22,9 +22,7 @@ from figures._common import (
 )
 
 
-def generate_moving_world(
-    results, project_root, *, filename: str = "moving_world.png"
-) -> Path:
+def generate_moving_world(results, project_root, *, filename: str = "moving_world.png") -> Path:
     """Three-panel bar chart for the moving sentinel world.
 
     Left panel: consensus accuracy. Center panel: free-energy gap (nats). Right
@@ -36,10 +34,13 @@ def generate_moving_world(
     apply_style()
     # Embedded at width=80% (~5.2 in): large fonts so effective text >= 7 pt.
     _FS_TICK, _FS_LABEL, _FS_TITLE, _FS_ANN = 13, 14, 14, 11
-    fig, axes = plt.subplots(1, 3, figsize=(10, 4))
+    fig, axes = plt.subplots(1, 3, figsize=(8.0, 5.2))
+    fig.subplots_adjust(left=0.09, right=0.98, top=0.81, bottom=0.20, wspace=0.47)
     conditions = ["isolated", "communicating", "efe_guided"]
     colors = [COLOR_NAIVE, COLOR_ROBUST, COLOR_MUTED]
-    labels = ["Isolated", "Comm.", "EFE-guided"]
+    # Compact codes keep the three repeated condition axes legible in the
+    # manuscript's 80%-width embed.  The figure-level key expands every code.
+    labels = ["ISO", "COM", "EFE"]
 
     acc = results["accuracy"]
     gap = results["free_energy_gap"]
@@ -66,11 +67,10 @@ def generate_moving_world(
             ax.axhline(y=0, color=COLOR_GRID, linewidth=0.9)
         else:
             ax.set_ylim(0, max(hi * 1.2, 0.01) + 0.01)
-        ax.tick_params(axis="x", rotation=15, labelsize=_FS_TICK)
+        ax.tick_params(axis="x", rotation=0, labelsize=_FS_TICK)
         ax.tick_params(axis="y", labelsize=_FS_TICK)
         ax.xaxis.label.set_size(_FS_LABEL)
         ax.yaxis.label.set_size(_FS_LABEL)
-        ax.set_xlabel("Condition", labelpad=5)
 
     # --- per-bar value annotations (gap + steps panels) ---
     # The gap panel's isolated bar is exactly 0 and the steps panel's bars are
@@ -83,8 +83,13 @@ def generate_moving_world(
             va = "bottom" if v >= 0 else "top"
             offset = pad if v >= 0 else -pad
             ax.text(
-                i, v + offset, fmt.format(v),
-                ha="center", va=va, fontsize=_FS_ANN, color=COLOR_AXIS,
+                i,
+                v + offset,
+                fmt.format(v),
+                ha="center",
+                va=va,
+                fontsize=_FS_ANN,
+                color=COLOR_AXIS,
             )
 
     # --- stats box in accuracy panel ---
@@ -100,7 +105,12 @@ def generate_moving_world(
         fontsize=_FS_ANN,
     )
 
-    fig.suptitle("Moving sentinel world: 3 conditions", fontsize=_FS_TITLE + 1)
+    fig.suptitle("Moving sentinel world: condition contrasts", fontsize=_FS_TITLE + 1)
+    fig.supxlabel(
+        "Condition: ISO = isolated · COM = communicating · EFE = EFE-guided",
+        fontsize=_FS_ANN,
+        y=0.02,
+    )
 
     out = figures_dir(Path(project_root))
     out_path = out / filename
@@ -108,7 +118,10 @@ def generate_moving_world(
     # a PDF companion for archival/vector use.  A caller may request either
     # extension, but the canonical no-override path is the manuscript PNG.
     png_path = out_path if out_path.suffix.lower() == ".png" else out_path.with_suffix(".png")
-    save_figure_pair(fig, png_path)
+    save_figure_pair(fig, png_path, manuscript_width_fraction=0.80)
+    from ._presentation_worlds import moving_presentation
+
+    moving_presentation(png_path, results)
     return png_path if out_path.suffix.lower() == ".png" else out_path
 
 

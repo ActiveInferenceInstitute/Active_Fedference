@@ -1,0 +1,59 @@
+{
+  "panels": [
+    {
+      "alt": "oracle: mean categorical log score and its seed-bootstrap interval on the common nats scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "373801cb61dfbf74194bb62d7289af61d0155f171caf71caff9976e6096f46d4",
+      "src": "../figures/belief_quality.slide-oracle-score.png"
+    },
+    {
+      "alt": "oracle: every finite reliability-bin confidence and accuracy, with the perfect-calibration identity reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "4e3be5126ce529ec445a970ead923163553a5f25c342cbe0a920d9ae3b4d4421",
+      "src": "../figures/belief_quality.slide-oracle-reliability.png"
+    },
+    {
+      "alt": "uniform: mean categorical log score and its seed-bootstrap interval on the common nats scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "974f5362fdfce50c340c364755146bf072625bdeb2611d1d03cf90decb792fe8",
+      "src": "../figures/belief_quality.slide-uniform-score.png"
+    },
+    {
+      "alt": "uniform: every finite reliability-bin confidence and accuracy, with the perfect-calibration identity reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "645b4aa14cd70146c26f24b5c6c0146532705ed404c5cc5173e0e8570fe485fc",
+      "src": "../figures/belief_quality.slide-uniform-reliability.png"
+    },
+    {
+      "alt": "confident wrong: mean categorical log score and its seed-bootstrap interval on the common nats scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "005d06b855520389bbb5038361b16b633f15f0b2e147f3e3e1a7d35bacf15c05",
+      "src": "../figures/belief_quality.slide-confident-wrong-score.png"
+    },
+    {
+      "alt": "confident wrong: every finite reliability-bin confidence and accuracy, with the perfect-calibration identity reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "9148f4418c596842c354507255ef8696df789668b703d944b760298ffaa0f9ee",
+      "src": "../figures/belief_quality.slide-confident-wrong-reliability.png"
+    },
+    {
+      "alt": "Categorical log score in nats: higher is better. Whiskers are 95% seed-bootstrap intervals; seed is the independent unit.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5fca503327f767b31d9c561e0ebe81a2423863546feb76f3202a58e8d0ca3d80",
+      "src": "../figures/belief_quality.slide-score-key.png"
+    },
+    {
+      "alt": "Reliability is a descriptive control diagnostic. Every finite bin is drawn on common 0\u20131 axes. The dark dotted identity marks perfect calibration.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2f8fcacded5a0bcc70b9f3f63e9f38bc9d70a6e866a63d3864a0146c85f3b0de",
+      "src": "../figures/belief_quality.slide-reliability-key.png"
+    },
+    {
+      "alt": "Oracle, uniform and confident-wrong controls check score and reliability behavior. They do not establish deployment calibration or universal robustness.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5d89b3a4f06ad825950f9cb4e4c4ef2599a66f4739610109cc557b22e85ca854",
+      "src": "../figures/belief_quality.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

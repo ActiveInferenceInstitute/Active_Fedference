@@ -15,18 +15,15 @@ from pathlib import Path
 import numpy as np
 
 from figures._common import (
-    COLOR_ACCENT,
     COLOR_DARK,
-    COLOR_MULTI_1,
-    COLOR_NAIVE,
-    COLOR_ROBUST,
-    COLOR_VARIATE,
     MIN_QUANTITATIVE_FONT_SIZE,
     apply_style,
     figures_dir,
     plt,
     save_figure,
+    semantic_style,
 )
+from figures._presentation_estimates import complexity_presentation
 
 __all__ = ["generate_complexity_scaling"]
 
@@ -39,13 +36,21 @@ _METHOD_LABELS = {
     "share_round_robust": "robust self-excluding sharing",
     "infer_states": "state inference",
 }
-_METHOD_COLORS = {
-    "log_linear_pool": COLOR_NAIVE,
-    "robust_aggregate": COLOR_ROBUST,
-    "variational_aggregate": COLOR_VARIATE,
-    "share_round_naive": COLOR_ACCENT,
-    "share_round_robust": COLOR_ROBUST,
-    "infer_states": COLOR_MULTI_1,
+_METHOD_ROLES = {
+    "log_linear_pool": "naive",
+    "robust_aggregate": "heuristic_robust",
+    "variational_aggregate": "variational",
+    "share_round_naive": "operating_point_1",
+    "share_round_robust": "operating_point_2",
+    "infer_states": "operating_point_3",
+}
+_METHOD_DIRECT_LABELS = {
+    "log_linear_pool": "log pool",
+    "robust_aggregate": "heuristic robust",
+    "variational_aggregate": "variational",
+    "share_round_naive": "sharing: reference",
+    "share_round_robust": "sharing: robust",
+    "infer_states": "state inference",
 }
 
 
@@ -103,23 +108,45 @@ def _plot_measurements(
             raise ValueError(f"complexity measurement arrays have inconsistent lengths for {method}")
         if np.any(sizes <= 0.0) or np.any(medians <= 0.0) or np.any(minima <= 0.0):
             raise ValueError(f"complexity measurement values must be positive for {method}")
-        color = _METHOD_COLORS.get(method, COLOR_DARK)
+        style = semantic_style(_METHOD_ROLES.get(method, "reference"))
         label = _METHOD_LABELS.get(method, method)
         yerr = np.vstack((medians - minima, maxima - medians))
         ax.errorbar(
             sizes,
             medians,
             yerr=yerr,
-            color=color,
-            marker="o",
-            linewidth=1.7,
+            color=style.color,
+            marker=style.marker,
+            markerfacecolor="white" if method != "log_linear_pool" else style.color,
+            markeredgecolor=style.keyline,
+            linestyle=style.dash,
+            linewidth=style.linewidth,
             markersize=5,
             capsize=2.5,
             label=label,
             zorder=3,
         )
         reference = medians[0] * (sizes / sizes[0]) ** expected
-        ax.plot(sizes, reference, color=color, linewidth=0.9, linestyle=":", alpha=0.75)
+        rule = semantic_style("reference_rule")
+        ax.plot(
+            sizes,
+            reference,
+            color=rule.color,
+            linewidth=rule.linewidth,
+            linestyle=rule.dash,
+            alpha=0.65,
+        )
+        ax.annotate(
+            _METHOD_DIRECT_LABELS.get(method, label),
+            xy=(float(sizes[-1]), float(medians[-1])),
+            xytext=(5, 0),
+            textcoords="offset points",
+            fontsize=MIN_QUANTITATIVE_FONT_SIZE,
+            color=style.keyline,
+            ha="left",
+            va="center",
+            clip_on=False,
+        )
         slope_raw = row["observed_log_log_slope"]
         if not isinstance(slope_raw, (int, float, str)):
             raise ValueError(f"observed complexity slope is not numeric for {method}")
@@ -132,7 +159,9 @@ def _plot_measurements(
     ax.set_ylabel("Median wall time (s)")
     ax.set_title(title)
     ax.grid(True, which="both", alpha=0.25)
-    ax.legend(fontsize=MIN_QUANTITATIVE_FONT_SIZE, loc="best")
+    # Direct end labels identify every series without obscuring timing ranges.
+    x_values = np.concatenate([_numbers(row, "sizes") for row in rows])
+    ax.set_xlim(float(x_values.min()) / 1.08, float(x_values.max()) * 1.65)
 
 
 def generate_complexity_scaling(
@@ -170,7 +199,7 @@ def generate_complexity_scaling(
     modality_row = _measurement(report, method="infer_states", axis="modalities")
 
     apply_style()
-    fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.6), facecolor="white")
+    fig, axes = plt.subplots(2, 2, figsize=(8.2, 8.6), facecolor="white")
     _plot_measurements(
         axes[0, 0],
         agent_rows,
@@ -218,4 +247,6 @@ def generate_complexity_scaling(
     )
     fig.subplots_adjust(left=0.08, right=0.98, bottom=0.10, top=0.91, wspace=0.25, hspace=0.30)
     out = figures_dir(Path(project_root) if project_root is not None else None)
-    return save_figure(fig, out / filename)
+    path = save_figure(fig, out / filename)
+    complexity_presentation(path, dict(report))
+    return path

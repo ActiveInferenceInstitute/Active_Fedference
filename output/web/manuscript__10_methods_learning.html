@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>10_methods_learning.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -472,9 +636,9 @@ and BMR</h2>
 model: they learn the parameters of the model, score policies by
 expected free energy, and revise model structure. The active-inference
 community has standardized all three operations <span class="citation">(Da Costa et al. 2020; Smith et al. 2022)</span>, and Friston et al. <span class="citation">(Friston et al. 2024)</span> place them
-at the heart of the federated belief-sharing scenario. We reimplement
-each in closed form so the language-acquisition, expected-free-energy,
-and emergence studies of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+at the heart of the federated belief-sharing scenario.</p>
+<p>We reimplement each in closed form so the language-acquisition,
+expected-free-energy, and emergence studies of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
 rest on machine-checkable quantities rather than fitted curves.</p>
 <h2 id="sec:methods-dirichlet">Conjugate Dirichlet learning from
 co-occurrence counts</h2>
@@ -490,14 +654,15 @@ a \;\leftarrow\; a + \text{counts},
 \qquad
 \mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o&#39;} a_{o&#39; s}},
 \]</span> {#eq:dirichlet-update}</p>
-<p>implemented in <code>dirichlet_learning.learn_likelihood</code>.
-Intuitively, each concentration vector is a running tally of how often
-each outcome was seen while the creature occupied a given state: the
-prior seeds that tally with pseudo-counts, every step adds the
-co-occurrences it witnessed, and the posterior mean is simply the tally
-renormalized into a categorical. Likelihood learning is therefore
-bookkeeping — accumulate counts, then normalize — with no iterative
-optimization loop. We drive <a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a> with the
+<p>implemented by <code>learn_likelihood</code> in the
+<code>dirichlet_learning</code> module. Intuitively, each concentration
+vector is a running tally of how often each outcome was seen while the
+creature occupied a given state: the prior seeds that tally with
+pseudo-counts, every step adds the co-occurrences it witnessed, and the
+posterior mean is simply the tally renormalized into a categorical.</p>
+<p>Likelihood learning is therefore bookkeeping — accumulate counts,
+then normalize — with no iterative optimization loop.</p>
+<p>We drive <a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a> with the
 expected sufficient statistics under the true model — a fixed count
 batch <span class="math inline">\(\text{count\_scale}\cdot
 A^{\star}\)</span> per step, optionally jittered by a seeded generator.
@@ -507,16 +672,18 @@ data-generating <span class="math inline">\(A^{\star}\)</span>;
 convergence is measured by the per-column KL divergence summed over
 hidden states,</p>
 <p><span class="math display">\[
-\mathrm{KL}\big(A^{\star} \,\|\, \mathbb{E}[A]\big)
-\;=\; \sum_{s}\sum_{o} A^{\star}_{o s}\,\ln\frac{A^{\star}_{o
-s}}{\mathbb{E}[A]_{o s}},
+\begin{aligned}
+\mathrm{KL}\big(A^{\star}\|\mathbb{E}[A]\big)
+&amp;= \sum_s\sum_o A^{\star}_{os}\\
+&amp;\quad\cdot\ln\frac{A^{\star}_{os}}{\mathbb{E}[A]_{os}}.
+\end{aligned}
 \]</span> {#eq:dirichlet-kl}</p>
 <p>which decreases monotonically toward zero — the standard-Bayes / KL
 fixed point. The learned likelihood always has full support (the
-Dirichlet prior is strictly positive), so <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (14)</a> is finite
+Dirichlet prior is strictly positive), so <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (19)</a> is finite
 throughout. ISC-17 pins the monotone-decreasing KL trajectory, and the
 language-acquisition study of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
-reports the descent of <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (14)</a> across 24
+reports the descent of <a class="xref" href="index.html#eq:dirichlet-kl">Eq. (19)</a> across 24
 steps.</p>
 <p>The implementation also carries the <span
 class="math inline">\(\eta\)</span> forgetting hyperprior of Friston et
@@ -526,7 +693,7 @@ concentration mass saturates at <span
 class="math inline">\(\eta\)</span> rather than growing without bound,
 modeling an agent that stays adaptable instead of becoming infinitely
 confident. With <span class="math inline">\(\eta\)</span> unset the
-classical unbounded accumulation of <a class="xref" href="index.html#eq:dirichlet-update">Eq. (13)</a> is
+classical unbounded accumulation of <a class="xref" href="index.html#eq:dirichlet-update">Eq. (18)</a> is
 recovered.</p>
 <h2 id="sec:methods-efe">Expected free energy as the action-selection
 objective</h2>
@@ -535,87 +702,89 @@ class="math inline">\(\boldsymbol{\pi}\)</span> by its expected free
 energy <span class="math inline">\(G(\boldsymbol{\pi})\)</span>, which
 the active-inference formulation decomposes two equivalent ways (Friston
 et al. <span class="citation">(Friston et al. 2024)</span>, their equation 2): a cost view of risk
-plus ambiguity, and a value view of pragmatic plus epistemic value. The
-two views are the same scalar rearranged, stated as <span
-class="citation"
-data-cites="eq:efe-decomposition"><a class="xref" href="index.html#eq:efe-decomposition">Eq. (17)</a></span> and
-pinned to a zero residual by the algebraic identity <span
-class="citation" data-cites="eq:efe-identity"><a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a></span>
-in <a class="xref" href="index.html#sec:formalism">Section 6</a>. We compute every
-term in closed form from the categorical model <span
+plus ambiguity, and a value view of pragmatic plus epistemic value.</p>
+<p>The two views are the same scalar rearranged, stated as <a class="xref" href="index.html#eq:efe-decomposition">Eq. (22)</a> and
+pinned to a zero residual by the algebraic identity <a class="xref" href="index.html#eq:efe-identity">Eq. (23)</a>
+in <a class="xref" href="index.html#sec:formalism">Section 6</a>.</p>
+<p>We compute every term in closed form from the categorical model <span
 class="math inline">\((A, B, C, D_0)\)</span> in
 <code>expected_free_energy.decompose</code>:</p>
-<ul>
-<li><em>Risk</em> is <span
+<h3 id="risk">Risk</h3>
+<p><em>Risk</em> is <span
 class="math inline">\(\mathrm{KL}\big(q(o\mid\boldsymbol{\pi})\,\|\,p_C(o)\big)\)</span>,
 the deviation of the policy-predicted outcomes from the
 preferred-outcome pmf <span
-class="math inline">\(p_C(o)=\mathrm{softmax}(C)[o]\)</span>; write
+class="math inline">\(p_C(o)=\mathrm{softmax}(C)[o]\)</span>. Write
 <span
 class="math inline">\(q_{\boldsymbol{\pi}}(o):=q(o\mid\boldsymbol{\pi})\)</span>
 for this scored-policy outcome predictive, used in the remaining
-terms.</li>
-<li><em>Ambiguity</em> is the expected likelihood entropy <span
+terms.</p>
+<h3 id="ambiguity">Ambiguity</h3>
+<p><em>Ambiguity</em> is the expected likelihood entropy <span
 class="math inline">\(\mathbb{E}_{q(s)}\!\big[H[p(o\mid
-s)]\big]\)</span>, the outcome uncertainty given the state.</li>
-<li><em>Pragmatic value</em> is the expected log-preference <span
+s)]\big]\)</span>, the outcome uncertainty given the state.</p>
+<h3 id="pragmatic-value">Pragmatic value</h3>
+<p><em>Pragmatic value</em> is the expected log-preference <span
 class="math inline">\(\mathbb{E}_{q_{\boldsymbol{\pi}}(o)}[\ln
-p_C(o)]\)</span> — the utility, exploitation term.</li>
-<li><em>Epistemic value</em> is the state-outcome mutual information
+p_C(o)]\)</span> — the utility, exploitation term.</p>
+<h3 id="epistemic-value">Epistemic value</h3>
+<p><em>Epistemic value</em> is the state-outcome mutual information
 <span class="math inline">\(H[q_{\boldsymbol{\pi}}(o)] -
 \mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span> — the expected information
-gain that drives exploration.</li>
-</ul>
-<p>Because there is no sampling, the identity of <a class="xref" href="index.html#eq:efe-identity">Eq. (18)</a> holds to
+gain that drives exploration.</p>
+<p>Because there is no sampling, the identity of <a class="xref" href="index.html#eq:efe-identity">Eq. (23)</a> holds to
 floating-point tolerance; ISC-19 (<code>expected_free_energy</code>)
 pins the residual of the decomposition to zero and pins each term’s
 semantics independently (deterministic likelihoods give zero ambiguity;
 uninformative likelihoods give zero epistemic value; preference-matched
-predictions lower risk). <a class="xref" href="index.html#fig:efe-decomp">Figure 7</a> visualizes the
+predictions lower risk).</p>
+<p><a class="xref" href="index.html#fig:efe-decomp">Figure 8</a> visualizes the
 additive cost view and the signed pragmatic/epistemic waterfall
 terminating at <span class="math inline">\(G(\boldsymbol{\pi})\)</span>
 — a deterministic identity (<a class="xref" href="index.html#prop:efe-decomposition">Proposition 7</a>), not a
 fitted result.</p>
-<h2 id="sec:methods-bmr">Bayesian model reduction for structure
-emergence</h2>
+<h2 id="sec:methods-bmr">Bayesian model reduction for the configured
+pruning sign control</h2>
 <p>Sentinels also revise model <em>structure</em>. Bayesian model
 reduction (BMR) scores whether a reduced model — for example one that
 prunes a redundant location column by shrinking its concentration toward
 zero — has more evidence than the full model, <em>without re-running
 inference</em> (Friston &amp; Penny via the post-hoc model optimization
 lineage <span class="citation">(Friston and Penny 2011)</span>; the same Beta-function identity is their
-equation 13 (Friston et al. <span class="citation">(Friston et al. 2024)</span>)). Because the
-likelihood is shared, the reduced posterior is available in closed form,
-<span class="math inline">\(\text{reduced\_post} = \text{post} +
-\text{reduced\_prior} - \text{prior}\)</span>, and the change in
-(negative) variational free energy is a difference of log multivariate
-Beta functions,</p>
+equation 13 (Friston et al. <span class="citation">(Friston et al. 2024)</span>)).</p>
+<p>Because the likelihood is shared, the reduced posterior is available
+in closed form, <span class="math inline">\(\text{reduced\_post} =
+\text{post} + \text{reduced\_prior} - \text{prior}\)</span>, and the
+change in (negative) variational free energy is a difference of log
+multivariate Beta functions,</p>
 <p><span class="math display">\[
 \begin{aligned}
 \Delta F
-&amp;\;=\; \ln B(\text{prior}) + \ln B(\text{reduced\_post})
-  - \ln B(\text{post}) - \ln B(\text{reduced\_prior}),\\
+&amp;\;=\; \ln B(\text{prior}) - \ln B(\text{post})\\
+&amp;\qquad + \ln B(\text{reduced\_post})\\
+&amp;\qquad - \ln B(\text{reduced\_prior}),\\
 \ln B(a)
 &amp;\;=\; \textstyle\sum_k \ln\Gamma(a_k)
-  - \ln\Gamma\!\big(\sum_k a_k\big),
+- \ln\Gamma\!\big(\sum_k a_k\big).
 \end{aligned}
 \]</span> {#eq:bmr-deltaf}</p>
 <p>computed in <code>bayesian_model_reduction.reduce</code>. A positive
-<span class="math inline">\(\Delta F\)</span> in <a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a> means the reduced
+<span class="math inline">\(\Delta F\)</span> in <a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a> means the reduced
 model carries more evidence — the pruned structure was redundant and
 should be adopted; a negative <span class="math inline">\(\Delta
-F\)</span> means the reduction destroyed support the data require. When
-the reduced prior equals the prior the score is identically zero in
-exact algebra, a zero point the suite pins to machine precision
+F\)</span> means the reduction destroyed support the data require.</p>
+<p>When the reduced prior equals the prior the score is identically zero
+in exact algebra, a zero point the suite pins to machine precision
 (ISC-20).</p>
-<p>The emergence study of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+<p>The configured BMR sign-control study of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
 uses this operation over <span class="math inline">\(n = 4\)</span>
 candidate states. It contrasts a redundant reduction (<span
 class="math inline">\(\Delta F = 3.68\)</span> nats; adopt) with a
 supported one (<span class="math inline">\(\Delta F = -27.67\)</span>
-nats; reject) in <a class="xref" href="index.html#fig:emergence-bmr">Figure 11</a>. This
+nats; reject) in <a class="xref" href="index.html#fig:emergence-bmr">Figure 12</a>. This
 fixed-candidate algebraic comparison is deterministic, so it has no
-resampled sample or bootstrap interval.</p>
+resampled sample or bootstrap interval and does not establish structure
+discovery or universal emergence.</p>
 </main>
 </body>
 </html>

@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,235 +259,256 @@
 
 \begin{document}
 
-\begin{frame}[allowframebreaks]{Limitations and claim boundaries}
+\begin{frame}{Limitations and claim boundaries}
 \protect\phantomsection\label{sec:limitations}
 The boundaries here define the contribution. The central goal is to show
 --- concretely and testably --- that the categorical
 generalized-variational construction inspired by FedGVI (Mildner et al.
 2025) has standard-Bayes client limits and a project-local
-log-linear-pool server identity. Under the explicit bridge in
-sec.~5.8, the latter specializes Friston et
-al.'s Eq. 7 message-combination term (Friston et al. 2024), not the
-complete source protocol; behavior away from those limits is evaluated
-only under declared simulation conditions. The exact identities are
-formal; performance and deployment claims remain conditional. Items
-beyond that boundary are named as future work.
+log-linear-pool server identity.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes: theorem,
-heuristic, and objective}
+\begin{frame}{Limitations and claim\ldots{} (part 2)}
+Under the explicit bridge in sec.~5.8, the
+latter specializes Friston et al.'s Eq. 7 message-combination term
+(Friston et al. 2024), not the complete source protocol; behavior away
+from those limits is evaluated only under declared simulation
+conditions.
+\end{frame}
+
+\begin{frame}{Limitations and claim\ldots{} (part 3)}
+The exact identities are formal; performance and deployment claims
+remain conditional. Items beyond that boundary are named as future work.
+\end{frame}
+
+\begin{frame}{Three robustness axes: theorem, heuristic, and objective}
 \protect\phantomsection\label{sec:limitations-axes}
-Robustness enters in three places with unequal standing --- a
-distinction surfaced by an adversarial review of this work and preserved
-deliberately throughout (sec.~3.3).
-
+The authoritative definitions and claim owners are in
+sec.~3.3; this section records only what still
+cannot transfer. A source-conditional client theorem does not certify
+either server rule,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes: theorem,
-heuristic, and objective}
-\begin{enumerate}
-\item
-  \textbf{Client-side, source-theorem-backed.} A robust per-agent
-  generalized-Bayes update with a bounded loss --- \(\beta\)-loss (Basu
-  et al. 1998) or generalized cross-entropy (Zhang and Sabuncu 2018) ---
-  inside the generalized posterior. Density-power and gamma-divergence
-  Bayes make clear that this is a loss/divergence-specific robustness
-  property, not an automatic property of every generalized posterior
-  (Fujisawa and Eguchi 2008; Ghosh and Basu 2015). It is derived from
-  the generalized-Bayes objective (Bissiri et al. 2016; Jewson et al.
-  2018; Knoblauch et al. 2022), provably limits to NLL/Bayes (hence to
-  the standard pool) as the loss parameter goes to zero
-  (eq.~4, eq.~5), and is the
-  theorem-bearing axis under the matching loss, divergence, and
-  regularity assumptions of FedGVI. The manuscript does not re-prove
-  that theorem for every possible categorical data-generating process.
-  \textbf{This is the client-side mechanism implemented and evaluated
-  here.}
-\item
-  \textbf{Server-side, heuristic.} The divergence-reweighting aggregator
-  \breaktt{robust\_aggregate}. Its positive formal property is the
-  recovery limit --- robustness \(0\) equals the standard log-linear
-  pool (eq.~7). A scoped no-go rejects one
-  declared separable objective class; it is \emph{not} a closed-form
-  minimizer of a FedGVI objective, and we never claim it inherits the
-  bounded-influence bound. An empirical characterization
-  (sec.~14.2) makes this
-  boundary concrete: the heuristic has a \emph{finite} measured
-  breakdown point (a colluding majority captures it), a witness against
-  unconditional server resistance rather than a transferred client
-  theorem. The robustness sweep reports it as a complementary heuristic,
-  and fig.~13 is labeled accordingly. Robust
-  federated optimizers such as Krum and gamma-mean aggregation motivate
-  the adversarial client problem (Blanchard et al. 2017; Li et al.
-  2022), but they do not certify this belief-pooling heuristic. It has
-  BH-rejected positive contrasts in the configured accuracy verdict in
-  sec.~7.5.1, while the declared mechanism gallery
-  and conditional-world study retain reversals that prohibit a universal
-  accuracy claim.
-\item
-  \textbf{Server-side, objective-backed (conservative).} The variational
-  aggregator \breaktt{variational\_aggregate} of
-  sec.~5.8.2, derived in
-  sec.~11. It runs exact closed-form block
-  updates that descend the stated free energy
-  eq.~8 monotonically on each block, shares the
-  recovery corner (eq.~7) with axis 2, and ---
-  unlike axis 2 --- carries a proven raw effective-weight bound with
-  empirical redescending behavior (fig.~15).
-  Its cost in the declared comparison is conservatism: the entropy
-  regularization yields a more diffuse consensus, and the method does
-  \emph{not} win that configured peak-accuracy verdict. It closes the
-  ``is there \emph{any} objective-backed server rule with raw-weight
-  control'' gap; it does not retroactively endow the sharp axis-2
-  heuristic with an objective.
-\end{enumerate}
-
+\begin{frame}{Three robustness axes (part 2)}
+a server recovery identity does not supply an objective or
+estimator-level influence bound, and objective descent plus raw-weight
+control does not imply truth recovery or peak-accuracy dominance.
+Likewise,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes: theorem,
-heuristic, and objective}
-The honest state is therefore a triangle, not a binary: axis 1 is
-source-theorem-backed under matching assumptions, axis 2 has conditional
-wins and reversals \emph{without} a server-side objective, and axis 3 is
-objective-backed \emph{but} conservative. No experiment attributes axis
-2's accuracy win to a theoretical guarantee, and none attributes axis
-3's weight bound to a peak-accuracy claim. The remaining open problem
---- an objective whose minimizer is the \emph{sharp} reweighting itself,
-which would combine accuracy and guarantee in one server rule --- is
-named future work in sec.~8.17; the extended methods that
-broaden the toolkit without touching these claims are cataloged in
-sec.~12.
+\begin{frame}{Three robustness axes (part 3)}
+conditional accuracy contrasts cannot confer a theorem on the heuristic.
+The evidence map in fig.~6 makes that
+no-transfer boundary and its nested replication units explicit.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Scope boundaries that the
-evidence does not cross}
+\begin{frame}{Three robustness axes (part 4)}
+The remaining methodological problem is a server objective that combines
+competitive conditional performance with an appropriate robustness
+guarantee. Related robust-federation work motivates the target
+(Blanchard et al. 2017; Li et al. 2022) but does not certify either
+project server rule.
+\end{frame}
+
+\begin{frame}{Three robustness axes (part 5)}
+Any such result must also survive beyond the present categorical model,
+declared attack grid, and single-host execution setting; future work and
+extended methods remain separate (sec.~8.17,
+sec.~13).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the evidence does not cross}
 \protect\phantomsection\label{sec:limitations-scope}
+\textbf{The bridge is a recasting, not an upstream claim.} Friston et
+al. (Friston et al. 2024) supply a belief-sharing operator for agents
+with a shared world model; Mildner et al.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Scope boundaries that the
-evidence does not cross}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{The bridge is a recasting, not an upstream claim.} Friston et
-  al. (Friston et al. 2024) supply a belief-sharing operator for agents
-  with a shared world model; Mildner et al. (Mildner et al. 2025) supply
-  robust federated generalized variational inference. Neither paper
-  claims the other. The contribution here is to recast the former as the
-  tested KL/NLL zero-robustness recovery corner of the latter-inspired
-  construction, then measure what changes when robust losses and server
-  reweighting are introduced.
-\item
-  \textbf{Historical sources are conceptual, not formal support.} The
-  pre-modern sources added in sec.~8.9 support
-  a genealogy of expectation, inverse inference, utility, and collective
-  judgment (Huygens 1657; Bayes 1763; Laplace 1774; Bernoulli 1738;
-  Condorcet 1785). They do not support any claim about KL, NLL,
-  product-of-experts training, FedGVI, or \breaktt{robust\_aggregate}.
-  Those claims rest only on the modern cited formalism and the tests
-  reported in sec.~7.1.
-\item
-  \textbf{Single-machine federation.} Federation is validated with queue
-  transport, a single-machine OS-process helper, and loopback TCP:
-  agents serialize beliefs, the server aggregates, and consensus is
-  broadcast back without changing the mathematics. The socket path now
-  exercises frame integrity and file-backed digest-verified replay
-  validation; an optional SQLite round-ID guard also survives local
-  process restarts. These controls are still not a substitute for
-  cross-host deployment, identity-bound mTLS, a shared multi-host replay
-  domain, discovery, long-running worker orchestration, or fault
-  tolerance; those steps are scoped as future work
-  (sec.~8.17).
-\item
-  \textbf{GPU / PyTorch Bayesian-neural-network experiments at the
-  original FedGVI scale.} The bounded-influence result is anchored here
-  by a small NumPy logistic-regression baseline
-  (fig.~16), not the RTX-class runs of the source
-  paper (Mildner et al. 2025). Even on that anchor the robust client's
-  margin over the standard client is non-monotone rather than uniform:
-  it opens in the moderate-to-high contamination range and then vanishes
-  at the most extreme swept level, where both configurations collapse
-  together with no reliable ordering (sec.~7.6).
-  That terminal convergence is reported, not trimmed; the axis's
-  rigorous standing rests on the recovery identities and the FedGVI
-  theorem under its matching assumptions, not on the size or
-  monotonicity of the empirical gap in this figure.
-\item
-  \textbf{Classification baselines are point estimates, not full
-  posteriors.} The NumPy logistic-regression baseline and the PyTorch
-  MLP complement both use point-estimate weights (no posterior
-  covariance is computed). A genuine mean-field variational family over
-  the weights --- diagonal-Gaussian \(q(w)\) with a closed-form KL and a
-  Monte-Carlo ELBO --- is implemented as a tested primitive
-  (\breaktt{bnn\_variational\_torch.VariationalMLP}, recovering the
-  point-estimate net exactly as its posterior variance vanishes), but
-  the full paper-faithful FedGVI classification lane (that variational
-  family trained under the contamination sweep, at GPU scale) is not:
-  MCMC, non-diagonal structure, and stochastic-weight averaging remain
-  unimplemented, and the full-posterior regime remains unverified.
-\item
-  \textbf{Hierarchical depth does not by itself improve the base task.}
-  The two- and three-level stacks (sec.~13.9,
-  sec.~13.11) run alternating L1/L2(/L3) inference
-  end-to-end and resolve their added context latents above chance, but
-  on the shared location task they do not beat the flat baseline --- the
-  paired location-accuracy gap is a small, statistically reliable
-  negative gap at the reported seed count
-  (fig.~25). Depth is therefore validated as
-  executable and consensus-preserving, not as an accuracy improvement;
-  whether a richer policy-and-horizon task family rewards hierarchy is
-  future work (sec.~8.20).
-\item
-  \textbf{Discrete POMDP only --- continuous or hybrid state spaces are
-  not addressed.} This work is discrete-categorical only, matching the
-  community's worked POMDP example (Da Costa et al. 2020; Friston et al.
-  2024). The limit-as-proof contract is validated off the categorical
-  case only for a one-dimensional Gaussian-mean conjugate slice;
-  continuous-state active inference and Gaussian belief-sharing colonies
-  remain untested.
-\item
-  \textbf{Temperature and divergence calibration are fixed, not
-  learned.} Coarsened posterior and safe-Bayes theory make clear that
-  the learning-rate/temperature is part of the inference rule under
-  misspecification (Miller and Dunson 2018; Grünwald 2012; Kleijn and
-  Vaart 2012). This manuscript validates the configured losses and
-  divergences, but it does not learn an optimal coarsening radius,
-  temperature, or divergence schedule across agents.
-\item
-  \textbf{Real multi-machine federation, networking, and privacy
-  cryptography.} Federation here is \emph{mathematical} (factor
-  aggregation), not infrastructural --- unlike communication-efficient
-  or Byzantine-robust federated learning (McMahan et al. 2017; Blanchard
-  et al. 2017).
-\item
-  \textbf{New linguistic theory.} The language-acquisition study
-  (sec.~7.3) reproduces the Dirichlet count
-  mechanism (eq.~14) mechanically; it does not
-  extend the linguistics.
-\end{itemize}
+\begin{frame}{Scope boundaries that the\ldots{} (part 2)}
+(Mildner et al. 2025) supply robust federated generalized variational
+inference. Neither paper claims the other.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What the statistics can and cannot
-claim}
+\begin{frame}{Scope boundaries that the\ldots{} (part 3)}
+The contribution here is to recast the former as the tested KL/NLL
+zero-robustness recovery corner of the latter-inspired construction,
+then measure changes under robust losses and server reweighting.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 4)}
+\textbf{Historical sources are conceptual, not formal support.} The
+pre-modern sources added in sec.~8.9 support a
+genealogy of expectation, inverse inference, utility, and collective
+judgment (Huygens 1657; Bayes 1763; Laplace 1774; Bernoulli 1738;
+Condorcet 1785). They do not support claims about KL, NLL,
+\end{frame}
+
+\begin{frame}[fragile]{Scope boundaries that the\ldots{} (part 5)}
+product-of-experts training, FedGVI, or \texttt{robust\_aggregate}.
+
+Those claims rest only on the modern cited formalism and the tests
+reported in sec.~7.1.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 6)}
+\textbf{Single-machine federation.} Federation is validated with queue
+transport, a single-machine OS-process helper, and loopback TCP: agents
+serialize beliefs, the server aggregates, and consensus is broadcast
+back without changing the mathematics.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 7)}
+The socket path exercises frame integrity and file-backed
+digest-verified replay validation; an optional SQLite round-ID guard
+survives local process restarts.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 8)}
+These controls do not substitute for cross-host deployment,
+identity-bound mTLS, a shared multi-host replay domain, discovery,
+long-running worker orchestration, or fault tolerance; those steps are
+scoped as future work (sec.~8.17).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 9)}
+\textbf{Source-scale posterior FedGVI classification remains open.} The
+displayed NumPy logistic-regression baseline is an exploratory
+point-estimate comparison, not the source paper's posterior-uncertainty
+BNN experiment (Mildner et al. 2025).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 10)}
+Its operating point was selected within the evaluated synthetic sweep to
+expose a mid-contamination margin (fig.~18).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 11)}
+The curves lose reliable ordering at the highest rate. The source
+theorem, not this selected finite sweep, carries the source-conditional
+robustness claim.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 12)}
+\textbf{Classification baselines are point estimates, not full
+posteriors.} The NumPy logistic-regression baseline and the PyTorch MLP
+complement both use point-estimate weights; no posterior covariance is
+computed.
+\end{frame}
+
+\begin{frame}[fragile]{Scope boundaries that the\ldots{} (part 13)}
+A genuine mean-field variational family over the
+weights---diagonal-Gaussian \(q(w)\) with a closed-form KL and a
+Monte-Carlo ELBO---is implemented by the tested \texttt{VariationalMLP}
+primitive in the \texttt{bnn\_variational\_torch} module. It recovers
+the point-estimate net exactly as its posterior variance vanishes.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 14)}
+The source-comparable training and evaluation lane remains unexecuted:
+leakage-free calibration, source-dataset parity, posterior-family
+comparisons, and source-scale compute are still open.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 15)}
+\textbf{Hierarchical depth does not by itself improve the base task.}
+The two- and three-level stacks (sec.~14.9,
+sec.~14.11) run alternating L1/L2(/L3) inference
+end-to-end and resolve their added context latents above chance. On the
+shared location task they do not beat the flat baseline:
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 16)}
+the paired location-accuracy gap is a small, statistically reliable
+negative gap at the reported seed count
+(fig.~28).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 17)}
+Depth is therefore validated as executable and consensus-preserving, not
+as an accuracy improvement; whether a richer policy-and-horizon task
+family rewards hierarchy is future work
+(sec.~8.20).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 18)}
+\textbf{Discrete POMDP only---continuous or hybrid state spaces are not
+addressed.} This work is discrete-categorical only, matching the
+community's worked POMDP example (Da Costa et al. 2020; Friston et al.
+2024).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 19)}
+The limit-as-proof contract is validated off the categorical case only
+for a one-dimensional Gaussian-mean conjugate slice; continuous-state
+active inference and Gaussian belief-sharing colonies remain untested.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 20)}
+\textbf{Temperature and divergence calibration are fixed, not learned.}
+Coarsened posterior and safe-Bayes theory make clear that the
+learning-rate/temperature is part of the inference rule under
+misspecification (Miller and Dunson 2018; Grünwald 2012; Kleijn and
+Vaart 2012).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 21)}
+This manuscript validates the configured losses and divergences, but it
+does not learn an optimal coarsening radius, temperature, or divergence
+schedule across agents.
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 22)}
+\textbf{Real multi-machine federation, networking, and privacy
+cryptography.} Federation here is \emph{mathematical} (factor
+aggregation), not infrastructural--- unlike communication-efficient or
+Byzantine-robust federated learning (McMahan et al. 2017; Blanchard et
+al. 2017).
+\end{frame}
+
+\begin{frame}{Scope boundaries that the\ldots{} (part 23)}
+\textbf{New linguistic theory.} The language-acquisition study
+(sec.~7.3) reproduces the Dirichlet count
+mechanism (eq.~18) mechanically; it does not
+extend the linguistics.
+\end{frame}
+
+\begin{frame}{What the statistics can and cannot claim}
 \protect\phantomsection\label{sec:limitations-stats}
 The verdict is a paired comparison at a single high contamination rate
-(sec.~7.5.1, tbl.~5).
-This concentrates power where the effect is largest, which is honest
-about \emph{where} robustness pays off but does not characterize the
-full contamination curve as a continuous function; the per-rate table
-(tbl.~4) reports the rest of the sweep without
-claiming family-wide significance beyond what BH-FDR (Benjamini and
-Hochberg 1995) certifies. BH-FDR controls expected false discovery
-proportion within the declared family, not the chance of any false
-positive. The matched-pairs Wilcoxon tests are rank tests under
-paired-difference assumptions (Wilcoxon 1945; Fay and Proschan 2010),
-not assumption-free proofs about raw means. Confidence intervals are
-percentile bootstrap (Efron and Tibshirani 1993), not analytic, and
-inherit that method's small-sample caveats at the lowest trial counts.
+(sec.~7.5.2, tbl.~7). The
+design concentrates power where the effect is largest.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What the statistics can and cannot
-claim}
+\begin{frame}{What the statistics can and\ldots{} (part 2)}
+It therefore identifies \emph{where} robustness pays off, but it does
+not characterize contamination as a continuous function.
+\end{frame}
+
+\begin{frame}{What the statistics can and\ldots{} (part 3)}
+The per-rate effect and inference projections
+(tbls.~5, 6)
+describe the remaining sweep.
+\end{frame}
+
+\begin{frame}{What the statistics can and\ldots{} (part 4)}
+Their inferential claims do not exceed the declared BH-FDR control
+(Benjamini and Hochberg 1995).
+\end{frame}
+
+\begin{frame}{What the statistics can and\ldots{} (part 5)}
+BH-FDR controls expected false discovery proportion within the declared
+family, not the chance of any false positive. The matched-pairs Wilcoxon
+tests are rank tests under paired-difference assumptions (Wilcoxon 1945;
+Fay and Proschan 2010), not assumption-free proofs about raw means.
+\end{frame}
+
+\begin{frame}{What the statistics can and\ldots{} (part 6)}
+Confidence intervals are percentile bootstrap (Efron and Tibshirani
+1993), not analytic, and inherit that method's small-sample caveats at
+the lowest trial counts.
+\end{frame}
+
+\begin{frame}{What the statistics can and\ldots{} (part 7)}
 The power values are observed-effect design approximations useful for
 confirmatory sample-size planning; they are not independent evidence for
 the verdict and do not cover model-specification uncertainty outside the

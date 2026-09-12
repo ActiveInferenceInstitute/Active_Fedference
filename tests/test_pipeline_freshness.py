@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from analysis.artifacts import ANALYSIS_REPORT_FILENAMES
 from publication.pipeline_freshness import (
     ANALYSIS_EXECUTION_PATH,
     ANALYSIS_EXECUTION_SCHEMA_VERSION,
@@ -23,29 +25,7 @@ from publication.pipeline_freshness import (
     validate_publication_pipeline_freshness,
 )
 
-_REPORT_NAMES = (
-    "belief_sharing.json",
-    "bnn_robustness.json",
-    "bnn_torch.json",
-    "contamination_gallery.json",
-    "complexity_scaling.json",
-    "cross_study_summary.json",
-    "disjoint_fov_world.json",
-    "efe_decomposition.json",
-    "emergence.json",
-    "heuristic_characterization.json",
-    "hierarchical_bmr.json",
-    "hierarchical_world.json",
-    "language_acquisition.json",
-    "moving_world.json",
-    "nlevel3_world.json",
-    "parameter_recovery.json",
-    "robust_influence_weights.json",
-    "robustness_onset.json",
-    "robustness_review_grid.json",
-    "robustness_sweep.json",
-    "variational_aggregation.json",
-)
+_REPORT_NAMES = ANALYSIS_REPORT_FILENAMES
 
 
 def _write(root: Path, relative: str, text: str = "content\n") -> None:
@@ -112,6 +92,55 @@ def _make_stage_tree(root: Path) -> None:
         _write(root, relative)
 
 
+def _make_renderer(root: Path) -> Path:
+    renderer = root / "template-renderer"
+    renderer.mkdir()
+    subprocess.run(("git", "-C", str(renderer), "init", "-q"), check=True)
+    subprocess.run(
+        ("git", "-C", str(renderer), "config", "user.name", "Renderer Test"),
+        check=True,
+    )
+    subprocess.run(
+        ("git", "-C", str(renderer), "config", "user.email", "renderer@example.invalid"),
+        check=True,
+    )
+    (renderer / "renderer.py").write_text("RENDERER = 1\n", encoding="utf-8")
+    subprocess.run(("git", "-C", str(renderer), "add", "."), check=True)
+    subprocess.run(
+        ("git", "-C", str(renderer), "commit", "-q", "-m", "test: renderer"),
+        check=True,
+    )
+    subprocess.run(
+        (
+            "git",
+            "-C",
+            str(renderer),
+            "remote",
+            "add",
+            "origin",
+            "https://github.com/docxology/template.git",
+        ),
+        check=True,
+    )
+    commit = subprocess.run(
+        ("git", "-C", str(renderer), "rev-parse", "HEAD^{commit}"),
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True,
+    ).stdout.strip()
+    _write(
+        root,
+        "manuscript/config.yaml",
+        "rendering:\n"
+        "  template_renderer:\n"
+        "    schema_version: template-renderer-lock-v1\n"
+        "    repository: docxology/template\n"
+        f"    git_commit: {commit}\n"
+        "    git_tree_state: clean\n",
+    )
+    return renderer
+
+
 def test_stage_specs_have_dependency_order() -> None:
     assert [stage.name for stage in PIPELINE_STAGES] == ["analysis", "hydration", "render"]
     assert PIPELINE_STAGES[1].dependencies == ("analysis",)
@@ -130,16 +159,25 @@ def test_stage_specs_have_dependency_order() -> None:
         ".toc",
         ".vrb",
     )
+    for report_name in (
+        "application_integrity_flow.json",
+        "evidence_replication_map.json",
+        "sensitivity.json",
+        "source_render_provenance.json",
+    ):
+        assert f"output/reports/{report_name}" in PIPELINE_STAGES[0].output_patterns
+        assert f"output/reports/{report_name}" in PIPELINE_STAGES[1].input_patterns
 
 
 def test_receipt_chain_records_and_validates(tmp_path: Path) -> None:
     _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
     record_pipeline_stage(tmp_path, "analysis", timestamp="2026-07-27T00:00:00Z")
     record_pipeline_stage(tmp_path, "hydration", timestamp="2026-07-27T00:01:00Z")
     record_pipeline_stage(
         tmp_path,
         "render",
-        renderer="test-renderer",
+        template_root=renderer,
         timestamp="2026-07-27T00:02:00Z",
     )
     assert validate_pipeline_freshness(tmp_path) == []
@@ -147,9 +185,10 @@ def test_receipt_chain_records_and_validates(tmp_path: Path) -> None:
 
 def test_render_receipt_excludes_machine_local_renderer_logs(tmp_path: Path) -> None:
     _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
     record_pipeline_stage(tmp_path, "analysis")
     record_pipeline_stage(tmp_path, "hydration")
-    record = record_pipeline_stage(tmp_path, "render")
+    record = record_pipeline_stage(tmp_path, "render", template_root=renderer)
 
     assert record["output_excluded_suffixes"] == list(
         PIPELINE_STAGES[2].output_excluded_suffixes
@@ -244,7 +283,7 @@ def test_analysis_regeneration_replaces_legacy_receipt_schema(tmp_path: Path) ->
     )
     record_pipeline_stage(tmp_path, "analysis")
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    assert receipt["schema_version"] == 3
+    assert receipt["schema_version"] == 4
     assert list(receipt["stages"]) == ["analysis"]
     assert validate_pipeline_freshness(tmp_path, stages=("analysis",)) == []
 
@@ -259,13 +298,79 @@ def test_changed_source_fails_the_analysis_receipt(tmp_path: Path) -> None:
 
 def test_changed_upstream_report_blocks_downstream_freshness(tmp_path: Path) -> None:
     _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
     record_pipeline_stage(tmp_path, "analysis")
     record_pipeline_stage(tmp_path, "hydration")
-    record_pipeline_stage(tmp_path, "render")
+    record_pipeline_stage(tmp_path, "render", template_root=renderer)
     (tmp_path / "output" / "reports" / "belief_sharing.json").write_text("changed\n", encoding="utf-8")
     findings = validate_pipeline_freshness(tmp_path, stages=("render",))
     assert any("analysis outputs" in finding for finding in findings)
     assert any("hydration inputs" in finding for finding in findings)
+
+
+def test_render_requires_explicit_locked_template_checkout(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+
+    with pytest.raises(ValueError, match="requires an explicit template_root"):
+        record_pipeline_stage(tmp_path, "render")
+
+
+def test_non_render_stage_rejects_template_checkout(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
+    with pytest.raises(ValueError, match="valid only for the render stage"):
+        record_pipeline_stage(tmp_path, "analysis", template_root=renderer)
+
+
+def test_render_receipt_is_structured_path_free_and_lock_bound(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+    record = record_pipeline_stage(tmp_path, "render", template_root=renderer)
+
+    assert record["renderer"] == {
+        "schema_version": "template-renderer-lock-v1",
+        "repository": "docxology/template",
+        "git_commit": subprocess.run(
+            ("git", "-C", str(renderer), "rev-parse", "HEAD^{commit}"),
+            check=True,
+            stdout=subprocess.PIPE,
+            text=True,
+        ).stdout.strip(),
+        "git_tree_state": "clean",
+    }
+    receipt_bytes = (tmp_path / "output/data/pipeline_provenance.json").read_text(
+        encoding="utf-8"
+    )
+    assert str(renderer) not in receipt_bytes
+    assert "github.com" not in receipt_bytes
+
+    receipt_path = tmp_path / "output/data/pipeline_provenance.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["stages"]["render"]["renderer"]["git_commit"] = "0" * 40
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    assert "render: render receipt renderer does not match the committed renderer lock" in (
+        validate_pipeline_freshness(tmp_path, stages=("render",))
+    )
+
+
+def test_legacy_renderer_label_fails_closed(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+    record_pipeline_stage(tmp_path, "render", template_root=renderer)
+    receipt_path = tmp_path / "output/data/pipeline_provenance.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["stages"]["render"]["renderer"] = "legacy free-form renderer"
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    assert "render: render receipt renderer must be a mapping" in validate_pipeline_freshness(
+        tmp_path, stages=("render",)
+    )
 
 
 def test_recording_downstream_stage_requires_fresh_dependencies(tmp_path: Path) -> None:

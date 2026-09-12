@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>16_results_belief_sharing.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -470,75 +634,75 @@ mjx-container[display="true"] {
 the project-pool corner</h2>
 <p>With the standard-Bayes client limit and project-pool recovery
 identity pinned exactly (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>), the
-study suite opens one step away from them. The first study’s estimand is
-the colony’s mean variational free energy under two communication
-conditions; the design is a categorical source-mechanism analogue of the
-colony belief-sharing result <span class="citation">(Friston et al. 2024)</span>, implemented at the
-stated categorical recovery limits. A colony of 7 sentinels each observe
-the same hidden creature location through an independent noisy sensor
-(acuity 0.55) and form a one-step variational posterior. When the colony
-runs one federated belief-sharing round — the standard log-linear pool,
-which is the <code>robustness=0</code> corner of the aggregation
-identity <a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a> proven in
-<a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a> — each
-agent’s posterior moves toward the cross-agent consensus via the
-belief-sharing round <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a>. Under the
-theorem’s shared-support, posterior-log-potential, and fixed-weight
-assumptions, that pool specializes Eq. 7’s message-combination term, not
-the complete source protocol; when held incommunicado, agents keep their
-private posteriors. Scoring each belief against the colony’s joint
-evidence yields the “two heads are better than one” reduction, reported
-here as earned quantities rather than asserted:</p>
-<ul>
-<li>Mean variational free energy, <strong>communicating</strong>: <span
-class="math inline">\(\bar F_{\text{share}} = 13.2190\)</span>
-(across-seed 95% bootstrap CI <span class="math inline">\([12.9656,
-13.4685]\)</span> over <span class="math inline">\(n = 480\)</span>
-seeds). The single illustrative seed-0 run has its own colony mean <span
-class="math inline">\(15.8115\)</span>, with a per-agent 95% bootstrap
-CI of <span class="math inline">\([15.6177, 16.0647]\)</span> over its
-<span class="math inline">\(n = 7\)</span> agents — that interval
-characterizes the displayed run’s per-agent spread, not the across-seed
-mean</li>
-<li>Mean variational free energy, <strong>incommunicado</strong>: <span
-class="math inline">\(\bar F_{\text{solo}} = 16.5298\)</span></li>
-<li>Free-energy reduction from sharing: <span
-class="math inline">\(\Delta \bar F = 3.3109\)</span> (communicating is
-strictly lower)</li>
-</ul>
-<p>The across-seed colony means above are computed over <span
-class="math inline">\(n = 480\)</span> seeds. The communicating colony
-also reaches higher mean true-state accuracy (0.7302) and lower mean
-surprise (0.3775) than its members reach alone. Sharing pulls each
-private posterior toward the joint minimizer, so the mean free energy
-when communicating sits below the incommunicado value.</p>
+study suite opens one step away from them. Its estimand is the paired,
+seed-level difference in colony-mean variational free energy between
+incommunicado and communicating conditions. The design is a categorical
+source-mechanism analogue of the colony belief-sharing result
+<span class="citation">(Friston et al. 2024)</span>.</p>
+<p>A colony of 7 sentinels observes one hidden location through
+independent noisy sensors of acuity 0.55. Each agent forms a one-step
+posterior. The communicating condition applies one standard
+log-linear-pool round at the <code>robustness=0</code> recovery corner
+(<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>, <a class="xref" href="index.html#eq:belief-round">Eq. (14)</a>); the
+incommunicado condition retains the paired private posteriors.</p>
+<p>Under shared support, posterior-log-potential admission, and fixed
+weights, the pool specializes Eq. 7’s message-combination term. It does
+not reproduce the complete source protocol. The paired comparison gives
+the following declared quantities:</p>
+<p><strong>Communicating mean.</strong> <span class="math inline">\(\bar
+F_{\text{share}} = 13.2190\)</span> (across-seed 95% bootstrap CI <span
+class="math inline">\([12.9656, 13.4685]\)</span> over <span
+class="math inline">\(n = 480\)</span> seeds). The single illustrative
+seed-0 run has its own colony mean <span
+class="math inline">\(15.8115\)</span>.</p>
+<p>Its per-agent 95% bootstrap CI is <span
+class="math inline">\([15.6177, 16.0647]\)</span> over its <span
+class="math inline">\(n = 7\)</span> agents. That interval characterizes
+the displayed run’s per-agent spread, not the across-seed mean.</p>
+<p><strong>Incommunicado mean.</strong> <span class="math inline">\(\bar
+F_{\text{solo}} = 16.5298\)</span>.</p>
+<p><strong>Paired reduction from sharing.</strong> <span
+class="math inline">\(\Delta \bar F = \bar F_{\text{solo}} - \bar
+F_{\text{share}}
+= 3.3109\)</span>; positive values mean lower free energy under
+communication.</p>
+<p>Each seed supplies one matched pair of colony means. Seeds are the
+independent unit; agents are nested within each seed and are not
+additional independent replicates. Across the declared seeds, the
+communicating condition also has higher mean true-state accuracy
+(0.7302) and lower mean surprise (0.3775). These are conditional results
+for the reduced protocol.</p>
 <figure id="fig:free-energy">
-<a class="figure-full-size-link" href="../figures/free_energy_comparison.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/free_energy_comparison.png" style="width:80.0%"
-alt="Per-seed free-energy points over communicating and incommunicado colony conditions, with mean bars and across-seed spread. The communicating mean is lower than the incommunicado mean." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
-<figcaption>Mean variational free energy of the
-sentinel colony. Source relation: source-mechanism analogue to the
-belief-sharing mechanism in Friston et al. (2024), Fig. 5; estimand:
-colony-mean variational free energy in nats; uncertainty: across-seed
-spread over independent seeds. The sentinel colony (<span
-class="math inline">\(7\)</span> agents, acuity <span
-class="math inline">\(0.55\)</span>) under two communication conditions.
-x-axis: condition (incommunicado vs. communicating — one standard
-belief-sharing round), plotted in that order; y-axis: colony-mean
-variational free energy in nats. Bars show the mean free energy averaged
-across <span class="math inline">\(n = 480\)</span> independent random
-seeds, with whiskers marking <span class="math inline">\(\pm\)</span>one
-across-seed standard deviation and grey points overlaying the individual
-per-seed values. The communicating bar is strictly lower than the
-incommunicado bar, with <span class="math inline">\(\Delta \bar F =
-3.3109\)</span> nats — the quantitative “two heads are better than one”
-result. Each seed is a fully deterministic run; the whiskers are the
-across-seed spread, not a bootstrap or resampling interval.</figcaption>
+<a class="figure-full-size-link" href="../figures/free_energy_comparison.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Paired colony-mean variational free energy under communication and isolation."><img src="../figures/free_energy_comparison.png" style="width:80.0%"
+data-slide-manifest="../figures/free_energy_comparison.slides.json"
+alt="A paired estimation plot joins each seed&#x27;s filled-circle incommunicado and open-diamond communicating free energy, then shows open-diamond differences, a dotted zero rule, and the percentile-bootstrap interval of incommunicado minus communicating values. Positive differences mean lower free energy with communication." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>Paired colony-mean variational free
+energy under communication and isolation. Source relation: reduced
+categorical source-mechanism analogue of Friston et al. (2024), Fig. 5;
+estimand: seed-level <span class="math inline">\(\Delta\bar F=\bar
+F_{\mathrm{solo}}-\bar F_{\mathrm{share}}\)</span> in nats, where
+positive values indicate lower free energy with communication. In Panel
+A, the x-axis is communication condition and the y-axis is colony-mean
+free energy. Filled reference circles mark incommunicado values, open
+comparison diamonds mark communicating values, fine connecting slopes
+preserve within-seed pairing, and open diamonds joined by a dark line
+identify condition means. In Panel B, the x-axis is paired difference
+and the y-axis is jitter only, with one open diamond per seed, a
+translucent distribution envelope, a dark dotted zero rule, and an
+open-diamond mean with its 95% percentile-bootstrap interval. The mean
+difference is 3.3109 nats across <span
+class="math inline">\(n=480\)</span> independent seeds. Agents and
+ordered steps remain nested within seed; the interval resamples seeds,
+not agents, worlds, or deployments. This reduced-protocol result does
+not establish a general communication benefit or exact source-protocol
+replication.</figcaption>
 </figure>
-<p><a class="xref" href="index.html#fig:free-energy">Figure 8</a> reports the
-headline gap; <a class="xref" href="index.html#fig:belief-heatmap">Figure 9</a> shows the
+<p><a class="xref" href="index.html#fig:free-energy">Figure 9</a> reports the
+headline gap; <a class="xref" href="index.html#fig:belief-heatmap">Figure 10</a> shows the
 per-agent mechanism behind it.</p>
 <figure id="fig:belief-heatmap">
-<a class="figure-full-size-link" href="../figures/belief_heatmap.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/belief_heatmap.png" style="width:80.0%"
+<a class="figure-full-size-link" href="../figures/belief_heatmap.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Single-panel belief heatmap over the hidden creature location."><img src="../figures/belief_heatmap.png" style="width:80.0%"
+data-slide-manifest="../figures/belief_heatmap.slides.json"
 alt="Heatmap of posterior probability over nine location cells for seven agent rows and a consensus row. Agent mass is dispersed, while the consensus row concentrates near one cell." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Single-panel belief heatmap over the
 hidden creature location. Source relation: original project diagnostic
@@ -554,51 +718,20 @@ consensus row — separated by the divider line — holding the federated
 consensus fused from those posteriors by the cavity-exclusion round
 defined in the methods. Each private posterior concentrates only
 moderately on the cell its noisy observation suggests; the consensus row
-concentrates far more sharply on the true location, and that
-after-sharing concentration is the mechanism behind the free-energy
-reduction reported by the free-energy comparison. All cell values are
-deterministic posterior probabilities for the single displayed seed; no
-error band is applicable.</figcaption>
+concentrates more sharply on the true location. All cell values are
+deterministic posterior probabilities for the single displayed seed, so
+no error band applies. This mechanism display does not establish
+calibration, a general communication benefit, or exact source-protocol
+replication.</figcaption>
 </figure>
 <h3 id="sec:robustness-axes-results">Three robustness axes remain
 distinct in the results</h3>
-<p>Before the contaminated studies, we fix the honesty boundary that
-governs every robustness claim in this paper, because the belief-sharing
-round above is exactly where the axes diverge once contamination is
-introduced. The robust extension of belief sharing lives on
-<strong>three distinct axes</strong> that must not be conflated.</p>
-<p>The <strong>per-agent axis</strong> is the generalized-Bayes update
-each sentinel runs locally: the <span
-class="math inline">\(\beta\)</span>-loss and robust cross-entropy
-clients of <a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a> and <span
-class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>. This
-axis follows the FedGVI objective <span class="citation">(Mildner et al. 2025)</span> and carries the
-cited bounded-influence result only under that theorem’s matching
-assumptions. The recovery limits of <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a> show
-the per-agent update reduces to standard Bayes; the separately stated
-server identity returns the project log-linear pool.</p>
-<p>The <strong>server-side axis</strong> is the
-<code>robust_aggregate</code> divergence-reweighting that down-weights
-agents at pooling time. This is a complementary <em>heuristic</em>. Its
-only proven property is the naive-recovery limit of <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a> — at
-zero robustness it equals the standard log-linear pool (<span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>) — and it
-carries <strong>no</strong> bounded-influence guarantee. No figure,
-table, or sentence in <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a> or
-<a class="xref" href="index.html#sec:results-baseline">Section 7.6</a> grants
-the server-side heuristic the guarantee that belongs to the per-agent
-axis. The contaminated sweep that follows reports the axes side by side
-and labels which is which at every step.</p>
-<p>The <strong>variational server axis</strong> is
-<code>variational_aggregate</code>. It is also server-side, but it is
-not the same claim as the sharp heuristic: it descends the stated
-aggregation free energy (<a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a>), carries
-the derived effective-weight bound proved in the supplement, and pays
-for that property with a conservative maximum-entropy bias. The
-contaminated sweep therefore reports behavior for the sharp heuristic
-and cites the variational rule only where the objective-backed guarantee
-is actually in force.</p>
+<p>The authoritative three-axis guarantee map is <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>. The
+contaminated studies keep its source-conditional client update,
+heuristic server reweighting, and objective-backed variational server
+rule visually and inferentially separate. In particular, no result below
+transfers the client’s bounded-influence theorem or the variational
+rule’s raw-weight bound to <code>robust_aggregate</code>.</p>
 </main>
 </body>
 </html>
