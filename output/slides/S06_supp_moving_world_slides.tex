@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,60 +259,78 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Supplement: moving-world methods
-and condition definitions}
+\begin{frame}{Supplement: moving-world methods and condition
+definitions}
 \protect\phantomsection\label{sec:supp-moving}
 This supplement supplies the construction that
-sec.~13.7 defers here: exactly how the
+sec.~14.7 defers here: exactly how the
 moving-sentinel world is built, how the three actions and the
 expected-free-energy policy move an agent, and how the \emph{isolated},
-\emph{communicating}, and \emph{EFE-guided} conditions differ. It
-answers the mechanical question left open in the main section --- what
-precisely is held fixed and what varies across the three conditions
+\end{frame}
+
+\begin{frame}{Supplement: moving-world\ldots{} (part 2)}
+\emph{communicating}, and \emph{EFE-guided} conditions differ.
+\end{frame}
+
+\begin{frame}{Supplement: moving-world\ldots{} (part 3)}
+It answers the mechanical question left open in the main section ---
+what precisely is held fixed and what varies across the three conditions
 whose accuracies are contrasted there --- so the reported
 binary-complement numbers can be read against their generative model
 rather than taken on trust.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Supplement: moving-world methods
-and condition definitions}
+\begin{frame}[fragile]{Supplement: moving-world\ldots{} (part 4)}
 The moving-world generative model is built by
-\breaktt{build\_moving\_world}. A linear grid of 4 cells holds one binary
+\texttt{build\_moving\_world}. A linear grid of 4 cells holds one binary
 hidden state --- the half of the grid (left = state 0, right = state 1)
-that contains the threat. The 2 sentinels start at evenly tiled
-positions
+that contains the threat.
+\end{frame}
+
+\begin{frame}{Supplement: moving-world\ldots{} (part 5)}
+The 2 sentinels start at evenly tiled positions
 (\(i \cdot \lfloor n_{\text{positions}} / n_{\text{agents}} \rfloor\))
 and each observe a half-open field-of-view window. With the default
-setup the two FOVs are disjoint, one per half. Each agent's likelihood
-is a \(2 \times 2\) matrix over outcomes (detected / not\_detected)
-given the binary state, with a confident signed reading for the half the
-agent watches; the transition tensor encodes three deterministic control
-paths --- stay, left (reflecting at cell 0), and right (reflecting at
-the last cell). The hidden-state prior is uniform.
-
+setup the two FOVs are disjoint, one per half.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Supplement: moving-world methods
-and condition definitions}
+\begin{frame}{Supplement: moving-world\ldots{} (part 6)}
+Each agent's likelihood is a \(2 \times 2\) matrix over outcomes
+(detected / not\_detected) given the binary state, with a confident
+signed reading for the half the agent watches; the transition tensor
+encodes three deterministic control paths --- stay, left (reflecting at
+cell 0), and right (reflecting at the last cell).
+\end{frame}
+
+\begin{frame}{Supplement: moving-world\ldots{} (part 7)}
+The hidden-state prior is uniform.
+\end{frame}
+
+\begin{frame}[fragile]{Supplement: moving-world\ldots{} (part 8)}
 Action selection has two regimes. The random conditions draw each
 agent's move uniformly from the three controls. The EFE-guided condition
-uses \breaktt{efe\_policy\_select}: for every candidate move it lands the
+uses \texttt{efe\_policy\_select}: for every candidate move it lands the
 agent at the deterministic next position, reconstructs the likelihood
-from that viewpoint, and scores the move by the expected posterior
-entropy after one observation, \(H = \sum_o P(o)\,H(P(s \mid o))\) ---
-taking the entropy-minimizing (information-seeking) step.
-
+from that viewpoint,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Supplement: moving-world methods
-and condition definitions}
+\begin{frame}{Supplement: moving-world\ldots{} (part 9)}
+and scores the move by the expected posterior entropy after one
+observation, \(H = \sum_o P(o)\,H(P(s \mid o))\) --- taking the
+entropy-minimizing (information-seeking) step.
+\end{frame}
+
+\begin{frame}{Supplement: moving-world\ldots{} (part 10)}
 We compare three conditions --- \emph{isolated} (random moves, no
 sharing), \emph{communicating} (random moves plus a per-step
 log-linear-pool consensus), and \emph{EFE-guided} (information-seeking
 moves plus the same per-step sharing) --- over 960 trials of 6 steps
-each, scoring the pooled consensus against the true state. All numerics
-are deterministic given the run seed.
+each,
+\end{frame}
+
+\begin{frame}{Supplement: moving-world\ldots{} (part 11)}
+scoring the pooled consensus against the true state. All numerics are
+deterministic given the run seed.
 \end{frame}
 
 \end{document}

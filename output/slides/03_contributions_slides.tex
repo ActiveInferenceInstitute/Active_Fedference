@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -219,165 +261,286 @@
 
 \section{Contributions and evidence boundaries}\label{sec:contributions}
 
-\begin{frame}[fragile,allowframebreaks]{Contributions and evidence
-boundaries}
+\begin{frame}{Contributions and evidence boundaries}
 We make ten contributions, each paired with a theorem, figure, table, or
 generated token and with an explicit boundary on what the evidence
-establishes. They fall into four groups: the first two build the core
-and its recovery contract; the next two report and statistically qualify
-the contaminated-consensus result; the fifth and sixth make the
-robustness axes explicit and add the objective-backed server rule; and
-the remaining four are scoped extensions --- parameter recovery, the
-tempered aggregation family, an aggregation-API transfer, and a
-disjoint-observation communication test.
-
+establishes.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Contributions and evidence
-boundaries}
-\begin{enumerate}
-\item
-  \textbf{A discrete-categorical FedGVI core.} A typed, deterministic,
-  pure-NumPy/ SciPy reimplementation of the FedGVI (Mildner et al. 2025)
-  generalized-Bayes primitives --- divergences, bounded robust losses,
-  the generalized posterior, the cavity/factor algebra, and robust
-  aggregation --- in the discrete-categorical setting that active
-  inference (Da Costa et al. 2020) uses. The objective
-  (eq.~1) and its closed-form tempered-softmax solution
-  are stated in Definition 1 and tested by the
-  recovery-limit probes. The whole core is zero-mock and reproducible
-  (Peng 2011).
-\item
-  \textbf{A recovery-tested connection between categorical pooling and
-  robust Bayes.} A recovery certificate showing that the client
-  KL/negative-log-likelihood loss limits recover Bayes and the server's
-  zero-robustness branch recovers the project log-linear pool. Under the
-  explicit shared-support, posterior-log-potential, and fixed-weight
-  assumptions in sec.~5.8, that pool
-  specializes Friston et al.'s Eq. 7 message-combination term (Friston
-  et al. 2024), not the complete source protocol. Three recovery limits
-  are pinned to bit-level residuals: the bounded losses recover
-  NLL/Bayes (Corollary 6 + Proposition
-  4; \(\le 0\) and \(\le 0\) maximum
-  residual, eq.~6), the Rényi divergence recovers
-  KL (Lemma 3; \(\le 0\) residual,
-  eq.~3), and the server-side reweighting pool
-  recovers the naive pool in its trusting limit (Theorem
-  5; \(\le 0\) residual,
-  eq.~7). Robustness is thereby a tested
-  recovery-limit extension, not a replacement.
-\item
-  \textbf{End-to-end evaluation of robust federated active inference.}
-  Three worked categorical source-mechanism analogues --- communicating
-  colonies reaching lower free energy
-  (sec.~7.2), Dirichlet language
-  acquisition (sec.~7.3), and structure emergence
-  by Bayesian model reduction (Friston and Penny 2011)
-  (sec.~7.4) --- plus a contaminated-sentinel
-  robustness sweep (sec.~7.5) in which the
-  naive pool degrades and at least one server-side robust member clears
-  the configured threshold at the most severe swept rate.
-\item
-  \textbf{A statistically qualified server-side contrast.} The ``robust
-  beats naive'' conclusion for the declared contamination rate is
-  produced only by a matched-pairs Wilcoxon signed-rank test (Wilcoxon
-  1945) deflated across the divergence family with Benjamini--Hochberg
-  FDR (Benjamini and Hochberg 1995), reported with bootstrap confidence
-  intervals (Efron and Tibshirani 1993) and observed-effect design-power
-  planning. Across 960 paired trials the headline display method (RKL;
-  tied set: RKL, AR, beta, rcce) reaches accuracy 0.9867 against the
-  naive pool's 0.9021 at the verdict rate
-  (\(q = 1.11 \times 10^{-158}\), rank-biserial-derived \(d\)-equivalent
-  = saturated (r=+1)). The predeclared selection rule is largest
-  positive rank-biserial effect\_size; stable method order tie-break;
-  the method with the largest paired mean difference is AR. Every
-  headline number is a generated token.
-\item
-  \textbf{An explicit accounting of the robustness axes.} A clear
-  separation (sec.~3.3) between the client-side
-  per-agent update, which inherits FedGVI's bounded-influence result
-  under its stated source assumptions; the sharp server-side reweighting
-  heuristic, whose positive formal property is its recovery limit and
-  whose declared separable objective class has a scoped no-go result;
-  and the conservative variational server rule, which is
-  objective-backed and has a redescending effective-weight update but is
-  not the accuracy-maximizer. Downstream users are told exactly which
-  result is theoretically backed and which is a labeled heuristic.
-\item
-  \textbf{An objective-backed server aggregator with redescending
-  weights.} We derive an aggregation free energy
-  eq.~8 whose exact block updates define the
-  \breaktt{variational\_aggregate} rule
-  (sec.~5.8.2, sec.~11):
-  each exact block update monotonically decreases a stated objective, a
-  converged fixed point is coordinatewise stationary, and the
-  implementation keeps the lowest observed objective among converged
-  configured starts (or reports the best unfinished trace as
-  non-converged), recovers the standard log-linear pool in the trusting
-  limit (eq.~7), and --- unlike the sharp
-  heuristic --- carries a proven raw effective-weight bound
-  (fig.~14,
-  fig.~15). The honest cost, stated plainly, is
-  conservatism: it is a maximum-entropy-biased consensus and trades peak
-  point-accuracy for that control, so it complements rather than
-  replaces the sharp heuristic of contribution 5.
-\item
-  \textbf{Executed finite-grid acuity-recovery experiment.} At each
-  value in the 0.60, 0.70, 0.80, 0.90 acuity grid, the study generates
-  200 synthetic observations in each of 960 trials and selects acuity by
-  marginal-likelihood grid search over the declared finite grid. The
-  observed mean absolute error is 0.0232 with \(R^2 =
-  0.9999\) (fig.~28). Acuity-by-colony-size
-  behavior belongs to the separate sensitivity study; it is not a
-  parameter- recovery result.
-\item
-  \textbf{The F\(_\lambda\) tempered aggregation family.} A
-  one-parameter \(\lambda>0\) generalization of the variational
-  aggregate (sec.~11.5):
-  \(F_\lambda(q, a) = \sum_n a_n\cdot\mathrm{CE}(q,q_n)
-  - \lambda H(q) + (1/c)\,\mathrm{KL}_{\mathrm{gen}}(a\|w)\). At
-  \(\lambda = 1.0\) the temperature is unity and the objective reduces
-  to the standard variational aggregate bit-for-bit. Lower \(\lambda\)
-  sharpens the variational \(q\)-block toward a maximizing state; it
-  does not algebraically recover \breaktt{robust\_aggregate}. The raw
-  effective-weight update and its bound are preserved for all
-  \(\lambda\). Full derivation in sec.~11.5.
-\item
-  \textbf{An aggregation-API transfer demonstration.} The same
-  \breaktt{robust\_aggregate} API that governs the POMDP studies is
-  exercised unchanged with one deterministic MLP trained with the
-  density-power \(\beta\)-loss (16 hidden units, \(\beta=0.5\);
-  generalized variational inference with a point-mass variational
-  family) as the per-client model, supporting portability of the server
-  API to this additional model class (sec.~7.6)
-  when the optional \texttt{torch} extra is installed
-  (sec.~5.26); without it the MLP run is skipped
-  and its tokens render accordingly.
-\item
-  \textbf{Communication benefit under disjoint observations.} A
-  multi-agent extension (sec.~13.7.1) in which 3
-  agents each observe a 2-slot disjoint window shows that belief sharing
-  materially improves over isolated-agent accuracy in the declared
-  configuration --- isolated agents clear the 0.167 chance baseline but
-  stay far below the communicating consensus, which itself remains well
-  short of full accuracy: across 128 seeds isolated accuracy is 0.326
-  versus communicating 0.493, a reproducible margin under the declared
-  matched-seed comparison (Wilcoxon \(p = 0.0000\)); this is evidence
-  for the configured disjoint-observation protocol, not a universal
-  communication theorem.
-\end{enumerate}
-
+\begin{frame}{Contributions and evidence\ldots{} (part 2)}
+They fall into four groups: the first two build the core and its
+recovery contract; the next two report and statistically qualify the
+contaminated-consensus result; the fifth and sixth make the robustness
+axes explicit and add the objective-backed server rule; and the
+remaining four are scoped extensions ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Contributions and evidence
-boundaries}
+\begin{frame}{Contributions and evidence\ldots{} (part 3)}
+parameter recovery, the tempered aggregation family, an aggregation-API
+transfer, and a disjoint-observation communication test.
+\end{frame}
+
+\begin{frame}{1. A discrete-categorical FedGVI core}
+\protect\phantomsection\label{a-discrete-categorical-fedgvi-core}
+A typed, deterministic, pure-NumPy/SciPy reimplementation of the FedGVI
+(Mildner et al. 2025) generalized-Bayes primitives --- divergences,
+bounded robust losses, the generalized posterior, the cavity/factor
+algebra, and robust aggregation ---
+\end{frame}
+
+\begin{frame}{1. A discrete-categorical\ldots{} (part 2)}
+in the discrete-categorical setting that active inference (Da Costa et
+al. 2020) uses.
+\end{frame}
+
+\begin{frame}{1. A discrete-categorical\ldots{} (part 3)}
+The objective (eq.~2) and its closed-form
+tempered-softmax solution are stated in Definition
+1 and tested by the recovery-limit probes. The
+whole core is zero-mock and reproducible (Peng 2011).
+\end{frame}
+
+\begin{frame}{2. A recovery-tested connection between categorical
+pooling and robust Bayes}
+\protect\phantomsection\label{a-recovery-tested-connection-between-categorical-pooling-and-robust-bayes}
+\end{frame}
+
+\begin{frame}{2. A recovery-tested\ldots{} (part 2)}
+A recovery certificate shows that the client KL/negative-log-likelihood
+loss limits recover Bayes and the server's zero-robustness branch
+recovers the project log-linear pool.
+\end{frame}
+
+\begin{frame}{2. A recovery-tested\ldots{} (part 3)}
+Under the explicit shared-support, posterior-log-potential, and
+fixed-weight assumptions in sec.~5.8, that pool
+specializes Friston et al.'s Eq. 7 message-combination term (Friston et
+al. 2024), not the complete source protocol.
+\end{frame}
+
+\begin{frame}{2. A recovery-tested\ldots{} (part 4)}
+Three recovery limits are pinned to bit-level residuals. The bounded
+losses recover NLL/Bayes (Corollary 6 +
+Proposition 4; \(\le 0\) and \(\le 0\)
+maximum residual, eq.~11).
+\end{frame}
+
+\begin{frame}{2. A recovery-tested\ldots{} (part 5)}
+The Rényi divergence recovers KL (Lemma 3;
+\(\le 0\) residual, eq.~6). The server-side
+reweighting pool recovers the naive pool in its trusting limit (Theorem
+5; \(\le 0\) residual,
+eq.~10).
+\end{frame}
+
+\begin{frame}{2. A recovery-tested\ldots{} (part 6)}
+Robustness is thereby a tested recovery-limit extension, not a
+replacement.
+\end{frame}
+
+\begin{frame}{3. End-to-end evaluation of robust federated active
+inference}
+\protect\phantomsection\label{end-to-end-evaluation-of-robust-federated-active-inference}
+Three worked categorical source-mechanism analogues cover communicating
+colonies reaching lower free energy
+(sec.~7.2), Dirichlet language acquisition
+(sec.~7.3),
+\end{frame}
+
+\begin{frame}{3. End-to-end evaluation of\ldots{} (part 2)}
+and a configured Bayesian-model- reduction pruning sign control (Friston
+and Penny 2011) (sec.~7.4).
+\end{frame}
+
+\begin{frame}{3. End-to-end evaluation of\ldots{} (part 3)}
+A contaminated-sentinel robustness sweep
+(sec.~7.5) shows the naive pool degrading while
+at least one server-side robust member clears the configured threshold
+at the most severe swept rate.
+\end{frame}
+
+\begin{frame}{4. A statistically qualified server-side contrast}
+\protect\phantomsection\label{a-statistically-qualified-server-side-contrast}
+The ``robust beats naive'' conclusion for the declared contamination
+rate is produced only by a matched-pairs Wilcoxon signed-rank test
+(Wilcoxon 1945).
+\end{frame}
+
+\begin{frame}{4. A statistically qualified\ldots{} (part 2)}
+Its multiplicity correction uses Benjamini--Hochberg FDR (Benjamini and
+Hochberg 1995) across the divergence family.
+
+We report the contrast with bootstrap confidence intervals (Efron and
+Tibshirani 1993) and observed-effect design-power planning.
+\end{frame}
+
+\begin{frame}{4. A statistically qualified\ldots{} (part 3)}
+Across 960 paired trials, the headline display method (RKL; tied set:
+RKL, AR, beta, rcce) reaches accuracy 0.9829 against the naive pool's
+0.9021 at the verdict rate.
+\end{frame}
+
+\begin{frame}{4. A statistically qualified\ldots{} (part 4)}
+At that rate, \(q = 1.11 \times 10^{-158}\), and the
+rank-biserial-derived \(d\)-equivalent is saturated (r=+1). The
+predeclared selection rule is largest positive rank-biserial
+effect\_size; stable method order tie-break; the method with the largest
+paired mean difference is AR. Every headline number is a generated
+token.
+\end{frame}
+
+\begin{frame}{5. An explicit accounting of the robustness axes}
+\protect\phantomsection\label{an-explicit-accounting-of-the-robustness-axes}
+The map in sec.~3.3 separates the client-side
+per-agent update, which inherits FedGVI's bounded-influence result under
+its stated source assumptions, from both server rules.
+\end{frame}
+
+\begin{frame}{5. An explicit accounting of\ldots{} (part 2)}
+The sharp server-side reweighting heuristic has a recovery limit as its
+positive formal property and a scoped no-go result for its declared
+separable objective class.
+\end{frame}
+
+\begin{frame}{5. An explicit accounting of\ldots{} (part 3)}
+The conservative variational server rule is objective-backed and has a
+redescending effective-weight update, but is not the accuracy-maximizer.
+Downstream users are told exactly which result is theoretically backed
+and which is a labeled heuristic.
+\end{frame}
+
+\begin{frame}[fragile]{6. An objective-backed server aggregator with
+redescending weights}
+\protect\phantomsection\label{an-objective-backed-server-aggregator-with-redescending-weights}
+We derive an aggregation free energy eq.~12 whose
+exact block updates define the \texttt{variational\_aggregate} rule
+(sec.~5.8.2, sec.~12).
+\end{frame}
+
+\begin{frame}{6. An objective-backed\ldots{} (part 2)}
+Each exact block update monotonically decreases a stated objective, and
+a converged fixed point is coordinatewise stationary. The implementation
+keeps the lowest observed objective among converged configured starts,
+\end{frame}
+
+\begin{frame}{6. An objective-backed\ldots{} (part 3)}
+or reports the best unfinished trace as non-converged.
+\end{frame}
+
+\begin{frame}{6. An objective-backed\ldots{} (part 4)}
+The rule recovers the standard log-linear pool in the trusting limit
+(eq.~10) and --- unlike the sharp heuristic ---
+carries a proven raw effective-weight bound
+(fig.~16, fig.~17).
+\end{frame}
+
+\begin{frame}{6. An objective-backed\ldots{} (part 5)}
+The honest cost is conservatism: it is a maximum-entropy-biased
+consensus and trades peak point-accuracy for that control, so it
+complements rather than replaces the sharp heuristic of contribution 5.
+\end{frame}
+
+\begin{frame}{7. Executed finite-grid acuity-recovery experiment}
+\protect\phantomsection\label{executed-finite-grid-acuity-recovery-experiment}
+At each value in the 0.60, 0.70, 0.80, 0.90 acuity grid, the study
+generates 200 synthetic observations in each of 960 trials. It selects
+acuity by marginal-likelihood grid search over the declared finite grid.
+\end{frame}
+
+\begin{frame}{7. Executed finite-grid\ldots{} (part 2)}
+The observed mean absolute error is 0.0232 with \(R^2 = 0.9999\)
+(fig.~31). Acuity-by-colony-size behavior
+belongs to the separate sensitivity study; it is not a
+parameter-recovery result.
+\end{frame}
+
+\begin{frame}{8. The tempered aggregation family}
+\protect\phantomsection\label{the-tempered-aggregation-family}
+A one-parameter \(\lambda>0\) generalization of the variational
+aggregate (sec.~12.5) is the objective
+\end{frame}
+
+\begin{frame}{8. The tempered\ldots{} (part 2)}
+\begin{equation}\tag{1}\protect\phantomsection\label{eq:contribution-tempered-family}{
+\begin{aligned}
+F_\lambda(q,a)
+&= \sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q)\\
+&\quad +\frac{1}{c}\,\mathrm{KL}_{\mathrm{gen}}(a\Vert w).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}[fragile]{8. The tempered\ldots{} (part 3)}
+In eq.~1, at \(\lambda = 1.0\), the
+temperature is unity and the objective reduces to the standard
+variational aggregate bit-for-bit. Lower \(\lambda\) sharpens the
+variational \(q\)-block toward a maximizing state; it does not
+algebraically recover \texttt{robust\_aggregate}.
+\end{frame}
+
+\begin{frame}{8. The tempered\ldots{} (part 4)}
+The raw effective-weight update and its bound are preserved for all
+\(\lambda\). The full derivation is in sec.~12.5.
+\end{frame}
+
+\begin{frame}[fragile]{9. An aggregation-API transfer demonstration}
+\protect\phantomsection\label{an-aggregation-api-transfer-demonstration}
+The same \texttt{robust\_aggregate} API that governs the POMDP studies
+is exercised unchanged with one deterministic MLP trained with the
+density-power \(\beta\)-loss (16 hidden units, \(\beta=0.5\);
+\end{frame}
+
+\begin{frame}{9. An aggregation-API\ldots{} (part 2)}
+generalized variational inference with a point-mass variational family)
+as the per-client model.
+\end{frame}
+
+\begin{frame}[fragile]{9. An aggregation-API\ldots{} (part 3)}
+This supports portability of the server API to one additional model
+class (sec.~7.6) when the optional \texttt{torch}
+extra is installed (sec.~5.26). Without it, the
+MLP run is skipped and its tokens render accordingly.
+\end{frame}
+
+\begin{frame}{10. Communication contrast under disjoint observations}
+\protect\phantomsection\label{communication-contrast-under-disjoint-observations}
+A multi-agent extension (sec.~14.7.1) in
+\end{frame}
+
+\begin{frame}{10. Communication contrast\ldots{} (part 2)}
+which 3 agents each observe a 2-slot disjoint window shows that belief
+sharing materially improves over isolated-agent accuracy in the declared
+configuration.
+\end{frame}
+
+\begin{frame}{10. Communication contrast\ldots{} (part 3)}
+Isolated agents clear the 0.167 chance baseline but stay far below the
+communicating consensus, which itself remains well short of full
+accuracy.
+\end{frame}
+
+\begin{frame}{10. Communication contrast\ldots{} (part 4)}
+Across 128 seeds, isolated accuracy is 0.326 versus communicating 0.493,
+a reproducible margin under the declared matched-seed comparison
+(Wilcoxon \(p = 9.35 \times 10^{-23}\)). This is evidence for the
+configured disjoint-observation protocol, not a universal communication
+theorem.
+\end{frame}
+
+\begin{frame}{10. Communication contrast\ldots{} (part 5)}
 The remainder of the paper proceeds as follows. sec.~5
 develops the FedGVI core and the recovery limits;
 sec.~6 states the numbered recovery theorems and the
 expected-free-energy identity;
 sec.~5.22 fixes the configuration;
+\end{frame}
+
+\begin{frame}{10. Communication contrast\ldots{} (part 6)}
 sec.~7 reports the 9 studies, beginning with the
-recovery checks (sec.~7.1);
+recovery checks (sec.~7.1).
+\end{frame}
+
+\begin{frame}{10. Communication contrast\ldots{} (part 7)}
 sec.~8 and sec.~9 synthesize; and
 sec.~10 and sec.~8.15
 document determinism, scope, limitations, and the standing of each

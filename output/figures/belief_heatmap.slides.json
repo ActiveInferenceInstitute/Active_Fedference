@@ -1,0 +1,161 @@
+{
+  "panels": [
+    {
+      "alt": "Posterior probability mass on a common 0\u20131 scale. Rows retain agent order, followed by consensus. Location indices retain their original order.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a6ea65893c5562eb31768604ca2f707221b169c394ea794a25b0a486d789b4f2",
+      "src": "../figures/belief_heatmap.slide-key.png"
+    },
+    {
+      "alt": "agent 0, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ad3d4ff6647d5086923a7863bd43525ea6adb25164ea612681e28ad10766856f",
+      "src": "../figures/belief_heatmap.slide-row-0-cells-0-2.png"
+    },
+    {
+      "alt": "agent 0, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "273b82d47871e25e278dad2a0917ac40c6888e5a0416c127f65c4839bce29848",
+      "src": "../figures/belief_heatmap.slide-row-0-cells-3-5.png"
+    },
+    {
+      "alt": "agent 0, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "bb121dd4ed55ac811e767413f980265994e424cd73abceb2a3f5410cb5fc1e54",
+      "src": "../figures/belief_heatmap.slide-row-0-cells-6-8.png"
+    },
+    {
+      "alt": "agent 1, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "1dac28189bd7621f390003b84609cf7d75da550207ea75facce2ee91c0c86778",
+      "src": "../figures/belief_heatmap.slide-row-1-cells-0-2.png"
+    },
+    {
+      "alt": "agent 1, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "90aba96b3a91da333ba0343862a41c0fa0aebb49e08df5db9ff52d9482a4a72d",
+      "src": "../figures/belief_heatmap.slide-row-1-cells-3-5.png"
+    },
+    {
+      "alt": "agent 1, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "5095695748f0d14e774913bf1d3c50fb6b72b88027b0a5508748c29e3b120797",
+      "src": "../figures/belief_heatmap.slide-row-1-cells-6-8.png"
+    },
+    {
+      "alt": "agent 2, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "305804c00055be6f3a7f73178f73e3b9ba8b078bc30d0a80c25ee72b422b186e",
+      "src": "../figures/belief_heatmap.slide-row-2-cells-0-2.png"
+    },
+    {
+      "alt": "agent 2, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "6cddf2af5ecea8e07e6748de2685bf91cba53faf448f2097cdb4f6cb2f60a0f2",
+      "src": "../figures/belief_heatmap.slide-row-2-cells-3-5.png"
+    },
+    {
+      "alt": "agent 2, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "18940b304e60d91b9785fcd0ed2c65f6810c331a2ac344879f6ea3d5db159734",
+      "src": "../figures/belief_heatmap.slide-row-2-cells-6-8.png"
+    },
+    {
+      "alt": "agent 3, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "d0cfd16dad68cd9177f5d937ce192e34e0fd8ae14aa0a82c3f71c9876e0a4be3",
+      "src": "../figures/belief_heatmap.slide-row-3-cells-0-2.png"
+    },
+    {
+      "alt": "agent 3, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "599c8f3dd37a6271e4517e89173c8f7d89f4efb9d40c93e18e7f006f09f7e9ed",
+      "src": "../figures/belief_heatmap.slide-row-3-cells-3-5.png"
+    },
+    {
+      "alt": "agent 3, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e8935d086c79bbfe3e1578d189fff733f774578e87f771afdba3f1d1cc02c1c6",
+      "src": "../figures/belief_heatmap.slide-row-3-cells-6-8.png"
+    },
+    {
+      "alt": "agent 4, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "010b23e0920b11995baa14550888b2f89b85f759e9e82fbd0884fc2cb42ffa53",
+      "src": "../figures/belief_heatmap.slide-row-4-cells-0-2.png"
+    },
+    {
+      "alt": "agent 4, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "0e5f700c34c8f4788889fec5cacc44dbb2cf5cf51948a9a44f5ac465e6c07ed6",
+      "src": "../figures/belief_heatmap.slide-row-4-cells-3-5.png"
+    },
+    {
+      "alt": "agent 4, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "b2f26a3d529e47633685e30d3fa865abf06d983764f28da0c7c6c293a7790f37",
+      "src": "../figures/belief_heatmap.slide-row-4-cells-6-8.png"
+    },
+    {
+      "alt": "agent 5, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "d7a07ba27490f7d8c8e01f55aeeefbde5ba491a472e926cb1542a0685c44a4d2",
+      "src": "../figures/belief_heatmap.slide-row-5-cells-0-2.png"
+    },
+    {
+      "alt": "agent 5, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "69bc40e619e0514a384a4e2eac230ddb27eb3110f5031b11e60b25b0058ee6ab",
+      "src": "../figures/belief_heatmap.slide-row-5-cells-3-5.png"
+    },
+    {
+      "alt": "agent 5, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "46deafef6a3e8d58a8106bff80b9d5d8292c8e4e9927c84b3969bee7a54fe7d9",
+      "src": "../figures/belief_heatmap.slide-row-5-cells-6-8.png"
+    },
+    {
+      "alt": "agent 6, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "8f6aeb1db5d049dee1dc330ceab6bb43f17111b0c0eb2c0dee9ee907df7c1cf1",
+      "src": "../figures/belief_heatmap.slide-row-6-cells-0-2.png"
+    },
+    {
+      "alt": "agent 6, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "759380d741b85cb5ef9920c4bae4c70bdc72e4ad251fa34fce3a6a36b946f0c1",
+      "src": "../figures/belief_heatmap.slide-row-6-cells-3-5.png"
+    },
+    {
+      "alt": "agent 6, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "1879ea09dccec0c837a197cccf0bbdbcf8310d33cdb65a168888c95d49a2e002",
+      "src": "../figures/belief_heatmap.slide-row-6-cells-6-8.png"
+    },
+    {
+      "alt": "consensus, locations 0 through 2; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "7d06f0884a83f1033b156e9f27008d0ac769ae415c97fb2ace6fd2592cb47265",
+      "src": "../figures/belief_heatmap.slide-row-7-cells-0-2.png"
+    },
+    {
+      "alt": "consensus, locations 3 through 5; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "a92ce40edf778fb50ec7f0c56a6720b0582e34cc33dfcf2ed42f2714e5067c44",
+      "src": "../figures/belief_heatmap.slide-row-7-cells-3-5.png"
+    },
+    {
+      "alt": "consensus, locations 6 through 8; every probability printed on the common 0\u20131 scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "5e18a17d6b501faa24a7bb9e9bad899ffdb945cf00adbce1345e0b9b2b51e30f",
+      "src": "../figures/belief_heatmap.slide-row-7-cells-6-8.png"
+    },
+    {
+      "alt": "7 agents and one consensus row. One configured colony snapshot; no uncertainty interval. Categorical log-linear specialization, not the full source protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "262669ae78410491112d87adaafdb7084ea7711cf98ad5cf3b404bf764e4efe7",
+      "src": "../figures/belief_heatmap.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

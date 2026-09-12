@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Experimental design: studies, estimands, determinism, and power — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-ff32c68188e6">
+<h1 id="presentation-title-ff32c68188e6" class="visually-hidden">Experimental design: studies, estimands, determinism, and power — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:methods-experimental-design"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-93c3e71a4c81">
+<h2 class="prose-slide" id="slide-heading-93c3e71a4c81">Experimental design: studies, estimands,
+determinism, and power</h2>
+<p>The generative model of <span class="cross-reference">Section 5.10</span>,
+the learning operators of <span class="cross-reference">Section 5.15</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental design: studies, estimands, determinism, and power, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f46947c655c">
+<h2 class="prose-slide"
+aria-label="Experimental design: studies, estimands, determinism, and power, part 2" id="slide-heading-6f46947c655c">Experimental
+design (part 2)</h2>
+<p>and the corruption process of <span class="cross-reference">Section 5.19</span>
+are exercised by 9 studies, including the contaminated-sentinel
+robustness sweep (Study 4).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental design: studies, estimands, determinism, and power, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f72d7c22fd06">
+<h2 class="prose-slide"
+aria-label="Experimental design: studies, estimands, determinism, and power, part 3" id="slide-heading-f72d7c22fd06">Experimental
+design (part 3)</h2>
+<p>The shared configuration (seed budget, colony size, contamination
+rates, divergences, trial counts, and the statistics settings) is read
+from <code>experiment:</code> in <a
+href="https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/config.yaml">manuscript
+rendering configuration</a>; the remaining per-study parameters are
+tested code defaults in <code>src/fedference/experiments/</code>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental design: studies, estimands, determinism, and power, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-189cb7d70198">
+<h2 class="prose-slide"
+aria-label="Experimental design: studies, estimands, determinism, and power, part 4" id="slide-heading-189cb7d70198">Experimental
+design (part 4)</h2>
+<p>No value is hard-coded in the manuscript, and each token below
+resolves to the same configuration the code executed.</p>
+</section>
+<section id="sec:methods-determinism" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2ef4a52bef44">
+<h2 class="prose-slide" id="slide-heading-2ef4a52bef44">Determinism through fixed seeds and generated
+variables</h2>
+<p>All stochastic steps draw from explicitly seeded generators
+(<code>np.random.default_rng</code>); the global <code>np.random</code>
+state is never touched. The single-run studies use the first configured
+seed (0),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3b1404c8e442">
+<h2 class="prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 2" id="slide-heading-3b1404c8e442">Determinism
+through fixed… (part 2)</h2>
+<p>and the across-seed studies enumerate the deterministic seed list
+<span class="math inline">\(0,\ldots,n_{\text{seeds}}-1\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-41d5310e600c">
+<h2 class="prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 3" id="slide-heading-41d5310e600c">Determinism
+through fixed… (part 3)</h2>
+<p>Re-running with the same seed reproduces every number in the results
+bit-for-bit, so the bootstrap confidence intervals and paired-test
+p-values of <span class="cross-reference">Section 5.27</span>
+are themselves deterministic functions of the seed.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-956dacb3281b">
+<h2 class="prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 4" id="slide-heading-956dacb3281b">Determinism
+through fixed… (part 4)</h2>
+<p>The figure layer follows the same provenance rule. Captions are
+written to be self-contained, with axes, resampling units, deterministic
+runs, truncated axes, and error-band status disclosed in the caption
+rather than left to inference <span class="citation"
+data-cites="rougier2014figures midway2020visualization">(Rougier et al.
+2014; Midway 2020)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1b5ccb19203">
+<h2 class="prose-slide"
+aria-label="Determinism through fixed seeds and generated variables, part 5" id="slide-heading-c1b5ccb19203">Determinism
+through fixed… (part 5)</h2>
+<p>This is why several results figures state “single deterministic run”
+or “no error band” even when the inferential evidence appears in an
+adjacent table.</p>
+</section>
+<section id="sec:methods-studies" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-644e02b5616f">
+<h2 class="prose-slide" id="slide-heading-644e02b5616f">Study suite and contamination sweep</h2>
+<p>Studies 1–3 implement reduced categorical protocols that are
+source-mechanism analogues of the belief-sharing, language-acquisition,
+and model-reduction mechanisms discussed by Friston et al. <span
+class="citation" data-cites="friston2024federated">(2024)</span> on the
+sentinel POMDP; they are not exact source-protocol figure
+replications.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ed1e92891648">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 2" id="slide-heading-ed1e92891648">Study suite
+and… (part 2)</h2>
+<p>The sweep adds the FedGVI robustness contribution <span
+class="citation" data-cites="mildner2025fedgvi">(Mildner et al.
+2025)</span>.</p>
+<p>Unless a study specifies otherwise, the global defaults are <span
+class="math inline">\(n_{\text{seeds}} = 480\)</span> independent seeds
+and <span class="math inline">\(n_{\text{trials}} = 960\)</span> matched
+trials per condition.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2eb4e8858b8b">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 3" id="slide-heading-2eb4e8858b8b">Study suite
+and… (part 3)</h2>
+<p>The inventories in <a class="cross-reference" href="#tbl:study-measures">Table 1</a>; <a class="cross-reference" href="#tbl:study_params">Table 2</a> separate each study’s
+declared measure from its compact execution parameters so neither
+meaning is compressed at presentation scale.</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Study suite and contamination sweep, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-18273231a262">
+<h2 class="table-led"
+aria-label="Study suite and contamination sweep, part 4" id="slide-heading-18273231a262">Study suite
+and… (part 4)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:study-measures" data-responsive-table="true">
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr>
+<th>Study</th>
+<th>Declared measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 — Belief sharing</td>
+<td>Communicating versus incommunicado colony free energy</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 table-led"
+aria-label="Study suite and contamination sweep, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-82f2450eb0ba">
+<h2 class="table-led"
+aria-label="Study suite and contamination sweep, part 5" id="slide-heading-82f2450eb0ba">Study suite
+and… (part 5)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:study_params" data-responsive-table="true">
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 64%" />
+</colgroup>
+<thead>
+<tr>
+<th>Study</th>
+<th>Key parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 — Belief sharing</td>
+<td><code>n_agents = 7</code>; <code>acuity = 0.55</code></td>
+</tr>
+<tr>
+<td>2 — Language acquisition</td>
+<td><code>num_steps = 24</code></td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5f291d8dbc54">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 6" id="slide-heading-5f291d8dbc54">Study suite
+and… (part 6)</h2>
+<p><strong>Study 1 — belief sharing.</strong> A colony of 7 sentinels at
+the deliberately low acuity 0.55 each infer the creature location (<span class="cross-reference">16</span>)
+and share beliefs through the log-linear pool (<span class="cross-reference">9</span>).
+We compare a <em>communicating</em> colony against an
+<em>incommunicado</em> one of the same size and seed,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b569b83a4fc5">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 7" id="slide-heading-b569b83a4fc5">Study suite
+and… (part 7)</h2>
+<p>scoring each by the mean variational free energy of <span class="cross-reference">Equation (17)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-43752f9b5250">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 8" id="slide-heading-43752f9b5250">Study suite
+and… (part 8)</h2>
+<p>Two protocol details: state inference in this study substitutes a
+flat (uniform) prior for <span class="math inline">\(D\)</span>, and
+each belief’s free energy is scored against the pooled evidence of all
+agents’ observations (the disclosure carried in <span class="cross-reference">Section 7.2</span>).
+The across-seed sample is <span class="math inline">\(n = 480\)</span>
+seeds,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-75cdb0590ee7">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 9" id="slide-heading-75cdb0590ee7">Study suite
+and… (part 9)</h2>
+<p>one colony-mean free energy per seed (<span class="cross-reference">Figure 9</span>,
+<span class="cross-reference">Figure 10</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d188049c8900">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 10" id="slide-heading-d188049c8900">Study suite
+and… (part 10)</h2>
+<p><strong>Study 2 — language acquisition.</strong> Each configured seed
+runs one sentinel trajectory using the conjugate Dirichlet update (<span class="cross-reference">18</span>)
+over 24 steps. We record the KL descent of <span class="cross-reference">Equation (19)</span>
+at each ordered step,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dd1807bce4a1">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 11" id="slide-heading-dd1807bce4a1">Study suite
+and… (part 11)</h2>
+<p>giving 25 points per trajectory and <span class="math inline">\(n =
+480\)</span> independent seed trajectories for the pointwise interval in
+<span class="cross-reference">Figure 11</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-44c446150f23">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 12" id="slide-heading-44c446150f23">Study suite
+and… (part 12)</h2>
+<p><strong>Study 3 — configured BMR sign control.</strong> A redundant
+model reduction and a supported one are scored by the BMR free energy of
+<span class="cross-reference">Equation (20)</span> over
+<span class="math inline">\(n = 4\)</span> candidate states (<span class="cross-reference">Figure 12</span>).
+This fixed-posterior comparison tests the expected signs for two
+declared prunings;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study suite and contamination sweep, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9aa042ca7b7d">
+<h2 class="prose-slide"
+aria-label="Study suite and contamination sweep, part 13" id="slide-heading-9aa042ca7b7d">Study suite
+and… (part 13)</h2>
+<p>it is not a structure-discovery experiment.</p>
+<p><strong>Study 4 — robustness sweep.</strong> The sweep varies two
+factors on a colony of 7 sentinels of which 2 are saboteurs
+(<code>confident_wrong</code>, <span class="cross-reference">Section 5.20</span>):</p>
+</section>
+<section id="contamination-rate" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea10f57bb42f">
+<h2 class="prose-slide" id="slide-heading-ea10f57bb42f">Contamination rate</h2>
+<p>The contamination rate spans <span class="math inline">\(\{0, 0.225,
+0.45, 0.675, 0.9\}\)</span> and is the convex-mix weight of <span class="cross-reference">Equation (21)</span>
+toward the confident-wrong delta.</p>
+</section>
+<section id="server-robustness-setting"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-64ac2dee4e01">
+<h2 class="prose-slide" id="slide-heading-64ac2dee4e01">Server robustness setting</h2>
+<p>The server robustness setting is named with FedGVI
+client-loss/divergence vocabulary for cross-reference only: <span
+class="math inline">\(\{KLD, RKL, AR, beta, rcce\}\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec2eab583d12">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 2" id="slide-heading-ec2eab583d12">Server robustness setting
+(part 2)</h2>
+<p><code>KLD</code> is the non-robust Friston / standard-Bayes baseline
+(server robustness 0, <span class="cross-reference">Equation (10)</span>)
+and serves as the design’s negative control. The recovery identity
+guarantees that it reproduces the naive log-linear pool exactly,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3cfb932b47bf">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 3" id="slide-heading-3cfb932b47bf">Server robustness setting
+(part 3)</h2>
+<p>so every contrast uses the proved un-robustified server rather than a
+separately tuned competitor.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8efe0d66d3af">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 4" id="slide-heading-8efe0d66d3af">Server robustness setting
+(part 4)</h2>
+<p>The remaining labels <span class="math inline">\(\{RKL, AR, beta,
+rcce\}\)</span> each select a fixed <code>robust_aggregate</code>
+down-weighting constant. The executed mapping is KLD (c=0.00), RKL
+(c=1.50), AR (c=1.30), beta (c=1.70), rcce (c=1.60), defined in
+<code>fedference.experiments._common</code>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9be9a34cafb4">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 5" id="slide-heading-9be9a34cafb4">Server robustness setting
+(part 5)</h2>
+<p>None of these labels invoke the client-side
+<code>generalized_posterior</code> update of <span class="cross-reference">Section 5.3</span>
+or the divergence family of <span class="cross-reference">Section 5.6</span>.
+This sweep exercises only the server-side heuristic axis of <span class="cross-reference">Section 3.3</span>
+(<code>robust_aggregate</code>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-363e935723a3">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 6" id="slide-heading-363e935723a3">Server robustness setting
+(part 6)</h2>
+<p>never the client-side source-conditional theorem lane.</p>
+<p>The executed per-divergence down-weighting strengths are fixed
+constants defined in <code>fedference.experiments._common</code> and
+recorded in the run reports.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1aba43be8ca6">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 7" id="slide-heading-1aba43be8ca6">Server robustness setting
+(part 7)</h2>
+<p>The headline verdict pairs 960 independent trials at the fixed
+contamination rate 0.800 — heavy contamination that degrades the naive
+pool while staying below the pure-veto cliff (<span class="cross-reference">Figure 13</span>,
+<span class="cross-reference">Figure 15</span>).
+Each trial contributes one matched (naive, robust) accuracy pair,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-33e60421d12e">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 8" id="slide-heading-33e60421d12e">Server robustness setting
+(part 8)</h2>
+<p>so the replication unit is the trial and the estimand is the
+within-trial accuracy difference at that single rate.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7311b45e1ae4">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 9" id="slide-heading-7311b45e1ae4">Server robustness setting
+(part 9)</h2>
+<p>A complementary exploratory point-estimate logistic-regression proxy
+compares joint NLL/L2 and RCCE/L2 configurations under flipped-label
+contamination (<span class="cross-reference">Figure 18</span>).
+Because both loss and shrinkage change,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e346ef68a9e3">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 10" id="slide-heading-e346ef68a9e3">Server robustness
+setting (part 10)</h2>
+<p>this is a composite loss-and-L2 contrast rather than an RCCE-only
+effect; it represents no weight-space posterior and does not implement a
+FedGVI generalized-posterior objective.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e6e10f2425ed">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 11" id="slide-heading-e6e10f2425ed">Server robustness
+setting (part 11)</h2>
+<p><strong>Study 5 — disjoint-FOV moving world.</strong> This extension
+(<span class="cross-reference">Section 14.7</span>)
+places 3 agents on a 2-slot disjoint-FOV track to test the necessity of
+communication when agents cannot observe the same positions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f260d10cd480">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 12" id="slide-heading-f260d10cd480">Server robustness
+setting (part 12)</h2>
+<p>Isolated agents are compared against EFE-guided communicating agents
+on accuracy across the moving sentinel’s trajectory.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f671f3800a2">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 13" id="slide-heading-1f671f3800a2">Server robustness
+setting (part 13)</h2>
+<p>Five structural extension studies (Studies 5–9, Supplementary
+sections) build on the same POMDP substrate and are described there: the
+moving disjoint-FOV sentinel (<span class="cross-reference">Section 14.7</span>),
+the 2-level hierarchical POMDP (<span class="cross-reference">Section 14.9</span>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Server robustness setting, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-180f3d73aeb6">
+<h2 class="prose-slide"
+aria-label="Server robustness setting, part 14" id="slide-heading-180f3d73aeb6">Server robustness
+setting (part 14)</h2>
+<p>the <span class="math inline">\(N\)</span>-level extension (<span class="cross-reference">Section 14.11</span>),
+the 2-D sensitivity sweep (<span class="cross-reference">Section 14.13</span>),
+and parameter recovery (<span class="cross-reference">Section 15</span>).</p>
+</section>
+<section id="sec:methods-power" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-af9dd1a34504">
+<h2 class="prose-slide" id="slide-heading-af9dd1a34504">Sample size and prospective statistical
+power</h2>
+<p>The verdict design answers a deliberate question: pair <em>many</em>
+trials at <em>one</em> high contamination rate rather than spread few
+trials across the rate curve.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-20120b14bafa">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 2" id="slide-heading-20120b14bafa">Sample
+size and… (part 2)</h2>
+<p>A matched-pairs Wilcoxon test gains power from the number of matched
+pairs, so concentrating <span class="math inline">\(n = 960\)</span>
+paired trials at the single rate 0.800 gives the test the resolution to
+detect the robustness effect;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5b2202c5f399">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 3" id="slide-heading-5b2202c5f399">Sample
+size and… (part 3)</h2>
+<p>scattering the same budget across 5 rates would dilute every
+contrast.</p>
+<p>The across-seed studies are powered separately, with <span
+class="math inline">\(n =
+480\)</span> seeds for belief sharing and <span class="math inline">\(n
+=
+480\)</span> independent seed trajectories for language acquisition.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b2752f0d4ff4">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 4" id="slide-heading-b2752f0d4ff4">Sample
+size and… (part 4)</h2>
+<p>The 25 ordered learning points are repeated measures within each
+seed, not additional independent replicates, so the language interval
+does not count time points as samples.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-03fb09cc9c7a">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 5" id="slide-heading-03fb09cc9c7a">Sample
+size and… (part 5)</h2>
+<p>The structural-extension and cross-study summary tier uses <span
+class="math inline">\(n = 128\)</span> independent seeds and <span
+class="math inline">\(n = 40\)</span> matched trials per contamination
+rate for its robustness row. Trials and clients are nested within a seed
+and are reduced before across-seed inference; they are not additional
+independent replicates.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e86ff80c0c5">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 6" id="slide-heading-7e86ff80c0c5">Sample
+size and… (part 6)</h2>
+<p>The bounded red-team review grid is a separate source-bound analysis
+profile. It uses 160 deterministic seed replicates, with 24 trials
+nested within each seed and scenario/rate cell, and retains the
+registered rates 0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 across the finite
+attack union clean, confident wrong, permutation, byzantine,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-99a0fc512c6c">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 7" id="slide-heading-99a0fc512c6c">Sample
+size and… (part 7)</h2>
+<p>drift, label noise, uniform.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-01ecb426553b">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 8" id="slide-heading-01ecb426553b">Sample
+size and… (part 8)</h2>
+<p>Its independent unit is the configured seed within a declared cell;
+cells that share design structure are not treated as independent worlds.
+Robust operating points, method settings, and rate profiles are fixed
+before the review run.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a4ebf269c2cb">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 9" id="slide-heading-a4ebf269c2cb">Sample
+size and… (part 9)</h2>
+<p>The grid reports selection-free contrasts and keeps clean, uniform,
+label-noise, permutation, confident-wrong, Byzantine, and drift controls
+visible. Completion of this finite review does not close
+server-heuristic characterization, leakage-free calibration,
+external-data, or protocol-reconstruction phases.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-822aa5a74e1a">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 10" id="slide-heading-822aa5a74e1a">Sample
+size and… (part 10)</h2>
+<p>We do not merely assert adequacy — we compute the design power
+implied by the observed effect.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fce70c2e1d40">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 11" id="slide-heading-fce70c2e1d40">Sample
+size and… (part 11)</h2>
+<p>For the headline robust method (RKL) the observed-effect design power
+of the paired Wilcoxon at the run’s <span class="math inline">\(n =
+960\)</span>, computed at <span class="math inline">\(\alpha =
+0.05\)</span> against the directional alternative <code>greater</code>
+(robust accuracy exceeds naive), is 1.0000.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0c43084c9c6d">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 12" id="slide-heading-0c43084c9c6d">Sample
+size and… (part 12)</h2>
+<p>The power approximation uses the deterministic noncentral-normal
+approximation of <span class="cross-reference">Section 5.27</span>,
+deflated by the Wilcoxon’s Pitman asymptotic relative efficiency, so it
+is approximately calibrated for the signed-rank test actually run (exact
+under a normal-shift alternative;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1bf3abd5bf15">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 13" id="slide-heading-1bf3abd5bf15">Sample
+size and… (part 13)</h2>
+<p>the power computation is one-sided while the reported p-values are
+two-sided).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-afe3c6799ddb">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 14" id="slide-heading-afe3c6799ddb">Sample
+size and… (part 14)</h2>
+<p>To bound a confirmatory replication, the prospective sample size
+needed to reach the target power 0.80 at the observed effect is <span
+class="math inline">\(n = 5\)</span> matched trials — the explicit
+sample-size budget a follow-up study should adopt.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sample size and prospective statistical power, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6464cf877025">
+<h2 class="prose-slide"
+aria-label="Sample size and prospective statistical power, part 15" id="slide-heading-6464cf877025">Sample
+size and… (part 15)</h2>
+<p>These power quantities characterize the <em>server-side</em>
+aggregation contrast; per the honesty contract of <span class="cross-reference">Section 3.3</span>
+they do not certify the per-client <span
+class="math inline">\(\beta\)</span>/rcce guarantees, which are pinned
+by the locked core (<span class="cross-reference">Section 6</span>)
+rather than by these aggregation-level statistics.</p>
+</section>
+<section id="sec:methods-software" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d655e8313138">
+<h2 class="prose-slide" id="slide-heading-d655e8313138">Software environment and configuration
+fingerprint</h2>
+<p>The FedGVI core, the POMDP studies, and the logistic-regression
+baseline are pure NumPy / SciPy — no GPU and no network.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Software environment and configuration fingerprint, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-653fb4960c3a">
+<h2 class="prose-slide"
+aria-label="Software environment and configuration fingerprint, part 2" id="slide-heading-653fb4960c3a">Software
+environment and… (part 2)</h2>
+<p>The deterministic-MLP neural complement (<span class="cross-reference">Section 7.6</span>)
+additionally uses PyTorch (CPU);</p>
+<p>the analysis pipeline executes it and emits its numbers as tokens
+exactly like every other result when the <code>torch</code> optional
+extra is installed,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Software environment and configuration fingerprint, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0555702968bc">
+<h2 class="prose-slide"
+aria-label="Software environment and configuration fingerprint, part 3" id="slide-heading-0555702968bc">Software
+environment and… (part 3)</h2>
+<p>and otherwise records a skipped status with unavailable-value
+sentinels instead of silently fabricating neural results.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Software environment and configuration fingerprint, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f3a8b5b60ca">
+<h2 class="prose-slide"
+aria-label="Software environment and configuration fingerprint, part 4" id="slide-heading-9f3a8b5b60ca">Software
+environment and… (part 4)</h2>
+<p>Versions and platform — including the PyTorch version used for the
+MLP complement — are recorded automatically in <span class="cross-reference">Section 10</span>.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

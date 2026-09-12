@@ -1,6 +1,6 @@
 {
   "accuracy_by_config": {
-    "nll / KLD (standard)": [
+    "nll / L2=0.05 (standard proxy)": [
       0.863955078125,
       0.8648925781250001,
       0.862568359375,
@@ -8,7 +8,7 @@
       0.530244140625,
       0.15939453125
     ],
-    "rcce / AR (robust)": [
+    "rcce / L2=0.10 (exploratory proxy)": [
       0.8641894531250001,
       0.86494140625,
       0.864609375,
@@ -18,7 +18,7 @@
     ]
   },
   "accuracy_ci_by_config": {
-    "nll / KLD (standard)": [
+    "nll / L2=0.05 (standard proxy)": [
       [
         0.8622653808593749,
         0.8656838378906251
@@ -44,7 +44,7 @@
         0.166494140625
       ]
     ],
-    "rcce / AR (robust)": [
+    "rcce / L2=0.10 (exploratory proxy)": [
       [
         0.862529052734375,
         0.8658398437499999
@@ -72,7 +72,7 @@
     ]
   },
   "accuracy_seed_values_by_config": {
-    "nll / KLD (standard)": [
+    "nll / L2=0.05 (standard proxy)": [
       [
         0.871875,
         0.87,
@@ -470,7 +470,7 @@
         0.1475
       ]
     ],
-    "rcce / AR (robust)": [
+    "rcce / L2=0.10 (exploratory proxy)": [
       [
         0.87125,
         0.870625,
@@ -869,7 +869,10 @@
       ]
     ]
   },
+  "analysis_unit": "synthetic-data seed within contamination operating point",
   "ci_percent": 95,
+  "claim_boundary": "exploratory conditional point-estimate baseline; no posterior-uncertainty BNN, leakage-free calibration, universal robustness, or source-protocol BNN replication claim; the legacy AR argument selects stronger L2 shrinkage and does not evaluate an Alpha-Renyi objective",
+  "configuration_boundary": "this composite two-configuration contrast changes both client loss and L2 shrinkage: NLL with L2 coefficient 0.05 versus RCCE with L2 coefficient 0.10; it cannot identify an RCCE-only effect. KLD and AR are compatibility argument names, and neither branch computes a weight-space divergence",
   "contamination_levels": [
     0.0,
     0.1,
@@ -878,11 +881,14 @@
     0.35,
     0.4
   ],
+  "interval_method": "percentile bootstrap across synthetic-data seeds",
+  "model_family": "point_estimate_logistic_regression",
   "n_bootstrap": 5000,
   "n_per": 200,
   "n_seeds": 64,
   "peak_margin": 0.027773437499999942,
   "peak_margin_contamination": 0.35,
+  "replication_unit": "synthetic-data seed",
   "robust_loss_param": 1.0,
   "robust_minus_standard": [
     0.00023437500000000888,
@@ -892,5 +898,8 @@
     0.027773437499999942,
     -0.013916015624999972
   ],
-  "seed": 0
+  "schema_version": "1.0",
+  "seed": 0,
+  "selection_disclosure": "peak_margin_contamination is selected within the displayed contamination sweep by maximum composite-configuration held-out accuracy margin; robust_loss_param and n_per are configured inputs, not selected by this report",
+  "study_status": "exploratory_conditional_synthetic_sweep"
 }

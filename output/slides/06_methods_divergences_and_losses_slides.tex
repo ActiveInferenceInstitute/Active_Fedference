@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,164 +259,221 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Divergences: robust objectives
-and the KL limit}
+\begin{frame}{Divergences: robust objectives and the KL limit}
 \protect\phantomsection\label{sec:method-divergences}
 \ifcsname proposition\endcsname
 \else
 \newtheorem{proposition}{Proposition}
 \fi
 
-The generalized-Bayes objective eq.~1 has exactly two
+The generalized-Bayes objective eq.~2 has exactly two
 tunable ingredients: the divergence \(D\) that regularizes the update
 toward the prior or cavity, and the loss \(L\) that measures data
-fidelity. This section develops both --- the divergence family first,
-the robust loss family in sec.~\breaktt{sec:method-losses} --- and shows
-that each carries a limit in which it collapses to its standard
-counterpart, KL for the divergence and NLL for the loss. Those
-client-side limits establish recovery to standard Bayes. The distinct
-categorical server bridge in sec.~5.8 then
-identifies a qualified log-linear message-combination specialization; it
-does not recover the complete source belief-sharing protocol.
-
+fidelity.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Divergences: robust objectives
-and the KL limit}
+\begin{frame}{Divergences: robust\ldots{} (part 2)}
+This section develops both --- the divergence family first, the robust
+loss family in sec.~5.7 --- and shows that each
+carries a limit in which it collapses to its standard counterpart,
+
+KL for the divergence and NLL for the loss.
+\end{frame}
+
+\begin{frame}{Divergences: robust\ldots{} (part 3)}
+Those client-side limits establish recovery to standard Bayes. The
+distinct categorical server bridge in sec.~5.8
+then identifies a qualified log-linear message-combination
+specialization; it does not recover the complete source belief-sharing
+protocol.
+\end{frame}
+
+\begin{frame}[fragile]{Divergences: robust\ldots{} (part 4)}
 The regularizing divergence \(D\) decides how far a client's updated
 belief may move from its cavity, so choosing \(D\) is a modeling
 decision rather than a numerical detail. The family lives in
 \texttt{divergences.py}. We implement the forward KL (the standard-Bayes
-case), the reverse KL (FedGVI's \texttt{RKL} client divergence), the
-standard \(\alpha\)-Rényi diagnostic, FedGVI's Alpha-Rényi normalization
-(AR), and total variation (a bounded distance in \([0,1]\)). The single
-most important recovery property is that the robust members recover the
-KL divergence in a limit:
-
+case), the reverse KL (FedGVI's \texttt{RKL} client divergence),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Divergences: robust objectives
-and the KL limit}
-\begin{equation}\protect\phantomsection\label{eq:renyi-limit}{
+\begin{frame}{Divergences: robust\ldots{} (part 5)}
+the standard \(\alpha\)-Rényi diagnostic, FedGVI's Alpha-Rényi
+normalization (AR), and total variation (a bounded distance in
+\([0,1]\)).
+
+The single most important recovery property is that the robust members
+recover the KL divergence in a limit:
+\end{frame}
+
+\begin{frame}{Divergences: robust\ldots{} (part 6)}
+\begin{equation}\tag{6}\protect\phantomsection\label{eq:renyi-limit}{
 D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q \,\|\, p).
 }\end{equation}
-
-\begin{lemma}[KL is the \(\alpha\to1\) limit of the Rényi family]\label{lem:renyi-kl-limit}
-For categorical pmfs \(q, p\) on a finite support, the \(\alpha\)-Rényi divergence
-\(D_\alpha(q\,\|\,p) = (\alpha-1)^{-1}\log\sum_k q_k^\alpha p_k^{1-\alpha}\) tends
-to \(\mathrm{KL}(q\,\|\,p)\) as \(\alpha\to1\), the limit (\ref{eq:renyi-limit}). The
-\texttt{divergences.py} implementation switches to the KL closed form inside a small
-band around \(\alpha=1\), so on that band the equality is exact rather than merely
-asymptotic.
-\end{lemma}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Divergences: robust objectives
-and the KL limit}
+\begin{frame}{Divergences: robust\ldots{} (part 7)}
+\begin{lemma}[KL is the \(\alpha\to1\) limit of the Rényi family]\label{lem:renyi-kl-limit}
+For finite-support categorical pmfs \(q, p\),
+\(D_\alpha(q\,\|\,p) = (\alpha-1)^{-1}\log\sum_k q_k^\alpha p_k^{1-\alpha}\) tends
+to \(\mathrm{KL}(q\,\|\,p)\) as \(\alpha\to1\), the limit
+(6). Near \(\alpha=1\), \texttt{divergences.py} returns the
+KL closed form, making equality exact there rather than asymptotic.
+\end{lemma}
+\end{frame}
+
+\begin{frame}{Divergences: robust\ldots{} (part 8)}
 KL is the divergence that makes generalized Bayes collapse to standard
 Bayes. When local posteriors are then combined by the separately
 specified categorical message-combination specialization in
 sec.~5.8, the project recovers its
-log-linear-pool corner; neither step reconstructs the complete
-belief-sharing protocol of Friston et al. (Friston et al. 2024).
-Everything robust is a controlled departure from that fixed point; Lemma
-\ref{lem:renyi-kl-limit} is the formal hinge, and the largest observed
-Rényi-versus-KL discrepancy in the recovery band is 0 (reported in
-sec.~7.1).
-
+log-linear-pool corner;
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Divergences: robust objectives
-and the KL limit}
-The standard Rényi diagnostic is \breaktt{renyi\_divergence}; FedGVI's
-\texttt{AR} regularizer is \breaktt{alpha\_renyi\_divergence}, equal to
+\begin{frame}{Divergences: robust\ldots{} (part 9)}
+neither step reconstructs the complete belief-sharing protocol of
+Friston et al. (Friston et al. 2024).
+\end{frame}
+
+\begin{frame}{Divergences: robust\ldots{} (part 10)}
+Everything robust is a controlled departure from that fixed point; Lemma
+3 is the formal hinge, and the largest observed
+Rényi-versus-KL discrepancy in the recovery band is 0 (reported in
+sec.~7.1).
+\end{frame}
+
+\begin{frame}[fragile]{Divergences: robust\ldots{} (part 11)}
+The standard Rényi diagnostic is \texttt{renyi\_divergence}; FedGVI's
+\texttt{AR} regularizer is \texttt{alpha\_renyi\_divergence}, equal to
 the standard form divided by \(\alpha\). For the finite categorical
-support, \breaktt{generalized\_posterior} solves the named Alpha-Rényi
-objective through its scalar normalization condition rather than using a
-generic power-softmax shortcut. This distinction keeps the reported
-limit and the implemented objective aligned. The \texttt{AR} regularizer
-is not merely a diagnostic: it is exercised as a client divergence in
-the categorical FedGVI baseline of sec.~7.6,
-where it pairs with the rcce loss of sec.~\breaktt{sec:method-losses} to
+support,
+\end{frame}
+
+\begin{frame}[fragile]{Divergences: robust\ldots{} (part 12)}
+\texttt{generalized\_posterior} solves the named Alpha-Rényi objective
+through its scalar normalization condition rather than using a generic
+power-softmax shortcut.
+\end{frame}
+
+\begin{frame}[fragile]{Divergences: robust\ldots{} (part 13)}
+This distinction keeps the reported limit and the implemented objective
+aligned. The \texttt{AR} regularizer is not merely a diagnostic: it is
+exercised as a client divergence in the categorical FedGVI baseline of
+sec.~7.6,
+\end{frame}
+
+\begin{frame}{Divergences: robust\ldots{} (part 14)}
+where it pairs with the rcce loss of sec.~5.7 to
 constitute the genuine per-client robustness axis.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Robust losses: bounded influence
-at the Bayes corner}
+\begin{frame}[fragile]{Robust losses: bounded influence at the Bayes
+corner}
 \protect\phantomsection\label{sec:method-losses}
-The data-fidelity term of eq.~1 lives in
+The data-fidelity term of eq.~2 lives in
 \texttt{losses.py}. Standard Bayes uses the negative log-likelihood,
-\(\mathrm{NLL}(p, o) = -\log p(o)\), which is \emph{unbounded}: a single
-contaminated observation with \(p(o)\to 0\) dominates the posterior.
+\(\mathrm{NLL}(p, o) = -\log p(o)\), which is \emph{unbounded}:
+\end{frame}
+
+\begin{frame}{Robust losses (part 2)}
+a single contaminated observation with \(p(o)\to 0\) dominates the
+posterior.
+\end{frame}
+
+\begin{frame}{Robust losses (part 3)}
 This is precisely the fragility the robust-Bayes literature was built to
 remove (Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015;
 Zhang and Sabuncu 2018), extended into robust-divergence variational
 inference (Futami et al. 2018), and the property FedGVI imports into
-federated inference (Mildner et al. 2025). The robust-statistics
-vocabulary here is the usual influence-function one (Huber and Ronchetti
-2009): bounded losses reduce the leverage of extreme observations, while
-NLL does not. We implement two categorical robust losses, each of which
-recovers NLL in a limit.
-
+federated inference (Mildner et al. 2025).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Robust losses: bounded influence
-at the Bayes corner}
+\begin{frame}{Robust losses (part 4)}
+The robust-statistics vocabulary here is the usual influence-function
+one (Huber and Ronchetti 2009): bounded losses reduce the leverage of
+extreme observations, while NLL does not.
+\end{frame}
+
+\begin{frame}{Robust losses (part 5)}
+We implement two categorical robust losses, each of which recovers NLL
+in a limit.
+
 The density-power (\(\beta\)) loss (Basu et al. 1998; Fujisawa and
 Eguchi 2008; Ghosh and Basu 2015; Futami et al. 2018) is recentered so
 that the scalar limit is exact:
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:beta-loss}{
-L_\beta(p, o) \;=\; -\frac{p(o)^\beta - 1}{\beta}
-\;+\; \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},
-\qquad L_\beta \xrightarrow[\beta\to 0]{} \mathrm{NLL}.
+\begin{frame}{Robust losses (part 6)}
+\begin{equation}\tag{7}\protect\phantomsection\label{eq:beta-loss}{
+\begin{aligned}
+L_\beta(p, o)
+&= -\frac{p(o)^\beta - 1}{\beta}
+   + \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},\\
+L_\beta
+&\xrightarrow[\beta\to 0]{} \mathrm{NLL}.
+\end{aligned}
 }\end{equation}
+\end{frame}
 
+\begin{frame}{Robust losses (part 7)}
 The robust categorical cross-entropy (generalized cross-entropy) (Zhang
 and Sabuncu 2018) is
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:rcce-loss}{
-L_{q_{\rm loss}}(p, o) \;=\;
-\frac{1 - p(o)^{q_{\rm loss}}}{q_{\rm loss}},
-\qquad L_{q_{\rm loss}} \xrightarrow[q_{\rm loss}\to 0]{} \mathrm{NLL},
+\begin{frame}{Robust losses (part 8)}
+\begin{equation}\tag{8}\protect\phantomsection\label{eq:rcce-loss}{
+\begin{aligned}
+L_{q_{\text{loss}}}(p, o)
+&= \frac{1 - p(o)^{q_{\text{loss}}}}{q_{\text{loss}}},\\
+L_{q_{\text{loss}}}
+&\xrightarrow[q_{\text{loss}}\to 0]{} \mathrm{NLL}.
+\end{aligned}
 }\end{equation}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Robust losses: bounded influence
-at the Bayes corner}
-which by l'Hôpital recovers NLL as \(q_{\rm loss}\to 0\) and at
-\(q_{\rm loss}=1\) is the bounded mean-absolute-error loss \(1 - p(o)\),
-finite exactly where NLL diverges.
+\begin{frame}{Robust losses (part 9)}
+which by l'Hôpital recovers NLL as \(q_{\text{loss}}\to 0\) and at
+\(q_{\text{loss}}=1\) is the bounded mean-absolute-error loss
+\(1 - p(o)\), finite exactly where NLL diverges.
+\end{frame}
 
+\begin{frame}{Robust losses (part 10)}
 \begin{proposition}[\(\beta\)-loss and rcce recover NLL]\label{prop:robust-loss-recovery}
-The recentered density-power loss \(L_\beta\) of (\ref{eq:beta-loss}) tends to the
-negative log-likelihood as \(\beta\to0\), and the robust categorical
-cross-entropy \(L_{q_{\rm loss}}\) of (\ref{eq:rcce-loss}) tends to the negative
-log-likelihood as \(q_{\rm loss}\to0\). Both limits are exact in the
-implementation; the largest observed
-\(\beta\to0\) discrepancy from the NLL closed form is 0
-and the largest \(q_{\rm loss}\to0\) discrepancy is 0
-(Section~7.1). At the bounded end the loss stays finite where NLL
-diverges, the source of the robustness validated in Section~7.5.
+The losses in (7) and (8) recover NLL as
+their respective loss parameters tend to zero. Both limits are exact in the
+implementation. At their bounded endpoints, both losses remain finite where
+NLL diverges.
 \end{proposition}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Robust losses: bounded influence
-at the Bayes corner}
-Taking the loss-parameter limits (\(\beta\to0\) or \(q_{\rm loss}\to0\))
-reproduces standard Bayes. Combining those local posteriors through the
-qualified categorical specialization in
+\begin{frame}{Robust losses (part 11)}
+The largest observed discrepancies are 0 and 0, respectively
+(sec.~7.1). sec.~7.5
+validates the bounded-loss robustness.
+\end{frame}
+
+\begin{frame}{Robust losses (part 12)}
+Taking the loss-parameter limits (\(\beta\to0\) or
+\(q_{\text{loss}}\to0\)) reproduces standard Bayes. Combining those
+local posteriors through the qualified categorical specialization in
 sec.~5.8 is a separate server step, not a
 recovery claim for the complete belief-sharing protocol of Friston et
-al. (2024). This is the \textbf{per-agent rigorous robustness axis}: it
-is derived from eq.~1 and provably limits to Bayes
-through Proposition \ref{prop:robust-loss-recovery} and Lemma
-\ref{lem:renyi-kl-limit}, and it is the axis that carries FedGVI's
-bounded-influence guarantee under the cited matching assumptions. The
-complementary server-side divergence-reweighting heuristic of
+al. (2024).
+\end{frame}
+
+\begin{frame}{Robust losses (part 13)}
+This is the \textbf{per-agent rigorous robustness axis}: it is derived
+from eq.~2 and provably limits to Bayes through
+Proposition 4 and Lemma
+3,
+\end{frame}
+
+\begin{frame}{Robust losses (part 14)}
+and it is the axis that carries FedGVI's bounded-influence guarantee
+under the cited matching assumptions.
+\end{frame}
+
+\begin{frame}{Robust losses (part 15)}
+The complementary server-side divergence-reweighting heuristic of
 sec.~5.8 is a distinct device and is never
 granted this guarantee (sec.~3.3).
 \end{frame}

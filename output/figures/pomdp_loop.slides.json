@@ -1,0 +1,125 @@
+{
+  "panels": [
+    {
+      "alt": "Shared world; D = den: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0f27ca36be5f27a977a2242d36cc8699e64bae0321902288abd35d82c120d1df",
+      "src": "../figures/pomdp_loop.slide-world.png"
+    },
+    {
+      "alt": "Sentinel 1 \u2192 Shared hidden location: Visual field; retained_warning.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c730eed5d2457c01e853fab2cc8606017bb34d00a253ade60156a3e7086fffd1",
+      "src": "../figures/pomdp_loop.slide-visual-field-1.png"
+    },
+    {
+      "alt": "Sentinel 2 \u2192 Shared hidden location: Visual field; retained_warning.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ed019f969ce37d962d1d6dedc7dfb4b6603855d670eed274db440b46a0629a35",
+      "src": "../figures/pomdp_loop.slide-visual-field-2.png"
+    },
+    {
+      "alt": "Sentinel n \u2192 Shared hidden location: Visual field; retained_warning.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "343b3728b53f603c13d03f181d9f7c399eefecfec70530794a07a487be55dac7",
+      "src": "../figures/pomdp_loop.slide-visual-field-n.png"
+    },
+    {
+      "alt": "Schematic local posterior q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8567acc7293816f3f3afa47898488a1aa5f355769a8aa86153924b9653c94474",
+      "src": "../figures/pomdp_loop.slide-local-posterior-1.png"
+    },
+    {
+      "alt": "Schematic local posterior q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3f559a1541e45db93a76db15578622929ebabb0526462a8b5d2e6a46b001aba0",
+      "src": "../figures/pomdp_loop.slide-local-posterior-2.png"
+    },
+    {
+      "alt": "Schematic local posterior qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8ee586200b0f2826eebca0e58a1bbca516266201908795ff0d5ed3763b634885",
+      "src": "../figures/pomdp_loop.slide-local-posterior-n.png"
+    },
+    {
+      "alt": "Local posterior q1 \u2192 Server: Posterior message; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f368ccbbfbf3bbcf971d7670d9c363ed0c297c0ba4da97cb4ba0889fb53af3e6",
+      "src": "../figures/pomdp_loop.slide-message-1.png"
+    },
+    {
+      "alt": "Local posterior q2 \u2192 Server: Posterior message; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "502f41982c642770045ea3ba14d27f2a2ff3a476e2c48869b8694ec2224f4c62",
+      "src": "../figures/pomdp_loop.slide-message-2.png"
+    },
+    {
+      "alt": "Local posterior qn \u2192 Server: Posterior message; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "36cdcf1acf2498a750b57868cce07493825263a13f74ff48fb904f796370bd8a",
+      "src": "../figures/pomdp_loop.slide-message-n.png"
+    },
+    {
+      "alt": "Qualified Eq. 7 pool / robust route \u2192 Posterior excluding recipient: Server return; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e31baf38370aa427d0b8a27de3e352a2a11e1e930347569d718e26cb7fb6fe89",
+      "src": "../figures/pomdp_loop.slide-return.png"
+    },
+    {
+      "alt": "Posterior excluding recipient \u2192 Recipient n; m \u2260 n: Self-exclusion; retained_warning.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "85aa506d0d74ee8ccd43dc671b1b7443f8ce7608cb7037c259ea77e63857f407",
+      "src": "../figures/pomdp_loop.slide-recipient.png"
+    },
+    {
+      "alt": "Hidden location s(t) \u2192 Private outcome o(t): A = P(o|s); data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b2c561e6b79b8f7a8c158c692edc9a4898e7e65c24188356ba409cb68480a16a",
+      "src": "../figures/pomdp_loop.slide-sensing.png"
+    },
+    {
+      "alt": "Private outcome o(t) \u2192 Local posterior q(t): Local inference; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a2586c1985f2957d71630c40dc8ed70bbf4f8017492d2b62b169d663c69888c3",
+      "src": "../figures/pomdp_loop.slide-inference.png"
+    },
+    {
+      "alt": "Local posterior q(t) \u2192 Action: still / left / right: C preferences / EFE; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "32676772af922b7d8d6f34584142aa26350889a385715c3648e4d5cd3c685bcc",
+      "src": "../figures/pomdp_loop.slide-policy.png"
+    },
+    {
+      "alt": "Action u(t) \u2192 Next hidden state s(t+1): B = P(s\u2032|s,u); data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bdf76b25369d7d08e8eafe8e3402eb66ab2613a4edb53901a372ecd4a198073b",
+      "src": "../figures/pomdp_loop.slide-transition.png"
+    },
+    {
+      "alt": "Next hidden state s(t+1) \u2192 Hidden location next step: Temporal loop; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fc18479b64d5534da7dffd18439588a69463a62c42ade04c00b66828777883fb",
+      "src": "../figures/pomdp_loop.slide-next-step.png"
+    },
+    {
+      "alt": "Agents share beliefs about one hidden location. Private outcomes and controls remain local; no raw sensory data are pooled.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "be2f81db58ba7ce8d98e85385fd38e59cabc80e7bd2f4dde05b1376ad79cd39b",
+      "src": "../figures/pomdp_loop.slide-privacy.png"
+    },
+    {
+      "alt": "Flat federation uses inference and communication. The moving-world extension also executes B and EFE-guided control.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7a0ffd6c30100f67f6de28d2a3ece77b34087217ac9fcc2c824efa99d7b61fcc",
+      "src": "../figures/pomdp_loop.slide-optional-control.png"
+    },
+    {
+      "alt": "Model schematic, not an empirical result. Hatched cells only illustrate topology or posterior emphasis; they are not measured probability values.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b0992551a992291f5c4726131e00311186ec9659667d0564d938d868edd133dc",
+      "src": "../figures/pomdp_loop.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

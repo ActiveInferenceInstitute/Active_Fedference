@@ -1,0 +1,29 @@
+{
+  "panels": [
+    {
+      "alt": "Both signed model-reduction gains on one nats scale; hatches distinguish targets and a dotted rule marks zero.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "82ba8219627d29b1eff327571454558681bf0c0182f2f9b077ca763126f18e8b",
+      "src": "../figures/emergence_bmr.slide-controls.png"
+    },
+    {
+      "alt": "Redundant target \u0394F: 3.677 nats. Supported target \u0394F: -27.67 nats. Positive gain favors the reduction; negative gain rejects it.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ee3b90ad0378b0d3ee4269d349479587397ebe8f3125736d9c31ee2a9329ef38",
+      "src": "../figures/emergence_bmr.slide-values.png"
+    },
+    {
+      "alt": "Source configured sign-control verdict: True. This is not an optimizer convergence diagnostic.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a1e393d20451b4971584a5bd427ed21327ac0f8a8a293ce8a0efbe6b8fe1f67d",
+      "src": "../figures/emergence_bmr.slide-verdict.png"
+    },
+    {
+      "alt": "One fixed-posterior categorical diagnostic. No independent stochastic replication or uncertainty interval applies. Source-mechanism analogue, not full protocol reconstruction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b9384cda60d678bacb3507613639256ebf9eed86309ecb52d5ab1c8a79d90806",
+      "src": "../figures/emergence_bmr.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

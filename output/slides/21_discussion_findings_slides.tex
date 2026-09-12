@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -219,214 +261,322 @@
 
 \section{Discussion: what the evidence supports}\label{sec:discussion}
 
-\begin{frame}[allowframebreaks]{Discussion: what the evidence supports}
+\begin{frame}{Discussion: what the evidence supports}
 The 9 studies probe distinct parts of one categorical, factor-based
 framework rather than repeating a single benchmark. Their common result
 is narrow but useful: the client construction contains its
 standard-Bayes limit and the server has a named project log-linear-pool
-recovery corner, and behavior away from those limits can be measured
-under declared contamination, sampling, and model assumptions. The
-recovery identities are formal; the performance results are conditional
-simulation evidence.
+recovery corner,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{The recovery limit is the formal anchor}
+\begin{frame}{Discussion: what the\ldots{} (part 2)}
+and behavior away from those limits can be measured under declared
+contamination, sampling, and model assumptions. The recovery identities
+are formal; the performance results are conditional simulation evidence.
+\end{frame}
+
+\begin{frame}{The recovery limit is the formal anchor}
 \protect\phantomsection\label{sec:discussion-limit}
 The coherence of the framework rests on the KL/NLL client limits and the
-zero-robustness project-pool identity (eq.~7,
-eq.~6). This is an identity of the stated
-categorical implementation, not an asymptotic claim about every
-generalized Bayesian model or a reconstruction of the complete source
-protocol. The server aggregator returns the log-linear pool
-(eq.~6) with maximum deviation 0; the generalized
+zero-robustness project-pool identity (eq.~10,
+eq.~11). This is an identity of the stated
+categorical implementation,
+\end{frame}
+
+\begin{frame}{The recovery limit is the\ldots{} (part 2)}
+not an asymptotic claim about every generalized Bayesian model or a
+reconstruction of the complete source protocol.
+\end{frame}
+
+\begin{frame}{The recovery limit is the\ldots{} (part 3)}
+The server aggregator returns the log-linear pool
+(eq.~9) with maximum deviation 0; the generalized
 posterior returns the closed-form Bayes update with deviation 5.55e-17;
 and the Rényi divergence, \(\beta\)-loss, and robust cross-entropy
-recover their KL/NLL limits with residuals 0, 0, and 0. Theorem
-5, Corollary
+recover their KL/NLL limits with residuals 0, 0, and 0.
+\end{frame}
+
+\begin{frame}{The recovery limit is the\ldots{} (part 4)}
+Theorem 5, Corollary
 6, Lemma 3, and
 Proposition 4 state the formal limits; the
 recovery checks in sec.~7.1 are the executable
 falsification harness.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What the study suite jointly shows}
+\begin{frame}{What the study suite jointly shows}
 \protect\phantomsection\label{sec:discussion-joint}
 Read together, the suite separates into two kinds of result: identities
 that hold exactly at the standard corner, and performance contrasts that
 are explicitly conditional on the operating regime. The distinction is
 the point of the joint reading --- it says which claims travel and which
 are tied to the declared world.
-
-Studies 1--3 sit at the standard corner. In the reduced categorical
-source-mechanism analogue protocol, belief sharing lowers mean
-variational free energy by \(\Delta \bar F = 3.3109\) nats
-(sec.~7.2, fig.~8);
-Dirichlet language learning reduces KL from 3.4231 to 0.0027 nats
-(sec.~7.3, fig.~10); and
-Bayesian model reduction accepts the redundant-pruning candidate while
-rejecting the supported-column control
-(sec.~7.4, fig.~11). These
-are mechanistic checks, not evidence that the implementation matches
-every detail of the source simulations.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What the study suite jointly shows}
+\begin{frame}{What the study suite jointly\ldots{} (part 2)}
+Studies 1--3 sit at the standard corner. In the reduced categorical
+analogue, the paired difference
+\(\Delta \bar F=\bar F_{\text{solo}}-\bar F_{\text{share}}\) is 3.3109
+nats, so its positive sign indicates lower mean free energy with
+communication (sec.~7.2,
+\end{frame}
 
+\begin{frame}{What the study suite jointly\ldots{} (part 3)}
+fig.~9). Seeds are the independent unit; agents
+remain nested within seed.
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 4)}
+Dirichlet learning reduces KL from 3.4231 to 0.0027 nats
+(sec.~7.3, fig.~11). The
+configured BMR sign control favors redundant-column pruning and rejects
+the supported-column reduction (sec.~7.4,
+fig.~12).
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 5)}
+These are bounded mechanistic checks, not exact source-protocol
+replications or general structure-discovery results.
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 6)}
 Study 4 steps away from the corner by holding the hidden state and
 attack target fixed while redrawing matched contaminated colonies. The
-standard pool degrades across the declared rate grid. The server-side
-heuristic is not uniformly better: its robust members are similar to or
-slightly below the standard pool at low contamination, then the selected
-pooled display member separates in its favor under severe contamination.
-At the largest swept rate, AR reaches 0.9880 against 0.6928 for the
-standard pool (tbl.~3; the sweep figure
-fig.~12 plots the separate matched-trial gallery
-colony, whose largest-rate separation is smaller). This regime
-dependence is a result, not a nuisance to be hidden: robustness can cost
-efficiency when the attack is weak and pay off when the declared
-contamination is severe.
-
+standard pool degrades across the declared rate grid.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What the study suite jointly shows}
+\begin{frame}{What the study suite jointly\ldots{} (part 7)}
+The server-side heuristic is not uniformly better: its robust members
+are similar to or slightly below the standard pool at low contamination,
+then the selected pooled display member separates in its favor under
+severe contamination.
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 8)}
+At the largest swept rate, AR reaches 0.9880 against 0.6928 for the
+standard pool (tbl.~4; the sweep plot in
+fig.~13 shows the separate matched-trial gallery
+colony, whose largest-rate separation is smaller).
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 9)}
+This regime dependence is a result, not a nuisance to be hidden:
+robustness can cost efficiency when the attack is weak and pay off when
+the declared contamination is severe.
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 10)}
 The structural extension studies (Studies 5--9) sharpen the conditional
 half of that split rather than adding further corner checks, and they
 are reported with their negative contrasts intact. Communication is not
-uniformly beneficial: the cross-study summary
-(fig.~27) reports each study's federation
-benefit in its native units with seed-level intervals --- several
-studies clearly positive, the moving-world EFE and two-level
-hierarchical studies approximately zero --- so pooling helps when views
-are complementary and can be unnecessary or mildly costly when the
-agents already agree. Adding hierarchical depth is held to the same
-standard --- the two-level stack does not beat the flat baseline on
-location accuracy (the paired gap is a small, statistically reliable
-cost) (sec.~13.9), earning its place only by
-additionally resolving the context latent above chance. The joint lesson
-is therefore not that federation or depth is always worth its cost, but
+uniformly beneficial:
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What the study suite jointly shows}
-that the suite measures the regimes in which each one is.
+\begin{frame}{What the study suite jointly\ldots{} (part 11)}
+the cross-study summary (fig.~30) reports
+each study's federation headline signed contrast or estimand in its
+native units. Its intervals come from the separate harmonized seed-level
+rerun, including rows whose primary figure is a deterministic
+diagnostic; several rows are positive,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What this simulation identifies---and
-what it does not}
+\begin{frame}{What the study suite jointly\ldots{} (part 12)}
+while the moving-world EFE and two-level hierarchical rows are
+approximately zero.
+
+Pooling helps when views are complementary and can be unnecessary or
+mildly costly when the agents already agree.
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 13)}
+Adding hierarchical depth is held to the same standard --- the two-level
+stack does not beat the flat baseline on location accuracy (the paired
+gap is a small, statistically reliable cost)
+(sec.~14.9), earning its place only by
+additionally resolving the context latent above chance.
+\end{frame}
+
+\begin{frame}{What the study suite jointly\ldots{} (part 14)}
+The joint lesson is therefore not that federation or depth is always
+worth its cost, but that the suite measures the regimes in which each
+one is.
+\end{frame}
+
+\begin{frame}{What this simulation identifies---and what it does not}
 \protect\phantomsection\label{sec:discussion-identifiability}
 The primary robustness estimand is the matched-trial mean difference in
 consensus accuracy conditional on the seeded true state and attack
-geometry. The 960 paired trials quantify Monte Carlo variation for that
-estimand; they do not average over hidden states, attack targets,
-adaptive adversaries, or real deployments. The cross-study layer reduces
-its matched trials within seed before seed-level summaries, so clients
-and within-seed trials are not silently counted as independent
-replicates. This follows simulation study guidance to declare the
-estimand and Monte Carlo unit explicitly (Morris et al. 2019; Koehler et
-al. 2009), and the bootstrap interval follows the declared resampling
-unit rather than treating nested observations as a flat sample (Loy and
-Korobova 2021).
-
+geometry.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{What this simulation identifies---and
-what it does not}
+\begin{frame}{What this simulation\ldots{} (part 2)}
+The 960 paired trials quantify Monte Carlo variation for that estimand;
+they do not average over hidden states, attack targets, adaptive
+adversaries, or real deployments.
+\end{frame}
+
+\begin{frame}{What this simulation\ldots{} (part 3)}
+The cross-study layer reduces its matched trials within seed before
+seed-level summaries, so clients and within-seed trials are not silently
+counted as independent replicates.
+\end{frame}
+
+\begin{frame}{What this simulation\ldots{} (part 4)}
+This follows simulation study guidance to declare the estimand and Monte
+Carlo unit explicitly (Morris et al. 2019; Koehler et al. 2009), and the
+bootstrap interval follows the declared resampling unit rather than
+treating nested observations as a flat sample (Loy and Korobova 2021).
+\end{frame}
+
+\begin{frame}{What this simulation\ldots{} (part 5)}
 The consequence is a more informative claim boundary. The sweep supports
 a conditional statement about this contamination mechanism and these
 categorical beliefs; it does not establish universal Byzantine
-tolerance, calibration, or truth recovery. The result also does not
-identify a single universally best robustness parameter independent of
-the operating regime: the standard pool is preferable at the
-low-contamination cells in this run, while at least one robust member
-has a BH-rejected positive contrast in the declared high-contamination
-verdict; the tied display set and deterministic tie-break are reported
-separately. Those are precisely the conditions a future adaptive or
-deployment study must vary.
+tolerance, calibration, or truth recovery.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{The robustness verdict is conditional
-and statistically qualified}
+\begin{frame}{What this simulation\ldots{} (part 6)}
+The result also does not identify a single universally best robustness
+parameter independent of the operating regime: the standard pool is
+preferable at the low-contamination cells in this run,
+\end{frame}
+
+\begin{frame}{What this simulation\ldots{} (part 7)}
+while at least one robust member has a BH-rejected positive contrast in
+the declared high-contamination verdict; the tied display set and
+deterministic tie-break are reported separately.
+\end{frame}
+
+\begin{frame}{What this simulation\ldots{} (part 8)}
+Those are precisely the conditions a future adaptive or deployment study
+must vary.
+\end{frame}
+
+\begin{frame}{The robustness comparison is conditional and statistically
+qualified}
 \protect\phantomsection\label{sec:discussion-verdict}
 The headline comparison is computed by the statistics module
-(sec.~7.5.1), not typed into the prose. Across 960
+(sec.~7.5.2), not typed into the prose. Across 960
 matched trial replicates nested within the fixed seeded world at
-contamination rate 0.800, each robust server member is compared with the
-standard pool by a Wilcoxon signed-rank test (Wilcoxon 1945) and the
-declared family of p-values is adjusted by Benjamini--Hochberg FDR
-(Benjamini and Hochberg 1995). A method wins only when the adjusted null
-is rejected and its effect is positive, here at
-\(q = 1.11 \times 10^{-158}\) with effect size 1.0000 (large). The
-observed-effect power and prospective sample-size calculation are
-planning quantities, not independent confirmation of the result.
-
+contamination rate 0.800,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{The robustness verdict is conditional
-and statistically qualified}
+\begin{frame}{The robustness comparison\ldots{} (part 2)}
+each robust server member is compared with the standard pool by a
+Wilcoxon signed-rank test (Wilcoxon 1945) and the declared family of
+p-values is adjusted by Benjamini--Hochberg FDR (Benjamini and Hochberg
+1995).
+\end{frame}
+
+\begin{frame}{The robustness comparison\ldots{} (part 3)}
+A method wins only when the adjusted null is rejected and its effect is
+positive, here at \(q = 1.11 \times 10^{-158}\) with effect size 1.0000
+(large). The observed-effect power and prospective sample-size
+calculation are planning quantities, not independent confirmation of the
+result.
+\end{frame}
+
+\begin{frame}{The robustness comparison\ldots{} (part 4)}
 The paired design is appropriate for the controlled comparison because
 each condition shares the seed, true state, and attack geometry. Its
 interpretation remains limited: the signed-rank test concerns the
-distribution of paired differences, not equality of raw means, and BH
-controls expected false-discovery proportion within the declared family
-rather than the probability of any false positive. The confidence
-intervals are percentile bootstrap intervals over the matched-trial
-unit. Seed-level review-grid results are reported separately and do not
-treat the primary trial count as a population of independent worlds.
-These qualifications make the verdict narrower, but also make it
-reproducible and falsifiable.
+distribution of paired differences, not equality of raw means,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes remain
-separate}
+\begin{frame}{The robustness comparison\ldots{} (part 5)}
+and BH controls expected false-discovery proportion within the declared
+family rather than the probability of any false positive.
+\end{frame}
+
+\begin{frame}{The robustness comparison\ldots{} (part 6)}
+The confidence intervals are percentile bootstrap intervals over the
+matched-trial unit. Seed-level review-grid results are reported
+separately and do not treat the primary trial count as a population of
+independent worlds. These qualifications make the verdict narrower,
+\end{frame}
+
+\begin{frame}{The robustness comparison\ldots{} (part 7)}
+but also make it reproducible and falsifiable.
+\end{frame}
+
+\begin{frame}{Three robustness axes remain separate}
 \protect\phantomsection\label{sec:discussion-axes}
-The unifying narrative would be dishonest if it let the aggregation
-heuristic inherit the guarantees of the client update or variational
-server objective. The \textbf{client-side} \(\beta\)/rcce
-generalized-Bayes update is the FedGVI-faithful axis (Mildner et al.
-2025): it is derived from the generalized-Bayes objective
-(eq.~1), limits to NLL/Bayes as its loss parameter
-tends to zero, and carries the loss-specific bounded-influence result
-(eq.~4, eq.~5). The
-\textbf{server-side} \breaktt{robust\_aggregate} divergence-reweighting
-is a complementary heuristic whose proven property is the recovery limit
-only (eq.~7). The \textbf{variational server}
-axis is objective-backed and supplies a proven raw effective-weight
-bound, with conservative accuracy behavior. No figure, statistic, or
-sentence transfers a client guarantee to the heuristic or a variational
+The authoritative theorem--heuristic--objective taxonomy is
+sec.~3.3. The results preserve it: the client
+theorem remains source-conditional (Mildner et al. 2025),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes remain
-separate}
-weight bound to the heuristic's accuracy verdict;
-sec.~8.13 states the boundary in full.
+\begin{frame}[fragile]{Three robustness axes\ldots{} (part 2)}
+\texttt{robust\_aggregate} carries only its proved recovery identity
+plus conditional empirical contrasts, and
+\texttt{variational\_aggregate} carries the stated objective and
+raw-weight bound.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Accuracy and effective-weight control
-can be traded explicitly}
+\begin{frame}{Three robustness axes\ldots{} (part 3)}
+No figure or statistic moves a guarantee between these operators;
+sec.~8.13 records the complete boundary.
+\end{frame}
+
+\begin{frame}{Three robustness axes\ldots{} (part 4)}
+The map in fig.~6 is the compact ledger
+for that separation. Its fourteen rows align headline result families
+and public boundaries with their estimands and independent units, while
+its nesting strip prevents seeds, trials, agents,
+\end{frame}
+
+\begin{frame}{Three robustness axes\ldots{} (part 5)}
+and ordered states from being treated as interchangeable evidence. Exact
+estimates and intervals remain in their typed reports and the
+native-unit cross-study summary (fig.~30).
+\end{frame}
+
+\begin{frame}{Accuracy and effective-weight control can be traded
+explicitly}
 \protect\phantomsection\label{sec:discussion-tempered}
-The \(F_\lambda\) family (sec.~11.5) supplies
+The \(F_\lambda\) family (sec.~12.5) supplies
 empirical grid evidence that accuracy and effective-weight control need
-not be a fixed binary choice within the tested objective family. At
-\(\lambda = 1.0\) the implementation recovers the current variational
-objective bit-for-bit; lower explored temperatures sharpen the consensus
-toward the heuristic while preserving the stated raw-weight bound under
-its assumptions. This is not a derivation of the heuristic from an
-objective. The open problem is to identify an objective whose minimizer
-is both competitive across contamination regimes and accompanied by a
-theorem that survives beyond the present categorical construction.
+not be a fixed binary choice within the tested objective family.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Why the boundary matters downstream}
+\begin{frame}{Accuracy and\ldots{} (part 2)}
+At \(\lambda = 1.0\) the implementation recovers the current variational
+objective bit-for-bit;
+
+lower explored temperatures sharpen the consensus toward the heuristic
+while preserving the stated raw-weight bound under its assumptions.
+\end{frame}
+
+\begin{frame}{Accuracy and\ldots{} (part 3)}
+This is not a derivation of the heuristic from an objective. The open
+problem is to identify an objective whose minimizer is both competitive
+across contamination regimes and accompanied by a theorem that survives
+beyond the present categorical construction.
+\end{frame}
+
+\begin{frame}{Why the boundary matters downstream}
 \protect\phantomsection\label{sec:discussion-downstream}
 The practical lesson is not that every robust rule should replace belief
 sharing. It is that a multi-agent active-inference system can expose
 separate controls for client updating, server reweighting, and
-objective-backed consensus, while retaining a tested route back to the
-ordinary pool. That separation tells a builder what can be promised:
-exact recovery at the named corner, conditional empirical behavior under
-the declared attack, and no silent transfer of a client-side or
-variational theorem to a different server heuristic. The result is a
-usable research contract for extending belief-sharing systems without
-confusing a simulation win with a general robustness guarantee.
+objective-backed consensus,
+\end{frame}
+
+\begin{frame}{Why the boundary matters\ldots{} (part 2)}
+while retaining a tested route back to the ordinary pool.
+\end{frame}
+
+\begin{frame}{Why the boundary matters\ldots{} (part 3)}
+That separation tells a builder what can be promised: exact recovery at
+the named corner, conditional empirical behavior under the declared
+attack, and no silent transfer of a client-side or variational theorem
+to a different server heuristic.
+\end{frame}
+
+\begin{frame}{Why the boundary matters\ldots{} (part 4)}
+The result is a usable research contract for extending belief-sharing
+systems without confusing a simulation win with a general robustness
+guarantee.
 \end{frame}
 
 \end{document}

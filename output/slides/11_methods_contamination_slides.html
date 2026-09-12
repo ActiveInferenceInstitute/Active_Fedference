@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Contamination models: declared failure modes for belief fusion — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-db1a7de39734">
+<h1 id="presentation-title-db1a7de39734" class="visually-hidden">Contamination models: declared failure modes for belief fusion — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:methods-contamination"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5fe95e2a9905">
+<h2 class="prose-slide" id="slide-heading-5fe95e2a9905">Contamination models: declared failure modes for
+belief fusion</h2>
+<p>Robust belief fusion only earns its keep when some agents are
+wrong.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7c20984c20a7">
+<h2 class="prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 2" id="slide-heading-7c20984c20a7">Contamination
+models (part 2)</h2>
+<p>The active-inference community has built ensembles that coordinate by
+sharing beliefs and observations <span class="citation"
+data-cites="friston2024federated heins2023collective albarracin2022epistemic kaufmann2021collective">(Friston
+et al. 2024; Heins et al. 2024; Albarracin et al. 2022; Kaufmann et al.
+2021)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-253af43bade3">
+<h2 class="prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 3" id="slide-heading-253af43bade3">Contamination
+models (part 3)</h2>
+<p>but it has assumed those beliefs are trustworthy in the cited modeled
+protocols: fusion is treated as exact-Bayes pooling of well-calibrated
+reports.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1fc6b3340db0">
+<h2 class="prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 4" id="slide-heading-1fc6b3340db0">Contamination
+models (part 4)</h2>
+<p>The robust-Bayes and federated-learning literatures <span
+class="citation"
+data-cites="mcmahan2017communication ashman2022partitioned mildner2025fedgvi">(McMahan
+et al. 2017; Ashman et al. 2022; Mildner et al. 2025)</span> have, in
+turn, studied robustness to corrupted clients under their declared
+settings, but outside the generative-model-bearing POMDP setting.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-214e3428f1b6">
+<h2 class="prose-slide"
+aria-label="Contamination models: declared failure modes for belief fusion, part 5" id="slide-heading-214e3428f1b6">Contamination
+models (part 5)</h2>
+<p>This section defines the corruption process that lets us test fusion
+robustness inside the active-inference colony — the experimental
+complement of the robust aggregation rule of <span class="cross-reference">Section 5.8</span>.</p>
+</section>
+<section id="sec:methods-corruption" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2dc9f6ce19dd">
+<h2 class="prose-slide" id="slide-heading-2dc9f6ce19dd">Corruption process for adversarial belief
+broadcasts</h2>
+<p>In the sentinel world a healthy sentinel reports a well-calibrated
+categorical over the creature’s location; a contaminated one reports
+something corrupted. <code>contamination.contaminate</code> manufactures
+the corrupted reports.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-05a5a8bb7ecf">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 2" id="slide-heading-05a5a8bb7ecf">Corruption
+process for… (part 2)</h2>
+<p>Every corruption is a convex mixture of the agent’s belief <span
+class="math inline">\(b\)</span> with a corruption target <span
+class="math inline">\(t\)</span>, governed by a single rate <span
+class="math inline">\(r \in [0, 1]\)</span>,</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Corruption process for adversarial belief broadcasts, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f5493d03e23c">
+<h2 class="equation-led"
+aria-label="Corruption process for adversarial belief broadcasts, part 3" id="slide-heading-f5493d03e23c">Corruption
+process for… (part 3)</h2>
+<p><span class="math display" id="eq:contamination-mix">\[
+\tilde b \;=\; (1 - r)\, b \;+\; r\, t,
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dfe2579fda31">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 4" id="slide-heading-dfe2579fda31">Corruption
+process for… (part 4)</h2>
+<p>so the experiments sweep exactly one knob. The convex form of <a class="cross-reference" href="#eq:contamination-mix">Equation (21)</a>
+gives a clean limit and is the anchor of the suite (ISC-26): at <span
+class="math inline">\(r = 0\)</span> every corruption kind returns the
+input belief unchanged, so contamination is a strict, continuous
+departure from the uncorrupted Friston belief-share —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-72a73bbea2d1">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 5" id="slide-heading-72a73bbea2d1">Corruption
+process for… (part 5)</h2>
+<p>never a discontinuity.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48ab5be11f80">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 6" id="slide-heading-48ab5be11f80">Corruption
+process for… (part 6)</h2>
+<p>This section defines the three core corruption targets <span
+class="math inline">\(t\)</span>, each capturing a distinct failure of a
+federated agent. Geometrically the three are three landmarks of the
+probability simplex — a wrong vertex (<code>confident_wrong</code>), the
+flat centroid (<code>uniform</code>), and a random interior point
+(<code>label_noise</code>) —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-97a789331611">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 7" id="slide-heading-97a789331611">Corruption
+process for… (part 7)</h2>
+<p>so the mixture of <a class="cross-reference" href="#eq:contamination-mix">Equation (21)</a>
+drags an honest belief toward a qualitatively different destination in
+each case.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-86c9eb86b18e">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 8" id="slide-heading-86c9eb86b18e">Corruption
+process for… (part 8)</h2>
+<p>Two further mechanisms (<code>byzantine</code> and
+<code>drift</code>) extend the same convex-mix contract and are
+introduced in the extended-methods supplement (<span class="cross-reference">Section 13.2</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ccb2bf353fb1">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 9" id="slide-heading-ccb2bf353fb1">Corruption
+process for… (part 9)</h2>
+<p><strong><code>confident_wrong</code> — the adversarial
+sentinel.</strong> This is the lookout that points to one wrong cell and
+insists on it with total certainty. The target is a one-hot spike on a
+wrong state, <span class="math inline">\(t =
+\mathrm{onehot}(s_{\text{wrong}})\)</span>, so <span
+class="math inline">\(\tilde b\)</span> is mixed toward a confident,
+mistaken delta.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c7b041a32225">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 10" id="slide-heading-c7b041a32225">Corruption
+process for… (part 10)</h2>
+<p>Callers choose <span class="math inline">\(s_{\text{wrong}}\)</span>
+explicitly; the verdict sweep of <span class="cross-reference">Section 5.22</span>
+fixes it once per colony as the state diametrically opposite the true
+state on the location grid, held constant across the entire rate sweep,
+rather than deriving it from the agent’s current belief.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-20e31fa9ac3c">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 11" id="slide-heading-20e31fa9ac3c">Corruption
+process for… (part 11)</h2>
+<p>At <span class="math inline">\(r = 1\)</span> this is a pure delta on
+the wrong cell. This is the saboteur that is <em>sure</em> and
+<em>mistaken</em>: exactly the agent that robust aggregation must
+reject.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4358f63fb4b6">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 12" id="slide-heading-4358f63fb4b6">Corruption
+process for… (part 12)</h2>
+<p><strong><code>label_noise</code> — the miscalibrated
+sentinel.</strong> This is the lookout with a scrambled sensor: it is
+not lying toward any particular cell, only diluting every honest report
+with the same fixed sprinkle of noise. The target is a fixed noisy
+categorical drawn once from a <span
+class="math inline">\(\mathrm{Dirichlet}(1)\)</span> (a random but valid
+pmf),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b9cb91dc10f4">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 13" id="slide-heading-b9cb91dc10f4">Corruption
+process for… (part 13)</h2>
+<p>modeling a sentinel whose report is partly random rather than
+adversarial.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-18b1f36c143d">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 14" id="slide-heading-18b1f36c143d">Corruption
+process for… (part 14)</h2>
+<p>Because the noisy target is drawn once and then held fixed across the
+rate sweep, the corruption has no direction to exploit and no single
+cell to veto — the robust pool meets diffuse degradation, not a targeted
+attack.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4522e7632757">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 15" id="slide-heading-4522e7632757">Corruption
+process for… (part 15)</h2>
+<p><strong><code>uniform</code> — the apathetic sentinel.</strong> This
+is the lookout that shrugs: it has lost track of the creature and calls
+every cell equally likely. The target is the maximum-entropy uniform pmf
+<span class="math inline">\(t = (1/n_s)\mathbf{1}\)</span>, modeling a
+saturated sentinel that has lost all information. At <span
+class="math inline">\(r = 1\)</span> it reports uniform,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-82375af30a8b">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 16" id="slide-heading-82375af30a8b">Corruption
+process for… (part 16)</h2>
+<p>contributing no evidence to the pool rather than actively pulling it
+toward a wrong cell.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b240c4368e40">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 17" id="slide-heading-b240c4368e40">Corruption
+process for… (part 17)</h2>
+<p>All three share the contract of <a class="cross-reference" href="#eq:contamination-mix">Equation (21)</a>
+and require an explicit seeded generator — <code>label_noise</code> uses
+it to draw the noisy target — so every contaminated report is
+reproducible. The grid of rates the sweep uses, <span
+class="math inline">\(\{0, 0.225, 0.45, 0.675, 0.9\}\)</span>,
+deliberately stops below the pure-veto limit <span
+class="math inline">\(r = 1\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0960d7a11031">
+<h2 class="prose-slide"
+aria-label="Corruption process for adversarial belief broadcasts, part 18" id="slide-heading-0960d7a11031">Corruption
+process for… (part 18)</h2>
+<p>where a fully-confident wrong delta forces <em>every</em> pooling
+rule’s accuracy to zero and the robust-versus-naive contrast
+vanishes.</p>
+</section>
+<section id="sec:methods-contamination-axes"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90d75dc59f8e">
+<h2 class="prose-slide" id="slide-heading-90d75dc59f8e">How contamination meets the three robustness
+axes</h2>
+<p>The authoritative guarantee taxonomy is <span class="cross-reference">Section 3.3</span>;
+this section only records where the declared corruption enters each
+route.</p>
+</section>
+<section id="sec:methods-contamination-client"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ced85de13a83">
+<h2 class="prose-slide" id="slide-heading-ced85de13a83">Client bounded-loss route</h2>
+<p>A corrupted local observation enters the per-agent generalized-Bayes
+update of <span class="cross-reference">Section 5.7</span>.
+FedGVI’s bounded-influence result applies only under the source
+theorem’s matching loss, divergence, model, and regularity assumptions
+<span class="citation" data-cites="mildner2025fedgvi">(Mildner et al.
+2025)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Client bounded-loss route, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e9eccc31a1e1">
+<h2 class="prose-slide"
+aria-label="Client bounded-loss route, part 2" id="slide-heading-e9eccc31a1e1">Client bounded-loss route
+(part 2)</h2>
+<p>The logistic-regression comparison in <span class="cross-reference">Figure 18</span>
+is a narrower exploratory proxy: it compares RCCE and NLL point-estimate
+gradients under two L2 coefficients. Its legacy <code>AR</code> argument
+selects the larger coefficient;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Client bounded-loss route, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48315ef0f3f5">
+<h2 class="prose-slide"
+aria-label="Client bounded-loss route, part 3" id="slide-heading-48315ef0f3f5">Client bounded-loss route
+(part 3)</h2>
+<p>it does not evaluate Alpha-Rényi divergence or inherit the source
+theorem from the observed curve.</p>
+</section>
+<section id="sec:methods-contamination-heuristic-server"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-89db09e4a1e1">
+<h2 class="prose-slide" id="slide-heading-89db09e4a1e1">Heuristic server route</h2>
+<p>A corrupted posterior broadcast enters <code>robust_aggregate</code>
+at fusion. Divergence reweighting can assign a smaller effective weight
+to a report far from the current consensus, as the finite diagnostics
+<span class="cross-reference">Figure 13</span>; <span class="cross-reference">Figure 15</span> illustrate.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Heuristic server route, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7412e91f2e6f">
+<h2 class="prose-slide"
+aria-label="Heuristic server route, part 2" id="slide-heading-7412e91f2e6f">Heuristic server route (part
+2)</h2>
+<p>The rule’s positive formal property is the exact <span
+class="math inline">\(c=0\)</span> recovery limit <span class="cross-reference">Equation (10)</span>,
+not a client-loss bound, Byzantine guarantee, or universal robustness
+theorem.</p>
+</section>
+<section id="sec:methods-contamination-variational-server"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-91cfd6601e41">
+<h2 class="prose-slide" id="slide-heading-91cfd6601e41">Objective-backed variational server route</h2>
+<p>The same corrupted posterior can instead enter
+<code>variational_aggregate</code>, whose declared free energy,
+block-descent property, and effective-weight bound are given in <span class="cross-reference">Section 5.8.2</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Objective-backed variational server route, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aef1c318162b">
+<h2 class="prose-slide"
+aria-label="Objective-backed variational server route, part 2" id="slide-heading-aef1c318162b">Objective-backed
+variational… (part 2)</h2>
+<p>Those properties belong to that forward-oriented objective and do not
+certify <code>robust_aggregate</code> or the source client’s
+bounded-loss theorem.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Objective-backed variational server route, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9037e65f7022">
+<h2 class="prose-slide"
+aria-label="Objective-backed variational server route, part 3" id="slide-heading-9037e65f7022">Objective-backed
+variational… (part 3)</h2>
+<p>Contamination is therefore a common stressor, not a license to
+transfer a guarantee or empirical result between client,
+heuristic-server, and variational-server lanes.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

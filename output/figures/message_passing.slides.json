@@ -1,0 +1,119 @@
+{
+  "panels": [
+    {
+      "alt": "Private update: local q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "489fb41121f880f2ba860dbbea4a6a9d7ba6cae2e585bc3378c642f405bd6ec7",
+      "src": "../figures/message_passing.slide-posterior-1.png"
+    },
+    {
+      "alt": "Local posterior q1 \u2192 Posterior-only broadcast: Private outcome stays local; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1d23a913c76fcc729b3d8c5a1ee2ac31e546e6b4d933bad8a09e9d0baf3ace49",
+      "src": "../figures/message_passing.slide-broadcast-1.png"
+    },
+    {
+      "alt": "Private update: local q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "250ff4e725c1e1d854258e9a532de7c02f83285cb7370cf480de829bdfd6039e",
+      "src": "../figures/message_passing.slide-posterior-2.png"
+    },
+    {
+      "alt": "Local posterior q2 \u2192 Posterior-only broadcast: Private outcome stays local; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ef658522de8637bba01c300185bf510999fb6418b1a0fc9cf9b2e4afc5ae2a70",
+      "src": "../figures/message_passing.slide-broadcast-2.png"
+    },
+    {
+      "alt": "Private update: local qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5e75ca3efe958c510de249bb685f334723d81526aeb99ea7e2508198d9c1ef35",
+      "src": "../figures/message_passing.slide-posterior-n.png"
+    },
+    {
+      "alt": "Local posterior qn \u2192 Posterior-only broadcast: Private outcome stays local; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d1dd808e16fae211cb0067ee4d1f11a856364013e3c023672ccb565d073c731d",
+      "src": "../figures/message_passing.slide-broadcast-n.png"
+    },
+    {
+      "alt": "Client route: NLL/KLD/\u03b2 = 0 is a project recovery identity.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e643458f6b9af2c8008e9ea7282a5b1e655ce952b0980537039d94963130319a",
+      "src": "../figures/message_passing.slide-client-recovery.png"
+    },
+    {
+      "alt": "Robust client losses: source theorem under its assumptions. Client guarantees do not transfer to server routes.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8e55f88d85f5ee7a59415c3f01333e6a76898debf2b691f7f09b419afe790792",
+      "src": "../figures/message_passing.slide-client-theorem.png"
+    },
+    {
+      "alt": "Protocol-v1 payload: categorical posterior q(n). No private outcome o(n) is broadcast.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "47c1c47c6baa0111069fa06f3c941d01da1723f55df9c910ae484938f5a3c0c5",
+      "src": "../figures/message_passing.slide-transport.png"
+    },
+    {
+      "alt": "Posterior-only broadcast \u2192 Log-linear pool: N \u00b7 Server route; naive.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6c11db6eff8fcbe8e37365df4c0f75c12729a7a9a06ad6dc8c6b5ec096b2ae43",
+      "src": "../figures/message_passing.slide-route-naive.png"
+    },
+    {
+      "alt": "N: softmax of the weighted sum of log posteriors. Qualified categorical Eq. 7 specialization.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "14ef519313c8891a26068a83b7e7aab53bcffbe8b7d6eec28ec9c3952f3d14ef",
+      "src": "../figures/message_passing.slide-owner-naive.png"
+    },
+    {
+      "alt": "Log-linear pool \u2192 Recipient n: N \u00b7 Senders m \u2260 n only; naive.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c9a8231b20c97360190161045cfcff693271d18b79999cac3a7c35633d180bf1",
+      "src": "../figures/message_passing.slide-return-naive.png"
+    },
+    {
+      "alt": "Posterior-only broadcast \u2192 Heuristic robust: H \u00b7 Server route; heuristic_robust.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "18b19c4e6dc64917c8e267557bc9ec7fb97ab772d35b9dc5c00382dbef3bffe2",
+      "src": "../figures/message_passing.slide-route-heuristic-robust.png"
+    },
+    {
+      "alt": "H: robust_aggregate uses configured divergence reweighting. Conditional heuristic evidence.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8fbfdaf49241ec9f75e65f8b20f5c8343f4ee0487d80c7ac4c462648c07d5921",
+      "src": "../figures/message_passing.slide-owner-heuristic-robust.png"
+    },
+    {
+      "alt": "Heuristic robust \u2192 Recipient n: H \u00b7 Senders m \u2260 n only; heuristic_robust.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8bd9faf85c9bbb4faefe29c7fd1b81294c55f046d4c7ce211c1757d0a2ab1a86",
+      "src": "../figures/message_passing.slide-return-heuristic-robust.png"
+    },
+    {
+      "alt": "Posterior-only broadcast \u2192 Variational server: V \u00b7 Server route; variational.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5a0f7efa36c5a28bf5ac0cb2074e5c66c0cfc60d6730c50216ecad24708328f7",
+      "src": "../figures/message_passing.slide-route-variational.png"
+    },
+    {
+      "alt": "V: variational_aggregate uses q,a block updates of F(q,a). Objective-backed weight property.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "65f93e5c40e91b0bed48e86c519b600eaacfe3b0ca0c0bfe5ecb79e3c24d52cb",
+      "src": "../figures/message_passing.slide-owner-variational.png"
+    },
+    {
+      "alt": "Variational server \u2192 Recipient n: V \u00b7 Senders m \u2260 n only; variational.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "637f3283cec5e7c8afd42dd49f65290a86c74d0209863d54ca251c12d2da3b43",
+      "src": "../figures/message_passing.slide-return-variational.png"
+    },
+    {
+      "alt": "Deterministic protocol schematic; no empirical estimate or uncertainty interval. Self-exclusion is preserved. The Eq. 7 bridge does not reconstruct the full source protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "091179f9fe1d75fae467e20f1e62423b8913799f8a07ede1d922be2983e8f630",
+      "src": "../figures/message_passing.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

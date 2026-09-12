@@ -1,0 +1,59 @@
+{
+  "panels": [
+    {
+      "alt": "Paired Bayesian-surprise values: lower reference-world bar and upper informative-world bar, with the configured threshold.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "485af3aa8310b6983c8fc2f2846692ef8d68346f7d77ce3a3304c8e27a16b525",
+      "src": "../figures/hierarchical_bmr.slide-level-1.png"
+    },
+    {
+      "alt": "non-gating world: L0 low_threat. Bayesian surprise 0 nats; source flag: prunable.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7d4f1264cf355693bf86c6c548621a1f9997db73026e64cfc2fccef806874056",
+      "src": "../figures/hierarchical_bmr.slide-level-1-non-gating.png"
+    },
+    {
+      "alt": "informative world: L0 low_threat. Bayesian surprise 0.3277 nats; source flag: kept.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b917c8bfdfc3aff1c87be8c592bc79613ce114db744f6ed2cc48630f59621fb5",
+      "src": "../figures/hierarchical_bmr.slide-level-1-informative.png"
+    },
+    {
+      "alt": "Paired Bayesian-surprise values: lower reference-world bar and upper informative-world bar, with the configured threshold.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ccaf3c2724112f1458d239429813151159433cad3d43e4e0601a579f0ec7a45d",
+      "src": "../figures/hierarchical_bmr.slide-level-2.png"
+    },
+    {
+      "alt": "non-gating world: L1 quiet. Bayesian surprise 0.5796 nats; source flag: kept.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2a78b82bbf409a3fe486749bb9556398099793e54cfcd9bfa2e493e127ea3864",
+      "src": "../figures/hierarchical_bmr.slide-level-2-non-gating.png"
+    },
+    {
+      "alt": "informative world: L1 quiet. Bayesian surprise 0.138 nats; source flag: kept.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1449eeab330ab6aa794972d598b83c094d5b34f62b35398194138981453b0f67",
+      "src": "../figures/hierarchical_bmr.slide-level-2-informative.png"
+    },
+    {
+      "alt": "Declared surprise threshold: 0.001 nats. prunable iff bayesian_surprise < surprise_tol; recommend the deepest prunable non-leaf level",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "64b50428a4ada1eed1f9cd621655d187ad45c6f97897f1f23f3207eb818aef49",
+      "src": "../figures/hierarchical_bmr.slide-threshold.png"
+    },
+    {
+      "alt": "Lower bar: non-gating configured world. Upper hatched bar: informative configured world. All levels share the same surprise scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "665ac4a7a7a752e3f6de7cf775c54f047788f49ac9338c91191f377a120d8d3f",
+      "src": "../figures/hierarchical_bmr.slide-key.png"
+    },
+    {
+      "alt": "Bayesian surprise KL(posterior || empirical prior). This configured information-gating diagnostic has no stochastic interval and is distinct from exact BMR evidence gain.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f2d405559dfcf2d873171b996c503962d2c515e87ffc2ec697f0b1091b29cb23",
+      "src": "../figures/hierarchical_bmr.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

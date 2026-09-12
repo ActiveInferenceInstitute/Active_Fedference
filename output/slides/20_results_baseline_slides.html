@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Exploratory generalized-Bayes logistic-regression baseline — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-44f139bdb680">
+<h1 id="presentation-title-44f139bdb680" class="visually-hidden">Exploratory generalized-Bayes logistic-regression baseline — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:results-baseline" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b4425e5ba870">
+<h2 class="prose-slide" id="slide-heading-b4425e5ba870">Exploratory generalized-Bayes
+logistic-regression baseline</h2>
+<p>The sweep of <span class="cross-reference">Section 7.5</span>
+characterizes the heuristic server axis. This exploratory baseline
+instead probes the client-side axis in a synthetic point-estimate
+logistic-regression setting.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ab1fe7a6501e">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 2" id="slide-heading-ab1fe7a6501e">Exploratory…
+(part 2)</h2>
+<p>The cited robust-Bayes and federated- learning results provide the
+source context <span class="citation"
+data-cites="mcmahan2017communication ashman2022partitioned bui2018partitioned">(McMahan
+et al. 2017; Ashman et al. 2022; Bui et al. 2018)</span>;</p>
+<p>this finite experiment does not reproduce their source protocol or
+inherit their conclusions unconditionally.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fe31dbfd6483">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 3" id="slide-heading-fe31dbfd6483">Exploratory…
+(part 3)</h2>
+<p>An exploratory federated logistic-regression point-estimate proxy is
+trained under client label contamination. Standard clients use the NLL
+gradient with L2 coefficient <span class="math inline">\(0.05\)</span>;
+the comparison uses the RCCE gradient at <span
+class="math inline">\(q=1.00\)</span> with L2 coefficient <span
+class="math inline">\(0.10\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c498babb7d40">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 4" id="slide-heading-c498babb7d40">Exploratory…
+(part 4)</h2>
+<p>The legacy <code>divergence="KLD"</code> and
+<code>divergence="AR"</code> arguments select those coefficients for
+compatibility; this module does not evaluate KL or Alpha-Rényi
+divergence between weight distributions, represent posterior covariance,
+or implement a FedGVI generalized-posterior objective.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-64bc3a132518">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 5" id="slide-heading-64bc3a132518">Exploratory…
+(part 5)</h2>
+<p>The estimand is therefore a composite contrast between two joint
+loss-and-shrinkage configurations, not an isolated RCCE effect. RCCE’s
+<span class="math inline">\(q\to0\)</span> gradient limit recovers the
+NLL gradient, while the separate categorical recovery identities remain
+in <span class="cross-reference">Section 7.1</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7790c67fade5">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 6" id="slide-heading-7790c67fade5">Exploratory…
+(part 6)</h2>
+<p>The corresponding bounded-influence claim remains source-conditional
+on FedGVI’s assumptions <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span>; this finite
+curve does not test that theorem. The losses connect the density-power
+line <span class="citation" data-cites="basu1998robust">(Basu et al.
+1998)</span>, generalized cross-entropy <span class="citation"
+data-cites="zhang2018generalized">(Zhang and Sabuncu 2018)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1ac24f2fa5e2">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 7" id="slide-heading-1ac24f2fa5e2">Exploratory…
+(part 7)</h2>
+<p>and the generalized-Bayes objective <span class="citation"
+data-cites="bissiri2016general knoblauch2022generalized">(Bissiri et al.
+2016; Knoblauch et al. 2022)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-210bafc3da57">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 8" id="slide-heading-210bafc3da57">Exploratory…
+(part 8)</h2>
+<p>The displayed configuration uses <span class="math inline">\(q =
+1.00\)</span> and 200 points per class per client. Those are configured
+inputs, not parameters selected by this report. Only the peak-margin
+contamination level is selected within the displayed contamination
+sweep, by the maximum composite-configuration accuracy difference.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c99536b62dfd">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 9" id="slide-heading-c99536b62dfd">Exploratory…
+(part 9)</h2>
+<p>The neighboring-<span class="math inline">\(q\)</span> sensitivity
+check is descriptive stability evidence, not leakage-free calibration or
+confirmatory model selection.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b1fb6a4d2266">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 10" id="slide-heading-b1fb6a4d2266">Exploratory…
+(part 10)</h2>
+<p>As contamination rises, the two configuration curves remain close at
+lower rates and separate over part of the moderate-to-high range. The
+largest displayed composite-configuration mean difference occurs at 0.35
+contamination, with margin 0.028.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2dcad96fb6a8">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 11" id="slide-heading-2dcad96fb6a8">Exploratory…
+(part 11)</h2>
+<p>Neighboring tested loss parameters retain a thresholded separation at
+more than one contamination level, and the plotted bands are seed-level
+95% bootstrap intervals.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-924c56ef79f8">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 12" id="slide-heading-924c56ef79f8">Exploratory…
+(part 12)</h2>
+<p>At the highest swept rate, 0.40, both configurations decline and no
+reliable ordering remains. Retaining that endpoint is necessary for the
+finite-sweep interpretation. Together with the within-sweep
+peak-contamination selection,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-98a92ace9437">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 13" id="slide-heading-98a92ace9437">Exploratory…
+(part 13)</h2>
+<p>it makes this an exploratory conditional pattern rather than a
+precalibrated or confirmatory robustness result.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-193a6c745384">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 14" id="slide-heading-193a6c745384">Exploratory…
+(part 14)</h2>
+<p>The separation in this small logistic-regression setting is modest.
+The recovery identities establish implementation compatibility at the
+named limit (<span class="cross-reference">Section 7.1</span>);
+the bounded-influence result comes from the cited FedGVI theorem under
+its assumptions <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ee84f68fd648">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 15" id="slide-heading-ee84f68fd648">Exploratory…
+(part 15)</h2>
+<p>not from this curve’s gap. Source-dataset parity, leakage-free
+calibration, and posterior-uncertainty experiments remain open (<span class="cross-reference">Section 8.19</span>).</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea5757f49cbb">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 16" id="slide-heading-ea5757f49cbb">Exploratory…
+(part 16)</h2>
+<figure id="fig:bnn-robustness-slide-panel-1">
+<img src="../figures/bnn_robustness.slide-configuration-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="0d7872ee0e2eace274bc2ae7de9c988661f064f6cc83d54b9b455ba6b61583fc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="nll / L2=0.05 (standard proxy): complete held-out accuracy curve and supplied interval band on shared axes." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3a6b377c55ab">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 17" id="slide-heading-3a6b377c55ab">Exploratory…
+(part 17)</h2>
+<figure id="fig:bnn-robustness-slide-panel-2">
+<img
+src="../figures/bnn_robustness.slide-configuration-1-identity.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="442759196b94359e6b405814dfc9cb709dad02e6f8c524377986644f9798aad9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1047"
+data-slide-figure-intrinsic-height="101"
+data-slide-figure-intrinsic-aspect="10.366337"
+alt="nll / L2=0.05 (standard proxy)" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67c60ccc9a68">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 18" id="slide-heading-67c60ccc9a68">Exploratory…
+(part 18)</h2>
+<figure id="fig:bnn-robustness-slide-panel-3">
+<img src="../figures/bnn_robustness.slide-configuration-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="78625fcf4ad0cc6a1982dbbe7e26e752d5ace501e18da19676475509cdcf040c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="rcce / L2=0.10 (exploratory proxy): complete held-out accuracy curve and supplied interval band on shared axes." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ba24865cd3ca">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 19" id="slide-heading-ba24865cd3ca">Exploratory…
+(part 19)</h2>
+<figure id="fig:bnn-robustness-slide-panel-4">
+<img
+src="../figures/bnn_robustness.slide-configuration-2-identity.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="47e69f632f39fc8100691403910b264c07e8ffd732a6988962dc3f881a216ffb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1197"
+data-slide-figure-intrinsic-height="101"
+data-slide-figure-intrinsic-aspect="11.851485"
+alt="rcce / L2=0.10 (exploratory proxy)" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cfa65a75440c">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 20" id="slide-heading-cfa65a75440c">Exploratory…
+(part 20)</h2>
+<figure id="fig:bnn-robustness-slide-panel-5">
+<img src="../figures/bnn_robustness.slide-composite-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6cd331300fd8bdbcca18e73ac6bbef7fdbc13ade5660e6ce747b8a4c16ab9e0f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1257"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8090909"
+alt="Composite NLL/L2=0.05 versus
+RCCE/L2=0.10 point-estimate proxy.
+The joint change cannot identify an
+RCCE-only effect." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa49f74c305b">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 21" id="slide-heading-aa49f74c305b">Exploratory…
+(part 21)</h2>
+<figure id="fig:bnn-robustness-slide-panel-6">
+<img src="../figures/bnn_robustness.slide-selection-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8c01a9743b9c955e2913bdd82927593cb4753a2afde2116f6a7bec73a95f74fd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1220"
+data-slide-figure-intrinsic-height="332"
+data-slide-figure-intrinsic-aspect="3.6746988"
+alt="peak_margin_contamination is
+selected within the displayed
+contamination sweep by maximum
+composite-configuration held-out" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ba1fbfc28698">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 22" id="slide-heading-ba1fbfc28698">Exploratory…
+(part 22)</h2>
+<figure id="fig:bnn-robustness-slide-panel-7">
+<img src="../figures/bnn_robustness.slide-selection-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="59455de4a793b89a940f383c796725c25fcae41ad552b808f09cbeefa97c8c28"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1270"
+data-slide-figure-intrinsic-height="258"
+data-slide-figure-intrinsic-aspect="4.9224806"
+alt="accuracy margin; robust_loss_param
+and n_per are configured inputs, not
+selected by this report" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d192237df0bc">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 23" id="slide-heading-d192237df0bc">Exploratory…
+(part 23)</h2>
+<figure id="fig:bnn-robustness-slide-panel-8">
+<img src="../figures/bnn_robustness.slide-peak-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="845637578fd3a39905a9d62baa34a7de6255416a9cf8568565275f1d7ff13568"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1192"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.7344633"
+alt="Largest displayed margin: 2.8% at
+35% contamination." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5c2571b5f2aa">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 24" id="slide-heading-5c2571b5f2aa">Exploratory…
+(part 24)</h2>
+<figure id="fig:bnn-robustness-slide-panel-9">
+<img src="../figures/bnn_robustness.slide-uncertainty-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="236afbc40cbd4219d68e241a0724a77cf60fa8e5079ecf5be1becde14b69f739"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1193"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6151515"
+alt="Shaded bands retain the
+source-supplied intervals. They do
+not represent FedGVI posterior
+uncertainty." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cd6970220076">
+<h2 class="figure-led"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 25" id="slide-heading-cd6970220076">Exploratory…
+(part 25)</h2>
+<figure id="fig:bnn-robustness-slide-panel-10">
+<img src="../figures/bnn_robustness.slide-scope-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="77454bf8693ccdef77c0160174a127d7234d19a217f9ffc8d72ceb7ce6fae907"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1184"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.5878788"
+alt="Exploratory proxy only: no
+Alpha-Renyi objective, calibration,
+universal robustness, or exact
+source-protocol replication." />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-575f459156b3">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 26" id="slide-heading-575f459156b3">Exploratory…
+(part 26)</h2>
+<p><span class="cross-reference">Figure 18</span>
+is exploratory per-client proxy evidence. Its loss-limit check, finite
+synthetic contrast, and the separate source-conditional theorem have
+different roles; none comes from the server comparison of <span class="cross-reference">Section 7.5.2</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dc75f5d17aaf">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 27" id="slide-heading-dc75f5d17aaf">Exploratory…
+(part 27)</h2>
+<p>The authoritative three-axis boundary is <span class="cross-reference">Section 3.3</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0628d4f5e8e8">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 28" id="slide-heading-0628d4f5e8e8">Exploratory…
+(part 28)</h2>
+<p><strong>PyTorch deterministic-MLP complement (executed).</strong> The
+optional pipeline also instantiates generalized variational inference
+with a point-mass MLP family: Linear→ReLU→Linear→softmax with 16 hidden
+units. Clients use the density-power <span
+class="math inline">\(\beta\)</span>-loss at <span
+class="math inline">\(\beta = 0.5\)</span> for 200 Adam steps,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b58ad33e8882">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 29" id="slide-heading-b58ad33e8882">Exploratory…
+(part 29)</h2>
+<p>and per-test-point predictions are fused with
+<code>robust_aggregate</code> at <code>robustness = 0.5</code> under
+PyTorch 2.12.1.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-872da37b91cb">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 30" id="slide-heading-872da37b91cb">Exploratory…
+(part 30)</h2>
+<p>The executed consensus is a valid probability simplex, with maximum
+unit-mass deviation 2.22e-16, and repeated seeded runs are bit-identical
+(Yes). At contamination 0.40, held-out consensus accuracy is 0.558 for
+the <span class="math inline">\(\beta\to 0\)</span> client and 0.545 for
+the <span class="math inline">\(\beta=0.5\)</span> client.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e0eb58ea940a">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 31" id="slide-heading-e0eb58ea940a">Exploratory…
+(part 31)</h2>
+<p>This single-seed endpoint demonstrates API transfer and deterministic
+execution, not posterior-uncertainty inference, model-class
+universality, or a robust-loss advantage at neural-network scale. It is
+separate from the 64-seed exploratory logistic-regression curve above
+and from the source-conditional theorem.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2f86637eb41e">
+<h2 class="prose-slide"
+aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 32" id="slide-heading-2f86637eb41e">Exploratory…
+(part 32)</h2>
+<p>When PyTorch is absent, the pipeline records unavailable-value
+sentinels; builds exercising this optional lane install the
+<code>torch</code> extra (<span class="cross-reference">Section 10</span>).</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

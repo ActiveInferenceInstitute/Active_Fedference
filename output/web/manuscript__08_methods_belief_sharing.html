@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>08_methods_belief_sharing.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -470,70 +634,72 @@ mjx-container[display="true"] {
 aggregation corner</h2>
 <p><code>belief_sharing.share_round</code> lifts the aggregation rule of
 <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> to
-a colony of categorical sentinel agents. Each agent has a private
-sensory outcome and a local posterior over the same shared latent
-location; it broadcasts the posterior, not its raw observation.
-Following the sensory attenuation that the active-inference formulation
-of belief sharing imposes <span class="citation">(Friston et al. 2024)</span> — “agents do not hear
-themselves” — an agent’s heard consensus excludes its own message:</p>
+a colony of categorical sentinel agents.</p>
+<p>Each agent has a private sensory outcome and a local posterior over
+the same shared latent location; it broadcasts the posterior, not its
+raw observation. Following the sensory attenuation that the
+active-inference formulation of belief sharing imposes
+<span class="citation">(Friston et al. 2024)</span> — “agents do not hear themselves” — an agent’s
+heard consensus excludes its own message:</p>
 <p><span class="math display">\[
 q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),
 \]</span> {#eq:belief-round}</p>
-<p>so the round in <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a> implements the
+<p>so the round in <a class="xref" href="index.html#eq:belief-round">Eq. (14)</a> implements the
 declared categorical colony-hive-mind mechanism. With the naive fusion
-rule of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>, <span
-class="citation" data-cites="eq:belief-round"><a class="xref" href="index.html#eq:belief-round">Eq. (9)</a></span>
-is the project’s standard log-linear-pool consensus. Under the explicit
-shared-support, posterior-log-potential, and fixed-weight assumptions of
-<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>, it
+rule of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>, <a class="xref" href="index.html#eq:belief-round">Eq. (14)</a>
+is the project’s standard log-linear-pool consensus.</p>
+<p>Under the explicit shared-support, posterior-log-potential, and
+fixed-weight assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>, it
 specializes Eq. 7’s message-combination term; it does not reconstruct
-the complete source protocol. With the server-side robust rule it yields
-a hive-mind that can down-weight a contaminated sentinel — an effect the
-contamination sweep of <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>
+the complete source protocol.</p>
+<p>With the server-side robust rule it yields a hive-mind that can
+down-weight a contaminated sentinel — an effect the contamination sweep
+of <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>
 measures rather than assumes, and one that carries no guarantee beyond
-the recovery limit. The per-round diagnostics — the post-sharing belief
-matrix, the global consensus, and the mean surprise and accuracy against
-a known ground-truth state — are returned by <code>share_round</code>
-and drive Studies 1 and 4.</p>
+the recovery limit.</p>
+<p>The per-round diagnostics — the post-sharing belief matrix, the
+global consensus, and the mean surprise and accuracy against a known
+ground-truth state — are returned by <code>share_round</code> and drive
+Studies 1 and 4.</p>
 <p><a class="xref" href="index.html#fig:message-passing">Figure 3</a> makes
 this concrete: three sentinel cards begin with different private
 categorical views of the nine-cell world, convert those views into local
 posteriors, and send only those posteriors to a fusion route. The return
 path is a cavity message, so the consensus heard by agent <span
 class="math inline">\(n\)</span> excludes the local posterior <span
-class="math inline">\(q_n\)</span>. The figure remains a protocol map
-rather than a new result; the empirical belief matrix and free-energy
-comparison remain the evidence surfaces in <a class="xref" href="index.html#fig:belief-heatmap">Figure 9</a> and <span
-class="citation"
-data-cites="fig:free-energy"><a class="xref" href="index.html#fig:free-energy">Figure 8</a></span>.</p>
-<p>Because <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a> calls the
-aggregation rule of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a> or its
-robust generalization, the recovery identity of <a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a> propagates
+class="math inline">\(q_n\)</span>.</p>
+<p>The figure remains a protocol map rather than a new result; the
+empirical belief matrix and free-energy comparison remain the evidence
+surfaces in <a class="xref" href="index.html#fig:belief-heatmap">Figure 10</a> and <a class="xref" href="index.html#fig:free-energy">Figure 9</a>.</p>
+<p>Because <a class="xref" href="index.html#eq:belief-round">Eq. (14)</a> calls the
+aggregation rule of <a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a> or its
+robust generalization, the recovery identity of <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a> propagates
 upward: a colony running <code>share_round</code> at zero server
 robustness is bit-identical to a colony running the project’s standard
-log-linear-pool round. Under the qualified categorical bridge, the pool
-realizes only the source message-combination specialization; the robust
-round is a project extension, not a reconstruction of the
-active-inference ensemble literature <span class="citation">(Friston et al. 2024; Heins et al. 2024)</span>. <a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>
+log-linear-pool round.</p>
+<p>Under the qualified categorical bridge, the pool realizes only the
+source message-combination specialization; the robust round is a project
+extension, not a reconstruction of the active-inference ensemble
+literature <span class="citation">(Friston et al. 2024; Heins et al. 2024)</span>.</p>
+<p><a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>
 reports that communicating colonies reach a mean variational free energy
 of 13.2190 nats against 16.5298 nats for incommunicado colonies across
 480 seeds, with the per-agent belief matrix before and after a round
-shown in <a class="xref" href="index.html#fig:belief-heatmap">Figure 9</a> and the
-colony comparison in <a class="xref" href="index.html#fig:free-energy">Figure 8</a>.</p>
+shown in <a class="xref" href="index.html#fig:belief-heatmap">Figure 10</a> and the
+colony comparison in <a class="xref" href="index.html#fig:free-energy">Figure 9</a>.</p>
 <p>The honesty boundary of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> carries
-through the lift unchanged. The robustness that <a class="xref" href="index.html#eq:belief-round">Eq. (9)</a> inherits when the
+through the lift unchanged. The robustness that <a class="xref" href="index.html#eq:belief-round">Eq. (14)</a> inherits when the
 colony fuses with the server-side heuristic is the
 divergence-reweighting device of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 whose positive property is the naive-recovery limit and whose declared
-separable objective class has a scoped no-go result; the per-agent
-FedGVI bounded-influence result enters the colony only through the
-rcce/AR client losses of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a>, under the
+separable objective class has a scoped no-go result.</p>
+<p>The per-agent FedGVI bounded-influence result enters the colony only
+through the rcce/AR client losses of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a>, under the
 source theorem’s matching assumptions, applied inside each agent’s local
-generalized-Bayes update. The robustness sweep in <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a> and
-the variational supplement in <a class="xref" href="index.html#sec:supp-variational">Section 11</a> keep
-the three axes distinct. The federation transport (<span
-class="citation"
-data-cites="sec:supp-federation"><a class="xref" href="index.html#sec:supp-federation">Section 12.4</a></span>) realizes
+generalized-Bayes update.</p>
+<p>The robustness sweep in <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a> and
+the variational supplement in <a class="xref" href="index.html#sec:supp-variational">Section 12</a> keep
+the three axes distinct. The federation transport (<a class="xref" href="index.html#sec:supp-federation">Section 13.4</a>) realizes
 this sharing over queue-backed worker channels; by <a class="xref" href="index.html#prop:federation-bit-identity">Proposition 12</a>, the
 federation bit-identity result, the consensus is bit-identical to the
 in-process call, so the channel adds no precision loss while leaving

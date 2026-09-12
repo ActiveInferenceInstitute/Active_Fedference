@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,75 +259,87 @@
 
 \begin{document}
 
-\subsection{Supplement: N-level hierarchical POMDP
-methods}\label{sec:supp-3level}
-
-\begin{frame}[fragile,allowframebreaks]{Supplement: N-level hierarchical
-POMDP methods}
+\begin{frame}{Supplement: N-level hierarchical POMDP methods}
+\protect\phantomsection\label{sec:supp-3level}
 This supplement specifies the generic \(N\)-level architecture that
-sec.~13.11 exercises at depth three: how the
+sec.~14.11 exercises at depth three: how the
 meta-context (L3), context (L2), and location (L1) factors are chained
-through conditioned priors, what the declarative \texttt{LayerSpec}
-interface fixes versus leaves free, and the top-down/bottom-up passes
-the inference runs. It answers \emph{what the executed 3-level result is
-a special case of} --- the reason the same code runs at other depths
-without new mathematics --- while recording that only the declared
-3-level configuration is empirically evaluated here.
+through conditioned priors,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model for an N-level
-hierarchy}
+\begin{frame}[fragile]{Supplement: N-level\ldots{} (part 2)}
+what the declarative \texttt{LayerSpec} interface fixes versus leaves
+free, and the top-down/bottom-up passes the inference runs.
+\end{frame}
+
+\begin{frame}{Supplement: N-level\ldots{} (part 3)}
+It answers \emph{what the executed 3-level result is a special case of}
+--- the reason the same code runs at other depths without new
+mathematics --- while recording that only the declared 3-level
+configuration is empirically evaluated here.
+\end{frame}
+
+\begin{frame}[fragile]{Generative model for an N-level hierarchy}
 \protect\phantomsection\label{generative-model-for-an-n-level-hierarchy}
-The 3-level POMDP implemented in
-\breaktt{fedference.pomdp.build\_3level\_world} extends the 2-level
-construction (sec.~13.10) by adding a top-level
-meta-context factor:
-
+The 3-level POMDP is built by \texttt{build\_3level\_world} in the
+\texttt{fedference.pomdp} module. It extends the 2-level construction
+(sec.~14.10) by adding a top-level meta-context
+factor.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model for an N-level
-hierarchy}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{L3 (meta-context)} --- 2 states (\texttt{low\_threat} /
-  \texttt{high\_threat}) with initial uniform prior, gating the L2
-  context prior;
-\item
-  \textbf{L2 (context)} --- 2 states (\texttt{quiet} / \texttt{alert})
-  with context-conditioned L1 location priors, gating the L1 prior;
-\item
-  \textbf{L1 (location)} --- the standard 3x3 grid with 9 states and
-  sensor acuity 0.85.
-\end{itemize}
+\begin{frame}[fragile]{Generative model for an\ldots{} (part 2)}
+\textbf{L3 (meta-context).} 2 \texttt{low\_threat} /
+\texttt{high\_threat} states begin from a uniform prior and gate the L2
+context prior.
 
+\textbf{L2 (context).} 2 \texttt{quiet} / \texttt{alert} states gate the
+L1 prior through context-conditioned location priors.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model for an N-level
-hierarchy}
-The conditioned priors are (see eq.~32 and
-eq.~33):
+\begin{frame}{Generative model for an\ldots{} (part 3)}
+\textbf{L1 (location).} The standard 3x3 grid has 9 states and sensor
+acuity 0.85.
 
+The conditioned priors are (see eq.~38 and
+eq.~39):
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generative model for an N-level
-hierarchy}
+\begin{frame}[fragile]{Generative model for an\ldots{} (part 4)}
 {\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}ll@{}}
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.5172}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.4828}}@{}}
 \toprule\noalign{}
-L3 state & L2 prior (quiet, alert) \\
+\begin{minipage}[b]{\linewidth}\raggedright
+L3 state
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+L2 prior (quiet, alert)
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \texttt{low\_threat} & (0.50, 0.50) --- uniform context \\
 \texttt{high\_threat} & (0.20, 0.80) --- peaked at alert \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
+\end{frame}
 
+\begin{frame}[fragile]{Generative model for an\ldots{} (part 5)}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.2963}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.7037}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 L2 state
@@ -299,97 +353,100 @@ L1 prior
 uniform \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generic N-level architecture}
+\begin{frame}[fragile]{Generic N-level architecture}
 \protect\phantomsection\label{generic-n-level-architecture}
-\breaktt{fedference.pomdp.LayerSpec} and
-\breaktt{fedference.pomdp.build\_nlevel\_world} implement the generic
-N-level version. The declarative layer specification is stored at
-\breaktt{src/fedference/config/hierarchical\_layers.yaml} and mirrors the
-canonical 3-level defaults (a standalone documentation artifact not read
-by any code path, kept in sync with the \breaktt{build\_3level\_world}
-defaults). The constructor accepts depth \ensuremath{\ge} 2; the executed empirical
-result in this manuscript is restricted to the declared 3-level
-configuration, and the leaf layer must carry
-\breaktt{n\_states\ ==\ N\_LOCATIONS}.
+The \texttt{LayerSpec} type and \texttt{build\_nlevel\_world} function
+in the \texttt{fedference.pomdp} module implement the generic N-level
+version. The declarative layer specification is
+\texttt{hierarchical\_layers.yaml} under
+\texttt{src/fedference/config/};
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Inference algorithm across
-hierarchy levels}
+\begin{frame}[fragile]{Generic N-level architecture (part 2)}
+it mirrors the canonical 3-level defaults (a standalone documentation
+artifact not read by any code path, kept in sync with the
+\texttt{build\_3level\_world} defaults).
+\end{frame}
+
+\begin{frame}[fragile]{Generic N-level architecture (part 3)}
+The constructor accepts depth \texorpdfstring{\ensuremath{\ge}}{>=} 2; the executed empirical result in this
+manuscript is restricted to the declared 3-level configuration, and the
+leaf layer must carry \texttt{n\_states\ ==\ N\_LOCATIONS}.
+\end{frame}
+
+\begin{frame}[fragile]{Inference algorithm across hierarchy levels}
 \protect\phantomsection\label{inference-algorithm-across-hierarchy-levels}
-\breaktt{fedference.pomdp.nlevel\_infer} performs 4 passes of top-down /
+\texttt{fedference.pomdp.nlevel\_infer} performs 4 passes of top-down /
 bottom-up alternating minimization over all N levels:
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Inference algorithm across
-hierarchy levels}
-\begin{enumerate}
-\tightlist
-\item
-  \textbf{Top-down pass} --- compute the empirical prior for each level
-  by marginalizing over the level above (eq.~32,
-  eq.~33).
-\item
-  \textbf{L1 update} --- one-step variational posterior on the
-  observation:
-  \(q_{\text{loc}} = \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
-  \log A[\text{obs},\,\cdot])\).
-\item
-  \textbf{Bottom-up pass} --- update each non-leaf level's belief from
-  the marginal evidence contributed by the level below:
-  \(\ell_j = \log(\tilde{p}_{\text{child|parent=}j}^\top q_{\text{child}})\).
-\end{enumerate}
-
+\begin{frame}{Inference algorithm across\ldots{} (part 2)}
+\textbf{1. Top-down pass.} Compute the empirical prior for each level by
+marginalizing over the level above (eq.~38,
+eq.~39).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Inference algorithm across
-hierarchy levels}
+\begin{frame}{Inference algorithm across\ldots{} (part 3)}
+\textbf{2. L1 update.} The one-step variational posterior on the
+observation is
+\(q_{\text{loc}} = \operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
+\log A[\text{obs},\,\cdot])\).
+\end{frame}
+
+\begin{frame}{Inference algorithm across\ldots{} (part 4)}
+\textbf{3. Bottom-up pass.} Update each non-leaf level's belief from the
+marginal evidence contributed by the level below:
+\(\ell_j = \log(\tilde{p}_{\text{child|parent=}j}^\top q_{\text{child}})\).
+\end{frame}
+
+\begin{frame}{Inference algorithm across\ldots{} (part 5)}
 After 4 iterations the agent broadcasts all N level beliefs; the colony
 federates each level independently via a log-linear pool
-(eq.~6).
+(eq.~9).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Study parameters for the three-level
-run}
+\begin{frame}{Study parameters for the three-level run}
 \protect\phantomsection\label{study-parameters-for-the-three-level-run}
-\end{frame}
-
-\begin{frame}[allowframebreaks]{Study parameters for the three-level
-run}
-\begin{longtable}[]{@{}ll@{}}
-\caption{Study 7 three-level hierarchical POMDP execution parameters:
-agent count, seeded trial budget, observation acuity,
-alternating-minimization iterations, and the L3/L2/L1 state
-cardinalities used by the three-level
-condition.}\label{tbl:nlevel3-params}\tabularnewline
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.6842}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.3158}}@{}}
+\label{tbl:nlevel3-params}\tabularnewline
 \toprule\noalign{}
-Parameter & Value \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Value
+\end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Parameter & Value \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Value
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 Agents & 4 \\
 Trials & 960 \\
 Acuity & 0.85 \\
-Alternating-min iterations & 4 \\
-L3 meta-context states & 2 \\
-L2 context states & 2 \\
-L1 location states & 9 \\
-Seed & 0 \\
 \bottomrule\noalign{}
 \end{longtable}
-
+\endgroup
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Study parameters for the three-level
-run}
+\begin{frame}{Study parameters for the\ldots{} (part 2)}
 The executed three-level configuration is summarized in
-tbl.~\ref{tbl:nlevel3-params}.
+tbl.~18.
 \end{frame}
 
 \end{document}

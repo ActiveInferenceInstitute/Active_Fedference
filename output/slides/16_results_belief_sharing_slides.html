@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Belief sharing lowers free energy at the project-pool corner — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-9328b68450d8">
+<h1 id="presentation-title-9328b68450d8" class="visually-hidden">Belief sharing lowers free energy at the project-pool corner — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:results-belief_sharing"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7b70f056e752">
+<h2 class="prose-slide" id="slide-heading-7b70f056e752">Belief sharing lowers free energy at the
+project-pool corner</h2>
+<p>With the standard-Bayes client limit and project-pool recovery
+identity pinned exactly (<span class="cross-reference">Section 7.1</span>),
+the study suite opens one step away from them. Its estimand is the
+paired,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d622c0e4d4f7">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 2" id="slide-heading-d622c0e4d4f7">Belief
+sharing lowers free… (part 2)</h2>
+<p>seed-level difference in colony-mean variational free energy between
+incommunicado and communicating conditions.</p>
+<p>The design is a categorical source-mechanism analogue of the colony
+belief-sharing result <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-89e3ff8338af">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 3" id="slide-heading-89e3ff8338af">Belief
+sharing lowers free… (part 3)</h2>
+<p>A colony of 7 sentinels observes one hidden location through
+independent noisy sensors of acuity 0.55. Each agent forms a one-step
+posterior. The communicating condition applies one standard
+log-linear-pool round at the <code>robustness=0</code> recovery corner
+(<span class="cross-reference">Equation (10)</span>,
+<span class="cross-reference">Equation (14)</span>);</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f8c6655e8535">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 4" id="slide-heading-f8c6655e8535">Belief
+sharing lowers free… (part 4)</h2>
+<p>the incommunicado condition retains the paired private
+posteriors.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b288b292e5bd">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 5" id="slide-heading-b288b292e5bd">Belief
+sharing lowers free… (part 5)</h2>
+<p>Under shared support, posterior-log-potential admission, and fixed
+weights, the pool specializes Eq. 7’s message-combination term. It does
+not reproduce the complete source protocol. The paired comparison gives
+the following declared quantities:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-07943059c7fa">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 6" id="slide-heading-07943059c7fa">Belief
+sharing lowers free… (part 6)</h2>
+<p><strong>Communicating mean.</strong> <span class="math inline">\(\bar
+F_{\text{share}} = 13.2190\)</span> (across-seed 95% bootstrap CI <span
+class="math inline">\([12.9656, 13.4685]\)</span> over <span
+class="math inline">\(n = 480\)</span> seeds). The single illustrative
+seed-0 run has its own colony mean <span
+class="math inline">\(15.8115\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-58319cb8bf3b">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 7" id="slide-heading-58319cb8bf3b">Belief
+sharing lowers free… (part 7)</h2>
+<p>Its per-agent 95% bootstrap CI is <span
+class="math inline">\([15.6177, 16.0647]\)</span> over its <span
+class="math inline">\(n = 7\)</span> agents. That interval characterizes
+the displayed run’s per-agent spread, not the across-seed mean.</p>
+<p><strong>Incommunicado mean.</strong> <span class="math inline">\(\bar
+F_{\text{solo}} = 16.5298\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1a5b29d4458">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 8" id="slide-heading-c1a5b29d4458">Belief
+sharing lowers free… (part 8)</h2>
+<p><strong>Paired reduction from sharing.</strong> <span
+class="math inline">\(\Delta \bar F = \bar F_{\text{solo}} - \bar
+F_{\text{share}}
+= 3.3109\)</span>; positive values mean lower free energy under
+communication.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9374099aae06">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 9" id="slide-heading-9374099aae06">Belief
+sharing lowers free… (part 9)</h2>
+<p>Each seed supplies one matched pair of colony means. Seeds are the
+independent unit; agents are nested within each seed and are not
+additional independent replicates. Across the declared seeds, the
+communicating condition also has higher mean true-state accuracy
+(0.7302) and lower mean surprise (0.3775).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d626cf6701c9">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 10" id="slide-heading-d626cf6701c9">Belief
+sharing lowers free… (part 10)</h2>
+<p>These are conditional results for the reduced protocol.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-86fe7050e37a">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 11" id="slide-heading-86fe7050e37a">Belief
+sharing lowers free… (part 11)</h2>
+<figure id="fig:free-energy-slide-panel-1">
+<img src="../figures/free_energy_comparison.slide-paired-seeds.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="1c941580467c8a07d845a31e35efe4ea38e37dc75760db24ef396dc38b339781"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1455"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.127193"
+alt="Every seed connects its isolated and communicating colony mean; dark line with open diamonds marks condition means." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c40dfa2ff082">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 12" id="slide-heading-c40dfa2ff082">Belief
+sharing lowers free… (part 12)</h2>
+<figure id="fig:free-energy-slide-panel-2">
+<img
+src="../figures/free_energy_comparison.slide-seed-differences.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="cdd9e9c97c1790197e7f96d4d727149b82f54cbf6495ebcde5795fec576f207b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1318"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.9269006"
+alt="All paired seed differences with jitter and descriptive violin, zero reference, and paired mean with the available report interval." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a0912e72eea">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 13" id="slide-heading-5a0912e72eea">Belief
+sharing lowers free… (part 13)</h2>
+<figure id="fig:free-energy-slide-panel-3">
+<img src="../figures/free_energy_comparison.slide-direction.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d84b76a4f00bdb1835381b8ffb7f17c0fc1b840cb286b35972e66597e24907c4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1274"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.8606061"
+alt="ΔF = isolated minus communicating. Positive values indicate lower F with communication in this reduced categorical protocol." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2a364a0355bb">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 14" id="slide-heading-2a364a0355bb">Belief
+sharing lowers free… (part 14)</h2>
+<figure id="fig:free-energy-slide-panel-4">
+<img src="../figures/free_energy_comparison.slide-pair-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8b80c36d86282bba9aa34ac2bdf2995fb071f63ca39ba968deb8582c36baa64d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1165"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.530303"
+alt="Filled circles: isolated. Open diamonds: sharing. Fine lines preserve pairing. Dark line / open diamonds: condition means." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1312156bc9f8">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 15" id="slide-heading-1312156bc9f8">Belief
+sharing lowers free… (part 15)</h2>
+<figure id="fig:free-energy-slide-panel-5">
+<img
+src="../figures/free_energy_comparison.slide-difference-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2ba1fd55db9fcfb5436a8e84cc2df355ad9a685c817d33b8096fbc8c89d93799"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1287"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.9"
+alt="One open diamond per seed; vertical jitter carries no outcome meaning. Violin is descriptive. Dark dotted rule marks zero contrast." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4c1677f00149">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 16" id="slide-heading-4c1677f00149">Belief
+sharing lowers free… (part 16)</h2>
+<figure id="fig:free-energy-slide-panel-6">
+<img src="../figures/free_energy_comparison.slide-mean.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4208c919f4ac265e85571aec4602b12d2875b39b3e53909446b44979cf0309cf"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1285"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.0590551"
+alt="Paired mean ΔF: +3.311 nats. Independent unit: configured seed; n = 480." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4875ee0a82c7">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 17" id="slide-heading-4875ee0a82c7">Belief
+sharing lowers free… (part 17)</h2>
+<figure id="fig:free-energy-slide-panel-7">
+<img src="../figures/free_energy_comparison.slide-interval.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e5d1318662d6fcefa50dae117ce1ccd206ab9818b6c6592a8f81e729e065ff2a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1239"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7"
+alt="Report-owned 95% interval: [3.186, 3.433] nats." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a21e3a89aa78">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 18" id="slide-heading-a21e3a89aa78">Belief
+sharing lowers free… (part 18)</h2>
+<figure id="fig:free-energy-slide-panel-8">
+<img src="../figures/free_energy_comparison.slide-unit.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1ec6d08522aecfe08ae4723345e4a935b583ec94648cfe3e2cf418197a91d4b9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1212"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6727273"
+alt="Analysis unit: configured seed with within-seed paired conditions. Agents and ordered steps remain nested within seed." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6588abaa0296">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 19" id="slide-heading-6588abaa0296">Belief
+sharing lowers free… (part 19)</h2>
+<figure id="fig:free-energy-slide-panel-9">
+<img src="../figures/free_energy_comparison.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="3420ab00dfba1fc11b4ddc18018e8698589c1d467d3bb79df7e9884210a82725"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1310"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.969697"
+alt="Reduced-protocol comparison. It does not establish a general communication benefit or reconstruct the complete source protocol." />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c3c047caf849">
+<h2 class="prose-slide"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 20" id="slide-heading-c3c047caf849">Belief
+sharing lowers free… (part 20)</h2>
+<p><span class="cross-reference">Figure 9</span>
+reports the headline gap; <span class="cross-reference">Figure 10</span>
+shows the per-agent mechanism behind it.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2d3860dc5c0d">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 21" id="slide-heading-2d3860dc5c0d">Belief
+sharing lowers free… (part 21)</h2>
+<figure id="fig:belief-heatmap-slide-panel-1">
+<img src="../figures/belief_heatmap.slide-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a6ea65893c5562eb31768604ca2f707221b169c394ea794a25b0a486d789b4f2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1314"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.2364532"
+alt="Posterior probability mass on a common 0–1 scale. Rows retain agent order, followed by consensus. Location indices retain their original order." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea590b49a5fa">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 22" id="slide-heading-ea590b49a5fa">Belief
+sharing lowers free… (part 22)</h2>
+<figure id="fig:belief-heatmap-slide-panel-2">
+<img src="../figures/belief_heatmap.slide-row-0-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="ad3d4ff6647d5086923a7863bd43525ea6adb25164ea612681e28ad10766856f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 0, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0a8cdeeb5be2">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 23" id="slide-heading-0a8cdeeb5be2">Belief
+sharing lowers free… (part 23)</h2>
+<figure id="fig:belief-heatmap-slide-panel-3">
+<img src="../figures/belief_heatmap.slide-row-0-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="273b82d47871e25e278dad2a0917ac40c6888e5a0416c127f65c4839bce29848"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 0, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c9c09b1f8ac1">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 24" id="slide-heading-c9c09b1f8ac1">Belief
+sharing lowers free… (part 24)</h2>
+<figure id="fig:belief-heatmap-slide-panel-4">
+<img src="../figures/belief_heatmap.slide-row-0-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="bb121dd4ed55ac811e767413f980265994e424cd73abceb2a3f5410cb5fc1e54"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 0, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-76670eb0d7fd">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 25" id="slide-heading-76670eb0d7fd">Belief
+sharing lowers free… (part 25)</h2>
+<figure id="fig:belief-heatmap-slide-panel-5">
+<img src="../figures/belief_heatmap.slide-row-1-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="1dac28189bd7621f390003b84609cf7d75da550207ea75facce2ee91c0c86778"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 1, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-11ec2aa2348a">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 26" id="slide-heading-11ec2aa2348a">Belief
+sharing lowers free… (part 26)</h2>
+<figure id="fig:belief-heatmap-slide-panel-6">
+<img src="../figures/belief_heatmap.slide-row-1-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="90aba96b3a91da333ba0343862a41c0fa0aebb49e08df5db9ff52d9482a4a72d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 1, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-33537c1de211">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 27" id="slide-heading-33537c1de211">Belief
+sharing lowers free… (part 27)</h2>
+<figure id="fig:belief-heatmap-slide-panel-7">
+<img src="../figures/belief_heatmap.slide-row-1-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="5095695748f0d14e774913bf1d3c50fb6b72b88027b0a5508748c29e3b120797"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 1, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d1b6d07af522">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 28" id="slide-heading-d1b6d07af522">Belief
+sharing lowers free… (part 28)</h2>
+<figure id="fig:belief-heatmap-slide-panel-8">
+<img src="../figures/belief_heatmap.slide-row-2-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="305804c00055be6f3a7f73178f73e3b9ba8b078bc30d0a80c25ee72b422b186e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 2, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-54ee7d510ad3">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 29" id="slide-heading-54ee7d510ad3">Belief
+sharing lowers free… (part 29)</h2>
+<figure id="fig:belief-heatmap-slide-panel-9">
+<img src="../figures/belief_heatmap.slide-row-2-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="6cddf2af5ecea8e07e6748de2685bf91cba53faf448f2097cdb4f6cb2f60a0f2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 2, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-675f0c91a252">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 30" id="slide-heading-675f0c91a252">Belief
+sharing lowers free… (part 30)</h2>
+<figure id="fig:belief-heatmap-slide-panel-10">
+<img src="../figures/belief_heatmap.slide-row-2-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="18940b304e60d91b9785fcd0ed2c65f6810c331a2ac344879f6ea3d5db159734"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 2, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8330e9f3e173">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 31" id="slide-heading-8330e9f3e173">Belief
+sharing lowers free… (part 31)</h2>
+<figure id="fig:belief-heatmap-slide-panel-11">
+<img src="../figures/belief_heatmap.slide-row-3-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d0cfd16dad68cd9177f5d937ce192e34e0fd8ae14aa0a82c3f71c9876e0a4be3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 3, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8770d13b64b0">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 32" id="slide-heading-8770d13b64b0">Belief
+sharing lowers free… (part 32)</h2>
+<figure id="fig:belief-heatmap-slide-panel-12">
+<img src="../figures/belief_heatmap.slide-row-3-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="599c8f3dd37a6271e4517e89173c8f7d89f4efb9d40c93e18e7f006f09f7e9ed"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 3, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-575ff016d45a">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 33" id="slide-heading-575ff016d45a">Belief
+sharing lowers free… (part 33)</h2>
+<figure id="fig:belief-heatmap-slide-panel-13">
+<img src="../figures/belief_heatmap.slide-row-3-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e8935d086c79bbfe3e1578d189fff733f774578e87f771afdba3f1d1cc02c1c6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 3, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-16a7101b851c">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 34" id="slide-heading-16a7101b851c">Belief
+sharing lowers free… (part 34)</h2>
+<figure id="fig:belief-heatmap-slide-panel-14">
+<img src="../figures/belief_heatmap.slide-row-4-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="010b23e0920b11995baa14550888b2f89b85f759e9e82fbd0884fc2cb42ffa53"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 4, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bfb1021a7134">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 35" id="slide-heading-bfb1021a7134">Belief
+sharing lowers free… (part 35)</h2>
+<figure id="fig:belief-heatmap-slide-panel-15">
+<img src="../figures/belief_heatmap.slide-row-4-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="0e5f700c34c8f4788889fec5cacc44dbb2cf5cf51948a9a44f5ac465e6c07ed6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 4, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 36" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-50e5c2fd068f">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 36" id="slide-heading-50e5c2fd068f">Belief
+sharing lowers free… (part 36)</h2>
+<figure id="fig:belief-heatmap-slide-panel-16">
+<img src="../figures/belief_heatmap.slide-row-4-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="b2f26a3d529e47633685e30d3fa865abf06d983764f28da0c7c6c293a7790f37"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 4, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 37" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3fd4562b9799">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 37" id="slide-heading-3fd4562b9799">Belief
+sharing lowers free… (part 37)</h2>
+<figure id="fig:belief-heatmap-slide-panel-17">
+<img src="../figures/belief_heatmap.slide-row-5-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d7a07ba27490f7d8c8e01f55aeeefbde5ba491a472e926cb1542a0685c44a4d2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 5, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 38" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6aac8e725adb">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 38" id="slide-heading-6aac8e725adb">Belief
+sharing lowers free… (part 38)</h2>
+<figure id="fig:belief-heatmap-slide-panel-18">
+<img src="../figures/belief_heatmap.slide-row-5-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="69bc40e619e0514a384a4e2eac230ddb27eb3110f5031b11e60b25b0058ee6ab"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 5, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 39" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-018987f2309b">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 39" id="slide-heading-018987f2309b">Belief
+sharing lowers free… (part 39)</h2>
+<figure id="fig:belief-heatmap-slide-panel-19">
+<img src="../figures/belief_heatmap.slide-row-5-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="46deafef6a3e8d58a8106bff80b9d5d8292c8e4e9927c84b3969bee7a54fe7d9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 5, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 40" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f4707ec75de1">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 40" id="slide-heading-f4707ec75de1">Belief
+sharing lowers free… (part 40)</h2>
+<figure id="fig:belief-heatmap-slide-panel-20">
+<img src="../figures/belief_heatmap.slide-row-6-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="8f6aeb1db5d049dee1dc330ceab6bb43f17111b0c0eb2c0dee9ee907df7c1cf1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 6, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 41" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3599e0d3db87">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 41" id="slide-heading-3599e0d3db87">Belief
+sharing lowers free… (part 41)</h2>
+<figure id="fig:belief-heatmap-slide-panel-21">
+<img src="../figures/belief_heatmap.slide-row-6-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="759380d741b85cb5ef9920c4bae4c70bdc72e4ad251fa34fce3a6a36b946f0c1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 6, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 42" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9accf1d32a74">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 42" id="slide-heading-9accf1d32a74">Belief
+sharing lowers free… (part 42)</h2>
+<figure id="fig:belief-heatmap-slide-panel-22">
+<img src="../figures/belief_heatmap.slide-row-6-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="1879ea09dccec0c837a197cccf0bbdbcf8310d33cdb65a168888c95d49a2e002"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="agent 6, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 43" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ebbb04f141b0">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 43" id="slide-heading-ebbb04f141b0">Belief
+sharing lowers free… (part 43)</h2>
+<figure id="fig:belief-heatmap-slide-panel-23">
+<img src="../figures/belief_heatmap.slide-row-7-cells-0-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="7d06f0884a83f1033b156e9f27008d0ac769ae415c97fb2ace6fd2592cb47265"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="consensus, locations 0 through 2; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 44" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-12cf81fb223a">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 44" id="slide-heading-12cf81fb223a">Belief
+sharing lowers free… (part 44)</h2>
+<figure id="fig:belief-heatmap-slide-panel-24">
+<img src="../figures/belief_heatmap.slide-row-7-cells-3-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="a92ce40edf778fb50ec7f0c56a6720b0582e34cc33dfcf2ed42f2714e5067c44"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="consensus, locations 3 through 5; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 45" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eeb3d1ff9821">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 45" id="slide-heading-eeb3d1ff9821">Belief
+sharing lowers free… (part 45)</h2>
+<figure id="fig:belief-heatmap-slide-panel-25">
+<img src="../figures/belief_heatmap.slide-row-7-cells-6-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="5e18a17d6b501faa24a7bb9e9bad899ffdb945cf00adbce1345e0b9b2b51e30f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1191"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="1.7412281"
+alt="consensus, locations 6 through 8; every probability printed on the common 0–1 scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 46" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-17faf1b3e887">
+<h2 class="figure-led"
+aria-label="Belief sharing lowers free energy at the project-pool corner, part 46" id="slide-heading-17faf1b3e887">Belief
+sharing lowers free… (part 46)</h2>
+<figure id="fig:belief-heatmap-slide-panel-26">
+<img src="../figures/belief_heatmap.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="262669ae78410491112d87adaafdb7084ea7711cf98ad5cf3b404bf764e4efe7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1314"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.2364532"
+alt="7 agents and one consensus row. One configured colony snapshot; no uncertainty interval. Categorical log-linear specialization, not the full source protocol." />
+</figure>
+</section>
+<section id="sec:robustness-axes-results"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-27fd5a1dd4e7">
+<h2 class="prose-slide" id="slide-heading-27fd5a1dd4e7">Three robustness axes remain distinct in the
+results</h2>
+<p>The authoritative three-axis guarantee map is <span class="cross-reference">Section 3.3</span>.
+The contaminated studies keep its source-conditional client update,
+heuristic server reweighting,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Three robustness axes remain distinct in the results, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3dcb92377f7f">
+<h2 class="prose-slide"
+aria-label="Three robustness axes remain distinct in the results, part 2" id="slide-heading-3dcb92377f7f">Three
+robustness axes… (part 2)</h2>
+<p>and objective-backed variational server rule visually and
+inferentially separate. In particular, no result below transfers the
+client’s bounded-influence theorem or the variational rule’s raw-weight
+bound to <code>robust_aggregate</code>.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+{
+  "panels": [
+    {
+      "alt": "Labeled JSON or Python request \u2192 Strict schema + 1-D categorical shape: parse; normal.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "124b9148fa37ce08c69673514045ca8962f87e3b2e0636078cec3185378da24d",
+      "src": "../figures/application_integrity_flow.slide-request-strict-validation.png"
+    },
+    {
+      "alt": "Strict schema + 1-D categorical shape \u2192 Canonical request + SHA-256: valid; normal.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c0193b4b33c2c76af9191159a2a667509a135b1e72a100d5e0535600fd833549",
+      "src": "../figures/application_integrity_flow.slide-strict-validation-canonical-request.png"
+    },
+    {
+      "alt": "Strict schema + 1-D categorical shape \u2192 Exit 2 \u00b7 invalid request no directory created: invalid request; rejected.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7f29588dabcb7f42d4d87375bf941b10bbbabedb200f7fc83822f57b5c6ce5ac",
+      "src": "../figures/application_integrity_flow.slide-strict-validation-invalid-request.png"
+    },
+    {
+      "alt": "Canonical request + SHA-256 \u2192 Destination + source provenance safety: validated semantics; normal.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "01571fc6916f6dc0dd97d6b1aa6ce76179a2176551b1dd2095113d42ad79488f",
+      "src": "../figures/application_integrity_flow.slide-canonical-request-destination-safety.png"
+    },
+    {
+      "alt": "Destination + source provenance safety \u2192 Exit 2 \u00b7 unsafe destination or provenance unavailable: unsafe path or provenance failure; rejected.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e74cc3448fe64e525430003c77c0f1c1129638307eac8bc408f5d8ef6cfa4986",
+      "src": "../figures/application_integrity_flow.slide-destination-safety-unsafe-destination.png"
+    },
+    {
+      "alt": "Destination + source provenance safety \u2192 aggregate_result called once: single delegation; normal.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a97fd334dc409dbc3e2f0e72eb9bedbac7b21b7ac975ef90679d6c12d993630f",
+      "src": "../figures/application_integrity_flow.slide-destination-safety-aggregate-result.png"
+    },
+    {
+      "alt": "aggregate_result called once \u2192 Consensus, weights, and histories: finite result; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c7acc668d4d6707d8926e78d527387c88b4ba5f591b45c444cee83561626bf92",
+      "src": "../figures/application_integrity_flow.slide-aggregate-result-rich-result.png"
+    },
+    {
+      "alt": "Consensus, weights, and histories \u2192 Classify convergence \u00d7 fallback: classify health; normal.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9f9e7ec00b7f2ae6ae5f16bb937fe4d45ab5ebb2a98809723ae8a7d346ef186b",
+      "src": "../figures/application_integrity_flow.slide-rich-result-solver-status.png"
+    },
+    {
+      "alt": "Classify convergence \u00d7 fallback \u2192 Exit 1 \u00b7 retain valid non-nominal artifacts: fallback or nonconvergence; retained_warning.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "df39f6e821ae2429aaac9d777a7f432e5ec96894b652c612827bb68239780b7b",
+      "src": "../figures/application_integrity_flow.slide-solver-status-non-nominal.png"
+    },
+    {
+      "alt": "Canonical request + SHA-256 \u2192 1  request.json: semantic input; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "396e8af25eb109b6f37897e868be9b54efde5d74a640820476b02ee38fe01729",
+      "src": "../figures/application_integrity_flow.slide-canonical-request-request-json.png"
+    },
+    {
+      "alt": "Consensus, weights, and histories \u2192 2  result.json: semantic output; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fb310d0748eed1b05596e3b85b731e4f0c71aaddf3b6d3fff1e4fb6510e30858",
+      "src": "../figures/application_integrity_flow.slide-rich-result-result-json.png"
+    },
+    {
+      "alt": "1  request.json \u2192 3  receipt.json: bind request hash; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5a363cf792d726ed70d219520437f7b5b414e6334c432d86bfb9096cae08499e",
+      "src": "../figures/application_integrity_flow.slide-request-json-receipt-json.png"
+    },
+    {
+      "alt": "2  result.json \u2192 3  receipt.json: bind result hash + provenance; data_dependency.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1ad81efdd985ef0aa27e3d94f6a27a2b189a4370a5a4ecef2d295e43ae5e5564",
+      "src": "../figures/application_integrity_flow.slide-result-json-receipt-json.png"
+    },
+    {
+      "alt": "3  receipt.json \u2192 Verify receipt: verify; normal.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a8fec71b11e5e0110a949b6d2d89225299363de0809a2961f7ac36ea9c131d82",
+      "src": "../figures/application_integrity_flow.slide-receipt-json-verification.png"
+    },
+    {
+      "alt": "Verify receipt \u2192 Mismatch \u00b7 report exact finding; do not reinterpret: mismatch; rejected.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "47323e2cbcfe281ce4c2fb58fc797f1d70cbbeb44aa37fce7b9660ac72101208",
+      "src": "../figures/application_integrity_flow.slide-verification-mismatch.png"
+    },
+    {
+      "alt": "1  request.json \u2192 2  result.json: Atomic write order; write_order.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "eb8535645c0ccc8257c6f31ea467c3c40c1c3b46f45314ea7a355d60432e9917",
+      "src": "../figures/application_integrity_flow.slide-write-request-json-result-json.png"
+    },
+    {
+      "alt": "2  result.json \u2192 3  receipt.json: Atomic write order; write_order.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ec4527f894ed136e60150ea7715bb7bd6bdf303e017aa564b01df6cba67cac3c",
+      "src": "../figures/application_integrity_flow.slide-write-result-json-receipt-json.png"
+    },
+    {
+      "alt": "converged \u00b7 no fallback\nnominal",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "501443e13d95120fb764d8d97c297327054ebf95a6a3323fabb1d198bf19aa28",
+      "src": "../figures/application_integrity_flow.slide-status-nominal.png"
+    },
+    {
+      "alt": "converged \u00b7 fallback\nconverged_with_fallback",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "96ad86e12c6b13a833ee31278af7016bcee8e98db29a1a0deabe8c439e7f5e03",
+      "src": "../figures/application_integrity_flow.slide-status-converged-with-fallback.png"
+    },
+    {
+      "alt": "not converged \u00b7 no fallback\nnot_converged",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "8b30e4fcc4c8635c3894b8cb4536daeb3b0e425e25f2d2196e656c49a41e584c",
+      "src": "../figures/application_integrity_flow.slide-status-not-converged.png"
+    },
+    {
+      "alt": "not converged \u00b7 fallback\nnot_converged_with_fallback",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d2d5110f2c54090db825d4461b884faa89977b6fe16647e77f6d32fef7c5fd3a",
+      "src": "../figures/application_integrity_flow.slide-status-not-converged-with-fallback.png"
+    },
+    {
+      "alt": "Artifact integrity\nEstablishes: recorded request/result bytes match the receipt",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "564c0cdc26e021e605702697f05b113656d3617a77f63500d1d8e879f187001e",
+      "src": "../figures/application_integrity_flow.slide-artifact-integrity-establishes.png"
+    },
+    {
+      "alt": "Artifact integrity\nDoes not establish: equivalence to another source checkout or nominal solver health",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "57ef1faf8b82ecb1a89a3105b1e087eaf5c418dd4e89d4db7ea073cdbab0ab97",
+      "src": "../figures/application_integrity_flow.slide-artifact-integrity-does-not-establish.png"
+    },
+    {
+      "alt": "Source equivalence\nEstablishes: requested source inputs match recorded source provenance",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "94d82d0780ec5b52b3e1241f9835e1620eadf7f63b1e396e2ccb5568db22b3c3",
+      "src": "../figures/application_integrity_flow.slide-source-equivalence-establishes.png"
+    },
+    {
+      "alt": "Source equivalence\nDoes not establish: calibration, domain suitability, or scientific validity",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2f9504a5296f83abe6d0a4d38edf9de2bc014b194ef24c9d6faf70a4510845e4",
+      "src": "../figures/application_integrity_flow.slide-source-equivalence-does-not-establish.png"
+    },
+    {
+      "alt": "Nominal solver health\nEstablishes: the recorded run converged without fallback",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bbf9fb64b0ffa531463c4daacc747f4175a2d379612a5561c0ab8538375adb15",
+      "src": "../figures/application_integrity_flow.slide-nominal-solver-establishes.png"
+    },
+    {
+      "alt": "Nominal solver health\nDoes not establish: a downstream decision, acceptance, or truth of an interpretation",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fdd0bc531813ba2eebea1ed157b33fe228c404c8ed6aeab241c3c4c8f91e6303",
+      "src": "../figures/application_integrity_flow.slide-nominal-solver-does-not-establish.png"
+    },
+    {
+      "alt": "Application receipt does not establish:\ncalibration",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "46b1bd93808bd9222f220ea86aceb932572c49bdcb1d3abbc8586f87403db29b",
+      "src": "../figures/application_integrity_flow.slide-no-claim-1.png"
+    },
+    {
+      "alt": "Application receipt does not establish:\ndomain suitability",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "170ad362ecfeee99723be5e119d2ddbc4d3c366e8a13e2b89051be3224c953f0",
+      "src": "../figures/application_integrity_flow.slide-no-claim-2.png"
+    },
+    {
+      "alt": "Application receipt does not establish:\nscientific validity",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6a6daeb0dff93c873be20b388c065b792f87806e9a0dc144742b91e712532934",
+      "src": "../figures/application_integrity_flow.slide-no-claim-3.png"
+    },
+    {
+      "alt": "Application receipt does not establish:\ndownstream decision correctness",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "930d95bd8bac656c66d0fb77a20b6568d66065c8796d7117ab714301dd08c48f",
+      "src": "../figures/application_integrity_flow.slide-no-claim-4.png"
+    },
+    {
+      "alt": "Application receipt does not establish:\nacceptance",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a69f3b6a1478d8d99067dc3b6a955d607c8bab1faa24153a59ad7dac50617b8e",
+      "src": "../figures/application_integrity_flow.slide-no-claim-5.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

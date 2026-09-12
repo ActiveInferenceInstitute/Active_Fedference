@@ -1,0 +1,41 @@
+{
+  "panels": [
+    {
+      "alt": "Risk plus ambiguity and signed pragmatic minus epistemic waterfall share the same terminal G.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "420152189dfd41a30e996ea0e91b94e5d18b927f0274cbe3151f40835985c898",
+      "src": "../figures/efe_decomposition.slide-identity.png"
+    },
+    {
+      "alt": "Cost: risk 1.187 plus ambiguity 4.271 nats. Hatched upper segment is ambiguity.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f3d04913ba6cc3507a967f91f429658d5c828fb05c4b82e2293d7b76a32c67e9",
+      "src": "../figures/efe_decomposition.slide-cost.png"
+    },
+    {
+      "alt": "Value: \u2212pragmatic 7.534 plus \u2212epistemic -2.077 nats. Crosshatching marks the signed epistemic correction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a0cd732d6c8e32a53eb339cc09c8cc83943570bc867a0c88b7787e2324b9e0ae",
+      "src": "../figures/efe_decomposition.slide-value.png"
+    },
+    {
+      "alt": "Terminal diamond: G = 5.457 nats. The right endpoint equals G; the intermediate top need not equal G.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f0712f31888a576a188f1132896085a2657a838226ce44929dee8351ea285551",
+      "src": "../figures/efe_decomposition.slide-endpoint.png"
+    },
+    {
+      "alt": "Identity residual: -2.665e-15 nats. G = risk + ambiguity = \u2212(pragmatic + epistemic).",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2579cb1bc4d7d6458e37c6429e64a6cd2700477dae42b1de4c3167a0c87d9922",
+      "src": "../figures/efe_decomposition.slide-residual.png"
+    },
+    {
+      "alt": "Uniform diagnostic prior makes information gain visible. One categorical identity diagnostic; no stochastic replication or uncertainty interval.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3ebe1f17e2d2d15ea316a18c60c792392fc5b7ca9ce1ca2737f568452b2859d3",
+      "src": "../figures/efe_decomposition.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

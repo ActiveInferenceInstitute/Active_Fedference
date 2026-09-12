@@ -1,0 +1,53 @@
+{
+  "panels": [
+    {
+      "alt": "byzantine: complete reference and pooled display-preset curves with their source-supplied seed bands and onset marker.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "b3cfc5e2db7f0cbbc5dd449827234703524c8d95aaca432b3149d0aa6de645e8",
+      "src": "../figures/robustness_onset.slide-mechanism-1.png"
+    },
+    {
+      "alt": "byzantine. Onset: 0.4. Gap at maximum rate: -0.016. Each curve has its own 95% seed-bootstrap band.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c6ac67ef8c08f198d18b775a4d380772c44b0b9294adc7eb2d95ad69c3d26b8c",
+      "src": "../figures/robustness_onset.slide-mechanism-1-notes.png"
+    },
+    {
+      "alt": "Arrow: declared byzantine veto cliff near the penultimate rate. The onset window does not establish universal robustness.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "72ffdfc3e512dcfa0184cd5ba8267553a9db63f2980cb39a4276bc9f1e590454",
+      "src": "../figures/robustness_onset.slide-veto-cliff.png"
+    },
+    {
+      "alt": "confident_wrong: complete reference and pooled display-preset curves with their source-supplied seed bands and onset marker.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "23b4d9aa748866660de7a340956414684419e776bee705e5d042d02a6f99da3f",
+      "src": "../figures/robustness_onset.slide-mechanism-2.png"
+    },
+    {
+      "alt": "confident wrong. Onset: 0.6. Gap at maximum rate: +0.110. Each curve has its own 95% seed-bootstrap band.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e2c66f7b35b7502e6516598e44079a4ea2fd25e412e396c8427c92698c08c5a3",
+      "src": "../figures/robustness_onset.slide-mechanism-2-notes.png"
+    },
+    {
+      "alt": "drift: complete reference and pooled display-preset curves with their source-supplied seed bands and onset marker.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "d711040df80fc1ae16943fa9bd919dac20b761147b637cfd4a8e3d4f77ea5d39",
+      "src": "../figures/robustness_onset.slide-mechanism-3.png"
+    },
+    {
+      "alt": "drift. Onset: 0.6. Gap at maximum rate: +0.110. Each curve has its own 95% seed-bootstrap band.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "acf57177cd980d526dc169579cc50903b9b230d22b7b997c3a3f5714e6b3256c",
+      "src": "../figures/robustness_onset.slide-mechanism-3-notes.png"
+    },
+    {
+      "alt": "Filled circles / solid: reference log pool. Open squares / dashed: pooled display server preset. This selected display curve is not a fixed-preset confirmatory contrast.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ec76c97507593d9c7a497b5d7f5bf5af509a7ed76f7f11b52819515c44772e00",
+      "src": "../figures/robustness_onset.slide-key.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

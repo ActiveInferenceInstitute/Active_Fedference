@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Sharp server heuristic: influence and finite-breakdown characterization — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-3e9d97d40133">
+<h1 id="presentation-title-3e9d97d40133" class="visually-hidden">Sharp server heuristic: influence and finite-breakdown characterization — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:results-heuristic-characterization"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cceeb21cdcbb">
+<h2 class="prose-slide" id="slide-heading-cceeb21cdcbb">Sharp server heuristic: influence and
+finite-breakdown characterization</h2>
+<p>The server-side <code>robust_aggregate</code> rule is the sharp
+heuristic axis of the three-axes design (<span class="cross-reference">Section 7.2.1</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-edec1755e70c">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 2" id="slide-heading-edec1755e70c">Sharp
+server heuristic (part 2)</h2>
+<p>It has BH-rejected positive contrasts in the configured accuracy
+verdict in <span class="cross-reference">Section 7.5.2</span>
+but has declared reversals elsewhere.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea78f2f76af3">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 3" id="slide-heading-ea78f2f76af3">Sharp
+server heuristic (part 3)</h2>
+<p>Unlike the objective-backed <code>variational_aggregate</code>, no
+closed-form free-energy derivation has been established for it in this
+repository. A separate scoped proposition in the aggregation-objective
+supplement rules out the declared continuously differentiable,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a8db14cd3fd4">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 4" id="slide-heading-a8db14cd3fd4">Sharp
+server heuristic (part 4)</h2>
+<p>separable forward-KL objective class for the implementation’s raw
+log-pool block; it does not rule out every broader coupled or
+fixed-point-only construction.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d13d4dc16a1b">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 5" id="slide-heading-d13d4dc16a1b">Sharp
+server heuristic (part 5)</h2>
+<p>The rule therefore remains a heuristic whose positive formal property
+is bit-identical recovery of the log-linear pool at
+<code>robustness = 0</code> (<span class="cross-reference">10</span>).
+This section does not promote the scoped negative result into an
+objective certificate; it <em>measures</em> the heuristic
+empirically,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a44e1b5d0d9c">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 6" id="slide-heading-a44e1b5d0d9c">Sharp
+server heuristic (part 6)</h2>
+<p>and the measurement makes its honesty boundary concrete.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ab3f6f414912">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 7" id="slide-heading-ab3f6f414912">Sharp
+server heuristic (part 7)</h2>
+<p>We measure two things (<span class="cross-reference">Figure 33</span>).
+First, a <strong>numerical influence function</strong>: we drag one
+agent’s belief a growing fraction toward a confident-wrong contamination
+point and read its converged pooling weight. At
+<code>robustness = 0</code> the weight is a flat <span
+class="math inline">\(1/n\)</span> at every perturbation —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8d23c3b02ba6">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 8" id="slide-heading-8d23c3b02ba6">Sharp
+server heuristic (part 8)</h2>
+<p>the naive pool never down-weights anyone — which anchors the
+instrument to the proven recovery corner.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7fceb1a76dc1">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 9" id="slide-heading-7fceb1a76dc1">Sharp
+server heuristic (part 9)</h2>
+<p>At positive robustness the dragged agent’s influence falls (not
+strictly monotonically — a tiny drag can briefly <em>raise</em> it
+before the divergence penalty dominates, an honest non-monotonicity we
+report rather than smooth away).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6ac929e68fb3">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 10" id="slide-heading-6ac929e68fb3">Sharp
+server heuristic (part 10)</h2>
+<p>Second, and more consequentially, a <strong>breakdown
+witness</strong>. We add colluding confident-wrong adversaries — all
+broadcasting the same false state — to a fixed colony of 5 honest
+sentinels until each aggregator’s consensus argmax is <em>captured</em>
+(flips to the adversaries’ target). The sharp heuristic is captured by 2
+colluders;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9cf8960ed303">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 11" id="slide-heading-9cf8960ed303">Sharp
+server heuristic (part 11)</h2>
+<p>the conservative objective-backed variational rule withstands more,
+capitulating only at 4.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0a07634f6b04">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 12" id="slide-heading-0a07634f6b04">Sharp
+server heuristic (part 12)</h2>
+<p>Both counts are <strong>finite</strong> (Yes): a colluding majority
+overwhelms either rule. That finite breakdown point is the honest
+headline: neither rule has an unconditional truth-recovery claim under
+coordinated collusion. The absence of an objective theorem for
+<code>robust_aggregate</code> is a separate derivational boundary.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-97c3ba29ff57">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 13" id="slide-heading-97c3ba29ff57">Sharp
+server heuristic (part 13)</h2>
+<p>The finite capture measurement neither establishes estimator-level
+B-robustness nor refutes the variational rule’s stated raw
+effective-weight result.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-91282108fde5">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 14" id="slide-heading-91282108fde5">Sharp
+server heuristic (part 14)</h2>
+<p>The report also runs a declared diagnostic grid over state dimension,
+honest-agent count, robustness, four simple attack mechanisms, and
+balanced versus adversary-downweighted base weights. This is a coverage
+instrument for finding counterexamples,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-948869a37d91">
+<h2 class="prose-slide"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 15" id="slide-heading-948869a37d91">Sharp
+server heuristic (part 15)</h2>
+<p>not a random sample of worlds and not a theorem search over all
+simplexes. A finite capture row is evidence against a universal
+guarantee; an uncaptured row is only “not found within this search
+budget.”</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-77bfd4b5f6a0">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 16" id="slide-heading-77bfd4b5f6a0">Sharp
+server heuristic (part 16)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-1">
+<img src="../figures/heuristic_breakdown.slide-influence.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="1fc328e8969043c3eaaa6412f271af5cd694e40d69eb8bfc112118ef1efb9768"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="Complete numerical influence paths for the reference and heuristic with the equal-weight reference." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9d110360e1c6">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 17" id="slide-heading-9d110360e1c6">Sharp
+server heuristic (part 17)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-2">
+<img src="../figures/heuristic_breakdown.slide-influence-drop.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="dea27478d20e748f6ad53cf2661a1817bf2e8688d37cf048a6311a8076b56367"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1240"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.8818898"
+alt="Endpoint weight drop: reference minus heuristic = 0.1435. Empirical at these settings, not a guarantee." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0f6d67d6b3c6">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 18" id="slide-heading-0f6d67d6b3c6">Sharp
+server heuristic (part 18)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-3">
+<img src="../figures/heuristic_breakdown.slide-heuristic.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="4fe6cdd88a0375b9ea6d11cba8bc8bf17efbbaffbbdbc05e8caf1bcb4708b702"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="573"
+data-slide-figure-intrinsic-aspect="2.4380454"
+alt="Heuristic: observed finite-search argmax capture at k=2 adversaries." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a668494d4bef">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 19" id="slide-heading-a668494d4bef">Sharp
+server heuristic (part 19)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-4">
+<img
+src="../figures/heuristic_breakdown.slide-heuristic-capture.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="51e48a9aedd55bd060f00ee54d1a74e6fea0521b35570c71c6d4e9b9564bb98e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1225"
+data-slide-figure-intrinsic-height="101"
+data-slide-figure-intrinsic-aspect="12.128713"
+alt="Heuristic: argmax captured at k=2." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3a864664f3c8">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 20" id="slide-heading-3a864664f3c8">Sharp
+server heuristic (part 20)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-5">
+<img src="../figures/heuristic_breakdown.slide-variational.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="b45de17a3c40037bd25d56ff8ca1f88e07379f29140e73f516c22b9a982021a0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="573"
+data-slide-figure-intrinsic-aspect="2.4380454"
+alt="Variational: observed finite-search argmax capture at k=4 adversaries." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8482d046b35">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 21" id="slide-heading-e8482d046b35">Sharp
+server heuristic (part 21)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-6">
+<img
+src="../figures/heuristic_breakdown.slide-variational-capture.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="55fa6037d0e5d082048353ec2becf9de5766248ccc619df5751ad8b36398b5f7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1285"
+data-slide-figure-intrinsic-height="101"
+data-slide-figure-intrinsic-aspect="12.722772"
+alt="Variational: argmax captured at k=4." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-02c32c5e75aa">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 22" id="slide-heading-02c32c5e75aa">Sharp
+server heuristic (part 22)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-7">
+<img src="../figures/heuristic_breakdown.slide-attack-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="57cb42f9af6278a89617bcecbb243c8dca5ebc9a43c4e04f461bbaf66f4e9dc1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="573"
+data-slide-figure-intrinsic-aspect="2.5898778"
+alt="confident_wrong: 16/16 declared rows have finite heuristic capture (100%)." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8051c238672a">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 23" id="slide-heading-8051c238672a">Sharp
+server heuristic (part 23)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-8">
+<img src="../figures/heuristic_breakdown.slide-attack-1-count.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="74216d2b675ef1659cec80d1adfc2373ac2408280da731324ee861cc785b5152"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1161"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.559322"
+alt="confident wrong: 16/16 rows with finite capture = 100%." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f896eb1ccad">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 24" id="slide-heading-6f896eb1ccad">Sharp
+server heuristic (part 24)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-9">
+<img src="../figures/heuristic_breakdown.slide-attack-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="6f766310e9f2168586ad28ed99747daf7058addd487e29364841cb206843d1fb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="573"
+data-slide-figure-intrinsic-aspect="2.5898778"
+alt="label_noise: 0/16 declared rows have finite heuristic capture (0%)." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5ceebc855431">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 25" id="slide-heading-5ceebc855431">Sharp
+server heuristic (part 25)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-10">
+<img src="../figures/heuristic_breakdown.slide-attack-2-count.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a881e459597c23048d142891f51f8e405f62b00d0dcea995c5eb342380a9026e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1128"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.3728814"
+alt="label noise: 0/16 rows with finite capture = 0%." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e0aba49aa831">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 26" id="slide-heading-e0aba49aa831">Sharp
+server heuristic (part 26)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-11">
+<img src="../figures/heuristic_breakdown.slide-attack-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="bdb7b5a26bb5a70ec76c82718fe379f4d3f65ca36c4dce9365e189634bb47cc2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="573"
+data-slide-figure-intrinsic-aspect="2.5898778"
+alt="uniform: 0/16 declared rows have finite heuristic capture (0%)." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-209525d133c6">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 27" id="slide-heading-209525d133c6">Sharp
+server heuristic (part 27)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-12">
+<img src="../figures/heuristic_breakdown.slide-attack-3-count.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b3448369a3f859d2cbc549ca2304a8d9c2d4ec5988304659121591ce0b73e19c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1026"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="5.7966102"
+alt="uniform: 0/16 rows with finite capture = 0%." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4a36dccc82df">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 28" id="slide-heading-4a36dccc82df">Sharp
+server heuristic (part 28)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-13">
+<img src="../figures/heuristic_breakdown.slide-attack-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="2d30d3384ee2927101eeafed3d8259a1468a2a171b30c6c662831283b2a3b21b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="573"
+data-slide-figure-intrinsic-aspect="2.5898778"
+alt="permutation: 16/16 declared rows have finite heuristic capture (100%)." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f7a907bb958">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 29" id="slide-heading-1f7a907bb958">Sharp
+server heuristic (part 29)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-14">
+<img src="../figures/heuristic_breakdown.slide-attack-4-count.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="19e1b770d4d8849a0ad25faded2b17b909b7182a660a3bb3d52cf95f13b59292"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1223"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.9096045"
+alt="permutation: 16/16 rows with finite capture = 100%." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e73357e222ae">
+<h2 class="figure-led"
+aria-label="Sharp server heuristic: influence and finite-breakdown characterization, part 30" id="slide-heading-e73357e222ae">Sharp
+server heuristic (part 30)</h2>
+<figure id="fig:heuristic-breakdown-slide-panel-15">
+<img src="../figures/heuristic_breakdown.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c063ea4adebdb9911cb3874d49e4bae1d353faecfadd3e033e4fb10f04238c4c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1261"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.1059113"
+alt="Finite-search capture and grid frequencies describe the declared settings. They are not global breakdown probabilities or universal robustness guarantees." />
+</figure>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

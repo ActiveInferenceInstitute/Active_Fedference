@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -74,44 +75,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\newenvironment{Shaded}{}{}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
-\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{\textbf{#1}}}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \usepackage{caption}
 \captionsetup[table]{skip=6pt}
@@ -234,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -257,44 +261,50 @@
 
 \section{References}\label{sec:references}
 
-\begin{frame}[fragile,allowframebreaks]{References}
+\begin{frame}[fragile]{References}
 The bibliography lives in
 \href{https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main/manuscript/references.bib}{project
-bibliography source} and is read by Pandoc during the PDF render. The
-build pipeline invokes Pandoc with \texttt{-\/-natbib}, so every Pandoc
-citation marker in the manuscript is rewritten to the appropriate LaTeX
-citation command and resolved against the bib file. Titles in the bib
-file are reproduced verbatim, including any British spellings, because
-they are quotations of the original sources.
-
+bibliography source} and is read by Pandoc during rendering. The
+combined PDF path invokes \texttt{-\/-natbib}, so citation markers
+become LaTeX citation commands resolved against the bib file. HTML,
+reveal.js, and other non-LaTeX reader surfaces use \texttt{-\/-citeproc}
+against that same file.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{References}
+\begin{frame}{References (part 2)}
+This is one bibliography with format-specific consumers, not two
+metadata sources. Titles retain the source's original spelling.
+
 The standalone checkout provides a local cross-reference gate for
 citation labels and all manuscript references:
+\end{frame}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{uv}\NormalTok{ run }\AttributeTok{{-}{-}locked}\NormalTok{ pytest tests/test\_xref\_integrity.py }\AttributeTok{{-}q}
-\end{Highlighting}
-\end{Shaded}
+\begin{frame}[fragile]{References (part 3)}
+\texttt{uv} \texttt{run} \texttt{-\/-locked} \texttt{pytest}
+\texttt{tests/test\_xref\_integrity.py} \texttt{-q}
+\end{frame}
 
+\begin{frame}[fragile]{References (part 4)}
 To validate that \texttt{references.bib} is syntactically clean and
 contains the required fields per entry type, the stricter citation
 validator is available when the project is checked out under the
-template monorepo's \breaktt{projects/working/} (it is not on the
-standalone repo's own dependency graph), invoked from the monorepo root
-with a monorepo-relative path:
-
+template monorepo's \texttt{projects/working/} (it is not on the
+standalone repo's own dependency graph),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{References}
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{uv}\NormalTok{ run python }\AttributeTok{{-}m}\NormalTok{ infrastructure.reference.citation.cli validate }\DataTypeTok{\textbackslash{}}
-\NormalTok{    projects/working/active\_fedference/manuscript/references.bib }\AttributeTok{{-}{-}strict}
-\end{Highlighting}
-\end{Shaded}
+\begin{frame}{References (part 5)}
+invoked from the monorepo root with a monorepo-relative path:
+\end{frame}
+
+\begin{frame}[fragile]{References (part 6)}
+\texttt{p=projects/working/\textbackslash{}}\strut \\
+\texttt{active\_fedference}\strut \\
+\texttt{b=\$p/manuscript/references.bib}\strut \\
+\texttt{uv} \texttt{run} \texttt{python} \texttt{-m}
+\texttt{\textbackslash{}}\strut \\
+\texttt{\ \ }\texttt{infrastructure.reference.\textbackslash{}}\strut \\
+\texttt{citation.cli} \texttt{validate} \texttt{"\$b"}
+\texttt{-\/-strict}
 \end{frame}
 
 \end{document}

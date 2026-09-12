@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>25_conclusion.md.web</title>
   <style>
@@ -202,12 +202,56 @@
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -219,7 +263,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -277,6 +332,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -284,13 +341,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -371,8 +483,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -421,6 +532,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -437,6 +554,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -450,23 +573,23 @@ different standards of evidence. Active inference describes agents that
 infer and act within generative models; federated generalized Bayes
 describes how losses, divergences, and variational objectives can make
 decentralized inference less sensitive to bad information
-<span class="citation">(Friston et al. 2017; Da Costa et al. 2020; Bissiri et al. 2016; Knoblauch et al. 2022)</span>. This paper does not dissolve those
-distinctions. It puts them into one categorical implementation,
-identifies the exact point at which they coincide, and then measures the
-consequences of moving away from that point.</p>
+<span class="citation">(Friston et al. 2017; Da Costa et al. 2020; Bissiri et al. 2016; Knoblauch et al. 2022)</span>.</p>
+<p>This paper does not dissolve those distinctions. It puts them into
+one categorical implementation, identifies the exact point at which they
+coincide, and then measures the consequences of moving away from that
+point.</p>
 <h2 id="sec:conclusion-recovery">The durable result is a recovery
 contract</h2>
 <p>The central contribution is the recovery-tested contract. The KL/NLL
 client limits of the declared generalized-Bayes construction recover the
 closed-form Bayes update, while the zero-robustness server branch
 recovers the project log-linear pool, with maximum measured deviations
-of 5.55e-17 and 0 (<span class="xref">Eq. 6</span>; <span
-class="citation"
-data-cites="eq:robust-identity"><a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a></span>). This is
-stronger than a verbal analogy because the limited identities are stated
-in the formalism, implemented in the core, and checked by executable
-invariants. Under the explicit shared-support, posterior-log-potential,
-and fixed-weight bridge, the server pool specializes Eq. 7’s
+of 5.55e-17 and 0 (<a class="xref" href="index.html#eq:standard-bayes">Eq. (11)</a>; <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>).</p>
+<p>This is stronger than a verbal analogy because the limited identities
+are stated in the formalism, implemented in the core, and checked by
+executable invariants.</p>
+<p>Under the explicit shared-support, posterior-log-potential, and
+fixed-weight bridge, the server pool specializes Eq. 7’s
 message-combination term; it is not an assertion that the
 active-inference and robust-Bayes literatures share all assumptions,
 objectives, deployment meanings, or the complete source protocol.</p>
@@ -474,87 +597,87 @@ objectives, deployment meanings, or the complete source protocol.</p>
 Logarithmic pooling has a substantial literature as an aggregation rule
 for expert distributions, including its connections to external
 Bayesianity, product-of-experts constructions, and KL-based opinion
-pooling <span class="citation">(Genest and Zidek 1986; Genest et al. 1986; Hinton 2002; Abbas 2009; Dietrich 2021)</span>. FedGVI contributes a
-generalized-Bayes perspective in which the loss and divergence determine
-what robustness means <span class="citation">(Mildner et al. 2025)</span>. The contribution here is
-therefore a scoped recasting: the project’s categorical log-linear-pool
-specialization is the non-robust corner of the implemented family under
-its stated bridge assumptions, and the corner becomes a testable
-boundary condition for future robust extensions. This does not identify
-the complete source belief-sharing protocol with FedGVI.</p>
+pooling <span class="citation">(Genest and Zidek 1986; Genest et al. 1986; Hinton 2002; Abbas 2009; Dietrich 2021)</span>.</p>
+<p>FedGVI contributes a generalized-Bayes perspective in which the loss
+and divergence determine what robustness means <span class="citation">(Mildner et al. 2025)</span>.</p>
+<p>The contribution here is therefore a scoped recasting: the project’s
+categorical log-linear-pool specialization is the non-robust corner of
+the implemented family under its stated bridge assumptions, and the
+corner becomes a testable boundary condition for future robust
+extensions.</p>
+<p>This does not identify the complete source belief-sharing protocol
+with FedGVI.</p>
 <h2 id="sec:conclusion-evidence">What the evidence establishes away from
 the corner</h2>
 <p>The standard-Bayes studies provide a necessary baseline rather than
 ornamental background. Communication changes mean free energy by 3.3109
-nats, Dirichlet learning reduces KL from 3.4231 to 0.0027, and Bayesian
-model reduction selects the declared redundant-pruning candidate. These
-results recover the declared mechanisms that make belief sharing
-scientifically interesting while keeping the source relationship bounded
-to the stated categorical protocol <span class="citation">(Friston et al. 2024)</span>. The extension
-studies then show that communication is not automatically beneficial in
-every information geometry: disjoint views can make sharing valuable,
-whereas a complementary moving-world control can make additional pooling
-unnecessary or mildly costly.</p>
+nats, Dirichlet learning reduces KL from 3.4231 to 0.0027, and the
+configured BMR sign control favors the declared redundant pruning while
+rejecting the supported control. These bounded diagnostics retain the
+stated categorical source relation <span class="citation">(Friston et al. 2024)</span>; they do not
+establish universal structure discovery or exact source-protocol
+replication.</p>
+<p>The extension studies show that communication is not automatically
+beneficial in every information geometry. Disjoint views can make
+sharing valuable, whereas a complementary moving-world control can make
+additional pooling unnecessary or mildly costly.</p>
 <p>The contamination study adds a second lesson. The server-side
 heuristic is regime-dependent: robust operating points can give up a
 little efficiency when contamination is weak and recover that cost when
-the declared attack is severe. At the most severe swept rate, the
-highest pooled robust mean reaches 0.9880 against the standard pool’s
-0.6928 (<a class="xref" href="index.html#tbl:robustness_sweep">Table 2</a>); at
-the verdict rate, the matched, BH-adjusted comparison of <span
-class="citation"
-data-cites="sec:results-robustness"><a class="xref" href="index.html#sec:results-robustness">Section 7.5</a></span>
-gives 0.9867 against 0.9021. The result is therefore an operating-point
-contrast, not a ranking that holds for every contamination rate, attack
-target, hidden state, or calibration regime. This interpretation follows
-the simulation-study principle that the data-generating mechanism,
-estimand, and Monte Carlo unit should be declared before a numerical
-result is treated as general evidence <span class="citation">(Morris et al. 2019)</span>.</p>
-<p>The three robustness axes give the result its proper meaning. The
-client-side generalized-Bayes update is the FedGVI-faithful,
-theorem-bearing axis under its matching loss and regularity assumptions.
-The server-side <code>robust_aggregate</code> is the sharp empirical
-heuristic; its proven property here is the recovery limit, not a
-transferred client-side bounded-influence theorem. The
-<code>variational_aggregate</code> is the conservative complement: it
-descends a stated aggregation objective and has a proven raw
-effective-weight bound, but its objective-backed control does not make
-it the peak-accuracy display leader. Separating these axes prevents a
-familiar failure in interdisciplinary work: a guarantee proved for one
-operator is silently attached to another operator because both are
-described with the same word, “robust.”</p>
+the declared attack is severe.</p>
+<p>At the most severe swept rate, the highest robust consensus mass in
+the single-world mechanistic sweep reaches 0.9880 (AR) against the
+standard pool’s 0.6928 (<a class="xref" href="index.html#tbl:robustness_sweep">Table 3</a>); at
+the verdict rate, the matched, BH-adjusted comparison for RKL in <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>
+gives 0.9829 against 0.9021.</p>
+<p>The result is therefore an operating-point contrast, not a ranking
+that holds for every contamination rate, attack target, hidden state, or
+calibration regime.</p>
+<p>This interpretation follows the simulation-study principle that the
+data-generating mechanism, estimand, and Monte Carlo unit should be
+declared before a numerical result is treated as general evidence
+<span class="citation">(Morris et al. 2019)</span>.</p>
+<p>The authoritative three-axis map is <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>. The
+client theorem remains source-conditional, the
+<code>robust_aggregate</code> results remain heuristic and conditional,
+and <code>variational_aggregate</code> retains its stated objective and
+raw- weight bound. Keeping those claim owners separate prevents a
+guarantee proved for one operator from migrating to another merely
+because both are called “robust.”</p>
 <h2 id="sec:conclusion-significance">Why the bridge matters for active
 inference</h2>
 <p>Belief sharing is not merely a communication convenience. In an
 active-inference system, a shared posterior can change expected
 free-energy calculations, model comparison, and subsequent action
 selection. A robustification at the fusion step can therefore alter
-behavior even when each local generative model is unchanged. Conversely,
-a server rule that suppresses an anomalous belief may also suppress a
-rare but correct observation. The relevant scientific question is not
-simply whether a robust curve rises; it is which assumptions about
-competence, independence, support, and action-relevant uncertainty the
-fusion rule encodes <span class="citation">(Genest and Zidek 1986; Tresp 2000; Heins et al. 2024)</span>.</p>
+behavior even when each local generative model is unchanged.</p>
+<p>Conversely, a server rule that suppresses an anomalous belief may
+also suppress a rare but correct observation. The relevant scientific
+question is not simply whether a robust curve rises; it is which
+assumptions about competence, independence, support, and action-relevant
+uncertainty the fusion rule encodes <span class="citation">(Genest and Zidek 1986; Tresp 2000; Heins et al. 2024)</span>.</p>
 <p>This is why the recovery corner is a useful organizing device. It
 gives a common reference behavior before robustness is introduced, makes
 the cost of a server intervention measurable, and lets later work
-compare new aggregation rules against an interpretable baseline. The
-bridge also keeps the distinction between inference and infrastructure
-visible. The current federation tests show that serialized beliefs can
-travel through the declared local transport and return a bit-identical
-consensus, but they do not turn a mathematical aggregation identity into
-a claim about secure, fault-tolerant, or privacy- preserving deployment
-<span class="citation">(McMahan et al. 2017; Blanchard et al. 2017; Pillutla et al. 2022)</span>.</p>
+compare new aggregation rules against an interpretable baseline.</p>
+<p>The bridge also keeps the distinction between inference and
+infrastructure visible. The current federation tests show that
+serialized beliefs can travel through the declared local transport and
+return a bit-identical consensus, but they do not turn a mathematical
+aggregation identity into a claim about secure, fault-tolerant, or
+privacy- preserving deployment <span class="citation">(McMahan et al. 2017; Blanchard et al. 2017; Pillutla et al. 2022)</span>.</p>
 <h2 id="sec:conclusion-boundaries">What remains unproved</h2>
 <p>The evidence does not establish universal Byzantine tolerance, truth
-recovery, calibration, or an optimal robustness parameter. The primary
-intervals are conditional on the fixed hidden state and attack target,
-and the nested trial and seed structure is reduced at the declared unit
-rather than treated as a larger independent sample <span class="citation">(Koehler et al. 2009; Loy and Korobova 2021)</span>. The categorical state space is the object of the
-proof and experiment; continuous or hybrid state spaces are a separate
-mathematical extension. The neural classification complement uses
-point-estimate weights, so it does not establish full posterior FedGVI
-behavior at the scale of the source experiments.</p>
+recovery, calibration, or an optimal robustness parameter.</p>
+<p>The primary intervals are conditional on the fixed hidden state and
+attack target, and the nested trial and seed structure is reduced at the
+declared unit rather than treated as a larger independent sample
+<span class="citation">(Koehler et al. 2009; Loy and Korobova 2021)</span>. The categorical state space is
+the object of the proof and experiment; continuous or hybrid state
+spaces are a separate mathematical extension.</p>
+<p>The neural classification complement uses point-estimate weights, so
+it does not establish full posterior FedGVI behavior at the scale of the
+source experiments.</p>
 <p>These are not defects to be hidden by a more expansive title. They
 define the proper contribution: an executable categorical bridge, a
 recovery certificate, an explicit map of theorem-bearing and heuristic
@@ -562,10 +685,11 @@ components, and conditional evidence about contamination behavior.
 Robust-statistics language such as influence and breakdown remains
 useful for describing the failure modes, but a finite simulation sweep
 is not by itself a general estimator-level robustness theorem
-<span class="citation">(Huber and Ronchetti 2009)</span>. The same discipline applies to historical and
-conceptual scholarship: early work on probability, inverse inference,
-utility, and collective judgment supplies lineage, not evidence for
-modern KL, FedGVI, or adversarial-federation claims.</p>
+<span class="citation">(Huber and Ronchetti 2009)</span>.</p>
+<p>The same discipline applies to historical and conceptual scholarship:
+early work on probability, inverse inference, utility, and collective
+judgment supplies lineage, not evidence for modern KL, FedGVI, or
+adversarial-federation claims.</p>
 <h2 id="sec:conclusion-program">A falsifiable research program</h2>
 <p>The next stage should be organized around boundary conditions rather
 than a larger collection of demonstrations. First, derive a server
@@ -574,19 +698,21 @@ objective whose minimizer is competitive with
 effective-weight control. Recent work on closed-form generalized
 variational objectives, logarithmic-pool weighting, and robust
 divergence-weighted federation provides relevant mathematical
-constraints <span class="citation">(Nguyen and Westerhout 2026; Carvalho et al. 2023; Li et al. 2022)</span>. A useful candidate must recover the standard log-linear
-pool at zero robustness, state which quantity is bounded, and fail
-visibly when those assumptions are violated.</p>
+constraints <span class="citation">(Nguyen and Westerhout 2026; Carvalho et al. 2023; Li et al. 2022)</span>.</p>
+<p>A useful candidate must recover the standard log-linear pool at zero
+robustness, state which quantity is bounded, and fail visibly when those
+assumptions are violated.</p>
 <p>Second, broaden the primary estimand across attack targets, hidden
 states, adaptive adversaries, calibration conditions, and model classes.
 The decisive falsifier is not a lower average score on one new grid; it
 is failure of the claimed robustness advantage, recovery identity, or
 stated uncertainty calibration under a pre-registered extension of the
-data-generating mechanism. Third, promote the point-estimate neural
-complement to a posterior-parameterized FedGVI study at
-source-comparable scale, and test whether the client-side bounded-loss
-behavior survives capacity, optimization, and posterior-family changes.
-Finally, move from local transport to multi-machine execution with
+data-generating mechanism.</p>
+<p>Third, promote the point-estimate neural complement to a
+posterior-parameterized FedGVI study at source-comparable scale, and
+test whether the client-side bounded-loss behavior survives capacity,
+optimization, and posterior-family changes.</p>
+<p>Finally, move from local transport to multi-machine execution with
 explicit threat models, authentication, failure handling, and privacy
 claims; none should be inferred from the current bit-identity
 result.</p>
@@ -597,7 +723,8 @@ the declared categorical setting, the standard-Bayes client limits and
 project log-linear-pool server identity are tested recovery conditions;
 away from them, server behavior is measurable, regime-dependent, and
 partitioned into theorem-bearing, objective-backed, and heuristic
-claims. That is a modest result, but it is a useful one: it supplies a
+claims.</p>
+<p>That is a modest result, but it is a useful one: it supplies a
 reproducible starting point from which stronger theorems, broader state
 spaces, independent implementations, and real federated deployments can
 be judged without losing the baseline they are meant to extend.</p>

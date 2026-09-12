@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,92 +274,100 @@
 
 \begin{document}
 
-\begin{frame}[allowframebreaks]{Bayesian model reduction selects
-supported structure}
+\begin{frame}{Configured BMR sign control passed}
 \protect\phantomsection\label{sec:results-emergence}
-The first two studies fixed the model's structure and asked how well its
-beliefs and learned parameters track the world; the third asks whether
-the model can also shed structure it never needed. The estimand is a
-Bayesian-model-reduction free-energy difference; the design is a
-categorical BMR diagnostic related to the structure-emergence mechanism
-discussed by Friston et al. (Friston et al. 2024), through the
-Bayesian-model-reduction lineage (Friston and Penny 2011). A full
-Dirichlet model carries a redundant state --- one column the data never
-support --- ranging over \(n = 4\) candidate states. Bayesian model
-reduction scores swapping the prior for a \emph{reduced} prior that
-prunes that column; the free-energy difference \(\Delta F\) is the
-model-reduction objective eq.~16. This is a single
-deterministic evidence comparison, so there is no resampled sample and,
+The first two studies fixed the model structure. This third study
+instead checks the sign of a configured Bayesian-model-reduction
+comparison. Its estimand is the BMR free-energy difference for two
+candidate likelihood-column prunings.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Bayesian model reduction selects
-supported structure}
-by design, no confidence interval or paired test. The structure-learning
-frame here is the discrete-state model-selection thread the
-active-inference community has developed (Smith et al. 2022), applied to
-a colony's shared generative model.
-
-\(\Delta F\) is positive for the correct (redundant) pruning --- the
-simpler model has more evidence and the run converges on it --- and
-negative for the control pruning of a well-supported column, which is
-correctly rejected:
-
+\begin{frame}{Configured BMR sign\ldots{} (part 2)}
+The categorical diagnostic is related to the model-reduction mechanism
+discussed by Friston et al. (Friston et al. 2024) and the post-hoc BMR
+lineage (Friston and Penny 2011). It is not a discovery claim about
+structure emergence.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Bayesian model reduction selects
-supported structure}
-\begin{itemize}
-\tightlist
-\item
-  \(\Delta F\), pruning the \textbf{redundant} column: 3.68 (positive
-  --- reduction accepted)
-\item
-  \(\Delta F\), pruning a \textbf{supported} column (control): -27.67
-  (negative --- reduction rejected)
-\item
-  Emergence converged (redundant accepted, supported rejected): Yes
-\end{itemize}
-
+\begin{frame}{Configured BMR sign\ldots{} (part 3)}
+The fixed posterior ranges over \(n = 4\) candidate states. One
+likelihood column is unsupported by the configured evidence; another is
+a supported control. BMR substitutes a reduced prior for each candidate
+and computes \(\Delta F\) eq.~20. This is one
+deterministic closed-form comparison,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Bayesian model reduction selects
-supported structure}
-The sign pattern
-\(\Delta F_{\text{redundant}} > 0 > \Delta F_{\text{supported}}\) is the
-demonstrated emergence verdict: the colony's generative model prunes the
-structure its data never support and retains the structure they do.
-
+\begin{frame}{Configured BMR sign\ldots{} (part 4)}
+so no resampled sample, confidence interval, or paired test applies
+(Smith et al. 2022).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Bayesian model reduction selects
-supported structure}
+\begin{frame}{Configured BMR sign\ldots{} (part 5)}
+\(\Delta F\) is positive for the declared redundant-column pruning, so
+the reduced candidate is favored for this fixed posterior.
+\textbf{Redundant-column result:} \(\Delta F=3.68\); the configured
+reduction is accepted.
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 6)}
+It is negative for the declared supported-column control.
+\textbf{Supported-column control:} \(\Delta F=-27.67\); that reduction
+is rejected.
+
+\textbf{Configured sign-control disposition:} redundant accepted and
+supported rejected, recorded as Yes.
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 7)}
+The observed sign pattern
+\(\Delta F_{\text{redundant}} > 0 > \Delta F_{\text{supported}}\) passes
+the configured control: this fixed posterior favors pruning the declared
+redundant column and rejects pruning the declared supported column.
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 8)}
+It does not show that arbitrary data or model families will discover,
+prune, or retain the correct structure.
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Bayesian-model-reduction (BMR) free-energy difference. Source relation: source-mechanism analogue to the model-reduction mechanism in Friston et al.~(2024), Fig. 9; estimand: BMR \textbackslash Delta F in nats; uncertainty: deterministic closed-form comparison. \textbackslash Delta F for two candidate likelihood-column prunings in a colony with n = 4 hidden states. x-axis: the candidate pruning (redundant column vs.~supported-column control); y-axis: \textbackslash Delta F in nats, where a positive value means the reduced model has more evidence and the pruning is accepted. The redundant-column bar is positive (\textbackslash Delta F = 3.68 nats) --- the data never supported this structure, so pruning it is the correct decision --- while the supported-column control bar is negative (\textbackslash Delta F = -27.67 nats), correctly rejected. The opposing signs constitute the emergence verdict (Yes). No error bar applies: BMR is a deterministic closed-form comparison on a single posterior.}]{../figures/emergence_bmr.png}
-\caption{Bayesian-model-reduction (BMR) free-energy difference. Source
-relation: source-mechanism analogue to the model-reduction mechanism in
-Friston et al.~(2024), Fig. 9; estimand: BMR \(\Delta F\) in nats;
-uncertainty: deterministic closed-form comparison. \(\Delta F\) for two
-candidate likelihood-column prunings in a colony with \(n = 4\) hidden
-states. x-axis: the candidate pruning (redundant column
-vs.~supported-column control); y-axis: \(\Delta F\) in nats, where a
-positive value means the reduced model has more evidence and the pruning
-is accepted. The redundant-column bar is positive (\(\Delta F = 3.68\)
-nats) --- the data never supported this structure, so pruning it is the
-correct decision --- while the supported-column control bar is negative
-(\(\Delta F = -27.67\) nats), correctly rejected. The opposing signs
-constitute the emergence verdict (Yes). No error bar applies: BMR is a
-deterministic closed-form comparison on a single
-posterior.}\label{fig:emergence-bmr}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Both signed model-reduction gains on one nats scale; hatches distinguish targets and a dotted rule marks zero.}]{../figures/emergence_bmr.slide-controls.png}
+\refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-1}
 \end{figure}
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Bayesian model reduction selects
-supported structure}
-fig.~\ref{fig:emergence-bmr} contrasts the two prunings and annotates
-the convergence verdict.
+\begin{frame}{Configured BMR sign\ldots{} (part 10)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Redundant target ΔF: 3.677 nats. Supported target ΔF: -27.67 nats. Positive gain favors the reduction; negative gain rejects it.}]{../figures/emergence_bmr.slide-values.png}
+\refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-2}
+\end{figure}
+\end{frame}
 
+\begin{frame}{Configured BMR sign\ldots{} (part 11)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source configured sign-control verdict: True. This is not an optimizer convergence diagnostic.}]{../figures/emergence_bmr.slide-verdict.png}
+\refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 12)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One fixed-posterior categorical diagnostic. No independent stochastic replication or uncertainty interval applies. Source-mechanism analogue, not full protocol reconstruction.}]{../figures/emergence_bmr.slide-scope.png}
+\refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 13)}
+fig.~12 contrasts the two configured prunings and
+reports the sign control.
+\end{frame}
+
+\begin{frame}{Configured BMR sign\ldots{} (part 14)}
 Studies 1--3 all ran in a \emph{trusting} world, where every broadcast
 belief is honest. The contamination sweep that follows removes that
 assumption, and it is the point at which the three robustness axes of

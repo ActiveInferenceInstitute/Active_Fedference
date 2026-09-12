@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,42 +259,55 @@
 
 \begin{document}
 
-\begin{frame}[allowframebreaks]{Future work: testing the open
-boundaries}
+\begin{frame}{Future work: testing the open boundaries}
 \protect\phantomsection\label{sec:future}
 The staged research program follows directly from the boundaries in
 sec.~8.13. It separates public-library reproducibility,
-server theory, portable source-protocol work, task generalization, and
-deployment validation so that success in one lane cannot silently
-certify another.
+server theory, portable source-protocol work, task generalization,
+\end{frame}
 
+\begin{frame}{Future work: testing the\ldots{} (part 2)}
+and deployment validation so that success in one lane cannot silently
+certify another.
+\end{frame}
+
+\begin{frame}{Future work: testing the\ldots{} (part 3)}
 The order is deliberate. Simulation-study guidance recommends declaring
 the estimand, data-generating mechanism, and Monte Carlo precision
-before treating replication as evidence (Morris et al. 2019), while
-Monte Carlo error should be reported separately from an interval or a
-hypothesis test (Koehler et al. 2009). For nested agents, trials, and
-seeds, the resampling unit must respect the dependence structure (Loy
-and Korobova 2021). Accordingly, the phase plan records a primary unit
-and a falsifier for each extension; a larger sample or more elaborate
-diagram is not itself a stronger claim.
+before treating replication as evidence (Morris et al. 2019),
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Future work: testing the open
-boundaries}
+\begin{frame}{Future work: testing the\ldots{} (part 4)}
+while Monte Carlo error should be reported separately from an interval
+or a hypothesis test (Koehler et al. 2009).
+\end{frame}
 
+\begin{frame}{Future work: testing the\ldots{} (part 5)}
+For nested agents, trials, and seeds, the resampling unit must respect
+the dependence structure (Loy and Korobova 2021). Accordingly, the phase
+plan records a primary unit and a falsifier for each extension; a larger
+sample or more elaborate diagram is not itself a stronger claim.
+\end{frame}
+
+\begin{frame}{Future work: testing the\ldots{} (part 6)}
 The implementation registry also separates smoke, pilot, and
 confirmatory profiles. Pilot worlds select budgets and calibration
-settings but never enter confirmatory intervals or headline values. Each
-completed run must bind its source bundle, configuration, dataset bytes,
-device, checkpoints, outputs, and completion status into a verifiable
-receipt. A negative or null scientific result remains a valid citable
-outcome when those implementation and provenance gates pass; it blocks
-the intended positive claim, not the software release.
-
+settings but never enter confirmatory intervals or headline values.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Future work: testing the open
-boundaries}
+\begin{frame}{Future work: testing the\ldots{} (part 7)}
+Each completed run must bind its source bundle, configuration, dataset
+bytes, device, checkpoints, outputs, and completion status into a
+verifiable receipt. A negative or null scientific result remains a valid
+citable outcome when those implementation and provenance gates pass; it
+blocks the intended positive claim,
+\end{frame}
+
+\begin{frame}{Future work: testing the\ldots{} (part 8)}
+not the software release.
+\end{frame}
+
+\begin{frame}{Future work: testing the\ldots{} (part 9)}
 A separate Friston protocol lane will resolve a machine-readable parity
 matrix before reconstructing source experiments in Python. Until every
 required source parameter, routine, unit, and estimand is recovered,
@@ -260,193 +315,293 @@ that lane will be described as a paper-constrained reconstruction rather
 than an exact replication.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Make the sharp server heuristic
-variational}
+\begin{frame}{Make the sharp server heuristic variational}
 \protect\phantomsection\label{sec:future-server}
 The asymmetry between the robustness axes
-(sec.~3.3) is the most consequential open problem.
-The client-side \(\beta\)/rcce update carries a derived, loss-specific
-bounded-influence result under the matching assumptions; the sharp
-server-side \breaktt{robust\_aggregate} carries only its recovery limit
-(eq.~7); and the new variational aggregator
-(sec.~5.8.2, sec.~11)
-supplies a \emph{rigorous} server-side rule --- exact block updates
-descending the stated free energy eq.~8 through
-non-increasing block updates, with a proven raw effective-weight bound
-and the same recovery corner. What it costs is conservatism: it is the
-maximum-entropy consensus, not the sharp accuracy-maximizer. The
-remaining open problem is therefore sharper than before --- to write
-down a generalized variational objective in the FedGVI family (Mildner
-et al. 2025), informed by recent closed-form GVI characterizations
+(sec.~3.3) motivates a consequential theoretical
+design question that is explicitly parked outside the authorized
+roadmap.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Make the sharp server heuristic
-variational}
-(Nguyen and Westerhout 2026), logarithmic-pool weighting theory
-(Carvalho et al. 2023), and robust divergence-weighted federated
-aggregation (Li et al. 2022), whose closed-form minimizer is competitive
-with the empirical reweighting across declared contamination regimes.
+\begin{frame}[fragile]{Make the sharp server\ldots{} (part 2)}
+The client-side \(\beta\)/rcce update carries a derived, loss-specific
+bounded-influence result under the matching assumptions; the sharp
+server-side \texttt{robust\_aggregate} carries only its recovery limit
+(eq.~10).
+\end{frame}
+
+\begin{frame}{Make the sharp server\ldots{} (part 3)}
+The new variational aggregator (sec.~5.8.2,
+sec.~12) supplies a \emph{rigorous} server-side
+rule --- exact block updates descending the stated free energy
+eq.~12 through non-increasing block updates,
+\end{frame}
+
+\begin{frame}{Make the sharp server\ldots{} (part 4)}
+with a proven raw effective-weight bound and the same recovery corner.
+What it costs is conservatism: it is the maximum-entropy consensus, not
+the sharp accuracy-maximizer.
+\end{frame}
+
+\begin{frame}{Make the sharp server\ldots{} (part 5)}
+That parked question is sharper than before: write down a generalized
+variational objective in the FedGVI family (Mildner et al. 2025),
+informed by recent closed-form GVI characterizations (Nguyen and
+Westerhout 2026), logarithmic-pool weighting theory (Carvalho et al.
+2023),
+\end{frame}
+
+\begin{frame}{Make the sharp server\ldots{} (part 6)}
+and robust divergence-weighted federated aggregation (Li et al. 2022),
+whose closed-form minimizer is competitive with the empirical
+reweighting across declared contamination regimes.
+\end{frame}
+
+\begin{frame}{Make the sharp server\ldots{} (part 7)}
 That would combine axis 3's effective-weight bound with axis 2's
 empirical sharpness in one server rule. The recovery corner and the
 variational objective together supply two boundary conditions any such
 unification must satisfy.
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Make the sharp server heuristic
-variational}
+\begin{frame}[fragile]{Make the sharp server\ldots{} (part 8)}
 Any empirical choice of \texttt{robustness} or \texttt{entropy\_weight}
 will be made on separate calibration worlds using a proper log score,
 then frozen before confirmatory evaluation. This guards against
 selecting an apparent leader with evaluation truth and preserves null or
-reversed confirmatory outcomes. The comparison family will include
-logarithmic and linear pools, the current heuristic, the variational
-family, and a centered-log-ratio geometric-median control; none inherits
-a parameter-space robust-federated-learning guarantee merely by
-operating on beliefs.
+reversed confirmatory outcomes.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Promote the baseline to original FedGVI
-scale}
+\begin{frame}{Make the sharp server\ldots{} (part 9)}
+The comparison family will include logarithmic and linear pools, the
+current heuristic, the variational family, and a centered-log-ratio
+geometric-median control; none inherits a parameter-space
+robust-federated-learning guarantee merely by operating on beliefs.
+\end{frame}
+
+\begin{frame}{Promote the baseline to original FedGVI scale}
 \protect\phantomsection\label{sec:future-scale}
 The bounded-influence result is anchored locally by the small NumPy
-logistic-regression baseline (fig.~16). Promoting
-it to the GPU-scale Bayesian-neural-network experiments of the source
-paper (Mildner et al. 2025) --- the experiments deferred here
-(sec.~8.13) --- would test whether the per-client
-robustness curve holds at the model capacity and contamination regimes
-where federated learning (McMahan et al. 2017) actually operates, and
-would connect the discrete-POMDP result to the partitioned-VI line
+logistic-regression baseline (fig.~18).
+\end{frame}
+
+\begin{frame}{Promote the baseline to\ldots{} (part 2)}
+Promoting it to the GPU-scale Bayesian-neural-network experiments of the
+source paper (Mildner et al. 2025) --- the experiments deferred here
+(sec.~8.13) ---
+\end{frame}
+
+\begin{frame}{Promote the baseline to\ldots{} (part 3)}
+would test whether the per-client robustness curve holds at the model
+capacity and contamination regimes where federated learning (McMahan et
+al. 2017) actually operates.
+\end{frame}
+
+\begin{frame}{Promote the baseline to\ldots{} (part 4)}
+It would connect the discrete-POMDP result to the partitioned-VI line
 (Ashman et al. 2022; Bui et al. 2018). The planned comparison would also
 require posterior-parameterization parity with Bayesian neural-network
 work, rather than treating the current deterministic point-mass MLP as a
 posterior (Mildner et al. 2025).
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Promote the baseline to original FedGVI
-scale}
+\begin{frame}{Promote the baseline to\ldots{} (part 5)}
 The portable lane preserves the source protocol's site factors, client
 cavity, factor-replacement update in natural coordinates. A synthetic
 CPU/MPS pilot already exercises the cavity-conditioned local optimizer,
 explicit device and fallback receipts, and checkpoint/resume
-equivalence. It does not establish source-dataset parity. The next local
-campaign distinguishes a locked portable CPU/MPS profile from an exact
-source-scale CUDA profile that remains external until suitable hardware
-is available. FashionMNIST anchors source-dataset protocol parity, while
-MNIST and KMNIST test portability. A separate source-bound tabular pack
-will report proper-score effects per licensed dataset, with
-training-only preprocessing and byte-, split-, and license-level
-provenance; nested seeds will not be treated as independent datasets.
+equivalence.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Extend hierarchical federation
-beyond the current stack}
+\begin{frame}{Promote the baseline to\ldots{} (part 6)}
+It does not establish source-dataset parity.
+\end{frame}
+
+\begin{frame}{Promote the baseline to\ldots{} (part 7)}
+The next local campaign distinguishes a locked portable CPU/MPS profile
+from an exact source-scale CUDA profile that remains external until
+suitable hardware is available. FashionMNIST anchors source-dataset
+protocol parity, while MNIST and KMNIST test portability.
+\end{frame}
+
+\begin{frame}{Promote the baseline to\ldots{} (part 8)}
+A separate source-bound tabular pack will report proper-score effects
+per licensed dataset, with training-only preprocessing and byte-,
+split-, and license-level provenance; nested seeds will not be treated
+as independent datasets.
+\end{frame}
+
+\begin{frame}{Extend hierarchical federation beyond the current stack}
 \protect\phantomsection\label{sec:future-hierarchical}
 The governing caveat here is that added depth must be shown to
-\emph{earn} generalization, not merely to execute: on the current
-sentinel task the deeper stacks match rather than beat the flat baseline
-on location (sec.~8.15). The extension therefore
-has two distinct fronts --- carrying the recovery contract to deeper
-stacks, and finding a task family in which depth actually pays.
+\emph{earn} generalization, not merely to execute:
+\end{frame}
 
-The 2-level hierarchical POMDP (sec.~13.9)
+\begin{frame}{Extend hierarchical\ldots{} (part 2)}
+on the current sentinel task the deeper stacks match rather than beat
+the flat baseline on location (sec.~8.15). The
+extension therefore has two distinct fronts ---
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 3)}
+carrying the recovery contract to deeper stacks, and finding a task
+family in which depth actually pays.
+\end{frame}
+
+\begin{frame}[fragile]{Extend hierarchical\ldots{} (part 4)}
+The 2-level hierarchical POMDP (sec.~14.9)
 couples location inference to a single global context. The generic
-N-level architecture
-(:func:\breaktt{fedference.pomdp.build\_nlevel\_world}) has already been
-exercised with a 3-level stack (sec.~13.11,
-sec.~13.12): a meta-context variable (L3) gates the
-context prior (L2) which in turn gates the location prior (L1). The
-empirical-prior top-down messages (eq.~32,
-eq.~33) remain valid variational steps at every
+N-level architecture uses \texttt{build\_nlevel\_world} from the
+\texttt{fedference.pomdp} module and has already been exercised with a
+3-level stack (sec.~14.11,
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 5)}
+sec.~14.12): a meta-context variable (L3) gates the
+context prior (L2) which in turn gates the location prior (L1).
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 6)}
+The empirical-prior top-down messages (eq.~38,
+eq.~39) remain valid variational steps at every
 depth, and the log-linear-pool federation at each level is bit-identical
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Extend hierarchical federation
-beyond the current stack}
 to the in-process result (Proposition
-12). The natural next question is
-whether the limit-as-proof contract of sec.~8.13
-survives still deeper hierarchies: does the recovery corner (context
-prior → uniform) remain checkable to machine precision when the L2 → L1
-message is itself a function of an L3 belief coupled to an L4 belief,
-and can message-passing engines such as RxInfer (Bagaev et al. 2023)
-carry the generic alternating-minimization at scale? Structure learning
-already answers the dual question --- how \emph{deep} the model should
-be --- for the top level: hierarchical Bayesian model reduction
-(sec.~14.1) prunes a non-gating
-meta-context and keeps an informative one, so the depth is decided by
-the evidence rather than assumed. Extending that per-level reduction to
-a full breadth-and-depth search over the generic N-level stack is the
-natural continuation.
-
+12).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Extend hierarchical federation
-beyond the current stack}
+\begin{frame}{Extend hierarchical\ldots{} (part 7)}
+The natural next question is whether the limit-as-proof contract of
+sec.~8.13 survives still deeper hierarchies: does the
+recovery corner (context prior \texorpdfstring{\ensuremath{\to}}{->} uniform) remain checkable to machine
+precision when the L2 \texorpdfstring{\ensuremath{\to}}{->} L1 message is itself a function of an L3 belief
+coupled to an L4 belief,
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 8)}
+and can message-passing engines such as RxInfer (Bagaev et al. 2023)
+carry the generic alternating-minimization at scale?
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 9)}
+The current hierarchical diagnostic asks a narrower question. Under one
+configured surprise threshold, it classifies the non-gating top level
+below the threshold and the informative top level above it
+(sec.~15.1). This is an implementation
+control,
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 10)}
+not a posterior refit or an autonomous depth-selection result.
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 11)}
+A future breadth-and- depth search must define its candidate family,
+scoring rule, uncertainty, replication units, and out-of-sample
+evaluation before it can support a model- selection claim for the
+generic N-level stack.
+\end{frame}
+
+\begin{frame}{Extend hierarchical\ldots{} (part 12)}
 The next task family is deliberately controlled rather than merely
 deeper: partially observable Four Rooms and Key-Door will compare flat,
 oracle, learned, shuffled, and non-gating hierarchies at matched
 horizons and compute. Task is the higher-level replication unit. A gain
-in only one task will remain task-specific, and the larger campaign will
-not begin until the hybrid representation recovery gates pass.
+in only one task will remain task-specific,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Move from process transport to
-true multi-machine federation}
+\begin{frame}{Extend hierarchical\ldots{} (part 13)}
+and the larger campaign will not begin until the hybrid representation
+recovery gates pass.
+\end{frame}
+
+\begin{frame}{Move from process transport to true multi-machine
+federation}
 \protect\phantomsection\label{sec:future-transport}
-Promoting federation from the current queue-backed, single-machine
-process and loopback-socket helpers to cross-host workers would retire
-the remaining deployment caveat of sec.~8.13 while
-preserving the bit-identical consensus property proved in Proposition
-12. The \texttt{federation/} package and
-federation tests already establish the API contract: a server collects
-serialized beliefs from 5 worker channels, fuses them with
-\breaktt{robust\_aggregate} at robustness \(c = 1.5\), and broadcasts the
-consensus back over response channels, with bit-identity verified at
-True. The loopback socket path adds optional pre-shared-key frame
-integrity and file-backed digest-verified replay validation. The next
-systems step is an explicitly local Docker multi-node emulator with mTLS
-by default, HMAC compatibility, checkpoint/restart, and reproducible
+The current deployment uses queue-backed single-machine processes and
+loopback sockets. Promotion to cross-host workers would address the
+remaining deployment caveat of sec.~8.13.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Move from process transport to
-true multi-machine federation}
-message-fault controls. It is not physical multi-host evidence. That
-later claim requires receipts from distinct hosts, deployment-grade key
-management, timeout policy, and long-running orchestration across
+\begin{frame}{Move from process\ldots{} (part 2)}
+That extension must preserve the bit-identical consensus property proved
+in Proposition 12.
+\end{frame}
+
+\begin{frame}[fragile]{Move from process\ldots{} (part 3)}
+The \texttt{federation/} package and federation tests already establish
+the API contract: a server collects serialized beliefs from 5 worker
+channels, fuses them with \texttt{robust\_aggregate} at robustness
+\(c = 1.5\), and broadcasts the consensus back over response channels,
+with bit-identity verified at True.
+\end{frame}
+
+\begin{frame}{Move from process\ldots{} (part 4)}
+The loopback socket path adds optional pre-shared-key frame integrity
+and file-backed digest-verified replay validation. The next systems step
+is an explicitly local Docker multi-node emulator with mTLS by default,
+HMAC compatibility, checkpoint/restart, and reproducible message-fault
+controls.
+\end{frame}
+
+\begin{frame}{Move from process\ldots{} (part 5)}
+It is not physical multi-host evidence.
+
+That later claim requires receipts from distinct hosts, deployment-grade
+key management, timeout policy, and long-running orchestration across
 process restarts, but it does not require changing the mathematics.
+\end{frame}
+
+\begin{frame}{Move from process\ldots{} (part 6)}
 Secure aggregation, differential privacy, and Byzantine tolerance are
 separate future threat models; transport integrity alone would not
 establish any of them (Blanchard et al. 2017; Pillutla et al. 2022).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Move beyond categorical state spaces}
+\begin{frame}{Move beyond categorical state spaces}
 \protect\phantomsection\label{sec:future-continuous}
 This work is discrete-categorical, matching the community's worked POMDP
 (Da Costa et al. 2020). A first step is already in place: the
 closed-form Gaussian KL and Rényi divergences of
-sec.~12 show the divergence family --- and its
+sec.~13 show the divergence family --- and its
 \(\alpha\to1\) recovery --- carries over verbatim to Gaussian beliefs,
-scoped out of the categorical experiments. Continuous-state Gaussian
-generative models would test whether the limit-as-proof contract
-survives the move off categorical state spaces --- whether the recovery
-corner remains checkable to machine precision when the belief simplex is
-replaced by a Gaussian belief, and whether message-passing engines such
-as RxInfer (Bagaev et al. 2023) can carry the robust update at scale.
-Extending the structure-learning study (Smith et al. 2022; Friston and
-Penny 2011) into continuous models would, in parallel, test whether
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Move beyond categorical state spaces}
-robust belief fusion and robust \emph{structure} fusion compose.
+\begin{frame}{Move beyond categorical\ldots{} (part 2)}
+scoped out of the categorical experiments.
+\end{frame}
 
+\begin{frame}{Move beyond categorical\ldots{} (part 3)}
+Continuous-state Gaussian generative models would test whether the
+limit-as-proof contract survives the move off categorical state spaces
+--- whether the recovery corner remains checkable to machine precision
+when the belief simplex is replaced by a Gaussian belief,
+\end{frame}
+
+\begin{frame}{Move beyond categorical\ldots{} (part 4)}
+and whether message-passing engines such as RxInfer (Bagaev et al. 2023)
+can carry the robust update at scale.
+\end{frame}
+
+\begin{frame}{Move beyond categorical\ldots{} (part 5)}
+Extending the structure-learning study (Smith et al. 2022; Friston and
+Penny 2011) into continuous models would, in parallel, test whether
+robust belief fusion and robust \emph{structure} fusion compose.
+\end{frame}
+
+\begin{frame}{Move beyond categorical\ldots{} (part 6)}
 A minimal executable fixture now gates a discrete dynamics context over
 continuous position and velocity, Gaussian observations, and bounded
 actions. The bounded pilot now includes matched naive, robust,
 discrete-only, continuous-only, and oracle-context components, a
-singular-covariance rejection, and next-position predictive scoring. It
-is still a representation, recovery, and control surface rather than
+singular-covariance rejection,
+\end{frame}
+
+\begin{frame}{Move beyond categorical\ldots{} (part 7)}
+and next-position predictive scoring.
+\end{frame}
+
+\begin{frame}{Move beyond categorical\ldots{} (part 8)}
+It is still a representation, recovery, and control surface rather than
 confirmatory task evidence. The full study must freeze calibration and
 budgets, use independently held-out worlds, retain outlier falsifiers,
 and execute the preregistered comparison before supporting a hybrid-task

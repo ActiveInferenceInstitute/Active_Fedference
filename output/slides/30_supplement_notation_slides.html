@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Supplemental notation contract — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:supp-notation"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b3472d583d7c">
+<h1 class="section-divider" id="slide-heading-b3472d583d7c">Supplemental notation contract</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Supplemental notation contract, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b3472d583d7c-2">
+<h2 class="section-overview prose-slide"
+aria-label="Supplemental notation contract, part 2" id="slide-heading-b3472d583d7c-2">Supplemental
+notation contract</h2>
+<p>This supplement is the authoritative notation contract for Active
+Fedference. The methods, formalism, results, figures, report schemas,
+and API documentation use these meanings even when a source paper uses a
+different symbol.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Supplemental notation contract, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d5a4d1ed7525">
+<h2 class="section-overview prose-slide"
+aria-label="Supplemental notation contract, part 2" id="slide-heading-d5a4d1ed7525">Supplemental
+notation… (part 2)</h2>
+<p>A symbol is not reused for a different mathematical object merely
+because the objects are both probability vectors.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Supplemental notation contract, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d1a4f7afa161">
+<h2 class="section-overview prose-slide"
+aria-label="Supplemental notation contract, part 3" id="slide-heading-d1a4f7afa161">Supplemental
+notation… (part 3)</h2>
+<p>The implementation names in the final column are the canonical names
+for new code and reports; old names survive only as warned,
+parity-tested compatibility adapters.</p>
+</section></section>
+<section>
+<section id="probability-objects-and-generative-model-quantities"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c5fc78a775a0">
+<h1 class="section-divider" id="slide-heading-c5fc78a775a0">Probability objects and generative-model
+quantities</h1>
+
+</section>
+<section id="states-posteriors-and-site-factors"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-212117bb8478">
+<h2 class="table-led" id="slide-heading-212117bb8478">States, posteriors, and site factors</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(s\)</span></td>
+<td>Hidden categorical-state index.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(o\)</span></td>
+<td>Observation/outcome index.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(q_n(s)\)</span></td>
+<td>Agent <span class="math inline">\(n\)</span>’s updated local
+posterior.</td>
+</tr>
+<tr>
+<td><span class="math inline">\(q(s)\)</span></td>
+<td>Server consensus posterior.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="States, posteriors, and site factors, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fcffce472725">
+<h2 class="prose-slide"
+aria-label="States, posteriors, and site factors, part 2" id="slide-heading-fcffce472725">States,
+posteriors, and site… (part 2)</h2>
+<p>Here <span class="math inline">\(s\in\{1,\ldots,n_s\}\)</span> and
+<span class="math inline">\(o\in\{1,\ldots,n_o\}\)</span> are indices,
+not distributions. Each <span class="math inline">\(q_n(s)\)</span> is
+the local posterior over the shared latent state after agent <span
+class="math inline">\(n\)</span>’s update; <span
+class="math inline">\(q(s)\)</span> is the corresponding server
+consensus, and <span class="math inline">\(q_{-n}(s)\)</span> removes
+agent <span class="math inline">\(n\)</span>’s site contribution. The
+site <span class="math inline">\(t_n(s)\)</span> is a natural-parameter
+factor.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="States, posteriors, and site factors, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-909d5c85820f">
+<h2 class="prose-slide"
+aria-label="States, posteriors, and site factors, part 3" id="slide-heading-909d5c85820f">States,
+posteriors, and site… (part 3)</h2>
+<p>The bridge-only quantity satisfies <span
+class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span> for
+state-constant <span class="math inline">\(\kappa_n\)</span>; it has no
+project API and does not imply that every source-protocol message is a
+broadcast posterior.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="States, posteriors, and site factors, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bc42b193a9f2">
+<h2 class="prose-slide"
+aria-label="States, posteriors, and site factors, part 4" id="slide-heading-bc42b193a9f2">States,
+posteriors, and site… (part 4)</h2>
+<p>The corresponding code terms are <code>state</code>,
+<code>observation</code>, <code>local_posteriors[n]</code>,
+<code>global_posterior</code> or <code>consensus</code>,
+<code>cavity(...)</code>, and <code>site_factor</code>, in table order
+through <span class="math inline">\(t_n(s)\)</span>. The bridge-only
+<span class="math inline">\(m_n(s)\)</span> has no project API.</p>
+</section>
+<section id="priors-policies-and-pomdp-quantities"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-665a6f14daab">
+<h2 class="table-led" id="slide-heading-665a6f14daab">Priors, policies, and POMDP quantities</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(\pi_0(s)\)</span></td>
+<td>Hidden-state prior, not a policy.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e5abbb1a9e06">
+<h2 class="prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 2" id="slide-heading-e5abbb1a9e06">Priors,
+policies, and… (part 2)</h2>
+<p>The state index <span class="math inline">\(s\)</span>, posterior
+<span class="math inline">\(q(s)\)</span>, prior <span
+class="math inline">\(\pi_0(s)\)</span>, and policy <span
+class="math inline">\(\boldsymbol{\pi}\)</span> must not be conflated.
+In particular, the policy symbol is bold when needed, never used for a
+prior, and the prior is never called a policy. The uppercase POMDP
+tensors <span class="math inline">\(A,B,C,D_0\)</span> are model
+objects; they are not posterior factors.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ca426845657f">
+<h2 class="prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 3" id="slide-heading-ca426845657f">Priors,
+policies, and… (part 3)</h2>
+<p>Each state-indexed column of <span class="math inline">\(A\)</span>
+is a pmf. The tensor <span class="math inline">\(B\)</span> is indexed
+by next state, current state, and control. The preferred-outcome pmf is
+<span
+class="math inline">\(p_C(o)=\operatorname{softmax}(C)[o]\)</span>, and
+<span class="math inline">\(q(o\mid\boldsymbol{\pi})\)</span> is the
+predicted-outcome distribution used in EFE calculations.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-64f6251a42e0">
+<h2 class="prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 4" id="slide-heading-64f6251a42e0">Priors,
+policies, and… (part 4)</h2>
+<p>The canonical code terms, in table order, are <code>prior</code> or
+<code>log_prior</code>, <code>policy</code>, <code>likelihood</code>,
+<code>transition</code>, <code>log_preferences</code>,
+<code>initial_prior</code>, and <code>predicted_outcomes</code>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-558e0ee15c5a">
+<h2 class="prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 5" id="slide-heading-558e0ee15c5a">Priors,
+policies, and… (part 5)</h2>
+<p>For the qualified relation to Friston et al.’s Eq. 7 <span
+class="citation" data-cites="friston2024federated">(Friston et al.
+2024)</span>, the shared support is finite, every <span
+class="math inline">\(q_n(s)\)</span> is positive on it, the Eq. 7
+softmax input is represented by the bridge-only <span
+class="math inline">\(m_n(s)\)</span> above, and the declared weights
+<span class="math inline">\(w_n\)</span> are fixed rather than functions
+of the emerging consensus.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f2d410193e47">
+<h2 class="prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 6" id="slide-heading-f2d410193e47">Priors,
+policies, and… (part 6)</h2>
+<p>Under exactly those assumptions, additive <span
+class="math inline">\(\kappa_n\)</span> constants cancel under softmax
+and <span class="cross-reference">Equation (9)</span>
+is the categorical posterior-log-potential specialization of the source
+message-combination term. It neither reconstructs source message
+construction, cavity/exclusion policy, scheduling,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a1789d1a4799">
+<h2 class="prose-slide"
+aria-label="Priors, policies, and POMDP quantities, part 7" id="slide-heading-a1789d1a4799">Priors,
+policies, and… (part 7)</h2>
+<p>generative factors, nor the complete source protocol.</p>
+</section></section>
+<section>
+<section id="divergences-losses-and-scalar-controls"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e32e3195fe96">
+<h1 class="section-divider" id="slide-heading-e32e3195fe96">Divergences, losses, and scalar
+controls</h1>
+
+</section>
+<section id="generalized-bayes-and-aggregation-terms"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e768018a2db8">
+<h2 class="table-led" id="slide-heading-e768018a2db8">Generalized-Bayes and aggregation terms</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(\mathcal D(q\Vert p)\)</span></td>
+<td>Regularizing divergence.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a5e025324d75">
+<h2 class="prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 2" id="slide-heading-a5e025324d75">Generalized-Bayes
+and… (part 2)</h2>
+<p>The regularizing divergence acts between distributions and may be KL,
+reverse KL, or <span class="math inline">\(\alpha\)</span>-Rényi. The
+positive learning rate/temperature <span
+class="math inline">\(\tau\)</span> multiplies accumulated loss and
+accepts <code>learning_rate</code> only as a warned compatibility
+alias.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7df49c946f27">
+<h2 class="prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 3" id="slide-heading-7df49c946f27">Generalized-Bayes
+and… (part 3)</h2>
+<p>The symbols <span class="math inline">\(w_n\)</span>, <span
+class="math inline">\(a_n\)</span>, and <span
+class="math inline">\(\widetilde a_n\)</span> are deliberately distinct.
+The first is supplied before aggregation, the second is the variational
+raw server output satisfying <span class="math inline">\(0\le a_n\le
+w_n\)</span>, and the third is only its normalized influence
+representation returned for interpretation and plotting.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8fa62e998146">
+<h2 class="prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 4" id="slide-heading-8fa62e998146">Generalized-Bayes
+and… (part 4)</h2>
+<p>Their canonical code terms, in table order, are
+<code>divergence</code>, <code>loss_by_state</code>, <code>tau</code>,
+<code>base_weights[n]</code>, <code>raw_effective_weights[n]</code>, and
+<code>normalized_effective_weights[n]</code>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c2c657bfd57b">
+<h2 class="prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 5" id="slide-heading-c2c657bfd57b">Generalized-Bayes
+and… (part 5)</h2>
+<p>The server heuristic’s reweighting is not a FedGVI client loss and
+does not inherit a client-side robustness theorem.
+<code>robust_aggregate</code> is a server heuristic with the tested
+<span class="math inline">\(c=0\)</span> recovery identity.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b5fa6a01d121">
+<h2 class="prose-slide"
+aria-label="Generalized-Bayes and aggregation terms, part 6" id="slide-heading-b5fa6a01d121">Generalized-Bayes
+and… (part 6)</h2>
+<p><code>variational_aggregate</code> owns the explicit finite-simplex
+objective and the raw-weight bound; that bound is not an estimator-level
+B-robustness theorem.</p>
+</section>
+<section id="robustness-divergences-and-loss-controls"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5989847c5530">
+<h2 class="table-led" id="slide-heading-5989847c5530">Robustness, divergences, and loss controls</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(c\ge0\)</span></td>
+<td>Server divergence-reweighting coefficient.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f595bb30d954">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 2" id="slide-heading-f595bb30d954">Robustness,
+divergences… (part 2)</h2>
+<p>The coefficient <span class="math inline">\(\lambda\)</span> controls
+the variational objective and its coordinate updates; <span
+class="math inline">\(\lambda\downarrow0\)</span> is a separate
+deterministic tied-argmax endpoint. The parameter <span
+class="math inline">\(q_{\text{loss}}\)</span> belongs to <span
+class="math inline">\(L_{q_{\text{loss}}}\)</span>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ba89690f5338">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 3" id="slide-heading-ba89690f5338">Robustness,
+divergences… (part 3)</h2>
+<p>its <span class="math inline">\(q_{\text{loss}}\downarrow0\)</span>
+NLL limit is handled separately, and the subscript prevents collision
+with posterior <span class="math inline">\(q(s)\)</span>. Contamination
+rate <span class="math inline">\(\rho\)</span> is always interpreted
+within the declared attack mechanism.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0b78afc48351">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 4" id="slide-heading-0b78afc48351">Robustness,
+divergences… (part 4)</h2>
+<p>The associated code terms are <code>robustness</code>,
+<code>entropy_weight</code>, <code>alpha</code>, <code>beta</code>,
+<code>q_loss</code>, and <code>contamination_rate</code> or
+<code>rate</code>, in table order.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-326e22066e9b">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 5" id="slide-heading-326e22066e9b">Robustness,
+divergences… (part 5)</h2>
+<p>For the objective-backed server rule, the complete scalar-control
+contract is defined for <span class="math inline">\(c&gt;0\)</span> and
+<span class="math inline">\(\lambda&gt;0\)</span>:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Robustness, divergences, and loss controls, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f6d9f3bd9329">
+<h2 class="equation-led"
+aria-label="Robustness, divergences, and loss controls, part 6" id="slide-heading-f6d9f3bd9329">Robustness,
+divergences… (part 6)</h2>
+<p><span class="math display" id="eq:notation-variational-objective">\[
+\begin{aligned}
+F_\lambda(q,a)
+&amp;= \sum_n a_n\,\mathrm{CE}(q,q_n)
+    -\lambda H(q)\\
+&amp;\qquad +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-df8e3a732490">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 7" id="slide-heading-df8e3a732490">Robustness,
+divergences… (part 7)</h2>
+<p>Its two coordinate updates are shown separately so each display
+remains legible at the presentation typography floor:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Robustness, divergences, and loss controls, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5775ac0d9e8a">
+<h2 class="equation-led"
+aria-label="Robustness, divergences, and loss controls, part 8" id="slide-heading-5775ac0d9e8a">Robustness,
+divergences… (part 8)</h2>
+<p><span class="math display" id="eq:notation-variational-updates">\[
+\begin{aligned}
+q &amp;\propto \exp\!\left(
+\frac{1}{\lambda}\sum_n a_n\log q_n\right),\\
+a_n &amp;= w_n\exp\!\big[-c\,\mathrm{CE}(q,q_n)\big].
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db810a1f3da7">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 9" id="slide-heading-db810a1f3da7">Robustness,
+divergences… (part 9)</h2>
+<p>The coordinate updates <a class="cross-reference" href="#eq:notation-variational-updates">Equation (35)</a>
+use <span class="math inline">\(\lambda=1.0\)</span> by default; the
+<code>entropy_weight</code> argument exposes the stated tempered family.
+The <span class="math inline">\(c=0\)</span> branch is handled as a
+recovery limit outside the <span class="math inline">\(c&gt;0\)</span>
+objective; at <span class="math inline">\(\lambda=1.0\)</span> it is the
+exact project log-linear pool.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-315c9527357e">
+<h2 class="prose-slide"
+aria-label="Robustness, divergences, and loss controls, part 10" id="slide-heading-315c9527357e">Robustness,
+divergences… (part 10)</h2>
+<p>The <span class="math inline">\(\lambda\downarrow0\)</span> endpoint
+is separately implemented as a deterministic tied-argmax rule and is not
+obtained by substituting <span class="math inline">\(\lambda=0\)</span>
+into the displayed objective or update.</p>
+</section>
+<section id="cavity-and-factor-algebra"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-791eeee4be70">
+<h2 class="prose-slide" id="slide-heading-791eeee4be70">Cavity and factor algebra</h2>
+<p>For a positive-support global posterior and site term, the cavity
+operation is defined in log space and then normalized:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Cavity and factor algebra, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dce31f41b439">
+<h2 class="equation-led"
+aria-label="Cavity and factor algebra, part 2" id="slide-heading-dce31f41b439">Cavity and factor algebra
+(part 2)</h2>
+<p><span class="math display" id="eq:notation-cavity">\[
+\begin{aligned}
+q_{-n}(s)
+&amp;= \frac{q(s)/t_n(s)}{\sum_{s&#39;}q(s&#39;)/t_n(s&#39;)}\\
+&amp;= \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cavity and factor algebra, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1c59f04ef523">
+<h2 class="prose-slide"
+aria-label="Cavity and factor algebra, part 3" id="slide-heading-1c59f04ef523">Cavity and factor algebra
+(part 3)</h2>
+<p>The corresponding factor replacement is</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Cavity and factor algebra, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7996d42049a1">
+<h2 class="equation-led"
+aria-label="Cavity and factor algebra, part 4" id="slide-heading-7996d42049a1">Cavity and factor algebra
+(part 4)</h2>
+<p><span class="math display" id="eq:notation-factor-replacement">\[
+\begin{aligned}
+\ell_n(s)
+&amp;= \log t_n^{\mathrm{old}}(s)\\
+&amp;\quad +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),\\
+t_n^{\mathrm{new}}(s)
+&amp;\leftarrow \operatorname{softmax}(\ell_n)(s).
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cavity and factor algebra, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a020f58e127">
+<h2 class="prose-slide"
+aria-label="Cavity and factor algebra, part 5" id="slide-heading-5a020f58e127">Cavity and factor algebra
+(part 5)</h2>
+<p>Here <span class="math inline">\(\ell_n\)</span> is the transient,
+unnormalized log-site vector; the softmax is exactly the exponential
+normalization of that vector.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cavity and factor algebra, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b25e811d4241">
+<h2 class="prose-slide"
+aria-label="Cavity and factor algebra, part 6" id="slide-heading-b25e811d4241">Cavity and factor algebra
+(part 6)</h2>
+<p>The code-level <code>cavity</code> adapter takes
+<code>global_posterior</code> and <code>site_factor</code>. The
+<code>update_factor</code> adapter takes <code>old_site_factor</code>,
+<code>old_global_posterior</code>, and
+<code>new_global_posterior</code>. The old keywords
+<code>posterior</code>, <code>factor</code>, <code>old_factor</code>,
+<code>old_posterior</code>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cavity and factor algebra, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1015fae62885">
+<h2 class="prose-slide"
+aria-label="Cavity and factor algebra, part 7" id="slide-heading-1015fae62885">Cavity and factor algebra
+(part 7)</h2>
+<p>and <code>new_posterior</code> are accepted only with a
+<code>DeprecationWarning</code>; mixed canonical/old calls fail
+closed.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cavity and factor algebra, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-21647baa5298">
+<h2 class="prose-slide"
+aria-label="Cavity and factor algebra, part 8" id="slide-heading-21647baa5298">Cavity and factor algebra
+(part 8)</h2>
+<p>Recombination is tested by normalizing <span
+class="math inline">\(q_{-n}(s)t_n(s)\)</span> and checking recovery of
+<span class="math inline">\(q(s)\)</span> to floating-point tolerance. A
+transported site factor is represented as a pmf, so its arbitrary
+positive natural-parameter scale is fixed by the explicit normalization
+above.</p>
+</section>
+<section id="statistical-notation-and-nesting"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-512d10a37dd8">
+<h2 class="table-led" id="slide-heading-512d10a37dd8">Statistical notation and nesting</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Contractual meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(n_{\rm seed}\)</span></td>
+<td>Number of independently seeded worlds/replicates in a declared cell;
+the inferential unit for seed-level summaries.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical notation and nesting, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7adf7deb9bdd">
+<h2 class="prose-slide"
+aria-label="Statistical notation and nesting, part 2" id="slide-heading-7adf7deb9bdd">Statistical
+notation and… (part 2)</h2>
+<p>For the robustness sweep, the primary result is <span
+class="math inline">\(r_{\rm rb}\)</span> and the matched mean
+difference <span class="math inline">\(\overline{\Delta}\)</span> with
+its bootstrap interval. The d-equivalent is retained only as a monotone
+secondary display and planning input. When <span
+class="math inline">\(|r_{\rm rb}|=1\)</span>, the transform
+diverges;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical notation and nesting, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1e506ac9632">
+<h2 class="prose-slide"
+aria-label="Statistical notation and nesting, part 3" id="slide-heading-c1e506ac9632">Statistical
+notation and… (part 3)</h2>
+<p>reports use a finite sentinel and captions disclose saturation rather
+than presenting a million-scale number as a scientifically interpretable
+effect.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical notation and nesting, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-26550fda03b3">
+<h2 class="prose-slide"
+aria-label="Statistical notation and nesting, part 4" id="slide-heading-26550fda03b3">Statistical
+notation and… (part 4)</h2>
+<p>Power, prospective sample size, MCSE, and MDE are observed-effect
+planning/precision diagnostics, not evidence that a confirmatory effect
+exists.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical notation and nesting, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e5d6e9da9371">
+<h2 class="prose-slide"
+aria-label="Statistical notation and nesting, part 5" id="slide-heading-e5d6e9da9371">Statistical
+notation and… (part 5)</h2>
+<p>The predeclared headline display rule is the largest positive <span
+class="math inline">\(r_{\rm rb}\)</span> among robust methods, with the
+declared method order as a deterministic tie break. A report must also
+expose the complete tied-method set, the tie-break, the method with the
+largest mean <span class="math inline">\(\overline{\Delta}\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical notation and nesting, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c025d21bf722">
+<h2 class="prose-slide"
+aria-label="Statistical notation and nesting, part 6" id="slide-heading-c025d21bf722">Statistical
+notation and… (part 6)</h2>
+<p>and the method with the largest mean at the worst rate.</p>
+<p>These are distinct summaries; none is a unique scientific winner when
+the evidence is tied or conditional.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Statistical notation and nesting, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-915f267209ed">
+<h2 class="prose-slide"
+aria-label="Statistical notation and nesting, part 7" id="slide-heading-915f267209ed">Statistical
+notation and… (part 7)</h2>
+<p>For the review grid, every configured robust method remains an
+inferential member and a displayed rate-profile curve. No pooled-mean
+selection creates a curve, interval, or hypothesis-test member for that
+surface.</p>
+</section>
+<section id="code-and-manuscript-naming-map"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f322491d834">
+<h2 class="prose-slide" id="slide-heading-1f322491d834">Code and manuscript naming map</h2>
+<p>Every arrow names a legacy surface followed by its canonical
+replacement.</p>
+<p><strong>Belief inputs.</strong> <code>beliefs</code> or
+<code>agent_beliefs</code> → <code>local_posteriors</code>;
+<code>weights</code> → <code>base_weights</code>. Both are warned
+keyword/property adapters.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Code and manuscript naming map, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fce9e61473b4">
+<h2 class="prose-slide"
+aria-label="Code and manuscript naming map, part 2" id="slide-heading-fce9e61473b4">Code and manuscript…
+(part 2)</h2>
+<p><strong>Aggregation outputs.</strong> Result property
+<code>agent_weights</code> → <code>normalized_effective_weights</code>;
+variational argument <code>agent_weights</code> →
+<code>raw_effective_weights</code>. Both are warned adapters, but
+represent different weight scales.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Code and manuscript naming map, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-71bb73a5303a">
+<h2 class="prose-slide"
+aria-label="Code and manuscript naming map, part 3" id="slide-heading-71bb73a5303a">Code and manuscript…
+(part 3)</h2>
+<p><strong>Diagnostics.</strong> <code>shared_beliefs</code> →
+<code>shared_posteriors</code>; <code>loss_vec</code> →
+<code>loss_by_state</code>. These are warned diagnostics and keyword
+adapters.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Code and manuscript naming map, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-45a7df776335">
+<h2 class="prose-slide"
+aria-label="Code and manuscript naming map, part 4" id="slide-heading-45a7df776335">Code and manuscript…
+(part 4)</h2>
+<p><strong>Statistics.</strong> <code>cohens_d_from_rank_biserial</code>
+→ <code>d_equivalent_from_rank_biserial</code>; report field
+<code>cohens_d</code> → <code>d_equivalent</code>. The function is a
+warned adapter; the report change is a versioned migration.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Code and manuscript naming map, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-df3f9e21480d">
+<h2 class="prose-slide"
+aria-label="Code and manuscript naming map, part 5" id="slide-heading-df3f9e21480d">Code and manuscript…
+(part 5)</h2>
+<p>These adapters never silently reinterpret an argument or result. The
+<code>agent_weights</code> result property preserves serialized wire
+compatibility, while the variational objective and new reports use the
+canonical weight terms. New reports are canonical and
+schema-versioned;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Code and manuscript naming map, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-52791a6b13fa">
+<h2 class="prose-slide"
+aria-label="Code and manuscript naming map, part 6" id="slide-heading-52791a6b13fa">Code and manuscript…
+(part 6)</h2>
+<p>readers fail closed on unsupported versions.
+<code>d_equivalent_from_rank_biserial</code> returns the declared
+rank-biserial-derived d-equivalent, not raw Cohen’s <span
+class="math inline">\(d\)</span>; <code>loss_vec</code> remains only a
+warned generalized-Bayes keyword adapter.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Code and manuscript naming map, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-39fc52596071">
+<h2 class="prose-slide"
+aria-label="Code and manuscript naming map, part 7" id="slide-heading-39fc52596071">Code and manuscript…
+(part 7)</h2>
+<p>The wire-level key <code>agent_weights</code> is preserved because it
+is a federation transport contract, not a claim about the scale or
+meaning of the new result fields. A future wire migration requires an
+explicit version and a fail-closed reader; it must not silently
+reinterpret the key.</p>
+</section>
+<section id="source-and-evidence-boundaries"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-54caabe3495d">
+<h2 class="prose-slide" id="slide-heading-54caabe3495d">Source and evidence boundaries</h2>
+<p>The Friston belief-sharing equations are source equations/protocol
+claims. Only under the explicit finite-shared-support,
+posterior-log-potential, and fixed-weight bridge above does the
+categorical log-linear pool specialize the source message-combination
+term;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Source and evidence boundaries, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5680875d6f58">
+<h2 class="prose-slide"
+aria-label="Source and evidence boundaries, part 2" id="slide-heading-5680875d6f58">Source and evidence…
+(part 2)</h2>
+<p>the tested <span class="math inline">\(c=0\)</span> identity remains
+project-local. The generalized-Bayes and loss limits are implementation
+analogues checked in the finite categorical model.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Source and evidence boundaries, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f70f7e57c3f0">
+<h2 class="prose-slide"
+aria-label="Source and evidence boundaries, part 3" id="slide-heading-f70f7e57c3f0">Source and evidence…
+(part 3)</h2>
+<p>The contamination, gallery, onset, conditional-world, and review-grid
+quantities are conditional simulation evidence over declared cells. None
+of these finite surfaces is an external-data replication, a
+reconstructed source protocol, a universal attack taxonomy, a causal
+intervention,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Source and evidence boundaries, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f14f4b7e41d4">
+<h2 class="prose-slide"
+aria-label="Source and evidence boundaries, part 4" id="slide-heading-f14f4b7e41d4">Source and evidence…
+(part 4)</h2>
+<p>or a proof of a server-side robustness guarantee.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Source and evidence boundaries, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7dca333c10b5">
+<h2 class="prose-slide"
+aria-label="Source and evidence boundaries, part 5" id="slide-heading-7dca333c10b5">Source and evidence…
+(part 5)</h2>
+<p>Open theory, calibration, protocol, continuous-state, external-data,
+authenticated-federation, and clean-release work remains open in the
+project TODO and claim-audit documents.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

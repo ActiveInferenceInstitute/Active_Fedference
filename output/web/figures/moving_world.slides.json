@@ -1,0 +1,59 @@
+{
+  "panels": [
+    {
+      "alt": "Accuracy: all isolated, communicating and EFE-guided values in fraction, retaining signed values and ties.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "582bf88121deaf03cc1cb54d3820a7b12c3492aea9b8db2892d051527dcf8dd7",
+      "src": "../figures/moving_world.slide-accuracy.png"
+    },
+    {
+      "alt": "Accuracy (fraction): ISO +0.999; COM +0.9771; EFE +0.9781.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "d28a90841c7bf21299e5457d78a4ab2669cdb7dd21c815d15505d49ba7de1eae",
+      "src": "../figures/moving_world.slide-accuracy-values.png"
+    },
+    {
+      "alt": "Free-energy gap: all isolated, communicating and EFE-guided values in nats, retaining signed values and ties.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f2d1289547a0ee0029a01f779a936d112388ee4e98dfc5771af5a48acc993559",
+      "src": "../figures/moving_world.slide-free-energy-gap.png"
+    },
+    {
+      "alt": "Free-energy gap (nats): ISO +0; COM -0.5285; EFE -0.4099.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1610b60dc1999adb9158d970b61ff4fca08051405a542cabc660394c0ea58ff8",
+      "src": "../figures/moving_world.slide-free-energy-gap-values.png"
+    },
+    {
+      "alt": "Time to consensus: all isolated, communicating and EFE-guided values in steps, retaining signed values and ties.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "a6f6f28136ec7b4b78c0b5f6baee9478e09b05dc5c9596b9281a3b6521a8d1f1",
+      "src": "../figures/moving_world.slide-n-steps-to-consensus.png"
+    },
+    {
+      "alt": "Time to consensus (steps): ISO +5.002; COM +5; EFE +5.001.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0326f2c8734b30a47dd9539ba0cae355ac992e2be6d7db62f86b69414a534e47",
+      "src": "../figures/moving_world.slide-n-steps-to-consensus-values.png"
+    },
+    {
+      "alt": "Accuracy gains over isolated: COM -0.022; EFE -0.021.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "322a28a9a41605fdefe0e41d11d988ef92e828fa3db86215c01ca94730b0889b",
+      "src": "../figures/moving_world.slide-gains.png"
+    },
+    {
+      "alt": "ISO / plain: isolated; COM / forward hatch: communicating; EFE / dots: EFE-guided. Different metric units have separate axes.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c33e007547bb3db1475ee35606ed5b35813535b594037871c153c10673bba41a",
+      "src": "../figures/moving_world.slide-key.png"
+    },
+    {
+      "alt": "Declared moving-world summary. No interval is added to these scalar bars. Ordered steps and within-run observations do not become independent replications.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ba4011bc9cb6af95ced993d8c149fcdee715a3bd14f7b22f05193c7a09c4afe5",
+      "src": "../figures/moving_world.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

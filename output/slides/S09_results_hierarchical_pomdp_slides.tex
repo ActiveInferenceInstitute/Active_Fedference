@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,32 +274,38 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP: federated
-belief sharing across levels}
+\begin{frame}{Hierarchical POMDP: federated belief sharing across
+levels}
 \protect\phantomsection\label{sec:results-hierarchical}
 The flat sentinel world couples all agents at a single latent level ---
-the creature's location. A natural extension is a \textbf{2-level
-hierarchical POMDP} in which location inference (Level 1, L1; 9 states)
-is coupled to a global \emph{context} variable (Level 2, L2; 2 states:
-\texttt{quiet} / \texttt{alert}) that modulates the L1 prior. In the
-\texttt{alert} context the creature is expected near the den (center
-cell); in the \texttt{quiet} context the prior is uniform. Each sentinel
-runs alternating L1/L2 minimization
-(\breaktt{fedference.pomdp.hierarchical\_infer}) to infer both its
-location belief and the current context belief, then the colony
-federates both levels via a log-linear pool.
-
+the creature's location.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP: federated
-belief sharing across levels}
+\begin{frame}[fragile]{Hierarchical POMDP (part 2)}
+A natural extension is a \textbf{2-level hierarchical POMDP} in which
+location inference (Level 1, L1; 9 states) is coupled to a global
+\emph{context} variable (Level 2, L2; 2 states: \texttt{quiet} /
+\texttt{alert}) that modulates the L1 prior.
+\end{frame}
+
+\begin{frame}[fragile]{Hierarchical POMDP (part 3)}
+In the \texttt{alert} context the creature is expected near the den
+(center cell); in the \texttt{quiet} context the prior is uniform.
+\end{frame}
+
+\begin{frame}[fragile]{Hierarchical POMDP (part 4)}
+Each sentinel runs alternating L1/L2 minimization with
+\texttt{hierarchical\_infer} from the \texttt{fedference.pomdp} module
+to infer both its location belief and the current context belief, then
+the colony federates both levels via a log-linear pool.
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 5)}
 We compare two conditions over 960 seeded trials with 4 agents at sensor
 acuity 0.85:
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP: federated
-belief sharing across levels}
+\begin{frame}{Hierarchical POMDP (part 6)}
 \begin{itemize}
 \tightlist
 \item
@@ -267,73 +315,216 @@ belief sharing across levels}
   \textbf{Hierarchical} --- agents run 4 alternating-minimization
   iterations to couple L1 and L2 beliefs before federating.
 \end{itemize}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP: federated
-belief sharing across levels}
+\begin{frame}{Hierarchical POMDP (part 7)}
 The measured location accuracies are 0.982 (flat) and 0.969
-(hierarchical), a gap of -0.014. Across 128 independent seeds the
-hierarchical location accuracy is 0.974 (SD 0.005; 95 \% CI
-0.973--0.975) versus flat 0.982 (95 \% CI 0.981--0.982), a mean accuracy
-gap of -0.008 (95 \% CI -0.009---0.007; Wilcoxon signed-rank
-\(p = 0.0000\), effect size \(r = 0.940\), large). On location the gap
-is small but statistically reliable in the \emph{negative} direction ---
-the paired test rejects at \(\alpha = 0.05\) and the gap's confidence
-interval (-0.009---0.007) excludes zero on the negative side --- so the
-hierarchy does not improve location accuracy in this regime; if anything
-it pays a small, consistent location cost for carrying the extra latent
-level. Its added value is that it \emph{also} infers the context latent,
-at accuracy 0.763 against a two-state chance baseline of \(0.5\).
-Two-level federation therefore runs L1/L2 inference end-to-end and
+(hierarchical), a gap of -0.014.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP: federated
-belief sharing across levels}
-resolves context above chance while paying a small, reliable location
-cost relative to the flat baseline (fig.~\ref{fig:hierarchical-pomdp}).
+\begin{frame}{Hierarchical POMDP (part 8)}
+Across 128 independent seeds the hierarchical location accuracy is 0.974
+(SD 0.005; 95 \% CI 0.973--0.975) versus flat 0.982 (95 \% CI
+0.981--0.982), a mean accuracy gap of -0.008 (95 \% CI -0.009---0.007;
+Wilcoxon signed-rank \(p = 3.59 \times 10^{-20}\), effect size
+\(r = 0.940\), large).
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 9)}
+On location the gap is small but statistically reliable in the
+\emph{negative} direction --- the paired test rejects at
+\(\alpha = 0.05\) and the gap's confidence interval (-0.009---0.007)
+excludes zero on the negative side --- so the hierarchy does not improve
+location accuracy in this regime; if anything it pays a small,
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 10)}
+consistent location cost for carrying the extra latent level.
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 11)}
+Its added value is that it \emph{also} infers the context latent, at
+accuracy 0.763 against a two-state chance baseline of \(0.5\). Two-level
+federation therefore runs L1/L2 inference end-to-end and resolves
+context above chance while paying a small, reliable location cost
+relative to the flat baseline (fig.~28).
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 12)}
 Context beliefs across the alternating-minimization iterations are shown
 in the top-middle panel: P(alert) sits above the two-state chance line
 and is stable from the first iteration onward when the observed location
-is the center cell --- the center-cell observation pins the context
-posterior immediately, because the alert context-conditioned L1 prior is
-peaked there. The full construction and parameter sweep are detailed in
-the supplement (sec.~13.10). For the effect of
-acuity and colony size on these results, see
-sec.~13.13.
-
+is the center cell ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP: federated
-belief sharing across levels}
+\begin{frame}{Hierarchical POMDP (part 13)}
+the center-cell observation pins the context posterior immediately,
+because the alert context-conditioned L1 prior is peaked there.
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 14)}
+The full construction and parameter sweep are detailed in the supplement
+(sec.~14.10). For the effect of acuity and colony
+size on these results, see sec.~14.13.
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 15)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Six-panel hierarchical POMDP belief-dynamics and accuracy diagnostic. Source relation: source-inspired original project diagnostic for a hierarchical POMDP extension; estimand: posterior probabilities and final location-accuracy gap in the declared seeded protocol; uncertainty: deterministic seeded run, so no resampling interval is shown. Six-panel (2x3) visualization of the V2 hierarchical POMDP belief dynamics. Top row shows the 2-level world; bottom row shows the 3-level extension. Top-left panel: x-axis indexes the 9 location states; y-axis shows posterior probability for the flat-prior and 2-level hierarchical conditions given a single center-cell observation. Top-middle panel: x-axis is alternating-minimization iteration number; y-axis shows the L2 context posteriors P(quiet) and P(alert) under 2-level inference, pinned by the center-cell observation and stable from the first iteration onward. Top-right panel: x-axis indexes location states; y-axis shows the colony L1 consensus probability after federating 4 agents, comparing flat vs 2-level hierarchical. Bottom-left panel: x-axis indexes location states; y-axis shows posterior probability for the flat-prior and 3-level hierarchical conditions given a single center-cell observation. Bottom-middle panel: x-axis is alternating-minimization iteration number; y-axis shows L2 P(alert) and L3 P(high\_threat) under 3-level inference, stable across iterations. Bottom-right panel: two bars showing the measured final location-accuracy gap (hierarchical minus flat) for the 2-level and 3-level systems, each a single scalar measured over 960 trials, with a zero reference line. Deterministic seeded run (seed 0), so bars carry no error band.}]{../figures/hierarchical_pomdp.png}
-\caption{Six-panel hierarchical POMDP belief-dynamics and accuracy
-diagnostic. Source relation: source-inspired original project diagnostic
-for a hierarchical POMDP extension; estimand: posterior probabilities
-and final location-accuracy gap in the declared seeded protocol;
-uncertainty: deterministic seeded run, so no resampling interval is
-shown. Six-panel (2x3) visualization of the V2 hierarchical POMDP belief
-dynamics. Top row shows the 2-level world; bottom row shows the 3-level
-extension. Top-left panel: x-axis indexes the 9 location states; y-axis
-shows posterior probability for the flat-prior and 2-level hierarchical
-conditions given a single center-cell observation. Top-middle panel:
-x-axis is alternating-minimization iteration number; y-axis shows the L2
-context posteriors P(quiet) and P(alert) under 2-level inference, pinned
-by the center-cell observation and stable from the first iteration
-onward. Top-right panel: x-axis indexes location states; y-axis shows
-the colony L1 consensus probability after federating 4 agents, comparing
-flat vs 2-level hierarchical. Bottom-left panel: x-axis indexes location
-states; y-axis shows posterior probability for the flat-prior and
-3-level hierarchical conditions given a single center-cell observation.
-Bottom-middle panel: x-axis is alternating-minimization iteration
-number; y-axis shows L2 P(alert) and L3 P(high\_threat) under 3-level
-inference, stable across iterations. Bottom-right panel: two bars
-showing the measured final location-accuracy gap (hierarchical minus
-flat) for the 2-level and 3-level systems, each a single scalar measured
-over 960 trials, with a zero reference line. Deterministic seeded run
-(seed 0), so bars carry no error band.}\label{fig:hierarchical-pomdp}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={two-level posterior, states 0 to 2: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-1-states-0-2.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={two-level posterior, states 3 to 5: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-1-states-3-5.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={two-level posterior, states 6 to 8: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-1-states-6-8.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Two-Level Posterior: flat peak state 4, mass 0.85; hierarchical peak state 4, mass 0.9795.}]{../figures/hierarchical_pomdp.slide-panel-1-peaks.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={colony consensus, states 0 to 2: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-2-states-0-2.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 20)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={colony consensus, states 3 to 5: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-2-states-3-5.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 21)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={colony consensus, states 6 to 8: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-2-states-6-8.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 22)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Colony Consensus: flat peak state 4, mass 0.9551; hierarchical peak state 4, mass 0.9999.}]{../figures/hierarchical_pomdp.slide-panel-2-peaks.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 23)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={three-level posterior, states 0 to 2: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-3-states-0-2.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 24)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={three-level posterior, states 3 to 5: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-3-states-3-5.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-10}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 25)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={three-level posterior, states 6 to 8: plain flat versus hatched hierarchical probabilities with the declared state reference.}]{../figures/hierarchical_pomdp.slide-panel-3-states-6-8.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-11}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 26)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Three-Level Posterior: flat peak state 4, mass 0.85; hierarchical peak state 4, mass 0.9802.}]{../figures/hierarchical_pomdp.slide-panel-3-peaks.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-12}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 27)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Two-level context: all alternating-minimization iterations with the half-probability reference.}]{../figures/hierarchical_pomdp.slide-context-1.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-13}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 28)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Two-level context: quiet (o, -); alert (s, -). Ordered iterations are not independent replications.}]{../figures/hierarchical_pomdp.slide-context-1-key.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-14}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 29)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Three-level context: all alternating-minimization iterations with the half-probability reference.}]{../figures/hierarchical_pomdp.slide-context-2.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-15}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 30)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Three-level context: L2 alert (s, -); L3 high threat (\^{}, -\/-). Ordered iterations are not independent replications.}]{../figures/hierarchical_pomdp.slide-context-2-key.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-16}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 31)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Final signed hierarchical-minus-flat location accuracy for both hierarchy depths; zero reference retained.}]{../figures/hierarchical_pomdp.slide-gaps.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-17}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 32)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchical minus flat: 2L -0.01354; 3L -0.01875. n = 960 nested trials. No per-trial trajectory or interval is inferred from these scalar gaps.}]{../figures/hierarchical_pomdp.slide-gap-values.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-18}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 33)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Acuity 0.85; observed state 4; colony true state 4; 4 agents. Plain left bars: flat; hatched right bars: hierarchical.}]{../figures/hierarchical_pomdp.slide-configuration.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-19}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchical POMDP (part 34)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Gap bars use the executed reports. Other panels are seeded diagnostic posterior calculations. No universal hierarchical benefit or calibrated uncertainty is established.}]{../figures/hierarchical_pomdp.slide-scope.png}
+\refstepcounter{figure}\label{fig:hierarchical-pomdp-slide-panel-20}
 \end{figure}
 \end{frame}
 

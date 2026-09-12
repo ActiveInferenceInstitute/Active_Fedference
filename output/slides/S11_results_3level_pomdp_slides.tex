@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,87 +259,103 @@
 
 \begin{document}
 
-\begin{frame}[fragile,allowframebreaks]{Three-level hierarchical POMDP:
-an executed test of the N-level template}
+\begin{frame}{Three-level hierarchical POMDP: an executed test of the
+N-level template}
 \protect\phantomsection\label{sec:results-3level}
-The 2-level hierarchical POMDP (sec.~13.9)
-couples location inference to a single global context. The N-level
-architecture (\breaktt{fedference.pomdp.build\_nlevel\_world}) provides a
-parameterized stack of levels; the canonical 3-level example couples
-location (L1; 9 states) to a context variable (L2; 2 states:
-\texttt{quiet} / \texttt{alert}) and further to a meta-context variable
-(L3; 2 states: \texttt{low\_threat} / \texttt{high\_threat}) that gates
-the L2 prior.
-
+The 2-level hierarchical POMDP (sec.~14.9)
+couples location inference to a single global context.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three-level hierarchical POMDP:
-an executed test of the N-level template}
-\begin{equation}\protect\phantomsection\label{eq:l3-to-l2-message}{
+\begin{frame}[fragile]{Three-level hierarchical\ldots{} (part 2)}
+The N-level architecture uses \texttt{build\_nlevel\_world} from the
+\texttt{fedference.pomdp} module and provides a parameterized stack of
+levels; the canonical 3-level example couples location (L1; 9 states) to
+a context variable (L2;
+\end{frame}
+
+\begin{frame}[fragile]{Three-level hierarchical\ldots{} (part 3)}
+2 states: \texttt{quiet} / \texttt{alert}) and further to a meta-context
+variable (L3; 2 states: \texttt{low\_threat} / \texttt{high\_threat})
+that gates the L2 prior.
+\end{frame}
+
+\begin{frame}{Three-level hierarchical\ldots{} (part 4)}
+\begin{equation}\tag{38}\protect\phantomsection\label{eq:l3-to-l2-message}{
 \tilde{D}_{\text{L2}} = \sum_k q_{\text{L3}}[k]\,p_{\text{L2|L3}}[k]
 }\end{equation}
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:l2-to-l1-message}{
+\begin{frame}{Three-level hierarchical\ldots{} (part 5)}
+\begin{equation}\tag{39}\protect\phantomsection\label{eq:l2-to-l1-message}{
 \tilde{D}_{\text{L1}} = \sum_c q_{\text{L2}}[c]\,p_{\text{L1|L2}}[c]
 }\end{equation}
+\end{frame}
 
-The inference algorithm (\breaktt{fedference.pomdp.nlevel\_infer})
+\begin{frame}[fragile]{Three-level hierarchical\ldots{} (part 6)}
+The inference algorithm (\texttt{fedference.pomdp.nlevel\_infer})
 performs 4 passes of top-down / bottom-up alternating minimization: the
-top-down pass propagates empirical priors from L3 → L2 → L1 via
-eq.~\ref{eq:l3-to-l2-message} and eq.~\ref{eq:l2-to-l1-message}; the
-bottom-up pass updates each level's belief from the marginal evidence
-contributed by the level below.
-
+top-down pass propagates empirical priors from L3 \texorpdfstring{\ensuremath{\to}}{->} L2 \texorpdfstring{\ensuremath{\to}}{->} L1 via
+eq.~38 and eq.~39;
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three-level hierarchical POMDP:
-an executed test of the N-level template}
+\begin{frame}{Three-level hierarchical\ldots{} (part 7)}
+the bottom-up pass updates each level's belief from the marginal
+evidence contributed by the level below.
+
 We compare two conditions over 960 seeded trials with 4 agents at sensor
-acuity 0.85:
-
+acuity 0.85.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three-level hierarchical POMDP:
-an executed test of the N-level template}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Flat} --- agents ignore all hierarchy and infer location under
-  a uniform prior;
-\item
-  \textbf{3-level} --- agents run 4 alternating-minimization iterations
-  across all three levels before federating.
-\end{itemize}
+\begin{frame}{Three-level hierarchical\ldots{} (part 8)}
+\textbf{Flat condition.} Agents ignore all hierarchy and infer location
+under a uniform prior.
 
+\textbf{Three-level condition.} Agents run 4 alternating-minimization
+iterations across all three levels before federating.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three-level hierarchical POMDP:
-an executed test of the N-level template}
+\begin{frame}{Three-level hierarchical\ldots{} (part 9)}
 The measured location accuracies are 0.984 (flat) and 0.966 (3-level), a
-gap of -0.019. Across 128 independent seeds the 3-level location
-accuracy is 0.976 (SD 0.005; 95 \% CI 0.976--0.977) versus flat 0.981
-(95 \% CI 0.980--0.981), a mean accuracy gap of -0.004 (95 \% CI
--0.005---0.003; Wilcoxon signed-rank \(p = 0.0000\), effect size
-\(r = 0.724\), medium; the location gap over the flat baseline is not
-statistically significant at this seed count). The 3-level condition
-additionally reports context accuracy 0.697 and meta-context accuracy
-0.547. Against the two-state chance baseline of \(0.5\), location is
-recovered and the intermediate context latent is resolved well above
-chance, but the meta-context latent is only marginally above chance ---
-the weakest of the three levels --- and is therefore \emph{not}
-convincingly recovered here. The study thus demonstrates that the
-generic \(N\)-level alternating-minimization runs and federates
+gap of -0.019.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three-level hierarchical POMDP:
-an executed test of the N-level template}
-end-to-end and recovers the fastest (location) and intermediate
-(context) latents; full recovery of the slowest (meta-context) level is
-left open. The full figure comparing 2-level and 3-level belief dynamics
-is fig.~25. The declarative layer
-specification used by the generic constructor is documented in the
-supplement (sec.~13.12). For the effect of acuity and
-colony size on these results, see sec.~13.13.
+\begin{frame}{Three-level hierarchical\ldots{} (part 10)}
+Across 128 independent seeds the 3-level location accuracy is 0.976 (SD
+0.005; 95 \% CI 0.976--0.977) versus flat 0.981 (95 \% CI 0.980--0.981),
+a mean accuracy gap of -0.004 (95 \% CI -0.005---0.003; Wilcoxon
+signed-rank \(p = 2.88 \times 10^{-12}\), effect size \(r = 0.724\),
+medium).
+\end{frame}
+
+\begin{frame}{Three-level hierarchical\ldots{} (part 11)}
+The signed mean gap and its interval describe the location-accuracy cost
+of this configured three-level condition relative to the flat baseline.
+
+The 3-level condition additionally reports context accuracy 0.697 and
+meta-context accuracy 0.547.
+\end{frame}
+
+\begin{frame}{Three-level hierarchical\ldots{} (part 12)}
+Against the two-state chance baseline of \(0.5\), location is recovered
+and the intermediate context latent is resolved well above chance, but
+the meta-context latent is only marginally above chance --- the weakest
+of the three levels --- and is therefore \emph{not} convincingly
+recovered here.
+\end{frame}
+
+\begin{frame}{Three-level hierarchical\ldots{} (part 13)}
+The study thus demonstrates that the generic \(N\)-level
+alternating-minimization runs and federates end-to-end and recovers the
+fastest (location) and intermediate (context) latents; full recovery of
+the slowest (meta-context) level is left open.
+\end{frame}
+
+\begin{frame}{Three-level hierarchical\ldots{} (part 14)}
+The full figure comparing 2-level and 3-level belief dynamics is
+fig.~28. The declarative layer specification
+used by the generic constructor is documented in the supplement
+(sec.~14.12). For the effect of acuity and colony size
+on these results, see sec.~14.13.
 \end{frame}
 
 \end{document}

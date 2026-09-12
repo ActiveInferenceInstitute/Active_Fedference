@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,187 +274,315 @@
 
 \begin{document}
 
-\subsection{Moving sentinel world: communication benefit depends on
-field of view}\label{sec:results-moving}
-
-\begin{frame}[allowframebreaks]{Moving sentinel world: communication
-benefit depends on field of view}
+\begin{frame}{Moving sentinel world: communication contrast depends on
+field of view}
+\protect\phantomsection\label{sec:results-moving}
 The hidden-state/action relation for this extension is summarized in the
 categorical loop schematic fig.~5; the results below
-remain the executed moving-world comparisons, not a claim that the
-schematic's full loop is present in every flat belief-sharing study.
+remain the executed moving-world comparisons,
+\end{frame}
 
+\begin{frame}{Moving sentinel world (part 2)}
+not a claim that the schematic's full loop is present in every flat
+belief-sharing study.
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 3)}
 The static sentinel world lets every agent observe the same shared
 latent, so belief sharing is a refinement rather than a requirement. To
 stress the \emph{necessity} of communication we add movement and
-\textbf{disjoint} fields of view. The world is a linear grid of 4 cells
-holding a single binary threat --- left half (state 0) or right half
-(state 1). The 2 sentinels start at evenly tiled positions and each
-observe a half-open window of cells, so in the default setup agent 0
-watches the left half and agent 1 the right half: their views do not
-overlap. Each agent's likelihood is a confident, signed presence reading
-for the half it can see, and three control paths (stay / left / right)
+\textbf{disjoint} fields of view.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Moving sentinel world: communication
-benefit depends on field of view}
-let it reposition. The expected-free-energy policy scores each candidate
-move by the expected posterior entropy after one observation and takes
-the most information-seeking step.
+\begin{frame}{Moving sentinel world (part 4)}
+The world is a linear grid of 4 cells holding a single binary threat ---
+left half (state 0) or right half (state 1). The 2 sentinels start at
+evenly tiled positions and each observe a half-open window of cells, so
+in the default setup agent 0 watches the left half and agent 1 the right
+half: their views do not overlap.
+\end{frame}
 
+\begin{frame}{Moving sentinel world (part 5)}
+Each agent's likelihood is a confident, signed presence reading for the
+half it can see, and three control paths (stay / left / right) let it
+reposition. The expected-free-energy policy scores each candidate move
+by the expected posterior entropy after one observation and takes the
+most information-seeking step.
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 6)}
 We run 960 trials of 6 steps each under three conditions:
 \emph{isolated} (random moves, no sharing), \emph{communicating} (random
 moves plus a log-linear-pool consensus each step), and \emph{EFE-guided}
-(information-seeking moves plus the same sharing). The measured
-consensus accuracies are 0.999 (isolated), 0.977 (communicating), and
-0.978 (EFE-guided), with a communicating free-energy gap of -0.528 nats
-relative to the isolated baseline (negative: no free-energy advantage
-over isolated in this binary-complement regime of logically complete
-half-views) (fig.~\ref{fig:moving-world}).
-
+(information-seeking moves plus the same sharing).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Moving sentinel world: communication
-benefit depends on field of view}
+\begin{frame}{Moving sentinel world (part 7)}
+The measured consensus accuracies are 0.999 (isolated), 0.977
+(communicating), and 0.978 (EFE-guided), with a communicating
+free-energy gap of -0.528 nats relative to the isolated baseline
+(negative:
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 8)}
+no free-energy advantage over isolated in this binary-complement regime
+of logically complete half-views) (fig.~26).
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 9)}
 Across 128 independent seeds the EFE-guided accuracy is 0.983 (95 \% CI
 0.982--0.984), the communicating (random-moves + sharing) accuracy is
 0.982 (95 \% CI 0.982--0.983), and the isolated accuracy is 0.999 (95 \%
-CI 0.999--0.999). In this binary-complement regime the isolated
-condition is in fact significantly \emph{higher} on accuracy than the
-EFE-guided sharing condition --- their 95 \% intervals do not overlap
---- and the EFE-vs-isolated accuracy contrast yields Wilcoxon
-signed-rank \(p = 0.0000\) (significant; isolated higher), effect size
-\(r = 1.000\) (large). Sharing is therefore not merely unnecessary in
-this regime; it costs a small but reliable amount of accuracy. Nor does
-sharing lower free energy here: the EFE free-energy gap (isolated
-surprise minus the EFE-guided condition's surprise) is -0.368 nats (95
-\% CI -0.384---0.353) --- negative, so the pooled consensus is slightly
+CI 0.999--0.999).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Moving sentinel world: communication
-benefit depends on field of view}
-\emph{more} surprised by the true state than the isolated baseline,
-because a single agent's view already suffices. The accuracy case for
-\emph{necessity} is therefore made only in the larger-state-space
-disjoint-FOV extension below, not by these binary-complement numbers.
+\begin{frame}{Moving sentinel world (part 10)}
+In this binary-complement regime the isolated condition is in fact
+significantly \emph{higher} on accuracy than the EFE-guided sharing
+condition --- their 95 \% intervals do not overlap --- and the
+EFE-vs-isolated accuracy contrast yields Wilcoxon signed-rank
+\(p = 9.27 \times 10^{-23}\) (significant; isolated higher),
+\end{frame}
 
+\begin{frame}{Moving sentinel world (part 11)}
+effect size \(r = 1.000\) (large). Sharing is therefore not merely
+unnecessary in this regime; it costs a small but reliable amount of
+accuracy.
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 12)}
+Nor does sharing lower free energy here: the EFE free-energy gap
+(isolated surprise minus the EFE-guided condition's surprise) is -0.368
+nats (95 \% CI -0.384---0.353) --- negative, so the pooled consensus is
+slightly \emph{more} surprised by the true state than the isolated
+baseline, because a single agent's view already suffices.
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 13)}
+The accuracy case for \emph{necessity} is therefore made only in the
+larger-state-space disjoint-FOV extension below, not by these
+binary-complement numbers.
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 14)}
 We report these numbers as measured, not assumed. The binary world
 carries a logical complement: ruling out one's own half implies the
 other, so a single agent's ``not detected'' still carries information
-about the global state, and an isolated agent is not strictly blind. By
-design, the intended \emph{cannot-decide-alone} regime is the
+about the global state, and an isolated agent is not strictly blind.
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 15)}
+By design, the intended \emph{cannot-decide-alone} regime is the
 high-noise, few-step corner where one sensor's evidence cannot overcome
 the flat prior; there belief sharing is meant to fuse the two
 complementary views into a decisive consensus. That regime is not
-separately measured here --- the construction, the three actions, the
-EFE rule, and the exact condition protocol are detailed in the
+separately measured here --- the construction,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Moving sentinel world: communication
-benefit depends on field of view}
-supplement (sec.~13.8).
-
+\begin{frame}{Moving sentinel world (part 16)}
+the three actions, the EFE rule, and the exact condition protocol are
+detailed in the supplement (sec.~14.8).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Moving sentinel world: communication
-benefit depends on field of view}
+\begin{frame}{Moving sentinel world (part 17)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Moving sentinel world across isolated, communicating, and EFE-guided conditions. Source relation: original project schematic for the moving-world protocol; estimand: condition-level consensus accuracy, signed free-energy gap, and steps-to-consensus proxy in the stated native units; uncertainty: deterministic seeded run, so no resampling interval is shown. Moving sentinel world across the three conditions (x-axis is condition: isolated, communicating, EFE-guided). Left panel: y-axis shows consensus accuracy (fraction of 960 trials whose pooled argmax matches the truth). Center panel: y-axis shows the signed free-energy gap in nats (isolated surprise minus the condition's surprise on the true state, so a positive value would mean lower free energy than isolated; the measured gaps are negative, plotted against a zero reference line and annotated per bar). Right panel: y-axis shows a coarse steps-to-consensus proxy, with per-bar value annotations showing the three conditions are essentially tied. Each colony runs 6 steps over a 4-cell linear grid with 2 disjoint-FOV agents. Deterministic seeded run, so the bars carry no error band.}]{../figures/moving_world.png}
-\caption{Moving sentinel world across isolated, communicating, and
-EFE-guided conditions. Source relation: original project schematic for
-the moving-world protocol; estimand: condition-level consensus accuracy,
-signed free-energy gap, and steps-to-consensus proxy in the stated
-native units; uncertainty: deterministic seeded run, so no resampling
-interval is shown. Moving sentinel world across the three conditions
-(x-axis is condition: isolated, communicating, EFE-guided). Left panel:
-y-axis shows consensus accuracy (fraction of 960 trials whose pooled
-argmax matches the truth). Center panel: y-axis shows the signed
-free-energy gap in nats (isolated surprise minus the condition's
-surprise on the true state, so a positive value would mean lower free
-energy than isolated; the measured gaps are negative, plotted against a
-zero reference line and annotated per bar). Right panel: y-axis shows a
-coarse steps-to-consensus proxy, with per-bar value annotations showing
-the three conditions are essentially tied. Each colony runs 6 steps over
-a 4-cell linear grid with 2 disjoint-FOV agents. Deterministic seeded
-run, so the bars carry no error band.}\label{fig:moving-world}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Accuracy: all isolated, communicating and EFE-guided values in fraction, retaining signed values and ties.}]{../figures/moving_world.slide-accuracy.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-1}
 \end{figure}
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Disjoint field-of-view extension}
+\begin{frame}{Moving sentinel world (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Accuracy (fraction): ISO +0.999; COM +0.9771; EFE +0.9781.}]{../figures/moving_world.slide-accuracy-values.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Free-energy gap: all isolated, communicating and EFE-guided values in nats, retaining signed values and ties.}]{../figures/moving_world.slide-free-energy-gap.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 20)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Free-energy gap (nats): ISO +0; COM -0.5285; EFE -0.4099.}]{../figures/moving_world.slide-free-energy-gap-values.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 21)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Time to consensus: all isolated, communicating and EFE-guided values in steps, retaining signed values and ties.}]{../figures/moving_world.slide-n-steps-to-consensus.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 22)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Time to consensus (steps): ISO +5.002; COM +5; EFE +5.001.}]{../figures/moving_world.slide-n-steps-to-consensus-values.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 23)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Accuracy gains over isolated: COM -0.022; EFE -0.021.}]{../figures/moving_world.slide-gains.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 24)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={ISO / plain: isolated; COM / forward hatch: communicating; EFE / dots: EFE-guided. Different metric units have separate axes.}]{../figures/moving_world.slide-key.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Moving sentinel world (part 25)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Declared moving-world summary. No interval is added to these scalar bars. Ordered steps and within-run observations do not become independent replications.}]{../figures/moving_world.slide-scope.png}
+\refstepcounter{figure}\label{fig:moving-world-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view extension}
 \protect\phantomsection\label{sec:results-disjoint-fov}
 To test whether communication is necessary (not merely beneficial) when
 observations are non-overlapping, we extend Study 5 to 3 agents each
 observing a 2-position disjoint window of a 6-position state space
-(chance-level accuracy 0.167). Isolated agents achieve mean accuracy
-0.35 --- above chance but far from decisive, since no single agent can
-infer the global state from a partial window alone. Communicating agents
-pool complementary beliefs to reach 0.55 (gap 0.19).
-
+(chance-level accuracy 0.167).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Disjoint field-of-view extension}
+\begin{frame}{Disjoint field-of-view\ldots{} (part 2)}
+Isolated agents achieve mean accuracy 0.35 --- above chance but far from
+decisive, since no single agent can infer the global state from a
+partial window alone. Communicating agents pool complementary beliefs to
+reach 0.55 (gap 0.19).
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 3)}
 This is now a powered result, not an illustrative point estimate. Across
 128 independent seeds the isolated accuracy is 0.326 (95\% CI
 0.320--0.332) and the communicating accuracy is 0.493 (95\% CI
 0.487--0.499), both clearing the 0.167 chance baseline --- isolated
-agents are \emph{not} at chance, since a partial FOV plus majority
-voting still carries some signal. The paired Wilcoxon signed-rank test
-(communicating vs.~isolated, matched by seed) gives \(p = 0.0000\),
-effect size \(r = 1.000\) (large): communicating beats isolated on every
-one of the 128 seeds, which is also why the p-value is at the smallest a
-128-seed paired sign test can report --- it should be read as ``every
-seed agreed,'' not as a precise magnitude of evidence beyond that floor.
-Given isolated performance is above chance, the precise claim is not
-that communication is \emph{logically} necessary for any signal at all,
+agents are \emph{not} at chance,
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Disjoint field-of-view extension}
+\begin{frame}{Disjoint field-of-view\ldots{} (part 4)}
+since a partial FOV plus majority voting still carries some signal.
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 5)}
+The paired Wilcoxon signed-rank test (communicating vs.~isolated,
+matched by seed) gives \(p = 9.35 \times 10^{-23}\), effect size
+\(r = 1.000\) (large): communicating beats isolated on every one of the
+128 seeds. This agreement saturates the rank-biserial effect at its
+upper bound;
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 6)}
+it does not turn the reported Wilcoxon signed-rank p-value into an exact
+paired sign-test probability. The paired mean gap and its interval
+quantify the accuracy contrast in its native units.
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 7)}
+Given isolated performance is above chance, the precise claim is not
+that communication is \emph{logically} necessary for any signal at all,
 but that it is necessary to approach the communicating-level accuracy
 under fully disjoint observations: the gap between the two conditions is
-significant, large, and reproducible, unlike the binary-complement
-contrast above.
+significant, large,
+\end{frame}
 
+\begin{frame}{Disjoint field-of-view\ldots{} (part 8)}
+and reproducible, unlike the binary-complement contrast above.
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 9)}
 We separately quantify EFE-guided navigation rather than asserting an
 unquantified ``widens the gap'' effect. In a matched but smaller-scale
 disjoint-FOV movement-policy comparison (2 agents, 4-position
-binary-state grid, belief sharing active in both arms), EFE-guided
-accuracy is 0.975 versus 0.977 for random movement (\(p = 0.1046\),
-negligible effect): the two movement policies are not significantly
-different, because both are already near ceiling once belief sharing is
-active. We report this as the null result it is rather than claiming an
-unmeasured EFE benefit. fig.~\ref{fig:disjoint-fov-world} summarizes the
-necessity result.
-
+binary-state grid, belief sharing active in both arms),
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Disjoint field-of-view extension}
+\begin{frame}{Disjoint field-of-view\ldots{} (part 10)}
+EFE-guided accuracy is 0.975 versus 0.977 for random movement
+(\(p = 0.1046\), negligible effect). This comparison did not resolve an
+accuracy difference in the configured near-ceiling regime with belief
+sharing active; it does not establish equivalence of the movement
+policies.
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 11)}
+We report this as the null result it is rather than claiming an
+unmeasured EFE benefit. fig.~27 summarizes the
+necessity result.
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Disjoint-field-of-view communication and navigation comparison. Source relation: source-inspired original project extension of the moving-world mechanism; estimand: condition-level consensus accuracy in the two declared disjoint-FOV protocols; uncertainty: across-seed standard-deviation error bars. Disjoint-FOV extension of the moving sentinel world, as a two-panel figure whose panels come from two separately configured experiments. Left panel (communication necessity, 3 agents each observing a 2-position non-overlapping window of the 6-position world): the x-axis is the condition (isolated vs.~communicating); the y-axis is consensus accuracy --- drawn as accuracy, the fraction of trials whose pooled argmax matches the true state. The accuracy gap between communicating and isolated conditions quantifies the necessity of belief sharing under fully disjoint fields of view, now backed by the paired Wilcoxon test in the text (p = 0.0000) rather than a single point estimate. Right panel (EFE vs random navigation, a smaller 2-agent, 4-position configuration): the x-axis is the movement policy (EFE-guided vs.~random); the y-axis is final consensus accuracy --- the panel is titled as a null result because that is what it shows. Both policies sit near ceiling once belief sharing is active, so the EFE-guided vs.~random contrast is the null result reported in the text (p = 0.1046). In both panels, bars show accuracy averaged across seeds; error bars show the across-seed standard deviation.}]{../figures/disjoint_fov_world.png}
-\caption{Disjoint-field-of-view communication and navigation comparison.
-Source relation: source-inspired original project extension of the
-moving-world mechanism; estimand: condition-level consensus accuracy in
-the two declared disjoint-FOV protocols; uncertainty: across-seed
-standard-deviation error bars. Disjoint-FOV extension of the moving
-sentinel world, as a two-panel figure whose panels come from two
-separately configured experiments. Left panel (communication necessity,
-3 agents each observing a 2-position non-overlapping window of the
-6-position world): the x-axis is the condition (isolated
-vs.~communicating); the y-axis is consensus accuracy --- drawn as
-accuracy, the fraction of trials whose pooled argmax matches the true
-state. The accuracy gap between communicating and isolated conditions
-quantifies the necessity of belief sharing under fully disjoint fields
-of view, now backed by the paired Wilcoxon test in the text
-(\(p = 0.0000\)) rather than a single point estimate. Right panel (EFE
-vs random navigation, a smaller 2-agent, 4-position configuration): the
-x-axis is the movement policy (EFE-guided vs.~random); the y-axis is
-final consensus accuracy --- the panel is titled as a null result
-because that is what it shows. Both policies sit near ceiling once
-belief sharing is active, so the EFE-guided vs.~random contrast is the
-null result reported in the text (\(p = 0.1046\)). In both panels, bars
-show accuracy averaged across seeds; error bars show the across-seed
-standard deviation.}\label{fig:disjoint-fov-world}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={communication: both condition means with seed standard-deviation whiskers on a common probability scale.}]{../figures/disjoint_fov_world.slide-communication.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 13)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={ISO mean 0.3262, SD 0.03472; COM mean 0.4928, SD 0.0349. COM−ISO = +0.1666.}]{../figures/disjoint_fov_world.slide-communication-values.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={movement: both condition means with seed standard-deviation whiskers on a common probability scale.}]{../figures/disjoint_fov_world.slide-movement.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 15)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={EFE mean 0.9749, SD 0.01134; RND mean 0.9768, SD 0.01019. EFE−RND = -0.001953.}]{../figures/disjoint_fov_world.slide-movement-values.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={ISO: isolated; COM: communicating; EFE: EFE-guided; RND: random movement. Hatches preserve condition identity.}]{../figures/disjoint_fov_world.slide-key.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Whiskers show standard deviations across configured seeds, not confidence intervals. Accuracy is a fraction correct.}]{../figures/disjoint_fov_world.slide-uncertainty.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Disjoint field-of-view\ldots{} (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Separate communication and movement-policy contrasts in the declared disjoint-view worlds. A near-ceiling movement contrast does not imply a general navigation advantage.}]{../figures/disjoint_fov_world.slide-scope.png}
+\refstepcounter{figure}\label{fig:disjoint-fov-world-slide-panel-7}
 \end{figure}
 \end{frame}
 

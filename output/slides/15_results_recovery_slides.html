@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Results: recovery checks and study suite — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:results"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c2e5a4c9d794">
+<h1 class="section-divider" id="slide-heading-c2e5a4c9d794">Results: recovery checks and study
+suite</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c2e5a4c9d794-2">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 2" id="slide-heading-c2e5a4c9d794-2">Results:
+recovery checks and study suite</h2>
+<p>Every quantitative assertion in this and the following results
+sections is a generated token,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-491dbfa04624">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 2" id="slide-heading-491dbfa04624">Results:
+recovery checks… (part 2)</h2>
+<p>hydrated by the manuscript-variable generator from analysis outputs
+produced by <code>src/analysis/workflow.py</code> and
+<code>src/fedference/experiments/</code> — no number is transcribed by
+hand.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c1a0688038c5">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 3" id="slide-heading-c1a0688038c5">Results:
+recovery checks… (part 3)</h2>
+<p>The studies implement categorical source-mechanism analogues of the
+colony belief-sharing scenario <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span> and add
+the contaminated-sentinel robustness sweep and the federated
+neural-network baseline that are this paper’s robust-federated-learning
+contribution.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3c6207ccfc50">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 4" id="slide-heading-3c6207ccfc50">Results:
+recovery checks… (part 4)</h2>
+<p>All runs are deterministic under seed 0.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-562d0855c6ab">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 5" id="slide-heading-562d0855c6ab">Results:
+recovery checks… (part 5)</h2>
+<p>We lead with the recovery limits, not with a study, because they are
+what makes the studies a single coherent system rather than a collection
+of unrelated experiments. The generalized-Bayes machinery of <span class="cross-reference">Section 5</span> contains
+the standard-Bayes client corner,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-68f399ad3bbe">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 6" id="slide-heading-68f399ad3bbe">Results:
+recovery checks… (part 6)</h2>
+<p>while the server has the exact project-local zero-robustness
+log-linear-pool identity.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6416c35d137c">
+<h2 class="section-overview prose-slide"
+aria-label="Results: recovery checks and study suite, part 7" id="slide-heading-6416c35d137c">Results:
+recovery checks… (part 7)</h2>
+<p>Under the explicit bridge in <span class="cross-reference">Section 5.8</span>,
+that pool is a categorical specialization of Eq. 7’s message-combination
+term rather than the complete source protocol. We verify those limited
+identities to machine precision before reporting anything built on top
+of them.</p>
+</section>
+<section id="sec:results-recovery" class="slide level2 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-833c9c3b37b9">
+<h2 class="section-divider" id="slide-heading-833c9c3b37b9">Recovery limits: standard-Bayes and
+project-pool corners are exact to machine precision</h2>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c5576f04bf65">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 2" id="slide-heading-c5576f04bf65">Recovery
+limits (part 2)</h2>
+<p>The identities that anchor every result are the client recovery of
+standard Bayes at the KL/NLL/<span
+class="math inline">\(\beta\to0\)</span> and <span
+class="math inline">\(q_{\text{loss}}\to0\)</span> limits plus the
+project-local server recovery to the log-linear pool at <span
+class="math inline">\(c=0\)</span> — the scoped claims of <span class="cross-reference">Section 6</span>
+(Corollary <span class="cross-reference">6</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8dd60bf8f16f">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 3" id="slide-heading-8dd60bf8f16f">Recovery
+limits (part 3)</h2>
+<p>Lemma <span class="cross-reference">3</span>,
+Theorem <span class="cross-reference">5</span>).</p>
+<p>These are not figures but exact equalities, pinned by the locked core
+test suite.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-799050db0d50">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 4" id="slide-heading-799050db0d50">Recovery
+limits (part 4)</h2>
+<p>Under the theorem’s shared-support, posterior-log-potential, and
+fixed-weight assumptions, the server pool specializes Eq. 7’s
+message-combination term; it does not reproduce the source construction
+in full. Robustness is a tested extension that vanishes at the stated
+recovery limits.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5f51f04cfa03">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 5" id="slide-heading-5f51f04cfa03">Recovery
+limits (part 5)</h2>
+<p>The five residuals below are the maximum absolute deviations between
+each generalized-Bayes object and the standard object it must reproduce
+in the trusting limit.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f7bc75673a5">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 6" id="slide-heading-1f7bc75673a5">Recovery
+limits (part 6)</h2>
+<p>Each is a deterministic constant of the mathematics, not a per-run
+sample: it is reported as the maximum absolute deviation over the
+recovery band, which is exactly <span class="math inline">\(0\)</span>
+where the implementation evaluates the closed form at the limit (the
+Rényi/loss switch) and otherwise a tiny floating-point residual:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c38d9cec3cf9">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 7" id="slide-heading-c38d9cec3cf9">Recovery
+limits (part 7)</h2>
+<p><strong>Server recovery.</strong> The server-side aggregator at zero
+robustness equals the log-linear pool (<span class="cross-reference">Equation (10)</span>,
+Theorem <span class="cross-reference">5</span>):
+maximum absolute deviation 0. This is the <em>naive-recovery</em> limit
+of the server-side heuristic —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b38704d9f9af">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 8" id="slide-heading-b38704d9f9af">Recovery
+limits (part 8)</h2>
+<p>the only property proven for that axis (see <span class="cross-reference">Section 3.3</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-402a0cef5123">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 9" id="slide-heading-402a0cef5123">Recovery
+limits (part 9)</h2>
+<p><strong>Posterior recovery.</strong> The generalized posterior under
+the KL divergence and the NLL loss equals the closed-form prior<span
+class="math inline">\(\times\)</span>likelihood Bayes posterior (<span class="cross-reference">Equation (11)</span>,
+Corollary <span class="cross-reference">6</span>):
+maximum absolute deviation 5.55e-17.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-88bf2c43c58f">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 10" id="slide-heading-88bf2c43c58f">Recovery
+limits (part 10)</h2>
+<p><strong>Divergence recovery.</strong> The Rényi divergence recovers
+KL as <span class="math inline">\(\alpha\to1\)</span> (<span class="cross-reference">Equation (6)</span>,
+Lemma <span class="cross-reference">3</span>):
+residual 0.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b913e768f8d0">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 11" id="slide-heading-b913e768f8d0">Recovery
+limits (part 11)</h2>
+<p><strong>Loss recoveries.</strong> The <span
+class="math inline">\(\beta\)</span>-loss recovers the NLL as <span
+class="math inline">\(\beta\to 0\)</span> (<span class="cross-reference">Equation (7)</span>,
+Proposition <span class="cross-reference">4</span>):
+residual 0. The robust categorical cross-entropy recovers the NLL as
+<span class="math inline">\(q_{\text{loss}}\to 0\)</span> (<span class="cross-reference">Equation (8)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-919145c100e8">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 12" id="slide-heading-919145c100e8">Recovery
+limits (part 12)</h2>
+<p>Proposition <span class="cross-reference">4</span>):
+residual 0.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f50be4afb97b">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 13" id="slide-heading-f50be4afb97b">Recovery
+limits (part 13)</h2>
+<p>Because the Rényi divergence and the two categorical losses switch to
+their exact closed form inside narrow numerical-stability bands around
+the limit point (the Rényi switch band for <span
+class="math inline">\(\alpha\)</span> and the categorical-loss switch
+band for <span class="math inline">\(q_{\text{loss}}\)</span> and <span
+class="math inline">\(\beta\)</span>),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ffac0aa78ddd">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 14" id="slide-heading-ffac0aa78ddd">Recovery
+limits (part 14)</h2>
+<p>the three zero residuals above confirm that branch equals the
+standard object — not, by themselves, that the <em>general</em> formula
+converges there.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f6da7e0a01a">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 15" id="slide-heading-9f6da7e0a01a">Recovery
+limits (part 15)</h2>
+<p>As a genuine (non-branch) convergence witness, evaluating each
+general formula strictly <em>outside</em> its switch band — <span
+class="math inline">\(q_{\text{loss}} = \beta =
+1.00 \times 10^{-6}\)</span> for the categorical losses and <span
+class="math inline">\(\alpha = 1.00001\)</span> for the Rényi divergence
+— gives residuals 1.12e-05 (rcce), 1.24e-05 (<span
+class="math inline">\(\beta\)</span>-loss), and 1.66e-05 (Rényi).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2ce1b25cc7dd">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 16" id="slide-heading-2ce1b25cc7dd">Recovery
+limits (part 16)</h2>
+<p>These residuals are nonzero—a small multiple of the input offset
+itself, as the first-order Taylor behavior near the limit predicts—yet
+remain several orders of magnitude below the <span
+class="math inline">\(O(1)\)</span> scale of the loss/divergence values
+being compared, and shrinking monotonically as the offset shrinks toward
+the switch band.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-18d64909955e">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 17" id="slide-heading-18d64909955e">Recovery
+limits (part 17)</h2>
+<p>The verification is in <code>test_core_identities.py</code> under
+<code>tests/fedference/</code>.</p>
+<p>This is evidence that the general formula itself converges to the
+standard-Bayes limit, not merely that the implementation switches to it
+exactly at the corner.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f757d91b8859">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 18" id="slide-heading-f757d91b8859">Recovery
+limits (part 18)</h2>
+<p>The first residual is the naive-aggregate limit of the
+<em>server-side</em> heuristic (Theorem <span class="cross-reference">5</span>);</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7001a78f1dc7">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 19" id="slide-heading-7001a78f1dc7">Recovery
+limits (part 19)</h2>
+<p>the latter four are the per-agent generalized-Bayes recoveries
+(Corollary <span class="cross-reference">6</span>
++ Proposition <span class="cross-reference">4</span>)
+and the divergence-family recovery in the Rényi limit (Lemma <span class="cross-reference">3</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a621a9951767">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 20" id="slide-heading-a621a9951767">Recovery
+limits (part 20)</h2>
+<p><span class="cross-reference">Equation (6)</span>)
+that define the theorem-bearing FedGVI axis under matching
+assumptions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8ea882aaa8d2">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 21" id="slide-heading-8ea882aaa8d2">Recovery
+limits (part 21)</h2>
+<p>Keeping the three axes distinct at the level of the recovery limits
+is what lets the robustness claims of <span class="cross-reference">Section 7.5</span>
+and <span class="cross-reference">Section 7.6</span>
+rest on the per-agent axis without leaning on the heuristic.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dfc76d04c247">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 22" id="slide-heading-dfc76d04c247">Recovery
+limits (part 22)</h2>
+<p>266 of 268 acceptance criteria are verified. The pure-NumPy/SciPy
+core carries project test coverage of 90.58% (gate <span
+class="math inline">\(\ge 90\%\)</span>), with every stochastic step
+threaded through a single seeded <code>np.random.default_rng(0)</code>.
+<span class="cross-reference">Section 10</span>
+records the full environment fingerprint,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-68e07f4f75f5">
+<h2 class="prose-slide"
+aria-label="Recovery limits: standard-Bayes and project-pool corners are exact to machine precision, part 23" id="slide-heading-68e07f4f75f5">Recovery
+limits (part 23)</h2>
+<p>and the expected-free-energy identity that underwrites the
+active-inference substrate is proven and visualized in <span class="cross-reference">Section 6.2</span>
+(<span class="cross-reference">Figure 8</span>).</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

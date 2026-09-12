@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Generative model: categorical states, observations, actions, and hierarchy — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-3a94a3caa40e">
+<h1 id="presentation-title-3a94a3caa40e" class="visually-hidden">Generative model: categorical states, observations, actions, and hierarchy — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:methods-generative-model"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6b7ec9c13874">
+<h2 class="prose-slide" id="slide-heading-6b7ec9c13874">Generative model: categorical states,
+observations, actions, and hierarchy</h2>
+<p>The 9 studies — including the contaminated-sentinel robustness sweep
+(Study 4) — run on one shared sentinel world (Studies 5–7 use its moving
+and hierarchical variants):</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e33d58e77e41">
+<h2 class="prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 2" id="slide-heading-e33d58e77e41">Generative
+model (part 2)</h2>
+<p>a discrete sentinel partially-observable Markov decision process
+(POMDP) using the categorical world structure illustrated by Friston et
+al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>, Figures 1 and 4.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cdf4c756f93d">
+<h2 class="prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 3" id="slide-heading-cdf4c756f93d">Generative
+model (part 3)</h2>
+<p>We adopt the discrete-state active-inference formulation that the
+community has standardized around — the categorical <span
+class="math inline">\(A/B/C/D_0\)</span> generative model of da Costa et
+al. <span class="citation" data-cites="dacosta2020active">(2020)</span>,
+the same object the <code>pymdp</code> <span class="citation"
+data-cites="heins2022pymdp">(Heins et al. 2022)</span> and RxInfer <span
+class="citation" data-cites="bagaev2023rxinfer">(Bagaev et al.
+2023)</span> toolboxes operate on.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-891f0f77a5ac">
+<h2 class="prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 4" id="slide-heading-891f0f77a5ac">Generative
+model (part 4)</h2>
+<p>We reimplement it in pure NumPy in <code>pomdp.py</code> so the
+colony, its sensors, and its dynamics are exactly the ones the analysis
+executes.</p>
+<p>A colony of sentinels watches a single hidden creature whose location
+is the shared latent factor they federate beliefs about.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c2a5c5adcf44">
+<h2 class="prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 5" id="slide-heading-c2a5c5adcf44">Generative
+model (part 5)</h2>
+<p>The structural map in <span class="cross-reference">Figure 4</span>
+follows the same generative-model vocabulary while making the
+implementation boundary visible: Panel A shows what one agent actually
+sees — one noisy categorical report over the 9 possible locations —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c0f825c9ea13">
+<h2 class="prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 6" id="slide-heading-c0f825c9ea13">Generative
+model (part 6)</h2>
+<p>while Panel B identifies the <span
+class="math inline">\(A/B/C/D_0\)</span> factors that turn that report
+into a local posterior.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-19650084eb8d">
+<h2 class="prose-slide"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 7" id="slide-heading-19650084eb8d">Generative
+model (part 7)</h2>
+<p>Temporal depth then describes state, observation, posterior, and
+control order; hierarchical depth describes conditioned priors. It is a
+formal schematic, not an assertion that every displayed dependency is
+simultaneously estimated in every study.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9aba9a639782">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 8" id="slide-heading-9aba9a639782">Generative
+model (part 8)</h2>
+<figure id="fig:generative-model-schema-slide-panel-1">
+<img
+src="../figures/generative_model_schema.slide-hidden-location.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7c9f21cf73514ca8a8d70392547bff70ab45a1ab9db94a42a223e27123d808b6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="618"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="1.3037975"
+alt="Hidden location s: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2dac4cbdb8e4">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 9" id="slide-heading-2dac4cbdb8e4">Generative
+model (part 9)</h2>
+<figure id="fig:generative-model-schema-slide-panel-2">
+<img src="../figures/generative_model_schema.slide-outcome.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0c0c5fa03c54b46051aef31fd977dd086106a00450690b80992827d56a4d44bd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="648"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="1.3670886"
+alt="Private outcome o: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7fcdb8f5c62b">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 10" id="slide-heading-7fcdb8f5c62b">Generative
+model (part 10)</h2>
+<figure id="fig:generative-model-schema-slide-panel-3">
+<img src="../figures/generative_model_schema.slide-sensor.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="70751889781ec1dd5ba4d0354e99b30733984d8560f99f16e3be8515e5fb16dd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Hidden location s → Private outcome o: A[o,s] = P(o|s); data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-87d41a73de9c">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 11" id="slide-heading-87d41a73de9c">Generative
+model (part 11)</h2>
+<figure id="fig:generative-model-schema-slide-panel-4">
+<img src="../figures/generative_model_schema.slide-likelihood.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d00cb7a72b075d38cc0ed4100e37763eb65428e3debb68e6137e7ec84e4906f5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="A: sensory likelihood → Local posterior q(s): Model factor; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-63441727acb9">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 12" id="slide-heading-63441727acb9">Generative
+model (part 12)</h2>
+<figure id="fig:generative-model-schema-slide-panel-5">
+<img src="../figures/generative_model_schema.slide-dynamics.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c7dfcc67f5b65dab06b246441e21fb83bae1b5f3c4f2ea07cb8525e9b4379bfb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="B: state transition → Local inference / action: Model factor; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e88756d719bc">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 13" id="slide-heading-e88756d719bc">Generative
+model (part 13)</h2>
+<figure id="fig:generative-model-schema-slide-panel-6">
+<img src="../figures/generative_model_schema.slide-preferences.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="22dc6cd91312190d3eb94f6c6da3644d456e952b25805692400c1495d7d2e5bb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="C: preferred outcomes → Local inference / action: Model factor; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7ef7f8655b49">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 14" id="slide-heading-7ef7f8655b49">Generative
+model (part 14)</h2>
+<figure id="fig:generative-model-schema-slide-panel-7">
+<img src="../figures/generative_model_schema.slide-prior.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a64356a9b19a79b24fb5ebc6f4a2fcad9b98d885ea1908b298d122c829db49c3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="D0: initial prior → Local posterior q(s): Model factor; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f8217d4e8136">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 15" id="slide-heading-f8217d4e8136">Generative
+model (part 15)</h2>
+<figure id="fig:generative-model-schema-slide-panel-8">
+<img
+src="../figures/generative_model_schema.slide-time-sensing.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="243f63c13d7c0c791a32ccfebd21181e231441579294b7baab5878c806649db9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Hidden state s(t) → Private report o(t): Observation; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d363e356ee43">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 16" id="slide-heading-d363e356ee43">Generative
+model (part 16)</h2>
+<figure id="fig:generative-model-schema-slide-panel-9">
+<img
+src="../figures/generative_model_schema.slide-time-inference.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a91b6ea470dae27689cede429b53ad1901c848f33c2199ce54123dd28c697158"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Private report o(t) → Posterior q(t): Inference; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d1f07bfde60a">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 17" id="slide-heading-d1f07bfde60a">Generative
+model (part 17)</h2>
+<figure id="fig:generative-model-schema-slide-panel-10">
+<img
+src="../figures/generative_model_schema.slide-time-control.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="98b6069076049b1f13c73072264d51ff2ecb3f8feccc2dbff53d62cfd4fa37c1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Posterior q(t) → Control u(t): EFE-guided action; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-56e89d7b56cc">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 18" id="slide-heading-56e89d7b56cc">Generative
+model (part 18)</h2>
+<figure id="fig:generative-model-schema-slide-panel-11">
+<img
+src="../figures/generative_model_schema.slide-time-transition.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0468d78ea60dd10ca17c7b353a19896b886c7953dd528c64c254c656bba336e6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Control u(t) → Next state s(t+1): B = P(s′|s,u); data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-773a92068178">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 19" id="slide-heading-773a92068178">Generative
+model (part 19)</h2>
+<figure id="fig:generative-model-schema-slide-panel-12">
+<img
+src="../figures/generative_model_schema.slide-meta-context.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ba9028ab303de34eaa0dbc0989d5dda4204df68a416e1e0f1ac08c4575b6d92f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Meta-context s(L) → Context s(2): Top-down context; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b9b6d02673e9">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 20" id="slide-heading-b9b6d02673e9">Generative
+model (part 20)</h2>
+<figure id="fig:generative-model-schema-slide-panel-13">
+<img
+src="../figures/generative_model_schema.slide-context-location.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="fd965f82ca9366e3a1fd1e3ab25fea6660e6438ea40a5468d77ab693b92a7de9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Context s(2) → Location s(1): Conditional prior; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e6fc6fbe6c06">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 21" id="slide-heading-e6fc6fbe6c06">Generative
+model (part 21)</h2>
+<figure id="fig:generative-model-schema-slide-panel-14">
+<img
+src="../figures/generative_model_schema.slide-location-posterior.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="56f7e4a40c80dbf862bb51616c24588f7ec35e9c8039965b8600cab5fb9702c4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Location s(1) → Local posterior q1: Location evidence; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d1a3808c42a8">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 22" id="slide-heading-d1a3808c42a8">Generative
+model (part 22)</h2>
+<figure id="fig:generative-model-schema-slide-panel-15">
+<img
+src="../figures/generative_model_schema.slide-context-posterior.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1683519b4669f46e9871c847e3119a5d0b31ed5d1ab013b1f8a000e51bc370fa"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Context s(2) → Local posterior q1: Context conditions prior; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fb183fab7083">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 23" id="slide-heading-fb183fab7083">Generative
+model (part 23)</h2>
+<figure id="fig:generative-model-schema-slide-panel-16">
+<img
+src="../figures/generative_model_schema.slide-meta-posterior.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6f64c87114ef7da26dda7852bca38339afb92b8c405039a4032e1313f8943187"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Meta-context s(L) → Local posterior q1: Optional higher context; retained_warning." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d9571aecd80c">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 24" id="slide-heading-d9571aecd80c">Generative
+model (part 24)</h2>
+<figure id="fig:generative-model-schema-slide-panel-17">
+<img src="../figures/generative_model_schema.slide-sensor-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="cc5f9a6d163d01c473e625bd1d29e34f120d3a692ca62d4d8c3004272466e3c4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1230"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7272727"
+alt="Diagonal mass is sensor acuity; residual mass is categorical noise. Raw outcomes remain private; only posteriors are broadcast." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0944b3617df3">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 25" id="slide-heading-0944b3617df3">Generative
+model (part 25)</h2>
+<figure id="fig:generative-model-schema-slide-panel-18">
+<img
+src="../figures/generative_model_schema.slide-local-equation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="594a6e87ee7d82bcfa7283b07e0cab1a573b4fbc3a651bdafc13c0a0564f90b6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1101"
+data-slide-figure-intrinsic-height="105"
+data-slide-figure-intrinsic-aspect="10.485714"
+alt="$q(s)=\mathrm{softmax}(\ln D_0+\ln A[o,\cdot])$" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa7ab7857167">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 26" id="slide-heading-aa7ab7857167">Generative
+model (part 26)</h2>
+<figure id="fig:generative-model-schema-slide-panel-19">
+<img src="../figures/generative_model_schema.slide-recovery.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8f5f9d3b116a998e7b473d2e2b504f9b69f1fd0d2197bede12da9e8eccceabda"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1201"
+data-slide-figure-intrinsic-height="410"
+data-slide-figure-intrinsic-aspect="2.9292683"
+alt="Project recovery identity: robust_aggregate(0) = log_linear_pool. This limit does not reconstruct the full source protocol." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2dd78167ac9c">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 27" id="slide-heading-2dd78167ac9c">Generative
+model (part 27)</h2>
+<figure id="fig:generative-model-schema-slide-panel-20">
+<img
+src="../figures/generative_model_schema.slide-mixture-equation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1aafe03feedb852763b7286e42d9cd723b6abad438419e274e8f230f86fc5105"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="548"
+data-slide-figure-intrinsic-height="174"
+data-slide-figure-intrinsic-aspect="3.1494253"
+alt="$\bar q_1=\sum_kq_2[k]D_{1|k}$" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c52bf8bdbfd4">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 28" id="slide-heading-c52bf8bdbfd4">Generative
+model (part 28)</h2>
+<figure id="fig:generative-model-schema-slide-panel-21">
+<img src="../figures/generative_model_schema.slide-optional.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7b9db538b62e7968a6184bb4541159942f4fecb46877f0127e1c7e98836d4a78"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1204"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6484848"
+alt="Flat studies stop after posterior sharing. Moving-world studies execute B and EFE-guided control. Hierarchy is an optional extension." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4f55ba8ea81f">
+<h2 class="figure-led"
+aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 29" id="slide-heading-4f55ba8ea81f">Generative
+model (part 29)</h2>
+<figure id="fig:generative-model-schema-slide-panel-22">
+<img src="../figures/generative_model_schema.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="303f30b9a5b4a36712c892ffbb7363e093d40f09a3a065cb9e9ad12589c0c9cb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1360"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.3497537"
+alt="Schematic formalization, not an empirical estimate. Private sensory outcomes become posterior messages; fusion uses the shared categorical state." />
+</figure>
+</section>
+<section id="sec:methods-state-space" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ad9f0cd01651">
+<h2 class="prose-slide" id="slide-heading-ad9f0cd01651">State space: one shared latent factor</h2>
+<p>The world holds one hidden factor: the creature’s location on a
+square grid of side <span class="math inline">\(L\)</span>, giving <span
+class="math inline">\(n_s = L^2\)</span> location states. Our sentinel
+world uses the <span class="math inline">\(3\times 3\)</span>
+cardinality illustrated in Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>, Fig. 1, so <span
+class="math inline">\(n_s = 9\)</span> — the cardinality
+<code>pomdp.N_LOCATIONS</code> exposes and
+<code>experiment_config</code> carries as <code>n_locations</code>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="State space: one shared latent factor, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4d4a4e768c8e">
+<h2 class="prose-slide"
+aria-label="State space: one shared latent factor, part 2" id="slide-heading-4d4a4e768c8e">State space:
+one shared… (part 2)</h2>
+<p>This single location factor is precisely the latent the colony
+gossips about: it is the shared argument of the log-linear pool (<span class="cross-reference">9</span>)
+and of every belief-sharing round (<span class="cross-reference">14</span>).
+Fixing one hidden factor keeps the recovery limits of <span class="cross-reference">Section 6</span>
+closed-form and exactly testable,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="State space: one shared latent factor, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5bdb7a793cfd">
+<h2 class="prose-slide"
+aria-label="State space: one shared latent factor, part 3" id="slide-heading-5bdb7a793cfd">State space:
+one shared… (part 3)</h2>
+<p>rather than approximated.</p>
+</section>
+<section id="sec:methods-abcd" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c4776c72b48f">
+<h2 class="prose-slide" id="slide-heading-c4776c72b48f">Four categorical tensors: likelihood,
+transitions, preferences, priors</h2>
+<p>The generative model is the tuple <span class="math inline">\((A, B,
+C, D_0)\)</span> in the discrete active-inference convention: a
+categorical probability mass function is a non-negative vector summing
+to one,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-66bbe0041e7d">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 2" id="slide-heading-66bbe0041e7d">Four
+categorical tensors (part 2)</h2>
+<p>and a likelihood matrix is shape <span class="math inline">\((n_o,
+n_s)\)</span> whose columns (indexed by hidden state) are
+categorical.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-63f41d61b313">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 3" id="slide-heading-63f41d61b313">Four
+categorical tensors (part 3)</h2>
+<p><strong>Observation likelihood <span class="math inline">\(A =
+P(o\mid s)\)</span>.</strong> Each sentinel observes the creature’s cell
+through a noisy sensor. With probability <code>acuity</code> the sensor
+reports the true cell; the residual mass <span
+class="math inline">\(1-\text{acuity}\)</span> spreads uniformly over
+the other <span class="math inline">\(n_s-1\)</span> cells. With outcome
+cardinality <span class="math inline">\(n_o = n_s\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0d9f5f440262">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 4" id="slide-heading-0d9f5f440262">Four
+categorical tensors (part 4)</h2>
+<p>the single location modality is one <span class="math inline">\((n_s,
+n_s)\)</span> matrix:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0311e0040c7">
+<h2 class="equation-led"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 5" id="slide-heading-d0311e0040c7">Four
+categorical tensors (part 5)</h2>
+<p><span class="math display" id="eq:observation-likelihood">\[
+\begin{aligned}
+A_{o s} &amp;= \text{acuity}
+&amp;&amp; \text{if }o=s,\\
+A_{o s} &amp;= \frac{1-\text{acuity}}{n_s-1}
+&amp;&amp; \text{if }o\neq s,\\
+\sum_o A_{o s} &amp;= 1.
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-16f7cbebb42d">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 6" id="slide-heading-16f7cbebb42d">Four
+categorical tensors (part 6)</h2>
+<p>The acuity in <a class="cross-reference" href="#eq:observation-likelihood">Equation (15)</a>
+tunes how peaked the sensor is: high acuity gives a near-diagonal <span
+class="math inline">\(A\)</span> that pins the creature; the
+belief-sharing study deliberately runs the colony at the low acuity
+<span class="math inline">\(\text{acuity} = 0.55\)</span>, where no
+single sentinel can resolve the location alone and the colony must pool
+evidence to do so.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dcbaf9626bd2">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 7" id="slide-heading-dcbaf9626bd2">Four
+categorical tensors (part 7)</h2>
+<p>When a seeded generator is supplied, each sentinel’s acuity is
+jittered by a small non-negative perturbation, so a colony carries
+slightly heterogeneous likelihoods while every column remains a proper
+pmf.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5f4057ddfe9d">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 8" id="slide-heading-5f4057ddfe9d">Four
+categorical tensors (part 8)</h2>
+<p><strong>Transition tensor <span class="math inline">\(B =
+P(s&#39;\mid s, u)\)</span>.</strong> The creature moves on the grid
+under three control paths — <code>still</code>, <code>left</code>,
+<code>right</code> — so <span class="math inline">\(B\)</span> has shape
+<span class="math inline">\((n_s, n_s, n_u)\)</span> with <span
+class="math inline">\(n_u = 3\)</span>. <code>still</code> is the
+deterministic self-loop; <code>left</code> and <code>right</code>
+decrement and increment the grid column,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6fa3312357ae">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 9" id="slide-heading-6fa3312357ae">Four
+categorical tensors (part 9)</h2>
+<p>saturating at the walls (a wall-adjacent move in the wall’s direction
+is a self-loop).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f8a24379403">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 10" id="slide-heading-6f8a24379403">Four
+categorical tensors (part 10)</h2>
+<p>All three controls act on the column index alone, so the creature’s
+row is preserved and its motion is confined to the horizontal axis of
+the grid — a deliberate one-dimensional control over the two-dimensional
+location factor. Every slice <span
+class="math inline">\(B_{\cdot\,\cdot\,u}\)</span> is column-normalized
+by construction,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a8787488c8bb">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 11" id="slide-heading-a8787488c8bb">Four
+categorical tensors (part 11)</h2>
+<p>so the transition is a valid categorical for each action.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2612d140dc69">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 12" id="slide-heading-2612d140dc69">Four
+categorical tensors (part 12)</h2>
+<p><strong>Log-preference <span
+class="math inline">\(C\)</span>.</strong> The sentinel prefers to
+<em>see</em> the creature near the den (the center cell), encoded as a
+log-preference vector of shape <span class="math inline">\((n_o,
+1)\)</span> with a positive bump on the center outcome and zero
+elsewhere.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-acf1aae36da1">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 13" id="slide-heading-acf1aae36da1">Four
+categorical tensors (part 13)</h2>
+<p>The preferred-outcome distribution that the expected-free-energy
+decomposition of <span class="cross-reference">Section 5.15</span>
+uses is <span class="math inline">\(p_C(o) =
+\mathrm{softmax}(C)[o]\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4389f1a2cfd9">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 14" id="slide-heading-4389f1a2cfd9">Four
+categorical tensors (part 14)</h2>
+<p><strong>Initial prior <span
+class="math inline">\(D_0\)</span>.</strong> The creature is believed to
+start at the grid center, so <span class="math inline">\(D_0\)</span> of
+shape <span class="math inline">\((n_s, 1)\)</span> places unit mass on
+the center cell. <span class="math inline">\(D_0\)</span> enters state
+inference as the log-prior of the one-step variational update (<a class="cross-reference" href="#eq:state-inference">Equation (16)</a>
+below).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c45a8fb5211d">
+<h2 class="prose-slide"
+aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 15" id="slide-heading-c45a8fb5211d">Four
+categorical tensors (part 15)</h2>
+<p>The columns-are-pmfs invariant is not assumed — it is pinned by
+ISC-15, which checks that every column of <span
+class="math inline">\(A\)</span> and of each <span
+class="math inline">\(B_{\cdot\,\cdot\,u}\)</span> sums to one.</p>
+</section>
+<section id="sec:methods-state-inference"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8bdb9065f9c9">
+<h2 class="prose-slide" id="slide-heading-8bdb9065f9c9">One-step variational state inference in the grid
+world</h2>
+<p>Given an observation <span class="math inline">\(o\)</span>, a
+sentinel forms a posterior over the creature’s location by a single
+softmax step (Friston et al. <span class="citation"
+data-cites="friston2024federated">(2024)</span>, Eq. 4): the log-prior
+plus the additive log-likelihood message,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-63e708e0ed1a">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 2" id="slide-heading-63e708e0ed1a">One-step
+variational state… (part 2)</h2>
+<p>summed over any conditionally independent modalities <span
+class="math inline">\(m\)</span>,</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="One-step variational state inference in the grid world, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2140cab80e99">
+<h2 class="equation-led"
+aria-label="One-step variational state inference in the grid world, part 3" id="slide-heading-2140cab80e99">One-step
+variational state… (part 3)</h2>
+<p><span class="math display" id="eq:state-inference">\[
+q(s)
+= \mathrm{softmax}\!\left(
+\begin{aligned}
+&amp;\ln D_0(s)\\
+&amp;\quad + \textstyle\sum_m \ln A_m[o_m, s]
+\end{aligned}
+\right).
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f4b8eff1c6fe">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 4" id="slide-heading-f4b8eff1c6fe">One-step
+variational state… (part 4)</h2>
+<p>The message <span class="math inline">\(\ln A_m[o_m, \cdot]\)</span>
+is the row of <span class="math inline">\(A_m\)</span> that the observed
+outcome selects; summing messages over modalities makes each modality an
+additive evidence term — the categorical product-of-experts. The
+companion variational free energy, the scalar <a class="cross-reference" href="#eq:state-inference">Equation (16)</a>
+minimizes, is</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="One-step variational state inference in the grid world, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec54145b41e5">
+<h2 class="equation-led"
+aria-label="One-step variational state inference in the grid world, part 5" id="slide-heading-ec54145b41e5">One-step
+variational state… (part 5)</h2>
+<p><span class="math display" id="eq:variational-free-energy">\[
+\begin{aligned}
+F[q]
+&amp;= \mathbb{E}_q\!\left[
+\begin{aligned}
+&amp;\ln q(s) - \ln D_0(s)\\
+&amp;\quad - \textstyle\sum_m \ln A_m[o_m, s]
+\end{aligned}
+\right]\\
+&amp;= \mathrm{KL}\big(q \,\|\, D_0\big)
+   - \mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big].
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0210067e502">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 6" id="slide-heading-d0210067e502">One-step
+variational state… (part 6)</h2>
+<p>reported in nats. The one-step posterior of <a class="cross-reference" href="#eq:state-inference">Equation (16)</a>
+is its unique minimizer, where <span class="math inline">\(F\)</span>
+equals the negative log model evidence.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1bd3842317c3">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 7" id="slide-heading-1bd3842317c3">One-step
+variational state… (part 7)</h2>
+<p>Both live in <code>belief_updating.infer_states</code> and
+<code>belief_updating.vfe</code>, and the free energy of <a class="cross-reference" href="#eq:variational-free-energy">Equation (17)</a>
+is the quantity the communicating-versus-incommunicado colony comparison
+of <span class="cross-reference">Section 5.22</span>
+scores.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db13c6ceef03">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 8" id="slide-heading-db13c6ceef03">One-step
+variational state… (part 8)</h2>
+<p>This inference step is not a separate mechanism bolted onto the
+colony: it is the <span class="math inline">\(L=\mathrm{NLL}\)</span>,
+learning-rate-1 special case of the generalized-Bayes posterior <span class="cross-reference">Equation (2)</span>,
+reusing the same locked softmax.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-87a282f0aff3">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 9" id="slide-heading-87a282f0aff3">One-step
+variational state… (part 9)</h2>
+<p>That client identity recovers the stated categorical Bayes substrate
+at its trusting limits. The separate server identity in <span class="cross-reference">Section 5.8</span>
+then yields the project log-linear pool under its qualified Eq. 7
+message-combination bridge;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="One-step variational state inference in the grid world, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-36c672863da8">
+<h2 class="prose-slide"
+aria-label="One-step variational state inference in the grid world, part 10" id="slide-heading-36c672863da8">One-step
+variational state… (part 10)</h2>
+<p>together these do not recover the complete Friston protocol (<span class="cross-reference">Section 6</span>).</p>
+</section>
+<section id="sec:methods-pomdp-loop" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-da94d40b041c">
+<h2 class="prose-slide" id="slide-heading-da94d40b041c">Hidden-state to action loop: the POMDP
+substrate</h2>
+<p>The categorical POMDP loop in <span class="cross-reference">Figure 5</span>
+separates the common latent-state substrate from the federation
+transport. In the sentinel interpretation, an agent is a
+location-sensitive observer:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c5b41a67e83f">
+<h2 class="prose-slide"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 2" id="slide-heading-c5b41a67e83f">Hidden-state
+to action loop (part 2)</h2>
+<p>the hidden state is one of 9 cells, the private outcome is a noisy
+categorical report of that location, and the agent sends its posterior
+over the location rather than the report itself.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1e249542c8cc">
+<h2 class="prose-slide"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 3" id="slide-heading-1e249542c8cc">Hidden-state
+to action loop (part 3)</h2>
+<p>The flat belief-sharing studies use the observation, posterior, and
+communication subset; the moving-world extension also executes
+transition and EFE-guided action paths.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b14e4ab4e099">
+<h2 class="prose-slide"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 4" id="slide-heading-b14e4ab4e099">Hidden-state
+to action loop (part 4)</h2>
+<p>The diagram therefore gives readers the active-inference context
+without turning a conceptual loop into a claim that every study
+estimates every latent or policy quantity.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d464659fb386">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 5" id="slide-heading-d464659fb386">Hidden-state
+to action loop (part 5)</h2>
+<figure id="fig:pomdp-loop-slide-panel-1">
+<img src="../figures/pomdp_loop.slide-world.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0f27ca36be5f27a977a2242d36cc8699e64bae0321902288abd35d82c120d1df"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="800"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="1.6877637"
+alt="Shared world; D = den: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fe7138344eef">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 6" id="slide-heading-fe7138344eef">Hidden-state
+to action loop (part 6)</h2>
+<figure id="fig:pomdp-loop-slide-panel-2">
+<img src="../figures/pomdp_loop.slide-visual-field-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c730eed5d2457c01e853fab2cc8606017bb34d00a253ade60156a3e7086fffd1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Sentinel 1 → Shared hidden location: Visual field; retained_warning." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-53a68a082d19">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 7" id="slide-heading-53a68a082d19">Hidden-state
+to action loop (part 7)</h2>
+<figure id="fig:pomdp-loop-slide-panel-3">
+<img src="../figures/pomdp_loop.slide-visual-field-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ed019f969ce37d962d1d6dedc7dfb4b6603855d670eed274db440b46a0629a35"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Sentinel 2 → Shared hidden location: Visual field; retained_warning." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3aa319884d85">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 8" id="slide-heading-3aa319884d85">Hidden-state
+to action loop (part 8)</h2>
+<figure id="fig:pomdp-loop-slide-panel-4">
+<img src="../figures/pomdp_loop.slide-visual-field-n.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="343b3728b53f603c13d03f181d9f7c399eefecfec70530794a07a487be55dac7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Sentinel n → Shared hidden location: Visual field; retained_warning." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bc0d65581937">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 9" id="slide-heading-bc0d65581937">Hidden-state
+to action loop (part 9)</h2>
+<figure id="fig:pomdp-loop-slide-panel-5">
+<img src="../figures/pomdp_loop.slide-local-posterior-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8567acc7293816f3f3afa47898488a1aa5f355769a8aa86153924b9653c94474"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="995"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="2.0991561"
+alt="Schematic local posterior q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bfeab3347e04">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 10" id="slide-heading-bfeab3347e04">Hidden-state
+to action loop (part 10)</h2>
+<figure id="fig:pomdp-loop-slide-panel-6">
+<img src="../figures/pomdp_loop.slide-local-posterior-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="3f559a1541e45db93a76db15578622929ebabb0526462a8b5d2e6a46b001aba0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="995"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="2.0991561"
+alt="Schematic local posterior q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-efb351b1b611">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 11" id="slide-heading-efb351b1b611">Hidden-state
+to action loop (part 11)</h2>
+<figure id="fig:pomdp-loop-slide-panel-7">
+<img src="../figures/pomdp_loop.slide-local-posterior-n.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8ee586200b0f2826eebca0e58a1bbca516266201908795ff0d5ed3763b634885"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="995"
+data-slide-figure-intrinsic-height="474"
+data-slide-figure-intrinsic-aspect="2.0991561"
+alt="Schematic local posterior qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-53b30ec25fbd">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 12" id="slide-heading-53b30ec25fbd">Hidden-state
+to action loop (part 12)</h2>
+<figure id="fig:pomdp-loop-slide-panel-8">
+<img src="../figures/pomdp_loop.slide-message-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f368ccbbfbf3bbcf971d7670d9c363ed0c297c0ba4da97cb4ba0889fb53af3e6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior q1 → Server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-646c508ce6f8">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 13" id="slide-heading-646c508ce6f8">Hidden-state
+to action loop (part 13)</h2>
+<figure id="fig:pomdp-loop-slide-panel-9">
+<img src="../figures/pomdp_loop.slide-message-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="502f41982c642770045ea3ba14d27f2a2ff3a476e2c48869b8694ec2224f4c62"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior q2 → Server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-89a397b5de6b">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 14" id="slide-heading-89a397b5de6b">Hidden-state
+to action loop (part 14)</h2>
+<figure id="fig:pomdp-loop-slide-panel-10">
+<img src="../figures/pomdp_loop.slide-message-n.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="36cdcf1acf2498a750b57868cce07493825263a13f74ff48fb904f796370bd8a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior qn → Server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b73b053a6fea">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 15" id="slide-heading-b73b053a6fea">Hidden-state
+to action loop (part 15)</h2>
+<figure id="fig:pomdp-loop-slide-panel-11">
+<img src="../figures/pomdp_loop.slide-return.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e31baf38370aa427d0b8a27de3e352a2a11e1e930347569d718e26cb7fb6fe89"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Qualified Eq. 7 pool / robust route → Posterior excluding recipient: Server return; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cb581def8f63">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 16" id="slide-heading-cb581def8f63">Hidden-state
+to action loop (part 16)</h2>
+<figure id="fig:pomdp-loop-slide-panel-12">
+<img src="../figures/pomdp_loop.slide-recipient.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="85aa506d0d74ee8ccd43dc671b1b7443f8ce7608cb7037c259ea77e63857f407"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Posterior excluding recipient → Recipient n; m ≠ n: Self-exclusion; retained_warning." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d855403d9339">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 17" id="slide-heading-d855403d9339">Hidden-state
+to action loop (part 17)</h2>
+<figure id="fig:pomdp-loop-slide-panel-13">
+<img src="../figures/pomdp_loop.slide-sensing.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b2c561e6b79b8f7a8c158c692edc9a4898e7e65c24188356ba409cb68480a16a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Hidden location s(t) → Private outcome o(t): A = P(o|s); data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ca45fcc9561b">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 18" id="slide-heading-ca45fcc9561b">Hidden-state
+to action loop (part 18)</h2>
+<figure id="fig:pomdp-loop-slide-panel-14">
+<img src="../figures/pomdp_loop.slide-inference.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a2586c1985f2957d71630c40dc8ed70bbf4f8017492d2b62b169d663c69888c3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Private outcome o(t) → Local posterior q(t): Local inference; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-de199e4821d3">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 19" id="slide-heading-de199e4821d3">Hidden-state
+to action loop (part 19)</h2>
+<figure id="fig:pomdp-loop-slide-panel-15">
+<img src="../figures/pomdp_loop.slide-policy.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="32676772af922b7d8d6f34584142aa26350889a385715c3648e4d5cd3c685bcc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Local posterior q(t) → Action: still / left / right: C preferences / EFE; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1fa52d9a0df3">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 20" id="slide-heading-1fa52d9a0df3">Hidden-state
+to action loop (part 20)</h2>
+<figure id="fig:pomdp-loop-slide-panel-16">
+<img src="../figures/pomdp_loop.slide-transition.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bdf76b25369d7d08e8eafe8e3402eb66ab2613a4edb53901a372ecd4a198073b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Action u(t) → Next hidden state s(t+1): B = P(s′|s,u); data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ffd31787d9ac">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 21" id="slide-heading-ffd31787d9ac">Hidden-state
+to action loop (part 21)</h2>
+<figure id="fig:pomdp-loop-slide-panel-17">
+<img src="../figures/pomdp_loop.slide-next-step.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="fc18479b64d5534da7dffd18439588a69463a62c42ade04c00b66828777883fb"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Next hidden state s(t+1) → Hidden location next step: Temporal loop; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-08f2bdaab95c">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 22" id="slide-heading-08f2bdaab95c">Hidden-state
+to action loop (part 22)</h2>
+<figure id="fig:pomdp-loop-slide-panel-18">
+<img src="../figures/pomdp_loop.slide-privacy.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="be2f81db58ba7ce8d98e85385fd38e59cabc80e7bd2f4dde05b1376ad79cd39b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1182"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.5818182"
+alt="Agents share beliefs about one hidden location. Private outcomes and controls remain local; no raw sensory data are pooled." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9b552836dba8">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 23" id="slide-heading-9b552836dba8">Hidden-state
+to action loop (part 23)</h2>
+<figure id="fig:pomdp-loop-slide-panel-19">
+<img src="../figures/pomdp_loop.slide-optional-control.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7a0ffd6c30100f67f6de28d2a3ece77b34087217ac9fcc2c824efa99d7b61fcc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1204"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6484848"
+alt="Flat federation uses inference and communication. The moving-world extension also executes B and EFE-guided control." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-23507c3e54a2">
+<h2 class="figure-led"
+aria-label="Hidden-state to action loop: the POMDP substrate, part 24" id="slide-heading-23507c3e54a2">Hidden-state
+to action loop (part 24)</h2>
+<figure id="fig:pomdp-loop-slide-panel-20">
+<img src="../figures/pomdp_loop.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b0992551a992291f5c4726131e00311186ec9659667d0564d938d868edd133dc"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1194"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.9408867"
+alt="Model schematic, not an empirical result. Hatched cells only illustrate topology or posterior emphasis; they are not measured probability values." />
+</figure>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

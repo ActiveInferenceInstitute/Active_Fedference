@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>26_reproducibility.md.web</title>
   <style>
@@ -243,6 +243,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -253,14 +262,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -291,12 +332,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -308,7 +393,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -366,6 +462,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -373,13 +471,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -460,8 +613,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -510,6 +662,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -526,21 +684,27 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="sec:reproducibility">Reproducibility: execution record and
-recovery checks</h1>
+application integrity</h1>
 <p>This section is a machine-verifiable reproducibility certificate.
 Every value below is computed by the analysis pipeline and injected at
 render time, establishing a chain of custody from configuration through
-code to publication. The discipline is the one that gates this project’s
-CI: every prose number is a generated token, every token is emitted by
-one generator function, and any drift between narrative and computed
-result fails the build before a green PDF exists
-<span class="citation">(Peng 2011)</span>.</p>
+code to publication.</p>
+<p>The discipline is the one that gates this project’s CI: every prose
+number is a generated token, every token is emitted by one generator
+function, and any drift between narrative and computed result fails the
+build before a green PDF exists <span class="citation">(Peng 2011)</span>.</p>
 <h2 id="sec:repro-determinism">Determinism contract for seeded
 scientific results</h2>
 <p>Reproducing every reported number requires only two recorded inputs:
@@ -548,19 +712,69 @@ the global seed pinned here and the software environment fingerprinted
 in the next subsection. The determinism contract fixes the first — it
 states exactly what is held constant, what is asserted to machine
 tolerance, and what is deliberately not claimed byte-identical.</p>
-<ul>
-<li>Global seed: 0, threaded through every
+<p><strong>Seed.</strong> The global seed is 0, threaded through every
 <code>np.random.default_rng(seed)</code>; the global
-<code>np.random</code> state is never used.</li>
-<li>Recovery identities use exact or machine-tolerance assertions;
-seeded study reports are regression-tested for repeatability under the
-recorded software environment. Rendered PDF/HTML/slide containers are
-validated as fresh publication products but are not claimed
-byte-identical across toolchain versions.</li>
-<li>No mocks anywhere: every test is a genuine computation on small
-categorical distributions or a seeded simulation under this repository’s
-explicit no-mocks policy.</li>
-</ul>
+<code>np.random</code> state is never used.</p>
+<p><strong>Assertions.</strong> Recovery identities use exact or
+machine-tolerance assertions; seeded study reports are regression-tested
+for repeatability under the recorded software environment. Rendered
+PDF/HTML/slide containers are validated as fresh publication products
+but are not claimed byte-identical across toolchain versions.</p>
+<p><strong>Execution.</strong> No mocks are used: every test is a
+genuine computation on small categorical distributions or a seeded
+simulation under this repository’s explicit no-mocks policy.</p>
+<h2 id="sec:repro-application-integrity">Application integrity and
+solver-health receipts</h2>
+<p>The labeled own-data path produces a different evidentiary object
+from a research report. It validates one-dimensional categorical inputs,
+hashes the canonical semantic request, delegates once to the shared
+aggregation domain, and records numerical health without adding a
+decision or interpretation.</p>
+<p>The application flow in <a class="xref" href="index.html#fig:application-integrity-flow">Figure 19</a>
+reads from top to bottom. Panel A follows validation and canonical
+hashing; Panel B places the exact two-by-two <code>solver_status</code>
+key below the result classifier; Panel C separates the upper
+atomic-write row from the lower verification lane. Invalid inputs or
+unsafe destinations fail before directory creation. Non-nominal
+numerical results retain their artifacts and return a distinct status
+rather than being silently promoted or discarded.</p>
+<p>An application receipt can verify artifact integrity and, when
+requested and available, source equivalence. Requiring nominal solver
+health adds a numerical gate. None of those levels establishes
+calibration, domain suitability, scientific validity, decision
+correctness, or acceptance.</p>
+<figure id="fig:application-integrity-flow">
+<a class="figure-full-size-link" href="../figures/application_integrity_flow.png" target="_blank" rel="noopener" aria-label="Open full-size figure, The labeled application path separates fail-closed request"><img src="../figures/application_integrity_flow.png" style="width:95.0%"
+data-slide-manifest="../figures/application_integrity_flow.slides.json"
+alt="Three vertical panels show request validation and canonical hashing, a two-by-two key for the four exact solver_status codes, and atomic request/result/receipt writing with a separate three-level verification lane. Red dashed exits reject invalid input or report mismatches; a neutral dashed exit retains non-nominal results." aria-details="fig-application-integrity-flow-long-description" /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<figcaption>The labeled application path separates
+fail-closed request and destination checks from retained non-nominal
+results. Source relation: source-owned labeled-aggregation,
+solver-health, artifact, and receipt contracts; status: deterministic
+implementation map, not an experiment. Panel A follows labeled JSON or
+Python input through strict schema and one-dimensional shape validation,
+canonical semantic hashing, a destination-and-required-provenance safety
+gate, and one delegation to the shared aggregation result. Its two
+dashed rejection branches distinguish an invalid request from an unsafe
+destination or unavailable required provenance; both exit 2 before
+directory creation. Panel B classifies convergence and fallback state,
+then gives the exact two-by-two <code>solver_status</code> key:
+<code>nominal</code>, <code>converged_with_fallback</code>,
+<code>not_converged</code>, and
+<code>not_converged_with_fallback</code>. Panel C carries the canonical
+request and rich result into <code>request.json</code> and
+<code>result.json</code>, binds both into <code>receipt.json</code>, and
+enters verification. Solid arrows encode data dependency; the dotted
+sequence records atomic write order; dashed paths mark rejection or a
+retained warning. The x-axis is left-to-right execution within rows;
+rows order panels and verification levels. The estimand is validation,
+artifact, and solver state; the unit is one categorical software state
+per invocation. No sampling uncertainty or independent replication unit
+applies. Exit 1 retains non-nominal artifacts, and a mismatch reports
+its exact finding. Receipt integrity, source equivalence, and nominal
+health do not establish calibration, domain suitability, scientific
+validity, downstream decision correctness, or acceptance.</figcaption>
+<details id="fig-application-integrity-flow-long-description" class="figure-long-description" data-figure-label="fig:application-integrity-flow"><summary>Detailed description of figure application integrity flow</summary><p>Read from panel A downward. Panel A moves a labeled JSON or Python request through strict schema and one-dimensional shape validation, a canonical semantic request and SHA-256, and a separate destination-and-provenance safety gate before one delegation to aggregate_result. One dashed red branch ends at exit 2 for an invalid request; another ends at exit 2 for an unsafe destination or unavailable required provenance. Both terminate before directory creation. Panel B carries the rich numerical result through a convergence-by-fallback classifier and then a two-by-two exact solver_status key: nominal, converged_with_fallback, not_converged, and not_converged_with_fallback. Its neutral dashed branch retains valid artifacts at exit 1 when health is non-nominal. Panel C carries the canonical request and rich result into request.json and result.json, binds both into receipt.json, and then enters verification. Solid arrows encode these data dependencies; a separate dotted sequence above the artifact boxes encodes the atomic request.json, result.json, receipt.json write order. The lower lane separates artifact integrity, source equivalence, and optional nominal solver health, while a dashed red branch reports an exact mismatch without reinterpreting the result.</p><p>This is a source-owned implementation map, not an experiment. Nodes and arrows carry categorical software states rather than a numerical estimand, so there is no sampling interval or replication unit. Shape, line style, direct labels, and ordered numbering duplicate the colour roles. Artifact integrity, requested source equivalence, and nominal solver health do not establish calibration, domain suitability, scientific validity, a downstream decision, or acceptance.</p></details></figure>
 <h2 id="sec:repro-environment">Environment fingerprint for the reported
 run</h2>
 <p>The second reproduction input is the exact toolchain. Every field
@@ -568,11 +782,12 @@ below is captured by the successful full test-and-coverage receipt
 before final variable generation rather than transcribed by hand. The
 receipt is bound to the source, tests, manuscript, source-owned
 documentation, release metadata, ISC tree, dependency lock, and fresh
-analysis receipt. It rejects any pre/post-suite drift in that boundary,
-so a reader matching this environment and the seed above can reproduce
-the seeded results; the config hash lets them confirm they are running
-the configuration from which this manuscript was rendered.</p>
-<table id="tbl:repro_env">
+analysis receipt.</p>
+<p>It rejects any pre/post-suite drift in that boundary, so a reader
+matching this environment and the seed above can reproduce the seeded
+results; the config hash lets them confirm they are running the
+configuration from which this manuscript was rendered.</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from SOURCE_DATE_EPOCH…"><table id="tbl:repro_env" data-responsive-table="true">
 <caption>Software and configuration fingerprint for the hydrated
 manuscript. The build epoch is derived from
 <code>SOURCE_DATE_EPOCH</code>; an unreleased build records an explicit
@@ -586,15 +801,15 @@ omitted sentinel rather than wall-clock time.</caption>
 <tbody>
 <tr>
 <td>Python</td>
-<td>3.13.11</td>
+<td>3.10.19</td>
 </tr>
 <tr>
 <td>NumPy</td>
-<td>2.4.2</td>
+<td>2.2.6</td>
 </tr>
 <tr>
 <td>SciPy</td>
-<td>1.18.0</td>
+<td>1.15.3</td>
 </tr>
 <tr>
 <td>PyTorch (MLP complement)</td>
@@ -606,24 +821,23 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Config hash (SHA-256, first 16)</td>
-<td>85a54abc8cf831a0</td>
+<td>cbe919be0d1d3903</td>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>2026-08-29T13:33:20Z</td>
+<td>2026-09-10T05:07:09Z</td>
 </tr>
 </tbody>
-</table>
-<p>The exact environment used for the reported run is recorded in <span
-class="citation" data-cites="tbl:repro_env"><a class="xref" href="index.html#tbl:repro_env">Table 7</a></span>.</p>
+</table></div>
+<p>The exact environment used for the reported run is recorded in <a class="xref" href="index.html#tbl:repro_env">Table 10</a>.</p>
 <h2 id="sec:repro-accessibility">Reader-surface accessibility
 boundary</h2>
 <p>The validated HTML manuscript is the canonical accessibility-enhanced
 reading surface. Its source gate requires a page language and title, a
 skip link and main landmark, non-empty image alternatives, figure
 captions, labelled full-size links, unique identifiers, resolved
-references, and present local assets on every generated page. These
-deterministic checks are not a claim of WCAG conformance:
+references, and present local assets on every generated page.</p>
+<p>These deterministic checks are not a claim of WCAG conformance:
 alternative-text quality, contrast, keyboard behavior, reading order,
 reflow, mathematics, and assistive-technology behavior still require
 manual review.</p>
@@ -631,45 +845,46 @@ manual review.</p>
 source-controlled LuaLaTeX/tagpdf path and is released only when
 <code>pdfinfo</code> reports <code>Tagged: yes</code>, qpdf exposes a
 non-empty <code>/Lang</code> and <code>StructTreeRoot</code>, and the
-source-bound language check passes. Some Poppler builds omit the
-language line from <code>pdfinfo</code> even when <code>/Lang</code> is
-present. The separate slide PDFs are checked structurally, textually,
-through renderer logs during the producing run, and by raster
-inspection, but do not inherit the manuscript tagging status. Renderer
-logs are retained with the external verification evidence rather than
-the public source tree because they contain environment-local timestamps
-and paths. Tagged structure is not PDF/UA conformance: a PDF/UA claim
-requires a dedicated conformance report plus screen-reader and
-reading-order review; <code>qpdf</code> structure checks and successful
-text extraction alone are insufficient.</p>
+source-bound language check passes.</p>
+<p>Some Poppler builds omit the language line from <code>pdfinfo</code>
+even when <code>/Lang</code> is present. The separate slide PDFs are
+checked structurally, textually, through renderer logs during the
+producing run, and by raster inspection, but do not inherit the
+manuscript tagging status. Renderer logs are retained with the external
+verification evidence rather than the public source tree because they
+contain environment-local timestamps and paths.</p>
+<p>Tagged structure is not PDF/UA conformance: a PDF/UA claim requires a
+dedicated conformance report plus screen-reader and reading-order
+review; <code>qpdf</code> structure checks and successful text
+extraction alone are insufficient.</p>
 <h2 id="sec:repro-tests">Test and coverage evidence for the claim
 surface</h2>
-<ul>
-<li>Acceptance criteria: 267 total, 265 passing.</li>
-<li>Project test suite: 2355 collected cases; the bound successful
-receipt records zero failed cases. The project no-mocks policy remains a
-separately executable source contract.</li>
-<li>Line coverage on <code>src/</code>: 91.13% (achieved by the bound
-full gate; <span class="math inline">\(\ge 90\%\)</span> line coverage
-is enforced in CI, while branch coverage is tracked separately in
-CI).</li>
-</ul>
+<p><strong>Acceptance criteria.</strong> 268 total, 266 passing.</p>
+<p><strong>Project test suite.</strong> 2824 collected cases; the bound
+successful receipt records zero failed cases. The project no-mocks
+policy remains a separately executable source contract.</p>
+<p><strong>Combined line and branch coverage on
+<code>src/</code>.</strong> 90.58%, achieved by the bound full gate with
+branch measurement enabled. The shared coverage threshold is <span
+class="math inline">\(\ge 90\%\)</span> on this combined measure.</p>
 <p>To regenerate this evidence from a clean checkout, run the project
-suite under the pinned development environment; the same invocation is
-the CI gate, so a passing local run and a green build are the same
-event:</p>
+suite under the pinned development environment. Local execution and
+hosted CI are separate results; the hosted checks must pass for the
+exact reviewed commit before public integration. Both use the following
+coverage gate:</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--extra</span> dev pytest tests/ <span class="dt">\</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--locked</span> <span class="at">--extra</span> dev pytest tests/ <span class="dt">\</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cov</span><span class="op">=</span>src <span class="at">--cov-fail-under</span><span class="op">=</span>90</span></code></pre></div>
 <p>For a release-facing hydration, use the receipt-producing wrapper
 after any required provisional pre-test render, then rerun hydration
 without its provisional flag:</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--extra</span> dev python scripts/validate_test_coverage.py</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run python scripts/z_generate_manuscript_variables.py</span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--locked</span> <span class="at">--extra</span> dev python scripts/validate_test_coverage.py</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run <span class="at">--locked</span> python scripts/<span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>z_generate_manuscript_variables.py</span></code></pre></div>
 <h2 id="sec:repro-artifacts">Artifact inventory for figures, data, and
 reports</h2>
-<table id="tbl:repro_artifacts">
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable table: Top-level generated files in output/figures , output/data , and output/reports at token-hydration time. The generated…"><table id="tbl:repro_artifacts" data-responsive-table="true">
 <caption>Top-level generated files in <code>output/figures</code>,
 <code>output/data</code>, and <code>output/reports</code> at
 token-hydration time. The generated release manifest is the source of
@@ -684,60 +899,24 @@ regenerable reviewer snapshots and must not be hand-edited.</caption>
 <tbody>
 <tr>
 <td>Figures</td>
-<td>61</td>
+<td>1226</td>
 </tr>
 <tr>
 <td>Data files</td>
-<td>6</td>
+<td>5</td>
 </tr>
 <tr>
 <td>Reports</td>
-<td>32</td>
+<td>36</td>
 </tr>
 <tr>
 <td>Total</td>
-<td>99</td>
+<td>1267</td>
 </tr>
 </tbody>
-</table>
-<p>The top-level artifact counts in <a class="xref" href="index.html#tbl:repro_artifacts">Table 8</a>
+</table></div>
+<p>The top-level artifact counts in <a class="xref" href="index.html#tbl:repro_artifacts">Table 11</a>
 complement the recursive, checksum-bearing release manifest.</p>
-<h2 id="sec:repro-recovery">Recovery-limit certificate for the client
-and project-pool corners</h2>
-<p>The recovery identities are reproducibility checks: the client
-machinery must return to standard Bayes at its KL/NLL loss limits, and
-the server heuristic must return to the project’s log-linear pool at
-zero robustness (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <span
-class="citation"
-data-cites="eq:standard-bayes"><span class="xref">Eq. 6</span></span>). Under the
-explicit shared-support, posterior-log-potential, and fixed-weight
-assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
-that pool specializes Eq. 7’s message-combination term; it does not
-reproduce the complete source protocol. These deviations are computed on
-every build:</p>
-<ul>
-<li><code>robust_aggregate(robustness=0)</code> versus
-<code>log_linear_pool</code> (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>): 0</li>
-<li><code>generalized_posterior(KLD, NLL)</code> versus closed-form
-Bayes: 5.55e-17</li>
-<li>Rényi divergence versus KL as <span class="math inline">\(\alpha\to
-1\)</span>: 0</li>
-<li><span class="math inline">\(\beta\)</span>-loss versus NLL as <span
-class="math inline">\(\beta\to 0\)</span>: 0</li>
-<li>rcce versus NLL as <span class="math inline">\(q_{\rm loss}\to
-0\)</span>: 0</li>
-</ul>
-<p>Any drift in these limits beyond machine precision would mean the
-robust generalization no longer contains its standard-Bayes client limit
-and project-local log-linear-pool server limit (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>) — and
-would fail the core test suite before this certificate could render. The
-certificate covers the recovery identity and the client-side result
-under the cited source theorem’s matching assumptions only; the
-server-side <code>robust_aggregate</code> heuristic is certified here
-for its recovery limit alone, not for any bounded-influence property
-(<a class="xref" href="index.html#sec:limitations">Section 8.13</a>).</p>
-<p>All code is authored by Daniel Ari Friedman and licensed under the
-MIT license. This is project version 1.1.0.dev0.</p>
 </main>
 </body>
 </html>

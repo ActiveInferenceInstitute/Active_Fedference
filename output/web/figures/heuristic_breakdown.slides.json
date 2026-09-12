@@ -1,0 +1,95 @@
+{
+  "panels": [
+    {
+      "alt": "Complete numerical influence paths for the reference and heuristic with the equal-weight reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "1fc328e8969043c3eaaa6412f271af5cd694e40d69eb8bfc112118ef1efb9768",
+      "src": "../figures/heuristic_breakdown.slide-influence.png"
+    },
+    {
+      "alt": "Endpoint weight drop: reference minus heuristic = 0.1435. Empirical at these settings, not a guarantee.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "dea27478d20e748f6ad53cf2661a1817bf2e8688d37cf048a6311a8076b56367",
+      "src": "../figures/heuristic_breakdown.slide-influence-drop.png"
+    },
+    {
+      "alt": "Heuristic: observed finite-search argmax capture at k=2 adversaries.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "4fe6cdd88a0375b9ea6d11cba8bc8bf17efbbaffbbdbc05e8caf1bcb4708b702",
+      "src": "../figures/heuristic_breakdown.slide-heuristic.png"
+    },
+    {
+      "alt": "Heuristic: argmax captured at k=2.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "51e48a9aedd55bd060f00ee54d1a74e6fea0521b35570c71c6d4e9b9564bb98e",
+      "src": "../figures/heuristic_breakdown.slide-heuristic-capture.png"
+    },
+    {
+      "alt": "Variational: observed finite-search argmax capture at k=4 adversaries.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "b45de17a3c40037bd25d56ff8ca1f88e07379f29140e73f516c22b9a982021a0",
+      "src": "../figures/heuristic_breakdown.slide-variational.png"
+    },
+    {
+      "alt": "Variational: argmax captured at k=4.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "55fa6037d0e5d082048353ec2becf9de5766248ccc619df5751ad8b36398b5f7",
+      "src": "../figures/heuristic_breakdown.slide-variational-capture.png"
+    },
+    {
+      "alt": "confident_wrong: 16/16 declared rows have finite heuristic capture (100%).",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "57cb42f9af6278a89617bcecbb243c8dca5ebc9a43c4e04f461bbaf66f4e9dc1",
+      "src": "../figures/heuristic_breakdown.slide-attack-1.png"
+    },
+    {
+      "alt": "confident wrong: 16/16 rows with finite capture = 100%.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "74216d2b675ef1659cec80d1adfc2373ac2408280da731324ee861cc785b5152",
+      "src": "../figures/heuristic_breakdown.slide-attack-1-count.png"
+    },
+    {
+      "alt": "label_noise: 0/16 declared rows have finite heuristic capture (0%).",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "6f766310e9f2168586ad28ed99747daf7058addd487e29364841cb206843d1fb",
+      "src": "../figures/heuristic_breakdown.slide-attack-2.png"
+    },
+    {
+      "alt": "label noise: 0/16 rows with finite capture = 0%.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a881e459597c23048d142891f51f8e405f62b00d0dcea995c5eb342380a9026e",
+      "src": "../figures/heuristic_breakdown.slide-attack-2-count.png"
+    },
+    {
+      "alt": "uniform: 0/16 declared rows have finite heuristic capture (0%).",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "bdb7b5a26bb5a70ec76c82718fe379f4d3f65ca36c4dce9365e189634bb47cc2",
+      "src": "../figures/heuristic_breakdown.slide-attack-3.png"
+    },
+    {
+      "alt": "uniform: 0/16 rows with finite capture = 0%.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b3448369a3f859d2cbc549ca2304a8d9c2d4ec5988304659121591ce0b73e19c",
+      "src": "../figures/heuristic_breakdown.slide-attack-3-count.png"
+    },
+    {
+      "alt": "permutation: 16/16 declared rows have finite heuristic capture (100%).",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "2d30d3384ee2927101eeafed3d8259a1468a2a171b30c6c662831283b2a3b21b",
+      "src": "../figures/heuristic_breakdown.slide-attack-4.png"
+    },
+    {
+      "alt": "permutation: 16/16 rows with finite capture = 100%.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "19e1b770d4d8849a0ad25faded2b17b909b7182a660a3bb3d52cf95f13b59292",
+      "src": "../figures/heuristic_breakdown.slide-attack-4-count.png"
+    },
+    {
+      "alt": "Finite-search capture and grid frequencies describe the declared settings. They are not global breakdown probabilities or universal robustness guarantees.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c063ea4adebdb9911cb3874d49e4bae1d353faecfadd3e033e4fb10f04238c4c",
+      "src": "../figures/heuristic_breakdown.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,92 +274,103 @@
 
 \begin{document}
 
-\begin{frame}[allowframebreaks]{Language acquisition follows conjugate
-Dirichlet updating}
+\begin{frame}{Conjugate Dirichlet likelihood-learning trajectory}
 \protect\phantomsection\label{sec:results-language}
 Where the first study fused fixed beliefs in a single round, the second
-asks whether a single agent can \emph{acquire} the likelihood of its
-shared world at all, and how quickly it does so. The design is a
-categorical source-mechanism analogue of the language-acquisition
-mechanism discussed by Friston et al. (Friston et al. 2024): each
-configured seed runs an agent that learns the likelihood of its shared
-world by conjugate Dirichlet updates over 24 count batches, the count
-update eq.~14. The recorded trajectory is
+records the KL trajectory produced when a single agent updates the
+likelihood of its shared world.
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 2)}
+The design is a categorical source-mechanism analogue of the
+language-acquisition mechanism discussed by Friston et al. (Friston et
+al. 2024).
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 3)}
+Each configured seed runs an agent that learns the likelihood of its
+shared world by conjugate Dirichlet updates over 24 count batches, the
+count update eq.~18. The recorded trajectory is
 \(\mathrm{KL}(\text{true } A \,\|\, \text{learned } A)\) before each
-batch --- it starts at the flat-prior maximum and declines monotonically
-toward zero as the agent ``acquires the language'' of its world. The KL
-here is the same divergence whose \(\alpha\to1\) Rényi limit is
+batch ---
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 4)}
+it starts at the flat-prior value and declines monotonically toward zero
+as the configured conjugate counts accumulate.
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 5)}
+The KL here is the same divergence whose \(\alpha\to1\) Rényi limit is
 established by Lemma 3
-(eq.~3), so the learning curve and the recovery
-\end{frame}
-
-\begin{frame}[allowframebreaks]{Language acquisition follows conjugate
-Dirichlet updating}
+(eq.~6), so the learning curve and the recovery
 limits measure the same object.
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Language acquisition follows conjugate
-Dirichlet updating}
-\begin{itemize}
-\tightlist
-\item
-  Initial KL (flat prior): 3.4231
-\item
-  Final KL (after 24 batches): 0.0027
-\item
-  Total KL reduction: 3.4204
-\item
-  Trajectory points: 25 ordered learning steps per seed
-\item
-  Pointwise seed bootstrap: 95\% intervals over \(n = 480\) independent
-  seeds
-\item
-  Trajectory monotone-decreasing: Yes
-\end{itemize}
-
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 6)}
+The endpoint summary is: initial KL (flat prior), 3.4231; final KL after
+24 batches, 0.0027; and total KL reduction, 3.4204.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Language acquisition follows conjugate
-Dirichlet updating}
-The monotone decline to a final KL of 0.0027 is the demonstrated
-quantity behind the acquisition claim: under the tested count schedule,
-the learned likelihood moves toward the true generative likelihood as
-conjugate counts accumulate. This finite trajectory is evidence of the
-update's behavior, not a convergence-rate result for arbitrary
-data-generating processes.
-
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 7)}
+The trajectory contains 25 ordered learning steps per seed. Pointwise
+95\% intervals resample the \(n = 480\) independent seeds, and the
+computed monotone-decreasing indicator is Yes.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Language acquisition follows conjugate
-Dirichlet updating}
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 8)}
+The observed decline to a final KL of 0.0027 is the bounded result:
+under the tested count schedule, the learned likelihood moves toward the
+true generative likelihood as conjugate counts accumulate.
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 9)}
+This finite trajectory characterizes the configured update and is not a
+convergence-rate result for arbitrary data-generating processes.
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Seed-mean KL divergence from the true likelihood A to the learned likelihood A. The plotted quantity is \textbackslash mathrm\{KL\}(\textbackslash text\{true \}A \textbackslash,\textbackslash\textbar\textbackslash, \textbackslash text\{learned \}A). Source relation: source-mechanism analogue to Friston et al.~(2024), Fig. 7; estimand: seed-mean KL in nats by ordered learning step. x-axis: ordered Dirichlet count batch, from the flat prior at zero through all 24 batches (25 points per seed); y-axis: summed per-column KL divergence between the true likelihood and the current expected likelihood, in nats. The solid line is the mean over 480 independent configured seeds, and the shaded band is the pointwise 95\% percentile-bootstrap interval resampling seeds at each learning step. The replication unit is seed, not the ordered trajectory points. The mean curve falls monotonically from 3.4231 nats to 0.0027 nats (total reduction 3.4204 nats, computed from the unrounded endpoints); the computed monotone-decreasing verdict is Yes. This reduced categorical protocol is related to, but does not exactly reproduce, the richer multi-episode protocol in Friston et al.~(2024).}]{../figures/language_kl_decay.png}
-\caption{Seed-mean KL divergence from the true likelihood A to the
-learned likelihood A. The plotted quantity is
-\(\mathrm{KL}(\text{true }A \,\|\, \text{learned }A)\). Source relation:
-source-mechanism analogue to Friston et al.~(2024), Fig. 7; estimand:
-seed-mean KL in nats by ordered learning step. x-axis: ordered Dirichlet
-count batch, from the flat prior at zero through all 24 batches (25
-points per seed); y-axis: summed per-column KL divergence between the
-true likelihood and the current expected likelihood, in nats. The solid
-line is the mean over 480 independent configured seeds, and the shaded
-band is the pointwise 95\% percentile-bootstrap interval resampling
-seeds at each learning step. The replication unit is seed, not the
-ordered trajectory points. The mean curve falls monotonically from
-3.4231 nats to 0.0027 nats (total reduction 3.4204 nats, computed from
-the unrounded endpoints); the computed monotone-decreasing verdict is
-Yes. This reduced categorical protocol is related to, but does not
-exactly reproduce, the richer multi-episode protocol in Friston et
-al.~(2024).}\label{fig:language-kl}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Complete ordered seed-mean KL learning trajectory with the supplied pointwise seed interval.}]{../figures/language_kl_decay.slide-trajectory.png}
+\refstepcounter{figure}\label{fig:language-kl-slide-panel-1}
 \end{figure}
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Language acquisition follows conjugate
-Dirichlet updating}
-fig.~\ref{fig:language-kl} plots the full learning curve and its CI
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 11)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={KL(true A \textbar\textbar{} learned A), in nats. Circles / solid: seed mean. The ordered x-axis is the Dirichlet count batch.}]{../figures/language_kl_decay.slide-estimand.png}
+\refstepcounter{figure}\label{fig:language-kl-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 12)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Pointwise 95\% percentile-bootstrap interval over independent configured seeds. Ordered steps are not independent replicates.}]{../figures/language_kl_decay.slide-uncertainty.png}
+\refstepcounter{figure}\label{fig:language-kl-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 13)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Initial mean: 3.423 nats. Final mean: 0.00269 nats. Steps: 25. Seeds: 480.}]{../figures/language_kl_decay.slide-endpoints.png}
+\refstepcounter{figure}\label{fig:language-kl-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source monotonicity check: True. This is a source-mechanism analogue, not exact protocol replication.}]{../figures/language_kl_decay.slide-pattern.png}
+\refstepcounter{figure}\label{fig:language-kl-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Conjugate Dirichlet\ldots{} (part 15)}
+fig.~11 plots the full learning curve and its CI
 band.
 \end{frame}
 

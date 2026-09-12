@@ -1,0 +1,131 @@
+{
+  "panels": [
+    {
+      "alt": "Study 1\nBelief sharing: mean and seed-bootstrap interval on the shared fraction facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f3598955264ab23a23b8afce071d50f3a3d1424021e82505dd7cd2460523e51d",
+      "src": "../figures/cross_study_summary.slide-fraction-study-1.png"
+    },
+    {
+      "alt": "Study 1 Belief sharing. Mean +0.437; 95% interval [+0.4034, +0.4675] fraction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "113b29dfb738f745790e03b8176949c8612eec65adffd53bf39323d9b297dbf9",
+      "src": "../figures/cross_study_summary.slide-fraction-study-1-values.png"
+    },
+    {
+      "alt": "Study 4\nWithin-run\ndisplay-selected maximum: mean and seed-bootstrap interval on the shared fraction facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "9825baa42d5e25b90a5b5972fa4d1e1cedf66f3f78c713c1329ff03506944651",
+      "src": "../figures/cross_study_summary.slide-fraction-study-2.png"
+    },
+    {
+      "alt": "Study 4 Within-run display-selected maximum. Mean +0.1175; 95% interval [+0.109, +0.1262] fraction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bc18e7156b693b503256b68a6abfa8fbe880494f0b4486913e6ca9af81102be0",
+      "src": "../figures/cross_study_summary.slide-fraction-study-2-values.png"
+    },
+    {
+      "alt": "Study 5\nMoving world (EFE): mean and seed-bootstrap interval on the shared fraction facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "8f13c51137b8cbab150ec5737a48e2ad726a880757768ee042d8d80c355b5fb3",
+      "src": "../figures/cross_study_summary.slide-fraction-study-3.png"
+    },
+    {
+      "alt": "Study 5 Moving world (EFE). Mean -0.01758; 95% interval [-0.02305, -0.0125] fraction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f1ad54fbf5154f2a49599334635b5f5bb89048e379d3424c2ba4dabdfa4a8077",
+      "src": "../figures/cross_study_summary.slide-fraction-study-3-values.png"
+    },
+    {
+      "alt": "Study 6\n2-level hierarchical POMDP: mean and seed-bootstrap interval on the shared fraction facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "37a400556bb9fb71e0cd1ed0ea23d0999ed899484c9ed52f14b705449196f800",
+      "src": "../figures/cross_study_summary.slide-fraction-study-4.png"
+    },
+    {
+      "alt": "Study 6 2-level hierarchical POMDP. Mean -0.001563; 95% interval [-0.008203, +0.004687] fraction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9bffe1f58f4aae36c6a24db96b9341e79d7a40f0a64f2f1fe58a808531de2ab0",
+      "src": "../figures/cross_study_summary.slide-fraction-study-4-values.png"
+    },
+    {
+      "alt": "Study 7\n3-level hierarchical POMDP: mean and seed-bootstrap interval on the shared fraction facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "27445842544a390b404d1caaee4ff021ba41861b6b19c5d5e4f3632f9f293d75",
+      "src": "../figures/cross_study_summary.slide-fraction-study-5.png"
+    },
+    {
+      "alt": "Study 7 3-level hierarchical POMDP. Mean -0.004297; 95% interval [-0.01211, +0.003906] fraction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "5d4718f6218d7cf4ea9435da8bb988c9483bbca51153fcf907586ca620bf9c92",
+      "src": "../figures/cross_study_summary.slide-fraction-study-5-values.png"
+    },
+    {
+      "alt": "Study 8\nSensitivity sweep: mean and seed-bootstrap interval on the shared fraction facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "560790b4f6d491b2f939381a5e626008ba0d52554885116f000e2596665f88b7",
+      "src": "../figures/cross_study_summary.slide-fraction-study-6.png"
+    },
+    {
+      "alt": "Study 8 Sensitivity sweep. Mean +0.2433; 95% interval [+0.2411, +0.2455] fraction.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "a2f9f6007747e4f13af40e8214743f2011b0d8e46c07e431eac0c10e19cec2da",
+      "src": "../figures/cross_study_summary.slide-fraction-study-6-values.png"
+    },
+    {
+      "alt": "Study 2\nLanguage acquisition: mean and seed-bootstrap interval on the shared nats facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c4e73274d3ee100e6fa5c403fe7fe9224065b863c0ef776e445648d955c1ec33",
+      "src": "../figures/cross_study_summary.slide-nats-study-1.png"
+    },
+    {
+      "alt": "Study 2 Language acquisition. Mean +3.42; 95% interval [+3.42, +3.421] nats.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "9c82d6109e1313f6ebb88eeccc9c25c822fcb2e300c7d81a7a5506dd4eaab802",
+      "src": "../figures/cross_study_summary.slide-nats-study-1-values.png"
+    },
+    {
+      "alt": "Study 3\nConfigured BMR\nsign control: mean and seed-bootstrap interval on the shared nats facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "9c5d711bfd3a23dbb0184c23665490ca0946570fcd781c2ae71bee73ae98aad6",
+      "src": "../figures/cross_study_summary.slide-nats-study-2.png"
+    },
+    {
+      "alt": "Study 3 Configured BMR sign control. Mean +3.716; 95% interval [+3.71, +3.722] nats.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ea0883352adb1229f4ec6aa285a3637f598335b1c1078fa0ccc17beea83a5de9",
+      "src": "../figures/cross_study_summary.slide-nats-study-2-values.png"
+    },
+    {
+      "alt": "Study 9\nParameter recovery: mean and seed-bootstrap interval on the shared R-sq facet scale.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "64f3f6ecd076e12747f9bac8ec947124e39603e4081aaa63b577f61fe0a95a32",
+      "src": "../figures/cross_study_summary.slide-rsq-study-1.png"
+    },
+    {
+      "alt": "Study 9 Parameter recovery. Mean +0.8861; 95% interval [+0.8716, +0.9005] R-sq.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f7a92c677d0013f88d4b513a7dd7aef2cbc833e539a9940a05bda3c61ebfe068",
+      "src": "../figures/cross_study_summary.slide-rsq-study-1-values.png"
+    },
+    {
+      "alt": "Separate harmonized seed-level rerun: n = 128 independent seeds. Whiskers are 95% percentile-bootstrap intervals.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "00e4ec64858c42abbc8929f812df9f8d296f5d81f99c1352a7db4de84db47eab",
+      "src": "../figures/cross_study_summary.slide-uncertainty.png"
+    },
+    {
+      "alt": "/// positive; xxx negative; dots within 0.001 of zero. Hatches describe the mean sign, not statistical significance. Direction remains metric-specific.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "cf12951a20d59ad3bf0a8bf4b5bbc1b6797cff477332e8777f0acde51f5326ad",
+      "src": "../figures/cross_study_summary.slide-direction.png"
+    },
+    {
+      "alt": "Native-unit facets stay separate. R\u00b2 is a fit statistic, not an effect contrast. No cross-unit ranking; Study 4 is a within-run display-selected maximum.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "cb6dccf62d9ba688656b249889b09415f9aafba227204bf39802a8246e00046e",
+      "src": "../figures/cross_study_summary.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

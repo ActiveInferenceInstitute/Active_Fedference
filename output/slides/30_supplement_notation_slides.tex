@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -219,301 +261,370 @@
 
 \section{Supplemental notation contract}\label{sec:supp-notation}
 
-\begin{frame}[allowframebreaks]{Supplemental notation contract}
+\begin{frame}{Supplemental notation contract}
 This supplement is the authoritative notation contract for Active
 Fedference. The methods, formalism, results, figures, report schemas,
 and API documentation use these meanings even when a source paper uses a
-different symbol. A symbol is not reused for a different mathematical
-object merely because the objects are both probability vectors. The
-implementation names in the final column are the canonical names for new
-code and reports; old names survive only as warned, parity-tested
+different symbol.
+\end{frame}
+
+\begin{frame}{Supplemental notation\ldots{} (part 2)}
+A symbol is not reused for a different mathematical object merely
+because the objects are both probability vectors.
+\end{frame}
+
+\begin{frame}{Supplemental notation\ldots{} (part 3)}
+The implementation names in the final column are the canonical names for
+new code and reports; old names survive only as warned, parity-tested
 compatibility adapters.
 \end{frame}
 
-\subsection{Probability objects and generative-model
+\section{Probability objects and generative-model
 quantities}\label{probability-objects-and-generative-model-quantities}
 
-\begin{frame}[fragile,allowframebreaks]{States, posteriors, and site
-factors}
+\begin{frame}{States, posteriors, and site factors}
 \protect\phantomsection\label{states-posteriors-and-site-factors}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{States, posteriors, and site
-factors}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.2963}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.7037}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Symbol
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Contractual meaning
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Canonical implementation term
+Meaning
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-\(s\) & A hidden categorical state; \(s\in\{1,\ldots,n_s\}\) is an
-index, not a distribution. & \texttt{state} \\
-\(o\) & An observation/outcome index; \(o\in\{1,\ldots,n_o\}\). &
-\texttt{observation} \\
-\(q_n(s)\) & Agent \(n\)'s local posterior over the shared latent state
-after its local update. & \texttt{local\_posteriors{[}n{]}} \\
-\(q(s)\) & The server consensus posterior over the shared state. &
-\breaktt{global\_posterior} / \texttt{consensus} \\
-\(q_{-n}(s)\) & The normalized cavity posterior with agent \(n\)'s site
-contribution removed. & \texttt{cavity(...)} \\
-\(t_n(s)\) & Agent \(n\)'s site/factor term in natural-parameter space.
-& \texttt{site\_factor} \\
-\(m_n(s)\) & Bridge-only source-equation log potential:
-\(m_n(s)=\log q_n(s)+\kappa_n\) with state-constant \(\kappa_n\). It is
-not a claim that every source-protocol message is a broadcast posterior.
-& No project API; notation for the qualified bridge only. \\
+\(s\) & Hidden categorical-state index. \\
+\(o\) & Observation/outcome index. \\
+\(q_n(s)\) & Agent \(n\)'s updated local posterior. \\
+\(q(s)\) & Server consensus posterior. \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Priors, policies, and POMDP
-quantities}
+\begin{frame}{States, posteriors, and site\ldots{} (part 2)}
+Here \(s\in\{1,\ldots,n_s\}\) and \(o\in\{1,\ldots,n_o\}\) are indices,
+not distributions. Each \(q_n(s)\) is the local posterior over the
+shared latent state after agent \(n\)'s update; \(q(s)\) is the
+corresponding server consensus, and \(q_{-n}(s)\) removes agent \(n\)'s
+site contribution. The site \(t_n(s)\) is a natural-parameter factor.
+\end{frame}
+
+\begin{frame}{States, posteriors, and site\ldots{} (part 3)}
+The bridge-only quantity satisfies \(m_n(s)=\log q_n(s)+\kappa_n\) for
+state-constant \(\kappa_n\); it has no project API and does not imply
+that every source-protocol message is a broadcast posterior.
+\end{frame}
+
+\begin{frame}[fragile]{States, posteriors, and site\ldots{} (part 4)}
+The corresponding code terms are \texttt{state}, \texttt{observation},
+\texttt{local\_posteriors{[}n{]}}, \texttt{global\_posterior} or
+\texttt{consensus}, \texttt{cavity(...)}, and \texttt{site\_factor}, in
+table order through \(t_n(s)\). The bridge-only \(m_n(s)\) has no
+project API.
+\end{frame}
+
+\begin{frame}{Priors, policies, and POMDP quantities}
 \protect\phantomsection\label{priors-policies-and-pomdp-quantities}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Priors, policies, and POMDP
-quantities}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.5789}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.4211}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Symbol
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Contractual meaning
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Canonical implementation term
+Meaning
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-\(\pi_0(s)\) & A prior over hidden states. The subscript distinguishes a
-prior from a policy. & \texttt{prior} / \texttt{log\_prior} \\
-\(\boldsymbol{\pi}\) & A policy or action sequence; it is not a prior
-and is bold when needed. & \texttt{policy} \\
-\(A[o,s]=P(o\mid s)\) & Observation likelihood matrix; each
-state-indexed column is a pmf. & \texttt{likelihood} \\
-\(B[s',s,u]=P(s'\mid s,u)\) & State-transition tensor indexed by next
-state, current state, and control. & \texttt{transition} \\
-\(C[o]\) & Log-preference over outcomes;
-\(p_C(o)=\operatorname{softmax}(C)[o]\) is the preferred-outcome pmf. &
-\texttt{log\_preferences} \\
-\(D_0[s]\) & Initial hidden-state prior in the POMDP. &
-\texttt{initial\_prior} \\
-\(q(o\mid\boldsymbol{\pi})\) & Policy-conditional predicted outcome
-distribution in EFE calculations. & \breaktt{predicted\_outcomes} \\
+\(\pi_0(s)\) & Hidden-state prior, not a policy. \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Priors, policies, and POMDP
-quantities}
+\begin{frame}{Priors, policies, and\ldots{} (part 2)}
 The state index \(s\), posterior \(q(s)\), prior \(\pi_0(s)\), and
 policy \(\boldsymbol{\pi}\) must not be conflated. In particular, the
-policy symbol is never used for a prior, and the prior is never called a
-policy. The uppercase POMDP tensors \(A,B,C,D_0\) are model objects;
-they are not posterior factors.
+policy symbol is bold when needed, never used for a prior, and the prior
+is never called a policy. The uppercase POMDP tensors \(A,B,C,D_0\) are
+model objects; they are not posterior factors.
+\end{frame}
 
+\begin{frame}{Priors, policies, and\ldots{} (part 3)}
+Each state-indexed column of \(A\) is a pmf. The tensor \(B\) is indexed
+by next state, current state, and control. The preferred-outcome pmf is
+\(p_C(o)=\operatorname{softmax}(C)[o]\), and
+\(q(o\mid\boldsymbol{\pi})\) is the predicted-outcome distribution used
+in EFE calculations.
+\end{frame}
+
+\begin{frame}[fragile]{Priors, policies, and\ldots{} (part 4)}
+The canonical code terms, in table order, are \texttt{prior} or
+\texttt{log\_prior}, \texttt{policy}, \texttt{likelihood},
+\texttt{transition}, \texttt{log\_preferences}, \texttt{initial\_prior},
+and \texttt{predicted\_outcomes}.
+\end{frame}
+
+\begin{frame}{Priors, policies, and\ldots{} (part 5)}
 For the qualified relation to Friston et al.'s Eq. 7 (Friston et al.
 2024), the shared support is finite, every \(q_n(s)\) is positive on it,
 the Eq. 7 softmax input is represented by the bridge-only \(m_n(s)\)
 above, and the declared weights \(w_n\) are fixed rather than functions
-of the emerging consensus. Under exactly those assumptions, additive
-\(\kappa_n\) constants cancel under softmax and
-eq.~6 is the categorical posterior-log-potential
-specialization of the source message-combination term. It neither
-reconstructs source message construction, cavity/exclusion policy,
-scheduling, generative factors, nor the complete source protocol.
+of the emerging consensus.
 \end{frame}
 
-\subsection{Divergences, losses, and scalar
+\begin{frame}{Priors, policies, and\ldots{} (part 6)}
+Under exactly those assumptions, additive \(\kappa_n\) constants cancel
+under softmax and eq.~9 is the categorical
+posterior-log-potential specialization of the source message-combination
+term. It neither reconstructs source message construction,
+cavity/exclusion policy, scheduling,
+\end{frame}
+
+\begin{frame}{Priors, policies, and\ldots{} (part 7)}
+generative factors, nor the complete source protocol.
+\end{frame}
+
+\section{Divergences, losses, and scalar
 controls}\label{divergences-losses-and-scalar-controls}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized-Bayes and
-aggregation terms}
+\begin{frame}{Generalized-Bayes and aggregation terms}
 \protect\phantomsection\label{generalized-bayes-and-aggregation-terms}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Generalized-Bayes and
-aggregation terms}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Symbol
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Contractual meaning
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Canonical implementation term
+Meaning
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-\(\mathcal D(q\Vert p)\) & A regularizing divergence between
-distributions, such as KL, reverse KL, or \(\alpha\)-Rényi. &
-\texttt{divergence} \\
-\(L(s;o)\) & Loss evaluated at state \(s\) for observation \(o\). &
-\texttt{loss\_by\_state} \\
-\(\tau>0\) & Generalized-Bayes learning rate/temperature multiplying the
-accumulated loss. & \texttt{tau} (\texttt{learning\_rate} is a warned
-compatibility alias) \\
-\(w_n\) & Non-negative raw/base aggregation weight supplied for local
-posterior \(q_n\). & \texttt{base\_weights{[}n{]}} \\
-\(a_n\) & Raw variational server effective weight before normalization.
-In the variational rule \(0\le a_n\le w_n\). &
-\texttt{raw\_effective\_weights{[}n{]}} \\
-\(\widetilde a_n=a_n/\sum_m a_m\) & Normalized influence weight returned
-for interpretation and plotting. &
-\texttt{normalized\_effective\_weights{[}n{]}} \\
+\(\mathcal D(q\Vert p)\) & Regularizing divergence. \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Generalized-Bayes and
-aggregation terms}
+\begin{frame}[fragile]{Generalized-Bayes and\ldots{} (part 2)}
+The regularizing divergence acts between distributions and may be KL,
+reverse KL, or \(\alpha\)-Rényi. The positive learning rate/temperature
+\(\tau\) multiplies accumulated loss and accepts \texttt{learning\_rate}
+only as a warned compatibility alias.
+\end{frame}
+
+\begin{frame}{Generalized-Bayes and\ldots{} (part 3)}
 The symbols \(w_n\), \(a_n\), and \(\widetilde a_n\) are deliberately
 distinct. The first is supplied before aggregation, the second is the
-variational raw server output, and the third is only its normalized
-influence representation. The server heuristic's reweighting is not a
-FedGVI client loss and does not inherit a client-side robustness
-theorem. \breaktt{robust\_aggregate} is a server heuristic with the
-tested \(c=0\) recovery identity. \breaktt{variational\_aggregate} owns
-the explicit finite-simplex objective and the raw-weight bound; that
-bound is not an estimator-level B-robustness theorem.
+variational raw server output satisfying \(0\le a_n\le w_n\), and the
+third is only its normalized influence representation returned for
+interpretation and plotting.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Robustness, divergences, and
-loss controls}
+\begin{frame}[fragile]{Generalized-Bayes and\ldots{} (part 4)}
+Their canonical code terms, in table order, are \texttt{divergence},
+\texttt{loss\_by\_state}, \texttt{tau}, \texttt{base\_weights{[}n{]}},
+\texttt{raw\_effective\_weights{[}n{]}}, and
+\texttt{normalized\_effective\_weights{[}n{]}}.
+\end{frame}
+
+\begin{frame}[fragile]{Generalized-Bayes and\ldots{} (part 5)}
+The server heuristic's reweighting is not a FedGVI client loss and does
+not inherit a client-side robustness theorem. \texttt{robust\_aggregate}
+is a server heuristic with the tested \(c=0\) recovery identity.
+\end{frame}
+
+\begin{frame}[fragile]{Generalized-Bayes and\ldots{} (part 6)}
+\texttt{variational\_aggregate} owns the explicit finite-simplex
+objective and the raw-weight bound; that bound is not an estimator-level
+B-robustness theorem.
+\end{frame}
+
+\begin{frame}{Robustness, divergences, and loss controls}
 \protect\phantomsection\label{robustness-divergences-and-loss-controls}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Robustness, divergences, and
-loss controls}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.3929}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.6071}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Symbol
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Contractual meaning
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Canonical implementation term
+Meaning
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-\(c\ge0\) & Server-side robustness coefficient used by the
-divergence-reweighting rule. & \texttt{robustness} \\
-\(\lambda>0\) & Entropy weight in the variational server objective and
-its coordinate updates. The \(\lambda\downarrow0\) endpoint is a
-separate deterministic tied-argmax rule. & \texttt{entropy\_weight} \\
-\(\alpha>0\) & Rényi divergence order. & \texttt{alpha} \\
-\(\beta\ge0\) & Density-power loss parameter. & \texttt{beta} \\
-\(q_{\rm loss}>0\) & Robust categorical cross-entropy parameter in
-\(L_{q_{\rm loss}}\). The \(q_{\rm loss}\downarrow0\) NLL limit is
-handled separately, and the subscript prevents collision with posterior
-\(q(s)\). & \texttt{q\_loss} \\
-\(\rho\in[0,1]\) & Contamination strength/rate in a declared attack
-mechanism. & \breaktt{contamination\_rate} / \texttt{rate} \\
+\(c\ge0\) & Server divergence-reweighting coefficient. \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Robustness, divergences, and
-loss controls}
+\begin{frame}{Robustness, divergences\ldots{} (part 2)}
+The coefficient \(\lambda\) controls the variational objective and its
+coordinate updates; \(\lambda\downarrow0\) is a separate deterministic
+tied-argmax endpoint. The parameter \(q_{\text{loss}}\) belongs to
+\(L_{q_{\text{loss}}}\);
+\end{frame}
+
+\begin{frame}{Robustness, divergences\ldots{} (part 3)}
+its \(q_{\text{loss}}\downarrow0\) NLL limit is handled separately, and
+the subscript prevents collision with posterior \(q(s)\). Contamination
+rate \(\rho\) is always interpreted within the declared attack
+mechanism.
+\end{frame}
+
+\begin{frame}[fragile]{Robustness, divergences\ldots{} (part 4)}
+The associated code terms are \texttt{robustness},
+\texttt{entropy\_weight}, \texttt{alpha}, \texttt{beta},
+\texttt{q\_loss}, and \texttt{contamination\_rate} or \texttt{rate}, in
+table order.
+\end{frame}
+
+\begin{frame}{Robustness, divergences\ldots{} (part 5)}
 For the objective-backed server rule, the complete scalar-control
 contract is defined for \(c>0\) and \(\lambda>0\):
+\end{frame}
 
-\begin{equation}\protect\phantomsection\label{eq:notation-variational-objective}{
+\begin{frame}{Robustness, divergences\ldots{} (part 6)}
+\begin{equation}\tag{34}\protect\phantomsection\label{eq:notation-variational-objective}{
 \begin{aligned}
 F_\lambda(q,a)
  &= \sum_n a_n\,\mathrm{CE}(q,q_n)
-    -\lambda H(q)
-    +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w),\\
-q &\propto \exp\!\left(\frac{1}{\lambda}
-                  \sum_n a_n\log q_n\right),\\
+    -\lambda H(q)\\
+ &\qquad +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Robustness, divergences\ldots{} (part 7)}
+Its two coordinate updates are shown separately so each display remains
+legible at the presentation typography floor:
+\end{frame}
+
+\begin{frame}{Robustness, divergences\ldots{} (part 8)}
+\begin{equation}\tag{35}\protect\phantomsection\label{eq:notation-variational-updates}{
+\begin{aligned}
+q &\propto \exp\!\left(
+\frac{1}{\lambda}\sum_n a_n\log q_n\right),\\
 a_n &= w_n\exp\!\big[-c\,\mathrm{CE}(q,q_n)\big].
 \end{aligned}
 }\end{equation}
+\end{frame}
 
-The implementation uses \(\lambda=1.0\) by default; the
-\texttt{entropy\_weight} argument exposes the stated tempered family.
-The \(c=0\) branch is handled as a recovery limit outside the \(c>0\)
-objective; at \(\lambda=1.0\) it is the exact project log-linear pool.
+\begin{frame}[fragile]{Robustness, divergences\ldots{} (part 9)}
+The coordinate updates eq.~35 use
+\(\lambda=1.0\) by default; the \texttt{entropy\_weight} argument
+exposes the stated tempered family. The \(c=0\) branch is handled as a
+recovery limit outside the \(c>0\) objective; at \(\lambda=1.0\) it is
+the exact project log-linear pool.
+\end{frame}
+
+\begin{frame}{Robustness, divergences\ldots{} (part 10)}
 The \(\lambda\downarrow0\) endpoint is separately implemented as a
 deterministic tied-argmax rule and is not obtained by substituting
 \(\lambda=0\) into the displayed objective or update.
 \end{frame}
 
-\subsection{Cavity and factor algebra}\label{cavity-and-factor-algebra}
-
-\begin{frame}[fragile,allowframebreaks]{Cavity and factor algebra}
+\begin{frame}{Cavity and factor algebra}
+\protect\phantomsection\label{cavity-and-factor-algebra}
 For a positive-support global posterior and site term, the cavity
 operation is defined in log space and then normalized:
-
-\begin{equation}\protect\phantomsection\label{eq:notation-cavity}{
-q_{-n}(s)
-  = \frac{q(s)/t_n(s)}{\sum_{s'}q(s')/t_n(s')}
-  = \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
-}\end{equation}
-
-The corresponding factor replacement is
-
-\begin{equation}\protect\phantomsection\label{eq:notation-factor-replacement}{
-\log t_n^{\mathrm{new}}(s)
- = \log t_n^{\mathrm{old}}(s)
-   +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),
-\qquad
-t_n^{\mathrm{new}}(s)\leftarrow
-\frac{\exp(\log t_n^{\mathrm{new}}(s))}
-     {\sum_{s'}\exp(\log t_n^{\mathrm{new}}(s'))}.
-}\end{equation}
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Cavity and factor algebra}
-The code-level adapters are
-\breaktt{cavity(global\_posterior,\ site\_factor)} and
-\breaktt{update\_factor(old\_site\_factor,\ old\_global\_posterior,\ new\_global\_posterior)}.
-The old keywords \texttt{posterior}, \texttt{factor},
-\texttt{old\_factor}, \texttt{old\_posterior}, and
-\texttt{new\_posterior} are accepted only with a
-\breaktt{DeprecationWarning}; mixed canonical/old calls fail closed.
+\begin{frame}{Cavity and factor algebra (part 2)}
+\begin{equation}\tag{36}\protect\phantomsection\label{eq:notation-cavity}{
+\begin{aligned}
+q_{-n}(s)
+&= \frac{q(s)/t_n(s)}{\sum_{s'}q(s')/t_n(s')}\\
+&= \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Cavity and factor algebra (part 3)}
+The corresponding factor replacement is
+\end{frame}
+
+\begin{frame}{Cavity and factor algebra (part 4)}
+\begin{equation}\tag{37}\protect\phantomsection\label{eq:notation-factor-replacement}{
+\begin{aligned}
+\ell_n(s)
+&= \log t_n^{\mathrm{old}}(s)\\
+&\quad +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),\\
+t_n^{\mathrm{new}}(s)
+&\leftarrow \operatorname{softmax}(\ell_n)(s).
+\end{aligned}
+}\end{equation}
+\end{frame}
+
+\begin{frame}{Cavity and factor algebra (part 5)}
+Here \(\ell_n\) is the transient, unnormalized log-site vector; the
+softmax is exactly the exponential normalization of that vector.
+\end{frame}
+
+\begin{frame}[fragile]{Cavity and factor algebra (part 6)}
+The code-level \texttt{cavity} adapter takes \texttt{global\_posterior}
+and \texttt{site\_factor}. The \texttt{update\_factor} adapter takes
+\texttt{old\_site\_factor}, \texttt{old\_global\_posterior}, and
+\texttt{new\_global\_posterior}. The old keywords \texttt{posterior},
+\texttt{factor}, \texttt{old\_factor}, \texttt{old\_posterior},
+\end{frame}
+
+\begin{frame}[fragile]{Cavity and factor algebra (part 7)}
+and \texttt{new\_posterior} are accepted only with a
+\texttt{DeprecationWarning}; mixed canonical/old calls fail closed.
+\end{frame}
+
+\begin{frame}{Cavity and factor algebra (part 8)}
 Recombination is tested by normalizing \(q_{-n}(s)t_n(s)\) and checking
 recovery of \(q(s)\) to floating-point tolerance. A transported site
 factor is represented as a pmf, so its arbitrary positive
 natural-parameter scale is fixed by the explicit normalization above.
 \end{frame}
 
-\subsection{Statistical notation and
-nesting}\label{statistical-notation-and-nesting}
-
-\begin{frame}[allowframebreaks]{Statistical notation and nesting}
+\begin{frame}{Statistical notation and nesting}
+\protect\phantomsection\label{statistical-notation-and-nesting}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.3000}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.7000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Symbol
@@ -524,106 +635,101 @@ Contractual meaning
 \endhead
 \(n_{\rm seed}\) & Number of independently seeded worlds/replicates in a
 declared cell; the inferential unit for seed-level summaries. \\
-\(n_{\rm trial}\) & Number of trials nested within one seed and cell;
-trials are averaged before seed-level inference. \\
-\(\Delta=b-a\) & Matched robust-minus-naive contrast for the same
-seed/trial or the declared seed-level reduction. \\
-\(r_{\rm rb}\) & Wilcoxon matched-pairs rank-biserial effect, primary
-standardized effect. \\
-\(d_{\rm eq}\) & \(2r_{\rm rb}/\sqrt{1-r_{\rm rb}^2}\), a secondary
-rank-biserial-derived display/planning d-equivalent, not raw Cohen's
-\(d\). \\
-\(\mathrm{CI}_{1-\alpha}\) & Percentile bootstrap interval for the named
-estimand, resampling the declared replication unit. \\
-\(\mathrm{MCSE}\) & Monte Carlo standard error/precision diagnostic for
-a simulation summary; it is not a confidence interval. \\
-\(\mathrm{MDE}\) & Observed-design minimum detectable effect diagnostic
-under its stated approximation; it is not confirmatory evidence. \\
-\(p,q\) & Raw p-value and BH-adjusted q-value; the family and ownership
-are declared with every report. \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Statistical notation and nesting}
+\begin{frame}{Statistical notation and\ldots{} (part 2)}
 For the robustness sweep, the primary result is \(r_{\rm rb}\) and the
 matched mean difference \(\overline{\Delta}\) with its bootstrap
 interval. The d-equivalent is retained only as a monotone secondary
 display and planning input. When \(|r_{\rm rb}|=1\), the transform
-diverges; reports use a finite sentinel and captions disclose saturation
-rather than presenting a million-scale number as a scientifically
-interpretable effect. Power, prospective sample size, MCSE, and MDE are
-observed-effect planning/precision diagnostics, not evidence that a
-confirmatory effect exists.
-
+diverges;
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Statistical notation and nesting}
+\begin{frame}{Statistical notation and\ldots{} (part 3)}
+reports use a finite sentinel and captions disclose saturation rather
+than presenting a million-scale number as a scientifically interpretable
+effect.
+\end{frame}
+
+\begin{frame}{Statistical notation and\ldots{} (part 4)}
+Power, prospective sample size, MCSE, and MDE are observed-effect
+planning/precision diagnostics, not evidence that a confirmatory effect
+exists.
+\end{frame}
+
+\begin{frame}{Statistical notation and\ldots{} (part 5)}
 The predeclared headline display rule is the largest positive
 \(r_{\rm rb}\) among robust methods, with the declared method order as a
 deterministic tie break. A report must also expose the complete
 tied-method set, the tie-break, the method with the largest mean
-\(\overline{\Delta}\), and the method with the largest mean at the worst
-rate. These are distinct summaries; none is a unique scientific winner
-when the evidence is tied or conditional.
-
+\(\overline{\Delta}\),
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Statistical notation and nesting}
+\begin{frame}{Statistical notation and\ldots{} (part 6)}
+and the method with the largest mean at the worst rate.
+
+These are distinct summaries; none is a unique scientific winner when
+the evidence is tied or conditional.
+\end{frame}
+
+\begin{frame}{Statistical notation and\ldots{} (part 7)}
 For the review grid, every configured robust method remains an
 inferential member and a displayed rate-profile curve. No pooled-mean
 selection creates a curve, interval, or hypothesis-test member for that
 surface.
 \end{frame}
 
-\subsection{Code and manuscript naming
-map}\label{code-and-manuscript-naming-map}
+\begin{frame}[fragile]{Code and manuscript naming map}
+\protect\phantomsection\label{code-and-manuscript-naming-map}
+Every arrow names a legacy surface followed by its canonical
+replacement.
 
-\begin{frame}[fragile,allowframebreaks]{Code and manuscript naming map}
-{\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Retired/ambiguous name
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Canonical name
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Compatibility rule
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\texttt{beliefs}, \texttt{agent\_beliefs} & \breaktt{local\_posteriors} &
-Warned keyword/property adapters; no silent reinterpretation. \\
-\texttt{weights} & \texttt{base\_weights} & Warned keyword adapter. The
-federation wire key \texttt{agent\_weights} remains unchanged. \\
-\texttt{agent\_weights} result property &
-\breaktt{normalized\_effective\_weights} & Warned property adapter;
-serialized wire compatibility is preserved. \\
-Variational \texttt{agent\_weights} argument &
-\breaktt{raw\_effective\_weights} & Warned objective API adapter; reports
-use the canonical term. \\
-\texttt{shared\_beliefs} & \breaktt{shared\_posteriors} & Warned
-diagnostics property adapter. \\
-\texttt{loss\_vec} & \texttt{loss\_by\_state} & Warned generalized-Bayes
-keyword adapter. \\
-\breaktt{cohens\_d\_from\_rank\_biserial} &
-\breaktt{d\_equivalent\_from\_rank\_biserial} & Warned function adapter;
-the returned value is not raw Cohen's \(d\). \\
-Report \texttt{cohens\_d} & Report \texttt{d\_equivalent} & New reports
-are canonical and schema-versioned; readers must fail closed on an
-unsupported version. \\
-\bottomrule\noalign{}
-\end{longtable}
-}
-
+\textbf{Belief inputs.} \texttt{beliefs} or \texttt{agent\_beliefs} \texorpdfstring{\ensuremath{\to}}{->}
+\texttt{local\_posteriors}; \texttt{weights} \texorpdfstring{\ensuremath{\to}}{->} \texttt{base\_weights}.
+Both are warned keyword/property adapters.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Code and manuscript naming map}
+\begin{frame}[fragile]{Code and manuscript\ldots{} (part 2)}
+\textbf{Aggregation outputs.} Result property \texttt{agent\_weights} \texorpdfstring{\ensuremath{\to}}{->}
+\texttt{normalized\_effective\_weights}; variational argument
+\texttt{agent\_weights} \texorpdfstring{\ensuremath{\to}}{->} \texttt{raw\_effective\_weights}. Both are
+warned adapters, but represent different weight scales.
+\end{frame}
+
+\begin{frame}[fragile]{Code and manuscript\ldots{} (part 3)}
+\textbf{Diagnostics.} \texttt{shared\_beliefs} \texorpdfstring{\ensuremath{\to}}{->}
+\texttt{shared\_posteriors}; \texttt{loss\_vec} \texorpdfstring{\ensuremath{\to}}{->}
+\texttt{loss\_by\_state}. These are warned diagnostics and keyword
+adapters.
+\end{frame}
+
+\begin{frame}[fragile]{Code and manuscript\ldots{} (part 4)}
+\textbf{Statistics.} \texttt{cohens\_d\_from\_rank\_biserial} \texorpdfstring{\ensuremath{\to}}{->}
+\texttt{d\_equivalent\_from\_rank\_biserial}; report field
+\texttt{cohens\_d} \texorpdfstring{\ensuremath{\to}}{->} \texttt{d\_equivalent}. The function is a warned
+adapter; the report change is a versioned migration.
+\end{frame}
+
+\begin{frame}[fragile]{Code and manuscript\ldots{} (part 5)}
+These adapters never silently reinterpret an argument or result. The
+\texttt{agent\_weights} result property preserves serialized wire
+compatibility, while the variational objective and new reports use the
+canonical weight terms. New reports are canonical and schema-versioned;
+\end{frame}
+
+\begin{frame}[fragile]{Code and manuscript\ldots{} (part 6)}
+readers fail closed on unsupported versions.
+\texttt{d\_equivalent\_from\_rank\_biserial} returns the declared
+rank-biserial-derived d-equivalent, not raw Cohen's \(d\);
+\texttt{loss\_vec} remains only a warned generalized-Bayes keyword
+adapter.
+\end{frame}
+
+\begin{frame}[fragile]{Code and manuscript\ldots{} (part 7)}
 The wire-level key \texttt{agent\_weights} is preserved because it is a
 federation transport contract, not a claim about the scale or meaning of
 the new result fields. A future wire migration requires an explicit
@@ -631,28 +737,37 @@ version and a fail-closed reader; it must not silently reinterpret the
 key.
 \end{frame}
 
-\subsection{Source and evidence
-boundaries}\label{source-and-evidence-boundaries}
-
-\begin{frame}[allowframebreaks]{Source and evidence boundaries}
+\begin{frame}{Source and evidence boundaries}
+\protect\phantomsection\label{source-and-evidence-boundaries}
 The Friston belief-sharing equations are source equations/protocol
 claims. Only under the explicit finite-shared-support,
 posterior-log-potential, and fixed-weight bridge above does the
 categorical log-linear pool specialize the source message-combination
-term; the tested \(c=0\) identity remains project-local. The
-generalized-Bayes and loss limits are implementation analogues checked
-in the finite categorical model. The contamination, gallery, onset,
-conditional-world, and review-grid quantities are conditional simulation
-evidence over declared cells. None of these finite surfaces is an
-external-data replication, a reconstructed source protocol, a universal
-attack taxonomy, a causal intervention, or a proof of a server-side
-robustness guarantee. Open theory, calibration, protocol,
-continuous-state, external-data, authenticated-federation, and
-clean-release work remains open in the project TODO and claim-audit
+term;
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Source and evidence boundaries}
-documents.
+\begin{frame}{Source and evidence\ldots{} (part 2)}
+the tested \(c=0\) identity remains project-local. The generalized-Bayes
+and loss limits are implementation analogues checked in the finite
+categorical model.
+\end{frame}
+
+\begin{frame}{Source and evidence\ldots{} (part 3)}
+The contamination, gallery, onset, conditional-world, and review-grid
+quantities are conditional simulation evidence over declared cells. None
+of these finite surfaces is an external-data replication, a
+reconstructed source protocol, a universal attack taxonomy, a causal
+intervention,
+\end{frame}
+
+\begin{frame}{Source and evidence\ldots{} (part 4)}
+or a proof of a server-side robustness guarantee.
+\end{frame}
+
+\begin{frame}{Source and evidence\ldots{} (part 5)}
+Open theory, calibration, protocol, continuous-state, external-data,
+authenticated-federation, and clean-release work remains open in the
+project TODO and claim-audit documents.
 \end{frame}
 
 \end{document}

@@ -1,0 +1,53 @@
+{
+  "panels": [
+    {
+      "alt": "Open fill: honest. Cross-hatch: adversary.\nDotted line: equal-weight pool.\nAll panels share the same weight scale.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0709e66a2d25ae87524866ec8b042f3838321e8764fe7adf555581bac0da300f",
+      "src": "../figures/robust_influence_weights.slide-encoding.png"
+    },
+    {
+      "alt": "Agents 0 through 1: exact normalized heuristic weights; shared scale and equal-weight reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "aaf1e589ede35ae48e4e0493db47515ad51556e107e1f8c6e7cbef1a0e991944",
+      "src": "../figures/robust_influence_weights.slide-agents-1-2.png"
+    },
+    {
+      "alt": "Agents 2 through 3: exact normalized heuristic weights; shared scale and equal-weight reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "e8656c45ad16531407a4a05fc055e30772aba6592de995735ae6f10636dd7fa9",
+      "src": "../figures/robust_influence_weights.slide-agents-3-4.png"
+    },
+    {
+      "alt": "Agents 4 through 5: exact normalized heuristic weights; shared scale and equal-weight reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "3168aee1aa995ea8b8699bed12d9c3e3c69e83e0306317d2f4666996acd21de7",
+      "src": "../figures/robust_influence_weights.slide-agents-5-6.png"
+    },
+    {
+      "alt": "Agents 6 through 6: exact normalized heuristic weights; shared scale and equal-weight reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f40c1888cb965361912cac2b8d1c667919e540399294b9545a7c9f535dada95d",
+      "src": "../figures/robust_influence_weights.slide-agents-7-7.png"
+    },
+    {
+      "alt": "Agents contaminated: 2/7 (29%)\nWeight sum: 1.000\nHealthy mean weight: 0.199",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7c30c3f6079b35480b06329008f60f027c83cc9b035cc438660e5a5dcc6071d5",
+      "src": "../figures/robust_influence_weights.slide-notes-1.png"
+    },
+    {
+      "alt": "Adversary mean weight: 0.002\nObserved role-weight gap: 0.198",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2f3c3c7cf3eb2702445e61d54495068d7c6f550eb19cf09d529c98aae395ea01",
+      "src": "../figures/robust_influence_weights.slide-notes-2.png"
+    },
+    {
+      "alt": "Server heuristic weights support a recovery-limit diagnostic.\nThey do not inherit client-loss robustness guarantees.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1a595935dc2c0374f8cd12dcc2e380d5c2a95a884c67e58a563067b4355678ad",
+      "src": "../figures/robust_influence_weights.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

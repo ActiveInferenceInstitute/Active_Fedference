@@ -1,0 +1,155 @@
+{
+  "panels": [
+    {
+      "alt": "Sharing, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "154a48d1f3d7883c1f8a87909739ed74e55f9a550422955e0b2897ba63c7b109",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-1-columns-1-3.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "6422db1dae382f60f6b0a78817da1c783af35cbe7fc5ff5bdbbd1044b1561e49",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-1-columns-4-5.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f3d6e6cbd5cadfae73f8f3d8176e21cdfed15d28df01663552e3363a0b25eeaf",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-2-columns-1-3.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "072873a529b6627e518903ba7c9d157de81e28c7f86b92576bf3eae17243c6a9",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-2-columns-4-5.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f83db211b7788ecc5e07b4d37194cb092e16e6b37dfbf171d7c5eab4fe20a6a2",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-3-columns-1-3.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "a49213f91d2f28fd0147efaba7ad50ab2c07d798219ac75206054743e0ba2cd9",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-3-columns-4-5.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "ba7583c926f83fd17f841d368acd73622ee8500428b8277483eacf63d7f4827d",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-4-columns-1-3.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "899e5bdd89edf050f7a0666897289f3e12ae321bbb30d0ab1c196634893a8641",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-4-columns-4-5.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "3dec8c69e2cc85e0678a8af239e759c387f84572cb0f838ddaf7e4cdcf482183",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-5-columns-1-3.png"
+    },
+    {
+      "alt": "Sharing, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "6ae252a6c4bf939b36d5eace32d884893f8d80d20e15a0bd4b0c3329894fa978",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-acuity-5-columns-4-5.png"
+    },
+    {
+      "alt": "Sharing: max |gap| = 0.586; positive cells above the display band = 19/25.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0432e9f51cf9c07c5b10a4ba008ccb62fff91bc9acbfb47a8db280d0b6dea373",
+      "src": "../figures/sensitivity_heatmap.slide-sharing-summary.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "43675a4cebe95b51d6c5f990c8a6790e7ec8a85a5c9289b9c3b2dedf7a88e1fc",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-1-columns-1-3.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "156f8ba2f1c4ce7136917ea1e5f9e4568985eab719005edd7f5b56adca4f382b",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-1-columns-4-5.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "f87e7dd3386111d08822837bda186cf3fda3fb556fd4096e0bd2e4f9990bee97",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-2-columns-1-3.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "838b0daaa1a33e52fe69d0c7477f4284476c90e72f7e8a2fd3ad20b30fa49cff",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-2-columns-4-5.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "3a033bcf207af6219cb2b896bd87b70208b3659e36ea1a567f467e823957fd34",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-3-columns-1-3.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "c7a1525acc036f92f43b32c598888d582597ed2740f76ff5dc36a95076678b28",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-3-columns-4-5.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "dbb868df1072bbb17a0c040775e47e546636e7809899c796c37f8e74662c18f7",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-4-columns-1-3.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "425d73c3172a2750786deed8df63d774c8a345f382e8fb4a332ee95690a6a696",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-4-columns-4-5.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "d2cc2671b5c2e89d9763d187976aedd1103f6120f5d550239be2af2a14ea34e6",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-5-columns-1-3.png"
+    },
+    {
+      "alt": "Hierarchy, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "cade649f8978478db4b6a6be173fbb8221eb9b17c3ac60aef70aabae5bf1252e",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-acuity-5-columns-4-5.png"
+    },
+    {
+      "alt": "Hierarchy: max |gap| = 0.450; positive cells above the display band = 4/25.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bebcace26cf0fd389783f7a1479004653e1fdf7d1c5f2cc19926282dd7ad647a",
+      "src": "../figures/sensitivity_heatmap.slide-hierarchy-summary.png"
+    },
+    {
+      "alt": "Sharing: communicating minus isolated accuracy. Hierarchy: hierarchical minus flat location accuracy. Positive and negative values retain their sign.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "713f25212a37f83ef3223d2a0bbdba1402eb51ce6f4eb2121abe74179bfbea8b",
+      "src": "../figures/sensitivity_heatmap.slide-direction.png"
+    },
+    {
+      "alt": "Common signed color scale: [-0.5861, 0.5861]. Every cell prints its value; panels keep original acuity and colony ordering.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "377e6e0b97746779b54c5e02d26bb0fdcf3263784685afa8178673ee447c7684",
+      "src": "../figures/sensitivity_heatmap.slide-scale.png"
+    },
+    {
+      "alt": "Hatching uses unrounded gaps: |gap| \u2264 0.05. Printed values are rounded; equal printed values can have different hatching. It is not a CI, significance test, unreliability flag or proof of zero effect.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "33141b09983512b3ae7ef0c56cb857f6cc02521b12fef139fa316e3a1a806010",
+      "src": "../figures/sensitivity_heatmap.slide-hatching.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

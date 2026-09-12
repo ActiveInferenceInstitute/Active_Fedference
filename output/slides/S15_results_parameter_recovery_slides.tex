@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -235,44 +277,84 @@
 \section{Parameter recovery: acuity selection on the tested
 grid}\label{sec:results-parameter-recovery}
 
-\begin{frame}[allowframebreaks]{Parameter recovery: acuity selection on
-the tested grid}
+\begin{frame}{Parameter recovery: acuity selection on the tested grid}
 Parameter recovery probes whether the executed observation model
 contains enough information to distinguish sensor acuity under the study
-design. We sweep acuity values 0.60, 0.70, 0.80, 0.90: for each true
-acuity the model generates 200 synthetic observations per trial across
-960 independent trials, fits acuity by marginal-likelihood grid search,
-and compares the recovered value with ground truth.
+design. We sweep acuity values 0.60, 0.70, 0.80, 0.90:
+\end{frame}
 
+\begin{frame}{Parameter recovery (part 2)}
+for each true acuity the model generates 200 synthetic observations per
+trial across 960 independent trials, fits acuity by marginal-likelihood
+grid search, and compares the recovered value with ground truth.
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 3)}
+The configured seed initializes the base RNG stream; it is not the
+independent analysis unit.
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 4)}
 Across the sweep the mean absolute recovery error is 0.0232 and the
 coefficient of determination of mean-recovered versus true acuity is
 \(R^2\) = 0.9999. Within this finite grid and observation budget,
 recovered acuity tracks the identity line with the reported error
-(fig.~\ref{fig:parameter-recovery}). This is evidence of practical
-acuity recoverability for the executed design, not a proof of global or
-structural identifiability and not an acuity-by-colony-size study.
-
+(fig.~31).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Parameter recovery: acuity selection on
-the tested grid}
+\begin{frame}{Parameter recovery (part 5)}
+This is evidence of practical acuity recoverability for the executed
+design, not a proof of global or structural identifiability and not an
+acuity-by-colony-size study.
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 6)}
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth,height=0.40\textheight,keepaspectratio,alt={Two-panel parameter-recovery figure. Source relation: original project parameter-recovery diagnostic; estimand: recovered acuity and absolute error in probability units; uncertainty: empirical percentile intervals across independent trials. In the left panel, the x-axis is true acuity and the y-axis is recovered acuity, both in probability units; error bars show the 95\% empirical percentile interval across 960 trials per condition, and the diagonal is the identity reference. This interval is a descriptive quantile of the independent-trial estimates, not a bootstrap confidence interval or Bayesian credible interval. In the right panel, the x-axis is tested true acuity and the y-axis is absolute acuity error in probability units; the horizontal line is the global mean absolute error. These finite-grid results quantify acuity recovery for 200 observations per trial; they do not establish global structural identifiability.}]{../figures/parameter_recovery.png}
-\caption{Two-panel parameter-recovery figure. Source relation: original
-project parameter-recovery diagnostic; estimand: recovered acuity and
-absolute error in probability units; uncertainty: empirical percentile
-intervals across independent trials. In the left panel, the x-axis is
-true acuity and the y-axis is recovered acuity, both in probability
-units; error bars show the 95\% empirical percentile interval across 960
-trials per condition, and the diagonal is the identity reference. This
-interval is a descriptive quantile of the independent-trial estimates,
-not a bootstrap confidence interval or Bayesian credible interval. In
-the right panel, the x-axis is tested true acuity and the y-axis is
-absolute acuity error in probability units; the horizontal line is the
-global mean absolute error. These finite-grid results quantify acuity
-recovery for 200 observations per trial; they do not establish global
-structural identifiability.}\label{fig:parameter-recovery}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every acuity condition\textquotesingle s recovered mean and empirical trial interval, with identity reference.}]{../figures/parameter_recovery.slide-recovery.png}
+\refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 7)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every acuity condition\textquotesingle s mean absolute error with the supplied global mean error reference.}]{../figures/parameter_recovery.slide-errors.png}
+\refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 8)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Recovery whiskers: 95\% empirical percentile intervals over independent simulation trials within each acuity. Observations are nested within trial.}]{../figures/parameter_recovery.slide-uncertainty.png}
+\refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 9)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={independent trials/acuity = 960
+observations/trial = 200
+MAE = 0.0232}]{../figures/parameter_recovery.slide-notes-1.png}
+\refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 10)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R² = 0.9999}]{../figures/parameter_recovery.slide-notes-2.png}
+\refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Parameter recovery (part 11)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Simulation-based recovery over the declared acuity grid. Identity reference is not an additional estimate; no uncertainty interval is inferred for MAE bars.}]{../figures/parameter_recovery.slide-scope.png}
+\refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-6}
 \end{figure}
 \end{frame}
 

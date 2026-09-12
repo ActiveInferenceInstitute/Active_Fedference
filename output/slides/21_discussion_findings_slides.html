@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Discussion: what the evidence supports — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:discussion"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67bc053c67a5">
+<h1 class="section-divider" id="slide-heading-67bc053c67a5">Discussion: what the evidence supports</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Discussion: what the evidence supports, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67bc053c67a5-2">
+<h2 class="section-overview prose-slide"
+aria-label="Discussion: what the evidence supports, part 2" id="slide-heading-67bc053c67a5-2">Discussion:
+what the evidence supports</h2>
+<p>The 9 studies probe distinct parts of one categorical, factor-based
+framework rather than repeating a single benchmark. Their common result
+is narrow but useful: the client construction contains its
+standard-Bayes limit and the server has a named project log-linear-pool
+recovery corner,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Discussion: what the evidence supports, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-899c9986110a">
+<h2 class="section-overview prose-slide"
+aria-label="Discussion: what the evidence supports, part 2" id="slide-heading-899c9986110a">Discussion:
+what the… (part 2)</h2>
+<p>and behavior away from those limits can be measured under declared
+contamination, sampling, and model assumptions. The recovery identities
+are formal; the performance results are conditional simulation
+evidence.</p>
+</section>
+<section id="sec:discussion-limit" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-782b0f1fddea">
+<h2 class="prose-slide" id="slide-heading-782b0f1fddea">The recovery limit is the formal anchor</h2>
+<p>The coherence of the framework rests on the KL/NLL client limits and
+the zero-robustness project-pool identity (<span class="cross-reference">Equation (10)</span>,
+<span class="cross-reference">Equation (11)</span>).
+This is an identity of the stated categorical implementation,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The recovery limit is the formal anchor, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e6aefc5f376e">
+<h2 class="prose-slide"
+aria-label="The recovery limit is the formal anchor, part 2" id="slide-heading-e6aefc5f376e">The
+recovery limit is the… (part 2)</h2>
+<p>not an asymptotic claim about every generalized Bayesian model or a
+reconstruction of the complete source protocol.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The recovery limit is the formal anchor, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f52af461ea07">
+<h2 class="prose-slide"
+aria-label="The recovery limit is the formal anchor, part 3" id="slide-heading-f52af461ea07">The
+recovery limit is the… (part 3)</h2>
+<p>The server aggregator returns the log-linear pool (<span class="cross-reference">9</span>)
+with maximum deviation 0; the generalized posterior returns the
+closed-form Bayes update with deviation 5.55e-17; and the Rényi
+divergence, <span class="math inline">\(\beta\)</span>-loss, and robust
+cross-entropy recover their KL/NLL limits with residuals 0, 0, and
+0.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The recovery limit is the formal anchor, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ef54e35acb8e">
+<h2 class="prose-slide"
+aria-label="The recovery limit is the formal anchor, part 4" id="slide-heading-ef54e35acb8e">The
+recovery limit is the… (part 4)</h2>
+<p>Theorem <span class="cross-reference">5</span>,
+Corollary <span class="cross-reference">6</span>,
+Lemma <span class="cross-reference">3</span>,
+and Proposition <span class="cross-reference">4</span>
+state the formal limits; the recovery checks in <span class="cross-reference">Section 7.1</span>
+are the executable falsification harness.</p>
+</section>
+<section id="sec:discussion-joint" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a22e779447cd">
+<h2 class="prose-slide" id="slide-heading-a22e779447cd">What the study suite jointly shows</h2>
+<p>Read together, the suite separates into two kinds of result:
+identities that hold exactly at the standard corner, and performance
+contrasts that are explicitly conditional on the operating regime. The
+distinction is the point of the joint reading — it says which claims
+travel and which are tied to the declared world.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1085d1fc67c3">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 2" id="slide-heading-1085d1fc67c3">What the study
+suite jointly… (part 2)</h2>
+<p>Studies 1–3 sit at the standard corner. In the reduced categorical
+analogue, the paired difference <span class="math inline">\(\Delta \bar
+F=\bar F_{\text{solo}}-\bar F_{\text{share}}\)</span> is 3.3109 nats, so
+its positive sign indicates lower mean free energy with communication
+(<span class="cross-reference">Section 7.2</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-89e8b50a7233">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 3" id="slide-heading-89e8b50a7233">What the study
+suite jointly… (part 3)</h2>
+<p><span class="cross-reference">Figure 9</span>).
+Seeds are the independent unit; agents remain nested within seed.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-87094653dd0f">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 4" id="slide-heading-87094653dd0f">What the study
+suite jointly… (part 4)</h2>
+<p>Dirichlet learning reduces KL from 3.4231 to 0.0027 nats (<span class="cross-reference">Section 7.3</span>,
+<span class="cross-reference">Figure 11</span>).
+The configured BMR sign control favors redundant-column pruning and
+rejects the supported-column reduction (<span class="cross-reference">Section 7.4</span>,
+<span class="cross-reference">Figure 12</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ba0f615fa0f2">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 5" id="slide-heading-ba0f615fa0f2">What the study
+suite jointly… (part 5)</h2>
+<p>These are bounded mechanistic checks, not exact source-protocol
+replications or general structure-discovery results.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a05ee12bbc43">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 6" id="slide-heading-a05ee12bbc43">What the study
+suite jointly… (part 6)</h2>
+<p>Study 4 steps away from the corner by holding the hidden state and
+attack target fixed while redrawing matched contaminated colonies. The
+standard pool degrades across the declared rate grid.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9540cdcdbd71">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 7" id="slide-heading-9540cdcdbd71">What the study
+suite jointly… (part 7)</h2>
+<p>The server-side heuristic is not uniformly better: its robust members
+are similar to or slightly below the standard pool at low contamination,
+then the selected pooled display member separates in its favor under
+severe contamination.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2e74d6d1967e">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 8" id="slide-heading-2e74d6d1967e">What the study
+suite jointly… (part 8)</h2>
+<p>At the largest swept rate, AR reaches 0.9880 against 0.6928 for the
+standard pool (<span class="cross-reference">Table 4</span>;
+the sweep plot in <span class="cross-reference">Figure 13</span>
+shows the separate matched-trial gallery colony, whose largest-rate
+separation is smaller).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fac1099d5917">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 9" id="slide-heading-fac1099d5917">What the study
+suite jointly… (part 9)</h2>
+<p>This regime dependence is a result, not a nuisance to be hidden:
+robustness can cost efficiency when the attack is weak and pay off when
+the declared contamination is severe.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-44c5d1409367">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 10" id="slide-heading-44c5d1409367">What the study
+suite jointly… (part 10)</h2>
+<p>The structural extension studies (Studies 5–9) sharpen the
+conditional half of that split rather than adding further corner checks,
+and they are reported with their negative contrasts intact.
+Communication is not uniformly beneficial:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-da38304bfb84">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 11" id="slide-heading-da38304bfb84">What the study
+suite jointly… (part 11)</h2>
+<p>the cross-study summary (<span class="cross-reference">Figure 30</span>)
+reports each study’s federation headline signed contrast or estimand in
+its native units. Its intervals come from the separate harmonized
+seed-level rerun, including rows whose primary figure is a deterministic
+diagnostic; several rows are positive,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2b416ab764ae">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 12" id="slide-heading-2b416ab764ae">What the study
+suite jointly… (part 12)</h2>
+<p>while the moving-world EFE and two-level hierarchical rows are
+approximately zero.</p>
+<p>Pooling helps when views are complementary and can be unnecessary or
+mildly costly when the agents already agree.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-185ee662a5cb">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 13" id="slide-heading-185ee662a5cb">What the study
+suite jointly… (part 13)</h2>
+<p>Adding hierarchical depth is held to the same standard — the
+two-level stack does not beat the flat baseline on location accuracy
+(the paired gap is a small, statistically reliable cost) (<span class="cross-reference">Section 14.9</span>),
+earning its place only by additionally resolving the context latent
+above chance.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the study suite jointly shows, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-119818c3c668">
+<h2 class="prose-slide"
+aria-label="What the study suite jointly shows, part 14" id="slide-heading-119818c3c668">What the study
+suite jointly… (part 14)</h2>
+<p>The joint lesson is therefore not that federation or depth is always
+worth its cost, but that the suite measures the regimes in which each
+one is.</p>
+</section>
+<section id="sec:discussion-identifiability"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2656888f619a">
+<h2 class="prose-slide" id="slide-heading-2656888f619a">What this simulation identifies—and what it does
+not</h2>
+<p>The primary robustness estimand is the matched-trial mean difference
+in consensus accuracy conditional on the seeded true state and attack
+geometry.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bacf8338899e">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 2" id="slide-heading-bacf8338899e">What
+this simulation… (part 2)</h2>
+<p>The 960 paired trials quantify Monte Carlo variation for that
+estimand; they do not average over hidden states, attack targets,
+adaptive adversaries, or real deployments.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48000d90a22f">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 3" id="slide-heading-48000d90a22f">What
+this simulation… (part 3)</h2>
+<p>The cross-study layer reduces its matched trials within seed before
+seed-level summaries, so clients and within-seed trials are not silently
+counted as independent replicates.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c9b21e1d4540">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 4" id="slide-heading-c9b21e1d4540">What
+this simulation… (part 4)</h2>
+<p>This follows simulation study guidance to declare the estimand and
+Monte Carlo unit explicitly <span class="citation"
+data-cites="morris2019simulation koehler2009mcse">(Morris et al. 2019;
+Koehler et al. 2009)</span>, and the bootstrap interval follows the
+declared resampling unit rather than treating nested observations as a
+flat sample <span class="citation" data-cites="loy2021lmeresampler">(Loy
+and Korobova 2021)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3d4876cecb6d">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 5" id="slide-heading-3d4876cecb6d">What
+this simulation… (part 5)</h2>
+<p>The consequence is a more informative claim boundary. The sweep
+supports a conditional statement about this contamination mechanism and
+these categorical beliefs; it does not establish universal Byzantine
+tolerance, calibration, or truth recovery.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-52f4532ced0f">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 6" id="slide-heading-52f4532ced0f">What
+this simulation… (part 6)</h2>
+<p>The result also does not identify a single universally best
+robustness parameter independent of the operating regime: the standard
+pool is preferable at the low-contamination cells in this run,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-56f043129d2d">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 7" id="slide-heading-56f043129d2d">What
+this simulation… (part 7)</h2>
+<p>while at least one robust member has a BH-rejected positive contrast
+in the declared high-contamination verdict; the tied display set and
+deterministic tie-break are reported separately.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-25027d9fad18">
+<h2 class="prose-slide"
+aria-label="What this simulation identifies—and what it does not, part 8" id="slide-heading-25027d9fad18">What
+this simulation… (part 8)</h2>
+<p>Those are precisely the conditions a future adaptive or deployment
+study must vary.</p>
+</section>
+<section id="sec:discussion-verdict" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e57a5ebc8273">
+<h2 class="prose-slide" id="slide-heading-e57a5ebc8273">The robustness comparison is conditional and
+statistically qualified</h2>
+<p>The headline comparison is computed by the statistics module (<span class="cross-reference">Section 7.5.2</span>),
+not typed into the prose. Across 960 matched trial replicates nested
+within the fixed seeded world at contamination rate 0.800,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2650e32e693d">
+<h2 class="prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 2" id="slide-heading-2650e32e693d">The
+robustness comparison… (part 2)</h2>
+<p>each robust server member is compared with the standard pool by a
+Wilcoxon signed-rank test <span class="citation"
+data-cites="wilcoxon1945individual">(Wilcoxon 1945)</span> and the
+declared family of p-values is adjusted by Benjamini–Hochberg FDR <span
+class="citation" data-cites="benjamini1995controlling">(Benjamini and
+Hochberg 1995)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8c0d227e5df8">
+<h2 class="prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 3" id="slide-heading-8c0d227e5df8">The
+robustness comparison… (part 3)</h2>
+<p>A method wins only when the adjusted null is rejected and its effect
+is positive, here at <span class="math inline">\(q = 1.11 \times
+10^{-158}\)</span> with effect size 1.0000 (large). The observed-effect
+power and prospective sample-size calculation are planning quantities,
+not independent confirmation of the result.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d49b847ed911">
+<h2 class="prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 4" id="slide-heading-d49b847ed911">The
+robustness comparison… (part 4)</h2>
+<p>The paired design is appropriate for the controlled comparison
+because each condition shares the seed, true state, and attack geometry.
+Its interpretation remains limited: the signed-rank test concerns the
+distribution of paired differences, not equality of raw means,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0514dc1db239">
+<h2 class="prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 5" id="slide-heading-0514dc1db239">The
+robustness comparison… (part 5)</h2>
+<p>and BH controls expected false-discovery proportion within the
+declared family rather than the probability of any false positive.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-66e7a94154d8">
+<h2 class="prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 6" id="slide-heading-66e7a94154d8">The
+robustness comparison… (part 6)</h2>
+<p>The confidence intervals are percentile bootstrap intervals over the
+matched-trial unit. Seed-level review-grid results are reported
+separately and do not treat the primary trial count as a population of
+independent worlds. These qualifications make the verdict narrower,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ad7658abd3aa">
+<h2 class="prose-slide"
+aria-label="The robustness comparison is conditional and statistically qualified, part 7" id="slide-heading-ad7658abd3aa">The
+robustness comparison… (part 7)</h2>
+<p>but also make it reproducible and falsifiable.</p>
+</section>
+<section id="sec:discussion-axes" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ac0d2e6a0be8">
+<h2 class="prose-slide" id="slide-heading-ac0d2e6a0be8">Three robustness axes remain separate</h2>
+<p>The authoritative theorem–heuristic–objective taxonomy is <span class="cross-reference">Section 3.3</span>.
+The results preserve it: the client theorem remains source-conditional
+<span class="citation" data-cites="mildner2025fedgvi">(Mildner et al.
+2025)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Three robustness axes remain separate, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3dcb92377f7f">
+<h2 class="prose-slide"
+aria-label="Three robustness axes remain separate, part 2" id="slide-heading-3dcb92377f7f">Three
+robustness axes… (part 2)</h2>
+<p><code>robust_aggregate</code> carries only its proved recovery
+identity plus conditional empirical contrasts, and
+<code>variational_aggregate</code> carries the stated objective and
+raw-weight bound.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Three robustness axes remain separate, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f68e6597003f">
+<h2 class="prose-slide"
+aria-label="Three robustness axes remain separate, part 3" id="slide-heading-f68e6597003f">Three
+robustness axes… (part 3)</h2>
+<p>No figure or statistic moves a guarantee between these operators;
+<span class="cross-reference">Section 8.13</span>
+records the complete boundary.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Three robustness axes remain separate, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0ea16fd9c577">
+<h2 class="prose-slide"
+aria-label="Three robustness axes remain separate, part 4" id="slide-heading-0ea16fd9c577">Three
+robustness axes… (part 4)</h2>
+<p>The map in <span class="cross-reference">Figure 6</span>
+is the compact ledger for that separation. Its fourteen rows align
+headline result families and public boundaries with their estimands and
+independent units, while its nesting strip prevents seeds, trials,
+agents,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Three robustness axes remain separate, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9384e995d95b">
+<h2 class="prose-slide"
+aria-label="Three robustness axes remain separate, part 5" id="slide-heading-9384e995d95b">Three
+robustness axes… (part 5)</h2>
+<p>and ordered states from being treated as interchangeable evidence.
+Exact estimates and intervals remain in their typed reports and the
+native-unit cross-study summary (<span class="cross-reference">Figure 30</span>).</p>
+</section>
+<section id="sec:discussion-tempered" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f0e3e77f10bd">
+<h2 class="prose-slide" id="slide-heading-f0e3e77f10bd">Accuracy and effective-weight control can be
+traded explicitly</h2>
+<p>The <span class="math inline">\(F_\lambda\)</span> family (<span class="cross-reference">Section 12.5</span>)
+supplies empirical grid evidence that accuracy and effective-weight
+control need not be a fixed binary choice within the tested objective
+family.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Accuracy and effective-weight control can be traded explicitly, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e9fe5c9f5b52">
+<h2 class="prose-slide"
+aria-label="Accuracy and effective-weight control can be traded explicitly, part 2" id="slide-heading-e9fe5c9f5b52">Accuracy
+and… (part 2)</h2>
+<p>At <span class="math inline">\(\lambda = 1.0\)</span> the
+implementation recovers the current variational objective
+bit-for-bit;</p>
+<p>lower explored temperatures sharpen the consensus toward the
+heuristic while preserving the stated raw-weight bound under its
+assumptions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Accuracy and effective-weight control can be traded explicitly, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f2dccd7722dd">
+<h2 class="prose-slide"
+aria-label="Accuracy and effective-weight control can be traded explicitly, part 3" id="slide-heading-f2dccd7722dd">Accuracy
+and… (part 3)</h2>
+<p>This is not a derivation of the heuristic from an objective. The open
+problem is to identify an objective whose minimizer is both competitive
+across contamination regimes and accompanied by a theorem that survives
+beyond the present categorical construction.</p>
+</section>
+<section id="sec:discussion-downstream"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d9e93e43a427">
+<h2 class="prose-slide" id="slide-heading-d9e93e43a427">Why the boundary matters downstream</h2>
+<p>The practical lesson is not that every robust rule should replace
+belief sharing. It is that a multi-agent active-inference system can
+expose separate controls for client updating, server reweighting, and
+objective-backed consensus,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Why the boundary matters downstream, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f28a3afb2a98">
+<h2 class="prose-slide"
+aria-label="Why the boundary matters downstream, part 2" id="slide-heading-f28a3afb2a98">Why the
+boundary matters… (part 2)</h2>
+<p>while retaining a tested route back to the ordinary pool.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Why the boundary matters downstream, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f1d4ca03386">
+<h2 class="prose-slide"
+aria-label="Why the boundary matters downstream, part 3" id="slide-heading-9f1d4ca03386">Why the
+boundary matters… (part 3)</h2>
+<p>That separation tells a builder what can be promised: exact recovery
+at the named corner, conditional empirical behavior under the declared
+attack, and no silent transfer of a client-side or variational theorem
+to a different server heuristic.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Why the boundary matters downstream, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3784c1530e92">
+<h2 class="prose-slide"
+aria-label="Why the boundary matters downstream, part 4" id="slide-heading-3784c1530e92">Why the
+boundary matters… (part 4)</h2>
+<p>The result is a usable research contract for extending belief-sharing
+systems without confusing a simulation win with a general robustness
+guarantee.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

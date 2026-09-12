@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>06_methods_divergences_and_losses.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -468,16 +632,16 @@ mjx-container[display="true"] {
 <main id="main-content" tabindex="-1">
 <h2 id="sec:method-divergences">Divergences: robust objectives and the
 KL limit</h2>
-<p>The generalized-Bayes objective <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> has exactly two tunable
+<p>The generalized-Bayes objective <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> has exactly two tunable
 ingredients: the divergence <span class="math inline">\(D\)</span> that
 regularizes the update toward the prior or cavity, and the loss <span
 class="math inline">\(L\)</span> that measures data fidelity. This
 section develops both — the divergence family first, the robust loss
 family in <a class="xref" href="index.html#sec:method-losses">Section 5.7</a> — and shows
 that each carries a limit in which it collapses to its standard
-counterpart, KL for the divergence and NLL for the loss. Those
-client-side limits establish recovery to standard Bayes. The distinct
-categorical server bridge in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>
+counterpart, KL for the divergence and NLL for the loss.</p>
+<p>Those client-side limits establish recovery to standard Bayes. The
+distinct categorical server bridge in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>
 then identifies a qualified log-linear message-combination
 specialization; it does not recover the complete source belief-sharing
 protocol.</p>
@@ -490,9 +654,9 @@ standard-Bayes case), the reverse KL (FedGVI’s <code>RKL</code> client
 divergence), the standard <span
 class="math inline">\(\alpha\)</span>-Rényi diagnostic, FedGVI’s
 Alpha-Rényi normalization (AR), and total variation (a bounded distance
-in <span class="math inline">\([0,1]\)</span>). The single most
-important recovery property is that the robust members recover the KL
-divergence in a limit:</p>
+in <span class="math inline">\([0,1]\)</span>).</p>
+<p>The single most important recovery property is that the robust
+members recover the KL divergence in a limit:</p>
 <p><span class="math display">\[
 D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q
 \,\|\, p).
@@ -500,16 +664,14 @@ D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q
 <div id="lem:renyi-kl-limit" class="theorem-box lemma">
 <p><strong>Lemma 1</strong> (KL is the <span
 class="math inline">\(\alpha\to1\)</span> limit of the Rényi family).
-For categorical pmfs <span class="math inline">\(q, p\)</span> on a
-finite support, the <span class="math inline">\(\alpha\)</span>-Rényi
-divergence <span class="math inline">\(D_\alpha(q\,\|\,p) =
+For finite-support categorical pmfs <span class="math inline">\(q,
+p\)</span>, <span class="math inline">\(D_\alpha(q\,\|\,p) =
 (\alpha-1)^{-1}\log\sum_k q_k^\alpha p_k^{1-\alpha}\)</span> tends to
 <span class="math inline">\(\mathrm{KL}(q\,\|\,p)\)</span> as <span
-class="math inline">\(\alpha\to1\)</span>, the limit (<a class="xref" href="index.html#eq:renyi-limit">Eq. (2)</a>). The
-<code>divergences.py</code> implementation switches to the KL closed
-form inside a small band around <span
-class="math inline">\(\alpha=1\)</span>, so on that band the equality is
-exact rather than merely asymptotic.</p>
+class="math inline">\(\alpha\to1\)</span>, the limit (<a class="xref" href="index.html#eq:renyi-limit">Eq. (6)</a>). Near <span
+class="math inline">\(\alpha=1\)</span>, <code>divergences.py</code>
+returns the KL closed form, making equality exact there rather than
+asymptotic.</p>
 </div>
 <p>KL is the divergence that makes generalized Bayes collapse to
 standard Bayes. When local posteriors are then combined by the
@@ -517,90 +679,93 @@ separately specified categorical message-combination specialization in
 <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
 the project recovers its log-linear-pool corner; neither step
 reconstructs the complete belief-sharing protocol of Friston et
-al. <span class="citation">(Friston et al. 2024)</span>. Everything robust is a controlled departure
-from that fixed point; <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a> is the formal
-hinge, and the largest observed Rényi-versus-KL discrepancy in the
-recovery band is 0 (reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>).</p>
+al. <span class="citation">(Friston et al. 2024)</span>.</p>
+<p>Everything robust is a controlled departure from that fixed point;
+<a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a> is
+the formal hinge, and the largest observed Rényi-versus-KL discrepancy
+in the recovery band is 0 (reported in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>).</p>
 <p>The standard Rényi diagnostic is <code>renyi_divergence</code>;
 FedGVI’s <code>AR</code> regularizer is
 <code>alpha_renyi_divergence</code>, equal to the standard form divided
 by <span class="math inline">\(\alpha\)</span>. For the finite
 categorical support, <code>generalized_posterior</code> solves the named
 Alpha-Rényi objective through its scalar normalization condition rather
-than using a generic power-softmax shortcut. This distinction keeps the
-reported limit and the implemented objective aligned. The
-<code>AR</code> regularizer is not merely a diagnostic: it is exercised
-as a client divergence in the categorical FedGVI baseline of <span
-class="citation"
-data-cites="sec:results-baseline"><a class="xref" href="index.html#sec:results-baseline">Section 7.6</a></span>, where
+than using a generic power-softmax shortcut.</p>
+<p>This distinction keeps the reported limit and the implemented
+objective aligned. The <code>AR</code> regularizer is not merely a
+diagnostic: it is exercised as a client divergence in the categorical
+FedGVI baseline of <a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>, where
 it pairs with the rcce loss of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a> to constitute
 the genuine per-client robustness axis.</p>
 <h2 id="sec:method-losses">Robust losses: bounded influence at the Bayes
 corner</h2>
-<p>The data-fidelity term of <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> lives in
+<p>The data-fidelity term of <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> lives in
 <code>losses.py</code>. Standard Bayes uses the negative log-likelihood,
 <span class="math inline">\(\mathrm{NLL}(p, o) = -\log p(o)\)</span>,
 which is <em>unbounded</em>: a single contaminated observation with
-<span class="math inline">\(p(o)\to 0\)</span> dominates the posterior.
-This is precisely the fragility the robust-Bayes literature was built to
-remove <span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015; Zhang and Sabuncu 2018)</span>, extended into robust-divergence variational
+<span class="math inline">\(p(o)\to 0\)</span> dominates the
+posterior.</p>
+<p>This is precisely the fragility the robust-Bayes literature was built
+to remove <span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015; Zhang and Sabuncu 2018)</span>, extended into robust-divergence variational
 inference <span class="citation">(Futami et al. 2018)</span>, and the property FedGVI imports into
 federated inference <span class="citation">(Mildner et al. 2025)</span>. The robust-statistics
 vocabulary here is the usual influence-function one <span class="citation">(Huber and Ronchetti 2009)</span>:
 bounded losses reduce the leverage of extreme observations, while NLL
-does not. We implement two categorical robust losses, each of which
-recovers NLL in a limit.</p>
+does not.</p>
+<p>We implement two categorical robust losses, each of which recovers
+NLL in a limit.</p>
 <p>The density-power (<span class="math inline">\(\beta\)</span>) loss
 <span class="citation">(Basu et al. 1998; Fujisawa and Eguchi 2008; Ghosh and Basu 2015; Futami et al. 2018)</span> is recentered so that the scalar limit is exact:</p>
 <p><span class="math display">\[
-L_\beta(p, o) \;=\; -\frac{p(o)^\beta - 1}{\beta}
-\;+\; \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},
-\qquad L_\beta \xrightarrow[\beta\to 0]{} \mathrm{NLL}.
+\begin{aligned}
+L_\beta(p, o)
+&amp;= -\frac{p(o)^\beta - 1}{\beta}
+   + \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},\\
+L_\beta
+&amp;\xrightarrow[\beta\to 0]{} \mathrm{NLL}.
+\end{aligned}
 \]</span> {#eq:beta-loss}</p>
 <p>The robust categorical cross-entropy (generalized cross-entropy)
 <span class="citation">(Zhang and Sabuncu 2018)</span> is</p>
 <p><span class="math display">\[
-L_{q_{\rm loss}}(p, o) \;=\;
-\frac{1 - p(o)^{q_{\rm loss}}}{q_{\rm loss}},
-\qquad L_{q_{\rm loss}} \xrightarrow[q_{\rm loss}\to 0]{} \mathrm{NLL},
+\begin{aligned}
+L_{q_{\text{loss}}}(p, o)
+&amp;= \frac{1 - p(o)^{q_{\text{loss}}}}{q_{\text{loss}}},\\
+L_{q_{\text{loss}}}
+&amp;\xrightarrow[q_{\text{loss}}\to 0]{} \mathrm{NLL}.
+\end{aligned}
 \]</span> {#eq:rcce-loss}</p>
-<p>which by l’Hôpital recovers NLL as <span class="math inline">\(q_{\rm
-loss}\to 0\)</span> and at <span class="math inline">\(q_{\rm
-loss}=1\)</span> is the bounded mean-absolute-error loss <span
-class="math inline">\(1 - p(o)\)</span>, finite exactly where NLL
-diverges.</p>
+<p>which by l’Hôpital recovers NLL as <span
+class="math inline">\(q_{\text{loss}}\to 0\)</span> and at <span
+class="math inline">\(q_{\text{loss}}=1\)</span> is the bounded
+mean-absolute-error loss <span class="math inline">\(1 - p(o)\)</span>,
+finite exactly where NLL diverges.</p>
 <div id="prop:robust-loss-recovery" class="theorem-box proposition">
 <p><strong>Proposition 2</strong> (<span
 class="math inline">\(\beta\)</span>-loss and rcce recover NLL). The
-recentered density-power loss <span
-class="math inline">\(L_\beta\)</span> of (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>) tends to the negative
-log-likelihood as <span class="math inline">\(\beta\to0\)</span>, and
-the robust categorical cross-entropy <span
-class="math inline">\(L_{q_{\rm loss}}\)</span> of (<a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a>) tends to the negative
-log-likelihood as <span class="math inline">\(q_{\rm loss}\to0\)</span>.
-Both limits are exact in the implementation; the largest observed <span
-class="math inline">\(\beta\to0\)</span> discrepancy from the NLL closed
-form is 0 and the largest <span class="math inline">\(q_{\rm
-loss}\to0\)</span> discrepancy is 0 (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>). At the
-bounded end the loss stays finite where NLL diverges, the source of the
-robustness validated in <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>.</p>
+losses in (<a class="xref" href="index.html#eq:beta-loss">Eq. (7)</a>) and
+(<a class="xref" href="index.html#eq:rcce-loss">Eq. (8)</a>) recover NLL as
+their respective loss parameters tend to zero. Both limits are exact in
+the implementation. At their bounded endpoints, both losses remain
+finite where NLL diverges.</p>
 </div>
+<p>The largest observed discrepancies are 0 and 0, respectively (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>). <a class="xref" href="index.html#sec:results-robustness">Section 7.5</a>
+validates the bounded-loss robustness.</p>
 <p>Taking the loss-parameter limits (<span
 class="math inline">\(\beta\to0\)</span> or <span
-class="math inline">\(q_{\rm loss}\to0\)</span>) reproduces standard
+class="math inline">\(q_{\text{loss}}\to0\)</span>) reproduces standard
 Bayes. Combining those local posteriors through the qualified
 categorical specialization in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> is
 a separate server step, not a recovery claim for the complete
-belief-sharing protocol of Friston et al. <span class="citation">(Friston et al. 2024)</span>. This
-is the <strong>per-agent rigorous robustness axis</strong>: it is
-derived from <a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a> and provably limits to
+belief-sharing protocol of Friston et al. <span class="citation">(Friston et al. 2024)</span>.</p>
+<p>This is the <strong>per-agent rigorous robustness axis</strong>: it
+is derived from <a class="xref" href="index.html#eq:gen-bayes">Eq. (2)</a> and provably limits to
 Bayes through <a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a> and <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>, and it is
 the axis that carries FedGVI’s bounded-influence guarantee under the
-cited matching assumptions. The complementary server-side
-divergence-reweighting heuristic of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> is
-a distinct device and is never granted this guarantee (<span
-class="citation"
-data-cites="sec:robustness-axes"><a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a></span>).</p>
+cited matching assumptions.</p>
+<p>The complementary server-side divergence-reweighting heuristic of
+<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a> is
+a distinct device and is never granted this guarantee (<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>).</p>
 </main>
 </body>
 </html>

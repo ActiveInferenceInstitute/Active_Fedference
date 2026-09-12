@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Future work: testing the open boundaries — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-1662be56d495">
+<h1 id="presentation-title-1662be56d495" class="visually-hidden">Future work: testing the open boundaries — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:future" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db7da7909a51">
+<h2 class="prose-slide" id="slide-heading-db7da7909a51">Future work: testing the open boundaries</h2>
+<p>The staged research program follows directly from the boundaries in
+<span class="cross-reference">Section 8.13</span>.
+It separates public-library reproducibility, server theory, portable
+source-protocol work, task generalization,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9731c6cf6a27">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 2" id="slide-heading-9731c6cf6a27">Future
+work: testing the… (part 2)</h2>
+<p>and deployment validation so that success in one lane cannot silently
+certify another.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7b592606dd19">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 3" id="slide-heading-7b592606dd19">Future
+work: testing the… (part 3)</h2>
+<p>The order is deliberate. Simulation-study guidance recommends
+declaring the estimand, data-generating mechanism, and Monte Carlo
+precision before treating replication as evidence <span class="citation"
+data-cites="morris2019simulation">(Morris et al. 2019)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a0ed6eaf581c">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 4" id="slide-heading-a0ed6eaf581c">Future
+work: testing the… (part 4)</h2>
+<p>while Monte Carlo error should be reported separately from an
+interval or a hypothesis test <span class="citation"
+data-cites="koehler2009mcse">(Koehler et al. 2009)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e43b7910a3bd">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 5" id="slide-heading-e43b7910a3bd">Future
+work: testing the… (part 5)</h2>
+<p>For nested agents, trials, and seeds, the resampling unit must
+respect the dependence structure <span class="citation"
+data-cites="loy2021lmeresampler">(Loy and Korobova 2021)</span>.
+Accordingly, the phase plan records a primary unit and a falsifier for
+each extension; a larger sample or more elaborate diagram is not itself
+a stronger claim.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fe1d24e58257">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 6" id="slide-heading-fe1d24e58257">Future
+work: testing the… (part 6)</h2>
+<p>The implementation registry also separates smoke, pilot, and
+confirmatory profiles. Pilot worlds select budgets and calibration
+settings but never enter confirmatory intervals or headline values.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-48b8cc3ccd1e">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 7" id="slide-heading-48b8cc3ccd1e">Future
+work: testing the… (part 7)</h2>
+<p>Each completed run must bind its source bundle, configuration,
+dataset bytes, device, checkpoints, outputs, and completion status into
+a verifiable receipt. A negative or null scientific result remains a
+valid citable outcome when those implementation and provenance gates
+pass; it blocks the intended positive claim,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a4a270c039e1">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 8" id="slide-heading-a4a270c039e1">Future
+work: testing the… (part 8)</h2>
+<p>not the software release.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Future work: testing the open boundaries, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7d413c01dc20">
+<h2 class="prose-slide"
+aria-label="Future work: testing the open boundaries, part 9" id="slide-heading-7d413c01dc20">Future
+work: testing the… (part 9)</h2>
+<p>A separate Friston protocol lane will resolve a machine-readable
+parity matrix before reconstructing source experiments in Python. Until
+every required source parameter, routine, unit, and estimand is
+recovered, that lane will be described as a paper-constrained
+reconstruction rather than an exact replication.</p>
+</section>
+<section id="sec:future-server" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7ead337987c0">
+<h2 class="prose-slide" id="slide-heading-7ead337987c0">Make the sharp server heuristic variational</h2>
+<p>The asymmetry between the robustness axes (<span class="cross-reference">Section 3.3</span>)
+motivates a consequential theoretical design question that is explicitly
+parked outside the authorized roadmap.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90389fc2e462">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 2" id="slide-heading-90389fc2e462">Make
+the sharp server… (part 2)</h2>
+<p>The client-side <span class="math inline">\(\beta\)</span>/rcce
+update carries a derived, loss-specific bounded-influence result under
+the matching assumptions; the sharp server-side
+<code>robust_aggregate</code> carries only its recovery limit (<span class="cross-reference">10</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-45d2361c2a94">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 3" id="slide-heading-45d2361c2a94">Make
+the sharp server… (part 3)</h2>
+<p>The new variational aggregator (<span class="cross-reference">Section 5.8.2</span>,
+<span class="cross-reference">Section 12</span>)
+supplies a <em>rigorous</em> server-side rule — exact block updates
+descending the stated free energy <span class="cross-reference">Equation (12)</span>
+through non-increasing block updates,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4f9debd9e10d">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 4" id="slide-heading-4f9debd9e10d">Make
+the sharp server… (part 4)</h2>
+<p>with a proven raw effective-weight bound and the same recovery
+corner. What it costs is conservatism: it is the maximum-entropy
+consensus, not the sharp accuracy-maximizer.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f76e80625208">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 5" id="slide-heading-f76e80625208">Make
+the sharp server… (part 5)</h2>
+<p>That parked question is sharper than before: write down a generalized
+variational objective in the FedGVI family <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span>, informed by
+recent closed-form GVI characterizations <span class="citation"
+data-cites="nguyen2026closedformgvi">(Nguyen and Westerhout
+2026)</span>, logarithmic-pool weighting theory <span class="citation"
+data-cites="carvalho2023logpooling">(Carvalho et al. 2023)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6b7a24f6c7fa">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 6" id="slide-heading-6b7a24f6c7fa">Make
+the sharp server… (part 6)</h2>
+<p>and robust divergence-weighted federated aggregation <span
+class="citation" data-cites="li2022gammafl">(Li et al. 2022)</span>,
+whose closed-form minimizer is competitive with the empirical
+reweighting across declared contamination regimes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8ee11e3dd42">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 7" id="slide-heading-e8ee11e3dd42">Make
+the sharp server… (part 7)</h2>
+<p>That would combine axis 3’s effective-weight bound with axis 2’s
+empirical sharpness in one server rule. The recovery corner and the
+variational objective together supply two boundary conditions any such
+unification must satisfy.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b01aa6858f9a">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 8" id="slide-heading-b01aa6858f9a">Make
+the sharp server… (part 8)</h2>
+<p>Any empirical choice of <code>robustness</code> or
+<code>entropy_weight</code> will be made on separate calibration worlds
+using a proper log score, then frozen before confirmatory evaluation.
+This guards against selecting an apparent leader with evaluation truth
+and preserves null or reversed confirmatory outcomes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Make the sharp server heuristic variational, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-39435ae8336a">
+<h2 class="prose-slide"
+aria-label="Make the sharp server heuristic variational, part 9" id="slide-heading-39435ae8336a">Make
+the sharp server… (part 9)</h2>
+<p>The comparison family will include logarithmic and linear pools, the
+current heuristic, the variational family, and a centered-log-ratio
+geometric-median control; none inherits a parameter-space
+robust-federated-learning guarantee merely by operating on beliefs.</p>
+</section>
+<section id="sec:future-scale" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-32b219c40429">
+<h2 class="prose-slide" id="slide-heading-32b219c40429">Promote the baseline to original FedGVI
+scale</h2>
+<p>The bounded-influence result is anchored locally by the small NumPy
+logistic-regression baseline (<span class="cross-reference">Figure 18</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7498ca5f768a">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 2" id="slide-heading-7498ca5f768a">Promote
+the baseline to… (part 2)</h2>
+<p>Promoting it to the GPU-scale Bayesian-neural-network experiments of
+the source paper <span class="citation"
+data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span> — the
+experiments deferred here (<span class="cross-reference">Section 8.13</span>)
+—</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2ac1e29db649">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 3" id="slide-heading-2ac1e29db649">Promote
+the baseline to… (part 3)</h2>
+<p>would test whether the per-client robustness curve holds at the model
+capacity and contamination regimes where federated learning <span
+class="citation" data-cites="mcmahan2017communication">(McMahan et al.
+2017)</span> actually operates.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a12fa0d20a6a">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 4" id="slide-heading-a12fa0d20a6a">Promote
+the baseline to… (part 4)</h2>
+<p>It would connect the discrete-POMDP result to the partitioned-VI line
+<span class="citation"
+data-cites="ashman2022partitioned bui2018partitioned">(Ashman et al.
+2022; Bui et al. 2018)</span>. The planned comparison would also require
+posterior-parameterization parity with Bayesian neural-network work,
+rather than treating the current deterministic point-mass MLP as a
+posterior <span class="citation" data-cites="mildner2025fedgvi">(Mildner
+et al. 2025)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0c1c9ade48dc">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 5" id="slide-heading-0c1c9ade48dc">Promote
+the baseline to… (part 5)</h2>
+<p>The portable lane preserves the source protocol’s site factors,
+client cavity, factor-replacement update in natural coordinates. A
+synthetic CPU/MPS pilot already exercises the cavity-conditioned local
+optimizer, explicit device and fallback receipts, and checkpoint/resume
+equivalence.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3ca92e23fa53">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 6" id="slide-heading-3ca92e23fa53">Promote
+the baseline to… (part 6)</h2>
+<p>It does not establish source-dataset parity.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-44833bdfabc9">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 7" id="slide-heading-44833bdfabc9">Promote
+the baseline to… (part 7)</h2>
+<p>The next local campaign distinguishes a locked portable CPU/MPS
+profile from an exact source-scale CUDA profile that remains external
+until suitable hardware is available. FashionMNIST anchors
+source-dataset protocol parity, while MNIST and KMNIST test
+portability.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa67276ddb14">
+<h2 class="prose-slide"
+aria-label="Promote the baseline to original FedGVI scale, part 8" id="slide-heading-aa67276ddb14">Promote
+the baseline to… (part 8)</h2>
+<p>A separate source-bound tabular pack will report proper-score effects
+per licensed dataset, with training-only preprocessing and byte-,
+split-, and license-level provenance; nested seeds will not be treated
+as independent datasets.</p>
+</section>
+<section id="sec:future-hierarchical" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cd8762c472f3">
+<h2 class="prose-slide" id="slide-heading-cd8762c472f3">Extend hierarchical federation beyond the
+current stack</h2>
+<p>The governing caveat here is that added depth must be shown to
+<em>earn</em> generalization, not merely to execute:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-441a1d4080f0">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 2" id="slide-heading-441a1d4080f0">Extend
+hierarchical… (part 2)</h2>
+<p>on the current sentinel task the deeper stacks match rather than beat
+the flat baseline on location (<span class="cross-reference">Section 8.15</span>).
+The extension therefore has two distinct fronts —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5597c0e78ac4">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 3" id="slide-heading-5597c0e78ac4">Extend
+hierarchical… (part 3)</h2>
+<p>carrying the recovery contract to deeper stacks, and finding a task
+family in which depth actually pays.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eeb17a0e2c4b">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 4" id="slide-heading-eeb17a0e2c4b">Extend
+hierarchical… (part 4)</h2>
+<p>The 2-level hierarchical POMDP (<span class="cross-reference">Section 14.9</span>)
+couples location inference to a single global context. The generic
+N-level architecture uses <code>build_nlevel_world</code> from the
+<code>fedference.pomdp</code> module and has already been exercised with
+a 3-level stack (<span class="cross-reference">Section 14.11</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0f48ca6ce35d">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 5" id="slide-heading-0f48ca6ce35d">Extend
+hierarchical… (part 5)</h2>
+<p><span class="cross-reference">Section 14.12</span>):
+a meta-context variable (L3) gates the context prior (L2) which in turn
+gates the location prior (L1).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6e58b0c352fe">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 6" id="slide-heading-6e58b0c352fe">Extend
+hierarchical… (part 6)</h2>
+<p>The empirical-prior top-down messages (<span class="cross-reference">Equation (38)</span>,
+<span class="cross-reference">Equation (39)</span>)
+remain valid variational steps at every depth, and the log-linear-pool
+federation at each level is bit-identical to the in-process result
+(Proposition <span class="cross-reference">12</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2455855de1d4">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 7" id="slide-heading-2455855de1d4">Extend
+hierarchical… (part 7)</h2>
+<p>The natural next question is whether the limit-as-proof contract of
+<span class="cross-reference">Section 8.13</span>
+survives still deeper hierarchies: does the recovery corner (context
+prior → uniform) remain checkable to machine precision when the L2 → L1
+message is itself a function of an L3 belief coupled to an L4
+belief,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-420f260b7f17">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 8" id="slide-heading-420f260b7f17">Extend
+hierarchical… (part 8)</h2>
+<p>and can message-passing engines such as RxInfer <span
+class="citation" data-cites="bagaev2023rxinfer">(Bagaev et al.
+2023)</span> carry the generic alternating-minimization at scale?</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b8b24de63aa5">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 9" id="slide-heading-b8b24de63aa5">Extend
+hierarchical… (part 9)</h2>
+<p>The current hierarchical diagnostic asks a narrower question. Under
+one configured surprise threshold, it classifies the non-gating top
+level below the threshold and the informative top level above it (<span class="cross-reference">Section 15.1</span>).
+This is an implementation control,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-56ecb333cd1c">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 10" id="slide-heading-56ecb333cd1c">Extend
+hierarchical… (part 10)</h2>
+<p>not a posterior refit or an autonomous depth-selection result.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d380cf8779e7">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 11" id="slide-heading-d380cf8779e7">Extend
+hierarchical… (part 11)</h2>
+<p>A future breadth-and- depth search must define its candidate family,
+scoring rule, uncertainty, replication units, and out-of-sample
+evaluation before it can support a model- selection claim for the
+generic N-level stack.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a114bfe8b74b">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 12" id="slide-heading-a114bfe8b74b">Extend
+hierarchical… (part 12)</h2>
+<p>The next task family is deliberately controlled rather than merely
+deeper: partially observable Four Rooms and Key-Door will compare flat,
+oracle, learned, shuffled, and non-gating hierarchies at matched
+horizons and compute. Task is the higher-level replication unit. A gain
+in only one task will remain task-specific,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec96d1827001">
+<h2 class="prose-slide"
+aria-label="Extend hierarchical federation beyond the current stack, part 13" id="slide-heading-ec96d1827001">Extend
+hierarchical… (part 13)</h2>
+<p>and the larger campaign will not begin until the hybrid
+representation recovery gates pass.</p>
+</section>
+<section id="sec:future-transport" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7dafb0f76c5d">
+<h2 class="prose-slide" id="slide-heading-7dafb0f76c5d">Move from process transport to true
+multi-machine federation</h2>
+<p>The current deployment uses queue-backed single-machine processes and
+loopback sockets. Promotion to cross-host workers would address the
+remaining deployment caveat of <span class="cross-reference">Section 8.13</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4eed5854e1cd">
+<h2 class="prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 2" id="slide-heading-4eed5854e1cd">Move
+from process… (part 2)</h2>
+<p>That extension must preserve the bit-identical consensus property
+proved in Proposition <span class="cross-reference">12</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a04a5e40836">
+<h2 class="prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 3" id="slide-heading-5a04a5e40836">Move
+from process… (part 3)</h2>
+<p>The <code>federation/</code> package and federation tests already
+establish the API contract: a server collects serialized beliefs from 5
+worker channels, fuses them with <code>robust_aggregate</code> at
+robustness <span class="math inline">\(c = 1.5\)</span>, and broadcasts
+the consensus back over response channels, with bit-identity verified at
+True.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3e667129bed5">
+<h2 class="prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 4" id="slide-heading-3e667129bed5">Move
+from process… (part 4)</h2>
+<p>The loopback socket path adds optional pre-shared-key frame integrity
+and file-backed digest-verified replay validation. The next systems step
+is an explicitly local Docker multi-node emulator with mTLS by default,
+HMAC compatibility, checkpoint/restart, and reproducible message-fault
+controls.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa0828ff7cbe">
+<h2 class="prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 5" id="slide-heading-aa0828ff7cbe">Move
+from process… (part 5)</h2>
+<p>It is not physical multi-host evidence.</p>
+<p>That later claim requires receipts from distinct hosts,
+deployment-grade key management, timeout policy, and long-running
+orchestration across process restarts, but it does not require changing
+the mathematics.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c998ad48e0fb">
+<h2 class="prose-slide"
+aria-label="Move from process transport to true multi-machine federation, part 6" id="slide-heading-c998ad48e0fb">Move
+from process… (part 6)</h2>
+<p>Secure aggregation, differential privacy, and Byzantine tolerance are
+separate future threat models; transport integrity alone would not
+establish any of them <span class="citation"
+data-cites="blanchard2017krum pillutla2022robust">(Blanchard et al.
+2017; Pillutla et al. 2022)</span>.</p>
+</section>
+<section id="sec:future-continuous" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-82ef20f5c532">
+<h2 class="prose-slide" id="slide-heading-82ef20f5c532">Move beyond categorical state spaces</h2>
+<p>This work is discrete-categorical, matching the community’s worked
+POMDP <span class="citation" data-cites="dacosta2020active">(Da Costa et
+al. 2020)</span>. A first step is already in place: the closed-form
+Gaussian KL and Rényi divergences of <span class="cross-reference">Section 13</span>
+show the divergence family — and its <span
+class="math inline">\(\alpha\to1\)</span> recovery — carries over
+verbatim to Gaussian beliefs,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-97b5536ff397">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 2" id="slide-heading-97b5536ff397">Move beyond
+categorical… (part 2)</h2>
+<p>scoped out of the categorical experiments.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f82dc5060e58">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 3" id="slide-heading-f82dc5060e58">Move beyond
+categorical… (part 3)</h2>
+<p>Continuous-state Gaussian generative models would test whether the
+limit-as-proof contract survives the move off categorical state spaces —
+whether the recovery corner remains checkable to machine precision when
+the belief simplex is replaced by a Gaussian belief,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-85dfc954a9cd">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 4" id="slide-heading-85dfc954a9cd">Move beyond
+categorical… (part 4)</h2>
+<p>and whether message-passing engines such as RxInfer <span
+class="citation" data-cites="bagaev2023rxinfer">(Bagaev et al.
+2023)</span> can carry the robust update at scale.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f53a6d436711">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 5" id="slide-heading-f53a6d436711">Move beyond
+categorical… (part 5)</h2>
+<p>Extending the structure-learning study <span class="citation"
+data-cites="smith2020active friston2011post">(Smith et al. 2022; Friston
+and Penny 2011)</span> into continuous models would, in parallel, test
+whether robust belief fusion and robust <em>structure</em> fusion
+compose.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-55837bf7fd1a">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 6" id="slide-heading-55837bf7fd1a">Move beyond
+categorical… (part 6)</h2>
+<p>A minimal executable fixture now gates a discrete dynamics context
+over continuous position and velocity, Gaussian observations, and
+bounded actions. The bounded pilot now includes matched naive, robust,
+discrete-only, continuous-only, and oracle-context components, a
+singular-covariance rejection,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7409945bb795">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 7" id="slide-heading-7409945bb795">Move beyond
+categorical… (part 7)</h2>
+<p>and next-position predictive scoring.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Move beyond categorical state spaces, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b1a4ed6d4d32">
+<h2 class="prose-slide"
+aria-label="Move beyond categorical state spaces, part 8" id="slide-heading-b1a4ed6d4d32">Move beyond
+categorical… (part 8)</h2>
+<p>It is still a representation, recovery, and control surface rather
+than confirmatory task evidence. The full study must freeze calibration
+and budgets, use independently held-out worlds, retain outlier
+falsifiers, and execute the preregistered comparison before supporting a
+hybrid-task claim.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

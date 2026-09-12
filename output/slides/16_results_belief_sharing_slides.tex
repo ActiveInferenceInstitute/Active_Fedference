@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -211,6 +212,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -232,173 +274,371 @@
 
 \begin{document}
 
-\subsection{Belief sharing lowers free energy at the project-pool
-corner}\label{sec:results-belief_sharing}
-
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
+\begin{frame}{Belief sharing lowers free energy at the project-pool
+corner}
+\protect\phantomsection\label{sec:results-belief_sharing}
 With the standard-Bayes client limit and project-pool recovery identity
 pinned exactly (sec.~7.1), the study suite opens
-one step away from them. The first study's estimand is the colony's mean
-variational free energy under two communication conditions; the design
-is a categorical source-mechanism analogue of the colony belief-sharing
-result (Friston et al. 2024), implemented at the stated categorical
-recovery limits. A colony of 7 sentinels each observe the same hidden
-creature location through an independent noisy sensor (acuity 0.55) and
-form a one-step variational posterior. When the colony runs one
-federated belief-sharing round --- the standard log-linear pool, which
-is the \texttt{robustness=0} corner of the aggregation identity
-eq.~7 proven in Theorem
-5 --- each agent's posterior moves
-toward the cross-agent consensus via the belief-sharing round
-eq.~10. Under the theorem's shared-support,
+one step away from them. Its estimand is the paired,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
-posterior-log-potential, and fixed-weight assumptions, that pool
-specializes Eq. 7's message-combination term, not the complete source
-protocol; when held incommunicado, agents keep their private posteriors.
-Scoring each belief against the colony's joint evidence yields the ``two
-heads are better than one'' reduction, reported here as earned
-quantities rather than asserted:
+\begin{frame}{Belief sharing lowers free\ldots{} (part 2)}
+seed-level difference in colony-mean variational free energy between
+incommunicado and communicating conditions.
 
+The design is a categorical source-mechanism analogue of the colony
+belief-sharing result (Friston et al. 2024).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
-\begin{itemize}
-\tightlist
-\item
-  Mean variational free energy, \textbf{communicating}:
-  \(\bar F_{\text{share}} = 13.2190\) (across-seed 95\% bootstrap CI
-  \([12.9656, 13.4685]\) over \(n = 480\) seeds). The single
-  illustrative seed-0 run has its own colony mean \(15.8115\), with a
-  per-agent 95\% bootstrap CI of \([15.6177, 16.0647]\) over its
-  \(n = 7\) agents --- that interval characterizes the displayed run's
-  per-agent spread, not the across-seed mean
-\item
-  Mean variational free energy, \textbf{incommunicado}:
-  \(\bar F_{\text{solo}} = 16.5298\)
-\item
-  Free-energy reduction from sharing: \(\Delta \bar F = 3.3109\)
-  (communicating is strictly lower)
-\end{itemize}
-
+\begin{frame}[fragile]{Belief sharing lowers free\ldots{} (part 3)}
+A colony of 7 sentinels observes one hidden location through independent
+noisy sensors of acuity 0.55. Each agent forms a one-step posterior. The
+communicating condition applies one standard log-linear-pool round at
+the \texttt{robustness=0} recovery corner (eq.~10,
+eq.~14);
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
-The across-seed colony means above are computed over \(n = 480\) seeds.
-The communicating colony also reaches higher mean true-state accuracy
-(0.7302) and lower mean surprise (0.3775) than its members reach alone.
-Sharing pulls each private posterior toward the joint minimizer, so the
-mean free energy when communicating sits below the incommunicado value.
-
+\begin{frame}{Belief sharing lowers free\ldots{} (part 4)}
+the incommunicado condition retains the paired private posteriors.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
+\begin{frame}{Belief sharing lowers free\ldots{} (part 5)}
+Under shared support, posterior-log-potential admission, and fixed
+weights, the pool specializes Eq. 7's message-combination term. It does
+not reproduce the complete source protocol. The paired comparison gives
+the following declared quantities:
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 6)}
+\textbf{Communicating mean.} \(\bar F_{\text{share}} = 13.2190\)
+(across-seed 95\% bootstrap CI \([12.9656, 13.4685]\) over \(n = 480\)
+seeds). The single illustrative seed-0 run has its own colony mean
+\(15.8115\).
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 7)}
+Its per-agent 95\% bootstrap CI is \([15.6177, 16.0647]\) over its
+\(n = 7\) agents. That interval characterizes the displayed run's
+per-agent spread, not the across-seed mean.
+
+\textbf{Incommunicado mean.} \(\bar F_{\text{solo}} = 16.5298\).
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 8)}
+\textbf{Paired reduction from sharing.}
+\(\Delta \bar F = \bar F_{\text{solo}} - \bar F_{\text{share}}
+= 3.3109\); positive values mean lower free energy under communication.
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 9)}
+Each seed supplies one matched pair of colony means. Seeds are the
+independent unit; agents are nested within each seed and are not
+additional independent replicates. Across the declared seeds, the
+communicating condition also has higher mean true-state accuracy
+(0.7302) and lower mean surprise (0.3775).
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 10)}
+These are conditional results for the reduced protocol.
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Mean variational free energy of the sentinel colony. Source relation: source-mechanism analogue to the belief-sharing mechanism in Friston et al.~(2024), Fig. 5; estimand: colony-mean variational free energy in nats; uncertainty: across-seed spread over independent seeds. The sentinel colony (7 agents, acuity 0.55) under two communication conditions. x-axis: condition (incommunicado vs.~communicating --- one standard belief-sharing round), plotted in that order; y-axis: colony-mean variational free energy in nats. Bars show the mean free energy averaged across n = 480 independent random seeds, with whiskers marking \textbackslash pmone across-seed standard deviation and grey points overlaying the individual per-seed values. The communicating bar is strictly lower than the incommunicado bar, with \textbackslash Delta \textbackslash bar F = 3.3109 nats --- the quantitative ``two heads are better than one'' result. Each seed is a fully deterministic run; the whiskers are the across-seed spread, not a bootstrap or resampling interval.}]{../figures/free_energy_comparison.png}
-\caption{Mean variational free energy of the sentinel colony. Source
-relation: source-mechanism analogue to the belief-sharing mechanism in
-Friston et al.~(2024), Fig. 5; estimand: colony-mean variational free
-energy in nats; uncertainty: across-seed spread over independent seeds.
-The sentinel colony (\(7\) agents, acuity \(0.55\)) under two
-communication conditions. x-axis: condition (incommunicado
-vs.~communicating --- one standard belief-sharing round), plotted in
-that order; y-axis: colony-mean variational free energy in nats. Bars
-show the mean free energy averaged across \(n = 480\) independent random
-seeds, with whiskers marking \(\pm\)one across-seed standard deviation
-and grey points overlaying the individual per-seed values. The
-communicating bar is strictly lower than the incommunicado bar, with
-\(\Delta \bar F = 3.3109\) nats --- the quantitative ``two heads are
-better than one'' result. Each seed is a fully deterministic run; the
-whiskers are the across-seed spread, not a bootstrap or resampling
-interval.}\label{fig:free-energy}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
-fig.~\ref{fig:free-energy} reports the headline gap;
-fig.~\ref{fig:belief-heatmap} shows the per-agent mechanism behind it.
-
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Belief sharing lowers free
-energy at the project-pool corner}
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth,height=0.40\textheight,keepaspectratio,alt={Single-panel belief heatmap over the hidden creature location. Source relation: original project diagnostic supporting the Study 1 analogue; estimand: posterior probability mass by hidden state; uncertainty: deterministic single-seed display. The hidden creature location (7 sentinels, acuity 0.55, seed 0). x-axis: hidden-state grid cell (creature location, 9 cells); rows: the 7 individual agents' private posteriors (one row per agent, dominant cell annotated), plus a bottom consensus row --- separated by the divider line --- holding the federated consensus fused from those posteriors by the cavity-exclusion round defined in the methods. Each private posterior concentrates only moderately on the cell its noisy observation suggests; the consensus row concentrates far more sharply on the true location, and that after-sharing concentration is the mechanism behind the free-energy reduction reported by the free-energy comparison. All cell values are deterministic posterior probabilities for the single displayed seed; no error band is applicable.}]{../figures/belief_heatmap.png}
-\caption{Single-panel belief heatmap over the hidden creature location.
-Source relation: original project diagnostic supporting the Study 1
-analogue; estimand: posterior probability mass by hidden state;
-uncertainty: deterministic single-seed display. The hidden creature
-location (\(7\) sentinels, acuity \(0.55\), seed \(0\)). x-axis:
-hidden-state grid cell (creature location, \(9\) cells); rows: the \(7\)
-individual agents' private posteriors (one row per agent, dominant cell
-annotated), plus a bottom consensus row --- separated by the divider
-line --- holding the federated consensus fused from those posteriors by
-the cavity-exclusion round defined in the methods. Each private
-posterior concentrates only moderately on the cell its noisy observation
-suggests; the consensus row concentrates far more sharply on the true
-location, and that after-sharing concentration is the mechanism behind
-the free-energy reduction reported by the free-energy comparison. All
-cell values are deterministic posterior probabilities for the single
-displayed seed; no error band is applicable.}\label{fig:belief-heatmap}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every seed connects its isolated and communicating colony mean; dark line with open diamonds marks condition means.}]{../figures/free_energy_comparison.slide-paired-seeds.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-1}
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes remain
-distinct in the results}
+\begin{frame}{Belief sharing lowers free\ldots{} (part 12)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={All paired seed differences with jitter and descriptive violin, zero reference, and paired mean with the available report interval.}]{../figures/free_energy_comparison.slide-seed-differences.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 13)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={ΔF = isolated minus communicating. Positive values indicate lower F with communication in this reduced categorical protocol.}]{../figures/free_energy_comparison.slide-direction.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 14)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled circles: isolated. Open diamonds: sharing. Fine lines preserve pairing. Dark line / open diamonds: condition means.}]{../figures/free_energy_comparison.slide-pair-key.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 15)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One open diamond per seed; vertical jitter carries no outcome meaning. Violin is descriptive. Dark dotted rule marks zero contrast.}]{../figures/free_energy_comparison.slide-difference-key.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 16)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired mean ΔF: +3.311 nats. Independent unit: configured seed; n = 480.}]{../figures/free_energy_comparison.slide-mean.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 17)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Report-owned 95\% interval: {[}3.186, 3.433{]} nats.}]{../figures/free_energy_comparison.slide-interval.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 18)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Analysis unit: configured seed with within-seed paired conditions. Agents and ordered steps remain nested within seed.}]{../figures/free_energy_comparison.slide-unit.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 19)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Reduced-protocol comparison. It does not establish a general communication benefit or reconstruct the complete source protocol.}]{../figures/free_energy_comparison.slide-scope.png}
+\refstepcounter{figure}\label{fig:free-energy-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 20)}
+fig.~9 reports the headline gap;
+fig.~10 shows the per-agent mechanism behind it.
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 21)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior probability mass on a common 0--1 scale. Rows retain agent order, followed by consensus. Location indices retain their original order.}]{../figures/belief_heatmap.slide-key.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-1}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 22)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 0, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-0-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-2}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 23)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 0, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-0-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-3}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 24)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 0, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-0-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-4}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 25)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 1, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-1-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-5}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 26)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 1, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-1-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-6}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 27)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 1, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-1-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-7}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 28)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 2, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-2-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-8}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 29)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 2, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-2-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-9}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 30)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 2, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-2-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-10}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 31)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 3, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-3-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-11}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 32)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 3, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-3-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-12}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 33)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 3, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-3-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-13}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 34)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 4, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-4-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-14}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 35)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 4, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-4-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-15}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 36)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 4, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-4-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-16}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 37)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 5, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-5-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-17}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 38)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 5, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-5-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-18}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 39)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 5, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-5-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-19}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 40)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 6, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-6-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-20}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 41)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 6, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-6-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-21}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 42)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 6, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-6-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-22}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 43)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-7-cells-0-2.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-23}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 44)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-7-cells-3-5.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-24}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 45)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-7-cells-6-8.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-25}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Belief sharing lowers free\ldots{} (part 46)}
+\begin{figure}
+\centering
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7 agents and one consensus row. One configured colony snapshot; no uncertainty interval. Categorical log-linear specialization, not the full source protocol.}]{../figures/belief_heatmap.slide-scope.png}
+\refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-26}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Three robustness axes remain distinct in the results}
 \protect\phantomsection\label{sec:robustness-axes-results}
-Before the contaminated studies, we fix the honesty boundary that
-governs every robustness claim in this paper, because the belief-sharing
-round above is exactly where the axes diverge once contamination is
-introduced. The robust extension of belief sharing lives on
-\textbf{three distinct axes} that must not be conflated.
-
-The \textbf{per-agent axis} is the generalized-Bayes update each
-sentinel runs locally: the \(\beta\)-loss and robust cross-entropy
-clients of eq.~4 and eq.~5. This axis
-follows the FedGVI objective (Mildner et al. 2025) and carries the cited
-bounded-influence result only under that theorem's matching assumptions.
-The recovery limits of sec.~7.1 show the
-per-agent update reduces to standard Bayes; the separately stated server
-identity returns the project log-linear pool.
-
+The authoritative three-axis guarantee map is
+sec.~3.3. The contaminated studies keep its
+source-conditional client update, heuristic server reweighting,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes remain
-distinct in the results}
-The \textbf{server-side axis} is the \breaktt{robust\_aggregate}
-divergence-reweighting that down-weights agents at pooling time. This is
-a complementary \emph{heuristic}. Its only proven property is the
-naive-recovery limit of Theorem 5 --- at
-zero robustness it equals the standard log-linear pool
-(eq.~7) --- and it carries \textbf{no}
-bounded-influence guarantee. No figure, table, or sentence in
-sec.~7.5 or sec.~7.6
-grants the server-side heuristic the guarantee that belongs to the
-per-agent axis. The contaminated sweep that follows reports the axes
-side by side and labels which is which at every step.
-
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Three robustness axes remain
-distinct in the results}
-The \textbf{variational server axis} is \breaktt{variational\_aggregate}.
-It is also server-side, but it is not the same claim as the sharp
-heuristic: it descends the stated aggregation free energy
-(eq.~8), carries the derived effective-weight
-bound proved in the supplement, and pays for that property with a
-conservative maximum-entropy bias. The contaminated sweep therefore
-reports behavior for the sharp heuristic and cites the variational rule
-only where the objective-backed guarantee is actually in force.
+\begin{frame}[fragile]{Three robustness axes\ldots{} (part 2)}
+and objective-backed variational server rule visually and inferentially
+separate. In particular, no result below transfers the client's
+bounded-influence theorem or the variational rule's raw-weight bound to
+\texttt{robust\_aggregate}.
 \end{frame}
 
 \end{document}

@@ -1,0 +1,41 @@
+{
+  "panels": [
+    {
+      "alt": "Every acuity condition's recovered mean and empirical trial interval, with identity reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "8a332dd4623d53bfa9633f1599dd1aed1eb9903bdd55c1a05e5c8a136c21cca6",
+      "src": "../figures/parameter_recovery.slide-recovery.png"
+    },
+    {
+      "alt": "Every acuity condition's mean absolute error with the supplied global mean error reference.",
+      "minimum_label_px": 91.66666666666667,
+      "sha256": "731fa153ce79734def5ef23046b4d213df1c60a0c1938a4f219f4b01e6f93243",
+      "src": "../figures/parameter_recovery.slide-errors.png"
+    },
+    {
+      "alt": "Recovery whiskers: 95% empirical percentile intervals over independent simulation trials within each acuity. Observations are nested within trial.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "7b904439f58a26710ba10b10c13c5ff44c7a97c2234278d210304aa57286494c",
+      "src": "../figures/parameter_recovery.slide-uncertainty.png"
+    },
+    {
+      "alt": "independent trials/acuity = 960\nobservations/trial = 200\nMAE = 0.0232",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6d8b11641e7cb2b46c6ad187dfee262ef02e133dfab30f5136d246c8087b8bd7",
+      "src": "../figures/parameter_recovery.slide-notes-1.png"
+    },
+    {
+      "alt": "R\u00b2 = 0.9999",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "74890db2ed3d3b8bc09a3c969106e33406d5c3a87cded2d5622412d51906dd5d",
+      "src": "../figures/parameter_recovery.slide-notes-2.png"
+    },
+    {
+      "alt": "Simulation-based recovery over the declared acuity grid. Identity reference is not an additional estimate; no uncertainty interval is inferred for MAE bars.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "72d540ac54784e74b2841e3c66885a74fabbcf6962fe2e35c979f0b50c14c5e7",
+      "src": "../figures/parameter_recovery.slide-scope.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

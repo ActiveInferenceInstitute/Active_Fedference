@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>21_discussion_findings.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -459,6 +617,12 @@ mjx-container[display="true"] {
   color: #4b5563;
   margin-top: 10px;
   text-align: center;
+}
+
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 </style>
@@ -478,17 +642,16 @@ simulation evidence.</p>
 <h2 id="sec:discussion-limit">The recovery limit is the formal
 anchor</h2>
 <p>The coherence of the framework rests on the KL/NLL client limits and
-the zero-robustness project-pool identity (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <span
-class="citation"
-data-cites="eq:standard-bayes"><span class="xref">Eq. 6</span></span>). This is an
+the zero-robustness project-pool identity (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>, <a class="xref" href="index.html#eq:standard-bayes">Eq. (11)</a>). This is an
 identity of the stated categorical implementation, not an asymptotic
 claim about every generalized Bayesian model or a reconstruction of the
-complete source protocol. The server aggregator returns the log-linear
-pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (5)</a>) with
+complete source protocol.</p>
+<p>The server aggregator returns the log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>) with
 maximum deviation 0; the generalized posterior returns the closed-form
 Bayes update with deviation 5.55e-17; and the Rényi divergence, <span
 class="math inline">\(\beta\)</span>-loss, and robust cross-entropy
-recover their KL/NLL limits with residuals 0, 0, and 0. <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>,
+recover their KL/NLL limits with residuals 0, 0, and 0.</p>
+<p><a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>,
 Corollary <a class="xref" href="index.html#cor:closed-form-bayes">Corollary 6</a>, <a class="xref" href="index.html#lem:renyi-kl-limit">Lemma 3</a>, and <a class="xref" href="index.html#prop:robust-loss-recovery">Proposition 4</a>
 state the formal limits; the recovery checks in <a class="xref" href="index.html#sec:results-recovery">Section 7.1</a> are the
 executable falsification harness.</p>
@@ -499,145 +662,145 @@ contrasts that are explicitly conditional on the operating regime. The
 distinction is the point of the joint reading — it says which claims
 travel and which are tied to the declared world.</p>
 <p>Studies 1–3 sit at the standard corner. In the reduced categorical
-source-mechanism analogue protocol, belief sharing lowers mean
-variational free energy by <span class="math inline">\(\Delta \bar F =
-3.3109\)</span> nats (<a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>,
-<a class="xref" href="index.html#fig:free-energy">Figure 8</a>); Dirichlet
-language learning reduces KL from 3.4231 to 0.0027 nats (<span
-class="citation"
-data-cites="sec:results-language"><a class="xref" href="index.html#sec:results-language">Section 7.3</a></span>, <span
-class="citation"
-data-cites="fig:language-kl"><a class="xref" href="index.html#fig:language-kl">Figure 10</a></span>); and Bayesian
-model reduction accepts the redundant-pruning candidate while rejecting
-the supported-column control (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>,
-<a class="xref" href="index.html#fig:emergence-bmr">Figure 11</a>). These are
-mechanistic checks, not evidence that the implementation matches every
-detail of the source simulations.</p>
+analogue, the paired difference <span class="math inline">\(\Delta \bar
+F=\bar F_{\text{solo}}-\bar F_{\text{share}}\)</span> is 3.3109 nats, so
+its positive sign indicates lower mean free energy with communication
+(<a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>,
+<a class="xref" href="index.html#fig:free-energy">Figure 9</a>). Seeds are the
+independent unit; agents remain nested within seed.</p>
+<p>Dirichlet learning reduces KL from 3.4231 to 0.0027 nats (<a class="xref" href="index.html#sec:results-language">Section 7.3</a>, <a class="xref" href="index.html#fig:language-kl">Figure 11</a>). The configured
+BMR sign control favors redundant-column pruning and rejects the
+supported-column reduction (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>,
+<a class="xref" href="index.html#fig:emergence-bmr">Figure 12</a>). These are
+bounded mechanistic checks, not exact source-protocol replications or
+general structure-discovery results.</p>
 <p>Study 4 steps away from the corner by holding the hidden state and
 attack target fixed while redrawing matched contaminated colonies. The
-standard pool degrades across the declared rate grid. The server-side
-heuristic is not uniformly better: its robust members are similar to or
-slightly below the standard pool at low contamination, then the selected
-pooled display member separates in its favor under severe contamination.
-At the largest swept rate, AR reaches 0.9880 against 0.6928 for the
-standard pool (<a class="xref" href="index.html#tbl:robustness_sweep">Table 2</a>; the
-sweep figure <a class="xref" href="index.html#fig:robustness-sweep">Figure 12</a> plots
+standard pool degrades across the declared rate grid.</p>
+<p>The server-side heuristic is not uniformly better: its robust members
+are similar to or slightly below the standard pool at low contamination,
+then the selected pooled display member separates in its favor under
+severe contamination.</p>
+<p>At the largest swept rate, AR reaches 0.9880 against 0.6928 for the
+standard pool (<a class="xref" href="index.html#tbl:robustness_sweep">Table 3</a>; the
+sweep plot in <a class="xref" href="index.html#fig:robustness-sweep">Figure 13</a> shows
 the separate matched-trial gallery colony, whose largest-rate separation
-is smaller). This regime dependence is a result, not a nuisance to be
-hidden: robustness can cost efficiency when the attack is weak and pay
-off when the declared contamination is severe.</p>
+is smaller).</p>
+<p>This regime dependence is a result, not a nuisance to be hidden:
+robustness can cost efficiency when the attack is weak and pay off when
+the declared contamination is severe.</p>
 <p>The structural extension studies (Studies 5–9) sharpen the
 conditional half of that split rather than adding further corner checks,
 and they are reported with their negative contrasts intact.
 Communication is not uniformly beneficial: the cross-study summary
-(<a class="xref" href="index.html#fig:cross-study-summary">Figure 27</a>)
-reports each study’s federation benefit in its native units with
-seed-level intervals — several studies clearly positive, the
-moving-world EFE and two-level hierarchical studies approximately zero —
-so pooling helps when views are complementary and can be unnecessary or
-mildly costly when the agents already agree. Adding hierarchical depth
-is held to the same standard — the two-level stack does not beat the
-flat baseline on location accuracy (the paired gap is a small,
-statistically reliable cost) (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>),
+(<a class="xref" href="index.html#fig:cross-study-summary">Figure 30</a>)
+reports each study’s federation headline signed contrast or estimand in
+its native units. Its intervals come from the separate harmonized
+seed-level rerun, including rows whose primary figure is a deterministic
+diagnostic; several rows are positive, while the moving-world EFE and
+two-level hierarchical rows are approximately zero.</p>
+<p>Pooling helps when views are complementary and can be unnecessary or
+mildly costly when the agents already agree.</p>
+<p>Adding hierarchical depth is held to the same standard — the
+two-level stack does not beat the flat baseline on location accuracy
+(the paired gap is a small, statistically reliable cost) (<a class="xref" href="index.html#sec:results-hierarchical">Section 14.9</a>),
 earning its place only by additionally resolving the context latent
-above chance. The joint lesson is therefore not that federation or depth
-is always worth its cost, but that the suite measures the regimes in
-which each one is.</p>
+above chance.</p>
+<p>The joint lesson is therefore not that federation or depth is always
+worth its cost, but that the suite measures the regimes in which each
+one is.</p>
 <h2 id="sec:discussion-identifiability">What this simulation
 identifies—and what it does not</h2>
 <p>The primary robustness estimand is the matched-trial mean difference
 in consensus accuracy conditional on the seeded true state and attack
 geometry. The 960 paired trials quantify Monte Carlo variation for that
 estimand; they do not average over hidden states, attack targets,
-adaptive adversaries, or real deployments. The cross-study layer reduces
-its matched trials within seed before seed-level summaries, so clients
-and within-seed trials are not silently counted as independent
-replicates. This follows simulation study guidance to declare the
-estimand and Monte Carlo unit explicitly <span class="citation">(Morris et al. 2019; Koehler et al. 2009)</span>, and the bootstrap interval follows the declared
-resampling unit rather than treating nested observations as a flat
-sample <span class="citation">(Loy and Korobova 2021)</span>.</p>
+adaptive adversaries, or real deployments.</p>
+<p>The cross-study layer reduces its matched trials within seed before
+seed-level summaries, so clients and within-seed trials are not silently
+counted as independent replicates.</p>
+<p>This follows simulation study guidance to declare the estimand and
+Monte Carlo unit explicitly <span class="citation">(Morris et al. 2019; Koehler et al. 2009)</span>, and
+the bootstrap interval follows the declared resampling unit rather than
+treating nested observations as a flat sample <span class="citation">(Loy and Korobova 2021)</span>.</p>
 <p>The consequence is a more informative claim boundary. The sweep
 supports a conditional statement about this contamination mechanism and
 these categorical beliefs; it does not establish universal Byzantine
-tolerance, calibration, or truth recovery. The result also does not
-identify a single universally best robustness parameter independent of
-the operating regime: the standard pool is preferable at the
-low-contamination cells in this run, while at least one robust member
-has a BH-rejected positive contrast in the declared high-contamination
-verdict; the tied display set and deterministic tie-break are reported
-separately. Those are precisely the conditions a future adaptive or
-deployment study must vary.</p>
-<h2 id="sec:discussion-verdict">The robustness verdict is conditional
+tolerance, calibration, or truth recovery.</p>
+<p>The result also does not identify a single universally best
+robustness parameter independent of the operating regime: the standard
+pool is preferable at the low-contamination cells in this run, while at
+least one robust member has a BH-rejected positive contrast in the
+declared high-contamination verdict; the tied display set and
+deterministic tie-break are reported separately.</p>
+<p>Those are precisely the conditions a future adaptive or deployment
+study must vary.</p>
+<h2 id="sec:discussion-verdict">The robustness comparison is conditional
 and statistically qualified</h2>
-<p>The headline comparison is computed by the statistics module (<span
-class="citation"
-data-cites="sec:results-verdict"><a class="xref" href="index.html#sec:results-verdict">Section 7.5.1</a></span>), not
+<p>The headline comparison is computed by the statistics module (<a class="xref" href="index.html#sec:results-verdict">Section 7.5.2</a>), not
 typed into the prose. Across 960 matched trial replicates nested within
 the fixed seeded world at contamination rate 0.800, each robust server
 member is compared with the standard pool by a Wilcoxon signed-rank test
 <span class="citation">(Wilcoxon 1945)</span> and the declared family of p-values is adjusted
-by Benjamini–Hochberg FDR <span class="citation">(Benjamini and Hochberg 1995)</span>. A method wins only
-when the adjusted null is rejected and its effect is positive, here at
-<span class="math inline">\(q = 1.11 \times 10^{-158}\)</span> with
-effect size 1.0000 (large). The observed-effect power and prospective
-sample-size calculation are planning quantities, not independent
-confirmation of the result.</p>
+by Benjamini–Hochberg FDR <span class="citation">(Benjamini and Hochberg 1995)</span>.</p>
+<p>A method wins only when the adjusted null is rejected and its effect
+is positive, here at <span class="math inline">\(q = 1.11 \times
+10^{-158}\)</span> with effect size 1.0000 (large). The observed-effect
+power and prospective sample-size calculation are planning quantities,
+not independent confirmation of the result.</p>
 <p>The paired design is appropriate for the controlled comparison
 because each condition shares the seed, true state, and attack geometry.
 Its interpretation remains limited: the signed-rank test concerns the
 distribution of paired differences, not equality of raw means, and BH
 controls expected false-discovery proportion within the declared family
-rather than the probability of any false positive. The confidence
-intervals are percentile bootstrap intervals over the matched-trial
-unit. Seed-level review-grid results are reported separately and do not
-treat the primary trial count as a population of independent worlds.
-These qualifications make the verdict narrower, but also make it
-reproducible and falsifiable.</p>
+rather than the probability of any false positive.</p>
+<p>The confidence intervals are percentile bootstrap intervals over the
+matched-trial unit. Seed-level review-grid results are reported
+separately and do not treat the primary trial count as a population of
+independent worlds. These qualifications make the verdict narrower, but
+also make it reproducible and falsifiable.</p>
 <h2 id="sec:discussion-axes">Three robustness axes remain separate</h2>
-<p>The unifying narrative would be dishonest if it let the aggregation
-heuristic inherit the guarantees of the client update or variational
-server objective. The <strong>client-side</strong> <span
-class="math inline">\(\beta\)</span>/rcce generalized-Bayes update is
-the FedGVI-faithful axis <span class="citation">(Mildner et al. 2025)</span>: it is derived from the
-generalized-Bayes objective (<a class="xref" href="index.html#eq:gen-bayes">Eq. (1)</a>), limits to NLL/Bayes
-as its loss parameter tends to zero, and carries the loss-specific
-bounded-influence result (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>, <a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a>). The
-<strong>server-side</strong> <code>robust_aggregate</code>
-divergence-reweighting is a complementary heuristic whose proven
-property is the recovery limit only (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>). The
-<strong>variational server</strong> axis is objective-backed and
-supplies a proven raw effective-weight bound, with conservative accuracy
-behavior. No figure, statistic, or sentence transfers a client guarantee
-to the heuristic or a variational weight bound to the heuristic’s
-accuracy verdict; <a class="xref" href="index.html#sec:limitations">Section 8.13</a> states the
-boundary in full.</p>
+<p>The authoritative theorem–heuristic–objective taxonomy is <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>. The
+results preserve it: the client theorem remains source-conditional
+<span class="citation">(Mildner et al. 2025)</span>, <code>robust_aggregate</code> carries only its
+proved recovery identity plus conditional empirical contrasts, and
+<code>variational_aggregate</code> carries the stated objective and
+raw-weight bound. No figure or statistic moves a guarantee between these
+operators; <a class="xref" href="index.html#sec:limitations">Section 8.13</a> records the
+complete boundary.</p>
+<p>The map in <a class="xref" href="index.html#fig:evidence-replication-map">Figure 6</a>
+is the compact ledger for that separation. Its fourteen rows align
+headline result families and public boundaries with their estimands and
+independent units, while its nesting strip prevents seeds, trials,
+agents, and ordered states from being treated as interchangeable
+evidence. Exact estimates and intervals remain in their typed reports
+and the native-unit cross-study summary (<a class="xref" href="index.html#fig:cross-study-summary">Figure 30</a>).</p>
 <h2 id="sec:discussion-tempered">Accuracy and effective-weight control
 can be traded explicitly</h2>
-<p>The <span class="math inline">\(F_\lambda\)</span> family (<span
-class="citation"
-data-cites="sec:supp-tempered"><a class="xref" href="index.html#sec:supp-tempered">Section 11.5</a></span>) supplies
+<p>The <span class="math inline">\(F_\lambda\)</span> family (<a class="xref" href="index.html#sec:supp-tempered">Section 12.5</a>) supplies
 empirical grid evidence that accuracy and effective-weight control need
 not be a fixed binary choice within the tested objective family. At
 <span class="math inline">\(\lambda = 1.0\)</span> the implementation
 recovers the current variational objective bit-for-bit; lower explored
 temperatures sharpen the consensus toward the heuristic while preserving
-the stated raw-weight bound under its assumptions. This is not a
-derivation of the heuristic from an objective. The open problem is to
-identify an objective whose minimizer is both competitive across
-contamination regimes and accompanied by a theorem that survives beyond
-the present categorical construction.</p>
+the stated raw-weight bound under its assumptions.</p>
+<p>This is not a derivation of the heuristic from an objective. The open
+problem is to identify an objective whose minimizer is both competitive
+across contamination regimes and accompanied by a theorem that survives
+beyond the present categorical construction.</p>
 <h2 id="sec:discussion-downstream">Why the boundary matters
 downstream</h2>
 <p>The practical lesson is not that every robust rule should replace
 belief sharing. It is that a multi-agent active-inference system can
 expose separate controls for client updating, server reweighting, and
 objective-backed consensus, while retaining a tested route back to the
-ordinary pool. That separation tells a builder what can be promised:
-exact recovery at the named corner, conditional empirical behavior under
-the declared attack, and no silent transfer of a client-side or
-variational theorem to a different server heuristic. The result is a
-usable research contract for extending belief-sharing systems without
-confusing a simulation win with a general robustness guarantee.</p>
+ordinary pool.</p>
+<p>That separation tells a builder what can be promised: exact recovery
+at the named corner, conditional empirical behavior under the declared
+attack, and no silent transfer of a client-side or variational theorem
+to a different server heuristic. The result is a usable research
+contract for extending belief-sharing systems without confusing a
+simulation win with a general robustness guarantee.</p>
 </main>
 </body>
 </html>

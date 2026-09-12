@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>S14_supp_sensitivity.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -468,50 +632,45 @@ mjx-container[display="true"] {
 <main id="main-content" tabindex="-1">
 <h2 id="sec:supp-sensitivity">Supplement: parameter-sensitivity
 methods</h2>
-<p>This supplement documents how the sensitivity grid of <span
-class="citation"
-data-cites="sec:results-sensitivity"><a class="xref" href="index.html#sec:results-sensitivity">Section 13.13</a></span>
+<p>This supplement documents how the sensitivity grid of <a class="xref" href="index.html#sec:results-sensitivity">Section 14.13</a>
 is generated and — importantly for a reader trying to reconcile numbers
 across studies — where its two sweeps use <em>different</em> seeding and
 trial budgets. It answers two questions the main section leaves
-implicit: exactly which seed drives each cell (so any cell is
-independently reproducible), and why the cross-study summary’s
-sensitivity row is not directly comparable, at matched trial counts, to
-the standalone heatmap.</p>
+implicit: exactly which seed drives each cell, so every cell is
+deterministically reproducible in isolation; and why the cross-study
+summary’s sensitivity row is not directly comparable, at matched trial
+counts, to the standalone heatmap.</p>
 <h3 id="experimental-protocol-for-grid-sensitivity">Experimental
 protocol for grid sensitivity</h3>
-<p>The sensitivity sweep is implemented in
-<code>fedference.experiments.run_belief_sharing_sensitivity</code> and
-<code>fedference.experiments.run_hierarchical_sensitivity</code>. Each
-function accepts a tuple of acuity values and a tuple of colony sizes.
-In the <strong>belief-sharing</strong> sweep every (acuity, colony-size)
-cell averages <span class="math inline">\(n_{\text{trials}}\)</span>
+<p>The sensitivity sweep uses
+<code>run_belief_sharing_sensitivity</code> and
+<code>run_hierarchical_sensitivity</code> from the
+<code>fedference.experiments</code> module. Each function accepts a
+tuple of acuity values and a tuple of colony sizes. In the
+<strong>belief-sharing</strong> sweep every (acuity, colony-size) cell
+averages <span class="math inline">\(n_{\text{trials}}\)</span>
 independent trials, each seeded via a deterministic formula:</p>
 <p><span class="math display">\[
 \text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j
 \cdot 10^3 + t
 \]</span> {#eq:sensitivity-seed}</p>
-<p>The deterministic seed rule <a class="xref" href="index.html#eq:sensitivity-seed">Eq. (33)</a> makes
-every grid cell and trial independently reproducible from the base
-seed.</p>
 <p>where <span class="math inline">\(i\)</span> indexes acuity, <span
 class="math inline">\(j\)</span> indexes colony size, and <span
-class="math inline">\(t\)</span> indexes the trial within a cell. For
-the belief-sharing sweep this guarantees that:</p>
-<ol type="1">
-<li>no two cells share a trial seed (no correlation between cells);</li>
-<li>re-running with the same <code>seed_base</code> is bit-identical
-(reproducibility);</li>
-<li>different <code>seed_base</code> values produce independent
-replicates (robustness checking).</li>
-</ol>
+class="math inline">\(t\)</span> indexes the trial within a cell. The
+deterministic rule <a class="xref" href="index.html#eq:sensitivity-seed">Eq. (40)</a> makes
+every grid cell and trial reproducible in isolation from the base seed.
+For the belief-sharing sweep, no two cells share a trial seed, so the
+design introduces no seed reuse between cells.</p>
+<p>Re-running with the same <code>seed_base</code> is bit-identical.
+Changing <code>seed_base</code> produces an independent replicate for
+robustness checking.</p>
 <p>The <strong>hierarchical</strong> sweep uses a simpler protocol:
 every cell calls <code>run_hierarchical_world</code> once with the same
 base seed (its internal trials are seeded by that run), so hierarchical
 cells share the base seed rather than the per-cell formula above.</p>
 <h3 id="grid-parameters-for-acuity-and-colony-size">Grid parameters for
 acuity and colony size</h3>
-<table>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
 <thead>
 <tr>
 <th>Parameter</th>
@@ -536,22 +695,20 @@ acuity and colony size</h3>
 <td>0</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <p>The 5×5 = 25 cells per system are run with <code>seed_base = 0</code>
 by default; <code>generate_sensitivity_heatmap</code> accepts a
 <code>seed</code> argument to override this.</p>
 <h3 id="belief-sharing-condition-in-the-sensitivity-grid">Belief-sharing
 condition in the sensitivity grid</h3>
-<p>Each trial in the belief-sharing sweep:</p>
-<ol type="1">
-<li>Draws a random true state and one noisy observation per agent (same
-protocol as <code>run_belief_sharing</code>).</li>
-<li>Runs one belief-sharing round with <code>communicate=True</code>
-(communicating) and <code>communicate=False</code> (isolated).</li>
-<li>Records <code>mean_accuracy</code> for each condition.</li>
-<li>The cell value is the average over <code>n_trials</code> of this
-gap.</li>
-</ol>
+<p>Each trial follows four labeled operations. <strong>Draw:</strong>
+sample one true state and one noisy observation per agent using the
+<code>run_belief_sharing</code> protocol. <strong>Compare:</strong> run
+one belief-sharing round with <code>communicate=True</code> and the
+matched isolated condition with <code>communicate=False</code>.
+<strong>Record:</strong> retain <code>mean_accuracy</code> for both
+conditions. <strong>Reduce:</strong> define the cell value as the mean
+communicating-minus-isolated gap across <code>n_trials</code>.</p>
 <h3
 id="hierarchical-pomdp-condition-in-the-sensitivity-grid">Hierarchical
 POMDP condition in the sensitivity grid</h3>
@@ -564,30 +721,42 @@ cell value.</p>
 <h3 id="figure-rendering-for-sensitivity-summaries">Figure rendering for
 sensitivity summaries</h3>
 <p><code>generate_sensitivity_heatmap</code> assembles the two grids
-into a 1×2 matplotlib <code>imshow</code> figure with RdYlGn colormap,
+into vertically stacked matplotlib <code>imshow</code> panels with a
+color-vision-deficiency-safer blue–neutral–brown signed palette and
 symmetric bounds at <span
 class="math inline">\(\pm\max(|\text{gap}|)\)</span>, per-cell numeric
-annotations, and a per-panel colorbar labeled “Accuracy gap
-(hierarchical/comm. − baseline)”. The figure is written to
-<code>../figures/sensitivity_heatmap.png</code>.</p>
+annotations, and a per-panel colorbar labeled “Accuracy difference”. The
+figure is written as <code>sensitivity_heatmap.png</code> under
+<code>../figures/</code>. Negative gaps map toward blue, positive gaps
+toward brown, and zero to the neutral midpoint; exact signed cell labels
+duplicate that encoding. Hatching marks only the declared <span
+class="math inline">\(|\mathrm{gap}| \le 0.05\)</span> display band. It
+is not an unreliability flag, confidence interval, significance test, or
+proof of zero effect.</p>
 <h3 id="cross-study-summary-construction">Cross-study summary
 construction</h3>
-<p><code>generate_cross_study_summary</code> runs a 128-seed (<span
-class="math inline">\(n_{\text{seeds}} = 128\)</span>) ensemble over
-Studies 1–9 and reports the mean ± 95 % bootstrap CI of the key
-federation-benefit metric for each study. The metric definitions
-are:</p>
+<p><code>generate_cross_study_summary</code> performs a separate
+harmonized 128-seed (<span class="math inline">\(n_{\text{seeds}} =
+128\)</span>) rerun over Studies 1–9 and reports the mean with a 95%
+seed-level percentile-bootstrap interval for each headline signed
+contrast or estimand. These intervals belong to that rerun, including
+for rows whose primary figure is a deterministic single-posterior or
+fixed-configuration diagnostic; they are not intervals on the primary
+deterministic display. The definitions are:</p>
 <p>The robustness row uses 40 matched trials per seed and rate; the
 trial-level observations are reduced within seed before the cross-study
-summary is formed. This preserves the seed as the independent Monte
-Carlo unit.</p>
+summary is formed. Within each seed, the row then takes the
+display-selected maximum non-reference server-preset contrast at the
+declared worst rate. This preserves the seed as the independent Monte
+Carlo unit but makes Study 4 a within-run display-selected summary, not
+a preselected method or inferential winner.</p>
 <p>The Study 8 row below uses 3 trials per cell — smaller than the
 full-resolution 20-trial <code>Trials per cell</code> grid documented
 above for the standalone sensitivity heatmap figure, a deliberate
 runtime budget for the per-seed cross-study loop rather than an
 oversight — so the two are not directly comparable at matched trial
 counts.</p>
-<table>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
 <colgroup>
 <col style="width: 46%" />
 <col style="width: 53%" />
@@ -601,7 +770,7 @@ counts.</p>
 <tbody>
 <tr>
 <td>1 — Belief sharing</td>
-<td>Accuracy gain: communicating − isolated</td>
+<td>Accuracy contrast: communicating − isolated</td>
 </tr>
 <tr>
 <td>2 — Language acquisition</td>
@@ -614,12 +783,12 @@ pruning</td>
 </tr>
 <tr>
 <td>4 — Robustness sweep</td>
-<td>Accuracy gain: pooled display robust method − naive at worst
-contamination rate</td>
+<td>Accuracy contrast: within-run display-selected maximum server-preset
+contrast − naive at worst contamination rate</td>
 </tr>
 <tr>
 <td>5 — Moving world (EFE)</td>
-<td>Accuracy gain: EFE-guided − isolated</td>
+<td>Accuracy contrast: EFE-guided − isolated</td>
 </tr>
 <tr>
 <td>6 — Hierarchical POMDP (2-level)</td>
@@ -639,9 +808,10 @@ contamination rate</td>
 identifiability</td>
 </tr>
 </tbody>
-</table>
-<p>Bootstrap CIs use 5000 resamples (default <code>n_boot</code> in
-<code>fedference.statistics.bootstrap_ci</code>).</p>
+</table></div>
+<p>Bootstrap CIs use 5000 resamples. Their default <code>n_boot</code>
+is defined by <code>bootstrap_ci</code> in the
+<code>fedference.statistics</code> module.</p>
 </main>
 </body>
 </html>

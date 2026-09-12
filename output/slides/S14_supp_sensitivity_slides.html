@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Supplement: parameter-sensitivity methods — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-3dedd97a38ea">
+<h1 id="presentation-title-3dedd97a38ea" class="visually-hidden">Supplement: parameter-sensitivity methods — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:supp-sensitivity" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-850c10964e25">
+<h2 class="prose-slide" id="slide-heading-850c10964e25">Supplement: parameter-sensitivity methods</h2>
+<p>This supplement documents how the sensitivity grid of <span class="cross-reference">Section 14.13</span>
+is generated and — importantly for a reader trying to reconcile numbers
+across studies —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Supplement: parameter-sensitivity methods, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-308a037c44d1">
+<h2 class="prose-slide"
+aria-label="Supplement: parameter-sensitivity methods, part 2" id="slide-heading-308a037c44d1">Supplement…
+(part 2)</h2>
+<p>where its two sweeps use <em>different</em> seeding and trial
+budgets. It answers two questions the main section leaves implicit:
+exactly which seed drives each cell, so every cell is deterministically
+reproducible in isolation;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Supplement: parameter-sensitivity methods, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d1bd0beab6e8">
+<h2 class="prose-slide"
+aria-label="Supplement: parameter-sensitivity methods, part 3" id="slide-heading-d1bd0beab6e8">Supplement…
+(part 3)</h2>
+<p>and why the cross-study summary’s sensitivity row is not directly
+comparable, at matched trial counts, to the standalone heatmap.</p>
+</section>
+<section id="experimental-protocol-for-grid-sensitivity"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea8fc5bcbeb3">
+<h2 class="prose-slide" id="slide-heading-ea8fc5bcbeb3">Experimental protocol for grid sensitivity</h2>
+<p>The sensitivity sweep uses
+<code>run_belief_sharing_sensitivity</code> and
+<code>run_hierarchical_sensitivity</code> from the
+<code>fedference.experiments</code> module.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-29b073307e96">
+<h2 class="prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 2" id="slide-heading-29b073307e96">Experimental
+protocol for… (part 2)</h2>
+<p>Each function accepts a tuple of acuity values and a tuple of colony
+sizes. In the <strong>belief-sharing</strong> sweep every (acuity,
+colony-size) cell averages <span
+class="math inline">\(n_{\text{trials}}\)</span> independent trials,
+each seeded via a deterministic formula:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Experimental protocol for grid sensitivity, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a75308c5d3e7">
+<h2 class="equation-led"
+aria-label="Experimental protocol for grid sensitivity, part 3" id="slide-heading-a75308c5d3e7">Experimental
+protocol for… (part 3)</h2>
+<p><span class="math display" id="eq:sensitivity-seed">\[
+\text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j
+\cdot 10^3 + t
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0473353e3dc">
+<h2 class="prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 4" id="slide-heading-d0473353e3dc">Experimental
+protocol for… (part 4)</h2>
+<p>where <span class="math inline">\(i\)</span> indexes acuity, <span
+class="math inline">\(j\)</span> indexes colony size, and <span
+class="math inline">\(t\)</span> indexes the trial within a cell. The
+deterministic rule <a class="cross-reference" href="#eq:sensitivity-seed">Equation (40)</a>
+makes every grid cell and trial reproducible in isolation from the base
+seed. For the belief-sharing sweep, no two cells share a trial seed,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5f6f81efa04d">
+<h2 class="prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 5" id="slide-heading-5f6f81efa04d">Experimental
+protocol for… (part 5)</h2>
+<p>so the design introduces no seed reuse between cells.</p>
+<p>Re-running with the same <code>seed_base</code> is bit-identical.
+Changing <code>seed_base</code> produces an independent replicate for
+robustness checking.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dc386a3e725b">
+<h2 class="prose-slide"
+aria-label="Experimental protocol for grid sensitivity, part 6" id="slide-heading-dc386a3e725b">Experimental
+protocol for… (part 6)</h2>
+<p>The <strong>hierarchical</strong> sweep uses a simpler protocol:
+every cell calls <code>run_hierarchical_world</code> once with the same
+base seed (its internal trials are seeded by that run), so hierarchical
+cells share the base seed rather than the per-cell formula above.</p>
+</section>
+<section id="grid-parameters-for-acuity-and-colony-size"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3bfe0ad7ce96">
+<h2 class="table-led" id="slide-heading-3bfe0ad7ce96">Grid parameters for acuity and colony size</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 46%" />
+<col style="width: 53%" />
+</colgroup>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sensor acuity <span class="math inline">\(\kappa\)</span></td>
+<td>{0.40, 0.55, 0.70, 0.85, 0.95}</td>
+</tr>
+<tr>
+<td>Colony size <span class="math inline">\(n\)</span></td>
+<td>{2, 4, 6, 8, 10}</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Grid parameters for acuity and colony size, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b5c4246d7c8e">
+<h2 class="prose-slide"
+aria-label="Grid parameters for acuity and colony size, part 2" id="slide-heading-b5c4246d7c8e">Grid
+parameters for acuity… (part 2)</h2>
+<p>The 5×5 = 25 cells per system are run with <code>seed_base = 0</code>
+by default; <code>generate_sensitivity_heatmap</code> accepts a
+<code>seed</code> argument to override this.</p>
+</section>
+<section id="belief-sharing-condition-in-the-sensitivity-grid"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b1f74a0ec18e">
+<h2 class="prose-slide" id="slide-heading-b1f74a0ec18e">Belief-sharing condition in the sensitivity
+grid</h2>
+<p>Each trial follows four labeled operations. <strong>Draw:</strong>
+sample one true state and one noisy observation per agent using the
+<code>run_belief_sharing</code> protocol.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief-sharing condition in the sensitivity grid, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-52fda6242a7e">
+<h2 class="prose-slide"
+aria-label="Belief-sharing condition in the sensitivity grid, part 2" id="slide-heading-52fda6242a7e">Belief-sharing
+condition in… (part 2)</h2>
+<p><strong>Compare:</strong> run one belief-sharing round with
+<code>communicate=True</code> and the matched isolated condition with
+<code>communicate=False</code>. <strong>Record:</strong> retain
+<code>mean_accuracy</code> for both conditions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Belief-sharing condition in the sensitivity grid, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cafe922f5379">
+<h2 class="prose-slide"
+aria-label="Belief-sharing condition in the sensitivity grid, part 3" id="slide-heading-cafe922f5379">Belief-sharing
+condition in… (part 3)</h2>
+<p><strong>Reduce:</strong> define the cell value as the mean
+communicating-minus-isolated gap across <code>n_trials</code>.</p>
+</section>
+<section id="hierarchical-pomdp-condition-in-the-sensitivity-grid"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9d562d6902e0">
+<h2 class="prose-slide" id="slide-heading-9d562d6902e0">Hierarchical POMDP condition in the sensitivity
+grid</h2>
+<p>Each cell in the hierarchical sweep calls
+<code>run_hierarchical_world</code> once with the cell’s acuity and
+colony size, passing the constant base seed (not the per-cell formula,
+which applies only to the belief-sharing sweep).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Hierarchical POMDP condition in the sensitivity grid, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a146cd152d82">
+<h2 class="prose-slide"
+aria-label="Hierarchical POMDP condition in the sensitivity grid, part 2" id="slide-heading-a146cd152d82">Hierarchical
+POMDP… (part 2)</h2>
+<p>The returned <code>location_accuracy_gap</code> (hierarchical minus
+flat) becomes the cell value.</p>
+</section>
+<section id="figure-rendering-for-sensitivity-summaries"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e893cc7eaf86">
+<h2 class="prose-slide" id="slide-heading-e893cc7eaf86">Figure rendering for sensitivity summaries</h2>
+<p><code>generate_sensitivity_heatmap</code> assembles the two grids
+into vertically stacked matplotlib <code>imshow</code> panels with a
+color-vision-deficiency-safer blue–neutral–brown signed palette and
+symmetric bounds at <span
+class="math inline">\(\pm\max(|\text{gap}|)\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Figure rendering for sensitivity summaries, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-325cd8dfad29">
+<h2 class="prose-slide"
+aria-label="Figure rendering for sensitivity summaries, part 2" id="slide-heading-325cd8dfad29">Figure
+rendering for… (part 2)</h2>
+<p>per-cell numeric annotations, and a per-panel colorbar labeled
+“Accuracy difference”. The figure is written as
+<code>sensitivity_heatmap.png</code> under <code>../figures/</code>.
+Negative gaps map toward blue, positive gaps toward brown,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Figure rendering for sensitivity summaries, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-517c8f9bd78f">
+<h2 class="prose-slide"
+aria-label="Figure rendering for sensitivity summaries, part 3" id="slide-heading-517c8f9bd78f">Figure
+rendering for… (part 3)</h2>
+<p>and zero to the neutral midpoint; exact signed cell labels duplicate
+that encoding. Hatching marks only the declared <span
+class="math inline">\(|\mathrm{gap}| \le 0.05\)</span> display band. It
+is not an unreliability flag, confidence interval, significance
+test,</p>
+<p>or proof of zero effect.</p>
+</section>
+<section id="cross-study-summary-construction"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6491bb51b13b">
+<h2 class="prose-slide" id="slide-heading-6491bb51b13b">Cross-study summary construction</h2>
+<p><code>generate_cross_study_summary</code> performs a separate
+harmonized 128-seed (<span class="math inline">\(n_{\text{seeds}} =
+128\)</span>) rerun over Studies 1–9 and reports the mean with a 95%
+seed-level percentile-bootstrap interval for each headline signed
+contrast or estimand. These intervals belong to that rerun,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cross-study summary construction, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e9e69bfb8ab5">
+<h2 class="prose-slide"
+aria-label="Cross-study summary construction, part 2" id="slide-heading-e9e69bfb8ab5">Cross-study
+summary… (part 2)</h2>
+<p>including for rows whose primary figure is a deterministic
+single-posterior or fixed-configuration diagnostic; they are not
+intervals on the primary deterministic display. The definitions are:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cross-study summary construction, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5cdf333a565e">
+<h2 class="prose-slide"
+aria-label="Cross-study summary construction, part 3" id="slide-heading-5cdf333a565e">Cross-study
+summary… (part 3)</h2>
+<p>The robustness row uses 40 matched trials per seed and rate; the
+trial-level observations are reduced within seed before the cross-study
+summary is formed. Within each seed, the row then takes the
+display-selected maximum non-reference server-preset contrast at the
+declared worst rate.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cross-study summary construction, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bb3c6c36b52f">
+<h2 class="prose-slide"
+aria-label="Cross-study summary construction, part 4" id="slide-heading-bb3c6c36b52f">Cross-study
+summary… (part 4)</h2>
+<p>This preserves the seed as the independent Monte Carlo unit but makes
+Study 4 a within-run display-selected summary, not a preselected method
+or inferential winner.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cross-study summary construction, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f1f42abccfb5">
+<h2 class="prose-slide"
+aria-label="Cross-study summary construction, part 5" id="slide-heading-f1f42abccfb5">Cross-study
+summary… (part 5)</h2>
+<p>The Study 8 row below uses 3 trials per cell — smaller than the
+full-resolution 20-trial <code>Trials per cell</code> grid documented
+above for the standalone sensitivity heatmap figure, a deliberate
+runtime budget for the per-seed cross-study loop rather than an
+oversight —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cross-study summary construction, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-35669d303b6c">
+<h2 class="prose-slide"
+aria-label="Cross-study summary construction, part 6" id="slide-heading-35669d303b6c">Cross-study
+summary… (part 6)</h2>
+<p>so the two are not directly comparable at matched trial counts.</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Cross-study summary construction, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0b7704156470">
+<h2 class="table-led"
+aria-label="Cross-study summary construction, part 7" id="slide-heading-0b7704156470">Cross-study
+summary… (part 7)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 46%" />
+<col style="width: 53%" />
+</colgroup>
+<thead>
+<tr>
+<th>Study</th>
+<th>Metric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 — Belief sharing</td>
+<td>Accuracy contrast: communicating − isolated</td>
+</tr>
+<tr>
+<td>2 — Language acquisition</td>
+<td>KL reduction: initial − final</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Cross-study summary construction, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-82c09da84dba">
+<h2 class="prose-slide"
+aria-label="Cross-study summary construction, part 8" id="slide-heading-82c09da84dba">Cross-study
+summary… (part 8)</h2>
+<p>Bootstrap CIs use 5000 resamples. Their default <code>n_boot</code>
+is defined by <code>bootstrap_ci</code> in the
+<code>fedference.statistics</code> module.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

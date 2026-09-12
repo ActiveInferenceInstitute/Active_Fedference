@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>11_methods_contamination.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,6 +619,12 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -473,12 +637,14 @@ The active-inference community has built ensembles that coordinate by
 sharing beliefs and observations <span class="citation">(Friston et al. 2024; Heins et al. 2024; Albarracin et al. 2022; Kaufmann et al. 2021)</span>,
 but it has assumed those beliefs are trustworthy in the cited modeled
 protocols: fusion is treated as exact-Bayes pooling of well-calibrated
-reports. The robust-Bayes and federated-learning literatures
+reports.</p>
+<p>The robust-Bayes and federated-learning literatures
 <span class="citation">(McMahan et al. 2017; Ashman et al. 2022; Mildner et al. 2025)</span>
 have, in turn, studied robustness to corrupted clients under their
 declared settings, but outside the generative-model-bearing POMDP
-setting. This section defines the corruption process that lets us test
-fusion robustness inside the active-inference colony — the experimental
+setting.</p>
+<p>This section defines the corruption process that lets us test fusion
+robustness inside the active-inference colony — the experimental
 complement of the robust aggregation rule of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>.</p>
 <h2 id="sec:methods-corruption">Corruption process for adversarial
 belief broadcasts</h2>
@@ -492,39 +658,39 @@ target <span class="math inline">\(t\)</span>, governed by a single rate
 <p><span class="math display">\[
 \tilde b \;=\; (1 - r)\, b \;+\; r\, t,
 \]</span> {#eq:contamination-mix}</p>
-<p>so the experiments sweep exactly one knob. The convex form of <span
-class="citation"
-data-cites="eq:contamination-mix"><a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a></span> gives a
+<p>so the experiments sweep exactly one knob. The convex form of <a class="xref" href="index.html#eq:contamination-mix">Eq. (21)</a> gives a
 clean limit and is the anchor of the suite (ISC-26): at <span
 class="math inline">\(r = 0\)</span> every corruption kind returns the
 input belief unchanged, so contamination is a strict, continuous
 departure from the uncorrupted Friston belief-share — never a
-discontinuity. This section defines the three core corruption targets
-<span class="math inline">\(t\)</span>, each capturing a distinct
-failure of a federated agent. Geometrically the three are three
-landmarks of the probability simplex — a wrong vertex
-(<code>confident_wrong</code>), the flat centroid
-(<code>uniform</code>), and a random interior point
-(<code>label_noise</code>) — so the mixture of <a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a> drags
+discontinuity.</p>
+<p>This section defines the three core corruption targets <span
+class="math inline">\(t\)</span>, each capturing a distinct failure of a
+federated agent. Geometrically the three are three landmarks of the
+probability simplex — a wrong vertex (<code>confident_wrong</code>), the
+flat centroid (<code>uniform</code>), and a random interior point
+(<code>label_noise</code>) — so the mixture of <a class="xref" href="index.html#eq:contamination-mix">Eq. (21)</a> drags
 an honest belief toward a qualitatively different destination in each
-case. Two further mechanisms (<code>byzantine</code> and
+case.</p>
+<p>Two further mechanisms (<code>byzantine</code> and
 <code>drift</code>) extend the same convex-mix contract and are
-introduced in the extended-methods supplement (<a class="xref" href="index.html#sec:supp-contamination">Section 12.2</a>).</p>
+introduced in the extended-methods supplement (<a class="xref" href="index.html#sec:supp-contamination">Section 13.2</a>).</p>
 <p><strong><code>confident_wrong</code> — the adversarial
 sentinel.</strong> This is the lookout that points to one wrong cell and
 insists on it with total certainty. The target is a one-hot spike on a
 wrong state, <span class="math inline">\(t =
 \mathrm{onehot}(s_{\text{wrong}})\)</span>, so <span
 class="math inline">\(\tilde b\)</span> is mixed toward a confident,
-mistaken delta. Callers choose <span
-class="math inline">\(s_{\text{wrong}}\)</span> explicitly; the verdict
-sweep of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
+mistaken delta.</p>
+<p>Callers choose <span class="math inline">\(s_{\text{wrong}}\)</span>
+explicitly; the verdict sweep of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
 fixes it once per colony as the state diametrically opposite the true
 state on the location grid, held constant across the entire rate sweep,
-rather than deriving it from the agent’s current belief. At <span
-class="math inline">\(r = 1\)</span> this is a pure delta on the wrong
-cell. This is the saboteur that is <em>sure</em> and <em>mistaken</em>:
-exactly the agent that robust aggregation must reject.</p>
+rather than deriving it from the agent’s current belief.</p>
+<p>At <span class="math inline">\(r = 1\)</span> this is a pure delta on
+the wrong cell. This is the saboteur that is <em>sure</em> and
+<em>mistaken</em>: exactly the agent that robust aggregation must
+reject.</p>
 <p><strong><code>label_noise</code> — the miscalibrated
 sentinel.</strong> This is the lookout with a scrambled sensor: it is
 not lying toward any particular cell, only diluting every honest report
@@ -532,10 +698,11 @@ with the same fixed sprinkle of noise. The target is a fixed noisy
 categorical drawn once from a <span
 class="math inline">\(\mathrm{Dirichlet}(1)\)</span> (a random but valid
 pmf), modeling a sentinel whose report is partly random rather than
-adversarial. Because the noisy target is drawn once and then held fixed
-across the rate sweep, the corruption has no direction to exploit and no
-single cell to veto — the robust pool meets diffuse degradation, not a
-targeted attack.</p>
+adversarial.</p>
+<p>Because the noisy target is drawn once and then held fixed across the
+rate sweep, the corruption has no direction to exploit and no single
+cell to veto — the robust pool meets diffuse degradation, not a targeted
+attack.</p>
 <p><strong><code>uniform</code> — the apathetic sentinel.</strong> This
 is the lookout that shrugs: it has lost track of the creature and calls
 every cell equally likely. The target is the maximum-entropy uniform pmf
@@ -544,7 +711,7 @@ saturated sentinel that has lost all information. At <span
 class="math inline">\(r = 1\)</span> it reports uniform, contributing no
 evidence to the pool rather than actively pulling it toward a wrong
 cell.</p>
-<p>All three share the contract of <a class="xref" href="index.html#eq:contamination-mix">Eq. (16)</a> and
+<p>All three share the contract of <a class="xref" href="index.html#eq:contamination-mix">Eq. (21)</a> and
 require an explicit seeded generator — <code>label_noise</code> uses it
 to draw the noisy target — so every contaminated report is reproducible.
 The grid of rates the sweep uses, <span class="math inline">\(\{0,
@@ -554,51 +721,43 @@ fully-confident wrong delta forces <em>every</em> pooling rule’s
 accuracy to zero and the robust-versus-naive contrast vanishes.</p>
 <h2 id="sec:methods-contamination-axes">How contamination meets the
 three robustness axes</h2>
-<p>A contaminated report feeds the colony in distinct places, and the
-honesty contract of <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> turns on
-keeping them separate.</p>
-<p>At the <em>server</em> (the aggregation step of <span
-class="citation"
-data-cites="sec:method-aggregation"><a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a></span>) a
-contaminated belief enters <code>robust_aggregate</code>, the
-iteratively-reweighted pool that discounts each agent by <span
-class="math inline">\(\exp(-c\,\mathrm{KL}(q_n\,\|\,q))\)</span>. A
-confidently-wrong agent sits far from the emerging consensus, earns a
-small effective weight, and is suppressed. This is the
-<em>heuristic</em> axis: its only proven property is that at <span
-class="math inline">\(c = 0\)</span> it recovers the project’s naive
-log-linear pool exactly (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>, <a class="xref" href="index.html#thm:belief-sharing-recovery">Theorem 5</a>).
-Under the qualified bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
-that pool specializes Eq. 7’s message-combination term rather than the
-complete source protocol. The robustness-sweep figures (<span
-class="citation"
-data-cites="fig:robustness-sweep"><a class="xref" href="index.html#fig:robustness-sweep">Figure 12</a></span>, <span
-class="citation"
-data-cites="fig:robust-weights"><a class="xref" href="index.html#fig:robust-weights">Figure 13</a></span>) illustrate
-this heuristic’s behavior — including the per-agent influence weights
-that drop the saboteurs — but they do not certify a per-agent
-guarantee.</p>
-<p>At the <em>client</em> (the per-agent generalized-Bayes update of
-<a class="xref" href="index.html#sec:method-losses">Section 5.7</a>)
-contamination is what the bounded <span
-class="math inline">\(\beta\)</span>-loss (<a class="xref" href="index.html#eq:beta-loss">Eq. (3)</a>) and rcce-loss (<span
-class="citation" data-cites="eq:rcce-loss"><a class="xref" href="index.html#eq:rcce-loss">Eq. (4)</a></span>) are
-designed to survive: a single corrupted observation with <span
-class="math inline">\(p(o)\to 0\)</span> drives the unbounded NLL to
-dominate the posterior, whereas the bounded losses cap its influence.
-This is the source-theorem-backed axis: the FedGVI guarantee
-<span class="citation">(Mildner et al. 2025)</span> is inherited only under the source theorem’s
-matching loss, divergence, and regularity assumptions. The federated
-logistic-regression baseline of <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
-applies this same client mechanism to flipped-label contamination (<span
-class="citation"
-data-cites="fig:bnn-robustness"><a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a></span>); it is the
-conjugate Bernoulli analogue of the categorical client update, and its
-robustness is the per-client loss, not the server reweighting.</p>
-<p>No figure, statistic, or sentence in this manuscript grants the
-server-side heuristic the per-client bounded-influence guarantee;
-contamination is the common stressor against which the three axes are
-kept distinct.</p>
+<p>The authoritative guarantee taxonomy is <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>; this
+section only records where the declared corruption enters each
+route.</p>
+<h3 id="sec:methods-contamination-client">Client bounded-loss route</h3>
+<p>A corrupted local observation enters the per-agent generalized-Bayes
+update of <a class="xref" href="index.html#sec:method-losses">Section 5.7</a>. FedGVI’s
+bounded-influence result applies only under the source theorem’s
+matching loss, divergence, model, and regularity assumptions
+<span class="citation">(Mildner et al. 2025)</span>.</p>
+<p>The logistic-regression comparison in <a class="xref" href="index.html#fig:bnn-robustness">Figure 18</a> is a
+narrower exploratory proxy: it compares RCCE and NLL point-estimate
+gradients under two L2 coefficients. Its legacy <code>AR</code> argument
+selects the larger coefficient; it does not evaluate Alpha-Rényi
+divergence or inherit the source theorem from the observed curve.</p>
+<h3 id="sec:methods-contamination-heuristic-server">Heuristic server
+route</h3>
+<p>A corrupted posterior broadcast enters <code>robust_aggregate</code>
+at fusion. Divergence reweighting can assign a smaller effective weight
+to a report far from the current consensus, as the finite diagnostics
+<span class="citation"
+data-cites="fig:robustness-sweep fig:robust-weights">[@fig:robustness-sweep;
+@fig:robust-weights]</span> illustrate.</p>
+<p>The rule’s positive formal property is the exact <span
+class="math inline">\(c=0\)</span> recovery limit <a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>, not a
+client-loss bound, Byzantine guarantee, or universal robustness
+theorem.</p>
+<h3 id="sec:methods-contamination-variational-server">Objective-backed
+variational server route</h3>
+<p>The same corrupted posterior can instead enter
+<code>variational_aggregate</code>, whose declared free energy,
+block-descent property, and effective-weight bound are given in <a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a>.
+Those properties belong to that forward-oriented objective and do not
+certify <code>robust_aggregate</code> or the source client’s
+bounded-loss theorem.</p>
+<p>Contamination is therefore a common stressor, not a license to
+transfer a guarantee or empirical result between client,
+heuristic-server, and variational-server lanes.</p>
 </main>
 </body>
 </html>

@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Abstract — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:abstract"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d21b4a64a2d8">
+<h1 class="section-divider" id="slide-heading-d21b4a64a2d8">Abstract</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d21b4a64a2d8-2">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 2" id="slide-heading-d21b4a64a2d8-2">Abstract</h2>
+<p>Multi-agent active inference gives a natural account of belief
+sharing: agents hold local posteriors over a shared latent state,
+communicate those beliefs, and pool them into a colony-level consensus.
+The same mechanism is fragile when a member is miscalibrated, corrupted,
+or strategically wrong.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f70a88e83e7e">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 2" id="slide-heading-f70a88e83e7e">Abstract (part 2)</h2>
+<p>Because the standard pool multiplies the reports together, a single
+confident-but-wrong broadcast that puts near-zero mass on the true state
+can pull the whole consensus off it, outweighing many honest
+members.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2acc5b947cb9">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 3" id="slide-heading-2acc5b947cb9">Abstract (part 3)</h2>
+<p>The colony therefore needs a way to preserve the useful structure of
+belief sharing while limiting the influence of contaminated beliefs.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b8e25533cc0b">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 4" id="slide-heading-b8e25533cc0b">Abstract (part 4)</h2>
+<p>This paper presents Active Fedference, a discrete-categorical
+framework that connects robust federated generalized variational
+inference with active inference belief sharing. The main bridge is
+structural: standard belief sharing appears as the non-robust corner of
+a broader generalized-Bayes family,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b9a7d890c29e">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 5" id="slide-heading-b9a7d890c29e">Abstract (part 5)</h2>
+<p>while robust losses, conservative server fusion, and explicit
+aggregation diagnostics describe how the system moves away from that
+corner under declared contamination mechanisms.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8e389e226a10">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 6" id="slide-heading-8e389e226a10">Abstract (part 6)</h2>
+<p>The result is not a replacement for belief sharing, but a containment
+result: ordinary belief sharing is recovered when robustness is turned
+off. Bounded-loss theory applies on the client axis, while the
+variational-server axis supplies an objective-backed redescending weight
+update.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8c91e365cca9">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 7" id="slide-heading-8c91e365cca9">Abstract (part 7)</h2>
+<p>Following the manuscript’s authoritative three-axis guarantee map,
+the paper keeps source-conditional client updates, a recovery-only
+heuristic server rule, and an objective-backed variational server rule
+as separate claim owners, with no robustness guarantee transferred
+between them.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5ce42b17b6ff">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 8" id="slide-heading-5ce42b17b6ff">Abstract (part 8)</h2>
+<p>The study suite then exercises the framework as an end-to-end
+research system: recovery checks anchor the standard-Bayes limit,
+belief-sharing studies verify the communication baseline, contamination
+experiments test robust consensus, and extension studies probe moving
+agents, hierarchical latent structure,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f896cac21cf2">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 9" id="slide-heading-f896cac21cf2">Abstract (part 9)</h2>
+<p>sensitivity to acuity and colony size, parameter recovery, and
+single-host socket-backed federation traces.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3ad42a77ee2f">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 10" id="slide-heading-3ad42a77ee2f">Abstract (part 10)</h2>
+<p>All reported quantities are generated from deterministic analysis
+artifacts and injected into the manuscript by token, so the paper,
+figures, release package, and validation reports remain tied to the same
+execution record.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3d65ac1758ce">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 11" id="slide-heading-3d65ac1758ce">Abstract (part 11)</h2>
+<p>The open-source repository is
+ActiveInferenceInstitute/Active_Fedference. This development manuscript
+has no assigned version DOI; published versions bind their reserved DOI,
+deposited PDF, and repository URL only after the release gates
+close.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Abstract, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c90a6e138e07">
+<h2 class="section-overview prose-slide"
+aria-label="Abstract, part 12" id="slide-heading-c90a6e138e07">Abstract (part 12)</h2>
+<p><strong>Keywords:</strong> active inference, federated learning,
+generalised variational inference, belief sharing, robustness,
+FedGVI</p>
+<p>The complete system schematic is shown in <span class="cross-reference">Figure 1</span>.</p>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-10885097403a">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 13" id="slide-heading-10885097403a">Abstract (part 13)</h2>
+<figure id="fig:graphical-abstract-slide-panel-1">
+<img src="../figures/graphical_abstract.slide-row-1-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="dc9397a6a2acb8b4921aeaa7c34562b99bf3a339e360b17bea5a756934231555"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A1: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-705ce7a45bde">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 14" id="slide-heading-705ce7a45bde">Abstract (part 14)</h2>
+<figure id="fig:graphical-abstract-slide-panel-2">
+<img src="../figures/graphical_abstract.slide-row-1-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d299311691b03cd54c303872ca16f390d44d574ee4ef0a15d11d533ff484ac18"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A1: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f09fad1c1525">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 15" id="slide-heading-f09fad1c1525">Abstract (part 15)</h2>
+<figure id="fig:graphical-abstract-slide-panel-3">
+<img src="../figures/graphical_abstract.slide-row-1-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="f2cc245dfd741bc5d15e7449fbf0a11f14fe92b33ae489d4ffec63af30a4780b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A1: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4eba8c04320f">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 16" id="slide-heading-4eba8c04320f">Abstract (part 16)</h2>
+<figure id="fig:graphical-abstract-slide-panel-4">
+<img src="../figures/graphical_abstract.slide-row-2-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="8c606058b36c22722f0330bbf2044a8cd5864e983c105b11d9401882f1d54ac9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A2: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2812270b15c4">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 17" id="slide-heading-2812270b15c4">Abstract (part 17)</h2>
+<figure id="fig:graphical-abstract-slide-panel-5">
+<img src="../figures/graphical_abstract.slide-row-2-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="df5347a0e29eb83cee1ddd814e1b8f483405ba5d9e27fffadfbb573db1807808"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A2: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-969b6b208f48">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 18" id="slide-heading-969b6b208f48">Abstract (part 18)</h2>
+<figure id="fig:graphical-abstract-slide-panel-6">
+<img src="../figures/graphical_abstract.slide-row-2-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="fcfac241369e6da4b0968423c0f5e2f4611aa769636223a510c17caccebcf718"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="A2: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d8b154f0b5a6">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 19" id="slide-heading-d8b154f0b5a6">Abstract (part 19)</h2>
+<figure id="fig:graphical-abstract-slide-panel-7">
+<img src="../figures/graphical_abstract.slide-row-3-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="3a13185eb71357ce1751bb958b7bf21182095dee5d47f27ad381c5a5378be55a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H1: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7fcb5f1237f7">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 20" id="slide-heading-7fcb5f1237f7">Abstract (part 20)</h2>
+<figure id="fig:graphical-abstract-slide-panel-8">
+<img src="../figures/graphical_abstract.slide-row-3-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="235cab8ba1be075fd357bcee79b46da7cb0aba5295616d9af9763120c2f53ee3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H1: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bf72380e1c5b">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 21" id="slide-heading-bf72380e1c5b">Abstract (part 21)</h2>
+<figure id="fig:graphical-abstract-slide-panel-9">
+<img src="../figures/graphical_abstract.slide-row-3-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="b504464849da3aafb4b949d4bcf677491c0562c2f3536f1ea695380be3cc5154"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H1: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a47cca789de6">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 22" id="slide-heading-a47cca789de6">Abstract (part 22)</h2>
+<figure id="fig:graphical-abstract-slide-panel-10">
+<img src="../figures/graphical_abstract.slide-row-4-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="fd7383790603394d8b2ac793e19ba7ad0e7516252381341cacc19b42b14e19b1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H2: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f46a311f2e2">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 23" id="slide-heading-6f46a311f2e2">Abstract (part 23)</h2>
+<figure id="fig:graphical-abstract-slide-panel-11">
+<img src="../figures/graphical_abstract.slide-row-4-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d2555d0ca254c86bba8da0e1550b3f4c76f4bc9538b640d40f77df0d6664b6d5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H2: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7285e9e39e82">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 24" id="slide-heading-7285e9e39e82">Abstract (part 24)</h2>
+<figure id="fig:graphical-abstract-slide-panel-12">
+<img src="../figures/graphical_abstract.slide-row-4-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="3e938ce0c02d132183ac4f4340515e54bfce86f7cbda1fb466218c838e058d08"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H2: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5e093c2293ec">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 25" id="slide-heading-5e093c2293ec">Abstract (part 25)</h2>
+<figure id="fig:graphical-abstract-slide-panel-13">
+<img src="../figures/graphical_abstract.slide-row-5-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e78c2bf4f2cf107917aa9904e97f73732cd029fefa9551bc6c0400972cc98783"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H3: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-af31d0da539c">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 26" id="slide-heading-af31d0da539c">Abstract (part 26)</h2>
+<figure id="fig:graphical-abstract-slide-panel-14">
+<img src="../figures/graphical_abstract.slide-row-5-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="b91f5c2b836932ffb2c5e969e60d0d610f5f9d5217820097b0db41716ec398fd"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H3: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7562daeb4548">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 27" id="slide-heading-7562daeb4548">Abstract (part 27)</h2>
+<figure id="fig:graphical-abstract-slide-panel-15">
+<img src="../figures/graphical_abstract.slide-row-5-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="81f65aaeb0b148509e058ab553e49ee06e3d337458bbe4145e92c68fec355e18"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="H3: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-39cec39afca1">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 28" id="slide-heading-39cec39afca1">Abstract (part 28)</h2>
+<figure id="fig:graphical-abstract-slide-panel-16">
+<img src="../figures/graphical_abstract.slide-row-6-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d66b46d4c9e07a8e8d898c3ebf3816f0f73e6096e321a443d5cbeebeddc7df0f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Naive consensus: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-006d3a8d0202">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 29" id="slide-heading-006d3a8d0202">Abstract (part 29)</h2>
+<figure id="fig:graphical-abstract-slide-panel-17">
+<img src="../figures/graphical_abstract.slide-row-6-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="095a07815cce1616d598e40a58a2cb5375e7f343abffee94c1be2e64318bf0b7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Naive consensus: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2969f234750b">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 30" id="slide-heading-2969f234750b">Abstract (part 30)</h2>
+<figure id="fig:graphical-abstract-slide-panel-18">
+<img src="../figures/graphical_abstract.slide-row-6-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="d7bae7151fe387ee2ed6d37c067cd70abe698f2e78bf7055c22ce6fd72b67b0e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Naive consensus: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1c0452cb57aa">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 31" id="slide-heading-1c0452cb57aa">Abstract (part 31)</h2>
+<figure id="fig:graphical-abstract-slide-panel-19">
+<img src="../figures/graphical_abstract.slide-row-7-states-1-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="21de9739e95f186f18e63269c68808dbabd2eda4625198d96e73024991fc663f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Heuristic consensus: source-derived posterior masses for states 1 to 3, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0736827aeed">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 32" id="slide-heading-d0736827aeed">Abstract (part 32)</h2>
+<figure id="fig:graphical-abstract-slide-panel-20">
+<img src="../figures/graphical_abstract.slide-row-7-states-4-6.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="2226eaca092f719d672cc27fe799f503b93f76bceb58bf67f9dea01a2995fd58"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Heuristic consensus: source-derived posterior masses for states 4 to 6, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-05994938484d">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 33" id="slide-heading-05994938484d">Abstract (part 33)</h2>
+<figure id="fig:graphical-abstract-slide-panel-21">
+<img src="../figures/graphical_abstract.slide-row-7-states-7-8.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="01b1331e0081298422c08bacc24235c732e09902f158d103acd11cba14f20f9e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Heuristic consensus: source-derived posterior masses for states 7 to 8, common 0–1 probability scale; arrow marks this row&#39;s argmax when present." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0a05644bf6ed">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 34" id="slide-heading-0a05644bf6ed">Abstract (part 34)</h2>
+<figure id="fig:graphical-abstract-slide-panel-22">
+<img src="../figures/graphical_abstract.slide-weights-1-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="91df355f87e360fd771509108a85e06b96897ebcc64319ab838be4e8bf9422a6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1402"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0497076"
+alt="Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e007b74a274b">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 35" id="slide-heading-e007b74a274b">Abstract (part 35)</h2>
+<figure id="fig:graphical-abstract-slide-panel-23">
+<img src="../figures/graphical_abstract.slide-weights-3-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="4b9ccc7e4edebff50c2a181941152a79b4fa1b3968971f785552dbe0ac2c3ee8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1402"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0497076"
+alt="Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 36" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-02c1afa95b89">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 36" id="slide-heading-02c1afa95b89">Abstract (part 36)</h2>
+<figure id="fig:graphical-abstract-slide-panel-24">
+<img src="../figures/graphical_abstract.slide-weights-5-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="c4dfc82f511ecab30bd6b780e6178eb8a172dfcc57d06f6efdf51df3c6ae03d6"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1402"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0497076"
+alt="Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 37" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-916453feb401">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 37" id="slide-heading-916453feb401">Abstract (part 37)</h2>
+<figure id="fig:graphical-abstract-slide-panel-25">
+<img src="../figures/graphical_abstract.slide-colony.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a7edd999211c1d2b85f89071fe8975174d5db95dd2f71da4e802faed80736ef0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1209"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.7598425"
+alt="Configured colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40%. True state: 3." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 38" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a2a57bb0c740">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 38" id="slide-heading-a2a57bb0c740">Abstract (part 38)</h2>
+<figure id="fig:graphical-abstract-slide-panel-26">
+<img src="../figures/graphical_abstract.slide-naive.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="84d729f8ada59448ef1ee7637072045145480c266ae0def12cad390d236a3650"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1315"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7.4293785"
+alt="Naive equal-weight log pool: true-state mass 39%; argmax state 6." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 39" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e54dc0719c38">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 39" id="slide-heading-e54dc0719c38">Abstract (part 39)</h2>
+<figure id="fig:graphical-abstract-slide-panel-27">
+<img src="../figures/graphical_abstract.slide-heuristic.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4d24d408e7c9000b9376855aaa249ec73ad67a3cb339acc74f576b0ef6ba2616"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1315"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.1771654"
+alt="Heuristic robust aggregation: true-state mass 50%; argmax state 3. Robustness 1.5." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 40" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fb75c41aa215">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 40" id="slide-heading-fb75c41aa215">Abstract (part 40)</h2>
+<figure id="fig:graphical-abstract-slide-panel-28">
+<img src="../figures/graphical_abstract.slide-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="4a78eda1cc42a25cc09240959744fa580ac3f9c8fcabf1066d4cb8e8bf44beb9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1189"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.9285714"
+alt="A / crosshatching: adversarial; H / plain: honest. All probability panels share a 0–1 scale. The true state is green; other states are gray." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 41" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dccdd164c51d">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 41" id="slide-heading-dccdd164c51d">Abstract (part 41)</h2>
+<figure id="fig:graphical-abstract-slide-panel-29">
+<img src="../figures/graphical_abstract.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0be74e9b3c1d88e1c1b6ac8967a8c3fb6dda4c6098ba162c89815793590a6a26"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1277"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.1453202"
+alt="One deterministic configured colony, not a replicated benchmark. True-state mass percentages are not deployment accuracy estimates. No uncertainty interval applies." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 42" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7bbf2c8d1a52">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 42" id="slide-heading-7bbf2c8d1a52">Abstract (part 42)</h2>
+<figure id="fig:graphical-abstract-slide-panel-30">
+<img src="../figures/graphical_abstract.slide-network-a1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="da126e9eef431f8cc9a2290b9d428768eea3012b1c021805fbef7487a81adcc9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Agent A1 → Fusion server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 43" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8a6701e711b5">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 43" id="slide-heading-8a6701e711b5">Abstract (part 43)</h2>
+<figure id="fig:graphical-abstract-slide-panel-31">
+<img src="../figures/graphical_abstract.slide-network-a2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="75eac9ca130594475436a7b958639af5a5d9b4066699332ca4fa91c3867bef34"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Agent A2 → Fusion server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 44" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ece9b7aa7d33">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 44" id="slide-heading-ece9b7aa7d33">Abstract (part 44)</h2>
+<figure id="fig:graphical-abstract-slide-panel-32">
+<img src="../figures/graphical_abstract.slide-network-h1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7167f95d3ea4a6e4e8ea5d31d4e18ee2b3ce9b51116610fb949af21a921f5cec"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Agent H1 → Fusion server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 45" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-23133927fb81">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 45" id="slide-heading-23133927fb81">Abstract (part 45)</h2>
+<figure id="fig:graphical-abstract-slide-panel-33">
+<img src="../figures/graphical_abstract.slide-network-h2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8d7480198fef91f82f25c331acb7c5595718a29c124facb454ec265857b3b900"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Agent H2 → Fusion server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 46" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-216cdf357b71">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 46" id="slide-heading-216cdf357b71">Abstract (part 46)</h2>
+<figure id="fig:graphical-abstract-slide-panel-34">
+<img src="../figures/graphical_abstract.slide-network-h3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="279e7ba0dec1c99ebcff76f897be2fa88e4e8acfcdebc6cfb3d3f43bba5bed3b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Agent H3 → Fusion server: Posterior message; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 section-overview figure-led"
+aria-label="Abstract, part 47" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c326c4597ccc">
+<h2 class="section-overview figure-led"
+aria-label="Abstract, part 47" id="slide-heading-c326c4597ccc">Abstract (part 47)</h2>
+<figure id="fig:graphical-abstract-slide-panel-35">
+<img
+src="../figures/graphical_abstract.slide-variational-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="b7020c8a4f62cf10434d9c7de6354446c63616f35ae823de6b881dcef39aae13"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1229"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.0270936"
+alt="The variational server is a separate objective-backed route. The displayed naive-versus-heuristic colony values do not measure its performance." />
+</figure>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

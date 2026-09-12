@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -219,176 +261,224 @@
 
 \section{Research gap and claim boundary}\label{sec:gap}
 
-\begin{frame}[allowframebreaks]{Research gap and claim boundary}
+\begin{frame}{Research gap and claim boundary}
 The two communities of sec.~2 provide substantial
 pieces of the problem, but the cited threads do not answer the same
 question. The gap is not a claim that either field is incomplete; it is
 the untested intersection between active-inference belief sharing and
-robust generalized Bayes. This section describes that intersection
-thread by thread, states the scoped bridge evaluated here, and records
-the evidence boundary that travels with it.
+robust generalized Bayes.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Five reviewed threads and their open
-intersection}
+\begin{frame}{Research gap and claim\ldots{} (part 2)}
+This section describes that intersection thread by thread, states the
+scoped bridge evaluated here, and records the evidence boundary that
+travels with it.
+\end{frame}
+
+\begin{frame}{Five reviewed threads and their open intersection}
 \protect\phantomsection\label{sec:gap-threads}
 Five threads in the reviewed literature run toward the gap but do not,
 in the sources cited here, cross it --- three from active inference and
 two from robust Bayes.
-
-\textbf{Thread 1 --- Generative modeling and action} (active inference).
-Discrete active inference is a mature, synthesized formalism with
-standardized tensors and an expected-free-energy action rule (Friston
-2010; Da Costa et al. 2020), and it is executable at scale through pymdp
-(Heins et al. 2022) and RxInfer (Bagaev et al. 2023). \emph{Boundary:}
-these sources do not by themselves equip the active-inference inference
-step with the contamination mechanism evaluated here.
-
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Five reviewed threads and their open
-intersection}
+\begin{frame}{Five reviewed threads and\ldots{} (part 2)}
+\textbf{Thread 1 --- Generative modeling and action} (active inference).
+Discrete active inference is a mature,
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 3)}
+synthesized formalism with standardized tensors and an
+expected-free-energy action rule (Friston 2010; Da Costa et al. 2020),
+and it is executable at scale through pymdp (Heins et al. 2022) and
+RxInfer (Bagaev et al. 2023).
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 4)}
+\emph{Boundary:} these sources do not by themselves equip the
+active-inference inference step with the contamination mechanism
+evaluated here.
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 5)}
 \textbf{Thread 2 --- Collective belief coordination} (active inference).
 Colonies coordinate by sharing beliefs and minimizing collective
 surprise, reproducing flocking (Heins et al. 2024), epistemic-community
 formation (Albarracin et al. 2022), and collective intelligence
-(Kaufmann et al. 2021). \emph{Boundary:} the cited collective-belief
-studies treat the broadcast posteriors as trusted and do not evaluate
-the robustness of fusion to misspecified or intentionally wrong members.
-
+(Kaufmann et al. 2021).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Five reviewed threads and their open
-intersection}
+\begin{frame}{Five reviewed threads and\ldots{} (part 6)}
+\emph{Boundary:} the cited collective-belief studies treat the broadcast
+posteriors as trusted and do not evaluate the robustness of fusion to
+misspecified or intentionally wrong members.
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 7)}
 \textbf{Thread 3 --- Belief sharing and structure growth} (active
 inference). Federated belief sharing fuses posteriors into a hive-mind
-consensus (Friston et al. 2024), and post-hoc Bayesian model reduction
-(Friston and Penny 2011) together with optimal-design-flavored model
-selection (Smith et al. 2022) grow and prune the generative model.
-\emph{Boundary:} in the cited belief-sharing line, fusion is exact-Bayes
-and trusting; its connection to the robustness theory developed for
-federated learning is not evaluated.
-
+consensus (Friston et al. 2024),
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Five reviewed threads and their open
-intersection}
+\begin{frame}{Five reviewed threads and\ldots{} (part 8)}
+and post-hoc Bayesian model reduction (Friston and Penny 2011) together
+with optimal-design-flavored model selection (Smith et al. 2022) grow
+and prune the generative model. \emph{Boundary:} in the cited
+belief-sharing line, fusion is exact-Bayes and trusting;
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 9)}
+its connection to the robustness theory developed for federated learning
+is not evaluated.
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 10)}
 \textbf{Thread 4 --- Federated and partitioned inference} (robust
 Bayes). Federated learning aggregates decentralized models (McMahan et
 al. 2017), and partitioned variational inference gives the
 factor-algebra framework that unifies federated and continual learning
-(Bui et al. 2018; Ashman et al. 2022). \emph{Boundary:} the cited
-examples target parameter or predictive-model factors rather than the
-generative-model-bearing, action-selecting POMDP belief consensus used
-here.
-
+(Bui et al. 2018; Ashman et al. 2022).
 \end{frame}
 
-\begin{frame}[allowframebreaks]{Five reviewed threads and their open
-intersection}
+\begin{frame}{Five reviewed threads and\ldots{} (part 11)}
+\emph{Boundary:} the cited examples target parameter or predictive-model
+factors rather than the generative-model-bearing, action-selecting POMDP
+belief consensus used here.
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 12)}
 \textbf{Thread 5 --- Generalized and robust Bayes} (robust Bayes).
 Generalized Bayesian updating replaces the likelihood--KL pair with a
 loss--divergence pair (Bissiri et al. 2016; Knoblauch et al. 2022);
-bounded losses --- the density-power \(\beta\)-divergence (Basu et al.
-1998) and generalized cross-entropy (Zhang and Sabuncu 2018) --- deliver
-bounded influence; and FedGVI (Mildner et al. 2025) federates the robust
-objective with provable guarantees. \emph{Boundary:} the cited
-robust-Bayes apparatus does not evaluate active-inference POMDP belief
-consensus. Its behavior in the discrete categorical regime of the worked
-belief-sharing example (Friston et al. 2024) is the scoped setting
-evaluated here.
+bounded losses ---
 \end{frame}
 
-\begin{frame}[allowframebreaks]{The belief-fusion bridge evaluated here}
+\begin{frame}{Five reviewed threads and\ldots{} (part 13)}
+the density-power \(\beta\)-divergence (Basu et al. 1998) and
+generalized cross-entropy (Zhang and Sabuncu 2018) --- deliver bounded
+influence; and FedGVI (Mildner et al. 2025) federates the robust
+objective with provable guarantees.
+\end{frame}
+
+\begin{frame}{Five reviewed threads and\ldots{} (part 14)}
+\emph{Boundary:} the cited robust-Bayes apparatus does not evaluate
+active-inference POMDP belief consensus. Its behavior in the discrete
+categorical regime of the worked belief-sharing example (Friston et al.
+2024) is the scoped setting evaluated here.
+\end{frame}
+
+\begin{frame}{The belief-fusion bridge evaluated here}
 \protect\phantomsection\label{sec:gap-bridge}
-Across these five reviewed threads, the missing intersection is
-specific: the active-inference sources provide belief fusion but not the
-contamination analysis used here, while the robust-Bayes sources provide
-robust inference but not this acting-agent categorical consensus. We
-evaluate the bridge with robust, generalized-Bayes belief fusion for
-active-inference ensembles, comprising three components and one recovery
-anchor. (i) A per-agent, FedGVI-faithful generalized-Bayes update
-carrying bounded-influence robustness through the \(\beta\)- and
-rcce-losses (eq.~4, eq.~5). (ii) A
-complementary server-side divergence-reweighting \emph{heuristic} that
-discounts each agent by its divergence from the emerging consensus
-(eq.~7). (iii) A conservative server-side
-variational rule with a stated aggregation free energy and a
-redescending raw effective-weight bound (eq.~8).
+Across these reviewed threads, the missing intersection is specific. The
+cited active-inference sources provide belief fusion but not the
+contamination analysis used here. The cited robust-Bayes sources provide
+robust inference but not this acting-agent categorical consensus.
 \end{frame}
 
-\begin{frame}[allowframebreaks]{The belief-fusion bridge evaluated here}
-The shared anchor is recovery of the standard-Bayes client limit and the
-project log-linear-pool server identity in their trusting limits
-(sec.~6.1). Under the qualified bridge of
-sec.~5.8, the latter specializes Friston et
-al.'s Eq. 7 message-combination term (Friston et al. 2024), not the
-complete source protocol. The algebraic result and machine-precision
-checks therefore identify a recovery boundary rather than a replacement.
-Headline comparisons use matched paired statistics --- paired Wilcoxon
-(Wilcoxon 1945), Benjamini--Hochberg FDR (Benjamini and Hochberg 1995),
-bootstrap confidence intervals (Efron and Tibshirani 1993), and
-observed-effect design-power planning --- and are certified for
-reproducibility (Peng 2011).
+\begin{frame}{The belief-fusion bridge\ldots{} (part 2)}
+We evaluate a bridge comprising three distinct robustness axes and one
+recovery anchor.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Guarantee map: three robustness
-axes}
+\begin{frame}{The belief-fusion bridge\ldots{} (part 3)}
+The client axis is a FedGVI-faithful generalized-Bayes update using the
+\(\beta\)- and rcce-losses (eq.~7,
+eq.~8). The heuristic server axis reweights each agent
+by divergence from the current consensus (eq.~10).
+\end{frame}
+
+\begin{frame}{The belief-fusion bridge\ldots{} (part 4)}
+The objective-backed server axis is a conservative variational rule with
+a stated aggregation free energy and raw effective-weight bound
+(eq.~12).
+\end{frame}
+
+\begin{frame}{The belief-fusion bridge\ldots{} (part 5)}
+The shared anchor recovers the standard-Bayes client limit and project
+log-linear-pool server identity (sec.~6.1).
+Under the qualified bridge of sec.~5.8, the
+latter specializes Friston et al.'s Eq.
+\end{frame}
+
+\begin{frame}{The belief-fusion bridge\ldots{} (part 6)}
+7 message-combination term (Friston et al. 2024), not the complete
+source protocol. The algebra and executable residuals identify a
+recovery boundary, not an equivalence of literatures.
+\end{frame}
+
+\begin{frame}{The belief-fusion bridge\ldots{} (part 7)}
+Declared comparisons use paired Wilcoxon statistics (Wilcoxon 1945),
+Benjamini--Hochberg FDR (Benjamini and Hochberg 1995),
+percentile-bootstrap intervals (Efron and Tibshirani 1993), and
+observed-effect design-power planning. Source-bound reports make those
+analyses reproducible (Peng 2011);
+\end{frame}
+
+\begin{frame}{The belief-fusion bridge\ldots{} (part 8)}
+they do not promote a conditional simulation into a theorem.
+\end{frame}
+
+\begin{frame}{Guarantee map: three robustness axes}
 \protect\phantomsection\label{sec:robustness-axes}
-A red-team review surfaced a distinction we carry through the paper
-rather than paper over: robustness enters in \textbf{three} places, and
-they do not have the same theoretical standing.
-
+A red-team review surfaced the paper's authoritative robustness
+taxonomy. Robustness enters in \textbf{three} places, with different
+claim owners, evidence classes, and permitted interpretations.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Guarantee map: three robustness
-axes}
-\begin{enumerate}
-\item
-  \textbf{Client-side (rigorous).} The per-agent generalized-Bayes
-  update, driven by a bounded loss inside
-  \breaktt{generalized\_posterior} (eq.~4,
-  eq.~5). It is derived from the stated objective
-  eq.~1 and provably limits to negative-log-likelihood
-  / Bayes --- and hence to the standard pool --- as the loss parameter
-  goes to zero (Corollary 6 + Proposition
-  4). This axis inherits FedGVI's (Mildner
-  et al. 2025) bounded-influence result only under the source theorem's
-  stated loss, model, and contamination assumptions.
-\item
-  \textbf{Server-side (heuristic).} The divergence-reweighting
-  aggregator \breaktt{robust\_aggregate}, which discounts each agent by
-  \(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\). Only its \emph{recovery}
-  limit is proven --- at \(c=0\) it equals the standard log-linear pool
-  (eq.~7, Theorem
-  5); it is \textbf{not} the closed-form
-  minimizer of a FedGVI objective. We present it as a complementary
-  heuristic and never claim it inherits the bounded-influence bound.
-\item
-  \textbf{Server-side (objective-backed, conservative).} The variational
-  aggregator \breaktt{variational\_aggregate} applies exact block updates
-  that do not increase the stated free energy
-  eq.~8, recovers the same log-linear pool in the
-  trusting limit, and bounds each raw effective weight by its base
-  weight. Its honest cost is conservatism: it is not the sharp
-  accuracy-maximizing heuristic.
-\end{enumerate}
-
+\begin{frame}[fragile]{Client-side: source-theorem-backed}
+\protect\phantomsection\label{client-side-source-theorem-backed}
+The per-agent generalized-Bayes update uses a bounded loss inside
+\texttt{generalized\_posterior} (eq.~7,
+eq.~8). It is derived from eq.~2 and
+limits to NLL/Bayes as the loss parameter approaches zero (Corollary
+6;
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Guarantee map: three robustness
-axes}
-The robustness sweep (sec.~7.5) reports these
-axes, and sec.~8.15 states which claim rests on
-which. No figure, table, or sentence in this paper grants the
-server-side heuristic the guarantee that belongs to the client-side
-update or the variational server objective: the effect-size,
-confidence-interval, and power enrichment that decorate the sweep
-characterize the heuristic's \emph{behavior}, not a per-agent or
-variational guarantee. This honesty is the point: the client-side axis
-is source-theorem-backed, the sharp server heuristic is useful but
-clearly labeled, and the variational server axis is rigorous but
-conservative.
+\begin{frame}{Client-side\ldots{} (part 2)}
+Proposition 4). FedGVI's bounded-influence
+result transfers only under the source theorem's loss, model, and
+contamination assumptions (Mildner et al. 2025).
+\end{frame}
+
+\begin{frame}[fragile]{Server-side: heuristic}
+\protect\phantomsection\label{server-side-heuristic}
+\texttt{robust\_aggregate} discounts an agent by
+\(\exp(-c\,\mathrm{KL}(q_n \,\|\, q))\). Its proved positive property is
+the recovery limit: at \(c=0\), it equals the standard log-linear pool
+(eq.~10, Theorem
+5).
+\end{frame}
+
+\begin{frame}{Server-side: heuristic (part 2)}
+It is not a closed-form FedGVI-objective minimizer and does not inherit
+the client-side bounded-influence result.
+\end{frame}
+
+\begin{frame}[fragile]{Server-side: objective-backed and conservative}
+\protect\phantomsection\label{server-side-objective-backed-and-conservative}
+\texttt{variational\_aggregate} applies exact block updates that do not
+increase the stated free energy eq.~12.
+\end{frame}
+
+\begin{frame}{Server-side\ldots{} (part 2)}
+It recovers the log-linear pool in the trusting limit and bounds each
+raw effective weight by its base weight. Its declared tradeoff is a
+conservative consensus;
+
+the objective-backed property does not imply peak-accuracy dominance.
+\end{frame}
+
+\begin{frame}{Server-side\ldots{} (part 3)}
+The robustness results (sec.~7.5) apply this
+map, and sec.~8.15 states the complete boundary.
+Effect sizes, intervals, and planning quantities characterize the server
+heuristic's conditional behavior;
+\end{frame}
+
+\begin{frame}{Server-side\ldots{} (part 4)}
+they do not transfer the client theorem or variational objective to that
+heuristic. Later sections refer back to this taxonomy rather than
+redefine it.
 \end{frame}
 
 \end{document}

@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Reproducibility: execution record and application integrity — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:reproducibility"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2e1749ddda94">
+<h1 class="section-divider" id="slide-heading-2e1749ddda94">Reproducibility: execution record and
+application integrity</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Reproducibility: execution record and application integrity, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2e1749ddda94-2">
+<h2 class="section-overview prose-slide"
+aria-label="Reproducibility: execution record and application integrity, part 2" id="slide-heading-2e1749ddda94-2">Reproducibility:
+execution record and application integrity</h2>
+<p>This section is a machine-verifiable reproducibility certificate.
+Every value below is computed by the analysis pipeline and injected at
+render time, establishing a chain of custody from configuration through
+code to publication.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Reproducibility: execution record and application integrity, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-475c92043294">
+<h2 class="section-overview prose-slide"
+aria-label="Reproducibility: execution record and application integrity, part 2" id="slide-heading-475c92043294">Reproducibility
+(part 2)</h2>
+<p>The discipline is the one that gates this project’s CI: every prose
+number is a generated token, every token is emitted by one generator
+function,</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Reproducibility: execution record and application integrity, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fc16560540e4">
+<h2 class="section-overview prose-slide"
+aria-label="Reproducibility: execution record and application integrity, part 3" id="slide-heading-fc16560540e4">Reproducibility
+(part 3)</h2>
+<p>and any drift between narrative and computed result fails the build
+before a green PDF exists <span class="citation"
+data-cites="peng2011reproducible">(Peng 2011)</span>.</p>
+</section>
+<section id="sec:repro-determinism" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-211e93ed6ffd">
+<h2 class="prose-slide" id="slide-heading-211e93ed6ffd">Determinism contract for seeded scientific
+results</h2>
+<p>Reproducing every reported number requires only two recorded inputs:
+the global seed pinned here and the software environment fingerprinted
+in the next subsection. The determinism contract fixes the first —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fde899cd6159">
+<h2 class="prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 2" id="slide-heading-fde899cd6159">Determinism
+contract for… (part 2)</h2>
+<p>it states exactly what is held constant, what is asserted to machine
+tolerance, and what is deliberately not claimed byte-identical.</p>
+<p><strong>Seed.</strong> The global seed is 0, threaded through every
+<code>np.random.default_rng(seed)</code>; the global
+<code>np.random</code> state is never used.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-42244050066a">
+<h2 class="prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 3" id="slide-heading-42244050066a">Determinism
+contract for… (part 3)</h2>
+<p><strong>Assertions.</strong> Recovery identities use exact or
+machine-tolerance assertions; seeded study reports are regression-tested
+for repeatability under the recorded software environment.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d9d8d3122f0c">
+<h2 class="prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 4" id="slide-heading-d9d8d3122f0c">Determinism
+contract for… (part 4)</h2>
+<p>Rendered PDF/HTML/slide containers are validated as fresh publication
+products but are not claimed byte-identical across toolchain
+versions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4f92a4bc1d37">
+<h2 class="prose-slide"
+aria-label="Determinism contract for seeded scientific results, part 5" id="slide-heading-4f92a4bc1d37">Determinism
+contract for… (part 5)</h2>
+<p><strong>Execution.</strong> No mocks are used: every test is a
+genuine computation on small categorical distributions or a seeded
+simulation under this repository’s explicit no-mocks policy.</p>
+</section>
+<section id="sec:repro-application-integrity"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-098e7bf9c3ef">
+<h2 class="prose-slide" id="slide-heading-098e7bf9c3ef">Application integrity and solver-health
+receipts</h2>
+<p>The labeled own-data path produces a different evidentiary object
+from a research report. It validates one-dimensional categorical inputs,
+hashes the canonical semantic request,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Application integrity and solver-health receipts, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d2e63114fa90">
+<h2 class="prose-slide"
+aria-label="Application integrity and solver-health receipts, part 2" id="slide-heading-d2e63114fa90">Application
+integrity and… (part 2)</h2>
+<p>delegates once to the shared aggregation domain, and records
+numerical health without adding a decision or interpretation.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Application integrity and solver-health receipts, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7f98d3e5a71">
+<h2 class="prose-slide"
+aria-label="Application integrity and solver-health receipts, part 3" id="slide-heading-d7f98d3e5a71">Application
+integrity and… (part 3)</h2>
+<p>The application flow in <span class="cross-reference">Figure 19</span>
+reads from top to bottom. Panel A follows validation and canonical
+hashing; Panel B places the exact two-by-two <code>solver_status</code>
+key below the result classifier; Panel C separates the upper
+atomic-write row from the lower verification lane.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Application integrity and solver-health receipts, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-66c7a8990053">
+<h2 class="prose-slide"
+aria-label="Application integrity and solver-health receipts, part 4" id="slide-heading-66c7a8990053">Application
+integrity and… (part 4)</h2>
+<p>Invalid inputs or unsafe destinations fail before directory creation.
+Non-nominal numerical results retain their artifacts and return a
+distinct status rather than being silently promoted or discarded.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Application integrity and solver-health receipts, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5e450fa066a7">
+<h2 class="prose-slide"
+aria-label="Application integrity and solver-health receipts, part 5" id="slide-heading-5e450fa066a7">Application
+integrity and… (part 5)</h2>
+<p>An application receipt can verify artifact integrity and, when
+requested and available, source equivalence. Requiring nominal solver
+health adds a numerical gate. None of those levels establishes
+calibration, domain suitability, scientific validity, decision
+correctness, or acceptance.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4cf4cb613633">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 6" id="slide-heading-4cf4cb613633">Application
+integrity and… (part 6)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-1">
+<img
+src="../figures/application_integrity_flow.slide-request-strict-validation.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="124b9148fa37ce08c69673514045ca8962f87e3b2e0636078cec3185378da24d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Labeled JSON or Python request → Strict schema + 1-D categorical shape: parse; normal." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3324c1d3b3d4">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 7" id="slide-heading-3324c1d3b3d4">Application
+integrity and… (part 7)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-2">
+<img
+src="../figures/application_integrity_flow.slide-strict-validation-canonical-request.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c0193b4b33c2c76af9191159a2a667509a135b1e72a100d5e0535600fd833549"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Strict schema + 1-D categorical shape → Canonical request + SHA-256: valid; normal." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-95f8488a50ff">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 8" id="slide-heading-95f8488a50ff">Application
+integrity and… (part 8)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-3">
+<img
+src="../figures/application_integrity_flow.slide-strict-validation-invalid-request.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="7f29588dabcb7f42d4d87375bf941b10bbbabedb200f7fc83822f57b5c6ce5ac"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Strict schema + 1-D categorical shape → Exit 2 · invalid request no directory created: invalid request; rejected." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0a7d4a9be4f2">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 9" id="slide-heading-0a7d4a9be4f2">Application
+integrity and… (part 9)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-4">
+<img
+src="../figures/application_integrity_flow.slide-canonical-request-destination-safety.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="01571fc6916f6dc0dd97d6b1aa6ce76179a2176551b1dd2095113d42ad79488f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Canonical request + SHA-256 → Destination + source provenance safety: validated semantics; normal." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-958e6602f2d1">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 10" id="slide-heading-958e6602f2d1">Application
+integrity and… (part 10)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-5">
+<img
+src="../figures/application_integrity_flow.slide-destination-safety-unsafe-destination.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="e74cc3448fe64e525430003c77c0f1c1129638307eac8bc408f5d8ef6cfa4986"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Destination + source provenance safety → Exit 2 · unsafe destination or provenance unavailable: unsafe path or provenance failure; rejected." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-861abd8bcdf8">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 11" id="slide-heading-861abd8bcdf8">Application
+integrity and… (part 11)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-6">
+<img
+src="../figures/application_integrity_flow.slide-destination-safety-aggregate-result.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a97fd334dc409dbc3e2f0e72eb9bedbac7b21b7ac975ef90679d6c12d993630f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Destination + source provenance safety → aggregate_result called once: single delegation; normal." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-41f38af87d39">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 12" id="slide-heading-41f38af87d39">Application
+integrity and… (part 12)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-7">
+<img
+src="../figures/application_integrity_flow.slide-aggregate-result-rich-result.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c7acc668d4d6707d8926e78d527387c88b4ba5f591b45c444cee83561626bf92"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="aggregate_result called once → Consensus, weights, and histories: finite result; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-19664c52d7a9">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 13" id="slide-heading-19664c52d7a9">Application
+integrity and… (part 13)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-8">
+<img
+src="../figures/application_integrity_flow.slide-rich-result-solver-status.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="9f9e7ec00b7f2ae6ae5f16bb937fe4d45ab5ebb2a98809723ae8a7d346ef186b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Consensus, weights, and histories → Classify convergence × fallback: classify health; normal." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3a8646fb09f">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 14" id="slide-heading-d3a8646fb09f">Application
+integrity and… (part 14)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-9">
+<img
+src="../figures/application_integrity_flow.slide-solver-status-non-nominal.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="df39f6e821ae2429aaac9d777a7f432e5ec96894b652c612827bb68239780b7b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Classify convergence × fallback → Exit 1 · retain valid non-nominal artifacts: fallback or nonconvergence; retained_warning." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ac4abaf5d45d">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 15" id="slide-heading-ac4abaf5d45d">Application
+integrity and… (part 15)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-10">
+<img
+src="../figures/application_integrity_flow.slide-canonical-request-request-json.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="396e8af25eb109b6f37897e868be9b54efde5d74a640820476b02ee38fe01729"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Canonical request + SHA-256 → 1  request.json: semantic input; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-15df1810f58c">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 16" id="slide-heading-15df1810f58c">Application
+integrity and… (part 16)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-11">
+<img
+src="../figures/application_integrity_flow.slide-rich-result-result-json.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="fb310d0748eed1b05596e3b85b731e4f0c71aaddf3b6d3fff1e4fb6510e30858"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Consensus, weights, and histories → 2  result.json: semantic output; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-10dffcef4373">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 17" id="slide-heading-10dffcef4373">Application
+integrity and… (part 17)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-12">
+<img
+src="../figures/application_integrity_flow.slide-request-json-receipt-json.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="5a363cf792d726ed70d219520437f7b5b414e6334c432d86bfb9096cae08499e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="1  request.json → 3  receipt.json: bind request hash; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0fdbbfd1a216">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 18" id="slide-heading-0fdbbfd1a216">Application
+integrity and… (part 18)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-13">
+<img
+src="../figures/application_integrity_flow.slide-result-json-receipt-json.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1ad81efdd985ef0aa27e3d94f6a27a2b189a4370a5a4ecef2d295e43ae5e5564"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="2  result.json → 3  receipt.json: bind result hash + provenance; data_dependency." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2338dd369228">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 19" id="slide-heading-2338dd369228">Application
+integrity and… (part 19)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-14">
+<img
+src="../figures/application_integrity_flow.slide-receipt-json-verification.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a8fec71b11e5e0110a949b6d2d89225299363de0809a2961f7ac36ea9c131d82"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="3  receipt.json → Verify receipt: verify; normal." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fc41384624e9">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 20" id="slide-heading-fc41384624e9">Application
+integrity and… (part 20)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-15">
+<img
+src="../figures/application_integrity_flow.slide-verification-mismatch.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="47323e2cbcfe281ce4c2fb58fc797f1d70cbbeb44aa37fce7b9660ac72101208"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="Verify receipt → Mismatch · report exact finding; do not reinterpret: mismatch; rejected." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0a2482b0f3b5">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 21" id="slide-heading-0a2482b0f3b5">Application
+integrity and… (part 21)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-16">
+<img
+src="../figures/application_integrity_flow.slide-write-request-json-result-json.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="eb8535645c0ccc8257c6f31ea467c3c40c1c3b46f45314ea7a355d60432e9917"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="1  request.json → 2  result.json: Atomic write order; write_order." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-282beb382f3d">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 22" id="slide-heading-282beb382f3d">Application
+integrity and… (part 22)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-17">
+<img
+src="../figures/application_integrity_flow.slide-write-result-json-receipt-json.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ec4527f894ed136e60150ea7715bb7bd6bdf303e017aa564b01df6cba67cac3c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1575"
+data-slide-figure-intrinsic-height="497"
+data-slide-figure-intrinsic-aspect="3.1690141"
+alt="2  result.json → 3  receipt.json: Atomic write order; write_order." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-509fa50649ee">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 23" id="slide-heading-509fa50649ee">Application
+integrity and… (part 23)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-18">
+<img
+src="../figures/application_integrity_flow.slide-status-nominal.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="501443e13d95120fb764d8d97c297327054ebf95a6a3323fabb1d198bf19aa28"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="821"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="4.6384181"
+alt="converged · no fallback
+nominal" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9ab253e4c33f">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 24" id="slide-heading-9ab253e4c33f">Application
+integrity and… (part 24)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-19">
+<img
+src="../figures/application_integrity_flow.slide-status-converged-with-fallback.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="96ad86e12c6b13a833ee31278af7016bcee8e98db29a1a0deabe8c439e7f5e03"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="862"
+data-slide-figure-intrinsic-height="179"
+data-slide-figure-intrinsic-aspect="4.8156425" alt="converged · fallback
+converged_with_fallback" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f5796be62cd0">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 25" id="slide-heading-f5796be62cd0">Application
+integrity and… (part 25)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-20">
+<img
+src="../figures/application_integrity_flow.slide-status-not-converged.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="8b30e4fcc4c8635c3894b8cb4536daeb3b0e425e25f2d2196e656c49a41e584c"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="953"
+data-slide-figure-intrinsic-height="179"
+data-slide-figure-intrinsic-aspect="5.3240223"
+alt="not converged · no fallback
+not_converged" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7ea7838676e9">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 26" id="slide-heading-7ea7838676e9">Application
+integrity and… (part 26)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-21">
+<img
+src="../figures/application_integrity_flow.slide-status-not-converged-with-fallback.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d2d5110f2c54090db825d4461b884faa89977b6fe16647e77f6d32fef7c5fd3a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1006"
+data-slide-figure-intrinsic-height="179"
+data-slide-figure-intrinsic-aspect="5.6201117"
+alt="not converged · fallback
+not_converged_with_fallback" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-31e098782eb8">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 27" id="slide-heading-31e098782eb8">Application
+integrity and… (part 27)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-22">
+<img
+src="../figures/application_integrity_flow.slide-artifact-integrity-establishes.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="564c0cdc26e021e605702697f05b113656d3617a77f63500d1d8e879f187001e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1248"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.9133858" alt="Artifact integrity
+Establishes: recorded request/result bytes match the receipt" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f42da0e70b3d">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 28" id="slide-heading-f42da0e70b3d">Application
+integrity and… (part 28)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-23">
+<img
+src="../figures/application_integrity_flow.slide-artifact-integrity-does-not-establish.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="57ef1faf8b82ecb1a89a3105b1e087eaf5c418dd4e89d4db7ea073cdbab0ab97"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1251"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7909091" alt="Artifact integrity
+Does not establish: equivalence to another source checkout or nominal solver health" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 29" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e6e67a4ef8f">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 29" id="slide-heading-7e6e67a4ef8f">Application
+integrity and… (part 29)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-24">
+<img
+src="../figures/application_integrity_flow.slide-source-equivalence-establishes.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="94d82d0780ec5b52b3e1241f9835e1620eadf7f63b1e396e2ccb5568db22b3c3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1272"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.007874" alt="Source equivalence
+Establishes: requested source inputs match recorded source provenance" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bb5f73b75c8e">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 30" id="slide-heading-bb5f73b75c8e">Application
+integrity and… (part 30)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-25">
+<img
+src="../figures/application_integrity_flow.slide-source-equivalence-does-not-establish.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2f9504a5296f83abe6d0a4d38edf9de2bc014b194ef24c9d6faf70a4510845e4"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1080"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.2727273" alt="Source equivalence
+Does not establish: calibration, domain suitability, or scientific validity" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9e4bee4bce78">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 31" id="slide-heading-9e4bee4bce78">Application
+integrity and… (part 31)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-26">
+<img
+src="../figures/application_integrity_flow.slide-nominal-solver-establishes.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="bbf9fb64b0ffa531463c4daacc747f4175a2d379612a5561c0ab8538375adb15"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1023"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.0275591"
+alt="Nominal solver health
+Establishes: the recorded run converged without fallback" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-39ffa5ffc68d">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 32" id="slide-heading-39ffa5ffc68d">Application
+integrity and… (part 32)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-27">
+<img
+src="../figures/application_integrity_flow.slide-nominal-solver-does-not-establish.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="fdd0bc531813ba2eebea1ed157b33fe228c404c8ed6aeab241c3c4c8f91e6303"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1233"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7363636"
+alt="Nominal solver health
+Does not establish: a downstream decision, acceptance, or truth of an interpretation" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 33" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1a2783491f90">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 33" id="slide-heading-1a2783491f90">Application
+integrity and… (part 33)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-28">
+<img
+src="../figures/application_integrity_flow.slide-no-claim-1.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="46b1bd93808bd9222f220ea86aceb932572c49bdcb1d3abbc8586f87403db29b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="979"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="3.8543307"
+alt="Application receipt does not establish:
+calibration" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 34" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cba668100ddd">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 34" id="slide-heading-cba668100ddd">Application
+integrity and… (part 34)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-29">
+<img
+src="../figures/application_integrity_flow.slide-no-claim-2.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="170ad362ecfeee99723be5e119d2ddbc4d3c366e8a13e2b89051be3224c953f0"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="979"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="3.8543307"
+alt="Application receipt does not establish:
+domain suitability" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 35" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e2c8640d3844">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 35" id="slide-heading-e2c8640d3844">Application
+integrity and… (part 35)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-30">
+<img
+src="../figures/application_integrity_flow.slide-no-claim-3.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6a6daeb0dff93c873be20b388c065b792f87806e9a0dc144742b91e712532934"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="979"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="3.8543307"
+alt="Application receipt does not establish:
+scientific validity" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 36" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c9f65c3cbee1">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 36" id="slide-heading-c9f65c3cbee1">Application
+integrity and… (part 36)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-31">
+<img
+src="../figures/application_integrity_flow.slide-no-claim-4.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="930d95bd8bac656c66d0fb77a20b6568d66065c8796d7117ab714301dd08c48f"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1162"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.5748031"
+alt="Application receipt does not establish:
+downstream decision correctness" />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Application integrity and solver-health receipts, part 37" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aea6ebec2a99">
+<h2 class="figure-led"
+aria-label="Application integrity and solver-health receipts, part 37" id="slide-heading-aea6ebec2a99">Application
+integrity and… (part 37)</h2>
+<figure id="fig:application-integrity-flow-slide-panel-32">
+<img
+src="../figures/application_integrity_flow.slide-no-claim-5.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a69f3b6a1478d8d99067dc3b6a955d607c8bab1faa24153a59ad7dac50617b8e"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="979"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="3.8543307"
+alt="Application receipt does not establish:
+acceptance" />
+</figure>
+</section>
+<section id="sec:repro-environment" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-078d6ba5206c">
+<h2 class="prose-slide" id="slide-heading-078d6ba5206c">Environment fingerprint for the reported
+run</h2>
+<p>The second reproduction input is the exact toolchain. Every field
+below is captured by the successful full test-and-coverage receipt
+before final variable generation rather than transcribed by hand.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Environment fingerprint for the reported run, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ba109a13668c">
+<h2 class="prose-slide"
+aria-label="Environment fingerprint for the reported run, part 2" id="slide-heading-ba109a13668c">Environment
+fingerprint for… (part 2)</h2>
+<p>The receipt is bound to the source, tests, manuscript, source-owned
+documentation, release metadata, ISC tree, dependency lock, and fresh
+analysis receipt.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Environment fingerprint for the reported run, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eeaee103a653">
+<h2 class="prose-slide"
+aria-label="Environment fingerprint for the reported run, part 3" id="slide-heading-eeaee103a653">Environment
+fingerprint for… (part 3)</h2>
+<p>It rejects any pre/post-suite drift in that boundary, so a reader
+matching this environment and the seed above can reproduce the seeded
+results; the config hash lets them confirm they are running the
+configuration from which this manuscript was rendered.</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Environment fingerprint for the reported run, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e17c181be63">
+<h2 class="table-led"
+aria-label="Environment fingerprint for the reported run, part 4" id="slide-heading-7e17c181be63">Environment
+fingerprint for… (part 4)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:repro_env" data-responsive-table="true">
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 51%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.10.19</td>
+</tr>
+<tr>
+<td>NumPy</td>
+<td>2.2.6</td>
+</tr>
+<tr>
+<td>SciPy</td>
+<td>1.15.3</td>
+</tr>
+<tr>
+<td>PyTorch (MLP complement)</td>
+<td>2.12.1</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Environment fingerprint for the reported run, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0de7c2bd2ac1">
+<h2 class="prose-slide"
+aria-label="Environment fingerprint for the reported run, part 5" id="slide-heading-0de7c2bd2ac1">Environment
+fingerprint for… (part 5)</h2>
+<p>The exact environment used for the reported run is recorded in <a class="cross-reference" href="#tbl:repro_env">Table 11</a>.</p>
+</section>
+<section id="sec:repro-accessibility" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-956fc8634bb8">
+<h2 class="prose-slide" id="slide-heading-956fc8634bb8">Reader-surface accessibility boundary</h2>
+<p>The validated HTML manuscript is the canonical accessibility-enhanced
+reading surface. Its source gate requires a page language and title, a
+skip link and main landmark, non-empty image alternatives, figure
+captions, labelled full-size links, unique identifiers, resolved
+references,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reader-surface accessibility boundary, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d5c66226bbd6">
+<h2 class="prose-slide"
+aria-label="Reader-surface accessibility boundary, part 2" id="slide-heading-d5c66226bbd6">Reader-surface…
+(part 2)</h2>
+<p>and present local assets on every generated page.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reader-surface accessibility boundary, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-03d472950b2b">
+<h2 class="prose-slide"
+aria-label="Reader-surface accessibility boundary, part 3" id="slide-heading-03d472950b2b">Reader-surface…
+(part 3)</h2>
+<p>These deterministic checks are not a claim of WCAG conformance:
+alternative-text quality, contrast, keyboard behavior, reading order,
+reflow, mathematics, and assistive-technology behavior still require
+manual review.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reader-surface accessibility boundary, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f4942fe1b739">
+<h2 class="prose-slide"
+aria-label="Reader-surface accessibility boundary, part 4" id="slide-heading-f4942fe1b739">Reader-surface…
+(part 4)</h2>
+<p>The combined manuscript PDF is generated through the
+source-controlled LuaLaTeX/tagpdf path and is released only when
+<code>pdfinfo</code> reports <code>Tagged: yes</code>, qpdf exposes a
+non-empty <code>/Lang</code> and <code>StructTreeRoot</code>, and the
+source-bound language check passes.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reader-surface accessibility boundary, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1163ac5ae2cb">
+<h2 class="prose-slide"
+aria-label="Reader-surface accessibility boundary, part 5" id="slide-heading-1163ac5ae2cb">Reader-surface…
+(part 5)</h2>
+<p>Some Poppler builds omit the language line from <code>pdfinfo</code>
+even when <code>/Lang</code> is present. The separate slide PDFs are
+checked structurally, textually, through renderer logs during the
+producing run, and by raster inspection, but do not inherit the
+manuscript tagging status.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reader-surface accessibility boundary, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-15beae44a8d5">
+<h2 class="prose-slide"
+aria-label="Reader-surface accessibility boundary, part 6" id="slide-heading-15beae44a8d5">Reader-surface…
+(part 6)</h2>
+<p>Renderer logs are retained with the external verification evidence
+rather than the public source tree because they contain
+environment-local timestamps and paths.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Reader-surface accessibility boundary, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7f9b17c8860c">
+<h2 class="prose-slide"
+aria-label="Reader-surface accessibility boundary, part 7" id="slide-heading-7f9b17c8860c">Reader-surface…
+(part 7)</h2>
+<p>Tagged structure is not PDF/UA conformance: a PDF/UA claim requires a
+dedicated conformance report plus screen-reader and reading-order
+review; <code>qpdf</code> structure checks and successful text
+extraction alone are insufficient.</p>
+</section>
+<section id="sec:repro-tests" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8334da6283d4">
+<h2 class="prose-slide" id="slide-heading-8334da6283d4">Test and coverage evidence for the claim
+surface</h2>
+<p><strong>Acceptance criteria.</strong> 268 total, 266 passing.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9adfb4019eae">
+<h2 class="prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 2" id="slide-heading-9adfb4019eae">Test
+and coverage evidence… (part 2)</h2>
+<p><strong>Project test suite.</strong> 2824 collected cases; the bound
+successful receipt records zero failed cases. The project no-mocks
+policy remains a separately executable source contract.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-abf477b4273b">
+<h2 class="prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 3" id="slide-heading-abf477b4273b">Test
+and coverage evidence… (part 3)</h2>
+<p><strong>Combined line and branch coverage on
+<code>src/</code>.</strong> 90.58%, achieved by the bound full gate with
+branch measurement enabled. The shared coverage threshold is <span
+class="math inline">\(\ge 90\%\)</span> on this combined measure.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-93c3ca052143">
+<h2 class="prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 4" id="slide-heading-93c3ca052143">Test
+and coverage evidence… (part 4)</h2>
+<p>To regenerate this evidence from a clean checkout, run the project
+suite under the pinned development environment. Local execution and
+hosted CI are separate results; the hosted checks must pass for the
+exact reviewed commit before public integration. Both use the following
+coverage gate:</p>
+</section>
+<section class="slide level2 code-led"
+aria-label="Test and coverage evidence for the claim surface, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-412298ff69be">
+<h2 class="code-led"
+aria-label="Test and coverage evidence for the claim surface, part 5" id="slide-heading-412298ff69be">Test
+and coverage evidence… (part 5)</h2>
+<p><code class="accessible-shell-token">uv</code> <code
+class="accessible-shell-token">run</code> <code
+class="accessible-shell-token">--locked</code> <code
+class="accessible-shell-token">--extra</code> <code
+class="accessible-shell-token">dev</code> <code
+class="accessible-shell-token">pytest</code> <code
+class="accessible-shell-token">tests/</code> <code
+class="accessible-shell-token">\</code><br />
+<code class="accessible-shell-token">  </code><code
+class="accessible-shell-token">--cov=src</code> <code
+class="accessible-shell-token">--cov-fail-under=90</code></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4989c1404528">
+<h2 class="prose-slide"
+aria-label="Test and coverage evidence for the claim surface, part 6" id="slide-heading-4989c1404528">Test
+and coverage evidence… (part 6)</h2>
+<p>For a release-facing hydration, use the receipt-producing wrapper
+after any required provisional pre-test render, then rerun hydration
+without its provisional flag:</p>
+</section>
+<section class="slide level2 code-led"
+aria-label="Test and coverage evidence for the claim surface, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7d8b3fd8646d">
+<h2 class="code-led"
+aria-label="Test and coverage evidence for the claim surface, part 7" id="slide-heading-7d8b3fd8646d">Test
+and coverage evidence… (part 7)</h2>
+<p><code class="accessible-shell-token">uv</code> <code
+class="accessible-shell-token">run</code> <code
+class="accessible-shell-token">--locked</code> <code
+class="accessible-shell-token">--extra</code> <code
+class="accessible-shell-token">dev</code> <code
+class="accessible-shell-token">python</code> <code
+class="accessible-shell-token">scripts/validate_test_coverage.py</code><br />
+<code class="accessible-shell-token">uv</code> <code
+class="accessible-shell-token">run</code> <code
+class="accessible-shell-token">--locked</code> <code
+class="accessible-shell-token">python</code> <code
+class="accessible-shell-token">scripts/\</code><br />
+<code
+class="accessible-shell-token">z_generate_manuscript_variables.py</code></p>
+</section>
+<section id="sec:repro-artifacts" class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f34cd9b16d12">
+<h2 class="table-led" id="slide-heading-f34cd9b16d12">Artifact inventory for figures, data, and
+reports</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:repro_artifacts" data-responsive-table="true">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Figures</td>
+<td>1226</td>
+</tr>
+<tr>
+<td>Data files</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Reports</td>
+<td>36</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Artifact inventory for figures, data, and reports, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c553169bb391">
+<h2 class="prose-slide"
+aria-label="Artifact inventory for figures, data, and reports, part 2" id="slide-heading-c553169bb391">Artifact
+inventory for… (part 2)</h2>
+<p>The top-level artifact counts in <a class="cross-reference" href="#tbl:repro_artifacts">Table 12</a>
+complement the recursive, checksum-bearing release manifest.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

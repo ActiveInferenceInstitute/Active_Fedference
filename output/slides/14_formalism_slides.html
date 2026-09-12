@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Formalism: recovery limits, EFE, and tempered aggregation — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1">
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section>
+<section id="sec:formalism"
+class="title-slide slide level1 section-divider" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a570a5223d4b">
+<h1 class="section-divider" id="slide-heading-a570a5223d4b">Formalism: recovery limits, EFE, and
+tempered aggregation</h1>
+
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a570a5223d4b-2">
+<h2 class="section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 2" id="slide-heading-a570a5223d4b-2">Formalism:
+recovery limits, EFE, and tempered aggregation</h2>
+<p>The primitives of <span class="cross-reference">Section 5</span> are
+governed by a compact set of machine-checkable identities.</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-94c57fecddb7">
+<h2 class="section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 2" id="slide-heading-94c57fecddb7">Formalism:
+recovery… (part 2)</h2>
+<p>Their counter is monotone across the methods and this section.
+Definitions <span class="cross-reference">Definition 1</span>
+and <span class="cross-reference">Definition 2</span>
+cover the posterior and cavity / PVI update (<span class="cross-reference">Section 5.3</span>).</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0c66d5e799ef">
+<h2 class="section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 3" id="slide-heading-0c66d5e799ef">Formalism:
+recovery… (part 3)</h2>
+<p>Lemma <span class="cross-reference">3</span>
+gives the Rényi KL limit (<span class="cross-reference">Section 5.6</span>).</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-428f0d2510e3">
+<h2 class="section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 4" id="slide-heading-428f0d2510e3">Formalism:
+recovery… (part 4)</h2>
+<p>Proposition <span class="cross-reference">4</span>
+gives the <span class="math inline">\(\beta\)</span>-loss and rcce NLL
+limits (<span class="cross-reference">Section 5.7</span>).
+Theorem <span class="cross-reference">5</span>
+and Corollary <span class="cross-reference">6</span>
+give belief-sharing and Bayes recovery (<span class="cross-reference">Section 5.8</span>).</p>
+</section>
+<section class="slide level2 section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2b73c08abb03">
+<h2 class="section-overview prose-slide"
+aria-label="Formalism: recovery limits, EFE, and tempered aggregation, part 5" id="slide-heading-2b73c08abb03">Formalism:
+recovery… (part 5)</h2>
+<p>Proposition <a class="cross-reference" href="#prop:efe-decomposition">7</a>
+below gives the expected-free-energy identity.</p>
+<p>Each carries a tested residual. None grants a bounded-influence
+guarantee to the server-side <code>robust_aggregate</code> heuristic;
+that boundary is stated in <span class="cross-reference">Section 3.3</span>.</p>
+</section>
+<section id="sec:formalism-recovery" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-477d5246554c">
+<h2 class="prose-slide" id="slide-heading-477d5246554c">Recovery limits as the proof surface</h2>
+<p>The recovery limits separate client and server claims. The divergence
+and loss limits recover the standard-Bayes client update; the
+independently tested identity equates <code>robust_aggregate</code> with
+<code>log_linear_pool</code> when <code>robustness=0</code>, recovering
+the project’s standard server pool.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2446a89b1fc8">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 2" id="slide-heading-2446a89b1fc8">Recovery
+limits as the… (part 2)</h2>
+<p>Under the explicit shared-support, posterior-log-potential, and
+fixed-weight assumptions in <span class="cross-reference">Section 5.8</span>,
+that pool is a categorical specialization of Eq. 7’s message-combination
+term, not recovery of the complete source protocol <span
+class="citation" data-cites="friston2024federated">(Friston et al.
+2024)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-221fdcee7a04">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 3" id="slide-heading-221fdcee7a04">Recovery
+limits as the… (part 3)</h2>
+<p>We collect the five residuals that pin those limited claims, each
+emitted by the test-suite and reported in <span class="cross-reference">Section 7.1</span>,
+never hardcoded.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0852db911ead">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 4" id="slide-heading-0852db911ead">Recovery
+limits as the… (part 4)</h2>
+<p>Read each row of the table below as a triple: the robust primitive,
+the trusting knob value at which it must collapse onto its
+standard-Bayes or project-local counterpart, and the tested residual
+measuring whatever gap survives at that value. The rows differ in what
+kind of check they are.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bf6c4ad49209">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 5" id="slide-heading-bf6c4ad49209">Recovery
+limits as the… (part 5)</h2>
+<p>The divergence and loss rows evaluate inside the implementation’s
+closed-form switch band, so their zeros are exact branch identities —
+guaranteed by construction, not measurements that could have come out
+otherwise.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bdc6f31006f8">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 6" id="slide-heading-bdc6f31006f8">Recovery
+limits as the… (part 6)</h2>
+<p>Their genuine falsifiers are the <em>off-switch</em> convergence
+residuals, evaluated just outside the band (at <span
+class="math inline">\(\alpha = 1.00001\)</span>, <span
+class="math inline">\(\beta = 1.00 \times 10^{-6}\)</span>, <span
+class="math inline">\(q_{\text{loss}} = 1.00 \times 10^{-6}\)</span>)
+where the general formulas run and a nonzero gap is possible: those
+residuals are <span class="math inline">\(1.66 \times 10^{-5}\)</span>,
+<span class="math inline">\(1.24 \times 10^{-5}\)</span>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-512303eaa387">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 7" id="slide-heading-512303eaa387">Recovery
+limits as the… (part 7)</h2>
+<p>and <span class="math inline">\(1.12 \times 10^{-5}\)</span>
+respectively, and any failure of those quantities to shrink toward the
+limit would falsify the containment claim.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e2701f917147">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 8" id="slide-heading-e2701f917147">Recovery
+limits as the… (part 8)</h2>
+<p>The posterior row is a measured identity on the general code path, so
+its near-zero residual is itself the falsification surface. The
+aggregate row’s zero at exactly <span class="math inline">\(c=0\)</span>
+is likewise branch-exact; the identity is additionally exercised on the
+iterative code path at near-zero robustness,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f0f0b2135d2b">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 9" id="slide-heading-f0f0b2135d2b">Recovery
+limits as the… (part 9)</h2>
+<p>where the consensus must still land on the log-linear pool to tight
+tolerance.</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Recovery limits as the proof surface, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-138a6effca66">
+<h2 class="table-led"
+aria-label="Recovery limits as the proof surface, part 10" id="slide-heading-138a6effca66">Recovery
+limits as the… (part 10)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table style="width:100%;" data-responsive-table="true">
+<colgroup>
+<col style="width: 55%" />
+<col style="width: 24%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Identity (owner statement)</th>
+<th>Trusting limit</th>
+<th>Tested residual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rényi <span class="math inline">\(\to\)</span> KL (Lemma <span class="cross-reference">3</span>,
+<span class="cross-reference">Equation (6)</span>)</td>
+<td><span class="math inline">\(\alpha \to 1\)</span></td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b8f116d132dd">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 11" id="slide-heading-b8f116d132dd">Recovery
+limits as the… (part 11)</h2>
+<p>The central project identity is the aggregation collapse of <span class="cross-reference">Equation (10)</span>:
+<code>robust_aggregate(robustness=0)</code> equals the log-linear pool
+<span class="cross-reference">Equation (9)</span>.
+Its source bridge is deliberately narrow.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-df2add64e5bd">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 12" id="slide-heading-df2add64e5bd">Recovery
+limits as the… (part 12)</h2>
+<p>Take the admitted posteriors defined in <span class="cross-reference">Section 5.8</span>,
+on a finite common support with <span
+class="math inline">\(q_n(s)&gt;0\)</span>, and represent each Eq. 7
+softmax input as a posterior log potential <span
+class="math inline">\(m_n(s)=\log q_n(s)+\kappa_n\)</span>, with <span
+class="math inline">\(\kappa_n\)</span> constant in <span
+class="math inline">\(s\)</span> and fixed declared weights <span
+class="math inline">\(w_n\)</span> independent of the emerging
+consensus.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fafd3302afba">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 13" id="slide-heading-fafd3302afba">Recovery
+limits as the… (part 13)</h2>
+<p>Softmax then cancels the additive constants and yields the project
+pool.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3fc084e921d">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 14" id="slide-heading-d3fc084e921d">Recovery
+limits as the… (part 14)</h2>
+<p>This identifies only the source equation’s message-combination term;
+it does not identify source message construction, cavity/exclusion
+policy, scheduling, generative factors, or the complete protocol.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7036ccc9ce86">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 15" id="slide-heading-7036ccc9ce86">Recovery
+limits as the… (part 15)</h2>
+<p>Theorem <span class="cross-reference">5</span>
+(<span class="cross-reference">Section 5.8</span>)
+states that specialization and the local <span
+class="math inline">\(c=0\)</span> identity; the residual 0 above pins
+the latter.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8473f597cec2">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 16" id="slide-heading-8473f597cec2">Recovery
+limits as the… (part 16)</h2>
+<p>Corollary <span class="cross-reference">6</span>
+establishes the separate client result:
+<code>generalized_posterior(KLD, NLL)</code> reproduces the closed-form
+prior-times-likelihood Bayes posterior of <span class="cross-reference">Equation (11)</span>
+to residual 5.55e-17.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0eb8565c241b">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 17" id="slide-heading-0eb8565c241b">Recovery
+limits as the… (part 17)</h2>
+<p>Pooling such local posteriors has the stated categorical
+specialization only under the theorem’s assumptions.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-70b0cf18966d">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 18" id="slide-heading-70b0cf18966d">Recovery
+limits as the… (part 18)</h2>
+<p>The honesty contract binds here: the theorem and corollary cover only
+the recovery identity and the per-agent rigorous axis (Proposition <span class="cross-reference">4</span>);
+no statement transfers the bounded-influence guarantee to the
+server-side divergence-reweighting heuristic,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery limits as the proof surface, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90114f9d58d4">
+<h2 class="prose-slide"
+aria-label="Recovery limits as the proof surface, part 19" id="slide-heading-90114f9d58d4">Recovery
+limits as the… (part 19)</h2>
+<p>whose positive property is the <span
+class="math inline">\(\texttt{robustness}=0\)</span> limit of <span class="cross-reference">Equation (10)</span>.
+A scoped no-go rejects a declared separable objective class without
+certifying another.</p>
+</section>
+<section id="sec:formalism-efe" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0b56ec216427">
+<h2 class="prose-slide" id="slide-heading-0b56ec216427">Expected-free-energy identity as an algebraic
+check</h2>
+<p>The active-inference substrate that drives the studies of <span class="cross-reference">Section 7</span> is a
+categorical specialization of the expected-free-energy algebra discussed
+by Friston et al. <span class="citation"
+data-cites="friston2024federated">(Friston et al. 2024)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-66598de2b5f3">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 2" id="slide-heading-66598de2b5f3">Expected-free-energy…
+(part 2)</h2>
+<p>It decomposes the expected free energy of a policy <span
+class="math inline">\(\boldsymbol{\pi}\)</span> into two equivalent
+two-term forms.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-10b9255d5707">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 3" id="slide-heading-10b9255d5707">Expected-free-energy…
+(part 3)</h2>
+<p>The risk-plus-ambiguity (cost) view and the negated
+pragmatic-plus-epistemic (value) view are the same scalar <span
+class="math inline">\(G(\boldsymbol{\pi})\)</span> rearranged <span
+class="citation" data-cites="dacosta2020active friston2024federated">(Da
+Costa et al. 2020; Friston et al. 2024)</span>:</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7be600bf1bdb">
+<h2 class="equation-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 4" id="slide-heading-7be600bf1bdb">Expected-free-energy…
+(part 4)</h2>
+<p><span class="math display" id="eq:efe-decomposition">\[
+\begin{aligned}
+G(\boldsymbol{\pi})
+&amp;= \underbrace{\text{risk} + \text{ambiguity}}_{\text{cost view}}\\
+&amp;= -\underbrace{\big(\text{pragmatic} +
+\text{epistemic}\big)}_{\text{value view}}.
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa7a10c66006">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 5" id="slide-heading-aa7a10c66006">Expected-free-energy…
+(part 5)</h2>
+<p>The two views are not approximations of one another; they are the
+same scalar rearranged. In the implementation the shared entropy term
+enters both sides of the rearrangement, so the identity residual is zero
+by construction — it is a definitional consistency check on the
+decomposition’s bookkeeping,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bd415efb9d3e">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 6" id="slide-heading-bd415efb9d3e">Expected-free-energy…
+(part 6)</h2>
+<p>not an independent measurement.</p>
+<p>The scientific content lives in the per-term semantics, which are
+pinned independently of the identity (see the closing clause of the
+proposition below):</p>
+</section>
+<section class="slide level2 equation-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6a1e03ccdba6">
+<h2 class="equation-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 7" id="slide-heading-6a1e03ccdba6">Expected-free-energy…
+(part 7)</h2>
+<p><span class="math display" id="eq:efe-identity">\[
+\begin{aligned}
+&amp;\big(\text{risk} + \text{ambiguity}\big)\\
+&amp;\quad + \big(\text{pragmatic} + \text{epistemic}\big)
+\equiv 0.
+\end{aligned}
+\]</span></p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c163fe49db71">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 8" id="slide-heading-c163fe49db71">Expected-free-energy…
+(part 8)</h2>
+<div class="formal-statement formal-proposition" data-formal-kind="proposition" id="prop:efe-decomposition"><p class="formal-statement-label"><strong>Proposition</strong> <span class="formal-statement-name">(Expected-free-energy decomposition identity)</span></p><p>For the categorical model in <code>expected_free_energy.py</code>, the cost and negated-value forms of (<a class="cross-reference" href="#eq:efe-decomposition">22</a>) give the same <span class="math inline">\(G(\boldsymbol{\pi})\)</span>; hence (<a class="cross-reference" href="#eq:efe-identity">23</a>) holds to machine precision. Cross-entropy and entropy splits establish the equality.</p></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b976b86d2c7a">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 9" id="slide-heading-b976b86d2c7a">Expected-free-energy…
+(part 9)</h2>
+<p>The residual is pinned to <span
+class="math inline">\(10^{-9}\)</span>. Independent checks require
+deterministic likelihoods to give zero ambiguity, uninformative
+likelihoods zero epistemic value, and preference-matched predictions
+lower risk.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-207de2eea64c">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 10" id="slide-heading-207de2eea64c">Expected-free-energy…
+(part 10)</h2>
+<p>Here risk is <span
+class="math inline">\(\mathrm{KL}(q(o\mid\boldsymbol{\pi})\,\|\,p_C(o))\)</span>,
+and ambiguity is expected likelihood entropy <span
+class="math inline">\(\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7e178cadf337">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 11" id="slide-heading-7e178cadf337">Expected-free-energy…
+(part 11)</h2>
+<p>Pragmatic value is expected log-preference <span
+class="math inline">\(\mathbb{E}_{q_{\boldsymbol{\pi}}(o)}[\ln
+p_C(o)]\)</span>. Epistemic value is the state-outcome mutual
+information <span class="math inline">\(H[q_{\boldsymbol{\pi}}(o)] -
+\mathbb{E}_{q(s)}[H[p(o\mid s)]]\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5642f658db38">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 12" id="slide-heading-5642f658db38">Expected-free-energy…
+(part 12)</h2>
+<p>The executed formal-specialization diagnostic of <span class="cross-reference">Figure 8</span>
+uses a uniform prior over the nine locations. This is intentional: the
+canonical sentinel-world <span class="math inline">\(D_0\)</span> is a
+point mass at the den,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-85c636b6ca53">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 13" id="slide-heading-85c636b6ca53">Expected-free-energy…
+(part 13)</h2>
+<p>and under that fully resolved prior the mutual-information term is
+zero because there is no state uncertainty for an observation to
+reduce.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-59a52bda17ca">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 14" id="slide-heading-59a52bda17ca">Expected-free-energy…
+(part 14)</h2>
+<p>The uncertainty-bearing diagnostic makes the epistemic term visible
+without changing the canonical <span class="math inline">\(D_0\)</span>
+used by the inference and recovery studies. Thus a near-zero epistemic
+value is a meaningful null condition, not a missing term.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e71510cab8d9">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 15" id="slide-heading-e71510cab8d9">Expected-free-energy…
+(part 15)</h2>
+<p><span class="cross-reference">Figure 8</span>
+shows the additive risk-plus-ambiguity view beside a signed
+pragmatic/epistemic waterfall whose terminal endpoint is <span
+class="math inline">\(G(\boldsymbol{\pi})\)</span>, labels epistemic
+value as <span
+class="math inline">\(I(s;o\mid\boldsymbol{\pi})\)</span>, and annotates
+the identity residual; it visualizes Proposition <a class="cross-reference" href="#prop:efe-decomposition">7</a>,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1d19f2e92e56">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 16" id="slide-heading-1d19f2e92e56">Expected-free-energy…
+(part 16)</h2>
+<p>not a fitted result, so it carries no error bars.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b7a252910815">
+<h2 class="figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 17" id="slide-heading-b7a252910815">Expected-free-energy…
+(part 17)</h2>
+<figure id="fig:efe-decomp-slide-panel-1">
+<img src="../figures/efe_decomposition.slide-identity.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="420152189dfd41a30e996ea0e91b94e5d18b927f0274cbe3151f40835985c898"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1437"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1008772"
+alt="Risk plus ambiguity and signed pragmatic minus epistemic waterfall share the same terminal G." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-43f991c62347">
+<h2 class="figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 18" id="slide-heading-43f991c62347">Expected-free-energy…
+(part 18)</h2>
+<figure id="fig:efe-decomp-slide-panel-2">
+<img src="../figures/efe_decomposition.slide-cost.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f3d04913ba6cc3507a967f91f429658d5c828fb05c4b82e2293d7b76a32c67e9"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1329"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.2322835"
+alt="Cost: risk 1.187 plus ambiguity 4.271 nats. Hatched upper segment is ambiguity." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4389ed77183b">
+<h2 class="figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 19" id="slide-heading-4389ed77183b">Expected-free-energy…
+(part 19)</h2>
+<figure id="fig:efe-decomp-slide-panel-3">
+<img src="../figures/efe_decomposition.slide-value.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a0cd732d6c8e32a53eb339cc09c8cc83943570bc867a0c88b7787e2324b9e0ae"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1119"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.3909091"
+alt="Value: −pragmatic 7.534 plus −epistemic -2.077 nats. Crosshatching marks the signed epistemic correction." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d49b7de73bb5">
+<h2 class="figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 20" id="slide-heading-d49b7de73bb5">Expected-free-energy…
+(part 20)</h2>
+<figure id="fig:efe-decomp-slide-panel-4">
+<img src="../figures/efe_decomposition.slide-endpoint.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f0712f31888a576a188f1132896085a2657a838226ce44929dee8351ea285551"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1223"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="4.8149606"
+alt="Terminal diamond: G = 5.457 nats. The right endpoint equals G; the intermediate top need not equal G." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c9df725582e6">
+<h2 class="figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 21" id="slide-heading-c9df725582e6">Expected-free-energy…
+(part 21)</h2>
+<figure id="fig:efe-decomp-slide-panel-5">
+<img src="../figures/efe_decomposition.slide-residual.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="2579cb1bc4d7d6458e37c6429e64a6cd2700477dae42b1de4c3167a0c87d9922"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1346"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.2992126"
+alt="Identity residual: -2.665e-15 nats. G = risk + ambiguity = −(pragmatic + epistemic)." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-78d99fe049da">
+<h2 class="figure-led"
+aria-label="Expected-free-energy identity as an algebraic check, part 22" id="slide-heading-78d99fe049da">Expected-free-energy…
+(part 22)</h2>
+<figure id="fig:efe-decomp-slide-panel-6">
+<img src="../figures/efe_decomposition.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="3ebe1f17e2d2d15ea316a18c60c792392fc5b7ca9ce1ca2737f568452b2859d3"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1181"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="2.908867"
+alt="Uniform diagnostic prior makes information gain visible. One categorical identity diagnostic; no stochastic replication or uncertainty interval." />
+</figure>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-356ed4e278c6">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 23" id="slide-heading-356ed4e278c6">Expected-free-energy…
+(part 23)</h2>
+<p>The expected-free-energy identity of <a class="cross-reference" href="#eq:efe-identity">Equation (23)</a>
+is the action-selection counterpart of the inference-side recovery
+limits collected above: both are exact, closed-form, machine-checkable
+identities over the same categorical generative model.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2410818c8a3f">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 24" id="slide-heading-2410818c8a3f">Expected-free-energy…
+(part 24)</h2>
+<p>Together they establish that the FedGVI-federated active-inference
+colony of this work is built on verified algebra throughout — the
+per-agent generalized-Bayes update recovers standard Bayes, the
+aggregation recovers the project log-linear pool under its qualified
+categorical bridge,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a114b8b893d">
+<h2 class="prose-slide"
+aria-label="Expected-free-energy identity as an algebraic check, part 25" id="slide-heading-5a114b8b893d">Expected-free-energy…
+(part 25)</h2>
+<p>and the policy scoring decomposes exactly — so every robustness
+result in <span class="cross-reference">Section 7</span> is a
+controlled departure from a known, tested fixed point rather than an
+unmoored claim.</p>
+</section>
+<section id="sec:formalism-tempered" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-da4de40f68ca">
+<h2 class="prose-slide" id="slide-heading-da4de40f68ca">Tempered aggregation free energy and the
+accuracy-guarantee trade</h2>
+<p>The recovery limits and the expected-free-energy identity fix the
+<em>endpoints</em> of the aggregation family; the remaining formal
+question is what a controlled departure from the unit-entropy server
+buys and what it costs.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dea321dc54a4">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 2" id="slide-heading-dea321dc54a4">Tempered
+aggregation free… (part 2)</h2>
+<p>The objective-backed variational aggregator of <span class="cross-reference">Section 12</span>
+holds its consensus-entropy term at unit weight.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6ab2cbedbe22">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 3" id="slide-heading-6ab2cbedbe22">Tempered
+aggregation free… (part 3)</h2>
+<p>Freeing that single coefficient produces a one-parameter family whose
+only moving part is the sharpness of the consensus, and whose raw
+effective-weight bound is provably untouched. The following proposition
+isolates exactly that separation — algebra that moves versus algebra
+that does not —</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2b3d538032ba">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 4" id="slide-heading-2b3d538032ba">Tempered
+aggregation free… (part 4)</h2>
+<p>before the interpretation subsections turn to the empirical accuracy
+question the algebra cannot settle on its own.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-649868604c85">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 5" id="slide-heading-649868604c85">Tempered
+aggregation free… (part 5)</h2>
+<div class="formal-statement formal-proposition" data-formal-kind="proposition" id="prop:tempered-aggregation"><p class="formal-statement-label"><strong>Proposition</strong> <span class="formal-statement-name">(Tempered aggregation free energy)</span></p><p>Let <span class="math inline">\(\lambda &gt; 0\)</span> and let <span class="math inline">\(F_\lambda\)</span> be (<span class="cross-reference">30</span>). At fixed <span class="math inline">\(a\)</span>, the <span class="math inline">\(q\)</span>-minimizer is (<span class="cross-reference">31</span>). At <span class="math inline">\(\lambda = 1.0\)</span>, <span class="math inline">\(F_\lambda\)</span> and both updates equal the standard variational aggregate bit-for-bit. The <span class="math inline">\(a\)</span>-update and bound <span class="math inline">\(a_n \le w_n\)</span> omit <span class="math inline">\(\lambda\)</span> and hold for every <span class="math inline">\(\lambda &gt; 0\)</span>.</p></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-651a6d74367b">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 6" id="slide-heading-651a6d74367b">Tempered
+aggregation free… (part 6)</h2>
+<p>At that default, the endpoint-selection rule also reduces bit-for-bit
+to the standard variational aggregate (Definition <span class="cross-reference">10</span>;
+<span class="cross-reference">Section 12</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-406f8acaff8f">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 7" id="slide-heading-406f8acaff8f">Tempered
+aggregation free… (part 7)</h2>
+<p>The proposition is intentionally more specific than the phrase
+“temperature improves robustness.” It identifies exactly which part of
+the variational server changes when the entropy coefficient changes, and
+it separates that algebra from the empirical accuracy question.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c9a6ad048ca3">
+<h2 class="prose-slide"
+aria-label="Tempered aggregation free energy and the accuracy-guarantee trade, part 8" id="slide-heading-c9a6ad048ca3">Tempered
+aggregation free… (part 8)</h2>
+<p>The objective and its update rules are a generalized-Bayes
+construction in the sense of <span class="citation"
+data-cites="bissiri2016general knoblauch2022generalized">(Bissiri et al.
+2016; Knoblauch et al. 2022)</span>, while the particular client/server
+decomposition is the one implemented and tested here.</p>
+</section>
+<section id="sec:formalism-tempered-interpretation"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90477c899a0d">
+<h2 class="prose-slide" id="slide-heading-90477c899a0d">What the entropy weight controls</h2>
+<p>For a fixed effective-weight vector <span
+class="math inline">\(a\)</span> and <span
+class="math inline">\(\lambda&gt;0\)</span>, the <span
+class="math inline">\(q\)</span>-block in <span class="cross-reference">Equation (31)</span>
+is a weighted geometric pool of the local posteriors with inverse
+temperature <span class="math inline">\(1/\lambda\)</span>. Lower <span
+class="math inline">\(\lambda\)</span> concentrates more sharply on
+states that receive consistent log-belief support;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the entropy weight controls, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e18ef4683c96">
+<h2 class="prose-slide"
+aria-label="What the entropy weight controls, part 2" id="slide-heading-e18ef4683c96">What the entropy
+weight… (part 2)</h2>
+<p>larger <span class="math inline">\(\lambda\)</span> spreads
+probability mass and retains more entropy.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the entropy weight controls, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c0660b4ebf09">
+<h2 class="prose-slide"
+aria-label="What the entropy weight controls, part 3" id="slide-heading-c0660b4ebf09">What the entropy
+weight… (part 3)</h2>
+<p>As <span class="math inline">\(\lambda\downarrow0\)</span>, the
+positive-temperature expression approaches a winner-take-most consensus
+(subject to ties and finite numerical support), whereas large <span
+class="math inline">\(\lambda\)</span> approaches a flatter
+distribution.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the entropy weight controls, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-abf5f2d6fdc9">
+<h2 class="prose-slide"
+aria-label="What the entropy weight controls, part 4" id="slide-heading-abf5f2d6fdc9">What the entropy
+weight… (part 4)</h2>
+<p>The implementation exposes that endpoint as a separately defined
+deterministic tied-argmax rule; it does not substitute <span
+class="math inline">\(\lambda=0\)</span> into the objective or
+coordinate update.</p>
+<p>This is a controlled change in the consensus geometry, not an
+automatic outlier detector.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the entropy weight controls, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8dae8f74080">
+<h2 class="prose-slide"
+aria-label="What the entropy weight controls, part 5" id="slide-heading-e8dae8f74080">What the entropy
+weight… (part 5)</h2>
+<p>The coupling matters. Although the formula for the <span
+class="math inline">\(a\)</span>-block does not contain <span
+class="math inline">\(\lambda\)</span>, the fixed point can still change
+because <span class="math inline">\(a_n\)</span> is evaluated at the new
+<span class="math inline">\(q\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the entropy weight controls, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-22994df0c55a">
+<h2 class="prose-slide"
+aria-label="What the entropy weight controls, part 6" id="slide-heading-22994df0c55a">What the entropy
+weight… (part 6)</h2>
+<p>The correct statement is therefore conditional: for any current
+consensus, the effective-weight update and the raw bound <span
+class="math inline">\(a_n\leq w_n\)</span> are unchanged; after
+alternating updates, different temperatures can reach different coupled
+<span class="math inline">\((q,a)\)</span> fixed points.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the entropy weight controls, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0167c0fd0995">
+<h2 class="prose-slide"
+aria-label="What the entropy weight controls, part 7" id="slide-heading-0167c0fd0995">What the entropy
+weight… (part 7)</h2>
+<p>This distinction prevents the temperature result from being read as a
+theorem that the normalized influence or accuracy is invariant in <span
+class="math inline">\(\lambda\)</span>.</p>
+</section>
+<section id="sec:formalism-tempered-recovery"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d09399e5f12c">
+<h2 class="prose-slide" id="slide-heading-d09399e5f12c">Recovery at the qualified log-linear-pool
+corner</h2>
+<p>At the configured default <span
+class="math inline">\(\lambda=1.0\)</span>, the entropy coefficient is
+the unit coefficient used by the original variational aggregator. The
+implementation therefore recovers that aggregator bit-for-bit,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-65cd8fc23f52">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 2" id="slide-heading-65cd8fc23f52">Recovery
+at the qualified… (part 2)</h2>
+<p>including its block updates and its endpoint-selection rule.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b49fcafbd90b">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 3" id="slide-heading-b49fcafbd90b">Recovery
+at the qualified… (part 3)</h2>
+<p>Turning the robustness strength <span
+class="math inline">\(c\)</span> to zero then sets every server weight
+to its base value and gives the tempered log-linear pool. At the default
+temperature this is the ordinary log-linear pool of <span class="cross-reference">Equation (9)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c89466821fb2">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 4" id="slide-heading-c89466821fb2">Recovery
+at the qualified… (part 4)</h2>
+<p>Under the shared-support, posterior-log-potential, and fixed-weight
+assumptions of <span class="cross-reference">Section 5.8</span>,
+that is the categorical specialization of Eq. 7’s message-combination
+term; it is not the complete belief-sharing protocol of <span
+class="citation" data-cites="friston2024federated">(Friston et al.
+2024)</span>. Away from that default,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-23fe2521ff87">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 5" id="slide-heading-23fe2521ff87">Recovery
+at the qualified… (part 5)</h2>
+<p>the result is a tempered generalization of the pool and should not be
+described as Friston’s Eq. 7 itself.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c2e699f8818f">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 6" id="slide-heading-c2e699f8818f">Recovery
+at the qualified… (part 6)</h2>
+<p>This nested limit is useful for interpretation. The <span
+class="math inline">\(c\to0\)</span> limit identifies the aggregation
+family with a known consensus operator; the <span
+class="math inline">\(\lambda=1.0\)</span> slice identifies the
+objective-backed implementation used in the main server comparison.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-30c945575ff4">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 7" id="slide-heading-30c945575ff4">Recovery
+at the qualified… (part 7)</h2>
+<p>Neither limit grants the server-side <code>robust_aggregate</code>
+heuristic a variational objective or a bounded-influence guarantee. The
+FedGVI literature’s rate and robustness results remain attached to their
+stated loss, divergence,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d38d3d9036f0">
+<h2 class="prose-slide"
+aria-label="Recovery at the qualified log-linear-pool corner, part 8" id="slide-heading-d38d3d9036f0">Recovery
+at the qualified… (part 8)</h2>
+<p>and sampling assumptions <span class="citation"
+data-cites="mildner2025fedgvi mildner2025rates">(Mildner, Hamelijnck, et
+al. 2025; Mildner, Giampouras, et al. 2025)</span>.</p>
+</section>
+<section id="sec:formalism-tempered-evidence"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6e41b51fa2f5">
+<h2 class="prose-slide" id="slide-heading-6e41b51fa2f5">What the accuracy–guarantee trade can
+establish</h2>
+<p>The executed grid over <span class="math inline">\(\lambda\in\{0.1,
+0.2, 0.3, 0.5, 0.7, 1\}\)</span> is a finite sensitivity study, not a
+search over a continuous optimum.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9fd857ac6a2f">
+<h2 class="prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 2" id="slide-heading-9fd857ac6a2f">What
+the… (part 2)</h2>
+<p>It asks whether any tested temperature narrows the point-accuracy gap
+to the sharp heuristic while retaining the same effective-weight update.
+The closest tested temperature is <span
+class="math inline">\(\lambda^{\ast}=0.3\)</span>,</p>
+<p>with observed gap <span class="math inline">\(0.0008\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3d691b4b081">
+<h2 class="prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 3" id="slide-heading-d3d691b4b081">What
+the… (part 3)</h2>
+<p>These tokens are computed from the executed contaminated-colony
+trials and are reported with the grid definition so a reader can
+reproduce the selection rule.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e44dcc45e537">
+<h2 class="prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 4" id="slide-heading-e44dcc45e537">What
+the… (part 4)</h2>
+<p>The result has two distinct readings. If a lower temperature improves
+the paired point-accuracy comparison, it provides design evidence that
+entropy regularization can be tuned rather than accepted as a fixed
+conservatism penalty.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-da77625f8dfa">
+<h2 class="prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 5" id="slide-heading-da77625f8dfa">What
+the… (part 5)</h2>
+<p>If no tested temperature closes the gap, that negative result is
+still informative: within this objective family, the same entropy
+mechanism that keeps consensus diffuse can limit exact point recovery
+under confident contamination.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2464c6d164e7">
+<h2 class="prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 6" id="slide-heading-2464c6d164e7">What
+the… (part 6)</h2>
+<p>In either case, the grid does not identify a universally best
+temperature, establish minimax robustness, or transfer the variational
+raw weight bound to a different estimator. Generalized-Bayes calibration
+and robust-loss theory motivate the family,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-447765443644">
+<h2 class="prose-slide"
+aria-label="What the accuracy–guarantee trade can establish, part 7" id="slide-heading-447765443644">What
+the… (part 7)</h2>
+<p>but only the executed categorical design supports the present
+finite-grid statement <span class="citation"
+data-cites="bissiri2016general knoblauch2022generalized mildner2025fedgvi">(Bissiri
+et al. 2016; Knoblauch et al. 2022; Mildner, Hamelijnck, et al.
+2025)</span>.</p>
+</section>
+<section id="sec:formalism-tempered-interpretation-summary"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bfc0a6d59167">
+<h2 class="prose-slide" id="slide-heading-bfc0a6d59167">Publication-facing interpretation</h2>
+<p>The practical contract is consequently three-part. Use the default
+temperature when exact compatibility with the tested variational server
+is the priority.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Publication-facing interpretation, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec757f535620">
+<h2 class="prose-slide"
+aria-label="Publication-facing interpretation, part 2" id="slide-heading-ec757f535620">Publication-facing…
+(part 2)</h2>
+<p>Explore the declared grid when the application can trade
+concentration against the same raw effective-weight control.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Publication-facing interpretation, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cafbb9fbeb76">
+<h2 class="prose-slide"
+aria-label="Publication-facing interpretation, part 3" id="slide-heading-cafbb9fbeb76">Publication-facing…
+(part 3)</h2>
+<p>Treat any selected temperature as a configuration-specific empirical
+choice until it is tested under a new contamination mechanism, colony
+size, sensor model, or loss. This is the appropriate bridge between the
+formal objective and the active-inference setting:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Publication-facing interpretation, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-67f4877e2acc">
+<h2 class="prose-slide"
+aria-label="Publication-facing interpretation, part 4" id="slide-heading-67f4877e2acc">Publication-facing…
+(part 4)</h2>
+<p>it exposes a tunable consensus geometry while keeping recovery,
+guarantee, and accuracy claims on separate evidence tracks.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

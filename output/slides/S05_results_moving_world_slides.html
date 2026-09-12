@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Moving sentinel world: communication contrast depends on field of view — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-fafd6da00c66">
+<h1 id="presentation-title-fafd6da00c66" class="visually-hidden">Moving sentinel world: communication contrast depends on field of view — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:results-moving" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1f1960f31b76">
+<h2 class="prose-slide" id="slide-heading-1f1960f31b76">Moving sentinel world: communication contrast
+depends on field of view</h2>
+<p>The hidden-state/action relation for this extension is summarized in
+the categorical loop schematic <span class="cross-reference">Figure 5</span>;
+the results below remain the executed moving-world comparisons,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aabc8afe939f">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 2" id="slide-heading-aabc8afe939f">Moving
+sentinel world (part 2)</h2>
+<p>not a claim that the schematic’s full loop is present in every flat
+belief-sharing study.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-213782df3304">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 3" id="slide-heading-213782df3304">Moving
+sentinel world (part 3)</h2>
+<p>The static sentinel world lets every agent observe the same shared
+latent, so belief sharing is a refinement rather than a requirement. To
+stress the <em>necessity</em> of communication we add movement and
+<strong>disjoint</strong> fields of view.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bda9062f24ad">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 4" id="slide-heading-bda9062f24ad">Moving
+sentinel world (part 4)</h2>
+<p>The world is a linear grid of 4 cells holding a single binary threat
+— left half (state 0) or right half (state 1). The 2 sentinels start at
+evenly tiled positions and each observe a half-open window of cells, so
+in the default setup agent 0 watches the left half and agent 1 the right
+half: their views do not overlap.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a5ab1b1e3c4d">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 5" id="slide-heading-a5ab1b1e3c4d">Moving
+sentinel world (part 5)</h2>
+<p>Each agent’s likelihood is a confident, signed presence reading for
+the half it can see, and three control paths (stay / left / right) let
+it reposition. The expected-free-energy policy scores each candidate
+move by the expected posterior entropy after one observation and takes
+the most information-seeking step.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1af3b1bdd486">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 6" id="slide-heading-1af3b1bdd486">Moving
+sentinel world (part 6)</h2>
+<p>We run 960 trials of 6 steps each under three conditions:
+<em>isolated</em> (random moves, no sharing), <em>communicating</em>
+(random moves plus a log-linear-pool consensus each step), and
+<em>EFE-guided</em> (information-seeking moves plus the same
+sharing).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-de175ea33f61">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 7" id="slide-heading-de175ea33f61">Moving
+sentinel world (part 7)</h2>
+<p>The measured consensus accuracies are 0.999 (isolated), 0.977
+(communicating), and 0.978 (EFE-guided), with a communicating
+free-energy gap of -0.528 nats relative to the isolated baseline
+(negative:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c88bfb663604">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 8" id="slide-heading-c88bfb663604">Moving
+sentinel world (part 8)</h2>
+<p>no free-energy advantage over isolated in this binary-complement
+regime of logically complete half-views) (<span class="cross-reference">Figure 26</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ecf7d95780c0">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 9" id="slide-heading-ecf7d95780c0">Moving
+sentinel world (part 9)</h2>
+<p>Across 128 independent seeds the EFE-guided accuracy is 0.983 (95 %
+CI 0.982–0.984), the communicating (random-moves + sharing) accuracy is
+0.982 (95 % CI 0.982–0.983), and the isolated accuracy is 0.999 (95 % CI
+0.999–0.999).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-47cbc668137e">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 10" id="slide-heading-47cbc668137e">Moving
+sentinel world (part 10)</h2>
+<p>In this binary-complement regime the isolated condition is in fact
+significantly <em>higher</em> on accuracy than the EFE-guided sharing
+condition — their 95 % intervals do not overlap — and the
+EFE-vs-isolated accuracy contrast yields Wilcoxon signed-rank <span
+class="math inline">\(p = 9.27 \times 10^{-23}\)</span> (significant;
+isolated higher),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9d7a65dc8d8c">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 11" id="slide-heading-9d7a65dc8d8c">Moving
+sentinel world (part 11)</h2>
+<p>effect size <span class="math inline">\(r = 1.000\)</span> (large).
+Sharing is therefore not merely unnecessary in this regime; it costs a
+small but reliable amount of accuracy.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8854a90e5aa5">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 12" id="slide-heading-8854a90e5aa5">Moving
+sentinel world (part 12)</h2>
+<p>Nor does sharing lower free energy here: the EFE free-energy gap
+(isolated surprise minus the EFE-guided condition’s surprise) is -0.368
+nats (95 % CI -0.384–-0.353) — negative, so the pooled consensus is
+slightly <em>more</em> surprised by the true state than the isolated
+baseline, because a single agent’s view already suffices.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b470752ae56a">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 13" id="slide-heading-b470752ae56a">Moving
+sentinel world (part 13)</h2>
+<p>The accuracy case for <em>necessity</em> is therefore made only in
+the larger-state-space disjoint-FOV extension below, not by these
+binary-complement numbers.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5fdb6acf3ee7">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 14" id="slide-heading-5fdb6acf3ee7">Moving
+sentinel world (part 14)</h2>
+<p>We report these numbers as measured, not assumed. The binary world
+carries a logical complement: ruling out one’s own half implies the
+other, so a single agent’s “not detected” still carries information
+about the global state, and an isolated agent is not strictly blind.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d6fe98181c1c">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 15" id="slide-heading-d6fe98181c1c">Moving
+sentinel world (part 15)</h2>
+<p>By design, the intended <em>cannot-decide-alone</em> regime is the
+high-noise, few-step corner where one sensor’s evidence cannot overcome
+the flat prior; there belief sharing is meant to fuse the two
+complementary views into a decisive consensus. That regime is not
+separately measured here — the construction,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2189991ec529">
+<h2 class="prose-slide"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 16" id="slide-heading-2189991ec529">Moving
+sentinel world (part 16)</h2>
+<p>the three actions, the EFE rule, and the exact condition protocol are
+detailed in the supplement (<span class="cross-reference">Section 14.8</span>).</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9dcc14af901c">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 17" id="slide-heading-9dcc14af901c">Moving
+sentinel world (part 17)</h2>
+<figure id="fig:moving-world-slide-panel-1">
+<img src="../figures/moving_world.slide-accuracy.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="582bf88121deaf03cc1cb54d3820a7b12c3492aea9b8db2892d051527dcf8dd7"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="Accuracy: all isolated, communicating and EFE-guided values in fraction, retaining signed values and ties." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3b4c3da975a2">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 18" id="slide-heading-3b4c3da975a2">Moving
+sentinel world (part 18)</h2>
+<figure id="fig:moving-world-slide-panel-2">
+<img src="../figures/moving_world.slide-accuracy-values.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="d28a90841c7bf21299e5457d78a4ab2669cdb7dd21c815d15505d49ba7de1eae"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1306"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7.3785311"
+alt="Accuracy (fraction): ISO +0.999; COM +0.9771; EFE +0.9781." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-92eeeed64c5e">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 19" id="slide-heading-92eeeed64c5e">Moving
+sentinel world (part 19)</h2>
+<figure id="fig:moving-world-slide-panel-3">
+<img src="../figures/moving_world.slide-free-energy-gap.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="f2d1289547a0ee0029a01f779a936d112388ee4e98dfc5771af5a48acc993559"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1517"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.2178363"
+alt="Free-energy gap: all isolated, communicating and EFE-guided values in nats, retaining signed values and ties." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9a1117894a1c">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 20" id="slide-heading-9a1117894a1c">Moving
+sentinel world (part 20)</h2>
+<figure id="fig:moving-world-slide-panel-4">
+<img src="../figures/moving_world.slide-free-energy-gap-values.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="1610b60dc1999adb9158d970b61ff4fca08051405a542cabc660394c0ea58ff8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1285"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="7.259887"
+alt="Free-energy gap (nats): ISO +0; COM -0.5285; EFE -0.4099." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c744a4199439">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 21" id="slide-heading-c744a4199439">Moving
+sentinel world (part 21)</h2>
+<figure id="fig:moving-world-slide-panel-5">
+<img src="../figures/moving_world.slide-n-steps-to-consensus.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="a6f6f28136ec7b4b78c0b5f6baee9478e09b05dc5c9596b9281a3b6521a8d1f1"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1397"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.0423977"
+alt="Time to consensus: all isolated, communicating and EFE-guided values in steps, retaining signed values and ties." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 22" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b0df25a60e91">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 22" id="slide-heading-b0df25a60e91">Moving
+sentinel world (part 22)</h2>
+<figure id="fig:moving-world-slide-panel-6">
+<img
+src="../figures/moving_world.slide-n-steps-to-consensus-values.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="0326f2c8734b30a47dd9539ba0cae355ac992e2be6d7db62f86b69414a534e47"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1076"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.079096"
+alt="Time to consensus (steps): ISO +5.002; COM +5; EFE +5.001." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 23" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bd5856d089d8">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 23" id="slide-heading-bd5856d089d8">Moving
+sentinel world (part 23)</h2>
+<figure id="fig:moving-world-slide-panel-7">
+<img src="../figures/moving_world.slide-gains.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="322a28a9a41605fdefe0e41d11d988ef92e828fa3db86215c01ca94730b0889b"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1203"
+data-slide-figure-intrinsic-height="177"
+data-slide-figure-intrinsic-aspect="6.7966102"
+alt="Accuracy gains over isolated: COM -0.022; EFE -0.021." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 24" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a5ed2ed9749b">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 24" id="slide-heading-a5ed2ed9749b">Moving
+sentinel world (part 24)</h2>
+<figure id="fig:moving-world-slide-panel-8">
+<img src="../figures/moving_world.slide-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="c33e007547bb3db1475ee35606ed5b35813535b594037871c153c10673bba41a"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1214"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.6787879"
+alt="ISO / plain: isolated; COM / forward hatch: communicating; EFE / dots: EFE-guided. Different metric units have separate axes." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 25" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4c375ff3dc34">
+<h2 class="figure-led"
+aria-label="Moving sentinel world: communication contrast depends on field of view, part 25" id="slide-heading-4c375ff3dc34">Moving
+sentinel world (part 25)</h2>
+<figure id="fig:moving-world-slide-panel-9">
+<img src="../figures/moving_world.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="ba4011bc9cb6af95ced993d8c149fcdee715a3bd14f7b22f05193c7a09c4afe5"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1280"
+data-slide-figure-intrinsic-height="406"
+data-slide-figure-intrinsic-aspect="3.1527094"
+alt="Declared moving-world summary. No interval is added to these scalar bars. Ordered steps and within-run observations do not become independent replications." />
+</figure>
+</section>
+<section id="sec:results-disjoint-fov" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f6888114dc5">
+<h2 class="prose-slide" id="slide-heading-9f6888114dc5">Disjoint field-of-view extension</h2>
+<p>To test whether communication is necessary (not merely beneficial)
+when observations are non-overlapping, we extend Study 5 to 3 agents
+each observing a 2-position disjoint window of a 6-position state space
+(chance-level accuracy 0.167).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e8a9229874ef">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 2" id="slide-heading-e8a9229874ef">Disjoint
+field-of-view… (part 2)</h2>
+<p>Isolated agents achieve mean accuracy 0.35 — above chance but far
+from decisive, since no single agent can infer the global state from a
+partial window alone. Communicating agents pool complementary beliefs to
+reach 0.55 (gap 0.19).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-813641348f8d">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 3" id="slide-heading-813641348f8d">Disjoint
+field-of-view… (part 3)</h2>
+<p>This is now a powered result, not an illustrative point estimate.
+Across 128 independent seeds the isolated accuracy is 0.326 (95% CI
+0.320–0.332) and the communicating accuracy is 0.493 (95% CI
+0.487–0.499), both clearing the 0.167 chance baseline — isolated agents
+are <em>not</em> at chance,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7887c5ce1aae">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 4" id="slide-heading-7887c5ce1aae">Disjoint
+field-of-view… (part 4)</h2>
+<p>since a partial FOV plus majority voting still carries some
+signal.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-19e42ca0ef80">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 5" id="slide-heading-19e42ca0ef80">Disjoint
+field-of-view… (part 5)</h2>
+<p>The paired Wilcoxon signed-rank test (communicating vs. isolated,
+matched by seed) gives <span class="math inline">\(p = 9.35 \times
+10^{-23}\)</span>, effect size <span class="math inline">\(r =
+1.000\)</span> (large): communicating beats isolated on every one of the
+128 seeds. This agreement saturates the rank-biserial effect at its
+upper bound;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1b1a15e331ec">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 6" id="slide-heading-1b1a15e331ec">Disjoint
+field-of-view… (part 6)</h2>
+<p>it does not turn the reported Wilcoxon signed-rank p-value into an
+exact paired sign-test probability. The paired mean gap and its interval
+quantify the accuracy contrast in its native units.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f6a6ef0fdf3">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 7" id="slide-heading-6f6a6ef0fdf3">Disjoint
+field-of-view… (part 7)</h2>
+<p>Given isolated performance is above chance, the precise claim is not
+that communication is <em>logically</em> necessary for any signal at
+all, but that it is necessary to approach the communicating-level
+accuracy under fully disjoint observations: the gap between the two
+conditions is significant, large,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-985e3a34c928">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 8" id="slide-heading-985e3a34c928">Disjoint
+field-of-view… (part 8)</h2>
+<p>and reproducible, unlike the binary-complement contrast above.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7f74f0834504">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 9" id="slide-heading-7f74f0834504">Disjoint
+field-of-view… (part 9)</h2>
+<p>We separately quantify EFE-guided navigation rather than asserting an
+unquantified “widens the gap” effect. In a matched but smaller-scale
+disjoint-FOV movement-policy comparison (2 agents, 4-position
+binary-state grid, belief sharing active in both arms),</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c352851fae88">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 10" id="slide-heading-c352851fae88">Disjoint
+field-of-view… (part 10)</h2>
+<p>EFE-guided accuracy is 0.975 versus 0.977 for random movement (<span
+class="math inline">\(p = 0.1046\)</span>, negligible effect). This
+comparison did not resolve an accuracy difference in the configured
+near-ceiling regime with belief sharing active; it does not establish
+equivalence of the movement policies.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Disjoint field-of-view extension, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6288f0fc52c2">
+<h2 class="prose-slide"
+aria-label="Disjoint field-of-view extension, part 11" id="slide-heading-6288f0fc52c2">Disjoint
+field-of-view… (part 11)</h2>
+<p>We report this as the null result it is rather than claiming an
+unmeasured EFE benefit. <span class="cross-reference">Figure 27</span>
+summarizes the necessity result.</p>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b0b6c1be31c7">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 12" id="slide-heading-b0b6c1be31c7">Disjoint
+field-of-view… (part 12)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-1">
+<img src="../figures/disjoint_fov_world.slide-communication.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="6e2c49a22d06cafced4de55b9ec03ea14ac3a40c92070eaf1022e1fdb9fea335"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="communication: both condition means with seed standard-deviation whiskers on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a7fce4af924a">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 13" id="slide-heading-a7fce4af924a">Disjoint
+field-of-view… (part 13)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-2">
+<img
+src="../figures/disjoint_fov_world.slide-communication-values.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f9d0d14adca3377618e1132413bdc014de68dd99a355e7cdadb90278ec4ab763"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1326"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.2204724"
+alt="ISO mean 0.3262, SD 0.03472; COM mean 0.4928, SD 0.0349. COM−ISO = +0.1666." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f5d5455ec7ad">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 14" id="slide-heading-f5d5455ec7ad">Disjoint
+field-of-view… (part 14)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-3">
+<img src="../figures/disjoint_fov_world.slide-movement.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="91.66666666666667"
+data-slide-label-source-sha256="e3e9548b210a26da64e12d7b49d78df341a40acea465666f82c949a1dab7a06d"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1484"
+data-slide-figure-intrinsic-height="684"
+data-slide-figure-intrinsic-aspect="2.1695906"
+alt="movement: both condition means with seed standard-deviation whiskers on a common probability scale." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-227da37c500f">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 15" id="slide-heading-227da37c500f">Disjoint
+field-of-view… (part 15)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-4">
+<img src="../figures/disjoint_fov_world.slide-movement-values.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="f60b235e37dcbe059452a18f546e8dd578f2dfea81478146c7491d05af93a9e8"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1369"
+data-slide-figure-intrinsic-height="254"
+data-slide-figure-intrinsic-aspect="5.3897638"
+alt="EFE mean 0.9749, SD 0.01134; RND mean 0.9768, SD 0.01019. EFE−RND = -0.001953." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-451a76a2ab7b">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 16" id="slide-heading-451a76a2ab7b">Disjoint
+field-of-view… (part 16)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-5">
+<img src="../figures/disjoint_fov_world.slide-key.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="a354eea881ffa38de5ee0df2d27b4ee60f168d13c43c9721713dbc03653a38f2"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1365"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="4.1363636"
+alt="ISO: isolated; COM: communicating; EFE: EFE-guided; RND: random movement. Hatches preserve condition identity." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-84e9e0fbbc72">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 17" id="slide-heading-84e9e0fbbc72">Disjoint
+field-of-view… (part 17)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-6">
+<img src="../figures/disjoint_fov_world.slide-uncertainty.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="6e91f2ef9f4719e57487cc2a76a357898b8b5a6fbaaf6c3586bf25dedc949a18"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1222"
+data-slide-figure-intrinsic-height="330"
+data-slide-figure-intrinsic-aspect="3.7030303"
+alt="Whiskers show standard deviations across configured seeds, not confidence intervals. Accuracy is a fraction correct." />
+</figure>
+</section>
+<section class="slide level2 figure-led"
+aria-label="Disjoint field-of-view extension, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-de150dd51d74">
+<h2 class="figure-led"
+aria-label="Disjoint field-of-view extension, part 18" id="slide-heading-de150dd51d74">Disjoint
+field-of-view… (part 18)</h2>
+<figure id="fig:disjoint-fov-world-slide-panel-7">
+<img src="../figures/disjoint_fov_world.slide-scope.png"
+class="accessible-max-fit-image"
+style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
+data-slide-label-minimum-px="67.22222222222223"
+data-slide-label-source-sha256="19e3904064921f7adb7e257ae1255252327fc4c3571a866a8b6050a792983c57"
+data-slide-figure-area-contract="allocation-not-ink-coverage"
+data-slide-figure-min-allocation-percent="70"
+data-slide-figure-max-fit-height-percent="80"
+data-slide-figure-intrinsic-status="validated"
+data-slide-figure-intrinsic-width="1293"
+data-slide-figure-intrinsic-height="483"
+data-slide-figure-intrinsic-aspect="2.6770186"
+alt="Separate communication and movement-policy contrasts in the declared disjoint-view worlds. A near-ceiling movement contrast does not imply a general navigation advantage." />
+</figure>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>

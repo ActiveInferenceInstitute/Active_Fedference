@@ -3,6 +3,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
   ignorenonframetext,
+  aspectratio=169,
 ]{beamer}
 \newif\ifbibliography
 \usepackage{pgfpages}
@@ -196,6 +197,47 @@
 \providecommand{\Crefrange}[2]{\texttt{\detokenize{#1}}--\texttt{\detokenize{#2}}}
 \providecommand{\paragraph}[1]{\textbf{#1}\ }
 
+% Opt-in accessible presentation profile.
+\setbeamerfont{normal text}{size*={20pt}{24pt}}
+\setbeamerfont{frametitle}{size*={28pt}{32pt}}
+\setbeamerfont{section title}{size*={28pt}{32pt}}
+\setbeamerfont{subsection title}{size*={28pt}{32pt}}
+\setbeamerfont{caption}{size*={16pt}{19pt}}
+\setbeamerfont{caption name}{size*={16pt}{19pt}}
+\setbeamerfont{itemize/enumerate body}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize/enumerate subsubbody}{size*={20pt}{24pt}}
+\setbeamerfont{itemize item}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subitem}{size*={20pt}{24pt}}
+\setbeamerfont{itemize subsubitem}{size*={20pt}{24pt}}
+\setbeamerfont{description body}{size*={20pt}{24pt}}
+\setbeamerfont{description item}{size*={20pt}{24pt}}
+\setbeamerfont{quote}{size*={20pt}{24pt}}
+\setbeamerfont{quotation}{size*={20pt}{24pt}}
+\AtBeginEnvironment{longtable}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{tabular}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{equation*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{align*}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{itemize}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{enumerate}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginEnvironment{description}{\fontsize{20pt}{24pt}\selectfont}
+\AtBeginDocument{\usebeamerfont{normal text}}
+\newlength{\AFSlideTableWidth}
+% The fixed footer reservation is calibrated with the semantic seven-line regular-body budget.
+\setbeamertemplate{footline}{%
+  \leavevmode\vbox{%
+    \hbox{%
+      \begin{beamercolorbox}[wd=\paperwidth,ht=16pt,dp=3pt,center]{author in head/foot}%
+        \fontsize{16pt}{19pt}\selectfont Untagged PDF derivative \textbar\ \href{../web/index.html}{HTML reader}%
+      \end{beamercolorbox}%
+    }%
+    \vskip6pt%
+  }%
+}
+% Accessible footer reserved height: 25pt.
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{hypothesis}{Hypothesis}
 \newtheorem{remark}[theorem]{Remark}
@@ -217,181 +259,209 @@
 
 \begin{document}
 
-\subsection{Supplement: parameter-sensitivity
-methods}\label{sec:supp-sensitivity}
-
-\begin{frame}[allowframebreaks]{Supplement: parameter-sensitivity
-methods}
+\begin{frame}{Supplement: parameter-sensitivity methods}
+\protect\phantomsection\label{sec:supp-sensitivity}
 This supplement documents how the sensitivity grid of
-sec.~13.13 is generated and --- importantly for
-a reader trying to reconcile numbers across studies --- where its two
-sweeps use \emph{different} seeding and trial budgets. It answers two
-questions the main section leaves implicit: exactly which seed drives
-each cell (so any cell is independently reproducible), and why the
-cross-study summary's sensitivity row is not directly comparable, at
-matched trial counts, to the standalone heatmap.
+sec.~14.13 is generated and --- importantly for
+a reader trying to reconcile numbers across studies ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Experimental protocol for grid
-sensitivity}
+\begin{frame}{Supplement\ldots{} (part 2)}
+where its two sweeps use \emph{different} seeding and trial budgets. It
+answers two questions the main section leaves implicit: exactly which
+seed drives each cell, so every cell is deterministically reproducible
+in isolation;
+\end{frame}
+
+\begin{frame}{Supplement\ldots{} (part 3)}
+and why the cross-study summary's sensitivity row is not directly
+comparable, at matched trial counts, to the standalone heatmap.
+\end{frame}
+
+\begin{frame}[fragile]{Experimental protocol for grid sensitivity}
 \protect\phantomsection\label{experimental-protocol-for-grid-sensitivity}
-The sensitivity sweep is implemented in
-\breaktt{fedference.experiments.run\_belief\_sharing\_sensitivity} and
-\breaktt{fedference.experiments.run\_hierarchical\_sensitivity}. Each
-function accepts a tuple of acuity values and a tuple of colony sizes.
-In the \textbf{belief-sharing} sweep every (acuity, colony-size) cell
-averages \(n_{\text{trials}}\) independent trials, each seeded via a
-deterministic formula:
-
+The sensitivity sweep uses \texttt{run\_belief\_sharing\_sensitivity}
+and \texttt{run\_hierarchical\_sensitivity} from the
+\texttt{fedference.experiments} module.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Experimental protocol for grid
-sensitivity}
-\begin{equation}\protect\phantomsection\label{eq:sensitivity-seed}{
+\begin{frame}{Experimental protocol for\ldots{} (part 2)}
+Each function accepts a tuple of acuity values and a tuple of colony
+sizes. In the \textbf{belief-sharing} sweep every (acuity, colony-size)
+cell averages \(n_{\text{trials}}\) independent trials, each seeded via
+a deterministic formula:
+\end{frame}
+
+\begin{frame}{Experimental protocol for\ldots{} (part 3)}
+\begin{equation}\tag{40}\protect\phantomsection\label{eq:sensitivity-seed}{
 \text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j \cdot 10^3 + t
 }\end{equation}
+\end{frame}
 
-The deterministic seed rule eq.~\ref{eq:sensitivity-seed} makes every
-grid cell and trial independently reproducible from the base seed.
-
+\begin{frame}{Experimental protocol for\ldots{} (part 4)}
 where \(i\) indexes acuity, \(j\) indexes colony size, and \(t\) indexes
-the trial within a cell. For the belief-sharing sweep this guarantees
-that:
-
+the trial within a cell. The deterministic rule
+eq.~40 makes every grid cell and trial
+reproducible in isolation from the base seed. For the belief-sharing
+sweep, no two cells share a trial seed,
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Experimental protocol for grid
-sensitivity}
-\begin{enumerate}
-\tightlist
-\item
-  no two cells share a trial seed (no correlation between cells);
-\item
-  re-running with the same \texttt{seed\_base} is bit-identical
-  (reproducibility);
-\item
-  different \texttt{seed\_base} values produce independent replicates
-  (robustness checking).
-\end{enumerate}
+\begin{frame}[fragile]{Experimental protocol for\ldots{} (part 5)}
+so the design introduces no seed reuse between cells.
 
+Re-running with the same \texttt{seed\_base} is bit-identical. Changing
+\texttt{seed\_base} produces an independent replicate for robustness
+checking.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Experimental protocol for grid
-sensitivity}
+\begin{frame}[fragile]{Experimental protocol for\ldots{} (part 6)}
 The \textbf{hierarchical} sweep uses a simpler protocol: every cell
-calls \breaktt{run\_hierarchical\_world} once with the same base seed
+calls \texttt{run\_hierarchical\_world} once with the same base seed
 (its internal trials are seeded by that run), so hierarchical cells
 share the base seed rather than the per-cell formula above.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Grid parameters for acuity and
-colony size}
+\begin{frame}{Grid parameters for acuity and colony size}
 \protect\phantomsection\label{grid-parameters-for-acuity-and-colony-size}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]{Grid parameters for acuity and
-colony size}
 {\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}ll@{}}
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.4615}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.5385}}@{}}
 \toprule\noalign{}
-Parameter & Values \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Values
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 Sensor acuity \(\kappa\) & \{0.40, 0.55, 0.70, 0.85, 0.95\} \\
 Colony size \(n\) & \{2, 4, 6, 8, 10\} \\
-Trials per cell & 20 \\
-Base seed & 0 \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Grid parameters for acuity and
-colony size}
-The 5×5 = 25 cells per system are run with \texttt{seed\_base\ =\ 0} by
-default; \breaktt{generate\_sensitivity\_heatmap} accepts a \texttt{seed}
+\begin{frame}[fragile]{Grid parameters for acuity\ldots{} (part 2)}
+The 5\texorpdfstring{\ensuremath{\times}}{x}5 = 25 cells per system are run with \texttt{seed\_base\ =\ 0} by
+default; \texttt{generate\_sensitivity\_heatmap} accepts a \texttt{seed}
 argument to override this.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief-sharing condition in the
-sensitivity grid}
+\begin{frame}[fragile]{Belief-sharing condition in the sensitivity grid}
 \protect\phantomsection\label{belief-sharing-condition-in-the-sensitivity-grid}
-Each trial in the belief-sharing sweep:
-
+Each trial follows four labeled operations. \textbf{Draw:} sample one
+true state and one noisy observation per agent using the
+\texttt{run\_belief\_sharing} protocol.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Belief-sharing condition in the
-sensitivity grid}
-\begin{enumerate}
-\tightlist
-\item
-  Draws a random true state and one noisy observation per agent (same
-  protocol as \breaktt{run\_belief\_sharing}).
-\item
-  Runs one belief-sharing round with \breaktt{communicate=True}
-  (communicating) and \breaktt{communicate=False} (isolated).
-\item
-  Records \texttt{mean\_accuracy} for each condition.
-\item
-  The cell value is the average over \texttt{n\_trials} of this gap.
-\end{enumerate}
+\begin{frame}[fragile]{Belief-sharing condition in\ldots{} (part 2)}
+\textbf{Compare:} run one belief-sharing round with
+\texttt{communicate=True} and the matched isolated condition with
+\texttt{communicate=False}. \textbf{Record:} retain
+\texttt{mean\_accuracy} for both conditions.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Hierarchical POMDP condition in
-the sensitivity grid}
+\begin{frame}[fragile]{Belief-sharing condition in\ldots{} (part 3)}
+\textbf{Reduce:} define the cell value as the mean
+communicating-minus-isolated gap across \texttt{n\_trials}.
+\end{frame}
+
+\begin{frame}[fragile]{Hierarchical POMDP condition in the sensitivity
+grid}
 \protect\phantomsection\label{hierarchical-pomdp-condition-in-the-sensitivity-grid}
 Each cell in the hierarchical sweep calls
-\breaktt{run\_hierarchical\_world} once with the cell's acuity and colony
+\texttt{run\_hierarchical\_world} once with the cell's acuity and colony
 size, passing the constant base seed (not the per-cell formula, which
-applies only to the belief-sharing sweep). The returned
-\breaktt{location\_accuracy\_gap} (hierarchical minus flat) becomes the
-cell value.
+applies only to the belief-sharing sweep).
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Figure rendering for sensitivity
-summaries}
+\begin{frame}[fragile]{Hierarchical POMDP\ldots{} (part 2)}
+The returned \texttt{location\_accuracy\_gap} (hierarchical minus flat)
+becomes the cell value.
+\end{frame}
+
+\begin{frame}[fragile]{Figure rendering for sensitivity summaries}
 \protect\phantomsection\label{figure-rendering-for-sensitivity-summaries}
-\breaktt{generate\_sensitivity\_heatmap} assembles the two grids into a
-1×2 matplotlib \texttt{imshow} figure with RdYlGn colormap, symmetric
-bounds at \(\pm\max(|\text{gap}|)\), per-cell numeric annotations, and a
-per-panel colorbar labeled ``Accuracy gap (hierarchical/comm. −
-baseline)''. The figure is written to
-\breaktt{output/figures/sensitivity\_heatmap.png}.
+\texttt{generate\_sensitivity\_heatmap} assembles the two grids into
+vertically stacked matplotlib \texttt{imshow} panels with a
+color-vision-deficiency-safer blue--neutral--brown signed palette and
+symmetric bounds at \(\pm\max(|\text{gap}|)\),
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Cross-study summary
-construction}
-\protect\phantomsection\label{cross-study-summary-construction}
-\breaktt{generate\_cross\_study\_summary} runs a 128-seed
-(\(n_{\text{seeds}} = 128\)) ensemble over Studies 1--9 and reports the
-mean ± 95 \% bootstrap CI of the key federation-benefit metric for each
-study. The metric definitions are:
+\begin{frame}[fragile]{Figure rendering for\ldots{} (part 2)}
+per-cell numeric annotations, and a per-panel colorbar labeled
+``Accuracy difference''. The figure is written as
+\texttt{sensitivity\_heatmap.png} under \texttt{output/figures/}.
+Negative gaps map toward blue, positive gaps toward brown,
+\end{frame}
 
+\begin{frame}{Figure rendering for\ldots{} (part 3)}
+and zero to the neutral midpoint; exact signed cell labels duplicate
+that encoding. Hatching marks only the declared
+\(|\mathrm{gap}| \le 0.05\) display band. It is not an unreliability
+flag, confidence interval, significance test,
+
+or proof of zero effect.
+\end{frame}
+
+\begin{frame}[fragile]{Cross-study summary construction}
+\protect\phantomsection\label{cross-study-summary-construction}
+\texttt{generate\_cross\_study\_summary} performs a separate harmonized
+128-seed (\(n_{\text{seeds}} = 128\)) rerun over Studies 1--9 and
+reports the mean with a 95\% seed-level percentile-bootstrap interval
+for each headline signed contrast or estimand. These intervals belong to
+that rerun,
+\end{frame}
+
+\begin{frame}{Cross-study summary\ldots{} (part 2)}
+including for rows whose primary figure is a deterministic
+single-posterior or fixed-configuration diagnostic; they are not
+intervals on the primary deterministic display. The definitions are:
+\end{frame}
+
+\begin{frame}{Cross-study summary\ldots{} (part 3)}
 The robustness row uses 40 matched trials per seed and rate; the
 trial-level observations are reduced within seed before the cross-study
-summary is formed. This preserves the seed as the independent Monte
-Carlo unit.
-
+summary is formed. Within each seed, the row then takes the
+display-selected maximum non-reference server-preset contrast at the
+declared worst rate.
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Cross-study summary
-construction}
+\begin{frame}{Cross-study summary\ldots{} (part 4)}
+This preserves the seed as the independent Monte Carlo unit but makes
+Study 4 a within-run display-selected summary, not a preselected method
+or inferential winner.
+\end{frame}
+
+\begin{frame}[fragile]{Cross-study summary\ldots{} (part 5)}
 The Study 8 row below uses 3 trials per cell --- smaller than the
-full-resolution 20-trial \breaktt{Trials\ per\ cell} grid documented
+full-resolution 20-trial \texttt{Trials\ per\ cell} grid documented
 above for the standalone sensitivity heatmap figure, a deliberate
 runtime budget for the per-seed cross-study loop rather than an
-oversight --- so the two are not directly comparable at matched trial
-counts.
-
+oversight ---
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Cross-study summary
-construction}
+\begin{frame}{Cross-study summary\ldots{} (part 6)}
+so the two are not directly comparable at matched trial counts.
+\end{frame}
+
+\begin{frame}{Cross-study summary\ldots{} (part 7)}
 {\def\LTcaptype{none} % do not increment counter
+% template-accessible-table-inset
+\begingroup
+\setlength{\AFSlideTableWidth}{\textwidth}%
+\setlength{\LTleft}{\fill}%
+\setlength{\LTright}{\fill}%
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4667}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5333}}@{}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.4667}}
+  >{\raggedright\arraybackslash}p{(\AFSlideTableWidth - 2\tabcolsep) * \real{0.5333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Study
@@ -400,28 +470,18 @@ Metric
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-1 --- Belief sharing & Accuracy gain: communicating − isolated \\
-2 --- Language acquisition & KL reduction: initial − final \\
-3 --- Emergence (BMR) & \(\Delta F\) for redundant pruning \\
-4 --- Robustness sweep & Accuracy gain: pooled display robust method −
-naive at worst contamination rate \\
-5 --- Moving world (EFE) & Accuracy gain: EFE-guided − isolated \\
-6 --- Hierarchical POMDP (2-level) & Location accuracy gap: hierarchical
-− flat \\
-7 --- 3-level POMDP & Location accuracy gap: 3-level − flat \\
-8 --- Parameter sensitivity & Mean accuracy gap across the sensitivity
-grid \\
-9 --- Parameter recovery & \(R^2\) for acuity identifiability \\
+1 --- Belief sharing & Accuracy contrast: communicating - isolated \\
+2 --- Language acquisition & KL reduction: initial - final \\
 \bottomrule\noalign{}
 \end{longtable}
+\endgroup
 }
-
 \end{frame}
 
-\begin{frame}[fragile,allowframebreaks]{Cross-study summary
-construction}
-Bootstrap CIs use 5000 resamples (default \texttt{n\_boot} in
-\breaktt{fedference.statistics.bootstrap\_ci}).
+\begin{frame}[fragile]{Cross-study summary\ldots{} (part 8)}
+Bootstrap CIs use 5000 resamples. Their default \texttt{n\_boot} is
+defined by \texttt{bootstrap\_ci} in the \texttt{fedference.statistics}
+module.
 \end{frame}
 
 \end{document}

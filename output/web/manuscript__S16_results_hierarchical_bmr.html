@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>S16_results_hierarchical_bmr.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -461,76 +619,83 @@ mjx-container[display="true"] {
   text-align: center;
 }
 
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h2 id="sec:results-hierarchical-bmr">Structure learning: does the
-hierarchy earn its depth?</h2>
-<p>Study 7 shows the 3-level agent runs and federates end to end, but a
-deeper model is only warranted if the extra level carries information.
-We close the loop with a structure-learning test: given a trained
-hierarchy and one leaf observation, does Bayesian model reduction
-correctly decide whether the top meta-context level should be
-<em>kept</em> or <em>pruned</em>?</p>
-<p>We reduce at the level granularity
-(:func:<code>fedference.bayesian_model_reduction.hierarchical_reduce</code>).
+<h2 id="sec:results-hierarchical-bmr">Hierarchical information-gating
+diagnostic</h2>
+<p>Study 7 shows that the 3-level agent runs and federates end to end.
+This supplementary diagnostic asks a narrower question: under a
+configured surprise threshold, does one leaf observation classify the
+top meta-context as informative or non-gating? The output is a
+thresholded information-gating diagnostic, not a Bayesian-model-evidence
+comparison or a data-driven proof of the hierarchy’s correct depth.</p>
+<p>The implementation evaluates levels through
+<code>hierarchical_reduce</code> in the
+<code>bayesian_model_reduction</code> module of <code>fedference</code>.
 For each non-leaf level we measure its <strong>Bayesian
 surprise</strong> <span class="math inline">\(\mathrm{KL}(q_i \,\|\,
 \tilde p_i)\)</span> — how far the leaf observation moves that level’s
 belief <span class="math inline">\(q_i\)</span> from its top-down prior
-<span class="math inline">\(\tilde p_i\)</span>. A level whose belief
-the data never move carries no structure and is prunable; an informative
-level moves and is kept. This is an inference-derived divergence, not a
-model re-fit, so it cannot manufacture a difference the generative model
-does not contain.</p>
-<p>The test is directional by construction. We build two 3-level worlds
-that differ <em>only</em> in the top level’s conditioned priors: a
-<strong>degenerate</strong> world whose meta-context is non-gating (both
-meta-context states predict the same context distribution) and an
+<span class="math inline">\(\tilde p_i\)</span>.</p>
+<p>The routine labels a level below the configured threshold as prunable
+and a level above it as kept. Because this is an inference-derived
+divergence rather than a model re-fit, the labels are conditional on the
+specified worlds, observation, and threshold.</p>
+<p>The control is directional by construction. We build two 3-level
+worlds that differ <em>only</em> in the top level’s conditioned priors:
+a <strong>degenerate</strong> world whose meta-context is non-gating
+(both meta-context states predict the same context distribution) and an
 <strong>informative</strong> world whose meta-context sharply
-distinguishes the two contexts. On the degenerate world the top level
-earns a Bayesian surprise of 0.000 nats and is flagged prunable
-(recovers the two-level structure: Yes); on the informative world the
-same level earns 0.328 nats and is kept (Yes); <a class="xref" href="index.html#fig:hierarchical-bmr">Figure 29</a> shows
-the per-level surprise for both worlds side by side. Because the two
-worlds share every other parameter, the opposite verdict is attributable
-to the meta-context’s information alone — the reduction discovers the
-right depth rather than assuming it.</p>
+distinguishes the two contexts.</p>
+<p>In the degenerate world, the top level has Bayesian surprise 0.000
+nats and is flagged prunable (recovers the two-level structure: Yes). In
+the informative world, it has 0.328 nats and is kept (Yes).</p>
+<p><a class="xref" href="index.html#fig:hierarchical-bmr">Figure 32</a> shows
+both configured worlds side by side. Their shared lower-level parameters
+isolate the top-level gating contrast, but do not establish a generally
+correct depth-selection procedure.</p>
 <figure id="fig:hierarchical-bmr">
-<a class="figure-full-size-link" href="../figures/hierarchical_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure"><img src="../figures/hierarchical_bmr.png" style="width:80.0%"
-alt="Horizontal bars show Bayesian surprise at two non-leaf hierarchy levels for informative and degenerate worlds. The informative upper level is kept, whereas the degenerate upper level falls below the prune threshold." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
+<a class="figure-full-size-link" href="../figures/hierarchical_bmr.png" target="_blank" rel="noopener" aria-label="Open full-size figure, Per-level Bayesian surprise and configured threshold classifications"><img src="../figures/hierarchical_bmr.png" style="width:80.0%"
+data-slide-manifest="../figures/hierarchical_bmr.slides.json"
+alt="Horizontal bars show Bayesian surprise at two non-leaf levels in informative and degenerate configured worlds. The threshold classifies whether the upper information channel is retained; this diagnostic is not a Bayesian-model-reduction emergence result." /><span class="figure-full-size-label" aria-hidden="true">Open full-size figure</span></a>
 <figcaption>Per-level Bayesian surprise and
-prune/keep decisions for two hierarchical worlds. Source relation:
-original project BMR structure-learning diagnostic related to the
-mechanism in Friston et al. Fig. 9; estimand: per-level Bayesian
-surprise in nats and the resulting prune/keep decision; uncertainty:
-deterministic schematic worlds, so no resampling interval is shown.
-Per-level Bayesian surprise for the two 3-level worlds. y-axis: the
-non-leaf reduction targets, indexed top-down from the reduction routine
-as level 0 = the meta-context (the topmost non-leaf level, L3 in the
-location-first L1/L2/L3 convention used elsewhere) and level 1 = the
-context (L2); the leaf location level (L1) is never a reduction target.
-x-axis: Bayesian surprise <span class="math inline">\(\mathrm{KL}(q
-\,\|\, \text{prior})\)</span> in nats — the information the leaf
-observation added at that level. Blue bars: the informative world (top
-level kept). Grey bars: the degenerate world (top level prunable). The
-dashed red line is the prune threshold; a level whose surprise falls
-below it is structurally unnecessary. The degenerate meta-context (grey,
-level 0) sits at 0.000 nats and is pruned, recovering the two-level
-model, while the informative meta-context (blue, level 0) at 0.328 nats
-is retained; both worlds keep the context level (level 1). Deterministic
-schematic worlds (no resampling), so no error band is
-applicable.</figcaption>
+configured threshold classifications for two hierarchical worlds. Source
+relation: original project information-gating diagnostic related to, but
+not an implementation of, the BMR mechanism in Friston et al. Fig. 9;
+estimand: per-level Bayesian surprise in nats and its thresholded
+prune/keep label; uncertainty: deterministic schematic worlds, so no
+resampling interval applies. The x-axis is Bayesian surprise <span
+class="math inline">\(\mathrm{KL}(q \,\|\, \text{prior})\)</span> in
+nats, measuring information added by the leaf observation. The y-axis
+lists the non-leaf reduction targets top-down: level 0 is the
+meta-context (L3), level 1 is context (L2), and leaf location L1 is not
+reduced. Hatches, keylines, direct value-and-status labels, and vertical
+position distinguish the informative and non-gating worlds without
+color; the dark dotted rule is the declared classification threshold.
+The non-gating meta-context has 0.000 nats and is flagged prunable,
+leaving a two-level stack. The informative meta-context has 0.328 nats
+and is kept; both worlds keep context. The unit is nats for each
+configured world-level target, with no independent replication unit,
+sample size, confidence interval, or error band. Falling below the
+configured threshold is a sign-control outcome, not proof of structural
+redundancy. The figure does not report model evidence, posterior
+refitting, universal depth recovery, structure emergence, or exact
+source-protocol replication.</figcaption>
 </figure>
-<p>This is the same Beta-function model-reduction machinery that drives
-the emergence study (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>,
-<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (15)</a>), lifted from pruning
-redundant <em>states</em> within one level to pruning a redundant
-<em>level</em> of the hierarchy — an honest, tested answer to “how deep
-should the generative model be?” that the data, not the modeler,
-decides.</p>
+<p>Unlike the Beta-function BMR sign control in <a class="xref" href="index.html#sec:results-emergence">Section 7.4</a> and
+<a class="xref" href="index.html#eq:bmr-deltaf">Eq. (20)</a>, this routine
+thresholds per-level surprise. It therefore checks the intended gating
+contrast in the declared worlds; it does not let the data independently
+choose model depth.</p>
 </main>
 </body>
 </html>

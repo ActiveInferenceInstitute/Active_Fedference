@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>24_discussion_future.md.web</title>
   <style>
@@ -178,6 +178,15 @@ window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
   fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
   dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
 });
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
 window.normalizeTemplateMathJaxAria = function () {
   document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
     var roleDescription = node.getAttribute("aria-roledescription") || "";
@@ -188,14 +197,46 @@ window.normalizeTemplateMathJaxAria = function () {
 };
 window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
   ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
     window.MathJax.startup.defaultReady();
-    window.MathJax.startup.promise.then(window.normalizeTemplateMathJaxAria);
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
   }
 });
 </script>
 <script defer=""
-  src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js"
-  type="text/javascript" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+  type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
 
 <link data-template-favicon rel="icon" href="favicon.ico">
 
@@ -226,12 +267,56 @@ window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
 .theorem-box.definition { border-left-style: dashed; }
 .theorem-box > p:first-child { margin-top: 0; }
 .theorem-box > p:last-child { margin-bottom: 0; }
+.figure-long-description {
+  border: 1px solid var(--web-border);
+  border-radius: 4px;
+  margin-block: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+.figure-long-description > summary { cursor: pointer; font-weight: 700; }
+.figure-long-description > p { max-width: 80ch; overflow-wrap: anywhere; }
+.figure-exact-values { max-width: 80ch; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; word-break: break-word; }
+pre {
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code { overflow-wrap: inherit; white-space: inherit; word-break: inherit; }
+div.sourceCode { max-width: 100%; overflow: visible; }
+pre.sourceCode { background: #2c3e50; color: #ecf0f1; }
+pre.sourceCode code,
+pre.sourceCode code span { color: inherit; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mjx-container[display="true"] { max-width: 100%; overflow: visible; }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+.table-scroll:focus-visible {
+  outline: 3px solid var(--brand-1);
+  outline-offset: 3px;
+}
+.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 html {
   max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -243,7 +328,18 @@ body {
   padding: 20px;
   background-color: #f8f8f8;
   color: #1a1a1a;
-  overflow-x: visible;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main,
+nav,
+section,
+article,
+figure,
+figcaption {
+  min-width: 0;
 }
 
 .skip-link {
@@ -301,6 +397,8 @@ code {
   padding: 2px 4px;
   border-radius: 3px;
   font-family: 'Liberation Mono', 'Courier New', monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre {
@@ -308,13 +406,68 @@ pre {
   color: #ecf0f1;
   padding: 15px;
   border-radius: 5px;
-  overflow-x: auto;
+  max-width: 100%;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+pre code {
+  overflow-wrap: inherit;
+  white-space: inherit;
+  word-break: inherit;
+}
+
+div.sourceCode {
+  max-width: 100%;
+  overflow: visible;
+}
+
+pre.sourceCode {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+pre.sourceCode code,
+pre.sourceCode code span {
+  color: inherit;
+}
+
+pre > code.sourceCode {
+  white-space: pre-wrap;
+}
+
+pre > code.sourceCode > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
   margin: 20px 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid #1f6f8b;
+  outline-offset: 3px;
+}
+
+.table-scroll > table {
+  margin-block: 0;
+  min-width: 100%;
+  width: max-content;
 }
 
 figure {
@@ -395,8 +548,7 @@ a:focus-visible {
 mjx-container[display="true"] {
   display: block;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   padding-bottom: 0.25rem;
 }
 
@@ -445,6 +597,12 @@ mjx-container[display="true"] {
 }
 
 @media (min-width: 1000px) {
+  /* Wide figure links stay within the viewport but extend beyond the prose
+     column. Do not clip their labels at the narrower body boundary. */
+  body {
+    overflow-x: visible;
+  }
+
   .figure-full-size-link {
     left: 50%;
     max-width: none;
@@ -459,6 +617,12 @@ mjx-container[display="true"] {
   color: #4b5563;
   margin-top: 10px;
   text-align: center;
+}
+
+.figure-long-description,
+.figure-exact-values {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 </style>
@@ -476,19 +640,21 @@ one lane cannot silently certify another.</p>
 declaring the estimand, data-generating mechanism, and Monte Carlo
 precision before treating replication as evidence
 <span class="citation">(Morris et al. 2019)</span>, while Monte Carlo error should be reported
-separately from an interval or a hypothesis test <span class="citation">(Koehler et al. 2009)</span>. For
-nested agents, trials, and seeds, the resampling unit must respect the
-dependence structure <span class="citation">(Loy and Korobova 2021)</span>. Accordingly, the phase plan
-records a primary unit and a falsifier for each extension; a larger
-sample or more elaborate diagram is not itself a stronger claim.</p>
+separately from an interval or a hypothesis test <span class="citation">(Koehler et al. 2009)</span>.</p>
+<p>For nested agents, trials, and seeds, the resampling unit must
+respect the dependence structure <span class="citation">(Loy and Korobova 2021)</span>. Accordingly, the
+phase plan records a primary unit and a falsifier for each extension; a
+larger sample or more elaborate diagram is not itself a stronger
+claim.</p>
 <p>The implementation registry also separates smoke, pilot, and
 confirmatory profiles. Pilot worlds select budgets and calibration
-settings but never enter confirmatory intervals or headline values. Each
-completed run must bind its source bundle, configuration, dataset bytes,
-device, checkpoints, outputs, and completion status into a verifiable
-receipt. A negative or null scientific result remains a valid citable
-outcome when those implementation and provenance gates pass; it blocks
-the intended positive claim, not the software release.</p>
+settings but never enter confirmatory intervals or headline values.</p>
+<p>Each completed run must bind its source bundle, configuration,
+dataset bytes, device, checkpoints, outputs, and completion status into
+a verifiable receipt. A negative or null scientific result remains a
+valid citable outcome when those implementation and provenance gates
+pass; it blocks the intended positive claim, not the software
+release.</p>
 <p>A separate Friston protocol lane will resolve a machine-readable
 parity matrix before reconstructing source experiments in Python. Until
 every required source parameter, routine, unit, and estimand is
@@ -496,66 +662,68 @@ recovered, that lane will be described as a paper-constrained
 reconstruction rather than an exact replication.</p>
 <h2 id="sec:future-server">Make the sharp server heuristic
 variational</h2>
-<p>The asymmetry between the robustness axes (<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>) is the
-most consequential open problem. The client-side <span
+<p>The asymmetry between the robustness axes (<a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>)
+motivates a consequential theoretical design question that is explicitly
+parked outside the authorized roadmap. The client-side <span
 class="math inline">\(\beta\)</span>/rcce update carries a derived,
 loss-specific bounded-influence result under the matching assumptions;
 the sharp server-side <code>robust_aggregate</code> carries only its
-recovery limit (<a class="xref" href="index.html#eq:robust-identity">Eq. (6)</a>); and the
-new variational aggregator (<a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a>,
-<a class="xref" href="index.html#sec:supp-variational">Section 11</a>)
+recovery limit (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>).</p>
+<p>The new variational aggregator (<a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a>,
+<a class="xref" href="index.html#sec:supp-variational">Section 12</a>)
 supplies a <em>rigorous</em> server-side rule — exact block updates
-descending the stated free energy <a class="xref" href="index.html#eq:agg-free-energy">Eq. (7)</a> through
+descending the stated free energy <a class="xref" href="index.html#eq:agg-free-energy">Eq. (12)</a> through
 non-increasing block updates, with a proven raw effective-weight bound
 and the same recovery corner. What it costs is conservatism: it is the
-maximum-entropy consensus, not the sharp accuracy-maximizer. The
-remaining open problem is therefore sharper than before — to write down
-a generalized variational objective in the FedGVI family
-<span class="citation">(Mildner et al. 2025)</span>, informed by recent closed-form GVI
-characterizations <span class="citation">(Nguyen and Westerhout 2026)</span>, logarithmic-pool weighting
-theory <span class="citation">(Carvalho et al. 2023)</span>, and robust divergence-weighted
-federated aggregation <span class="citation">(Li et al. 2022)</span>, whose closed-form minimizer is
-competitive with the empirical reweighting across declared contamination
-regimes. That would combine axis 3’s effective-weight bound with axis
-2’s empirical sharpness in one server rule. The recovery corner and the
+maximum-entropy consensus, not the sharp accuracy-maximizer.</p>
+<p>That parked question is sharper than before: write down a generalized
+variational objective in the FedGVI family <span class="citation">(Mildner et al. 2025)</span>, informed
+by recent closed-form GVI characterizations <span class="citation">(Nguyen and Westerhout 2026)</span>,
+logarithmic-pool weighting theory <span class="citation">(Carvalho et al. 2023)</span>, and robust
+divergence-weighted federated aggregation <span class="citation">(Li et al. 2022)</span>, whose
+closed-form minimizer is competitive with the empirical reweighting
+across declared contamination regimes.</p>
+<p>That would combine axis 3’s effective-weight bound with axis 2’s
+empirical sharpness in one server rule. The recovery corner and the
 variational objective together supply two boundary conditions any such
 unification must satisfy.</p>
 <p>Any empirical choice of <code>robustness</code> or
 <code>entropy_weight</code> will be made on separate calibration worlds
 using a proper log score, then frozen before confirmatory evaluation.
 This guards against selecting an apparent leader with evaluation truth
-and preserves null or reversed confirmatory outcomes. The comparison
-family will include logarithmic and linear pools, the current heuristic,
-the variational family, and a centered-log-ratio geometric-median
-control; none inherits a parameter-space robust-federated-learning
-guarantee merely by operating on beliefs.</p>
+and preserves null or reversed confirmatory outcomes.</p>
+<p>The comparison family will include logarithmic and linear pools, the
+current heuristic, the variational family, and a centered-log-ratio
+geometric-median control; none inherits a parameter-space
+robust-federated-learning guarantee merely by operating on beliefs.</p>
 <h2 id="sec:future-scale">Promote the baseline to original FedGVI
 scale</h2>
 <p>The bounded-influence result is anchored locally by the small NumPy
-logistic-regression baseline (<a class="xref" href="index.html#fig:bnn-robustness">Figure 16</a>). Promoting
+logistic-regression baseline (<a class="xref" href="index.html#fig:bnn-robustness">Figure 18</a>). Promoting
 it to the GPU-scale Bayesian-neural-network experiments of the source
-paper <span class="citation">(Mildner et al. 2025)</span> — the experiments deferred here (<span
-class="citation" data-cites="sec:limitations"><a class="xref" href="index.html#sec:limitations">Section 8.13</a></span>)
+paper <span class="citation">(Mildner et al. 2025)</span> — the experiments deferred here (<a class="xref" href="index.html#sec:limitations">Section 8.13</a>)
 — would test whether the per-client robustness curve holds at the model
 capacity and contamination regimes where federated learning
-<span class="citation">(McMahan et al. 2017)</span> actually operates, and would connect the
-discrete-POMDP result to the partitioned-VI line <span class="citation">(Ashman et al. 2022; Bui et al. 2018)</span>. The planned comparison would also require
-posterior-parameterization parity with Bayesian neural-network work,
-rather than treating the current deterministic point-mass MLP as a
-posterior <span class="citation">(Mildner et al. 2025)</span>.</p>
+<span class="citation">(McMahan et al. 2017)</span> actually operates.</p>
+<p>It would connect the discrete-POMDP result to the partitioned-VI line
+<span class="citation">(Ashman et al. 2022; Bui et al. 2018)</span>. The planned comparison
+would also require posterior-parameterization parity with Bayesian
+neural-network work, rather than treating the current deterministic
+point-mass MLP as a posterior <span class="citation">(Mildner et al. 2025)</span>.</p>
 <p>The portable lane preserves the source protocol’s site factors,
 client cavity, factor-replacement update in natural coordinates. A
 synthetic CPU/MPS pilot already exercises the cavity-conditioned local
 optimizer, explicit device and fallback receipts, and checkpoint/resume
-equivalence. It does not establish source-dataset parity. The next local
-campaign distinguishes a locked portable CPU/MPS profile from an exact
-source-scale CUDA profile that remains external until suitable hardware
-is available. FashionMNIST anchors source-dataset protocol parity, while
-MNIST and KMNIST test portability. A separate source-bound tabular pack
-will report proper-score effects per licensed dataset, with
-training-only preprocessing and byte-, split-, and license-level
-provenance; nested seeds will not be treated as independent
-datasets.</p>
+equivalence. It does not establish source-dataset parity.</p>
+<p>The next local campaign distinguishes a locked portable CPU/MPS
+profile from an exact source-scale CUDA profile that remains external
+until suitable hardware is available. FashionMNIST anchors
+source-dataset protocol parity, while MNIST and KMNIST test
+portability.</p>
+<p>A separate source-bound tabular pack will report proper-score effects
+per licensed dataset, with training-only preprocessing and byte-,
+split-, and license-level provenance; nested seeds will not be treated
+as independent datasets.</p>
 <h2 id="sec:future-hierarchical">Extend hierarchical federation beyond
 the current stack</h2>
 <p>The governing caveat here is that added depth must be shown to
@@ -565,37 +733,33 @@ on location (<a class="xref" href="index.html#sec:limitations-scope">Section 8.1
 extension therefore has two distinct fronts — carrying the recovery
 contract to deeper stacks, and finding a task family in which depth
 actually pays.</p>
-<p>The 2-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-hierarchical">Section 13.9</a>)
+<p>The 2-level hierarchical POMDP (<a class="xref" href="index.html#sec:results-hierarchical">Section 14.9</a>)
 couples location inference to a single global context. The generic
-N-level architecture
-(:func:<code>fedference.pomdp.build_nlevel_world</code>) has already
-been exercised with a 3-level stack (<a class="xref" href="index.html#sec:results-3level">Section 13.11</a>, <span
-class="citation"
-data-cites="sec:supp-3level"><a class="xref" href="index.html#sec:supp-3level">Section 13.12</a></span>): a meta-context
+N-level architecture uses <code>build_nlevel_world</code> from the
+<code>fedference.pomdp</code> module and has already been exercised with
+a 3-level stack (<a class="xref" href="index.html#sec:results-3level">Section 14.11</a>, <a class="xref" href="index.html#sec:supp-3level">Section 14.12</a>): a meta-context
 variable (L3) gates the context prior (L2) which in turn gates the
-location prior (L1). The empirical-prior top-down messages (<span
-class="citation"
-data-cites="eq:l3-to-l2-message"><a class="xref" href="index.html#eq:l3-to-l2-message">Eq. (31)</a></span>, <span
-class="citation"
-data-cites="eq:l2-to-l1-message"><a class="xref" href="index.html#eq:l2-to-l1-message">Eq. (32)</a></span>) remain
+location prior (L1).</p>
+<p>The empirical-prior top-down messages (<a class="xref" href="index.html#eq:l3-to-l2-message">Eq. (38)</a>, <a class="xref" href="index.html#eq:l2-to-l1-message">Eq. (39)</a>) remain
 valid variational steps at every depth, and the log-linear-pool
 federation at each level is bit-identical to the in-process result
-(<a class="xref" href="index.html#prop:federation-bit-identity">Proposition 12</a>). The
-natural next question is whether the limit-as-proof contract of <span
-class="citation" data-cites="sec:limitations"><a class="xref" href="index.html#sec:limitations">Section 8.13</a></span>
-survives still deeper hierarchies: does the recovery corner (context
-prior → uniform) remain checkable to machine precision when the L2 → L1
-message is itself a function of an L3 belief coupled to an L4 belief,
-and can message-passing engines such as RxInfer <span class="citation">(Bagaev et al. 2023)</span>
-carry the generic alternating-minimization at scale? Structure learning
-already answers the dual question — how <em>deep</em> the model should
-be — for the top level: hierarchical Bayesian model reduction (<span
-class="citation"
-data-cites="sec:results-hierarchical-bmr"><a class="xref" href="index.html#sec:results-hierarchical-bmr">Section 14.1</a></span>)
-prunes a non-gating meta-context and keeps an informative one, so the
-depth is decided by the evidence rather than assumed. Extending that
-per-level reduction to a full breadth-and-depth search over the generic
-N-level stack is the natural continuation.</p>
+(<a class="xref" href="index.html#prop:federation-bit-identity">Proposition 12</a>).</p>
+<p>The natural next question is whether the limit-as-proof contract of
+<a class="xref" href="index.html#sec:limitations">Section 8.13</a> survives still
+deeper hierarchies: does the recovery corner (context prior → uniform)
+remain checkable to machine precision when the L2 → L1 message is itself
+a function of an L3 belief coupled to an L4 belief, and can
+message-passing engines such as RxInfer <span class="citation">(Bagaev et al. 2023)</span> carry the
+generic alternating-minimization at scale?</p>
+<p>The current hierarchical diagnostic asks a narrower question. Under
+one configured surprise threshold, it classifies the non-gating top
+level below the threshold and the informative top level above it (<a class="xref" href="index.html#sec:results-hierarchical-bmr">Section 15.1</a>).
+This is an implementation control, not a posterior refit or an
+autonomous depth-selection result.</p>
+<p>A future breadth-and- depth search must define its candidate family,
+scoring rule, uncertainty, replication units, and out-of-sample
+evaluation before it can support a model- selection claim for the
+generic N-level stack.</p>
 <p>The next task family is deliberately controlled rather than merely
 deeper: partially observable Four Rooms and Key-Door will compare flat,
 oracle, learned, shuffled, and non-gating hierarchies at matched
@@ -604,52 +768,54 @@ in only one task will remain task-specific, and the larger campaign will
 not begin until the hybrid representation recovery gates pass.</p>
 <h2 id="sec:future-transport">Move from process transport to true
 multi-machine federation</h2>
-<p>Promoting federation from the current queue-backed, single-machine
-process and loopback-socket helpers to cross-host workers would retire
-the remaining deployment caveat of <a class="xref" href="index.html#sec:limitations">Section 8.13</a> while preserving
-the bit-identical consensus property proved in <a class="xref" href="index.html#prop:federation-bit-identity">Proposition 12</a>. The
-<code>federation/</code> package and federation tests already establish
-the API contract: a server collects serialized beliefs from 5 worker
-channels, fuses them with <code>robust_aggregate</code> at robustness
-<span class="math inline">\(c = 1.5\)</span>, and broadcasts the
-consensus back over response channels, with bit-identity verified at
-True. The loopback socket path adds optional pre-shared-key frame
-integrity and file-backed digest-verified replay validation. The next
-systems step is an explicitly local Docker multi-node emulator with mTLS
-by default, HMAC compatibility, checkpoint/restart, and reproducible
-message-fault controls. It is not physical multi-host evidence. That
-later claim requires receipts from distinct hosts, deployment-grade key
-management, timeout policy, and long-running orchestration across
-process restarts, but it does not require changing the mathematics.
-Secure aggregation, differential privacy, and Byzantine tolerance are
+<p>The current deployment uses queue-backed single-machine processes and
+loopback sockets. Promotion to cross-host workers would address the
+remaining deployment caveat of <a class="xref" href="index.html#sec:limitations">Section 8.13</a>. That extension
+must preserve the bit-identical consensus property proved in <a class="xref" href="index.html#prop:federation-bit-identity">Proposition 12</a>.</p>
+<p>The <code>federation/</code> package and federation tests already
+establish the API contract: a server collects serialized beliefs from 5
+worker channels, fuses them with <code>robust_aggregate</code> at
+robustness <span class="math inline">\(c = 1.5\)</span>, and broadcasts
+the consensus back over response channels, with bit-identity verified at
+True.</p>
+<p>The loopback socket path adds optional pre-shared-key frame integrity
+and file-backed digest-verified replay validation. The next systems step
+is an explicitly local Docker multi-node emulator with mTLS by default,
+HMAC compatibility, checkpoint/restart, and reproducible message-fault
+controls. It is not physical multi-host evidence.</p>
+<p>That later claim requires receipts from distinct hosts,
+deployment-grade key management, timeout policy, and long-running
+orchestration across process restarts, but it does not require changing
+the mathematics.</p>
+<p>Secure aggregation, differential privacy, and Byzantine tolerance are
 separate future threat models; transport integrity alone would not
 establish any of them <span class="citation">(Blanchard et al. 2017; Pillutla et al. 2022)</span>.</p>
 <h2 id="sec:future-continuous">Move beyond categorical state spaces</h2>
 <p>This work is discrete-categorical, matching the community’s worked
 POMDP <span class="citation">(Da Costa et al. 2020)</span>. A first step is already in place: the
-closed-form Gaussian KL and Rényi divergences of <a class="xref" href="index.html#sec:supp-extended">Section 12</a> show the
+closed-form Gaussian KL and Rényi divergences of <a class="xref" href="index.html#sec:supp-extended">Section 13</a> show the
 divergence family — and its <span
 class="math inline">\(\alpha\to1\)</span> recovery — carries over
-verbatim to Gaussian beliefs, scoped out of the categorical experiments.
-Continuous-state Gaussian generative models would test whether the
+verbatim to Gaussian beliefs, scoped out of the categorical
+experiments.</p>
+<p>Continuous-state Gaussian generative models would test whether the
 limit-as-proof contract survives the move off categorical state spaces —
 whether the recovery corner remains checkable to machine precision when
 the belief simplex is replaced by a Gaussian belief, and whether
 message-passing engines such as RxInfer <span class="citation">(Bagaev et al. 2023)</span> can carry
-the robust update at scale. Extending the structure-learning study
-<span class="citation">(Smith et al. 2022; Friston and Penny 2011)</span> into continuous models would, in
-parallel, test whether robust belief fusion and robust
-<em>structure</em> fusion compose.</p>
+the robust update at scale.</p>
+<p>Extending the structure-learning study <span class="citation">(Smith et al. 2022; Friston and Penny 2011)</span> into continuous models would, in parallel, test whether
+robust belief fusion and robust <em>structure</em> fusion compose.</p>
 <p>A minimal executable fixture now gates a discrete dynamics context
 over continuous position and velocity, Gaussian observations, and
 bounded actions. The bounded pilot now includes matched naive, robust,
 discrete-only, continuous-only, and oracle-context components, a
-singular-covariance rejection, and next-position predictive scoring. It
-is still a representation, recovery, and control surface rather than
-confirmatory task evidence. The full study must freeze calibration and
-budgets, use independently held-out worlds, retain outlier falsifiers,
-and execute the preregistered comparison before supporting a hybrid-task
-claim.</p>
+singular-covariance rejection, and next-position predictive scoring.</p>
+<p>It is still a representation, recovery, and control surface rather
+than confirmatory task evidence. The full study must freeze calibration
+and budgets, use independently held-out worlds, retain outlier
+falsifiers, and execute the preregistered comparison before supporting a
+hybrid-task claim.</p>
 </main>
 </body>
 </html>

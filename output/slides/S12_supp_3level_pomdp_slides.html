@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Supplement: N-level hierarchical POMDP methods — presentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.2.1/dist/theme/white.css" id="theme">
+<script data-template-mathjax-config>
+window.MathJax = window.MathJax || {};
+window.MathJax.chtml = Object.assign({}, window.MathJax.chtml, {
+  fontURL: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/woff2",
+  dynamicPrefix: "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.0.0/chtml/dynamic"
+});
+var templateMathOutput = window.MathJax.output || {};
+window.MathJax.output = Object.assign({}, templateMathOutput, {
+  displayOverflow: "linebreak",
+  linebreaks: Object.assign({}, templateMathOutput.linebreaks, {
+    inline: true,
+    width: "100%",
+    lineleading: 0.5
+  })
+});
+window.normalizeTemplateMathJaxAria = function () {
+  document.querySelectorAll("mjx-speech[aria-roledescription]").forEach(function (node) {
+    var roleDescription = node.getAttribute("aria-roledescription") || "";
+    if (/[-]/.test(roleDescription)) {
+      node.setAttribute("aria-roledescription", "mathematical expression");
+    }
+  });
+};
+window.MathJax.startup = Object.assign({}, window.MathJax.startup, {
+  ready: function () {
+    var measuredWidth = document.documentElement.clientWidth;
+    var reflowQueued = false;
+    window.MathJax.startup.defaultReady();
+    window.templateMathJaxReflowPromise = window.MathJax.startup.promise.then(
+      window.normalizeTemplateMathJaxAria
+    );
+    function reflowDisplayMath() {
+      if (reflowQueued || document.documentElement.clientWidth === measuredWidth) return;
+      reflowQueued = true;
+      window.templateMathJaxReflowPromise = window.templateMathJaxReflowPromise
+        .catch(function () { /* A later resize may retry a failed render. */ })
+        .then(async function () {
+          var width = document.documentElement.clientWidth;
+          try {
+            // MathJax 4 MathItem.STATE.METRICS = 110. The default RERENDER
+            // state retains old container metrics and cannot reflow on zoom.
+            await window.MathJax.startup.document.rerenderPromise(110);
+            window.normalizeTemplateMathJaxAria();
+            window.templateMathJaxReflowError = null;
+          } catch (error) {
+            window.templateMathJaxReflowError = String(error);
+            console.error("MathJax viewport reflow failed", error);
+            throw error;
+          } finally {
+            measuredWidth = width;
+            reflowQueued = false;
+          }
+        })
+        .then(reflowDisplayMath);
+      // Keep failure observable to callers without an unhandled rejection.
+      window.templateMathJaxReflowPromise.catch(function () {});
+    }
+    window.addEventListener("resize", reflowDisplayMath);
+    // Also cover a resize that happened during the initial asynchronous render.
+    window.templateMathJaxReflowPromise.then(reflowDisplayMath);
+  }
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0/tex-chtml.js" integrity="sha384-2BWc4dVaHADUocwKrUrK9u3iDwHxVMKXWEcoRmUkXYSFKhAsgVAYClu9ydNuo5Oz" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><style data-template-accessible-slides>
+:root { --r-background-color: #ffffff; --r-main-color: #111111; --r-link-color: #004b87; }
+html, body { max-width: 100%; overflow-x: hidden; }
+main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh; }
+.reveal { color: #111111; background: #ffffff; font-size: 26.67px; }
+.reveal .slides section {
+  max-width: 100%; min-width: 0; overflow-wrap: anywhere;
+  text-align: left; line-height: 1.35;
+}
+/* Scroll view already scales the logical slide to its viewport. A second
+   max-width clamp would shrink the content before that scale is applied. */
+.reveal .scroll-page section { max-width: none; }
+.reveal h1, .reveal h2, .reveal h3 { color: #111111; font-size: 37.33px; line-height: 1.15; }
+.reveal a { color: #004b87; text-decoration: underline; text-decoration-thickness: 0.11em; }
+.reveal a:focus-visible, .reveal button:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal .table-scroll {
+  max-width: 100%; overflow-x: auto;
+  overscroll-behavior-inline: contain; scrollbar-gutter: stable;
+}
+.reveal .table-scroll:focus-visible { outline: 4px solid #b34d00; outline-offset: 4px; }
+.reveal table { max-width: 100%; min-width: 100%; width: max-content; font-size: inherit; border-collapse: collapse; }
+.reveal th, .reveal td { border: 2px solid #404040; padding: 0.25em 0.4em; }
+.reveal section.figure-led figure {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Reveal scales its 960×700 logical canvas to the viewport. Keep figure
+     geometry in that canvas so narrow viewports do not scale ``vh`` twice. */
+  max-block-size: 560px;
+}
+/* The minimum is an allocation floor carried independently from the
+   title/footer-safe maximum; neither value asserts literal ink coverage. */
+.reveal section.figure-led img.accessible-max-fit-image {
+  height: var(--template-figure-safe-max-height) !important;
+  min-height: var(--template-figure-min-allocation-height);
+  max-height: var(--template-figure-safe-max-height);
+  max-width: 100%;
+  object-fit: contain;
+}
+.reveal section.figure-led img.accessible-max-fit-image:not(.accessible-multi-image-panel) {
+  display: block;
+  width: 98% !important;
+  margin-inline: auto;
+}
+.reveal section.figure-led img.accessible-max-fit-image.accessible-multi-image-panel {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 0;
+}
+.reveal figcaption, .reveal .slide-reader-link { font-size: 21.33px; line-height: 1.3; }
+.slide-reader-nav {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  inset-block-start: max(0.5rem, env(safe-area-inset-top));
+  z-index: 30;
+  background: #ffffff;
+  border: 2px solid #111111;
+  padding: 0.3rem 0.55rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: max(0.5rem, env(safe-area-inset-left));
+  inset-block-start: -8rem;
+  z-index: 100;
+  background: #ffffff;
+  color: #111111;
+  border: 3px solid #111111;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  max-inline-size: calc(100vw - 1rem);
+  overflow-wrap: anywhere;
+}
+.skip-link:focus { inset-block-start: max(0.5rem, env(safe-area-inset-top)); }
+.visually-hidden {
+  position: absolute !important; inline-size: 1px !important; block-size: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.figure-long-description {
+  font-size: 21.33px; max-height: 35vh; max-width: 100%;
+  overflow: auto; overflow-wrap: anywhere;
+}
+.figure-exact-values { font-size: 21.33px; max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 32rem) {
+  /* Reveal ordinarily fits a fixed 960 x 700 canvas by transforming each
+     active section.  At narrow reader widths that projection transform
+     compounds CSS reflow and makes nominal 28/20/16-point text physically
+     unreadable.  This media query keeps Reveal's active-slide and keyboard
+     state machine, but lays out the current slide as an unscaled document. */
+  html.reveal-full-page,
+  body.reveal-viewport {
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 7.5rem);
+    min-block-size: calc(100dvh - 7.5rem);
+    margin-block-start: 7.5rem;
+    scroll-margin-block-start: 7.5rem;
+  }
+  main#main-content .reveal {
+    position: relative;
+    inset: auto;
+    inline-size: 100%;
+    block-size: auto !important;
+    min-block-size: inherit;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+  main#main-content .reveal .slides {
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0;
+    overflow: visible;
+    pointer-events: auto;
+    perspective: none;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+  main#main-content .reveal .slides > section.stack.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  main#main-content .reveal .slides > section.present:not(.stack),
+  main#main-content .reveal .slides > section.stack.present > section.present {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    inline-size: 100% !important;
+    block-size: auto !important;
+    min-block-size: inherit;
+    margin: 0 !important;
+    padding: clamp(0.75rem, 3vw, 1.25rem) !important;
+    box-sizing: border-box !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    transition: none !important;
+  }
+  main#main-content .reveal pre,
+  main#main-content .reveal mjx-container[display="true"] {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  main#main-content .reveal section.figure-led figure {
+    inline-size: 100%;
+    margin-inline: 0;
+  }
+  main#main-content .reveal section.figure-led img.accessible-max-fit-image {
+    /* These are logical-canvas pixels in projection mode.  With the narrow
+       transform removed they become readable CSS-pixel allocation bounds;
+       keep the source-owned floor/max variables instead of substituting vh. */
+    min-block-size: var(--template-figure-min-allocation-height);
+    max-block-size: var(--template-figure-safe-max-height);
+  }
+  .slide-reader-nav {
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(4.25rem, calc(env(safe-area-inset-top) + 4.25rem));
+  }
+}
+@media (max-width: 32rem) and (max-height: 20rem) {
+  body { scroll-padding-block-start: 3.25rem; }
+  body:has(.skip-link:focus) { scroll-padding-block-start: 7.25rem; }
+  .slide-reader-nav {
+    position: fixed;
+    inset-inline: max(0.5rem, env(safe-area-inset-left));
+    inset-block-start: max(0.5rem, env(safe-area-inset-top));
+    margin: 0;
+  }
+  body:has(.skip-link:focus) .slide-reader-nav,
+  .skip-link:focus + .slide-reader-nav {
+    inset-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4.5rem));
+  }
+  main#main-content {
+    block-size: auto;
+    min-block-size: calc(100vh - 3.25rem);
+    min-block-size: calc(100dvh - 3.25rem);
+    margin-block-start: 3.25rem;
+    scroll-margin-block-start: 3.25rem;
+  }
+  body:has(.skip-link:focus) main#main-content,
+  .skip-link:focus ~ main#main-content {
+    min-block-size: calc(100vh - 7.25rem);
+    min-block-size: calc(100dvh - 7.25rem);
+    margin-block-start: 7.25rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition: none !important; } }
+@media (forced-colors: active) { .reveal th, .reveal td, .slide-reader-nav { border: 2px solid CanvasText; } }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="slide-reader-nav" aria-label="Presentation companion"><a href="../web/index.html">Open canonical HTML manuscript</a></nav>
+<main id="main-content" tabindex="-1" aria-labelledby="presentation-title-95335e94c4a2">
+<h1 id="presentation-title-95335e94c4a2" class="visually-hidden">Supplement: N-level hierarchical POMDP methods — presentation</h1>
+  <div class="reveal">
+    <div class="slides" role="region" aria-label="Presentation slides">
+
+
+<section id="sec:supp-3level" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-eeeee3641069">
+<h2 class="prose-slide" id="slide-heading-eeeee3641069">Supplement: N-level hierarchical POMDP
+methods</h2>
+<p>This supplement specifies the generic <span
+class="math inline">\(N\)</span>-level architecture that <span class="cross-reference">Section 14.11</span>
+exercises at depth three: how the meta-context (L3), context (L2), and
+location (L1) factors are chained through conditioned priors,</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Supplement: N-level hierarchical POMDP methods, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f05984228150">
+<h2 class="prose-slide"
+aria-label="Supplement: N-level hierarchical POMDP methods, part 2" id="slide-heading-f05984228150">Supplement:
+N-level… (part 2)</h2>
+<p>what the declarative <code>LayerSpec</code> interface fixes versus
+leaves free, and the top-down/bottom-up passes the inference runs.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Supplement: N-level hierarchical POMDP methods, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-89950dd13dfe">
+<h2 class="prose-slide"
+aria-label="Supplement: N-level hierarchical POMDP methods, part 3" id="slide-heading-89950dd13dfe">Supplement:
+N-level… (part 3)</h2>
+<p>It answers <em>what the executed 3-level result is a special case
+of</em> — the reason the same code runs at other depths without new
+mathematics — while recording that only the declared 3-level
+configuration is empirically evaluated here.</p>
+</section>
+<section id="generative-model-for-an-n-level-hierarchy"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f80b9a9f270c">
+<h2 class="prose-slide" id="slide-heading-f80b9a9f270c">Generative model for an N-level hierarchy</h2>
+<p>The 3-level POMDP is built by <code>build_3level_world</code> in the
+<code>fedference.pomdp</code> module. It extends the 2-level
+construction (<span class="cross-reference">Section 14.10</span>)
+by adding a top-level meta-context factor.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model for an N-level hierarchy, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-22c37fb9fef7">
+<h2 class="prose-slide"
+aria-label="Generative model for an N-level hierarchy, part 2" id="slide-heading-22c37fb9fef7">Generative
+model for an… (part 2)</h2>
+<p><strong>L3 (meta-context).</strong> 2 <code>low_threat</code> /
+<code>high_threat</code> states begin from a uniform prior and gate the
+L2 context prior.</p>
+<p><strong>L2 (context).</strong> 2 <code>quiet</code> /
+<code>alert</code> states gate the L1 prior through context-conditioned
+location priors.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generative model for an N-level hierarchy, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6920e29152ab">
+<h2 class="prose-slide"
+aria-label="Generative model for an N-level hierarchy, part 3" id="slide-heading-6920e29152ab">Generative
+model for an… (part 3)</h2>
+<p><strong>L1 (location).</strong> The standard 3x3 grid has 9 states
+and sensor acuity 0.85.</p>
+<p>The conditioned priors are (see <span class="cross-reference">Equation (38)</span>
+and <span class="cross-reference">Equation (39)</span>):</p>
+</section>
+<section class="slide level2 table-led"
+aria-label="Generative model for an N-level hierarchy, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-68e83cf858e2">
+<h2 class="table-led"
+aria-label="Generative model for an N-level hierarchy, part 4" id="slide-heading-68e83cf858e2">Generative
+model for an… (part 4)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 51%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr>
+<th>L3 state</th>
+<th>L2 prior (quiet, alert)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>low_threat</code></td>
+<td>(0.50, 0.50) — uniform context</td>
+</tr>
+<tr>
+<td><code>high_threat</code></td>
+<td>(0.20, 0.80) — peaked at alert</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 table-led"
+aria-label="Generative model for an N-level hierarchy, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-efca16fcf64d">
+<h2 class="table-led"
+aria-label="Generative model for an N-level hierarchy, part 5" id="slide-heading-efca16fcf64d">Generative
+model for an… (part 5)</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table data-responsive-table="true">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr>
+<th>L2 state</th>
+<th>L1 prior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quiet</code></td>
+<td>uniform over all 9 location states</td>
+</tr>
+<tr>
+<td><code>alert</code></td>
+<td>mass 0.60 at center cell (flat index 4), residual uniform</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section id="generic-n-level-architecture"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2afbbb83006c">
+<h2 class="prose-slide" id="slide-heading-2afbbb83006c">Generic N-level architecture</h2>
+<p>The <code>LayerSpec</code> type and <code>build_nlevel_world</code>
+function in the <code>fedference.pomdp</code> module implement the
+generic N-level version. The declarative layer specification is
+<code>hierarchical_layers.yaml</code> under
+<code>src/fedference/config/</code>;</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generic N-level architecture, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-09cec3b41105">
+<h2 class="prose-slide"
+aria-label="Generic N-level architecture, part 2" id="slide-heading-09cec3b41105">Generic N-level
+architecture (part 2)</h2>
+<p>it mirrors the canonical 3-level defaults (a standalone documentation
+artifact not read by any code path, kept in sync with the
+<code>build_3level_world</code> defaults).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Generic N-level architecture, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c8d8673259c0">
+<h2 class="prose-slide"
+aria-label="Generic N-level architecture, part 3" id="slide-heading-c8d8673259c0">Generic N-level
+architecture (part 3)</h2>
+<p>The constructor accepts depth ≥ 2; the executed empirical result in
+this manuscript is restricted to the declared 3-level configuration, and
+the leaf layer must carry <code>n_states == N_LOCATIONS</code>.</p>
+</section>
+<section id="inference-algorithm-across-hierarchy-levels"
+class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8bf1be3d4d40">
+<h2 class="prose-slide" id="slide-heading-8bf1be3d4d40">Inference algorithm across hierarchy levels</h2>
+<p><code>fedference.pomdp.nlevel_infer</code> performs 4 passes of
+top-down / bottom-up alternating minimization over all N levels:</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7c0dfa63cddd">
+<h2 class="prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 2" id="slide-heading-7c0dfa63cddd">Inference
+algorithm across… (part 2)</h2>
+<p><strong>1. Top-down pass.</strong> Compute the empirical prior for
+each level by marginalizing over the level above (<span class="cross-reference">Equation (38)</span>,
+<span class="cross-reference">Equation (39)</span>).</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7138994dab7e">
+<h2 class="prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 3" id="slide-heading-7138994dab7e">Inference
+algorithm across… (part 3)</h2>
+<p><strong>2. L1 update.</strong> The one-step variational posterior on
+the observation is <span class="math inline">\(q_{\text{loc}} =
+\operatorname{softmax}(\log \widetilde{\pi}_{0,\mathrm{L1}} +
+\log A[\text{obs},\,\cdot])\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-3e87db92dbba">
+<h2 class="prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 4" id="slide-heading-3e87db92dbba">Inference
+algorithm across… (part 4)</h2>
+<p><strong>3. Bottom-up pass.</strong> Update each non-leaf level’s
+belief from the marginal evidence contributed by the level below: <span
+class="math inline">\(\ell_j =
+\log(\tilde{p}_{\text{child|parent=}j}^\top
+q_{\text{child}})\)</span>.</p>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-188cfa06b219">
+<h2 class="prose-slide"
+aria-label="Inference algorithm across hierarchy levels, part 5" id="slide-heading-188cfa06b219">Inference
+algorithm across… (part 5)</h2>
+<p>After 4 iterations the agent broadcasts all N level beliefs; the
+colony federates each level independently via a log-linear pool (<span class="cross-reference">9</span>).</p>
+</section>
+<section id="study-parameters-for-the-three-level-run"
+class="slide level2 table-led" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-71aa081a26ce">
+<h2 class="table-led" id="slide-heading-71aa081a26ce">Study parameters for the three-level run</h2>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Scrollable data table"><table id="tbl:nlevel3-params" data-responsive-table="true">
+<colgroup>
+<col style="width: 68%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agents</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Trials</td>
+<td>960</td>
+</tr>
+<tr>
+<td>Acuity</td>
+<td>0.85</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="slide level2 prose-slide"
+aria-label="Study parameters for the three-level run, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cd5b3dfa0da3">
+<h2 class="prose-slide"
+aria-label="Study parameters for the three-level run, part 2" id="slide-heading-cd5b3dfa0da3">Study
+parameters for the… (part 2)</h2>
+<p>The executed three-level configuration is summarized in <a class="cross-reference" href="#tbl:nlevel3-params">Table 18</a>.</p>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+    scrollActivationWidth: null,
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </main>
+<script data-template-interactive-keyboard-guard>
+(function () {
+  document.addEventListener("keydown", function (event) {
+    var target = event.target;
+    if (!(target instanceof Element)) return;
+    var control = target.closest(
+      ".reveal summary, .reveal button, .reveal [role='button'], " +
+      ".reveal input[type='checkbox'], .reveal input[type='radio']"
+    );
+    if (!control || (event.key !== " " && event.key !== "Spacebar")) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    control.click();
+  }, true);
+}());
+</script>
+</body>
+</html>
