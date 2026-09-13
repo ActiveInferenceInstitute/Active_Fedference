@@ -28,9 +28,9 @@ abstract: 'Multi-agent active inference gives a natural account of belief sharin
   socket-backed federation traces. All reported quantities are generated from deterministic
   analysis artifacts and injected into the manuscript by token, so the paper, figures,
   release package, and validation reports remain tied to the same execution record.
-  The open-source repository is ActiveInferenceInstitute/Active_Fedference. This development
-  manuscript has no assigned version DOI; published versions bind their reserved DOI,
-  deposited PDF, and repository URL only after the release gates close.'
+  The open-source repository is ActiveInferenceInstitute/Active_Fedference. This final-release
+  manuscript uses assigned version DOI 10.5281/zenodo.22149133; the bound deposited
+  PDF and repository release are controlled by separate publication gates.'
 authors:
 - affiliation: Active Inference Institute
   email: daniel@activeinference.institute
@@ -38,6 +38,10 @@ authors:
   given-names: Daniel Ari
   orcid: 0000-0001-6232-9096
 cff-version: 1.2.0
+date-released: '2026-09-14'
+identifiers:
+- type: doi
+  value: 10.5281/zenodo.22149133
 keywords:
 - active inference
 - federated learning
@@ -50,4 +54,4 @@ message: If you use this software, please cite it using the metadata from this f
 repository-code: https://github.com/ActiveInferenceInstitute/Active_Fedference
 title: Active Fedference
 type: software
-version: 1.1.0.dev0
+version: 1.1.0
