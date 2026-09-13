@@ -342,10 +342,10 @@ def test_verify_rejects_out_of_root_symlink_ancestor(tmp_path: Path) -> None:
     ]
 
 
-def test_verify_rejects_case_alias_for_excluded_control_when_applicable(
+def test_verify_rejects_case_alias_for_excluded_control(
     tmp_path: Path,
 ) -> None:
-    """Case-insensitive filesystems must not alias controls into payload scope."""
+    """Reject forged control aliases on both filesystem case policies."""
     _make_artifacts(tmp_path)
     control = _write_artifact(
         tmp_path,
@@ -355,8 +355,9 @@ def test_verify_rejects_case_alias_for_excluded_control_when_applicable(
     build_release(tmp_path)
     alias = "output/reports/Artifact_Manifest.json"
     alias_path = tmp_path / alias
-    if not alias_path.is_file() or not alias_path.samefile(control):
-        pytest.skip("filesystem is case-sensitive")
+    aliases_control = alias_path.is_file() and alias_path.samefile(control)
+    if not aliases_control:
+        assert not alias_path.exists()
 
     manifest_path = tmp_path / "output" / "release" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -371,7 +372,13 @@ def test_verify_rejects_case_alias_for_excluded_control_when_applicable(
     manifest["total_bytes"] += control.stat().st_size
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
-    assert f"manifest: non-canonical artifact path {alias}" in verify_release(tmp_path)
+    findings = verify_release(tmp_path)
+    if aliases_control:
+        assert f"manifest: non-canonical artifact path {alias}" in findings
+    else:
+        # A case-sensitive host must reject the nonexistent payload, without
+        # silently opening the differently cased excluded control instead.
+        assert alias in findings
 
 
 def test_default_build_is_byte_idempotent_and_omits_release_time(
