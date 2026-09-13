@@ -2446,17 +2446,17 @@ $1$ time(s) and measured $5$ time(s),
 with median time plotted and the observed repeat range shown as a min--max bar.
 
 The fixed input seed is $20260728$ on the $arm64$
-machine using Python $3.10.19$ and NumPy $2.2.6$.
+machine using Python $3.12.12$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.96
-(log-linear), 0.94 (iterative robust),
-0.80 (variational), 1.66
-(naive self-excluding sharing), and 1.91
+performance guarantees: agent-axis slopes are 0.75
+(log-linear), 0.87 (iterative robust),
+0.82 (variational), 1.63
+(naive self-excluding sharing), and 1.93
 (robust self-excluding sharing); state-axis slopes
-are 0.97, 0.96, and
-0.96; the modality-axis inference slope is
-0.64.
+are 0.98, 0.97, and
+1.01; the modality-axis inference slope is
+0.71.
 
 The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
@@ -2469,7 +2469,7 @@ is the governing claim, not equality between a finite-grid slope and its exponen
 The timing plot in [@fig:complexity-scaling] visualizes the implementation-derived orders
 and the corresponding finite-grid timing diagnostic.
 
-![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on $arm64$ with Python $3.10.19$, NumPy $2.2.6$, seed $20260728$, and $5$ measured repeat(s) after $1$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../figures/complexity_scaling.png){#fig:complexity-scaling width=95% data-slide-manifest="../figures/complexity_scaling.slides.json"}
+![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on $arm64$ with Python $3.12.12$, NumPy $2.4.2$, seed $20260728$, and $5$ measured repeat(s) after $1$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../figures/complexity_scaling.png){#fig:complexity-scaling width=95% data-slide-manifest="../figures/complexity_scaling.slides.json"}
 
 
 
@@ -4626,13 +4626,13 @@ rendered.
 
 | Field | Value |
 |---|---|
-| Python | 3.10.19 |
-| NumPy | 2.2.6 |
-| SciPy | 1.15.3 |
+| Python | 3.12.12 |
+| NumPy | 2.4.2 |
+| SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
 | Config hash (SHA-256, first 16) | cbe919be0d1d3903 |
-| Reproducible build epoch (UTC) | 2026-09-10T05:07:09Z |
+| Reproducible build epoch (UTC) | 2026-09-13T01:42:53Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -4674,7 +4674,7 @@ insufficient.
 
 **Acceptance criteria.** 268 total, 266 passing.
 
-**Project test suite.** 2824 collected cases; the bound successful
+**Project test suite.** 2847 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 

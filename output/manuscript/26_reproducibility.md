@@ -68,13 +68,13 @@ rendered.
 
 | Field | Value |
 |---|---|
-| Python | 3.10.19 |
-| NumPy | 2.2.6 |
-| SciPy | 1.15.3 |
+| Python | 3.12.12 |
+| NumPy | 2.4.2 |
+| SciPy | 1.18.0 |
 | PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
 | Config hash (SHA-256, first 16) | cbe919be0d1d3903 |
-| Reproducible build epoch (UTC) | 2026-09-10T05:07:09Z |
+| Reproducible build epoch (UTC) | 2026-09-13T01:42:53Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -116,7 +116,7 @@ insufficient.
 
 **Acceptance criteria.** 268 total, 266 passing.
 
-**Project test suite.** 2824 collected cases; the bound successful
+**Project test suite.** 2847 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
