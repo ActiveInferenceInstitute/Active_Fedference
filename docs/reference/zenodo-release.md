@@ -73,7 +73,8 @@ snapshot that inherits metadata and files. The current
 [publication-date help](https://help.zenodo.org/docs/deposit/describe-records/publication-date/)
 also states that the publication date defaults to the record's creation date.
 The CLI resolves Zenodo's `latest_draft` link and validates the returned draft
-against exactly those two documented combinations:
+against the following tightly bounded combinations. Live service inspection
+also demonstrated normalized metadata with exact file inheritance:
 
 1. `legacy_inherited`: all caller-purpose metadata and the complete semantic
    file set exactly match the published source; the legacy response may omit a
@@ -83,7 +84,11 @@ against exactly those two documented combinations:
    is either omitted or unchanged, while the draft file set is empty. This
    shape requires a server creation timestamp in strict RFC 3339 form: calendar
    date, uppercase `T`, hours/minutes/seconds, at most six fractional digits,
-   and a required `Z` or `±HH:MM` offset.
+   and a required `Z` or `±HH:MM` offset;
+3. `current_inherited_files`: the same strict normalized metadata and creation
+   timestamp as `current_separate_record`, with the complete source file set
+   inherited exactly by filename, byte size, and checksum. Record-specific file
+   IDs may differ; they do not identify file content.
 
 A mixed, partial, or unrelated file set; any other metadata drift; an arbitrary
 publication date; a changed version; or a missing/unparseable server creation
@@ -148,10 +153,10 @@ draft/record/concept identifiers, normalized UTC creation timestamp, validated
 file names/sizes/checksums, and the credential-variable name only. It never
 includes the bearer token or local env-file path. Confirm that the draft is
 `unsubmitted`, its purpose metadata are expected, and its file set agrees with
-the reported shape: exactly the inherited v1.0.4 PDF for `legacy_inherited`, or
-empty for `current_separate_record`. Any partial or unrelated file set blocks
+the reported shape: exactly the inherited v1.0.4 PDF for `legacy_inherited` or
+`current_inherited_files`, or empty for `current_separate_record`. Any partial or unrelated file set blocks
 the operation. `created_utc` may be null only for `legacy_inherited`; it is
-mandatory for `current_separate_record`. Then record the returned draft id and reserved DOI before
+mandatory for both current shapes. Then record the returned draft id and reserved DOI before
 changing `manuscript/config.yaml` from the empty-DOI/forthcoming-status
 development state to the assigned DOI/date final release identity and removing
 `doi_status`. Then emit metadata, regenerate the complete source-bound
@@ -277,7 +282,7 @@ uv run --locked python scripts/zenodo_release.py \
   --verify output/pdf/active_fedference_combined.pdf
 ```
 
-`--replace-existing` is required only when a `legacy_inherited` new-version
+`--replace-existing` is required when a `legacy_inherited` or `current_inherited_files` new-version
 draft contains a same-named prior file whose checksum differs. A
 `current_separate_record` draft starts empty and does not need replacement. The
 adapter refuses a same-name conflict by default, and it never deletes or

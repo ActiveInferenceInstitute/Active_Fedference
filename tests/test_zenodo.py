@@ -1131,7 +1131,7 @@ def test_new_version_rejects_any_other_purpose_metadata_drift(
         new_version_client.new_version(7)
 
 
-@pytest.mark.parametrize("file_shape", ["partial", "unrelated", "normalized_with_file"])
+@pytest.mark.parametrize("file_shape", ["partial", "unrelated", "normalized_with_unrelated_file"])
 def test_new_version_rejects_partial_unrelated_or_mixed_file_shapes(
     new_version_client: ZenodoClient,
     file_shape: str,
@@ -1157,7 +1157,36 @@ def test_new_version_rejects_partial_unrelated_or_mixed_file_shapes(
     else:
         _NewVersionHandler.draft_version = None
         _NewVersionHandler.draft_publication_date = "2026-08-28"
+        _NewVersionHandler.draft_files = [
+            {"id": "foreign", "filename": "foreign.pdf", "filesize": 3, "checksum": "md5:foreign"}
+        ]
 
+    with pytest.raises(ZenodoError, match="file set"):
+        new_version_client.new_version(7)
+
+
+def test_normalized_metadata_accepts_only_exact_inherited_files(
+    new_version_client: ZenodoClient,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    result = new_version_client.new_version(7)
+    assert result.linked_version_shape == "current_inherited_files"
+    source_files = new_version_client.get_deposition(7).files
+    assert [(file.filename, file.filesize, file.checksum) for file in result.files] == [
+        (file.filename, file.filesize, file.checksum) for file in source_files
+    ]
+    assert result.reserved_doi != new_version_client.get_deposition(7).doi
+
+
+@pytest.mark.parametrize("field,value", [("checksum", "md5:changed"), ("filesize", 9999),
+                                         ("filename", "different.pdf")])
+def test_normalized_inherited_file_identity_drift_is_rejected(
+    new_version_client: ZenodoClient, field: str, value: object,
+) -> None:
+    _NewVersionHandler.draft_version = None
+    _NewVersionHandler.draft_publication_date = "2026-08-28"
+    _NewVersionHandler.draft_files[0][field] = value
     with pytest.raises(ZenodoError, match="file set"):
         new_version_client.new_version(7)
 
