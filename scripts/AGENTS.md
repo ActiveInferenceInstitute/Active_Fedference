@@ -13,6 +13,7 @@ Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/devel
 
 | Script | Pipeline | Role |
 | --- | --- | --- |
+| `ci_shards.py` | CI validation | Collects and partitions whole test modules, binds execution to validation inputs, and rejects incomplete shard evidence before combined coverage |
 | `02_run_analysis.py` | Stage 4 (REQUIRED) | Calls `analysis.workflow.run_analysis_pipeline()` |
 | `record_pipeline_stage.py` | Provenance (REQUIRED) | Validates the completed external PDF/slide/web surfaces, then records the render boundary; analysis and hydration receipts are producer-owned |
 | `z_generate_manuscript_variables.py` | Pre-render (REQUIRED) | Final non-draft hydration requires fresh analysis plus the successful validation receipt; provisional mode is pre-test only and never records hydration |

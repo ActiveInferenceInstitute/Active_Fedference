@@ -496,7 +496,7 @@ def test_writer_rejects_failed_or_below_policy_results_without_writing(tmp_path:
             "validation receipt populated recorded_at requires timestamp_policy=recorded",
         ),
     ),
-    ids=lambda case: str(case),
+    ids=lambda case: case if isinstance(case, str) else None,
 )
 def test_receipt_findings_fail_closed_on_structural_corruption(
     tmp_path: Path,
@@ -612,7 +612,7 @@ def test_receipt_findings_fail_closed_on_structural_corruption(
             "validation receipt analysis-stage digest is stale",
         ),
     ),
-    ids=lambda case: str(case),
+    ids=lambda case: case if isinstance(case, str) else None,
 )
 def test_receipt_findings_validate_nested_integrity_contracts(
     tmp_path: Path,

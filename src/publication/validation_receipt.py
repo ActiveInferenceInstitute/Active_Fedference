@@ -54,6 +54,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
     "docs/**/*.md",
     "docs/**/*.json",
     ".github/workflows/*.yml",
+    ".github/ci/*.json",
     # Final hydration consumes every manuscript source format below.  Binding
     # them here prevents a post-test caption, formalism, bibliography, or
     # template-config edit from being released under an older test receipt.
@@ -93,7 +94,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
 # them optional preserves the fixture trees used by focused receipt tests,
 # while a real checkout still hashes the license as a release input.
 _OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset(
-    {"manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE"}
+    {"manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE", ".github/ci/*.json"}
 )
 MINIMUM_COVERAGE_THRESHOLD = 90.0
 _ENVIRONMENT_FIELDS: tuple[str, ...] = (

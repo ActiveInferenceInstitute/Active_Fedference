@@ -198,3 +198,29 @@ Every stochastic step uses `np.random.default_rng(seed)` with seeds from
 - Agent checklist: [`agent_instructions.md`](agent_instructions.md)
 - Verification commands: [`../reference/verification-commands.md`](../reference/verification-commands.md)
 - Test directory contract: [`../../tests/AGENTS.md`](../../tests/AGENTS.md)
+
+## CI scheduling and retained execution evidence
+
+CI collects the complete test inventory before scheduling. `scripts/ci_shards.py`
+assigns whole modules to four jobs using measured scheduling weights in
+`.github/ci/module-times.json`. The weights affect placement only: newly collected
+modules use their test count as a fallback cost and remain required. Module
+boundaries preserve module-scoped real-analysis fixtures and their isolated
+per-test copies. Each job gets a separate checkout; no generated scientific
+results are cached between jobs or commits.
+
+Every shard rechecks the complete collection and declared validation inputs,
+then records completed node IDs, skips, exit status, and its coverage-file hash.
+The final `gate` requires successful fast checks, all shards, and both Python
+compatibility jobs. It rejects incomplete or duplicated execution and combines
+the authenticated coverage files before enforcing the unchanged 90% threshold
+over `src/`. Individual partial shards do not enforce a whole-program percentage.
+This does not waive the final coverage requirement.
+
+JUnit files and duration reports are retained even when a test job fails. The
+initial weights come from a complete macOS Python 3.12 baseline; they are scheduling
+estimates, not claims about hosted runner speed. Rebalance from retained timings
+without reducing scientific budgets, seed counts, assertions, or required tests.
+Release evidence still distinguishes the branch head, PR merge ref, and actual
+public-main merge. Workflow or scheduling-input edits invalidate prior coverage
+and release receipts and require the affected evidence to be regenerated.
