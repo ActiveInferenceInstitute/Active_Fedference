@@ -11,16 +11,20 @@ documented categorical posterior-log-potential bridge assumptions, the project
 log-linear pool specializes Friston Eq. 7; it is not a reconstruction of the
 complete source message-passing protocol.
 
-The public release target is
+The canonical public repository is
 [ActiveInferenceInstitute/Active_Fedference](https://github.com/ActiveInferenceInstitute/Active_Fedference).
-The v1.0.4 release is published at
-[GitHub](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
-and [Zenodo](https://doi.org/10.5281/zenodo.21972644), with public record
-[21972644](https://zenodo.org/records/21972644). The v1.0.3, v1.0.2, v1.0.1,
-and v0.1.0 records remain available as prior versions. This checkout remains a
-standalone development/review source with the interim `docxology` remote; it
-is not the public repository, and future changes remain unreleased until an
-explicit review and publication action.
+This source carries version `1.1.0`, with reserved DOI
+[`10.5281/zenodo.22149133`](https://doi.org/10.5281/zenodo.22149133) and intended
+UTC publication date 2026-09-14. The
+[v1.1.0 GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0)
+and [Zenodo record](https://zenodo.org/records/22149133) are the publication
+verification surfaces; reserved identity alone does not prove publication.
+Installation and checksum verification are documented in the
+[application guide](docs/application-guide.md#install-the-v110-release).
+The immutable v1.0.4 record remains at
+[Zenodo](https://doi.org/10.5281/zenodo.21972644), alongside v1.0.3, v1.0.2,
+v1.0.1, and v0.1.0. The configured `docxology` remote is the interim evidence
+remote; public integration uses reviewed pull requests to the canonical repository.
 
 ## The standalone core
 
@@ -55,11 +59,11 @@ only the project-local server recovery identity used by the categorical bridge.
 
 ## Repository boundary
 
-This checkout is a standalone repository, separate from both the sibling
-template repository and the public GitHub target. Do not merge it into the
+This checkout is a standalone repository, separate from the sibling
+template repository. Do not merge it into the
 unrelated template remote. Credentials, uncached external data, and local
-review scratch remain private and are excluded from the release; the published
-v1.0.4 snapshot is public, while any later uncommitted changes are not. Verify
+review scratch remain private and are excluded from the release; only reviewed, integrated source and explicitly published artifacts are public
+release evidence; uncommitted changes are not. Verify
 the repository root before running render or release commands:
 
 ```bash

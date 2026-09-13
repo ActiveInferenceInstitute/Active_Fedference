@@ -59,6 +59,38 @@ flowchart TB
 | Write boundary | `request.json`, `result.json`, and `receipt.json` are written atomically in that order. | Partial unsafe setup is rejected before creation; a completed receipt records execution completion, not acceptance. | File production does not authorize a downstream action. |
 | Verification boundary | Artifact integrity is always checked; source equivalence and nominal solver health are reported only when requested and available. | Hash, source, or requested-health mismatches produce explicit findings and a nonzero exit. | Receipt integrity, source equivalence, and nominal numerical health do not establish calibration, domain suitability, scientific validity, a downstream decision, or acceptance. |
 
+## Install the v1.1.0 release
+
+Use the [v1.1.0 GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0)
+for the canonical PDF, wheel, source distribution, `manifest.json`, and sorted
+`SHA256SUMS.txt`. The version DOI is
+[`10.5281/zenodo.22149133`](https://doi.org/10.5281/zenodo.22149133). Verify the
+published release and checksums before installation; a reserved DOI or source
+checkout alone is not publication evidence. The package is distributed through
+GitHub release assets; these instructions do not require a PyPI upload.
+
+```bash
+mkdir active-fedference-1.1.0
+cd active-fedference-1.1.0
+gh release download v1.1.0 --repo ActiveInferenceInstitute/Active_Fedference
+shasum -a 256 -c SHA256SUMS.txt
+python3 -m venv .venv
+.venv/bin/python -m pip install ./active_fedference-1.1.0-py3-none-any.whl
+.venv/bin/fedference --help
+```
+
+To install from the verified source distribution instead, use a separate
+virtual environment and install `./active_fedference-1.1.0.tar.gz`. Python 3.10
+or newer is required. The default installation uses NumPy/SciPy and does not
+import Torch. Use the labeled request below with `fedference aggregate`, then
+`fedference verify` to validate its receipt outside the source checkout.
+
+The HTML reader is the accessibility-enhanced surface. The canonical combined
+PDF has verified tagged structure; PDF/UA conformance is not established.
+Beamer slide PDFs are untagged. Native assistive-technology review remains
+unverified. These boundaries are detailed in
+[the accessibility guide](manuscript/accessibility.md).
+
 ## Fastest own-data path
 
 The default runtime supports Python 3.10 or newer and does not import Torch.
