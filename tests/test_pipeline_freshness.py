@@ -484,7 +484,7 @@ def test_pipeline_stage_reader_rejects_an_unknown_stage(tmp_path: Path) -> None:
             "analysis inputs: receipt is missing its hash map",
         ),
     ),
-    ids=lambda case: str(case),
+    ids=lambda case: case if isinstance(case, str) else None,
 )
 def test_pipeline_validation_reports_corrupt_stage_metadata(
     tmp_path: Path,

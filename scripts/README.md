@@ -27,7 +27,8 @@ in `src/`.
 
 | Script | Output | Status |
 | --- | --- | --- |
-| `02_run_analysis.py [--profile publication|smoke] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
+| `ci_shards.py {plan,run,verify} --plan PATH [--project-root PATH]` | Complete collection plan, per-shard execution receipts, coverage and JUnit diagnostics under `.tmp/` | CI scheduling and complete-execution verification; final combined coverage remains required |
+| `02_run_analysis.py [--profile publication\|smoke] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
 | `record_pipeline_stage.py render --template-root PATH [--timestamp UTC] [--project-root PATH]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
 | `validate_test_coverage.py [--verify] [--project-root PATH]` | `output/data/test_coverage_receipt.json` | REQUIRED full-suite receipt before final hydration |
 | `z_generate_manuscript_variables.py [--provisional-validation] [--project-root PATH]` | `output/data/manuscript_variables.json`, `output/manuscript/` | REQUIRED; final non-draft mode consumes the test/coverage receipt, while provisional mode never records hydration |

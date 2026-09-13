@@ -5,6 +5,7 @@ include domain_profile.yaml
 include experiment_plan.yaml
 include uv.lock
 recursive-include .github *.yml *.yaml
+recursive-include .github/ci *.json
 include LICENSE
 include CITATION.cff
 include .zenodo.json

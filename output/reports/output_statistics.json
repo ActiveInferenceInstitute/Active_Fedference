@@ -4,12 +4,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "12.02",
-      "total_size_bytes": 12601949,
+      "total_size_bytes": 12603795,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "12.02",
-          "size_bytes": 12601949,
+          "size_bytes": 12603795,
           "path": "pdf/active_fedference_combined.pdf"
         }
       ],
@@ -20,8 +20,8 @@
     "web": {
       "exists": true,
       "file_count": 1273,
-      "size_mb": "46.06",
-      "total_size_bytes": 48296546,
+      "size_mb": "46.07",
+      "total_size_bytes": 48303430,
       "largest_files": [
         {
           "name": "evidence_replication_map.png",
@@ -32,7 +32,7 @@
         {
           "name": "index.html",
           "size_mb": "0.58",
-          "size_bytes": 603016,
+          "size_bytes": 603740,
           "path": "web/index.html"
         },
         {
@@ -55,12 +55,12 @@
       "exists": true,
       "file_count": 88,
       "size_mb": "34.63",
-      "total_size_bytes": 36307028,
+      "total_size_bytes": 36310971,
       "largest_files": [
         {
           "name": "13_methods_statistics_slides.pdf",
           "size_mb": "4.24",
-          "size_bytes": 4440756,
+          "size_bytes": 4444696,
           "path": "slides/13_methods_statistics_slides.pdf"
         },
         {
@@ -96,8 +96,8 @@
     "figures": {
       "exists": true,
       "file_count": 1226,
-      "size_mb": "44.07",
-      "total_size_bytes": 46215692,
+      "size_mb": "44.08",
+      "total_size_bytes": 46219706,
       "largest_files": [
         {
           "name": "evidence_replication_map.png",
@@ -128,8 +128,8 @@
     "data": {
       "exists": true,
       "file_count": 5,
-      "size_mb": "0.78",
-      "total_size_bytes": 822972,
+      "size_mb": "0.79",
+      "total_size_bytes": 823917,
       "largest_files": [
         {
           "name": "pipeline_provenance.json",
@@ -140,7 +140,7 @@
         {
           "name": "test_coverage_receipt.json",
           "size_mb": "0.15",
-          "size_bytes": 158925,
+          "size_bytes": 159871,
           "path": "data/test_coverage_receipt.json"
         },
         {
@@ -158,7 +158,7 @@
       "exists": true,
       "file_count": 29,
       "size_mb": "3.06",
-      "total_size_bytes": 3211060,
+      "total_size_bytes": 3211070,
       "largest_files": [
         {
           "name": "robustness_review_grid.json",
@@ -259,12 +259,12 @@
       "exists": true,
       "file_count": 3,
       "size_mb": "0.89",
-      "total_size_bytes": 934644,
+      "total_size_bytes": 934968,
       "largest_files": [
         {
           "name": "manifest.json",
           "size_mb": "0.56",
-          "size_bytes": 586799,
+          "size_bytes": 587123,
           "path": "release/manifest.json"
         },
         {
@@ -290,12 +290,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "12.02",
-      "total_size_bytes": 12601949,
+      "total_size_bytes": 12603795,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "12.02",
-          "size_bytes": 12601949,
+          "size_bytes": 12603795,
           "path": "active_fedference_combined.pdf"
         }
       ],
@@ -305,26 +305,26 @@
     }
   },
   "total_files": 2675,
-  "total_size_mb": 153.9711103439331,
+  "total_size_mb": 153.99000453948975,
   "largest_files": [
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "12.02",
-      "size_bytes": 12601949,
+      "size_bytes": 12603795,
       "category": "root",
       "path": "active_fedference_combined.pdf"
     },
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "12.02",
-      "size_bytes": 12601949,
+      "size_bytes": 12603795,
       "category": "pdf",
       "path": "pdf/active_fedference_combined.pdf"
     },
     {
       "name": "13_methods_statistics_slides.pdf",
       "size_mb": "4.24",
-      "size_bytes": 4440756,
+      "size_bytes": 4444696,
       "category": "slides",
       "path": "slides/13_methods_statistics_slides.pdf"
     },
@@ -380,16 +380,16 @@
   ],
   "missing_expected_files": [],
   "sizes_by_category": {
-    "pdf": 12.018155097961426,
-    "web": 46.05917549133301,
-    "slides": 34.62508010864258,
-    "figures": 44.0747184753418,
-    "data": 0.7848472595214844,
-    "reports": 3.062305450439453,
+    "pdf": 12.019915580749512,
+    "web": 46.06574058532715,
+    "slides": 34.62884044647217,
+    "figures": 44.07854652404785,
+    "data": 0.7857484817504883,
+    "reports": 3.062314987182617,
     "docs": 0.06070518493652344,
     "manuscript": 0.37662220001220703,
-    "release": 0.8913459777832031,
-    "root": 12.018155097961426
+    "release": 0.8916549682617188,
+    "root": 12.019915580749512
   },
   "inventory_mode": "stable-local-output-v1",
   "inventory_scope": "stage5-delivery-mirror",

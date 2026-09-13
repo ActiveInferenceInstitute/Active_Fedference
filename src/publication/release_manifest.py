@@ -158,6 +158,7 @@ FINGERPRINT_INPUTS: tuple[str, ...] = (
     "docs/**/*.md",
     "docs/**/*.json",
     ".github/workflows/*.yml",
+    ".github/ci/*.json",
     "experiment_plan.yaml",
     "domain_profile.yaml",
     "pyproject.toml",

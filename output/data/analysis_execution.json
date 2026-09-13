@@ -1,6 +1,6 @@
 {
   "analysis_input_snapshot": {
-    "input_digest": "8146d2651f42c3b0afb8a322eddea9d31e272a42170fd2c1f39c1eef0c3e8685",
+    "input_digest": "7685d7689b8ef9deff5e340b82ecd933867cb4123db0e35d42f033cac02bd757",
     "input_hashes": {
       "experiment_plan.yaml": "9c3f279e61fc31da6dd40b5f49061cf3db9d9ba8ba228d817ac8fdf14ee7b76f",
       "manuscript/00_abstract.md": "fe7eec4b90c3675c1d928cfd2617a20f148cc167c8a5e618d52edea6c925d795",
@@ -189,12 +189,12 @@
       "src/publication/metadata.py": "3ea539a9fea30cb45e46157be3648aec078068918b55cef56e4fd82550d2f4e4",
       "src/publication/pipeline_freshness.py": "ae327a1a84d1fdfb810124d5a3f19276d495d29e62bd1626e9fc0ff99c411d30",
       "src/publication/release_assets.py": "1711c2a671b158b33b46790167997e71d42223d0205186bfec4050d6300fdd4d",
-      "src/publication/release_manifest.py": "ab74b60c28716cb453fd64a75c84b1cfed224fce4afd6e0ad7eab3a2db160969",
+      "src/publication/release_manifest.py": "a54bc6b45e6ef9f2195b24f3ea4307d79dcba5b23532f9250b69bb68277ce152",
       "src/publication/surface_validation.py": "0e21e260b0a4cdd12c437b0cfdaf1dedad8ae17c0d03d95b49e3eaa01248b204",
       "src/publication/template_renderer.py": "e29e0eee27843e5bd03566becdd5e518a6ffb0a5dd6b840f921f74184809421e",
-      "src/publication/validation_receipt.py": "3a6a0b5ff9d56ae1eb38f56d10a15bb2ece96b167f68130c433e287734d8c556",
+      "src/publication/validation_receipt.py": "b962b7074c97f03e92f302ada952d7a818ee8157fab67dc39f17599f56fda69a",
       "src/publication/web_package.py": "681ed185c5460d5e65843835b9bf26a88638dfa841cc6cb39cb369b3a34ced97",
-      "src/publication/zenodo.py": "a048f2e3449867ac2f1e781f1a01c49bf12357388a72107e287252b939dfd826",
+      "src/publication/zenodo.py": "1f9dcbbf6d7cf6a448745d5a303e2537105c58137ff3d7349bff615c244a4e3c",
       "uv.lock": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254"
     }
   },

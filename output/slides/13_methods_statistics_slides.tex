@@ -1181,19 +1181,19 @@ with median time plotted and the observed repeat range shown as a
 min--max bar.
 
 The fixed input seed is \(20260728\) on the \(arm64\) machine using
-Python \(3.10.19\) and NumPy \(2.2.6\).
+Python \(3.12.12\) and NumPy \(2.4.2\).
 \end{frame}
 
 \begin{frame}{Computational complexity\ldots{} (part 15)}
 The measured log--log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.96
-(log-linear), 0.94 (iterative robust), 0.80 (variational), 1.66 (naive
-self-excluding sharing), and 1.91 (robust self-excluding sharing);
-state-axis slopes are 0.97, 0.96, and 0.96;
+orders, not performance guarantees: agent-axis slopes are 0.75
+(log-linear), 0.87 (iterative robust), 0.82 (variational), 1.63 (naive
+self-excluding sharing), and 1.93 (robust self-excluding sharing);
+state-axis slopes are 0.98, 0.97, and 1.01;
 \end{frame}
 
 \begin{frame}{Computational complexity\ldots{} (part 16)}
-the modality-axis inference slope is 0.64.
+the modality-axis inference slope is 0.71.
 
 The slope fit is a timing diagnostic on this machine, not an inferential
 test and not evidence that the same constants hold under another BLAS,
@@ -1224,7 +1224,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log pool by agents. Expected exponent: 1. Observed log-log slope: 0.961.}]{../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log pool by agents. Expected exponent: 1. Observed log-log slope: 0.7467.}]{../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -1240,7 +1240,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.9395.}]{../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.8696.}]{../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -1256,7 +1256,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational by agents. Expected exponent: 1. Observed log-log slope: 0.7973.}]{../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational by agents. Expected exponent: 1. Observed log-log slope: 0.8219.}]{../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -1272,7 +1272,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.665.}]{../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.626.}]{../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -1288,7 +1288,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.914.}]{../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.929.}]{../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -1304,7 +1304,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log pool by states. Expected exponent: 1. Observed log-log slope: 0.9695.}]{../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log pool by states. Expected exponent: 1. Observed log-log slope: 0.9797.}]{../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -1320,7 +1320,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.963.}]{../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.967.}]{../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -1336,7 +1336,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational by states. Expected exponent: 1. Observed log-log slope: 0.9602.}]{../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational by states. Expected exponent: 1. Observed log-log slope: 1.005.}]{../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -1352,7 +1352,7 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.6413.}]{../figures/complexity_scaling.slide-group-4-infer-states-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.7106.}]{../figures/complexity_scaling.slide-group-4-infer-states-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-18}
 \end{figure}
 \end{frame}

@@ -32,7 +32,9 @@ DEFAULT_TOKEN_ENV_NAMES: tuple[str, ...] = (
     "ZENODO_API_TOKEN",
 )
 _SERVER_OWNED_METADATA_FIELDS = frozenset({"doi", "prereserve_doi"})
-_ZenodoLinkedVersionShape = Literal["legacy_inherited", "current_separate_record"]
+_ZenodoLinkedVersionShape = Literal[
+    "legacy_inherited", "current_separate_record", "current_inherited_files"
+]
 _RFC3339_TIMESTAMP_RE = re.compile(
     r"\A(?P<date_time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})"
     r"(?P<fraction>\.\d{1,6})?(?P<offset>Z|[+-]\d{2}:\d{2})\Z"
@@ -571,7 +573,7 @@ def _require_linked_version(
     *,
     created: object,
 ) -> tuple[_ZenodoLinkedVersionShape, str | None]:
-    """Prove that *draft* is one of the two safe linked-version shapes."""
+    """Prove a linked version's identity, normalized metadata and file inheritance."""
     if source.record_id != source.id or draft.record_id != draft.id:
         raise ZenodoError("Zenodo linked version has incomplete record identity")
     if source.concept_record_id is None:
@@ -621,10 +623,13 @@ def _require_linked_version(
     except ZenodoError as exc:
         current_shape_error = exc
     else:
-        if draft.files:
+        if draft.files and not files_are_inherited:
             raise ZenodoError(
-                "Zenodo separate-record linked draft must have an empty file set"
+                "Zenodo separate-record linked draft must have an empty file set "
+                "or the exact inherited file set"
             )
+        if draft.files:
+            return "current_inherited_files", created_utc
         return "current_separate_record", created_utc
 
     if metadata_is_inherited:

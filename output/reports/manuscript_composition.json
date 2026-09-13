@@ -1,8 +1,8 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "5482f3d28da5f350c19a17d46058f71ff462fc0b1c93eda48ebc0f706fbac0dd",
+  "binding_sha256": "d055dd9ed4921b976b58a7fbdd395f4e11cb4d9f1ee17a35d311c688c456e382",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "c1a01925064b22a01b1fe2b0f15eb1eb50ddd8cb95922e5083c743539eabcc8e",
+  "combined_sha256": "73e7776ce45ecb269e495f0aa152e9b45149de86fff68dd448d28f099de36089",
   "combined_size_bytes": 360236,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
@@ -87,7 +87,7 @@
     {
       "ordinal": 14,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "949aa0efec0f551245e9b263f9651a051d758b460d1e0aaccf7e17cff7de9350",
+      "sha256": "0e45b632b4728b1cdceaf5b7a03b5d494013e9226e0872964b0c05ca193ca6b5",
       "size_bytes": 17502
     },
     {
@@ -99,7 +99,7 @@
     {
       "ordinal": 16,
       "path": "output/manuscript/15_results_recovery.md",
-      "sha256": "98c14742eda07f44acf236fd9495bf2ffa991d96344cc7d5a24f74117390ecf3",
+      "sha256": "ca87ae36ee331c8d657b286f2ed162f9236d29cafaccf04a6b38bc6f66337870",
       "size_bytes": 6054
     },
     {
@@ -165,7 +165,7 @@
     {
       "ordinal": 27,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "eedea3cddfd413e1c33f8555f9eba0e67183e9a2e898e121bde621edfc682637",
+      "sha256": "82d7c79c4d6ccfabe05e0cb80c28afa9187d179611c52182d8248b3c8912210a",
       "size_bytes": 9279
     },
     {
@@ -271,7 +271,7 @@
       "size_bytes": 1278
     }
   ],
-  "ordered_inputs_sha256": "b5c63876d0b0cfa3e71954db17325c0e5d6089a669baf61521278eaf6d6319a4",
+  "ordered_inputs_sha256": "8af865687af503f7948337f04895414df256ae60b37a754d7a1dc7a68aa8ab93",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }
