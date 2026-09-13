@@ -14,7 +14,7 @@
     "--cov-report=json:<coverage-workdir>/coverage.json"
   ],
   "coverage": {
-    "percent": 90.58081977137566,
+    "percent": 90.57369751789466,
     "threshold": 90.0
   },
   "environment": {
@@ -25,7 +25,7 @@
     "python_version": "3.12.12",
     "scipy_version": "1.18.0"
   },
-  "input_digest": "b013e342f26ba56f6bdfdfa61ac0fe4e64f829e4d38e496bb7991f465002f635",
+  "input_digest": "b1b21e4430235c52a91b23dccf60769ad3cc1d9b788db2ecc10c641dcf2aba46",
   "input_hashes": {
     ".github/ci/module-times.json": "48b8f9d8bc826d19469df3941291d9cbd1ddc63c7c6067eeff1da7f423a2b414",
     ".github/workflows/ci.yml": "7e21c60bd6b522a6f0b6f0c9841936bd0b4b45da18ebdc9068aff24b100f102b",
@@ -476,7 +476,7 @@
     "tests/test_publication_identifiers.py": "e48956cbb3fedeb288a7f6bbdf988e83c4c21a87b7dc65242d691d07526adf54",
     "tests/test_publication_metadata.py": "94784faba2fa53db2d42496286c4c4aa648b89bcebfa6876459f541210232ecd",
     "tests/test_release_assets.py": "e38f2716e22bd5173d2b09243bc8a08a5c558697aa61f9279cdfe62fdd4d30ed",
-    "tests/test_release_manifest.py": "3850437d6934b2e3b5cfff010a6aa1aff0da3c2a217f8a910609bdd029a4db21",
+    "tests/test_release_manifest.py": "4ec70e36f89e54ca4a304b36f695ca154094123634182355a83b5b987b0f2c4e",
     "tests/test_release_preflight.py": "67f739e6075e42da9ddbcd3774d998e63ae93e35dbd03a089b0ef9eb4c9042f3",
     "tests/test_report_scale_guard.py": "1fab18129a5020d20ed84f9da9d0cb46ca59aefc7a4533a515d4158943c3b066",
     "tests/test_runtime_surface.py": "a76378ad30a217d72a8224907e1c686e83261293771737dc941a4849f4883b62",
@@ -551,7 +551,7 @@
         "input_digest": "7685d7689b8ef9deff5e340b82ecd933867cb4123db0e35d42f033cac02bd757",
         "output_digest": "7eb4f05e69a19dea6817d3b8a11098143545cb46130dac3f39dd8f92fe7bc014"
       },
-      "input_digest": "b013e342f26ba56f6bdfdfa61ac0fe4e64f829e4d38e496bb7991f465002f635",
+      "input_digest": "b1b21e4430235c52a91b23dccf60769ad3cc1d9b788db2ecc10c641dcf2aba46",
       "input_hashes": {
         ".github/ci/module-times.json": "48b8f9d8bc826d19469df3941291d9cbd1ddc63c7c6067eeff1da7f423a2b414",
         ".github/workflows/ci.yml": "7e21c60bd6b522a6f0b6f0c9841936bd0b4b45da18ebdc9068aff24b100f102b",
@@ -1002,7 +1002,7 @@
         "tests/test_publication_identifiers.py": "e48956cbb3fedeb288a7f6bbdf988e83c4c21a87b7dc65242d691d07526adf54",
         "tests/test_publication_metadata.py": "94784faba2fa53db2d42496286c4c4aa648b89bcebfa6876459f541210232ecd",
         "tests/test_release_assets.py": "e38f2716e22bd5173d2b09243bc8a08a5c558697aa61f9279cdfe62fdd4d30ed",
-        "tests/test_release_manifest.py": "3850437d6934b2e3b5cfff010a6aa1aff0da3c2a217f8a910609bdd029a4db21",
+        "tests/test_release_manifest.py": "4ec70e36f89e54ca4a304b36f695ca154094123634182355a83b5b987b0f2c4e",
         "tests/test_release_preflight.py": "67f739e6075e42da9ddbcd3774d998e63ae93e35dbd03a089b0ef9eb4c9042f3",
         "tests/test_report_scale_guard.py": "1fab18129a5020d20ed84f9da9d0cb46ca59aefc7a4533a515d4158943c3b066",
         "tests/test_runtime_surface.py": "a76378ad30a217d72a8224907e1c686e83261293771737dc941a4849f4883b62",
@@ -1025,7 +1025,7 @@
         "input_digest": "7685d7689b8ef9deff5e340b82ecd933867cb4123db0e35d42f033cac02bd757",
         "output_digest": "7eb4f05e69a19dea6817d3b8a11098143545cb46130dac3f39dd8f92fe7bc014"
       },
-      "input_digest": "b013e342f26ba56f6bdfdfa61ac0fe4e64f829e4d38e496bb7991f465002f635",
+      "input_digest": "b1b21e4430235c52a91b23dccf60769ad3cc1d9b788db2ecc10c641dcf2aba46",
       "input_hashes": {
         ".github/ci/module-times.json": "48b8f9d8bc826d19469df3941291d9cbd1ddc63c7c6067eeff1da7f423a2b414",
         ".github/workflows/ci.yml": "7e21c60bd6b522a6f0b6f0c9841936bd0b4b45da18ebdc9068aff24b100f102b",
@@ -1476,7 +1476,7 @@
         "tests/test_publication_identifiers.py": "e48956cbb3fedeb288a7f6bbdf988e83c4c21a87b7dc65242d691d07526adf54",
         "tests/test_publication_metadata.py": "94784faba2fa53db2d42496286c4c4aa648b89bcebfa6876459f541210232ecd",
         "tests/test_release_assets.py": "e38f2716e22bd5173d2b09243bc8a08a5c558697aa61f9279cdfe62fdd4d30ed",
-        "tests/test_release_manifest.py": "3850437d6934b2e3b5cfff010a6aa1aff0da3c2a217f8a910609bdd029a4db21",
+        "tests/test_release_manifest.py": "4ec70e36f89e54ca4a304b36f695ca154094123634182355a83b5b987b0f2c4e",
         "tests/test_release_preflight.py": "67f739e6075e42da9ddbcd3774d998e63ae93e35dbd03a089b0ef9eb4c9042f3",
         "tests/test_report_scale_guard.py": "1fab18129a5020d20ed84f9da9d0cb46ca59aefc7a4533a515d4158943c3b066",
         "tests/test_runtime_surface.py": "a76378ad30a217d72a8224907e1c686e83261293771737dc941a4849f4883b62",

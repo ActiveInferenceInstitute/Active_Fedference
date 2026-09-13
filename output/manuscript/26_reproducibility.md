@@ -120,7 +120,7 @@ insufficient.
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
-**Combined line and branch coverage on `src/`.** 90.58%,
+**Combined line and branch coverage on `src/`.** 90.57%,
 achieved by the bound full gate with branch measurement enabled. The shared
 coverage threshold is $\ge 90\%$ on this combined measure.
 

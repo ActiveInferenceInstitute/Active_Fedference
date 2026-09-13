@@ -2850,7 +2850,7 @@ without leaning on the heuristic.
 
 266 of 268 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-90.58% (gate $\ge 90\%$), with every stochastic step threaded
+90.57% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -4516,7 +4516,7 @@ insufficient.
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
-**Combined line and branch coverage on `src/`.** 90.58%,
+**Combined line and branch coverage on `src/`.** 90.57%,
 achieved by the bound full gate with branch measurement enabled. The shared
 coverage threshold is $\ge 90\%$ on this combined measure.
 

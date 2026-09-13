@@ -4,12 +4,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "12.02",
-      "total_size_bytes": 12603796,
+      "total_size_bytes": 12603795,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "12.02",
-          "size_bytes": 12603796,
+          "size_bytes": 12603795,
           "path": "pdf/active_fedference_combined.pdf"
         }
       ],
@@ -20,8 +20,8 @@
     "web": {
       "exists": true,
       "file_count": 1273,
-      "size_mb": "46.06",
-      "total_size_bytes": 48300560,
+      "size_mb": "46.07",
+      "total_size_bytes": 48303430,
       "largest_files": [
         {
           "name": "evidence_replication_map.png",
@@ -32,7 +32,7 @@
         {
           "name": "index.html",
           "size_mb": "0.58",
-          "size_bytes": 603016,
+          "size_bytes": 603740,
           "path": "web/index.html"
         },
         {
@@ -55,7 +55,7 @@
       "exists": true,
       "file_count": 88,
       "size_mb": "34.63",
-      "total_size_bytes": 36310970,
+      "total_size_bytes": 36310971,
       "largest_files": [
         {
           "name": "13_methods_statistics_slides.pdf",
@@ -290,12 +290,12 @@
       "exists": true,
       "file_count": 1,
       "size_mb": "12.02",
-      "total_size_bytes": 12603796,
+      "total_size_bytes": 12603795,
       "largest_files": [
         {
           "name": "active_fedference_combined.pdf",
           "size_mb": "12.02",
-          "size_bytes": 12603796,
+          "size_bytes": 12603795,
           "path": "active_fedference_combined.pdf"
         }
       ],
@@ -305,19 +305,19 @@
     }
   },
   "total_files": 2675,
-  "total_size_mb": 153.98726844787598,
+  "total_size_mb": 153.99000453948975,
   "largest_files": [
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "12.02",
-      "size_bytes": 12603796,
+      "size_bytes": 12603795,
       "category": "root",
       "path": "active_fedference_combined.pdf"
     },
     {
       "name": "active_fedference_combined.pdf",
       "size_mb": "12.02",
-      "size_bytes": 12603796,
+      "size_bytes": 12603795,
       "category": "pdf",
       "path": "pdf/active_fedference_combined.pdf"
     },
@@ -380,16 +380,16 @@
   ],
   "missing_expected_files": [],
   "sizes_by_category": {
-    "pdf": 12.019916534423828,
-    "web": 46.06300354003906,
-    "slides": 34.62883949279785,
+    "pdf": 12.019915580749512,
+    "web": 46.06574058532715,
+    "slides": 34.62884044647217,
     "figures": 44.07854652404785,
     "data": 0.7857484817504883,
     "reports": 3.062314987182617,
     "docs": 0.06070518493652344,
     "manuscript": 0.37662220001220703,
     "release": 0.8916549682617188,
-    "root": 12.019916534423828
+    "root": 12.019915580749512
   },
   "inventory_mode": "stable-local-output-v1",
   "inventory_scope": "stage5-delivery-mirror",
