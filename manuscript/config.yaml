@@ -15,7 +15,7 @@ paper:
   version: "1.1.0"
   # Development rendering may derive this from the fixed source epoch. A final
   # release must set the exact same YYYY-MM-DD as publication.date_released.
-  date: "2026-09-14"
+  date: "2026-09-19"
 
 authors:
   - name: "Daniel Ari Friedman"
@@ -41,7 +41,7 @@ publication:
   # source-only Markdown delimiters before writing citation metadata.
   software_name: "Active Fedference"
   date_created: "2026-06-24"
-  date_released: "2026-09-14"
+  date_released: "2026-09-19"
   abstract: >-
     Multi-agent active inference gives a natural account of belief sharing:
     agents hold local posteriors over a shared latent state, communicate those

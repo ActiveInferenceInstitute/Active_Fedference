@@ -37,7 +37,7 @@ uv run --locked fedference verify \
 
 This source carries the `1.1.0` release identity and reserved version DOI
 [`10.5281/zenodo.22149133`](https://doi.org/10.5281/zenodo.22149133).
-The intended UTC publication date is 2026-09-14. Check the
+The intended UTC publication date is 2026-09-19. Check the
 [v1.1.0 release record](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0)
 for publication and the five verified assets; a source version or reserved DOI
 alone does not establish publication. See the

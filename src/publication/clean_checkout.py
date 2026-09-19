@@ -18,6 +18,7 @@ IMMUTABLE_RELEASE_PDFS: tuple[str, ...] = (
     "Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf",
     "Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf",
     "Active_Fedference_Research_Manuscript_v1.0.4_Zenodo_10.5281-zenodo.21972644.pdf",
+    "Active_Fedference_Research_Manuscript_v1.1.0_Zenodo_10.5281-zenodo.22149133.pdf",
 )
 HISTORICAL_RELEASE_PDF_LEDGER_PATH = "docs/reference/historical-release-pdfs.json"
 TODO_TRACKED_PATHS: tuple[str, ...] = (

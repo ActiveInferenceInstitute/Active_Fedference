@@ -15,7 +15,7 @@ The canonical public repository is
 [ActiveInferenceInstitute/Active_Fedference](https://github.com/ActiveInferenceInstitute/Active_Fedference).
 This source carries version `1.1.0`, with reserved DOI
 [`10.5281/zenodo.22149133`](https://doi.org/10.5281/zenodo.22149133) and intended
-UTC publication date 2026-09-14. The
+UTC publication date 2026-09-19. The
 [v1.1.0 GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0)
 and [Zenodo record](https://zenodo.org/records/22149133) are the publication
 verification surfaces; reserved identity alone does not prove publication.
