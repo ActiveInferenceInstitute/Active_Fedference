@@ -292,9 +292,21 @@ the selected draft's reserved DOI before removing that server-owned field from
 the PUT payload; missing release identity or a wrong draft therefore fails
 before metadata changes. After the PUT, the adapter refetches the draft and
 compares the complete canonical caller-owned metadata; only Zenodo's explicit
-`doi` and `prereserve_doi` fields are excluded. Inspect the post-upload summary
+`doi` and `prereserve_doi` fields are excluded. The request comparison admits
+the observed equivalent license identifiers `MIT` and `mit-license`, and the
+default publisher `Zenodo` when a software request omits `imprint_publisher`.
+An explicitly requested publisher and every other metadata field must still
+match. These comparison rules do not rewrite the returned metadata snapshot or
+its digest, and do not relax the strict inherited-purpose check for linked
+new-version recovery. Inspect the post-upload summary
 and require exactly one file,
 `active_fedference_combined.pdf`.
+
+A gateway timeout is a failed request, not evidence that a remote mutation
+did or did not complete. Refetch the same deposition and inspect its state,
+metadata, and files before deciding whether a timed-out mutation needs another
+attempt. Keep read-only recovery attempts bounded and retain their failures;
+do not create an unrelated DOI to work around a temporarily unavailable draft.
 
 ## Publication gate
 

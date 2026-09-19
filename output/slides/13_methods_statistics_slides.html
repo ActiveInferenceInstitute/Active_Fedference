@@ -2189,7 +2189,7 @@ with median time plotted and the observed repeat range shown as a
 min–max bar.</p>
 <p>The fixed input seed is <span class="math inline">\(20260728\)</span>
 on the <span class="math inline">\(arm64\)</span> machine using Python
-<span class="math inline">\(3.12.12\)</span> and NumPy <span
+<span class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -2198,17 +2198,17 @@ aria-label="Computational complexity and scaling diagnostic, part 15" role="grou
 aria-label="Computational complexity and scaling diagnostic, part 15" id="slide-heading-c1e31bfe358b">Computational
 complexity… (part 15)</h2>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.75
-(log-linear), 0.87 (iterative robust), 0.82 (variational), 1.63 (naive
+orders, not performance guarantees: agent-axis slopes are 0.99
+(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.64 (naive
 self-excluding sharing), and 1.93 (robust self-excluding sharing);
-state-axis slopes are 0.98, 0.97, and 1.01;</p>
+state-axis slopes are 0.96, 0.96, and 0.95;</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Computational complexity and scaling diagnostic, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aa236d58023e">
 <h2 class="prose-slide"
 aria-label="Computational complexity and scaling diagnostic, part 16" id="slide-heading-aa236d58023e">Computational
 complexity… (part 16)</h2>
-<p>the modality-axis inference slope is 0.71.</p>
+<p>the modality-axis inference slope is 0.66.</p>
 <p>The slope fit is a timing diagnostic on this machine, not an
 inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network.</p>
@@ -2243,14 +2243,14 @@ src="../figures/complexity_scaling.slide-group-1-log-linear-pool.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="bd5080a5b58339a5dc85ce8c8cac1d051075aad94a04f56ad57daa9853e2bbba"
+data-slide-label-source-sha256="01a1ae018cbbc5e469fae03632c209d927093e357764480ad3177686183027aa"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
 data-slide-figure-intrinsic-status="validated"
-data-slide-figure-intrinsic-width="1738"
+data-slide-figure-intrinsic-width="1711"
 data-slide-figure-intrinsic-height="684"
-data-slide-figure-intrinsic-aspect="2.5409357"
+data-slide-figure-intrinsic-aspect="2.501462"
 alt="log_linear_pool by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
 </figure>
 </section>
@@ -2265,7 +2265,7 @@ src="../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="3ace87604a6ae6d653cf0bd0d9b493c4441f64b875bec2a0be4b789f2fa5b7de"
+data-slide-label-source-sha256="69079f613114f8a3e1df0835a1a611dffcc6984e80a3bfb8b290bfa5c1642a5a"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2273,7 +2273,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1279"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0354331"
-alt="log pool by agents. Expected exponent: 1. Observed log-log slope: 0.7467." />
+alt="log pool by agents. Expected exponent: 1. Observed log-log slope: 0.9871." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2287,14 +2287,14 @@ src="../figures/complexity_scaling.slide-group-1-robust-aggregate.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="604c966a64c76f56397cf83cbc2873132072237c230c5327fde7d200e52e372a"
+data-slide-label-source-sha256="99e2aeed36d372a2f1b9d493de6eeaf8e326498fa5128993a25428349c12ada2"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
 data-slide-figure-intrinsic-status="validated"
-data-slide-figure-intrinsic-width="1738"
+data-slide-figure-intrinsic-width="1711"
 data-slide-figure-intrinsic-height="684"
-data-slide-figure-intrinsic-aspect="2.5409357"
+data-slide-figure-intrinsic-aspect="2.501462"
 alt="robust_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
 </figure>
 </section>
@@ -2309,7 +2309,7 @@ src="../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="13d3d29e7db7b66891499b61678168efa29c49bf5ecc32a74733b0a933b74f14"
+data-slide-label-source-sha256="d77cbc3389242c21c64af25240497f8b50b37fa408c5ef6e044228b4d1e0271c"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2317,7 +2317,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1279"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0354331"
-alt="heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.8696." />
+alt="heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.9352." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2331,14 +2331,14 @@ src="../figures/complexity_scaling.slide-group-1-variational-aggregate.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="637a4a26c71a7d6020758fec59119cf6bbdccdd07c59659f7fdd7ef6c6166e9a"
+data-slide-label-source-sha256="d7c6465af66213568c1cdfefe5a6270eacef68555037456f237f813220ff3b64"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
 data-slide-figure-intrinsic-status="validated"
-data-slide-figure-intrinsic-width="1738"
+data-slide-figure-intrinsic-width="1711"
 data-slide-figure-intrinsic-height="684"
-data-slide-figure-intrinsic-aspect="2.5409357"
+data-slide-figure-intrinsic-aspect="2.501462"
 alt="variational_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
 </figure>
 </section>
@@ -2353,7 +2353,7 @@ src="../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="e80afa6f777ff035199f9a6480aa8ee09fc6f3188df20c0c775911c26ceb7def"
+data-slide-label-source-sha256="28c8b2ffb61bc1a932d4b1e5e1e17cb4dbf610e6fd075c5ce3b2fe06e2fe6d6b"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2361,7 +2361,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1279"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0354331"
-alt="variational by agents. Expected exponent: 1. Observed log-log slope: 0.8219." />
+alt="variational by agents. Expected exponent: 1. Observed log-log slope: 0.7932." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2375,7 +2375,7 @@ src="../figures/complexity_scaling.slide-group-2-share-round-naive.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="9cf57001eca65977a14050eeb1052b397b47321664e31c396d2c080a716e2c98"
+data-slide-label-source-sha256="91a92ce6b9c84e1c7c0308ccb4223e445c3db36a200faf2be3c94016d5f48972"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2397,7 +2397,7 @@ src="../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="cb80c8015c8af5c944aa70bddeeb7865140a1441ef1cb30b31ed8e5c21701964"
+data-slide-label-source-sha256="1007e9abf2ad0e1909db2aa7798d2887bd8673ea497c77247ddab86335807785"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2405,7 +2405,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1140"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="4.488189"
-alt="sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.626." />
+alt="sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.639." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2419,7 +2419,7 @@ src="../figures/complexity_scaling.slide-group-2-share-round-robust.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="abfe110d16ed7612b78f1013aab939f032c0c63fac326fb1e711bd6c1d7909fe"
+data-slide-label-source-sha256="1e5ea92c6e33fa0a197aa063c4315d22f4d01a43feff38c7764ed62a8f24f207"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2441,7 +2441,7 @@ src="../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="59dade709f9b0cef3449b20f654271860688c32a2a8119814be5a350c5676622"
+data-slide-label-source-sha256="4b17b1a59bdd15b668e80ce29dc6d7f8569932efc8b1f6afe654f52b9d82fa37"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2449,7 +2449,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1278"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0314961"
-alt="sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.929." />
+alt="sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.926." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2463,14 +2463,14 @@ src="../figures/complexity_scaling.slide-group-3-log-linear-pool.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="0787313404c389d8319ce0c2cbebedda32e5b6969d6f0f34461c851efaba81cb"
+data-slide-label-source-sha256="621153d966877d731204d9f7bf5fe9b8137b681a66bbc404fad5a7be5d29f37d"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
 data-slide-figure-intrinsic-status="validated"
-data-slide-figure-intrinsic-width="1762"
+data-slide-figure-intrinsic-width="1761"
 data-slide-figure-intrinsic-height="684"
-data-slide-figure-intrinsic-aspect="2.5760234"
+data-slide-figure-intrinsic-aspect="2.5745614"
 alt="log_linear_pool by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
 </figure>
 </section>
@@ -2485,7 +2485,7 @@ src="../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="cb053092f5757a0caba7ddd69bfd1ca7098f5c74323dc4538598e1b0310e2d95"
+data-slide-label-source-sha256="c31faf19051dc719fc9ef1a29e5a8206dd0cc03e978561b5aeec108e761592ec"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2493,7 +2493,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1279"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0354331"
-alt="log pool by states. Expected exponent: 1. Observed log-log slope: 0.9797." />
+alt="log pool by states. Expected exponent: 1. Observed log-log slope: 0.9647." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2507,14 +2507,14 @@ src="../figures/complexity_scaling.slide-group-3-robust-aggregate.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="99c070def7e1b626c82a86d0459b1d1b6e3daf12f4db68c19841fd6e2f212a61"
+data-slide-label-source-sha256="a204dbcce176f637337f19103184530f492a88847a8cca44892006535a3ed8ba"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
 data-slide-figure-intrinsic-status="validated"
-data-slide-figure-intrinsic-width="1762"
+data-slide-figure-intrinsic-width="1761"
 data-slide-figure-intrinsic-height="684"
-data-slide-figure-intrinsic-aspect="2.5760234"
+data-slide-figure-intrinsic-aspect="2.5745614"
 alt="robust_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
 </figure>
 </section>
@@ -2529,7 +2529,7 @@ src="../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="ebf420c0a376f416a5c9606051997cc946aca3d7637e41b287a5fc827907ed92"
+data-slide-label-source-sha256="9796b500c72bf6bc0fe1d622a6d804ad016b0206ba9e07e7ffbe15156aecdda5"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2537,7 +2537,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1279"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0354331"
-alt="heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.967." />
+alt="heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.9611." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2551,14 +2551,14 @@ src="../figures/complexity_scaling.slide-group-3-variational-aggregate.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="1bd1e1271cc7115bafed1f2e4d473d24e342ecd5a63efb696696bbaecf19ba65"
+data-slide-label-source-sha256="352afbc516b49d79e055573d546691e40d9a4877882095c283a8ed58c15d2d5e"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
 data-slide-figure-intrinsic-status="validated"
-data-slide-figure-intrinsic-width="1762"
+data-slide-figure-intrinsic-width="1761"
 data-slide-figure-intrinsic-height="684"
-data-slide-figure-intrinsic-aspect="2.5760234"
+data-slide-figure-intrinsic-aspect="2.5745614"
 alt="variational_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales." />
 </figure>
 </section>
@@ -2573,7 +2573,7 @@ src="../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="32a096589f9376f350d8cb68a0f6eda7ec6680b6cd210cc4416c8fcd2c2ddf43"
+data-slide-label-source-sha256="291972cb8df98166e6c46337140ff89e9b17adc3313a23aaeb610429e5df5860"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2581,7 +2581,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1279"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="5.0354331"
-alt="variational by states. Expected exponent: 1. Observed log-log slope: 1.005." />
+alt="variational by states. Expected exponent: 1. Observed log-log slope: 0.9541." />
 </figure>
 </section>
 <section class="slide level2 figure-led"
@@ -2595,7 +2595,7 @@ src="../figures/complexity_scaling.slide-group-4-infer-states.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="91.66666666666667"
-data-slide-label-source-sha256="a60a565814bb3e77603eef9dde472caa86dc43c3aecba5ca0b1e3bdb42d65681"
+data-slide-label-source-sha256="eb798aeab7c69cfe7f82e11fcce4c3b44dc370bdd766dd6b0eaf526389974dfa"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2617,7 +2617,7 @@ src="../figures/complexity_scaling.slide-group-4-infer-states-guide.png"
 class="accessible-max-fit-image"
 style="--template-figure-safe-max-height:560px;--template-figure-min-allocation-height:392px;width:98.0%;height:80.0%"
 data-slide-label-minimum-px="67.22222222222223"
-data-slide-label-source-sha256="7ab816b69fb6760431893d6d2190a5b0c495388ec763f61ade039170cf1d5553"
+data-slide-label-source-sha256="6f227db204d0e2cffc53b247f8d8339fd3277660c98065a2c34c9bb46d3b3371"
 data-slide-figure-area-contract="allocation-not-ink-coverage"
 data-slide-figure-min-allocation-percent="70"
 data-slide-figure-max-fit-height-percent="80"
@@ -2625,7 +2625,7 @@ data-slide-figure-intrinsic-status="validated"
 data-slide-figure-intrinsic-width="1140"
 data-slide-figure-intrinsic-height="254"
 data-slide-figure-intrinsic-aspect="4.488189"
-alt="state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.7106." />
+alt="state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.6563." />
 </figure>
 </section>
 <section class="slide level2 figure-led"

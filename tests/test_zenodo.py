@@ -41,6 +41,7 @@ class _ZenodoHandler(BaseHTTPRequestHandler):
     publish_calls = 0
     authorization_headers: list[str] = []
     put_payloads: list[dict[str, Any]] = []
+    response_overrides: dict[str, Any] = {}
 
     def log_message(self, _format: str, *_args: object) -> None:
         return
@@ -915,6 +916,126 @@ def test_metadata_update_requires_canonical_post_put_refetch(
         _ZenodoHandler.ignore_metadata_update = False
 
 
+@pytest.fixture
+def normalized_metadata_server() -> Iterator[tuple[ZenodoClient, type[_ZenodoHandler]]]:
+    """Serve the observed software-license and publisher response conventions."""
+    class NormalizedHandler(_ZenodoHandler):
+        metadata_payload = None
+        ignore_metadata_update = False
+        uploaded = False
+        extra_file = False
+        state = "unsubmitted"
+        put_payloads: list[dict[str, Any]] = []
+        authorization_headers: list[str] = []
+        response_overrides: dict[str, Any] = {}
+
+        @classmethod
+        def _deposition(cls, *, published: bool | None = None) -> dict[str, Any]:
+            payload = super()._deposition(published=published)
+            metadata = payload["metadata"]
+            if metadata.get("license") == "MIT":
+                metadata["license"] = "mit-license"
+            if metadata.get("upload_type") == "software":
+                metadata.setdefault("imprint_publisher", "Zenodo")
+            metadata.update(cls.response_overrides)
+            return payload
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), NormalizedHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield (
+            ZenodoClient(
+                "test-token",
+                api_base=f"http://127.0.0.1:{server.server_port}/api",
+                timeout=5.0,
+            ),
+            NormalizedHandler,
+        )
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+@pytest.mark.parametrize("license_id", ["MIT", "mit-license"])
+@pytest.mark.parametrize("publisher", [None, "Requested publisher"])
+def test_metadata_update_accepts_observed_software_api_normalization(
+    normalized_metadata_server: tuple[ZenodoClient, type[_ZenodoHandler]],
+    license_id: str,
+    publisher: str | None,
+) -> None:
+    client, handler = normalized_metadata_server
+    requested: dict[str, Any] = {
+        "doi": "10.5281/zenodo.7",
+        "title": "Updated release",
+        "description": "Complete approved abstract.",
+        "upload_type": "software",
+        "license": license_id,
+    }
+    if publisher is not None:
+        requested["imprint_publisher"] = publisher
+    before = json.dumps(requested, sort_keys=True)
+    updated = client.update_metadata(7, requested)
+    assert updated.state == "unsubmitted"
+    assert updated.metadata.as_dict()["license"] == "mit-license"
+    assert updated.metadata.as_dict()["imprint_publisher"] == (publisher or "Zenodo")
+    assert json.dumps(requested, sort_keys=True) == before
+    assert handler.put_payloads == [
+        {"metadata": {key: value for key, value in requested.items() if key != "doi"}}
+    ]
+
+
+@pytest.mark.parametrize(
+    ("publisher", "overrides"),
+    [
+        (None, {"license": "Apache-2.0"}),
+        (None, {"license": None}),
+        (None, {"imprint_publisher": "Unexpected publisher"}),
+        (None, {"imprint_publisher": None}),
+        ("Requested publisher", {"imprint_publisher": "Zenodo"}),
+        (None, {"description": "Changed abstract."}),
+        (None, {"unexpected_field": "Unrequested value"}),
+    ],
+)
+def test_metadata_update_still_rejects_drift_after_api_normalization(
+    normalized_metadata_server: tuple[ZenodoClient, type[_ZenodoHandler]],
+    publisher: str | None,
+    overrides: dict[str, Any],
+) -> None:
+    client, handler = normalized_metadata_server
+    handler.response_overrides = overrides
+    requested: dict[str, Any] = {
+        "doi": "10.5281/zenodo.7",
+        "title": "Updated release",
+        "description": "Complete approved abstract.",
+        "upload_type": "software",
+        "license": "MIT",
+    }
+    if publisher is not None:
+        requested["imprint_publisher"] = publisher
+    with pytest.raises(ZenodoError, match="canonical request"):
+        client.update_metadata(7, requested)
+    assert len(handler.put_payloads) == 1
+
+
+def test_metadata_update_does_not_infer_a_publisher_for_other_upload_types(
+    normalized_metadata_server: tuple[ZenodoClient, type[_ZenodoHandler]],
+) -> None:
+    client, handler = normalized_metadata_server
+    handler.response_overrides = {"imprint_publisher": "Zenodo"}
+    with pytest.raises(ZenodoError, match="canonical request"):
+        client.update_metadata(
+            7,
+            {
+                "doi": "10.5281/zenodo.7",
+                "title": "Dataset release",
+                "upload_type": "dataset",
+                "license": "MIT",
+            },
+        )
+
+
 def test_new_version_resolves_latest_draft_link() -> None:
     _NewVersionHandler.authorization_headers = []
     _NewVersionHandler.new_version_calls = 0
@@ -1119,12 +1240,17 @@ def test_new_version_rejects_a_missing_or_invalid_server_creation_timestamp(
         new_version_client.new_version(7)
 
 
+@pytest.mark.parametrize(
+    "extra_metadata",
+    [{"notes": "unexpected drift"}, {"imprint_publisher": "Zenodo"}],
+)
 def test_new_version_rejects_any_other_purpose_metadata_drift(
     new_version_client: ZenodoClient,
+    extra_metadata: dict[str, Any],
 ) -> None:
     _NewVersionHandler.draft_version = None
     _NewVersionHandler.draft_publication_date = "2026-08-28"
-    _NewVersionHandler.draft_extra_metadata = {"notes": "unexpected drift"}
+    _NewVersionHandler.draft_extra_metadata = extra_metadata
     _NewVersionHandler.draft_files = []
 
     with pytest.raises(ZenodoError, match="purpose metadata"):
