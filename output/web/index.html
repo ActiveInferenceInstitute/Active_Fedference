@@ -4407,14 +4407,14 @@ with median time plotted and the observed repeat range shown as a
 min–max bar.</p>
 <p>The fixed input seed is <span class="math inline">\(20260728\)</span>
 on the <span class="math inline">\(arm64\)</span> machine using Python
-<span class="math inline">\(3.12.12\)</span> and NumPy <span
+<span class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.75
-(log-linear), 0.87 (iterative robust), 0.82 (variational), 1.63 (naive
+orders, not performance guarantees: agent-axis slopes are 0.99
+(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.64 (naive
 self-excluding sharing), and 1.93 (robust self-excluding sharing);
-state-axis slopes are 0.98, 0.97, and 1.01; the modality-axis inference
-slope is 0.71.</p>
+state-axis slopes are 0.96, 0.96, and 0.95; the modality-axis inference
+slope is 0.66.</p>
 <p>The slope fit is a timing diagnostic on this machine, not an
 inferential test and not evidence that the same constants hold under
 another BLAS, accelerator, process topology, or distributed network.</p>
@@ -4446,7 +4446,7 @@ timing spans around the median, not confidence intervals. Dark dotted
 lines are normalized <span class="math inline">\(\Theta\)</span>-order
 guides derived from implementation accounting, not fitted results. The
 fixed seeded benchmark ran on <span class="math inline">\(arm64\)</span>
-with Python <span class="math inline">\(3.12.12\)</span>, NumPy <span
+with Python <span class="math inline">\(3.13.11\)</span>, NumPy <span
 class="math inline">\(2.4.2\)</span>, seed <span
 class="math inline">\(20260728\)</span>, and <span
 class="math inline">\(5\)</span> measured repeat(s) after <span
@@ -5010,7 +5010,7 @@ href="#sec:results-robustness">7.5</a> and sec. <a
 href="#sec:results-baseline">7.6</a> rest on the per-agent axis without
 leaning on the heuristic.</p>
 <p>266 of 268 acceptance criteria are verified. The pure-NumPy/SciPy
-core carries project test coverage of 90.57% (gate <span
+core carries project test coverage of 90.58% (gate <span
 class="math inline">\(\ge 90\%\)</span>), with every stochastic step
 threaded through a single seeded <code>np.random.default_rng(0)</code>.
 sec. <a href="#sec:reproducibility">10</a> records the full environment
@@ -7598,7 +7598,7 @@ omitted sentinel rather than wall-clock time.</caption>
 <tbody>
 <tr>
 <td>Python</td>
-<td>3.12.12</td>
+<td>3.13.11</td>
 </tr>
 <tr>
 <td>NumPy</td>
@@ -7622,7 +7622,7 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>2026-09-13T01:42:53Z</td>
+<td>2026-09-13T17:51:20Z</td>
 </tr>
 </tbody>
 </table></div>
@@ -7660,11 +7660,11 @@ extraction alone are insufficient.</p>
 class="header-section-number">10.5</span> Test and coverage evidence for
 the claim surface</h2>
 <p><strong>Acceptance criteria.</strong> 268 total, 266 passing.</p>
-<p><strong>Project test suite.</strong> 2847 collected cases; the bound
+<p><strong>Project test suite.</strong> 2860 collected cases; the bound
 successful receipt records zero failed cases. The project no-mocks
 policy remains a separately executable source contract.</p>
 <p><strong>Combined line and branch coverage on
-<code>src/</code>.</strong> 90.57%, achieved by the bound full gate with
+<code>src/</code>.</strong> 90.58%, achieved by the bound full gate with
 branch measurement enabled. The shared coverage threshold is <span
 class="math inline">\(\ge 90\%\)</span> on this combined measure.</p>
 <p>To regenerate this evidence from a clean checkout, run the project
