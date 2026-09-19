@@ -62,4 +62,4 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.1.0.dev0.
+This is project version 1.1.0.

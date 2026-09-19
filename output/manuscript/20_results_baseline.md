@@ -68,13 +68,13 @@ Linear→ReLU→Linear→softmax with 16 hidden units. Clients use the
 density-power $\beta$-loss at $\beta = 0.5$ for
 200 Adam steps, and per-test-point predictions are fused with
 `robust_aggregate` at `robustness = 0.5` under PyTorch
-2.12.1.
+not installed.
 
 The executed consensus is a valid probability simplex, with maximum unit-mass
-deviation 2.22e-16, and repeated seeded runs are bit-identical
-(Yes). At contamination 0.40, held-out
-consensus accuracy is 0.558 for the $\beta\to 0$ client and
-0.545 for the $\beta=0.5$ client.
+deviation N/A, and repeated seeded runs are bit-identical
+(N/A). At contamination N/A, held-out
+consensus accuracy is N/A (PyTorch not run) for the $\beta\to 0$ client and
+N/A (PyTorch not run) for the $\beta=0.5$ client.
 
 This single-seed endpoint demonstrates API transfer and deterministic execution,
 not posterior-uncertainty inference, model-class universality, or a robust-loss

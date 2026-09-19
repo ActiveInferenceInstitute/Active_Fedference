@@ -71,10 +71,10 @@ rendered.
 | Python | 3.13.11 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | 2.12.1 |
+| PyTorch (MLP complement) | not installed |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | cbe919be0d1d3903 |
-| Reproducible build epoch (UTC) | 2026-09-13T17:51:20Z |
+| Config hash (SHA-256, first 16) | e707fcb26b557c57 |
+| Reproducible build epoch (UTC) | 2026-09-19T00:00:00Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 

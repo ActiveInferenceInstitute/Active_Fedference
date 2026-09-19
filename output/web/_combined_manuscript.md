@@ -43,7 +43,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-This development manuscript has no assigned version DOI; published versions bind their reserved DOI, deposited PDF, and repository URL only after the release gates close.
+This final-release manuscript uses assigned version DOI [10.5281/zenodo.22149133](https://doi.org/10.5281/zenodo.22149133); the bound deposited PDF and repository release are controlled by separate publication gates.
 
 **Keywords:** active inference, federated learning, generalised variational inference, belief sharing, robustness, FedGVI
 
@@ -2449,13 +2449,13 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.99
+performance guarantees: agent-axis slopes are 0.93
 (log-linear), 0.94 (iterative robust),
-0.79 (variational), 1.64
-(naive self-excluding sharing), and 1.93
+0.79 (variational), 1.62
+(naive self-excluding sharing), and 1.89
 (robust self-excluding sharing); state-axis slopes
-are 0.96, 0.96, and
-0.95; the modality-axis inference slope is
+are 0.97, 0.95, and
+0.94; the modality-axis inference slope is
 0.66.
 
 The slope fit is a timing diagnostic on this
@@ -3531,13 +3531,13 @@ Linear→ReLU→Linear→softmax with 16 hidden units. Clients use the
 density-power $\beta$-loss at $\beta = 0.5$ for
 200 Adam steps, and per-test-point predictions are fused with
 `robust_aggregate` at `robustness = 0.5` under PyTorch
-2.12.1.
+not installed.
 
 The executed consensus is a valid probability simplex, with maximum unit-mass
-deviation 2.22e-16, and repeated seeded runs are bit-identical
-(Yes). At contamination 0.40, held-out
-consensus accuracy is 0.558 for the $\beta\to 0$ client and
-0.545 for the $\beta=0.5$ client.
+deviation N/A, and repeated seeded runs are bit-identical
+(N/A). At contamination N/A, held-out
+consensus accuracy is N/A (PyTorch not run) for the $\beta\to 0$ client and
+N/A (PyTorch not run) for the $\beta=0.5$ client.
 
 This single-seed endpoint demonstrates API transfer and deterministic execution,
 not posterior-uncertainty inference, model-class universality, or a robust-loss
@@ -4629,10 +4629,10 @@ rendered.
 | Python | 3.13.11 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | 2.12.1 |
+| PyTorch (MLP complement) | not installed |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | cbe919be0d1d3903 |
-| Reproducible build epoch (UTC) | 2026-09-13T17:51:20Z |
+| Config hash (SHA-256, first 16) | e707fcb26b557c57 |
+| Reproducible build epoch (UTC) | 2026-09-19T00:00:00Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -4790,7 +4790,7 @@ the server-side `robust_aggregate` heuristic is certified here for its recovery
 limit alone, not for any bounded-influence property ([@sec:limitations]).
 
 All code is authored by Daniel Ari Friedman and licensed under the MIT license.
-This is project version 1.1.0.dev0.
+This is project version 1.1.0.
 
 
 

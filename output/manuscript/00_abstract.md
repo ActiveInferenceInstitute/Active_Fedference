@@ -43,7 +43,7 @@ figures, release package, and validation reports remain tied to the same
 execution record.
 
 The open-source repository is ActiveInferenceInstitute/Active_Fedference.
-This development manuscript has no assigned version DOI; published versions bind their reserved DOI, deposited PDF, and repository URL only after the release gates close.
+This final-release manuscript uses assigned version DOI [10.5281/zenodo.22149133](https://doi.org/10.5281/zenodo.22149133); the bound deposited PDF and repository release are controlled by separate publication gates.
 
 **Keywords:** active inference, federated learning, generalised variational inference, belief sharing, robustness, FedGVI
 

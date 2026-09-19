@@ -1,16 +1,16 @@
 {
   "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "64f2b9ff236b47d02cbd6c8daf461f7c06cf23e972a92d1cf412df4ac89bf28c",
+  "binding_sha256": "ff8bec2c3127ac4c2bca2b9ae7e842594b77ffa64239ca8b88c562b1522450ff",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "d72e68e6921df4a9803f54ca16146cf1e6f32c1ca61db1e6c5cfd73561a64d5f",
-  "combined_size_bytes": 360236,
+  "combined_sha256": "cb6182b7e99baff4b86371e4cd33d9199af599899dd7dc2859b43bd38d3900e4",
+  "combined_size_bytes": 360317,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
       "ordinal": 1,
       "path": "output/manuscript/00_abstract.md",
-      "sha256": "df878ac7b2401a41d016ae624bfbb62c0dacba458f1c31e6278475d4d37cd741",
-      "size_bytes": 4498
+      "sha256": "fa5eaa165ad700a0a7d76eec8c690537a00f8fe2f7ab617bbad019b5fb9ab881",
+      "size_bytes": 4544
     },
     {
       "ordinal": 2,
@@ -87,7 +87,7 @@
     {
       "ordinal": 14,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "45d7750ea257b057b0ae5551d68214a4a3e16f52251a8d9fadd839b1bc02f572",
+      "sha256": "5a7dceb8380824a501ef19d62c5948247568cbf680bea8bdf50383b999975fda",
       "size_bytes": 17502
     },
     {
@@ -129,8 +129,8 @@
     {
       "ordinal": 21,
       "path": "output/manuscript/20_results_baseline.md",
-      "sha256": "482c7fe1f750b4f53b5fc91ddbfc373b47f4aad65e3f3101a7d8b28a49615df0",
-      "size_bytes": 6019
+      "sha256": "4a0fca7e759db464324c6b3055aa0ac7e2eafb05e36ea2d367f96697a9542c3c",
+      "size_bytes": 6052
     },
     {
       "ordinal": 22,
@@ -165,14 +165,14 @@
     {
       "ordinal": 27,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "01677717ea9ae52a49129302c30355be2a25296e583904d1c47aeaa865a17548",
-      "size_bytes": 9279
+      "sha256": "59cced4bad532e4d80395fd2b40b0b05207f31d1fe0ab4c9502edaca13329d4d",
+      "size_bytes": 9286
     },
     {
       "ordinal": 28,
       "path": "output/manuscript/26_reproducibility_provenance.md",
-      "sha256": "aed509542e6e30c3a70860001105b708f16582d865f4fb2989bd16582f31d168",
-      "size_bytes": 4857
+      "sha256": "0175966e5f208df42919824dd1b3717164a741b6f47d4805fc41d6b710c29393",
+      "size_bytes": 4852
     },
     {
       "ordinal": 29,
@@ -271,7 +271,7 @@
       "size_bytes": 1278
     }
   ],
-  "ordered_inputs_sha256": "e8c49ab9b7445b10f29a5742c3bbc8309463c0da9f929e4b1f05c180616be3fe",
+  "ordered_inputs_sha256": "828de65e8dfc4bd1765d484950e8401a6d32a0b59af4ecb4b41012893205fe6d",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }

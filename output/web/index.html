@@ -1490,10 +1490,11 @@ artifacts and injected into the manuscript by token, so the paper,
 figures, release package, and validation reports remain tied to the same
 execution record.</p>
 <p>The open-source repository is
-ActiveInferenceInstitute/Active_Fedference. This development manuscript
-has no assigned version DOI; published versions bind their reserved DOI,
-deposited PDF, and repository URL only after the release gates
-close.</p>
+ActiveInferenceInstitute/Active_Fedference. This final-release
+manuscript uses assigned version DOI <a
+href="https://doi.org/10.5281/zenodo.22149133">10.5281/zenodo.22149133</a>;
+the bound deposited PDF and repository release are controlled by
+separate publication gates.</p>
 <p><strong>Keywords:</strong> active inference, federated learning,
 generalised variational inference, belief sharing, robustness,
 FedGVI</p>
@@ -4410,10 +4411,10 @@ on the <span class="math inline">\(arm64\)</span> machine using Python
 <span class="math inline">\(3.13.11\)</span> and NumPy <span
 class="math inline">\(2.4.2\)</span>.</p>
 <p>The measured log–log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.99
-(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.64 (naive
-self-excluding sharing), and 1.93 (robust self-excluding sharing);
-state-axis slopes are 0.96, 0.96, and 0.95; the modality-axis inference
+orders, not performance guarantees: agent-axis slopes are 0.93
+(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.62 (naive
+self-excluding sharing), and 1.89 (robust self-excluding sharing);
+state-axis slopes are 0.97, 0.95, and 0.94; the modality-axis inference
 slope is 0.66.</p>
 <p>The slope fit is a timing diagnostic on this machine, not an
 inferential test and not evidence that the same constants hold under
@@ -6297,12 +6298,13 @@ units. Clients use the density-power <span
 class="math inline">\(\beta\)</span>-loss at <span
 class="math inline">\(\beta = 0.5\)</span> for 200 Adam steps, and
 per-test-point predictions are fused with <code>robust_aggregate</code>
-at <code>robustness = 0.5</code> under PyTorch 2.12.1.</p>
+at <code>robustness = 0.5</code> under PyTorch not installed.</p>
 <p>The executed consensus is a valid probability simplex, with maximum
-unit-mass deviation 2.22e-16, and repeated seeded runs are bit-identical
-(Yes). At contamination 0.40, held-out consensus accuracy is 0.558 for
-the <span class="math inline">\(\beta\to 0\)</span> client and 0.545 for
-the <span class="math inline">\(\beta=0.5\)</span> client.</p>
+unit-mass deviation N/A, and repeated seeded runs are bit-identical
+(N/A). At contamination N/A, held-out consensus accuracy is N/A (PyTorch
+not run) for the <span class="math inline">\(\beta\to 0\)</span> client
+and N/A (PyTorch not run) for the <span
+class="math inline">\(\beta=0.5\)</span> client.</p>
 <p>This single-seed endpoint demonstrates API transfer and deterministic
 execution, not posterior-uncertainty inference, model-class
 universality, or a robust-loss advantage at neural-network scale. It is
@@ -7610,7 +7612,7 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>PyTorch (MLP complement)</td>
-<td>2.12.1</td>
+<td>not installed</td>
 </tr>
 <tr>
 <td>Platform</td>
@@ -7618,11 +7620,11 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Config hash (SHA-256, first 16)</td>
-<td>cbe919be0d1d3903</td>
+<td>e707fcb26b557c57</td>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>2026-09-13T17:51:20Z</td>
+<td>2026-09-19T00:00:00Z</td>
 </tr>
 </tbody>
 </table></div>
@@ -7813,7 +7815,7 @@ server-side <code>robust_aggregate</code> heuristic is certified here
 for its recovery limit alone, not for any bounded-influence property
 (sec. <a href="#sec:limitations">8.13</a>).</p>
 <p>All code is authored by Daniel Ari Friedman and licensed under the
-MIT license. This is project version 1.1.0.dev0.</p>
+MIT license. This is project version 1.1.0.</p>
 <hr />
 <h1 data-number="12" id="sec:supp-variational"><span
 class="header-section-number">12</span> Supplement: variational
