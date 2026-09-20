@@ -362,15 +362,16 @@ curl -fsSL https://zenodo.org/api/records/21864004 | jq \
 
 ## Invariants
 
-- The immutable v1.0.4 DOI, released PDF, README latest-published-release
-  section, live Zenodo record, and public GitHub release must agree. The current
-  post-v1.0.4 development config and generated metadata must not claim that DOI.
+- The immutable v1.0.4 DOI, released PDF, README prior-published-release
+  section, live Zenodo record, and public GitHub release must agree. A pre-release
+  development revision must not claim the final v1.1.0 DOI; the final v1.1.0
+  identity binds its reserved DOI, release date, and exact version/DOI-named PDF.
 - Development identity requires matching PEP 440 development package/manuscript
   versions, no assigned DOI, and no release date. Final identity requires a
   matching final version, assigned DOI/date, an exactly equal manuscript date,
   and a new exact version/DOI-named top-level PDF. Clean-checkout validation
-  always requires all five immutable
-  top-level PDFs from v0.1.0 through v1.0.4 to remain tracked; a development
+  always requires all six immutable
+  top-level PDFs from v0.1.0 through v1.1.0 to remain tracked; a development
   revision does not require a new v1.1 PDF, while a final v1.1.0 revision adds
   its exact new PDF without replacing any historical file. The checked-in
   [`historical-release-pdfs.json`](historical-release-pdfs.json) ledger binds

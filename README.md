@@ -35,11 +35,15 @@ uv run --locked fedference verify \
   --require-nominal-solver
 ```
 
-This checkout is the unreleased `1.1.0.dev0` development line: it has no
-assigned version DOI or release date. The immutable v1.0.4 tag remains the
-latest published archival snapshot and predates this application interface.
-Use the exact reviewed revision or package artifact approved for your
-application; the v1.0.4 DOI applies only to the v1.0.4 release and PDF.
+This source carries the `1.1.0` release identity and reserved version DOI
+[`10.5281/zenodo.22149133`](https://doi.org/10.5281/zenodo.22149133).
+The intended UTC publication date is 2026-09-19. Check the
+[v1.1.0 release record](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0)
+for publication and the five verified assets; a source version or reserved DOI
+alone does not establish publication. See the
+[release installation and checksum instructions](docs/application-guide.md#install-the-v110-release).
+The v1.0.4 release predates this application interface; its DOI applies only
+to that earlier release and PDF.
 
 The same labeled envelope is available as a pure Python operation:
 
@@ -84,15 +88,15 @@ integrity, not scientific validity or a downstream decision. These are
 usage examples, not a complete Friston protocol reconstruction, a universal
 robustness result, a production multi-host network, or confirmatory evidence.
 
-## v1.0.4 public release
+## Release records
 
-The source-bound v1.0.4 reviewer snapshot is published and its release metadata
+The prior source-bound v1.0.4 reviewer snapshot is published and its release metadata
 has been checked against the live Zenodo record. The public source, release tag,
 and immutable research artifact now cross-reference the same version.
 
 - **Published DOI:** [`10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
   · [Zenodo record](https://zenodo.org/records/21972644)
-- **Current public release:** [v1.0.4 GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
+- **Prior public release:** [v1.0.4 GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
 - **Public source repository:**
   [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 - **Released manuscript PDF:**

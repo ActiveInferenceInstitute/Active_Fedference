@@ -1,6 +1,6 @@
 {
   "analysis_input_snapshot": {
-    "input_digest": "bf0f8df7a6b4744bcd993065f4aae9e08753a8ba86b394b01e3a18faa2787ad7",
+    "input_digest": "6eaa204c1fd618cf2fec69dd5d8647f1fa4e867d0e28a35b8005d9deac65f96c",
     "input_hashes": {
       "experiment_plan.yaml": "9c3f279e61fc31da6dd40b5f49061cf3db9d9ba8ba228d817ac8fdf14ee7b76f",
       "manuscript/00_abstract.md": "fe7eec4b90c3675c1d928cfd2617a20f148cc167c8a5e618d52edea6c925d795",
@@ -50,9 +50,9 @@
       "manuscript/S16_results_hierarchical_bmr.md": "71cd3466d3ab7462bb1142ef3debd82c64cf89652edd2279bc6648f4f0f29c0a",
       "manuscript/S17_results_heuristic_characterization.md": "6d23b16b02d65b3fadcba7b4b414eaf887b8aac753d36fd04a97e707b641d9af",
       "manuscript/SYNTAX.md": "eb5bfd0525333379ef2d1ce3b31429ceaed4df644c6064e56eac5c32c04ef234",
-      "manuscript/config.yaml": "cbe919be0d1d390376f88ed64b7d09f44489d0522346751242fb6e5fc9ac3021",
+      "manuscript/config.yaml": "e707fcb26b557c574b317c8f8cd7bf871ba3ecd3d06580da610f3c16bf940715",
       "manuscript/preamble.md": "e75ada000c3ceeb452e9a840d5469d747ebd616747864a08df3b94ba51a9942d",
-      "pyproject.toml": "15f92f85ef77fe280db45ad3596cd22b550f768a9a1fad3870b88cc672386ae3",
+      "pyproject.toml": "6905b67da18c2e867c2bb22cc2486f538b31906d0048ede7b3103cd9af5e1901",
       "scripts/02_run_analysis.py": "45feb30f7b36933d1b942eacf7ad4ac16b15fbb44b614af1f581384c772734cd",
       "src/__init__.py": "332b6b62bb3f543d712d8dfb9302597166884b2b45b1300e98ff17e04782746c",
       "src/_runtime.py": "d43e57f2c9bc3ced44b70875857777c9061bdc3b1beea6e41a392f98540ca838",
@@ -184,7 +184,7 @@
       "src/manuscript_vars/tokens.py": "b4bb0c727e87774fcf7ea7b616a1dce8b2defe8c8ab991362e3571315e0d218e",
       "src/project_paths.py": "ec40a76c41ce2f1fc1a3dfe8b7f0a8d4720b8bad6ac82d834b1d21b46422a011",
       "src/publication/__init__.py": "96f053b1a089d320354c4316d15e44dce3de5b0ff921edfcc21227503b3e49ff",
-      "src/publication/clean_checkout.py": "38b35e374308c9be9bd160de2998ff35ed556bb6e097d6f9b2d357d8c7921666",
+      "src/publication/clean_checkout.py": "c4f7154c1a0d39570da63b727df362f2999f3feb1b713ab394ff9db82be3d9c6",
       "src/publication/identifiers.py": "416ae23be367c5a10c9f03c235f4d5a221ea70a75e54b75a89afdd05affafaef",
       "src/publication/metadata.py": "3ea539a9fea30cb45e46157be3648aec078068918b55cef56e4fd82550d2f4e4",
       "src/publication/pipeline_freshness.py": "ae327a1a84d1fdfb810124d5a3f19276d495d29e62bd1626e9fc0ff99c411d30",
@@ -195,7 +195,7 @@
       "src/publication/validation_receipt.py": "b962b7074c97f03e92f302ada952d7a818ee8157fab67dc39f17599f56fda69a",
       "src/publication/web_package.py": "681ed185c5460d5e65843835b9bf26a88638dfa841cc6cb39cb369b3a34ced97",
       "src/publication/zenodo.py": "ebfe53fef12a5ccba8a5050191e98ca3b622323d1fa38a1ef38bd13c9a310edd",
-      "uv.lock": "bb0131bbe6b61dfd675f429ab10d57f24b167eb93c260ddcd388e95d20147254"
+      "uv.lock": "f537963f5925093d5183ad3e34a06d04808fcb681e252f839fab0be204ebb4ea"
     }
   },
   "configured_profile": "publication",

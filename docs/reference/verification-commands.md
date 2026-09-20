@@ -537,8 +537,8 @@ uv run --locked python scripts/validate_clean_checkout.py
 
 It must be run from a checkout containing the committed required paths; a dirty
 tree is reported as a failure rather than silently promoted to release evidence.
-The probe also requires all five historical top-level release PDFs (v0.1.0
-through v1.0.4) and verifies their bytes against
+The probe also requires all six immutable top-level release PDFs (v0.1.0
+through v1.1.0) and verifies their bytes against
 [`historical-release-pdfs.json`](historical-release-pdfs.json). The release
 bundle preflight repeats that digest check, so tracking a substituted file does
 not satisfy the immutable-release boundary.

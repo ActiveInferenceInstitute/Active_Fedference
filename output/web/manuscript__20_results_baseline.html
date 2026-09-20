@@ -721,12 +721,13 @@ units. Clients use the density-power <span
 class="math inline">\(\beta\)</span>-loss at <span
 class="math inline">\(\beta = 0.5\)</span> for 200 Adam steps, and
 per-test-point predictions are fused with <code>robust_aggregate</code>
-at <code>robustness = 0.5</code> under PyTorch 2.12.1.</p>
+at <code>robustness = 0.5</code> under PyTorch not installed.</p>
 <p>The executed consensus is a valid probability simplex, with maximum
-unit-mass deviation 2.22e-16, and repeated seeded runs are bit-identical
-(Yes). At contamination 0.40, held-out consensus accuracy is 0.558 for
-the <span class="math inline">\(\beta\to 0\)</span> client and 0.545 for
-the <span class="math inline">\(\beta=0.5\)</span> client.</p>
+unit-mass deviation N/A, and repeated seeded runs are bit-identical
+(N/A). At contamination N/A, held-out consensus accuracy is N/A (PyTorch
+not run) for the <span class="math inline">\(\beta\to 0\)</span> client
+and N/A (PyTorch not run) for the <span
+class="math inline">\(\beta=0.5\)</span> client.</p>
 <p>This single-seed endpoint demonstrates API transfer and deterministic
 execution, not posterior-uncertainty inference, model-class
 universality, or a robust-loss advantage at neural-network scale. It is

@@ -276,13 +276,13 @@ The fixed input seed is $20260728$ on the $arm64$
 machine using Python $3.13.11$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.99
+performance guarantees: agent-axis slopes are 0.93
 (log-linear), 0.94 (iterative robust),
-0.79 (variational), 1.64
-(naive self-excluding sharing), and 1.93
+0.79 (variational), 1.62
+(naive self-excluding sharing), and 1.89
 (robust self-excluding sharing); state-axis slopes
-are 0.96, 0.96, and
-0.95; the modality-axis inference slope is
+are 0.97, 0.95, and
+0.94; the modality-axis inference slope is
 0.66.
 
 The slope fit is a timing diagnostic on this

@@ -81,6 +81,7 @@ def test_all_immutable_release_pdfs_are_required_for_clean_checkout() -> None:
         "Active_Fedference_Research_Manuscript_v1.0.2_Zenodo_10.5281-zenodo.21934992.pdf",
         "Active_Fedference_Research_Manuscript_v1.0.3_Zenodo_10.5281-zenodo.21969756.pdf",
         "Active_Fedference_Research_Manuscript_v1.0.4_Zenodo_10.5281-zenodo.21972644.pdf",
+        "Active_Fedference_Research_Manuscript_v1.1.0_Zenodo_10.5281-zenodo.22149133.pdf",
     )
     assert set(IMMUTABLE_RELEASE_PDFS) <= set(REQUIRED_TRACKED_PATHS)
     assert HISTORICAL_RELEASE_PDF_LEDGER_PATH in REQUIRED_TRACKED_PATHS
