@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 266/268
+progress: 271/273
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1251,3 +1251,11 @@ them.
   controls pass; current focused controls and 1,456 adjacent tests pass with
   zero skips (34 slow-profile tests deselected). Historical failures remain.
   Supported wrapper, federation and format migrations are separate units.
+
+- [x] ISC-278: Source-bound GNN scientific extensions preserve original-byte
+  and closed-parser provenance, execute declared native Gaussian/tracking and
+  two-client signed-site/cavity operations, and refuse unsupported semantics
+  and altered checkpoints. Valid tiny observation noise retains positive
+  covariance; large finite inputs and noncommuting covariance known answers
+  pass. Checkpoint6 independently approves Task9; original REDs remain.
+  This does not establish source client optimization or scientific campaigns.
