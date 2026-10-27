@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 274/276
+progress: 275/277
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1288,3 +1288,11 @@ them.
   protected inventory locators and twelve source-reference refusals pass.
   Actual external historical corpus, race hardening and live-schema retirement
   remain separate; no scientific or publication acceptance is inferred.
+
+- [x] ISC-282: Shared validation and release provenance input policies bind
+  present source JSON resources, including GNN parser/cache/backend registry
+  data. Real addition, content change and removal invalidate prior identities;
+  optional absence preserves intentionally minimal fixture scopes. Independent
+  review approves all four source/test files with no quality blockers and
+  eighteen genuine before-fix failures retained. This is content custody,
+  not resource completeness, final-source certification or release acceptance.

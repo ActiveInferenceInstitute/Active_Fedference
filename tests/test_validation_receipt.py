@@ -896,3 +896,31 @@ def test_final_hydration_refuses_missing_receipt_before_any_output_write(tmp_pat
     assert "validation receipt preflight failed" in completed.stderr
     assert variables_path.read_bytes() == before_variables
     assert manuscript_path.read_bytes() == before_manuscript
+
+
+
+@pytest.mark.parametrize("relative", [
+    "src/fedference/config/gnn-backend-lock.json",
+    "src/fedference/models/sentinel.ir.json",
+    "src/fedference/models/extensions.parser.json",
+])
+@pytest.mark.parametrize("operation", ["add", "change", "remove"])
+def test_packaged_json_changes_invalidate_validation_receipt(
+    tmp_path: Path, relative: str, operation: str,
+) -> None:
+    # Given valid evidence over real source/config files.
+    _make_validation_tree(tmp_path)
+    path = tmp_path / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if operation != "add":
+        path.write_text('{"revision":"before"}')
+    _write_successful_receipt(tmp_path)
+    assert validation_receipt_findings(tmp_path) == []
+    # When a packaged JSON source is added, changed or removed.
+    if operation == "remove":
+        path.unlink()
+    else:
+        path.write_text('{"revision":"after"}')
+    # Then old evidence cannot qualify the changed source tree.
+    findings = validation_receipt_findings(tmp_path)
+    assert any("validation receipt input hashes are stale" in item for item in findings)
