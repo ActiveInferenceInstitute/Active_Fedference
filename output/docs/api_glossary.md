@@ -11,43 +11,43 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.figure_exact_values` | `build_figure_exact_values` | function | Build every declared exact-value fallback from the reports used to plot it. |
 | `analysis.figure_exact_values` | `conditional_display_summaries` | function | Return the review grid's grouped means and half min/max spans. |
 | `analysis.figure_exact_values` | `render_figure_exact_values_markdown` | function | Render deterministic, human-readable Markdown tables from exact values. |
-| `analysis.report_schemas` | `ApplicationIntegrityFlowReport` | class | Source-owned payload for the application integrity flow figure. |
-| `analysis.report_schemas` | `BeliefQualityReport` | class | Top-level payload written to ``belief_quality.json``. |
-| `analysis.report_schemas` | `BeliefSharingReport` | class | Top-level payload written to ``belief_sharing.json``. |
-| `analysis.report_schemas` | `BnnRobustnessReport` | class | Top-level payload written to ``bnn_robustness.json``. |
-| `analysis.report_schemas` | `BnnTorchOkReport` | class | Executed PyTorch complement payload written to ``bnn_torch.json``. |
-| `analysis.report_schemas` | `BnnTorchSkippedReport` | class | Degradation payload when the PyTorch optional extra is unavailable. |
-| `analysis.report_schemas` | `ComplexityScalingReport` | class | Top-level payload written to ``complexity_scaling.json``. |
-| `analysis.report_schemas` | `ConditionalWorldReport` | class | Top-level payload written to ``conditional_world.json``. |
-| `analysis.report_schemas` | `ContaminationGalleryCell` | class | One seed-aggregated contamination-gallery mechanism cell. |
-| `analysis.report_schemas` | `ContaminationGalleryReport` | class | Top-level payload written to ``contamination_gallery.json``. |
-| `analysis.report_schemas` | `CrossStudySummaryReport` | class | Top-level payload written to ``cross_study_summary.json``. |
-| `analysis.report_schemas` | `DisjointFovWorldReport` | class | Top-level payload written to ``disjoint_fov_world.json``. |
-| `analysis.report_schemas` | `EfeDecompositionReport` | class | Top-level payload written to ``efe_decomposition.json``. |
-| `analysis.report_schemas` | `EmergenceReport` | class | Top-level payload written to ``emergence.json``. |
-| `analysis.report_schemas` | `EvidenceReplicationMapReport` | class | Source-owned payload for the evidence and replication map. |
-| `analysis.report_schemas` | `FigureDependencyContract` | class | Declared top-level report fields consumed by one figure generator. |
-| `analysis.report_schemas` | `FigureMetadataEntry` | class | Per-figure metadata payload written inside ``figure_registry.json``. |
-| `analysis.report_schemas` | `FigureRegistryPayload` | class | Top-level figure registry payload. |
-| `analysis.report_schemas` | `HeuristicCharacterizationReport` | class | Top-level payload written to ``heuristic_characterization.json``. |
-| `analysis.report_schemas` | `HierarchicalBmrReport` | class | Top-level payload written to ``hierarchical_bmr.json``. |
-| `analysis.report_schemas` | `HierarchicalWorldReport` | class | Top-level payload written to ``hierarchical_world.json``. |
-| `analysis.report_schemas` | `LanguageAcquisitionReport` | class | Top-level payload written to ``language_acquisition.json``. |
-| `analysis.report_schemas` | `MovingWorldReport` | class | Top-level payload written to ``moving_world.json``. |
-| `analysis.report_schemas` | `NLevel3WorldReport` | class | Top-level payload written to ``nlevel3_world.json``. |
-| `analysis.report_schemas` | `ParameterRecoveryReport` | class | Top-level payload written to ``parameter_recovery.json``. |
-| `analysis.report_schemas` | `ReportSchemaError` | class | Raised when a report or figure-registry payload violates its schema. |
-| `analysis.report_schemas` | `ReviewGridReport` | class | Top-level payload written to ``robustness_review_grid.json``. |
-| `analysis.report_schemas` | `RobustInfluenceWeightsReport` | class | Top-level payload written to ``robust_influence_weights.json``. |
-| `analysis.report_schemas` | `RobustnessOnsetCell` | class | One pooled-method, seed-aggregated robustness-onset rate cell. |
-| `analysis.report_schemas` | `RobustnessOnsetReport` | class | Top-level payload written to ``robustness_onset.json``. |
-| `analysis.report_schemas` | `RobustnessSweepReport` | class | Top-level payload written to ``robustness_sweep.json``. |
-| `analysis.report_schemas` | `SchemaDefinition` | class | Shallow top-level schema definition. |
-| `analysis.report_schemas` | `SensitivityReport` | class | Source-bound payload for the two configured sensitivity grids. |
-| `analysis.report_schemas` | `SourceRenderProvenanceReport` | class | Source-owned payload for producer order and stale invalidation. |
-| `analysis.report_schemas` | `VariationalAggregationReport` | class | Top-level payload written to ``variational_aggregation.json``. |
 | `analysis.report_schemas` | `check_figure_contract` | function | Validate the declared report fields consumed by one figure generator. |
 | `analysis.report_schemas` | `validate_report` | function | Validate one report or figure-registry payload before it is written. |
+| `analysis.schemas.aggregation_diagnostics` | `HeuristicCharacterizationReport` | class | Top-level payload written to ``heuristic_characterization.json``. |
+| `analysis.schemas.aggregation_diagnostics` | `RobustInfluenceWeightsReport` | class | Top-level payload written to ``robust_influence_weights.json``. |
+| `analysis.schemas.aggregation_diagnostics` | `VariationalAggregationReport` | class | Top-level payload written to ``variational_aggregation.json``. |
+| `analysis.schemas.application_integrity_flow` | `ApplicationIntegrityFlowReport` | class | Source-owned payload for the application integrity flow figure. |
+| `analysis.schemas.belief_sharing` | `BeliefSharingReport` | class | Top-level payload written to ``belief_sharing.json``. |
+| `analysis.schemas.bnn_robustness` | `BnnRobustnessReport` | class | Top-level payload written to ``bnn_robustness.json``. |
+| `analysis.schemas.bnn_torch` | `BnnTorchOkReport` | class | Executed PyTorch complement payload written to ``bnn_torch.json``. |
+| `analysis.schemas.bnn_torch` | `BnnTorchSkippedReport` | class | Degradation payload when the PyTorch optional extra is unavailable. |
+| `analysis.schemas.contamination` | `ContaminationGalleryCell` | class | One seed-aggregated contamination-gallery mechanism cell. |
+| `analysis.schemas.contamination` | `ContaminationGalleryReport` | class | Top-level payload written to ``contamination_gallery.json``. |
+| `analysis.schemas.contamination` | `RobustnessOnsetCell` | class | One pooled-method, seed-aggregated robustness-onset rate cell. |
+| `analysis.schemas.contamination` | `RobustnessOnsetReport` | class | Top-level payload written to ``robustness_onset.json``. |
+| `analysis.schemas.evidence_replication_map` | `EvidenceReplicationMapReport` | class | Source-owned payload for the evidence and replication map. |
+| `analysis.schemas.figure_registry` | `FigureMetadataEntry` | class | Per-figure metadata payload written inside ``figure_registry.json``. |
+| `analysis.schemas.figure_registry` | `FigureRegistryPayload` | class | Top-level figure registry payload. |
+| `analysis.schemas.hierarchical_bmr` | `HierarchicalBmrReport` | class | Top-level payload written to ``hierarchical_bmr.json``. |
+| `analysis.schemas.learning` | `EfeDecompositionReport` | class | Top-level payload written to ``efe_decomposition.json``. |
+| `analysis.schemas.learning` | `EmergenceReport` | class | Top-level payload written to ``emergence.json``. |
+| `analysis.schemas.learning` | `LanguageAcquisitionReport` | class | Top-level payload written to ``language_acquisition.json``. |
+| `analysis.schemas.observer_worlds` | `ComplexityScalingReport` | class | Top-level payload written to ``complexity_scaling.json``. |
+| `analysis.schemas.observer_worlds` | `ConditionalWorldReport` | class | Top-level payload written to ``conditional_world.json``. |
+| `analysis.schemas.observer_worlds` | `DisjointFovWorldReport` | class | Top-level payload written to ``disjoint_fov_world.json``. |
+| `analysis.schemas.parameter_recovery` | `ParameterRecoveryReport` | class | Top-level payload written to ``parameter_recovery.json``. |
+| `analysis.schemas.primitives` | `FigureDependencyContract` | class | Declared top-level report fields consumed by one figure generator. |
+| `analysis.schemas.primitives` | `ReportSchemaError` | class | Raised when a report or figure-registry payload violates its schema. |
+| `analysis.schemas.primitives` | `SchemaDefinition` | class | Shallow top-level schema definition. |
+| `analysis.schemas.review_grid` | `ReviewGridReport` | class | Top-level payload written to ``robustness_review_grid.json``. |
+| `analysis.schemas.robustness_sweep` | `RobustnessSweepReport` | class | Top-level payload written to ``robustness_sweep.json``. |
+| `analysis.schemas.sensitivity` | `SensitivityReport` | class | Source-bound payload for the two configured sensitivity grids. |
+| `analysis.schemas.source_render_provenance` | `SourceRenderProvenanceReport` | class | Source-owned payload for producer order and stale invalidation. |
+| `analysis.schemas.study_summaries` | `BeliefQualityReport` | class | Top-level payload written to ``belief_quality.json``. |
+| `analysis.schemas.study_summaries` | `CrossStudySummaryReport` | class | Top-level payload written to ``cross_study_summary.json``. |
+| `analysis.schemas.worlds` | `HierarchicalWorldReport` | class | Top-level payload written to ``hierarchical_world.json``. |
+| `analysis.schemas.worlds` | `MovingWorldReport` | class | Top-level payload written to ``moving_world.json``. |
+| `analysis.schemas.worlds` | `NLevel3WorldReport` | class | Top-level payload written to ``nlevel3_world.json``. |
 | `analysis.visual_contracts` | `ApplicationIntegrityFlowReport` | class | Typed payload for the application integrity and solver-health figure. |
 | `analysis.visual_contracts` | `EvidenceLane` | class | One claim-owner lane in the evidence and replication map. |
 | `analysis.visual_contracts` | `EvidenceReplicationMapReport` | class | Typed payload for the evidence-class and replication-unit map. |
@@ -145,23 +145,23 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.divergences` | `renyi_divergence` | function | Return the standard Rényi divergence ``D_alpha(q \|\| p)``. |
 | `fedference.divergences` | `reverse_kl` | function | Return the reverse KL ``KL(p \|\| q)`` — FedGVI's ``RKL`` client divergence. |
 | `fedference.divergences` | `total_variation` | function | Return total-variation distance ``0.5 * sum_k \|q_k - p_k\|`` in [0, 1]. |
-| `fedference.evidence` | `ApplicationReceipt` | class | Integrity receipt for one labeled categorical aggregation operation. |
-| `fedference.evidence` | `ArtifactRecord` | class | One output file bound into a run receipt. |
-| `fedference.evidence` | `DatasetSpec` | class | Legally and byte-level reproducible external dataset declaration. |
-| `fedference.evidence` | `ExperimentSpec` | class | Decision-complete declaration for one research experiment family. |
-| `fedference.evidence` | `RunReceipt` | class | Content-bound receipt for one executed experiment profile. |
-| `fedference.evidence` | `SourceReference` | class | Pinned scholarly or implementation source used by an experiment. |
-| `fedference.evidence` | `canonical_sha256` | function | Hash a JSON-compatible value using canonical key and separator order. |
-| `fedference.evidence` | `load_application_receipt` | function | Load and validate one strict application receipt. |
-| `fedference.evidence` | `load_receipt` | function | Auto-detect and load a research or application receipt. |
-| `fedference.evidence` | `load_run_receipt` | function | Load and validate a JSON run receipt. |
-| `fedference.evidence` | `make_artifact_record` | function | Create a receipt record for an existing file below ``root``. |
-| `fedference.evidence` | `sha256_file` | function | Return the SHA-256 digest of ``path`` without loading it all into memory. |
-| `fedference.evidence` | `validate_evidence_report` | function | Validate the typed top-level contract for an executable run report. |
-| `fedference.evidence` | `verify_application_receipt` | function | Verify artifact/envelope bindings, source, and the requested solver policy. |
-| `fedference.evidence` | `verify_run_receipt` | function | Return exact provenance/artifact findings; empty means verified. |
-| `fedference.evidence` | `write_application_receipt` | function | Atomically persist one canonical application receipt. |
-| `fedference.evidence` | `write_run_receipt` | function | Atomically persist a canonical run receipt. |
+| `fedference.evidence_contracts.application_schema` | `ApplicationReceipt` | class | Integrity receipt for one labeled categorical aggregation operation. |
+| `fedference.evidence_contracts.application_verification` | `verify_application_receipt` | function | Verify artifact/envelope bindings, source, and the requested solver policy. |
+| `fedference.evidence_contracts.custody` | `load_application_receipt` | function | Load and validate one strict application receipt. |
+| `fedference.evidence_contracts.custody` | `load_receipt` | function | Auto-detect and load a research or application receipt. |
+| `fedference.evidence_contracts.custody` | `load_run_receipt` | function | Load and validate a JSON run receipt. |
+| `fedference.evidence_contracts.custody` | `make_artifact_record` | function | Create a receipt record for an existing file below ``root``. |
+| `fedference.evidence_contracts.custody` | `write_application_receipt` | function | Atomically persist one canonical application receipt. |
+| `fedference.evidence_contracts.custody` | `write_run_receipt` | function | Atomically persist a canonical run receipt. |
+| `fedference.evidence_contracts.hashing` | `canonical_sha256` | function | Hash a JSON-compatible value using canonical key and separator order. |
+| `fedference.evidence_contracts.hashing` | `sha256_file` | function | Return the SHA-256 digest of ``path`` without loading it all into memory. |
+| `fedference.evidence_contracts.run_schema` | `RunReceipt` | class | Content-bound receipt for one executed experiment profile. |
+| `fedference.evidence_contracts.run_verification` | `verify_run_receipt` | function | Return exact provenance/artifact findings; empty means verified. |
+| `fedference.evidence_contracts.schema` | `ArtifactRecord` | class | One output file bound into a run receipt. |
+| `fedference.evidence_contracts.specifications` | `DatasetSpec` | class | Legally and byte-level reproducible external dataset declaration. |
+| `fedference.evidence_contracts.specifications` | `ExperimentSpec` | class | Decision-complete declaration for one research experiment family. |
+| `fedference.evidence_contracts.specifications` | `SourceReference` | class | Pinned scholarly or implementation source used by an experiment. |
+| `fedference.evidence_contracts.specifications` | `validate_evidence_report` | function | Validate the typed top-level contract for an executable run report. |
 | `fedference.expected_free_energy` | `EFETerms` | class | The four EFE terms for one policy, summed over its horizon. |
 | `fedference.expected_free_energy` | `decompose` | function | Closed-form EFE decomposition for one policy over a categorical POMDP. |
 | `fedference.expected_free_energy` | `preferred_outcomes` | function | Preferred-outcome distribution ``p(o) = softmax(C)`` from log-preferences ``C``. |
@@ -232,6 +232,65 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.generalized_bayes` | `generalized_posterior` | function | Closed-form generalized posterior over hidden states. |
 | `fedference.generalized_bayes` | `softmax` | function | Numerically stable softmax returning a categorical pmf. |
 | `fedference.generalized_bayes` | `update_factor` | function | Return the refreshed local factor ``t_i`` after a client update. |
+| `fedference.gnn.admission` | `GNNAdmissionError` | class | Stable machine-readable refusal and exact IR location. |
+| `fedference.gnn.admission` | `admit` | function | Admit canonical IR with explicit family semantics; never execute a model. |
+| `fedference.gnn.admission` | `content_digest` | function | SHA-256 binds full admitted content and declared provenance, not its truth. |
+| `fedference.gnn.admission` | `dumps` | function | Serialize the immutable IR deterministically; re-admit to reject forged values. |
+| `fedference.gnn.admission` | `loads` | function | Lossless duplicate-aware JSON admission, not raw GNN duplicate detection. |
+| `fedference.gnn.backend` | `BackendConfig` | class |  |
+| `fedference.gnn.backend` | `BackendResult` | class |  |
+| `fedference.gnn.backend` | `run_pymdp` | function | Execute admitted categorical data with a locked, isolated upstream process. |
+| `fedference.gnn.backend` | `verify_backend_output` | function | Read actual runtime files and reject refusal, truncation or replay mismatch. |
+| `fedference.gnn.backend_registry` | `BackendProfile` | class | One admitted runtime identity, separate from its serialization. |
+| `fedference.gnn.backend_registry` | `BackendRegistry` | class | Immutable admitted views and an isolated JSON projection. |
+| `fedference.gnn.backend_registry` | `load_backend_registry` | function | Parse registry semantics once and retain their admitted field types. |
+| `fedference.gnn.backend_registry` | `read_backend_document` | function | Read one strict backend JSON boundary with its existing finding code. |
+| `fedference.gnn.loader` | `load_gnn` | function | Run the pinned real extractor against an immutable caller-owned snapshot. |
+| `fedference.gnn.loader` | `load_sentinel` | function | Load the compiled, source-bound sentinel offline; never invoke upstream. |
+| `fedference.gnn.loader` | `verify_sentinel_cache` | function | Build-time real-parser conformance gate; compare without overwriting. |
+| `fedference.gnn.native` | `NativeWorld` | class |  |
+| `fedference.gnn.native` | `SentinelParameters` | class | Explicit overrides; None retains the numeric source value. |
+| `fedference.gnn.native` | `native_posterior` | function | Execute the existing native inference operation on GNN-derived values. |
+| `fedference.gnn.native` | `native_world` | function | Create writable native arrays from admitted immutable model data. |
+| `fedference.gnn.native` | `parameterize_sentinel` | function | Adjust the declared sensor and sole preferred outcome, retaining topology. |
+| `fedference.gnn.scientific` | `GaussianPosterior` | class | Multivariate conditioning result in the model coordinate units. |
+| `fedference.gnn.scientific` | `ScientificProgram` | class | Admitted family plus immutable source-bound native settings. |
+| `fedference.gnn.scientific` | `SiteRun` | class | Real cavity/replacement states and bounded protocol parity. |
+| `fedference.gnn.scientific` | `checkpoint` | function | Serialize an explicit native checkpoint bound to the full GNN source. |
+| `fedference.gnn.scientific` | `gaussian_condition` | function | Condition a full Gaussian on a same-coordinate noisy observation. |
+| `fedference.gnn.scientific` | `load_scientific` | function | Admit the payload preserved by the actual pinned Markdown parser. |
+| `fedference.gnn.scientific` | `restore_checkpoint` | function | Reject stale model binding before returning a native server state. |
+| `fedference.gnn.scientific` | `run_sites` | function | Run signed diagonal prior × sites, proper cavity, and factor replacement. |
+| `fedference.gnn.scientific` | `run_tracking` | function | Run the real native tracking consumer; seed is the explicit caller input. |
+| `fedference.gnn.scientific` | `tracking_config` | function | Bind target/noise/cue inputs; refuse unsupported dynamical semantics. |
+| `fedference.gnn.source` | `ParsedExtensions` | class | Immutable preserved payload and parser/source binding, not admission. |
+| `fedference.gnn.source` | `parse_extensions` | function | Execute the pinned normal parser import from a verified-only snapshot. |
+| `fedference.gnn.structured` | `HierarchyParameters` | class | Explicit source-preserving hierarchy overrides; no PMF normalization. |
+| `fedference.gnn.structured` | `HierarchyWorld` | class |  |
+| `fedference.gnn.structured` | `MovingParameters` | class | Explicit topology parameters; numeric sensor profiles remain source-owned. |
+| `fedference.gnn.structured` | `MovingWorld` | class |  |
+| `fedference.gnn.structured` | `StructuredProgram` | class | Immutable admitted model and source-bound native mapping. |
+| `fedference.gnn.structured` | `cached_structured` | function | Load a generated IR only when bound source/parser/full payload hashes agree. |
+| `fedference.gnn.structured` | `hierarchy_depth` | function | Select a source-defined suffix; its new root keeps its declared default prior. |
+| `fedference.gnn.structured` | `hierarchy_leaf` | function | Expose the source leaf channel through the shared categorical adapter. |
+| `fedference.gnn.structured` | `hierarchy_world` | function | Map source levels/conditional edges to the existing native inference contract. |
+| `fedference.gnn.structured` | `infer_hierarchy` | function | Execute native message passing with the admitted source likelihood and gates. |
+| `fedference.gnn.structured` | `load_structured` | function | Run the real pinned parser before strict project extension admission. |
+| `fedference.gnn.structured` | `moving_world` | function | Consume distinct threat and position tensors without flattening them. |
+| `fedference.gnn.structured` | `parameterize_hierarchy` | function | Bind all declared overrides into the admitted IR and its digest. |
+| `fedference.gnn.structured` | `parameterize_moving` | function | Resize only the declared line template, retaining source sensor/prior values. |
+| `fedference.gnn.structured` | `require_structured_backend` | function | Refuse unsupported compositions before any backend output is created. |
+| `fedference.gnn.structured` | `structured_tasks` | function | Load the two explicit grid task definitions; no ambient task defaults. |
+| `fedference.gnn.types` | `Categorical` | class |  |
+| `fedference.gnn.types` | `CategoricalModel` | class |  |
+| `fedference.gnn.types` | `HierarchicalModel` | class |  |
+| `fedference.gnn.types` | `HybridGaussianModel` | class | Mean uses coordinate units; covariance entry (i,j) uses units[i]*units[j]. |
+| `fedference.gnn.types` | `Layer` | class | Topologically ordered parent; conditioned prior replaces D when conditioned. |
+| `fedference.gnn.types` | `Metadata` | class |  |
+| `fedference.gnn.types` | `MovingObserverModel` | class |  |
+| `fedference.gnn.types` | `Provenance` | class |  |
+| `fedference.gnn.types` | `SiteFactorModel` | class | Signed Gaussian increments (Mildner et al., 2025), not PMFs/cavities. |
+| `fedference.gnn.types` | `Tensor` | class |  |
 | `fedference.hierarchy_tasks` | `HierarchyTask` | class | Grid task with an optional key-gated door. |
 | `fedference.hierarchy_tasks` | `run_hierarchy_task_pilot` | function | Run both task units and all matched hierarchy controls. |
 | `fedference.hierarchy_tasks` | `simulate_hierarchy_task` | function | Simulate one seeded episode under one declared hierarchy control. |
@@ -289,7 +348,6 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.single_machine` | `run_fedgvi_bnn_pilot` | function | Run a portable CPU/MPS FedGVI-vs-PVI proper-score pilot. |
 | `fedference.statistics` | `bh_fdr` | function | Benjamini-Hochberg (1995) step-up FDR control over a family of p-values. |
 | `fedference.statistics` | `bootstrap_ci` | function | Percentile bootstrap confidence interval for the mean of ``samples``. |
-| `fedference.statistics` | `cohens_d_from_rank_biserial` | function | Deprecated compatibility alias for :func:`d_equivalent_from_rank_biserial`. |
 | `fedference.statistics` | `d_equivalent_from_rank_biserial` | function | Return the monotone ``d``-equivalent display transform of rank-biserial ``r``. |
 | `fedference.statistics` | `interpret_effect_size` | function | Label a secondary ``d``-equivalent display value by magnitude. |
 | `fedference.statistics` | `minimum_detectable_effect` | function | Approximate a two-sided normal-mean minimum detectable effect. |

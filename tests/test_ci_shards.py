@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import copy
 import json
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
-from scripts.ci_shards import digest, partition, validate_plan, verify_results
+from scripts.ci_shards import digest, partition, validate_plan, verify_results, verify_shard_artifacts
 
 
 def _plan() -> dict:
@@ -111,3 +113,112 @@ def test_real_pytest_plugin_selects_only_its_module_and_records_execution(tmp_pa
     record = json.loads((tmp_path / "result.json").read_text())
     assert record["finished"] == ["tests/test_b.py::test_one"]
     assert len(record["nodes"]) == 2
+
+
+
+@pytest.fixture(scope="module")
+def bounded_shard_artifacts(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, dict]:
+    """Real tiny pytest/coverage runs; these are not production-suite receipts."""
+    root = tmp_path_factory.mktemp("bounded-shard-control")
+    (root / "src").mkdir()
+    (root / "tests").mkdir()
+    (root / "src/arithmetic_sample.py").write_text(
+        "def add(a, b):\n    return a + b\ndef multiply(a, b):\n    return a * b\n"
+    )
+    (root / "tests/test_a.py").write_text(
+        "from arithmetic_sample import add\ndef test_add():\n    assert add(2, 3) == 5\n"
+    )
+    (root / "tests/test_b.py").write_text(
+        "import os,pytest\nfrom arithmetic_sample import multiply\n"
+        "def test_multiply():\n"
+        "    if os.environ.get('SKIP_SAMPLE'):\n        pytest.skip('negative skip control')\n"
+        "    assert multiply(2, 3) == 6\n"
+    )
+    nodes = ["tests/test_a.py::test_add", "tests/test_b.py::test_multiply"]
+    plan = {"nodes": nodes, "groups": [[nodes[0]], [nodes[1]]],
+            "collection_digest": digest(nodes), "scope": "bounded-runner-control"}
+    (root / "plan.json").write_text(json.dumps(plan))
+    source = Path(__file__).resolve().parents[1]
+    (root / "driver.py").write_text(
+        "import json,os,sys,pytest\nfrom pathlib import Path\n"
+        f"sys.path.insert(0, {str(source)!r})\n"
+        "sys.path.insert(0,str(Path.cwd()/'src'))\n"
+        "from scripts.ci_shards import Inventory,record_shard_result\n"
+        "plan=json.loads(Path('plan.json').read_text())\n"
+        "index=int(sys.argv[1]); directory=Path(sys.argv[2])/f'shard-{index}'\n"
+        "directory.mkdir(parents=True)\n"
+        "os.environ['COVERAGE_FILE']=str((directory/f'.coverage.shard-{index}').resolve())\n"
+        "inventory=Inventory(plan,index)\n"
+        "status=pytest.main(['tests','--cov=src','--cov-fail-under=0','-q'],plugins=[inventory])\n"
+        "record_shard_result(plan,index,directory,inventory,int(status))\n"
+        "raise SystemExit(status)\n"
+    )
+    for index in range(2):
+        command = [sys.executable, str(root / "driver.py"), str(index), str(root / "results")]
+        result = subprocess.run(command, cwd=root, capture_output=True, text=True,
+                                timeout=60, check=False)
+        (root / f"process-{index}.json").write_text(json.dumps({
+            "argv": command, "returncode": result.returncode,
+            "stdout": result.stdout, "stderr": result.stderr,
+        }, indent=2))
+        assert result.returncode == 0, result.stdout + result.stderr
+    return root, plan
+
+
+def test_real_receipts_bind_complete_fixture_execution(bounded_shard_artifacts: tuple[Path, dict]) -> None:
+    # Given two genuine fixture shard runs and coverage databases.
+    root, plan = bounded_shard_artifacts
+    # When the production artifact verifier consumes their receipts.
+    verify_shard_artifacts(plan, root / "results")
+    # Then the recorded nodes are exactly the bounded fixture's universe.
+    observed = [json.loads(path.read_text())["finished"]
+                for path in sorted((root / "results").glob("shard-*/receipt.json"))]
+    assert observed == plan["groups"]
+    environment = dict(os.environ, COVERAGE_FILE=str(root / ".coverage"))
+    commands = [
+        [sys.executable, "-m", "coverage", "combine", "--keep",
+         str(root / "results/shard-0"), str(root / "results/shard-1")],
+        [sys.executable, "-m", "coverage", "report", "--fail-under=90"],
+        [sys.executable, "-m", "coverage", "json", "-o", str(root / "combined.json")],
+    ]
+    for index, command in enumerate(commands):
+        result = subprocess.run(command, cwd=root, env=environment, capture_output=True,
+                                text=True, timeout=60, check=False)
+        (root / f"combine-{index}.json").write_text(json.dumps({
+            "argv": command, "returncode": result.returncode,
+            "stdout": result.stdout, "stderr": result.stderr,
+        }, indent=2))
+        assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("fault", ["missing", "duplicate", "coverage", "skipped"])
+def test_real_artifact_verifier_refuses_incomplete_evidence(
+    bounded_shard_artifacts: tuple[Path, dict], tmp_path: Path, fault: str,
+) -> None:
+    # Given actual fixture receipts and their original coverage bytes.
+    root, plan = bounded_shard_artifacts
+    target = tmp_path / "results"
+    shutil.copytree(root / "results", target)
+    # When a required artifact is withheld, duplicated, altered, or a test truly skips.
+    if fault == "missing":
+        (target / "shard-1").rename(target / "withheld-shard-1")
+    elif fault == "duplicate":
+        shutil.copytree(target / "shard-1", target / "shard-extra")
+    elif fault == "coverage":
+        with (target / "shard-1/.coverage.shard-1").open("ab") as stream:
+            stream.write(b"tampered")
+    else:
+        (target / "shard-1").rename(target / "original-shard-1")
+        environment = dict(os.environ, SKIP_SAMPLE="1")
+        command = [sys.executable, str(root / "driver.py"), "1", str(target)]
+        result = subprocess.run(command, cwd=root, env=environment, capture_output=True,
+                                text=True, timeout=60, check=False)
+        (tmp_path / "skip-process.json").write_text(json.dumps({
+            "argv": command, "returncode": result.returncode,
+            "stdout": result.stdout, "stderr": result.stderr,
+        }, indent=2))
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert json.loads((target / "shard-1/receipt.json").read_text())["skipped"]
+    # Then green subprocess status cannot substitute for complete evidence.
+    with pytest.raises(ValueError):
+        verify_shard_artifacts(plan, target)

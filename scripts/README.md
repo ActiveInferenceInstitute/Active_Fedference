@@ -28,6 +28,8 @@ in `src/`.
 | Script | Output | Status |
 | --- | --- | --- |
 | `ci_shards.py {plan,run,verify} --plan PATH [--project-root PATH]` | Complete collection plan, per-shard execution receipts, coverage and JUnit diagnostics under `.tmp/` | CI scheduling and complete-execution verification; final combined coverage remains required |
+| `bootstrap_gnn.py --upstream-root PATH --destination NEW_PATH --profile cpython312-cpu [--python PATH]` | Fresh pinned runtime, real Agent/parser qualification and `environment.json` | Required GNN CI provisioning; the 3.14 profile qualifies existing-runtime execution |
+| `validation_profiles.py` (internal pytest policy helper) | Native/GNN/full collection and required-runtime refusal | Imported by pytest configuration and the shard planner |
 | `02_run_analysis.py [--profile publication\|smoke] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
 | `record_pipeline_stage.py render --template-root PATH [--timestamp UTC] [--project-root PATH]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
 | `validate_test_coverage.py [--verify] [--project-root PATH]` | `output/data/test_coverage_receipt.json` | REQUIRED full-suite receipt before final hydration |

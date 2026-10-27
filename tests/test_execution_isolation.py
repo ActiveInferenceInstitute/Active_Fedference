@@ -40,14 +40,17 @@ def test_outside_checkout_and_complete_shard_inventory(tmp_path: Path) -> None:
     ancestor.mkdir()
     config = ancestor / "pytest.ini"
     config.write_text("[pytest]\naddopts = --ancestor-option-must-not-be-used\n")
-    environment["PYTEST_ADDOPTS"] = f"-c {config} --rootdir={ancestor}"
+    environment["PYTEST_ADDOPTS"] = (
+        f"-c {config} --rootdir={ancestor} -o cache_dir={tmp_path / 'cache'}"
+    )
     plan_path = tmp_path / "plan.json"
     planned = _run([sys.executable, str(ROOT / "scripts" / "ci_shards.py"), "plan",
                     "--project-root", str(ROOT), "--plan", str(plan_path)], ancestor, environment)
     assert planned.returncode == 0, planned.stdout + planned.stderr
     plan = json.loads(plan_path.read_text())
     collected = _run([sys.executable, "-m", "pytest", "-c", str(ROOT / "pyproject.toml"),
-                      f"--rootdir={ROOT}", str(ROOT / "tests"), "--collect-only", "-qq"],
+                      f"--rootdir={ROOT}", str(ROOT / "tests"), "--collect-only",
+                      "--validation-profile=full", "-qq"],
                      ancestor, environment)
     assert collected.returncode == 0, collected.stdout + collected.stderr
     nodes = [line for line in collected.stdout.splitlines() if line.startswith("tests/") and "::" in line]

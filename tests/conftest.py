@@ -18,6 +18,12 @@ for _path in (ROOT, ROOT / "src"):
         sys.path.insert(0, str(_path))
 
 
+# Minimal fixture projects copy this file without the repository's scripts.
+pytest_plugins = (
+    ("scripts.validation_profiles",) if (ROOT / "scripts/validation_profiles.py").is_file() else ()
+)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def isolated_test_processes(tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
     """Bound fixture discovery and use this populated interpreter in child builds."""
@@ -31,7 +37,10 @@ def isolated_test_processes(tmp_path_factory: pytest.TempPathFactory) -> Iterato
         "GIT_CEILING_DIRECTORIES": os.pathsep.join(filter(None, (ceilings, str(temporary_root)))),
         # Child suites use the known project configuration, but their own cwd
         # for node IDs. An explicit child -c/--rootdir still takes precedence.
-        "PYTEST_ADDOPTS": shlex.join(["-c", str(ROOT / "pyproject.toml"), "--rootdir=."]),
+        "PYTEST_ADDOPTS": shlex.join([
+            "-c", str(ROOT / "pyproject.toml"), "--rootdir=.",
+            "-o", f"cache_dir={temporary_root / 'pytest-cache'}",
+        ]),
         "UV_PYTHON": sys.executable,
     }
     previous = {key: os.environ.get(key) for key in environment}

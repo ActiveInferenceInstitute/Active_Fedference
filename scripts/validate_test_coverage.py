@@ -113,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
             "-m",
             "pytest",
             "tests/",
+            "--validation-profile=full",
             "--cov=src",
             f"--cov-fail-under={MINIMUM_COVERAGE_THRESHOLD:g}",
             f"--junitxml={junit}",

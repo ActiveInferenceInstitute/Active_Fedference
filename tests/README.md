@@ -3,7 +3,7 @@
 Active Fedference test suite. Full contract: [`AGENTS.md`](AGENTS.md).
 
 ```bash
-uv run --locked --extra dev pytest tests/ --cov=src --cov-fail-under=90
+uv run --locked --extra dev pytest tests/ --validation-profile=full --cov=src --cov-fail-under=90
 ```
 
 Fast feedback and explicit profiles:

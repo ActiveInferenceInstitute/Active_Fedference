@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 276/278
+progress: 278/280
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1306,3 +1306,20 @@ them.
   coverage is 92.26 percent with production bytes unchanged by test cleanup.
   Report-field migrations, scientific results and final reader delivery remain
   separate; current source report/figure contracts are preserved.
+
+- [x] ISC-284: Real upstream PyMDP state-inference execution consumes admitted
+  GNN models through a source-bound isolated backend. Strict request/model,
+  runtime-registry, numeric output and native replay checks reject tampering;
+  independent review approves the typed registry fix and 55 backend cases.
+  Fresh installed-wheel/default-registry checks pass without optional backend
+  imports. This qualifies CPU float32 state inference, not planning, learning,
+  complete source protocols or scientific equivalence.
+
+- [x] ISC-285: Required native/GNN validation profiles share complete test
+  inventory and exact-once shard verification with a combined 90 percent source
+  coverage floor. Fresh pinned Python 3.12 CPU provisioning, dependency checks,
+  actual Agent execution and normal upstream parsing pass locally; Python 3.14
+  is qualified only for existing-runtime execution. Missing runtimes, skips,
+  incomplete receipts and corrupt coverage fail their real controls. Independent
+  review approves the bounded bootstrap/profile scope. Hosted Linux execution,
+  full production shard union and final combined coverage remain pending.

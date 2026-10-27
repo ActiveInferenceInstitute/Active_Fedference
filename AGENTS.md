@@ -107,13 +107,26 @@ Full module map, experiments, and artifacts:
 
 ## Validation commands
 
+Pytest defaults to `--validation-profile=native`. The `gnn` profile owns
+the external parser/runtime modules; `full` includes both profiles. Required
+`gnn`/`full` execution fails when `GNN_ROOT` or
+`GNN_PARSER_DEPENDENCIES` is absent and rejects skipped tests. Provision
+a fresh pinned runtime with `scripts/bootstrap_gnn.py --upstream-root PATH
+--destination NEW_PATH --profile cpython312-cpu`, then export the values from
+its `environment.json`. Bootstrap provisions `cpython312-cpu`; the
+`cpython314-cpu` registry profile qualifies a caller-supplied existing runtime.
+`GNN_PYTHON` selects the interpreter independently of the upstream source.
+Both profiles require exact Python and whole installed-distribution matches.
+CI requires the exact-once union of native and GNN
+shards before enforcing combined source coverage.
+
 ```bash
-uv run --locked --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ --validation-profile=full \
   --cov=src --cov-fail-under=90
 
-# Fast feedback and explicit integration/publication profiles
-uv run --locked pytest tests/ -m "not slow" -q
-uv run --locked pytest tests/ -m integration -q
+# Native feedback (default): no external GNN runtime required
+uv run --locked pytest tests/ --validation-profile=native -m "not slow" -q
+uv run --locked pytest tests/ --validation-profile=full -m integration -q
 uv run --locked pytest tests/ -m publication -q
 
 # Real-subprocess public API, federation, replay, and CLI examples

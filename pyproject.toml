@@ -122,6 +122,7 @@ disable_error_code = ["import-untyped"]
 [tool.setuptools.package-data]
 fedference = [
     "config/*.yaml",
+    "config/*.json",
     "data/*.csv",
     "models/*.gnn.md",
     "models/*.json",

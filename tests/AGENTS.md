@@ -81,7 +81,7 @@ controls, receipt verification, and caller-owned output isolation.
 ## Authoritative command
 
 ```bash
-uv run --locked --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ --validation-profile=full \
   --cov=src \
   --cov-fail-under=90
 ```
