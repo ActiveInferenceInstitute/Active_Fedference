@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 275/277
+progress: 276/278
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1296,3 +1296,13 @@ them.
   review approves all four source/test files with no quality blockers and
   eighteen genuine before-fix failures retained. This is content custody,
   not resource completeness, final-source certification or release acceptance.
+
+- [x] ISC-283: Analysis report schema families, shared primitives and figure
+  dependency owners are separated behind one canonical validation boundary.
+  Independent review reproduces 70 unchanged definitions, 27 real canonical
+  report outputs and 346 exact malformed-field diagnostics. Runtime figure
+  consumer-field refusals replace an opaque metadata hash check and fail under
+  deliberate validator bypass. All 461 scoped cases pass; original branch-aware
+  coverage is 92.26 percent with production bytes unchanged by test cleanup.
+  Report-field migrations, scientific results and final reader delivery remain
+  separate; current source report/figure contracts are preserved.
