@@ -472,10 +472,10 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `publication.validation_receipt` | `validation_receipt_findings` | function | Return fail-closed findings for the standalone validation receipt. |
 | `publication.validation_receipt` | `validation_receipt_tokens` | function | Load final manuscript provenance tokens from a fresh successful receipt. |
 | `publication.validation_receipt` | `write_validation_receipt` | function | Atomically write a receipt for a successful, fresh full validation gate. |
-| `publication.web_package` | `WebPackageValidation` | class | Asset, reference, markup, and accessibility result for generated HTML. |
-| `publication.web_package` | `mirror_web_figures` | function | Mirror every generated figure into the web package, removing stale files. |
-| `publication.web_package` | `normalize_web_xrefs` | function | Atomically replace visible references with self-contained HTML links. |
-| `publication.web_package` | `sanitize_machine_paths` | function | Replace local home, temporary, and volume prefixes in text artifacts. |
+| `publication.web.assets` | `mirror_web_figures` | function | Mirror every generated figure into the web package, removing stale files. |
+| `publication.web.assets` | `sanitize_machine_paths` | function | Replace local home, temporary, and volume prefixes in text artifacts. |
+| `publication.web.models` | `WebPackageValidation` | class | Asset, reference, markup, and accessibility result for generated HTML. |
+| `publication.web.normalization` | `normalize_web_xrefs` | function | Atomically replace visible references with self-contained HTML links. |
 | `publication.web_package` | `validate_web_package` | function | Check generated HTML assets, links, markup, and accessibility structure. |
 | `publication.zenodo` | `ZenodoClient` | class | Small standard-library Zenodo REST client for release boundaries. |
 | `publication.zenodo` | `ZenodoDeposition` | class | Stable subset of a Zenodo deposition response. |

@@ -902,7 +902,11 @@ def test_multi_machine_claims_stay_qualified() -> None:
 def test_security_and_accessibility_boundaries_are_explicit_and_gated() -> None:
     threat_model = _read("docs/security/active_fedference-threat-model.md")
     accessibility = _read("docs/manuscript/accessibility.md")
-    web_validator = _read("src/publication/web_package.py")
+    web_validator = "\n".join(_read(path) for path in (
+        "src/publication/web_package.py",
+        "src/publication/web/accessibility.py",
+        "src/publication/web/accessibility_parser.py",
+    ))
 
     for heading in (
         "## Scope and assumptions",

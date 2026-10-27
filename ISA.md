@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 278/280
+progress: 279/281
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1323,3 +1323,13 @@ them.
   incomplete receipts and corrupt coverage fail their real controls. Independent
   review approves the bounded bootstrap/profile scope. Hosted Linux execution,
   full production shard union and final combined coverage remain pending.
+
+- [x] ISC-286: HTML tokenization, reference rendering, resource/link policy,
+  accessibility facts and transactional file custody have focused owners
+  behind the canonical publication boundary. Independent review approves
+  73 unchanged definitions, 186 passing cases, 90.69 percent scoped branch
+  coverage and three intended mutation failures. Real CLI rejection, original
+  and current byte/finding/link characterization, and a source-bound glossary
+  agree. Resource refusal remains read-only validation; normalization retains
+  its existing path and changed-original guards. This extraction does not
+  establish browser rendering, WCAG/PDF-UA, release or scientific acceptance.
