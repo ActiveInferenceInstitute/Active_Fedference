@@ -21,6 +21,9 @@ specialized audits relevant to the change under review.
 
 ## Architecture and implementation reviews
 
+- [`repository-review-2026-10-27.md`](repository-review-2026-10-27.md) — live
+  repository/GNN sync, bounded model exchange, reproduced boundary findings,
+  and proposed medium engineering and major scientific scopes.
 - [`first-principles-redteam-review-2026-07-16.md`](first-principles-redteam-review-2026-07-16.md)
   — first-principles and adversarial review of mathematical, transport, test,
   and release boundaries.

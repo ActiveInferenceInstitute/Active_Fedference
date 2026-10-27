@@ -94,12 +94,14 @@ dimension, not a fourth robustness guarantee. See
 
 ## Rule 7: Standalone repository and public target boundary (ISC-37)
 
-This project is its own standalone repository. The configured interim review
-mirror is `https://github.com/docxology/active_fedference`; the public target is
-`https://github.com/ActiveInferenceInstitute/Active_Fedference`, whose current
-public release is v1.0.4. The v1.0.4 snapshot is published from this standalone
-repository. The current `1.1.0.dev0` line has no version DOI or release date;
-the v1.0.4 DOI identifies only its immutable release/PDF. Never copy or commit
+This project is its own standalone repository. The canonical public repository
+is `https://github.com/ActiveInferenceInstitute/Active_Fedference`; this public
+checkout configures it as `origin`. The separate interim evidence mirror is
+`https://github.com/docxology/active_fedference`. Inspect checkout-local aliases
+before synchronizing. Source release identity comes from `manuscript/config.yaml`
+and `pyproject.toml`, with emitted metadata checked by `scripts/emit_metadata.py`;
+verify hosted release and DOI state separately. Prior version DOIs identify
+only their immutable releases/PDFs. Never copy or commit
 this project into the unrelated public template remote. A feature-branch push,
 private-main integration, public-main promotion, versioned GitHub release, and
 Zenodo publication are distinct actions. Future source changes remain

@@ -40,6 +40,7 @@ Technical index for `docs/`. Navigation hub:
 | `reference/README.md` | Reference-document index and metadata/release boundary signposts |
 | **research/** | |
 | `research/README.md` | Research-audit index, read order, and source-currentness boundary |
+| `research/repository-review-2026-10-27.md` | Dated sync/GNN review, retained negative control, normalization finding, and engineering/scientific follow-up scopes |
 | `research/literature-audit.md` | Primary-source scholarship and evidence-transfer boundaries |
 | `research/manuscript-claim-audit.md` | Manuscript-wide claim-status ledger |
 | `research/visual-claim-audit.md` | Figure, caption, uncertainty, and accessibility claim audit |

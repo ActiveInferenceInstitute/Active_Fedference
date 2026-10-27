@@ -64,6 +64,9 @@ AESTHETIC table for what is gate-checked versus convention.
 
 ## Reader paths
 
+- **Repository maintenance and GNN exchange:** use the
+  [2026-10-27 review and scopes](research/repository-review-2026-10-27.md) and
+  the [GNN example](../examples/README.md#6-exchange-the-canonical-sentinel-model-with-gnn).
 - **Active-inference readers:** begin with the Friston belief-sharing mechanism
   and categorical recovery identity in
   [`core/conceptual-foundations.md`](core/conceptual-foundations.md), then follow

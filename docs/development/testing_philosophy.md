@@ -12,6 +12,32 @@ Forbidden anywhere under `tests/`:
 Tests use real NumPy computations with fixed seeds, real temp files (`tmp_path`),
 and subprocess smoke for auxiliary scripts.
 
+## Temporary and subprocess isolation
+
+Use caller-owned temporary storage outside this checkout when setting `TMPDIR`.
+Several fixtures deliberately represent non-Git directories; putting them
+inside a checkout makes Git discover the enclosing repository. If the temporary
+storage has a separate ancestor workspace repository or pytest configuration,
+bound discovery explicitly for the test run:
+
+```bash
+# TMPDIR must already name the chosen existing external scratch directory.
+export GIT_CEILING_DIRECTORIES="$TMPDIR"
+export PYTEST_ADDOPTS="${PYTEST_ADDOPTS:+$PYTEST_ADDOPTS }--rootdir=."
+uv run --locked --extra dev pytest tests/ -m "not slow and not publication" -q
+```
+
+Real fixture repositories below `TMPDIR` still have their own `.git` directories.
+The pytest root option is resolved in each subprocess's working directory, so
+the tiny child suites retain their own node IDs. Keep the chosen temporary
+root outside the real project roots used by CLI tests.
+
+When explicitly selecting `UV_PYTHON` for packaging tests, select the populated
+project-environment interpreter, not only its base interpreter. The tests use
+real `uv build --no-build-isolation` subprocesses, which need the locked
+`setuptools` already available in that environment. Do not add undeclared
+global dependencies to hide an environment-selection failure.
+
 ## Coverage gate
 
 Configured in [`pyproject.toml`](../../pyproject.toml). Authoritative command:

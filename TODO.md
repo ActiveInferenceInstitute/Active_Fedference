@@ -6,8 +6,11 @@
 
 The authoritative public integration repository is
 [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
-(`public`). The `origin` remote, `docxology/active_fedference`, remains the
-private/interim evidence repository. “Push to main” therefore means: fix an
+(`origin` in the public checkout). The separate
+[`docxology/active_fedference`](https://github.com/docxology/active_fedference)
+repository remains the private/interim evidence mirror; aliases such as
+`public` and `origin` depend on the checkout and must be inspected before use.
+“Push to main” therefore means: fix an
 exact candidate SHA, pass the applicable confidentiality and verification
 gates, push a `codex/*` branch to the required remotes, obtain green review
 checks, and merge into public `main` with a normal merge commit. It never means
@@ -18,6 +21,11 @@ Every open item has one owner page under
 surface of the remaining work, not whether its gate is optional: a Minor item
 can still block a release. The source-indexed dependency map is
 [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-plan.md).
+
+The [2026-10-27 repository review](docs/research/repository-review-2026-10-27.md)
+records current sync evidence, the optional GNN exchange boundary, and proposed
+engineering follow-ups. Its proposals do not promote parked scientific work
+or close any release/reproduction gate in this backlog.
 
 ## Non-negotiable scientific boundary
 

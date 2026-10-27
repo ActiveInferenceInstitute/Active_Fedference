@@ -1,19 +1,20 @@
 # Active Fedference — Technical Reference
 
 **Standalone research project** (separate git repository at
-``docxology/active_fedference``). Reimplements **FedGVI**
+``ActiveInferenceInstitute/Active_Fedference``). Reimplements **FedGVI**
 (Mildner et al., 2025) in the discrete-categorical setting and connects it to
 Friston et al. (2024) federated **belief-sharing**.
 
 **Acceptance contract:** [`ISA.md`](ISA.md) · **Documentation hub:** [`docs/README.md`](docs/README.md)
 
-This checkout is intentionally a standalone development and review repository;
-the v1.0.4 public snapshot is published at the target below; v1.0.3, v1.0.2,
-v1.0.1, and v0.1.0 remain prior Zenodo versions.
-The configured interim remote is
+The canonical public repository is
+[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference),
+configured as `origin` in this public checkout. The source version is `1.1.0`;
+the tagged public snapshot is available at its
+[GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0).
 [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
-(`origin`); the public destination is
-[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
+is the separate interim evidence mirror. Remote aliases are checkout-local:
+inspect `git remote -v` before any synchronization or release action.
 Work on a `codex/*` branch. Commit, push, and Zenodo publication are separate
 release actions and require explicit authorization; do not force-push or reset
 a dirty worktree.
@@ -71,6 +72,10 @@ Full module map, experiments, and artifacts:
   [`src/fedference_cli/README.md`](src/fedference_cli/README.md).
 - Figures are generated through `src/figures/`, whose metadata registry,
   manuscript captions, report payloads, and output filenames must agree.
+- For GNN model exchange, use the optional
+  [sentinel example](examples/README.md#6-exchange-the-canonical-sentinel-model-with-gnn).
+  Select an explicit current `GNN_ROOT` and verify native matrix parity; GNN
+  extraction success alone is not model or protocol validation.
 
 ## Conventions
 

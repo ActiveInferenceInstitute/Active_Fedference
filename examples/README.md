@@ -8,7 +8,7 @@ them from a checkout after installing the locked environment:
 uv sync --locked
 ```
 
-The default environment is sufficient for all five examples and the installed
+The default environment is sufficient for all six examples and the installed
 CLI. It does not install the optional Torch path. For adapting the example
 beliefs, choosing a method, and interpreting solver diagnostics, start with the
 [`application guide`](../docs/application-guide.md).
@@ -168,13 +168,80 @@ runtime/source provenance, request/configuration hashes, and solver health. It
 proves integrity at those declared levels, not calibration, scientific
 validity, a winning state, or approval of a downstream decision.
 
+## 6. Exchange the canonical sentinel model with GNN
+
+[`06_gnn_sentinel.py`](06_gnn_sentinel.py) serializes the existing
+`build_sentinel_world()` defaults; it does not implement another world builder.
+The default output is JSON containing the GNN Markdown document. `--format gnn`
+emits that document directly. No GNN dependency enters the installed package.
+
+```bash
+mkdir -p .tmp/gnn-exchange
+uv run --locked python examples/06_gnn_sentinel.py --format gnn \
+  > .tmp/gnn-exchange/sentinel.gnn.md
+```
+
+Select a trusted GNN source checkout explicitly. From the usual sibling layout:
+
+```bash
+export GNN_ROOT="$(cd ../Generalized_Notation_Notation && pwd -P)"
+git -C "$GNN_ROOT" -c core.fsmonitor=false status --short
+git -C "$GNN_ROOT" rev-parse HEAD
+git -C "$GNN_ROOT" ls-remote origin HEAD refs/heads/main
+```
+
+Inspect these outputs: a clean checkout whose HEAD matches live remote main is
+the current upstream source. Do not silently replace a dirty or divergent GNN
+checkout. The 2026-10-27 interoperability run used GNN package version `5.0.1`
+at commit `f0dfb68368280f3a43ff91ac28db058c968002d8`; that is a dated tested
+revision, not an assertion that it will remain the latest.
+Current GNN declares Python `>=3.11,<3.15`; use a compatible external
+interpreter for extraction and the optional integration tests. The exporter
+and local verifier retain Fedference's Python 3.10 support.
+
+Run its stdlib-only headless extractor in an isolated child interpreter, then
+verify its result against the native Fedference matrices:
+
+```bash
+uv run --locked python -I -S -c '
+import sys
+sys.path.insert(0, sys.argv[1])
+from gnn.extract import extract_to_json
+print(extract_to_json(sys.argv[2], on_error="raise", strict_validation=True))
+' "$GNN_ROOT/src" .tmp/gnn-exchange/sentinel.gnn.md \
+  > .tmp/gnn-exchange/extracted.json
+uv run --locked python examples/06_gnn_sentinel.py \
+  --verify-extracted .tmp/gnn-exchange/extracted.json
+```
+
+Require `"extraction_verified": true` from the final command. Extraction may
+emit an error envelope, and the tested upstream can warn rather than fail on
+some dimension mismatches even in strict mode. The local comparison rejects
+error envelopes, incompatible extraction schemas, wrong dimensions, missing
+matrices, changed values, and transposed B tensors. It preserves
+`B[next_state, previous_state, action]`, the `still/left/right` control order,
+log-preference C values, and the one-dimensional exchange representation of
+the native C/D column vectors.
+
+This proves numeric exchange for the canonical single-factor, single-modality
+sentinel model only. It does not execute a GNN inference backend, encode
+federation messages or FedGVI site/cavity updates, prove arbitrary model
+round trips, or reproduce the complete Friston protocol. Broader adapters are
+scoped in the [repository review](../docs/research/repository-review-2026-10-27.md).
+
 ## Regression tests
 
 The ladder is executed as real subprocesses with no mocks:
 
 ```bash
 uv run --locked --extra dev pytest tests/test_examples.py -q
+uv run --locked --extra dev pytest tests/test_gnn_interop.py -q
 ```
+
+With `GNN_ROOT` set, the GNN tests also execute the real upstream headless
+extractor and a corrupted-matrix negative control. Without it, exactly those
+two external tests skip; local export and parity checks still run. An explicit
+invalid `GNN_ROOT` fails rather than silently skipping or choosing another tree.
 
 The federation/replay check is marked `integration`, so it can also be selected
 explicitly:

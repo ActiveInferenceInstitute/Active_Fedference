@@ -1105,7 +1105,8 @@ def test_canonical_public_git_contract_is_consistent_across_active_release_pages
     assert public_url in index
     assert public_url in release
     assert public_url in handoff
-    assert "`origin` remote, `docxology/active_fedference`" in roadmap
+    # Repository destinations are stable; aliases depend on the local checkout.
+    assert "https://github.com/docxology/active_fedference" in roadmap
     assert "private/interim evidence remote" in release
     assert "private/interim evidence remote" in handoff
     assert "reviewed `codex/*` branches and normal merge commits" in index
