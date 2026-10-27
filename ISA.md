@@ -1218,3 +1218,16 @@ them.
   ISC-89 or ISC-242 or supply the final owner-author release verdict. Probe:
   presentation boundary, figure/caption contracts, real paired renderer,
   full artifact inventory, and complete final PDF/HTML visual inspection.
+
+- [x] ISC-274: Canonical `fedference.gnn/1` IR admits immutable categorical,
+  moving-observer, hierarchical, hybrid-Gaussian, and signed site-factor
+  representations with explicit labels, axes, units, capabilities, schedules
+  and digest provenance. Probe: `tests/fedference/test_gnn_contract.py`.
+  This is representation admission, not raw GNN parsing, execution or scientific
+  equivalence; source/parser/backend/native digest declarations are not attestations.
+- [x] ISC-275: Canonical JSON rejects duplicate keys before information loss;
+  admission rejects unsupported semantics, nonfinite/negative/non-normalized
+  PMFs, axis/shape mismatches and improper covariance without normalization.
+  Probe: `test_shape_axis_duplicate_and_unsupported_kind`, malformed/family
+  controls and concrete valid/mutated/refused IR command-line QA. Raw GNN
+  duplicate detection remains the real parser/loader boundary's responsibility.
