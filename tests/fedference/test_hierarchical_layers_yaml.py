@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-import inspect
 from pathlib import Path
 
+import numpy as np
 import yaml
 
 from fedference.pomdp import build_3level_world
 
 
 def test_hierarchical_layers_yaml_matches_build_3level_world_defaults() -> None:
-    """Guard the pre-fix YAML acuity drift (0.85) from code default 0.9."""
+    """Numeric YAML reference agrees with source-derived public defaults."""
     config_path = (
         Path(__file__).resolve().parent.parent.parent
         / "src"
@@ -20,12 +20,13 @@ def test_hierarchical_layers_yaml_matches_build_3level_world_defaults() -> None:
         / "hierarchical_layers.yaml"
     )
     payload = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    params = inspect.signature(build_3level_world).parameters
+    world = build_3level_world()
 
     sensor = payload["sensor"]
-    assert sensor["acuity"] == params["acuity"].default
-    assert sensor["goal_bonus"] == params["goal_bonus"].default
+    np.testing.assert_allclose(np.diag(world["L1"]["A"][0]), sensor["acuity"])
+    assert float(np.max(world["L1"]["C"][0])) == sensor["goal_bonus"]
 
     l3_spec = payload["layers"][0]
-    assert l3_spec["default_prior"] == list(params["l3_prior"].default)
+    np.testing.assert_array_equal(l3_spec["default_prior"], world["L3_prior"])
+    np.testing.assert_array_equal(payload["layers"][-1]["default_prior"], world["level_priors"][-1])
 

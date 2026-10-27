@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 271/273
+progress: 272/274
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1259,3 +1259,12 @@ them.
   covariance; large finite inputs and noncommuting covariance known answers
   pass. Checkpoint6 independently approves Task9; original REDs remain.
   This does not establish source client optimization or scientific campaigns.
+
+- [x] ISC-279: Moving-observer and two/three/four-level hierarchy adapters
+  consume admitted GNN source values with distinct threat/position factors,
+  source-preserving public hierarchy leaves and explicit override semantics.
+  Offline caches re-admit typed source/header content; resizing refuses
+  non-template controls or priors. Source mutation, seed/oracle and invalid
+  payload controls pass; checkpoint6 and its small recheck approve this scope.
+  Unsupported backend compositions refuse; scientific campaigns and protocol
+  reproduction remain separate. Task59 retains the module-size advisory.

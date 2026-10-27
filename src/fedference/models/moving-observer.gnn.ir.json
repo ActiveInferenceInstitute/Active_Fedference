@@ -1,0 +1,232 @@
+{
+  "model": {
+    "metadata": {
+      "name": "moving-observer",
+      "capabilities": [
+        "fedference.gnn/moving-observer/1"
+      ],
+      "schedule": [
+        "predict",
+        "observe"
+      ],
+      "provenance": {
+        "source": "ea242fea38fd340281278885eca150f4de5a00475cfce58ec850e422345eb3fc",
+        "asset": "ea242fea38fd340281278885eca150f4de5a00475cfce58ec850e422345eb3fc",
+        "parser": "713cb47cfa67071c84ae4d2a92e192d2f8168b42e3ce8f034c938e4a972561b6",
+        "backend": null,
+        "native_result": null
+      },
+      "schema": "fedference.gnn/1",
+      "precision": "float64-atol-1e-12-rtol-0"
+    },
+    "threat": {
+      "states": [
+        "left",
+        "right"
+      ],
+      "observations": [
+        "detected",
+        "not_detected"
+      ],
+      "actions": [
+        "stay",
+        "left",
+        "right"
+      ],
+      "A": {
+        "axes": [
+          "observation",
+          "state"
+        ],
+        "shape": [
+          2,
+          2
+        ],
+        "values": [
+          0.85,
+          0.1,
+          0.15,
+          0.9
+        ]
+      },
+      "B": {
+        "axes": [
+          "next_state",
+          "previous_state",
+          "action"
+        ],
+        "shape": [
+          2,
+          2,
+          3
+        ],
+        "values": [
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "C": {
+        "axes": [
+          "observation"
+        ],
+        "shape": [
+          2
+        ],
+        "values": [
+          0.0,
+          0.0
+        ]
+      },
+      "D": {
+        "axes": [
+          "state"
+        ],
+        "shape": [
+          2
+        ],
+        "values": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    "positions": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "position_transition": {
+      "axes": [
+        "next_position",
+        "previous_position",
+        "action"
+      ],
+      "shape": [
+        4,
+        4,
+        3
+      ],
+      "values": [
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        1.0
+      ]
+    },
+    "position_prior": {
+      "axes": [
+        "position"
+      ],
+      "shape": [
+        4
+      ],
+      "values": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "observation_map": {
+      "axes": [
+        "observation",
+        "threat",
+        "position"
+      ],
+      "shape": [
+        2,
+        2,
+        4
+      ],
+      "values": [
+        0.85,
+        0.85,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.85,
+        0.85,
+        0.15,
+        0.15,
+        0.9,
+        0.9,
+        0.9,
+        0.9,
+        0.15,
+        0.15
+      ]
+    },
+    "kind": "moving-observer"
+  },
+  "native": {
+    "agent_positions": [
+      0,
+      2
+    ],
+    "capability": "native-moving-observer/1",
+    "fov_width": 2,
+    "resize": "reflecting-line-half-sensor/1",
+    "roles": {
+      "observation_map": "observation-given-threat-position",
+      "position": "controlled-observer",
+      "threat": "latent-half"
+    }
+  },
+  "digest": "5ecd3f84126d747055482947b88f34bb42492143e3ddfce5533a8fcca35f57c4"
+}
