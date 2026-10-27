@@ -14,7 +14,7 @@ import pytest
 ROOT: Final = Path(__file__).resolve().parents[1]
 CONTRACT: Final = Path("docs/development/api-retirement-20261027.md")
 HISTORICAL_READERS: Final = (
-    "src/fedference/evidence.py::RunReceipt.from_dict",
+    "src/fedference/evidence_contracts/run_schema.py::RunReceipt.from_dict",
     "src/fedference/federation/transport.py::deserialize_envelope",
     "src/fedference/federation/transport.py::deserialize_result",
     "src/fedference/federation/socket_transport.py::aggregation_config_from_replay",
@@ -311,7 +311,7 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
         if entry["disposition"] in {"retain-science", "retain-history", "owner-decision"}:
             assert entry["status"] == "present", f"unauthorized retained-surface retirement: {symbol}"
         assert entry["callsites"] == callsites(index, entry), f"caller inventory drift: {symbol}"
-    evidence = ast.parse((root / "src/fedference/evidence.py").read_text())
+    evidence = ast.parse((root / "src/fedference/evidence_contracts/schema.py").read_text())
     transport = ast.parse((root / "src/fedference/federation/transport.py").read_text())
     for tree, name, expected in (
         (evidence, "LEGACY_EVIDENCE_SCHEMA_VERSION", "1.1"),

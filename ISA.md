@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 273/275
+progress: 274/276
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1278,3 +1278,13 @@ them.
   required rejection coverage remain; independent checkpoint6 recheck approves.
   Broader wrapper/schema retirement and receipt-module locator integration
   remain separate units; this does not certify publication or scientific scope.
+
+- [x] ISC-281: Evidence specifications, schema/strict-JSON, hashing, custody
+  and verification have focused owners with unchanged current and synthetic
+  historical receipt semantics, canonical public objects and finding codes.
+  Independent review confirms original definition equivalence, byte/corpus
+  preservation, installed CLI verification and meaningful mutation failures.
+  Current scoped 184 tests pass at 97.61 percent branch-aware coverage;
+  protected inventory locators and twelve source-reference refusals pass.
+  Actual external historical corpus, race hardening and live-schema retirement
+  remain separate; no scientific or publication acceptance is inferred.
