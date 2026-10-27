@@ -238,14 +238,14 @@ def _active_todo_doc_files() -> tuple[str, ...]:
     )
 
 
-def _repository_guide_files() -> tuple[str, ...]:
+def _repository_guide_files(root: Path = ROOT) -> tuple[str, ...]:
     """Discover every source-owned AGENTS/README contract, not a hand-picked subset."""
     guides: list[str] = []
-    for path in ROOT.rglob("*.md"):
-        relative = path.relative_to(ROOT)
+    for path in root.rglob("*.md"):
+        relative = path.relative_to(root)
         if path.name not in {"AGENTS.md", "README.md"}:
             continue
-        if relative.parts[0] in {".pytest_cache", ".tmp", ".venv", "build", "node_modules", "output"}:
+        if relative.parts[0] in {".omo", ".pytest_cache", ".tmp", ".venv", "build", "node_modules", "output"}:
             continue
         guides.append(relative.as_posix())
     return tuple(sorted(guides))
@@ -337,16 +337,16 @@ def test_script_quick_reference_covers_every_entrypoint() -> None:
     assert missing == []
 
 
-def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> None:
+def _local_markdown_link_offenders(root: Path, paths: tuple[str, ...]) -> list[str]:
     """Prevent docs from linking back to absent template-repo guides."""
     allowed_placeholder_targets = {
         "../output/figures/name.png",
         "../output/figures/NAME.png",
     }
     offenders: list[str] = []
-    for path in _contract_files():
-        source = ROOT / path
-        for line_number, line in enumerate(_read(path).splitlines(), start=1):
+    for path in paths:
+        source = root / path
+        for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), start=1):
             for match in _MARKDOWN_LINK_PATTERN.finditer(line):
                 target = match.group(1).strip()
                 if (
@@ -362,13 +362,17 @@ def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> Non
                     continue
                 resolved = (source.parent / target_path).resolve()
                 try:
-                    resolved.relative_to(ROOT)
+                    resolved.relative_to(root)
                 except ValueError:
                     offenders.append(f"{path}:{line_number}: {target} escapes repository")
                     continue
                 if not resolved.exists():
                     offenders.append(f"{path}:{line_number}: {target} missing")
-    assert offenders == []
+    return offenders
+
+
+def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> None:
+    assert _local_markdown_link_offenders(ROOT, _contract_files()) == []
 
 
 def test_documentation_hub_and_section_indexes_reach_every_page() -> None:
@@ -1684,3 +1688,19 @@ def test_anchor_source_audit_table_is_not_interrupted_by_prose() -> None:
     assert all(line.startswith("|") for line in table_lines if line.strip())
     assert "Mildner, Giampouras & Damoulas" in section[table_start:table_end]
     assert "Efron & Tibshirani" in section[table_start:table_end]
+
+
+def test_generated_runtime_guides_do_not_hide_real_source_link_failures(tmp_path: Path) -> None:
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "README.md").write_text("[Docs](docs/README.md)\n")
+    source = tmp_path / "docs/README.md"
+    source.write_text("# Current documentation\n")
+    runtime = tmp_path / ".omo/evidence/wheel/README.md"
+    runtime.parent.mkdir(parents=True)
+    runtime.write_text("[Missing](missing-runtime.md)\n")
+    paths = _repository_guide_files(tmp_path)
+    assert _local_markdown_link_offenders(tmp_path, paths) == []
+    assert _local_markdown_link_offenders(tmp_path, (runtime.relative_to(tmp_path).as_posix(),))
+    source.write_text("[Broken](missing-source.md)\n")
+    failures = _local_markdown_link_offenders(tmp_path, _repository_guide_files(tmp_path))
+    assert any("docs/README.md" in failure and "missing-source.md missing" in failure for failure in failures)
