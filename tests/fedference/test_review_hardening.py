@@ -8,14 +8,13 @@ import pytest
 from analysis.report_schemas import ReportSchemaError, validate_report
 from fedference.aggregation import (
     AggregationConfig,
-    aggregate,
     aggregate_result,
     aggregation_free_energy,
     log_linear_pool,
     robust_aggregate,
     variational_aggregate,
 )
-from fedference.belief_sharing import share_round
+from fedference.belief_sharing import share_round_result
 from fedference.experiments import run_review_grid
 from fedference.generalized_bayes import (
     cavity,
@@ -215,7 +214,11 @@ def test_aggregation_free_energy_rejects_negative_raw_weights() -> None:
 
 
 def test_share_round_canonical_fields_follow_log_product() -> None:
-    canonical = share_round(local_posteriors=BELIEFS, exclude_self=False)
+    canonical = share_round_result(
+        config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+        local_posteriors=BELIEFS,
+        exclude_self=False,
+    )
     assert canonical.shared_posteriors.shape == BELIEFS.shape
     expected = np.prod(BELIEFS, axis=0)
     expected /= expected.sum()
@@ -228,26 +231,37 @@ def test_share_round_canonical_fields_follow_log_product() -> None:
 )
 def test_share_round_rejects_malformed_true_state(true_state: object) -> None:
     with pytest.raises(ValueError, match="true_state"):
-        share_round(local_posteriors=BELIEFS, true_state=true_state)
+        share_round_result(
+            config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+            local_posteriors=BELIEFS,
+            true_state=true_state,
+        )
 
 
 def test_share_round_alias_conflicts_and_fail_closed_inputs() -> None:
     with pytest.raises(TypeError, match="unexpected keyword"):
-        share_round(local_posteriors=BELIEFS, agent_beliefs=BELIEFS)
-    with pytest.raises(TypeError, match="unexpected keyword"):
-        share_round(local_posteriors=BELIEFS, base_weights=[1.0, 1.0, 1.0], weights=[1.0, 1.0, 1.0])
-    with pytest.raises(TypeError, match="unexpected"):
-        share_round(local_posteriors=BELIEFS, typo=1)
-    with pytest.raises(TypeError, match="required"):
-        share_round()
-    with pytest.raises(ValueError, match="AggregationConfig"):
-        share_round(local_posteriors=BELIEFS, config="not-a-config")
-    with pytest.raises(ValueError, match="mutually exclusive"):
-        share_round(
+        share_round_result(
+            config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
             local_posteriors=BELIEFS,
-            config=AggregationConfig(),
-            method="naive",
+            agent_beliefs=BELIEFS,
         )
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        share_round_result(
+            config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+            local_posteriors=BELIEFS,
+            base_weights=[1.0, 1.0, 1.0],
+            weights=[1.0, 1.0, 1.0],
+        )
+    with pytest.raises(TypeError, match="unexpected"):
+        share_round_result(
+            config=AggregationConfig(method="naive", max_iter=32, tol=1e-9), local_posteriors=BELIEFS, typo=1
+        )
+    with pytest.raises(TypeError, match="required"):
+        share_round_result(config=AggregationConfig(method="naive", max_iter=32, tol=1e-9))
+    with pytest.raises(ValueError, match="AggregationConfig"):
+        share_round_result(local_posteriors=BELIEFS, config="not-a-config")
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        share_round_result(local_posteriors=BELIEFS, config=AggregationConfig(), method="naive")
 
 
 def test_generalized_bayes_validation_and_alpha_branches() -> None:
@@ -370,15 +384,15 @@ def test_aggregation_validation_alias_and_dispatch_paths() -> None:
             robustness=1.0,
         )
 
-    aggregate(local_posteriors=BELIEFS)
+    aggregate_result(local_posteriors=BELIEFS).consensus
     with pytest.raises(TypeError, match="required"):
-        aggregate()
+        aggregate_result().consensus
     with pytest.raises(TypeError, match="unexpected keyword"):
-        aggregate(BELIEFS, base_weights=[1.0, 1.0, 1.0], weights=[1.0, 1.0, 1.0])
-    with pytest.raises(ValueError, match="unknown naive"):
-        aggregate(BELIEFS, method="naive", robustness=1.0)
-    with pytest.raises(ValueError, match="mutually exclusive"):
-        aggregate(BELIEFS, config=AggregationConfig(), method="naive")
+        aggregate_result(BELIEFS, base_weights=[1.0, 1.0, 1.0], weights=[1.0, 1.0, 1.0]).consensus
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        aggregate_result(BELIEFS, robustness=1.0)
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        aggregate_result(BELIEFS, config=AggregationConfig(), method="naive").consensus
 
 
 @pytest.mark.parametrize(

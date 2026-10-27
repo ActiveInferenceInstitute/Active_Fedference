@@ -25,7 +25,6 @@ from fedference.benchmark import (
     load_tabular_csv,
     run_benchmark,
     run_external_benchmark_pack,
-    run_tabular_benchmark,
     summarize_external_benchmark_rows,
 )
 
@@ -46,17 +45,20 @@ def test_repository_and_packaged_synthetic_fixtures_are_identical() -> None:
 
 
 def test_recovery_identity_holds_and_accuracies_valid() -> None:
-    r = run_tabular_benchmark(seed=0)
+    features, labels = load_tabular_csv(_DATA)
+    r = run_benchmark(features, labels, seed=0)
     assert r["recovery_identity_holds"] is True
     assert 0.0 <= r["naive_accuracy"] <= 1.0
     assert 0.0 <= r["robust_accuracy"] <= 1.0
+    r.update(dataset=_DATA.name, n_rows=int(features.shape[0]), n_features=int(features.shape[1]))
     assert r["dataset"] == "synthetic_tabular.csv"
     assert r["n_rows"] == 150
     assert r["n_features"] == 4
 
 
 def test_clean_data_classified_perfectly() -> None:
-    r = run_tabular_benchmark(seed=0, n_contaminated=0)
+    features, labels = load_tabular_csv(_DATA)
+    r = run_benchmark(features, labels, seed=0, n_contaminated=0)
     assert r["naive_accuracy"] == 1.0
     assert r["robust_accuracy"] == 1.0
     assert r["robust_minus_naive"] == 0.0
@@ -66,7 +68,8 @@ def test_heavy_contamination_shows_measured_robust_edge() -> None:
     """Pinned measured fact at seed 0: with 4/5 clients label-shuffled, the
     robust pool holds slightly higher held-out accuracy than the naive pool.
     This is a MEASUREMENT, not a guarantee — asserted only at this setting."""
-    r = run_tabular_benchmark(seed=0, n_contaminated=4, contamination_rate=1.0, robustness=2.5)
+    features, labels = load_tabular_csv(_DATA)
+    r = run_benchmark(features, labels, seed=0, n_contaminated=4, contamination_rate=1.0, robustness=2.5)
     assert r["naive_accuracy"] == 0.8222222222222222
     assert r["robust_accuracy"] == 0.8444444444444444
     assert r["robust_minus_naive"] > 0.0

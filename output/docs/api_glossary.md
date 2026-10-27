@@ -73,7 +73,6 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.aggregation` | `AggregationConfig` | class | Validated, serializable configuration shared by every aggregation adapter. |
 | `fedference.aggregation` | `AggregationResult` | class | Consensus plus per-agent influence diagnostics. |
 | `fedference.aggregation` | `AggregatorProtocol` | class | Callable server-side aggregation boundary used by federation adapters. |
-| `fedference.aggregation` | `aggregate` | function | Convenience dispatch returning just the consensus pmf. |
 | `fedference.aggregation` | `aggregate_result` | function | Canonical aggregation dispatcher returning consensus and diagnostics. |
 | `fedference.aggregation` | `aggregation_free_energy` | function | Variational free energy minimized by :func:`variational_aggregate`. |
 | `fedference.aggregation` | `log_linear_pool` | function | Return the project's product-of-experts consensus. |
@@ -92,9 +91,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.bayesian_model_reduction` | `log_beta` | function | Return ``lnB(a) = sum_k gammaln(a_k) - gammaln(sum_k a_k)``. |
 | `fedference.bayesian_model_reduction` | `reduce` | function | Score a Dirichlet model reduction via the Beta-function free energy. |
 | `fedference.bayesian_model_reduction` | `reduced_posterior` | function | Closed-form reduced posterior ``post + reduced_prior - prior``. |
-| `fedference.belief_sharing` | `SharingDiagnostics` | class | Per-round outcome of belief sharing. |
 | `fedference.belief_sharing` | `SharingRoundResult` | class | Complete diagnostics for one in-process belief-sharing round. |
-| `fedference.belief_sharing` | `share_round` | function | Run one round and return the historical compatibility diagnostics. |
 | `fedference.belief_sharing` | `share_round_result` | function | Run one federated belief-sharing round over a shared factor. |
 | `fedference.belief_updating` | `infer_states` | function | One-step variational posterior over hidden states (Friston Eq. 4). |
 | `fedference.belief_updating` | `vfe` | function | Variational free energy ``F[q]`` for a belief ``qs`` (Friston 2024). |
@@ -102,7 +99,6 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.benchmark` | `run_benchmark` | function | Federated tabular classification with contaminated clients. |
 | `fedference.benchmark` | `run_external_benchmark_pack` | function | Run the preregistered three-dataset pack without pooling nested seeds. |
 | `fedference.benchmark` | `run_external_dataset_benchmark` | function | Fetch, verify, and run one registered UCI benchmark. |
-| `fedference.benchmark` | `run_tabular_benchmark` | function | Load the bundled synthetic tabular CSV (or a user CSV) and stress it. |
 | `fedference.benchmark` | `summarize_external_benchmark_rows` | function | Summarize seed-level rows without treating seeds as datasets. |
 | `fedference.bnn_baseline` | `contaminate` | function | Flip a ``fraction`` of binary labels, biased toward high-leverage outliers. |
 | `fedference.bnn_baseline` | `fed_gvi_logreg` | function | Run the federated logistic-regression baseline and return its result. |

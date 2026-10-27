@@ -1,9 +1,9 @@
 """Robust-influence-weights figure: the heuristic down-weights saboteurs.
 
 Draws the per-agent influence weights returned by a robust pooling round
-(:func:`fedference.belief_sharing.share_round` with ``method="robust"`` ->
-``SharingDiagnostics.normalized_effective_weights``; the old ``agent_weights``
-property is a warned compatibility adapter). The contaminated (saboteur) agents are
+(:func:`fedference.belief_sharing.share_round_result` with
+``config=AggregationConfig(method="robust", max_iter=32)`` ->
+``SharingRoundResult.normalized_effective_weights``). The contaminated (saboteur) agents are
 highlighted: a working robust aggregator assigns them visibly *lower* influence
 than the healthy majority, which is how the server-side consensus stays near the
 truth under contamination.

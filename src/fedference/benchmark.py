@@ -16,7 +16,9 @@ Two honest bindings:
   replaced uniformly at random (``label_noise``), every method is compared on
   the same train/test split and client shards.
 
-The compatibility path remains exercised on the bundled synthetic CSV. The
+Callers explicitly load CSV inputs with load_tabular_csv before run_benchmark
+and bind dataset metadata at the report boundary. The bundled synthetic CSV
+remains a mechanics control. The
 registered path downloads and verifies three pinned UCI archives into a caller-
 provided cache and records archive/member/split provenance. That executable
 path is not itself the confirmatory evidence pack: pilots, locked comparisons,
@@ -28,7 +30,6 @@ from __future__ import annotations
 
 import csv
 import hashlib
-from importlib import resources
 from pathlib import Path
 from typing import Any, TypedDict
 
@@ -338,21 +339,6 @@ def run_benchmark(
     }
 
 
-def run_tabular_benchmark(path: str | Path | None = None, *, seed: int = 0, **kwargs: Any) -> dict[str, Any]:
-    """Load the bundled synthetic tabular CSV (or a user CSV) and stress it."""
-    if path is None:
-        resource = resources.files("fedference").joinpath("data").joinpath("synthetic_tabular.csv")
-        with resources.as_file(resource) as bundled_path:
-            features, labels = load_tabular_csv(bundled_path)
-        dataset_name = resource.name
-    else:
-        features, labels = load_tabular_csv(path)
-        dataset_name = Path(path).name
-    report = run_benchmark(features, labels, seed=seed, **kwargs)
-    report["dataset"] = dataset_name
-    report["n_rows"] = int(features.shape[0])
-    report["n_features"] = int(features.shape[1])
-    return report
 
 
 def run_external_dataset_benchmark(
@@ -476,6 +462,5 @@ __all__ = [
     "run_benchmark",
     "run_external_benchmark_pack",
     "run_external_dataset_benchmark",
-    "run_tabular_benchmark",
     "summarize_external_benchmark_rows",
 ]

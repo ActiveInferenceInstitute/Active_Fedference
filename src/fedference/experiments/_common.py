@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..aggregation import log_linear_pool
-from ..belief_sharing import share_round
+from ..aggregation import AggregationConfig, log_linear_pool
+from ..belief_sharing import share_round_result
 from ..statistics import d_equivalent_from_rank_biserial
 
 ArrayF = np.ndarray
@@ -60,10 +60,9 @@ def _consensus_accuracy(
     if robustness == 0.0:
         consensus = log_linear_pool(local_posteriors=local_posteriors)
     else:
-        consensus = share_round(
+        consensus = share_round_result(
             local_posteriors,
-            method="robust",
-            robustness=robustness,
+            config=AggregationConfig(method="robust", robustness=robustness, max_iter=32, tol=1e-9),
             exclude_self=False,
             true_state=true_state,
         ).consensus

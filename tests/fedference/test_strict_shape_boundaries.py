@@ -12,12 +12,10 @@ from fedference import (
     AggregationConfig,
     AggregationResult,
     LabeledAggregationRequest,
-    aggregate,
     aggregate_result,
     aggregation_free_energy,
     log_linear_pool,
     robust_aggregate,
-    share_round,
     share_round_result,
     variational_aggregate,
 )
@@ -80,16 +78,19 @@ _BAD_CATEGORICAL_VECTORS = (
             lambda bad: aggregate_result((bad, _VALID_POSTERIOR)),
         ),
         (
-            "aggregate compatibility wrapper",
-            lambda bad: aggregate((bad, _VALID_POSTERIOR)),
+            "aggregate_result configured projection",
+            lambda bad: aggregate_result((bad, _VALID_POSTERIOR), config=_ROBUST_CONFIG).consensus,
         ),
         (
             "share_round_result",
             lambda bad: share_round_result((bad, _VALID_POSTERIOR)),
         ),
         (
-            "share_round compatibility wrapper",
-            lambda bad: share_round((bad, _VALID_POSTERIOR)),
+            "share_round_result configured recipient path",
+            lambda bad: share_round_result(
+                (bad, _VALID_POSTERIOR),
+                config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+            ),
         ),
         (
             "run_multiprocess_round_result",
@@ -282,24 +283,20 @@ def test_aggregation_result_rejects_matrix_public_vectors(
             ),
         ),
         (
-            "aggregate compatibility wrapper",
-            lambda bad: aggregate(
-                _LOCAL_POSTERIORS,
-                config=_ROBUST_CONFIG,
-                base_weights=bad,
-            ),
+            "aggregate_result configured projection",
+            lambda bad: aggregate_result(
+                _LOCAL_POSTERIORS, config=_ROBUST_CONFIG, base_weights=bad
+            ).consensus,
         ),
         (
             "share_round_result",
-            lambda bad: share_round_result(
-                _LOCAL_POSTERIORS,
-                base_weights=bad,
-            ),
+            lambda bad: share_round_result(_LOCAL_POSTERIORS, base_weights=bad),
         ),
         (
-            "share_round compatibility wrapper",
-            lambda bad: share_round(
+            "share_round_result configured recipient path",
+            lambda bad: share_round_result(
                 _LOCAL_POSTERIORS,
+                config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
                 base_weights=bad,
             ),
         ),
@@ -335,21 +332,20 @@ def _outer_generator():
 
 
 def test_outer_generators_cross_aggregate_and_sharing_boundaries() -> None:
-    direct = aggregate_result(_outer_generator(), config=_ROBUST_CONFIG)
-    compatibility = aggregate(_outer_generator(), config=_ROBUST_CONFIG)
-    sharing = share_round_result(
+    direct = robust_aggregate(
         _outer_generator(),
-        config=_ROBUST_CONFIG,
-        exclude_self=False,
+        robustness=_ROBUST_CONFIG.robustness,
+        max_iter=_ROBUST_CONFIG.max_iter,
+        tol=_ROBUST_CONFIG.tol,
     )
-    legacy_sharing = share_round(
-        _outer_generator(),
-        config=_ROBUST_CONFIG,
-        exclude_self=False,
+    configured = aggregate_result(_outer_generator(), config=_ROBUST_CONFIG)
+    sharing = share_round_result(_outer_generator(), config=_ROBUST_CONFIG, exclude_self=False)
+    np.testing.assert_array_equal(configured.consensus, direct.consensus)
+    np.testing.assert_array_equal(sharing.consensus, direct.consensus)
+    np.testing.assert_array_equal(
+        sharing.shared_posteriors,
+        np.tile(direct.consensus, (len(_LOCAL_POSTERIORS), 1)),
     )
-    assert np.array_equal(compatibility, direct.consensus)
-    assert np.array_equal(sharing.consensus, direct.consensus)
-    assert np.array_equal(legacy_sharing.consensus, direct.consensus)
 
 
 def test_outer_generators_cross_process_and_socket_boundaries() -> None:

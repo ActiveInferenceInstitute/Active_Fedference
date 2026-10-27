@@ -247,7 +247,7 @@ jobs:
             "$wheel_smoke_env/bin/fedference" list --json
             "$wheel_smoke_env/bin/python" -c "import sys; from importlib.metadata import version; from importlib.resources import files; import fedference; assert fedference.__version__ == version('active_fedference'); assert files('fedference').joinpath('py.typed').is_file(); assert 'torch' not in sys.modules"
             "$wheel_smoke_env/bin/python" -c "import json; from pathlib import Path; from fedference import LabeledAggregationRequest, aggregate_labeled; request = LabeledAggregationRequest.from_json(Path('request.json').read_text()); assert aggregate_labeled(request).aggregation.solver_status == 'nominal'; assert 'torch' not in __import__('sys').modules"
-            "$wheel_smoke_env/bin/python" -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+            "$wheel_smoke_env/bin/python" -c "from importlib import resources; from fedference.benchmark import load_tabular_csv, run_benchmark; resource = resources.files('fedference').joinpath('data', 'synthetic_tabular.csv'); features, labels = load_tabular_csv(resource); report = run_benchmark(features, labels, seed=0); report.update(dataset=resource.name, n_rows=int(features.shape[0]), n_features=int(features.shape[1])); assert report['n_rows'] == 150 and report['recovery_identity_holds']"
             "$wheel_smoke_env/bin/fedference" aggregate --input request.json --output-dir wheel-run
             "$wheel_smoke_env/bin/fedference" verify wheel-run/receipt.json --require-nominal-solver
             test -s wheel-run/request.json
@@ -262,7 +262,7 @@ jobs:
             "$sdist_smoke_env/bin/fedference" list --json
             "$sdist_smoke_env/bin/python" -c "import sys; from importlib.metadata import version; from importlib.resources import files; import fedference; assert fedference.__version__ == version('active_fedference'); assert files('fedference').joinpath('py.typed').is_file(); assert 'torch' not in sys.modules"
             "$sdist_smoke_env/bin/python" -c "import json; from pathlib import Path; from fedference import LabeledAggregationRequest, aggregate_labeled; request = LabeledAggregationRequest.from_json(Path('request.json').read_text()); assert aggregate_labeled(request).aggregation.solver_status == 'nominal'; assert 'torch' not in __import__('sys').modules"
-            "$sdist_smoke_env/bin/python" -c "from fedference.benchmark import run_tabular_benchmark; assert run_tabular_benchmark(seed=0)['n_rows'] == 150"
+            "$sdist_smoke_env/bin/python" -c "from importlib import resources; from fedference.benchmark import load_tabular_csv, run_benchmark; resource = resources.files('fedference').joinpath('data', 'synthetic_tabular.csv'); features, labels = load_tabular_csv(resource); report = run_benchmark(features, labels, seed=0); report.update(dataset=resource.name, n_rows=int(features.shape[0]), n_features=int(features.shape[1])); assert report['n_rows'] == 150 and report['recovery_identity_holds']"
             "$sdist_smoke_env/bin/fedference" aggregate --input request.json --output-dir sdist-run
             "$sdist_smoke_env/bin/fedference" verify sdist-run/receipt.json --require-nominal-solver
             test -s sdist-run/request.json

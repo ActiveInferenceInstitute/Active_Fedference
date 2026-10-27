@@ -14,8 +14,8 @@ import pytest
 
 from fedference import divergences as dv
 from fedference import losses as ls
-from fedference.aggregation import log_linear_pool, robust_aggregate
-from fedference.belief_sharing import share_round
+from fedference.aggregation import AggregationConfig, log_linear_pool, robust_aggregate
+from fedference.belief_sharing import share_round_result
 from fedference.generalized_bayes import cavity, generalized_posterior, softmax
 
 # ---- divergence limits ---------------------------------------------------
@@ -189,7 +189,12 @@ def test_robust_aggregate_downweights_the_outlier():
 
 def test_share_round_self_exclusion_changes_per_agent_consensus():
     beliefs = np.array([[0.8, 0.1, 0.1], [0.7, 0.2, 0.1], [0.1, 0.1, 0.8]])
-    diag = share_round(beliefs, method="naive", exclude_self=True, true_state=0)
+    diag = share_round_result(
+        beliefs,
+        config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+        exclude_self=True,
+        true_state=0,
+    )
     # with self-exclusion the three agents do NOT all land on the same belief
     assert not np.allclose(diag.shared_posteriors[0], diag.shared_posteriors[2], atol=1e-6)
     assert 0.0 <= diag.mean_accuracy <= 1.0
@@ -198,7 +203,17 @@ def test_share_round_self_exclusion_changes_per_agent_consensus():
 def test_robust_sharing_beats_naive_under_a_contaminated_sentinel():
     # ground truth is state 0; two honest agents + one adversary broadcasting state 2
     beliefs = np.array([[0.75, 0.15, 0.10], [0.70, 0.20, 0.10], [0.02, 0.03, 0.95]])
-    naive = share_round(beliefs, method="naive", exclude_self=False, true_state=0)
-    robust = share_round(beliefs, method="robust", robustness=5.0, exclude_self=False, true_state=0)
+    naive = share_round_result(
+        beliefs,
+        config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+        exclude_self=False,
+        true_state=0,
+    )
+    robust = share_round_result(
+        beliefs,
+        config=AggregationConfig(method="robust", robustness=5.0, max_iter=32, tol=1e-9),
+        exclude_self=False,
+        true_state=0,
+    )
     assert robust.mean_accuracy > naive.mean_accuracy
     assert robust.mean_surprise < naive.mean_surprise

@@ -10,11 +10,10 @@ import pytest
 from fedference import (
     AggregationConfig,
     AggregationResult,
-    aggregate,
     aggregate_result,
     log_linear_pool,
     robust_aggregate,
-    share_round,
+    share_round_result,
     variational_aggregate,
 )
 
@@ -114,24 +113,23 @@ def test_zero_entropy_configuration_has_a_deterministic_boundary_solution() -> N
 
 
 def test_legacy_dispatch_and_config_path_are_compatible() -> None:
-    legacy = aggregate(BELIEFS, method="robust", robustness=1.5)
-    configured = aggregate(
-        BELIEFS,
-        config=AggregationConfig(method="robust", robustness=1.5),
-    )
+    from importlib import import_module
+
+    with pytest.raises(AttributeError):
+        getattr(import_module("fedference.aggregation"), "aggregate")
+    legacy = aggregate_result(
+        BELIEFS, config=AggregationConfig(method="robust", robustness=1.5, max_iter=32, tol=1e-9)
+    ).consensus
+    configured = robust_aggregate(BELIEFS, robustness=1.5, max_iter=32, tol=1e-9).consensus
     assert np.array_equal(legacy, configured)
-    with pytest.raises(ValueError, match="mutually exclusive"):
-        aggregate(
-            BELIEFS,
-            method="robust",
-            config=AggregationConfig(method="robust", robustness=1.5),
-        )
-    with pytest.raises(ValueError, match="compatibility solver"):
-        aggregate(
-            BELIEFS,
-            config=AggregationConfig(method="robust", robustness=1.5),
-            robustness=2.0,
-        )
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        aggregate_result(
+            BELIEFS, method="robust", config=AggregationConfig(method="robust", robustness=1.5)
+        ).consensus
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        aggregate_result(
+            BELIEFS, config=AggregationConfig(method="robust", robustness=1.5), robustness=2.0
+        ).consensus
 
 
 def test_share_round_accepts_config_and_rejects_mixed_paths() -> None:
@@ -140,15 +138,15 @@ def test_share_round_accepts_config_and_rejects_mixed_paths() -> None:
         robustness=1.5,
         entropy_weight=0.8,
     )
-    configured = share_round(BELIEFS, config=config, exclude_self=False)
+    configured = share_round_result(BELIEFS, config=config, exclude_self=False)
     direct = aggregate_result(BELIEFS, config=config)
     assert np.array_equal(configured.consensus, direct.consensus)
     assert np.array_equal(
         configured.normalized_effective_weights,
         direct.normalized_effective_weights,
     )
-    with pytest.raises(ValueError, match="mutually exclusive"):
-        share_round(BELIEFS, method="robust", config=config)
+    with pytest.raises(TypeError, match="unexpected keyword"):
+        share_round_result(BELIEFS, method="robust", config=config)
 
 
 @pytest.mark.parametrize(
@@ -163,12 +161,7 @@ def test_share_round_global_consensus_is_bit_identical_to_direct_dispatch(
     config: AggregationConfig,
 ) -> None:
     base_weights = np.asarray([0.5, 1.0, 2.0])
-    shared = share_round(
-        BELIEFS,
-        config=config,
-        base_weights=base_weights,
-        exclude_self=True,
-    )
+    shared = share_round_result(BELIEFS, config=config, base_weights=base_weights, exclude_self=True)
     direct = aggregate_result(BELIEFS, config=config, base_weights=base_weights)
     assert np.array_equal(shared.consensus, direct.consensus)
     if shared.normalized_effective_weights is not None:
@@ -191,7 +184,7 @@ def test_share_round_generators_preserve_exact_global_and_leave_one_out_dispatch
 ) -> None:
     """One-shot iterables must not introduce a second normalization pass."""
     base_weights = np.asarray([0.5, 1.0, 2.0])
-    shared = share_round(
+    shared = share_round_result(
         (row for row in BELIEFS),
         config=config,
         base_weights=(float(weight) for weight in base_weights),
@@ -216,4 +209,4 @@ def test_dispatch_rejects_non_configuration_objects() -> None:
     with pytest.raises(ValueError, match="config must be an AggregationConfig"):
         aggregate_result(BELIEFS, config=invalid)
     with pytest.raises(ValueError, match="config must be an AggregationConfig"):
-        share_round(BELIEFS, config=invalid)
+        share_round_result(BELIEFS, config=invalid)

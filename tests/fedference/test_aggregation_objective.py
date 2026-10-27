@@ -27,7 +27,8 @@ import numpy as np
 import pytest
 
 from fedference.aggregation import (
-    aggregate,
+    AggregationConfig,
+    aggregate_result,
     aggregation_free_energy,
     log_linear_pool,
     robust_aggregate,
@@ -334,7 +335,9 @@ def test_single_agent_consensus_recovers_that_agent_at_c_zero():
 
 def test_aggregate_dispatch_variational():
     beliefs = [np.array([0.7, 0.2, 0.1]), np.array([0.6, 0.3, 0.1])]
-    got = aggregate(beliefs, method="variational", robustness=1.0)
+    got = aggregate_result(
+        beliefs, config=AggregationConfig(method="variational", robustness=1.0, max_iter=64, tol=1e-9)
+    ).consensus
     ref = variational_aggregate(beliefs, robustness=1.0).consensus
     assert np.allclose(got, ref, atol=1e-12)
 

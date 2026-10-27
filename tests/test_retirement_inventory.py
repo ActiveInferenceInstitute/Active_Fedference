@@ -20,6 +20,7 @@ HISTORICAL_READERS: Final = (
     "src/fedference/federation/socket_transport.py::aggregation_config_from_replay",
 )
 SCIENTIFIC_CONTROLS: Final = (
+    "src/fedference/bnn_baseline.py::fed_gvi_logreg",
     "src/fedference/aggregation.py::log_linear_pool",
     "src/fedference/aggregation.py::robust_aggregate",
     "src/fedference/aggregation.py::variational_aggregate",
@@ -44,9 +45,37 @@ class Entry(Surface):
     rationale: str
 
 
+class OwnerDecision(TypedDict):
+    id: str
+    symbol: str
+    disposition: str
+    canonical: str
+    task: int
+    rationale: str
+    implementation_status: str
+
+
+class HistoricalDecision(TypedDict):
+    id: str
+    symbol: str
+    disposition: str
+    tasks: list[int]
+    implementation_status: str
+
+
+class AdditionalRetirement(TypedDict):
+    symbol: str
+    replacement: str
+    task: int
+    status: str
+
+
 class Inventory(TypedDict):
     schema_version: int
     entries: list[Entry]
+    owner_decisions: list[OwnerDecision]
+    historical_decisions: list[HistoricalDecision]
+    additional_retirements: list[AdditionalRetirement]
 
 
 class References(TypedDict):
@@ -60,7 +89,7 @@ def read_inventory(root: Path) -> Inventory:
     blocks = re.findall(r"```json\n(.*?)\n```", (root / CONTRACT).read_text(), re.S)
     assert len(blocks) == 1, "expected one machine-readable inventory"
     inventory: Inventory = json.loads(blocks[0])
-    assert inventory["schema_version"] == 1
+    assert inventory["schema_version"] == 2
     return inventory
 
 
@@ -257,6 +286,26 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
     """Fail on unclassified surfaces, stale callers, or removed retained entries."""
     entries = inventory["entries"]
     by_symbol = {entry["symbol"]: entry for entry in entries}
+    decisions = {decision["symbol"]: decision for decision in inventory["owner_decisions"]}
+    assert len(entries) == 94, "initial inventory rows must be preserved"
+    assert len(decisions) == 23, "all owner decisions must have resolved metadata"
+    assert {d["id"] for d in decisions.values()} == {f"OD{i:02}" for i in range(1, 24)}
+    assert decisions.keys() == {
+        entry["symbol"] for entry in entries if entry["disposition"] == "owner-decision"
+    }, "resolved decisions must bind the original owner rows"
+    for decision in decisions.values():
+        assert decision["disposition"] in {"remove/migrate", "retain-current"}
+        assert decision["canonical"] and decision["rationale"]
+        assert decision["task"] in {52, 53, 54, 56}
+        expected = "implemented" if decision["task"] == 52 else "pending"
+        assert decision["implementation_status"] == expected
+        entry = by_symbol[decision["symbol"]]
+        assert entry["replacement"] == decision["canonical"]
+        assert entry["status"] == ("retired" if decision["task"] == 52 else "present")
+    history = inventory["historical_decisions"]
+    assert {d["id"] for d in history} == {f"HD{i:02}" for i in range(1, 5)}
+    assert history[0]["symbol"] == HISTORICAL_READERS[0]
+    assert all(d["disposition"] and d["tasks"] and d["implementation_status"] == "pending" for d in history)
     assert len(by_symbol) == len(entries), "duplicate inventory symbol"
     for required, disposition in (
         (HISTORICAL_READERS, "retain-history"),
@@ -308,9 +357,22 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
                     assert keyword not in {arg.arg for arg in arguments}, (
                         f"retired keyword still accepted: {symbol}"
                     )
-        if entry["disposition"] in {"retain-science", "retain-history", "owner-decision"}:
+        if entry["disposition"] in {"retain-science", "retain-history"} or (
+            entry["disposition"] == "owner-decision" and decisions[symbol]["disposition"] == "retain-current"
+        ):
             assert entry["status"] == "present", f"unauthorized retained-surface retirement: {symbol}"
         assert entry["callsites"] == callsites(index, entry), f"caller inventory drift: {symbol}"
+    for extra in inventory["additional_retirements"]:
+        assert extra["task"] == 52 and extra["status"] == "retired" and extra["replacement"]
+        path, target = extra["symbol"].split("::")
+        for name, definition in definitions(ast.parse((root / path).read_text())):
+            if "(" not in target:
+                assert name != target, f"retired symbol still defined: {extra['symbol']}"
+            elif name == target.split("(")[0] and isinstance(definition, ast.FunctionDef):
+                arguments = definition.args.posonlyargs + definition.args.args + definition.args.kwonlyargs
+                assert target.split("(")[1][:-2] not in {arg.arg for arg in arguments}, (
+                    f"retired keyword still accepted: {extra['symbol']}"
+                )
     evidence = ast.parse((root / "src/fedference/evidence_contracts/schema.py").read_text())
     transport = ast.parse((root / "src/fedference/federation/transport.py").read_text())
     for tree, name, expected in (

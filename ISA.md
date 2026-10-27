@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 279/281
+progress: 280/282
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1333,3 +1333,14 @@ them.
   agree. Resource refusal remains read-only validation; normalization retains
   its existing path and changed-original guards. This extraction does not
   establish browser rendering, WCAG/PDF-UA, release or scientific acceptance.
+
+- [x] ISC-287: Domain orchestration uses canonical result/configuration
+  boundaries and explicit CSV inputs. Redundant aggregation/sharing/benchmark
+  wrappers and aliases are removed with current callers and installed smoke
+  paths migrated. Independent review approves 514 scoped and 99 adjacent cases,
+  all 175 original test-function mappings and six preserved scientific controls.
+  Solver budgets, numerical operations and declared benchmark reports remain
+  source-pinned; actual removed imports/selectors reject. Fresh scoped coverage
+  is 92.55 percent combined. The example process boundary now supplies typed
+  row sequences. Later federation, schema, field and documentation migrations
+  remain separate; this is no scientific or release acceptance.

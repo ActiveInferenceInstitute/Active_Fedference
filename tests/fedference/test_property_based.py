@@ -13,7 +13,7 @@ Losses       (L1-L3) : nll, beta_loss, rcce
 Aggregation  (A1-A5) : log_linear_pool, robust_aggregate, variational_aggregate,
                         aggregate dispatch, agent_weights normalization
 Gen-Bayes    (G1-G2) : generalized_posterior closed form, cavity roundtrip
-Belief share (S1-S2) : share_round pmf validity, exclude_self differentiation
+Belief share (S1-S2) : share_round_result pmf validity, exclude_self differentiation
 Statistics   (T1-T4) : power_analysis in [0,1], bootstrap_ci lo<=hi,
                         bh_fdr q-values in [0,1], d_equivalent sign consistency
 
@@ -28,6 +28,8 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
+
+from fedference import AggregationConfig
 
 # ---------------------------------------------------------------------------
 # Shared strategies — all use lazy imports inside each test body so that any
@@ -297,10 +299,12 @@ def test_variational_aggregate_zero_robustness_equals_log_linear_pool(beliefs):
 @settings(max_examples=150, deadline=None, suppress_health_check=[HealthCheck.too_slow])
 def test_aggregate_dispatch_naive_consistent(beliefs):
     """aggregate(method='naive') returns the same result as log_linear_pool directly."""
-    from fedference.aggregation import aggregate, log_linear_pool
+    from fedference.aggregation import aggregate_result, log_linear_pool
 
     direct = log_linear_pool(beliefs)
-    dispatched = aggregate(beliefs, method="naive")
+    dispatched = aggregate_result(
+        beliefs, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9)
+    ).consensus
     np.testing.assert_allclose(direct, dispatched, atol=1e-12)
 
 
@@ -383,7 +387,7 @@ def test_cavity_factor_roundtrip(posterior_factor):
 
 
 # ===========================================================================
-# S1 — share_round always returns valid pmfs for every agent
+# S1 — share_round_result always returns valid pmfs for every agent
 # ===========================================================================
 
 
@@ -393,17 +397,23 @@ def test_cavity_factor_roundtrip(posterior_factor):
 )
 @settings(max_examples=150, deadline=None, suppress_health_check=[HealthCheck.too_slow])
 def test_share_round_returns_valid_pmfs(beliefs, method):
-    """share_round always produces valid (non-negative, normalized) per-agent beliefs."""
-    from fedference.belief_sharing import share_round
+    """share_round_result always produces valid (non-negative, normalized) per-agent beliefs."""
+    from fedference.belief_sharing import share_round_result
 
-    diag = share_round(beliefs, method=method, robustness=1.0, exclude_self=True)
+    diag = share_round_result(
+        beliefs,
+        config=AggregationConfig(
+            method=method, robustness=1.0, max_iter=(64 if method == "variational" else 32), tol=1e-9
+        ),
+        exclude_self=True,
+    )
     for i, row in enumerate(diag.shared_posteriors):
         assert _is_valid_pmf(row, atol=1e-6), f"Agent {i}'s shared belief is not a valid pmf: {row}"
     assert _is_valid_pmf(diag.consensus, atol=1e-6), f"Global consensus is not a valid pmf: {diag.consensus}"
 
 
 # ===========================================================================
-# S2 — share_round with exclude_self=True: every recipient omits itself
+# S2 — share_round_result with exclude_self=True: every recipient omits itself
 # ===========================================================================
 
 
@@ -418,10 +428,12 @@ def test_share_round_exclude_self_uses_each_recipients_leave_one_out_pool(belief
     at the same state even though each pool has a different membership.
     """
     from fedference.aggregation import log_linear_pool
-    from fedference.belief_sharing import share_round
+    from fedference.belief_sharing import share_round_result
 
     beliefs_arr = np.asarray(beliefs, dtype=np.float64)
-    diag = share_round(beliefs_arr, method="naive", exclude_self=True)
+    diag = share_round_result(
+        beliefs_arr, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9), exclude_self=True
+    )
     all_indices = np.arange(len(beliefs_arr))
     for recipient in all_indices:
         expected = log_linear_pool(beliefs_arr[all_indices != recipient])

@@ -8,7 +8,7 @@ import json
 import numpy as np
 import pytest
 
-from fedference.aggregation import log_linear_pool, robust_aggregate, variational_aggregate
+from fedference.aggregation import AggregationConfig, log_linear_pool, robust_aggregate, variational_aggregate
 from fedference.aggregation_comparators import linear_opinion_pool
 from fedference.generalized_bayes import cavity, generalized_posterior, update_factor
 from fedference.losses import rcce
@@ -86,7 +86,14 @@ def test_canonical_client_and_effect_size_numerics() -> None:
 def test_retired_keyword_and_export_rejected(module: str, name: str, retired: str) -> None:
     # Given valid input that the former alias accepted.
     rows = np.array([[0.8, 0.2], [0.5, 0.5]])
-    function = getattr(importlib.import_module(f"fedference.{module}"), name)
+    imported = importlib.import_module(f"fedference.{module}")
+    if name in ("aggregate", "share_round"):
+        with pytest.raises(AttributeError):
+            getattr(imported, name)
+        canonical = "aggregate_result" if name == "aggregate" else "share_round_result"
+        function = getattr(imported, canonical)
+    else:
+        function = getattr(imported, name)
     arguments = {retired: [2.0, 1.0] if retired == "weights" else rows}
     if retired == "weights":
         arguments["local_posteriors"] = rows
@@ -141,7 +148,14 @@ def test_retired_domain_keywords_fail_before_dispatch(module: str, name: str, re
     from fedference.pomdp import build_moving_world
 
     rows = np.array([[0.8, 0.2], [0.5, 0.5]])
-    function = getattr(importlib.import_module(f"fedference.{module}"), name)
+    imported = importlib.import_module(f"fedference.{module}")
+    if name in ("aggregate", "share_round"):
+        with pytest.raises(AttributeError):
+            getattr(imported, name)
+        canonical = "aggregate_result" if name == "aggregate" else "share_round_result"
+        function = getattr(imported, canonical)
+    else:
+        function = getattr(imported, name)
     # Each case replaces one canonical argument in an otherwise valid call.
     match name:
         case "aggregation_free_energy":
@@ -212,13 +226,15 @@ def test_retired_assimilation_keyword_leaves_state_unchanged() -> None:
 
 
 def test_retired_result_properties_are_absent() -> None:
-    from fedference.belief_sharing import share_round
+    from fedference.belief_sharing import share_round_result
     from fedference.calibration import CalibrationEpisode
     from fedference.hybrid import HybridBelief, hybrid_aggregate
 
     rows = np.array([[0.8, 0.2], [0.5, 0.5]])
     aggregation = robust_aggregate(rows, robustness=0.0)
-    shared = share_round(rows, exclude_self=False)
+    shared = share_round_result(
+        rows, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9), exclude_self=False
+    )
     episode = CalibrationEpisode("episode", "clean", rows, 0)
     belief = HybridBelief(np.array([0.8, 0.2]), np.zeros(2), np.ones(2))
     hybrid = hybrid_aggregate([belief], robustness=0.0)

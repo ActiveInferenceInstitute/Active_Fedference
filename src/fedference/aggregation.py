@@ -143,10 +143,6 @@ def log_linear_pool(
     return softmax(w @ np.log(mat))
 
 
-# Historical convenience alias for the project pool; not a full-protocol claim.
-friston_belief_share = log_linear_pool
-
-
 @dataclass
 class AggregationResult:
     """Consensus plus per-agent influence diagnostics.
@@ -354,7 +350,7 @@ class AggregationResult:
 class AggregationConfig:
     """Validated, serializable configuration shared by every aggregation adapter.
 
-    The defaults preserve :func:`aggregate` compatibility: ``method`` is the
+    The default method and robustness are explicit: ``method`` is the
     project log-linear pool, while selecting either robust method without
     overriding ``robustness`` uses the historical strength of ``1.0``.
     Individual low-level solvers continue to accept ``max_iter=0`` for
@@ -856,8 +852,7 @@ def aggregate_result(
     Returns:
         An :class:`AggregationResult` for every method. The naive path records
         normalized base weights and zero iterations, providing a uniform
-        diagnostics contract without changing :func:`aggregate`'s compatibility
-        array-only return type.
+        diagnostics contract for all methods.
     """
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
@@ -894,63 +889,3 @@ def aggregate_result(
         multistart=resolved.multistart,
         entropy_weight=resolved.entropy_weight,
     )
-
-
-def aggregate(
-    local_posteriors: Iterable[ArrayF] | None = None,
-    *,
-    method: str | None = None,
-    config: AggregationConfig | None = None,
-    **kwargs: Any,
-) -> ArrayF:
-    """Convenience dispatch returning just the consensus pmf.
-
-    ``method='naive'`` -> :func:`log_linear_pool`; ``method='robust'`` ->
-    :func:`robust_aggregate` (the empirically sharp heuristic;
-    ``robustness`` defaults to 1.0); ``method='variational'`` ->
-    :func:`variational_aggregate` (objective-backed for its stated
-    finite-simplex objective; ``robustness`` defaults to 1.0).
-
-    ``config`` is the additive public configuration path. It is mutually
-    exclusive with the compatibility ``method`` and solver keyword path; ``base_weights``
-    remains per-call data and may be supplied with either path.
-    """
-    if local_posteriors is None:
-        raise TypeError("local_posteriors is required")
-    if {"beliefs", "weights"} & kwargs.keys():
-        raise TypeError("unexpected keyword argument")
-    base_weights = kwargs.pop("base_weights", None)
-    if config is not None:
-        if method is not None:
-            raise ValueError("config and compatibility method are mutually exclusive")
-        if kwargs:
-            names = ", ".join(sorted(kwargs))
-            raise ValueError(f"config and compatibility solver arguments are mutually exclusive: {names}")
-        return aggregate_result(
-            local_posteriors,
-            config=config,
-            base_weights=base_weights,
-        ).consensus
-
-    resolved_method = "naive" if method is None else method
-    if resolved_method == "naive":
-        if kwargs:
-            names = ", ".join(sorted(kwargs))
-            raise ValueError(f"unknown naive aggregation arguments: {names}")
-        return log_linear_pool(local_posteriors, base_weights=base_weights)
-    if resolved_method == "robust":
-        kwargs.setdefault("robustness", 1.0)
-        return robust_aggregate(
-            local_posteriors,
-            base_weights=base_weights,
-            **kwargs,
-        ).consensus
-    if resolved_method == "variational":
-        kwargs.setdefault("robustness", 1.0)
-        kwargs.setdefault("entropy_weight", 1.0)
-        return variational_aggregate(
-            local_posteriors,
-            base_weights=base_weights,
-            **kwargs,
-        ).consensus
-    raise ValueError(f"unknown method {resolved_method!r}; choose 'naive', 'robust' or 'variational'")

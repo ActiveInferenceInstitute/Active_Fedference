@@ -6,6 +6,31 @@ a serialized format, or a scientific control. The [stability policy](../referenc
 and [modularity contract](modularity.md) remain applicable until the corresponding
 migration is implemented and reviewed. Release authorization is separate.
 
+## Resolved decisions and current implementation
+
+The explicit breaking-change authorization resolves all 23 owner decisions.
+Schema 2 retains all 94 initial rows and all 61 previously retired statuses.
+The owner_decisions metadata records each OD disposition, canonical route,
+assigned task and rationale. Only OD01–03 are implemented by Task 52.
+Later Task 53/54/55/56/58 surfaces remain present until their separately assigned
+migration and verification gates. The original owner-decision classification
+is retained as source evidence; it no longer denotes an unanswered question.
+
+Task 52 removes aggregate, share_round, SharingDiagnostics, friston_belief_share
+and run_tabular_benchmark. Canonical config/result paths retain all six scientific
+controls, exact solver budgets, and None for unavailable truth metrics.
+Benchmark callers explicitly load the synthetic mechanics fixture or their CSV
+before running run_benchmark and binding report metadata. Supplementary aliases
+and removed rich-selector keywords are recorded separately from the 94 rows.
+
+HD01 refers physically to
+src/fedference/evidence_contracts/run_schema.py::RunReceipt.from_dict.
+Its current run1.2 constructor remains. Live1.1 dispatch may retire only after
+Task55 verifies the full available corpus through fedference_archive, preserving
+unavailable provenance and explicit losses. HD02–04 retain current wire-v1
+decoding and its normalized-influence semantics. No archive or published bytes
+are rewritten here. Current caller locators are conservative AST references.
+
 ## Dispositions and migration
 
 - `remove-deprecated`: migrate active callers and guidance to `replacement`, then
@@ -69,7 +94,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "entries": [
     {
       "callsites": [],
@@ -109,37 +134,21 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     },
     {
       "callsites": [
-        "src/__init__.py::<module>",
-        "src/fedference/__init__.py::<module>",
-        "tests/fedference/test_aggregation_config.py::<module>",
-        "tests/fedference/test_aggregation_config.py::test_legacy_dispatch_and_config_path_are_compatible",
-        "tests/fedference/test_aggregation_objective.py::<module>",
-        "tests/fedference/test_aggregation_objective.py::test_aggregate_dispatch_variational",
-        "tests/fedference/test_core_edges.py::<module>",
-        "tests/fedference/test_core_edges.py::test_aggregate_dispatch_rejects_unknown_method",
-        "tests/fedference/test_core_edges.py::test_aggregate_validation_and_dispatch",
         "tests/fedference/test_federation_health.py::test_structured_replay_integrity_finding_codes",
-        "tests/fedference/test_property_based.py::test_aggregate_dispatch_naive_consistent",
-        "tests/fedference/test_review_hardening.py::<module>",
-        "tests/fedference/test_review_hardening.py::test_aggregation_validation_alias_and_dispatch_paths",
         "tests/fedference/test_socket_transport.py::test_malformed_replay_worker_orders_fail_closed",
         "tests/fedference/test_socket_transport.py::test_replay_log_rejects_tampered_consensus_digest",
         "tests/fedference/test_socket_transport.py::test_replay_rejects_duplicate_worker_events_and_config_tamper",
         "tests/fedference/test_socket_transport.py::test_replay_rejects_top_level_aggregate_config_tamper",
-        "tests/fedference/test_strict_shape_boundaries.py::<module>",
-        "tests/fedference/test_strict_shape_boundaries.py::test_advertised_aggregation_and_federation_boundaries_reject_matrix_rows",
-        "tests/fedference/test_strict_shape_boundaries.py::test_advertised_weight_boundaries_reject_matrix_weights",
-        "tests/fedference/test_strict_shape_boundaries.py::test_outer_generators_cross_aggregate_and_sharing_boundaries",
         "tests/figures/test_visual_flow_figures.py::test_application_flow_failure_routes_use_clear_dedicated_lanes"
       ],
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Promised consensus-array convenience API; method/tuning configuration remains supported separately from warned keywords.",
-      "replacement": "aggregate_result(...).consensus",
-      "scope": "explicit migration decision",
-      "status": "present",
+      "owner": "breaking-52",
+      "rationale": "Redundant array projection and method/kwargs dispatch; no distinct mathematics.",
+      "replacement": "aggregate_result(..., config=AggregationConfig(...)).consensus",
+      "scope": "Task 52",
+      "status": "retired",
       "symbol": "src/fedference/aggregation.py::aggregate"
     },
     {
@@ -155,9 +164,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/aggregation.py::aggregate(beliefs=)"
     },
     {
-      "callsites": [
-        "tests/fedference/test_review_hardening.py::test_aggregation_validation_alias_and_dispatch_paths"
-      ],
+      "callsites": [],
       "disposition": "remove-deprecated",
       "historical_reader": "none-runtime-alias",
       "kind": "keyword",
@@ -181,7 +188,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/aggregation.py::aggregate_result(beliefs=)"
     },
     {
-      "callsites": [],
+      "callsites": [
+        "tests/fedference/test_review_hardening.py::test_aggregation_validation_alias_and_dispatch_paths"
+      ],
       "disposition": "remove-deprecated",
       "historical_reader": "none-runtime-alias",
       "kind": "keyword",
@@ -234,8 +243,6 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "src/analysis/workflow.py::<module>",
         "src/analysis/workflow.py::_heatmap_inputs",
         "src/fedference/__init__.py::<module>",
-        "src/fedference/aggregation.py::<module>",
-        "src/fedference/aggregation.py::aggregate",
         "src/fedference/aggregation.py::aggregate_result",
         "src/fedference/benchmark.py::<module>",
         "src/fedference/benchmark.py::run_benchmark",
@@ -313,7 +320,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_tempered_aggregation_objective.py::test_c_to_zero_recovery_tempered",
         "tests/test_domain_retirement.py::<module>",
         "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
-        "tests/test_domain_retirement.py::test_retired_assimilation_keyword_leaves_state_unchanged"
+        "tests/test_domain_retirement.py::test_retired_assimilation_keyword_leaves_state_unchanged",
+        "tests/test_unified_domain_api.py::<module>",
+        "tests/test_unified_domain_api.py::test_six_substantive_scientific_controls_remain"
       ],
       "disposition": "retain-science",
       "historical_reader": "none-scientific-control",
@@ -355,7 +364,6 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "callsites": [
         "src/__init__.py::<module>",
         "src/fedference/__init__.py::<module>",
-        "src/fedference/aggregation.py::aggregate",
         "src/fedference/aggregation.py::aggregate_result",
         "src/fedference/benchmark.py::<module>",
         "src/fedference/benchmark.py::run_benchmark",
@@ -379,6 +387,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "src/manuscript_vars/loaders.py::_recovery_residuals",
         "src/manuscript_vars/loaders.py::_tempered_variables",
         "tests/fedference/test_aggregation_config.py::<module>",
+        "tests/fedference/test_aggregation_config.py::test_legacy_dispatch_and_config_path_are_compatible",
         "tests/fedference/test_aggregation_config.py::test_rich_dispatch_matches_each_low_level_method",
         "tests/fedference/test_aggregation_objective.py::<module>",
         "tests/fedference/test_aggregation_objective.py::test_robust_aggregate_iterative_path_recovers_pool_in_the_small_c_limit",
@@ -417,13 +426,16 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_strict_shape_boundaries.py::<module>",
         "tests/fedference/test_strict_shape_boundaries.py::test_advertised_aggregation_and_federation_boundaries_reject_matrix_rows",
         "tests/fedference/test_strict_shape_boundaries.py::test_advertised_weight_boundaries_reject_matrix_weights",
+        "tests/fedference/test_strict_shape_boundaries.py::test_outer_generators_cross_aggregate_and_sharing_boundaries",
         "tests/fedference/test_tempered_aggregation_objective.py::<module>",
         "tests/fedference/test_tempered_aggregation_objective.py::test_lambda_star_empirical",
         "tests/test_domain_retirement.py::<module>",
         "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
         "tests/test_domain_retirement.py::test_retired_result_properties_are_absent",
         "tests/test_token_sourcing.py::<module>",
-        "tests/test_token_sourcing.py::test_federation_bit_identical_token_matches_direct_recomputation"
+        "tests/test_token_sourcing.py::test_federation_bit_identical_token_matches_direct_recomputation",
+        "tests/test_unified_domain_api.py::<module>",
+        "tests/test_unified_domain_api.py::test_six_substantive_scientific_controls_remain"
       ],
       "disposition": "retain-science",
       "historical_reader": "none-scientific-control",
@@ -462,7 +474,6 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     {
       "callsites": [
         "src/fedference/__init__.py::<module>",
-        "src/fedference/aggregation.py::aggregate",
         "src/fedference/aggregation.py::aggregate_result",
         "src/fedference/experiments/complexity.py::<module>",
         "src/fedference/experiments/complexity.py::_aggregation_call",
@@ -527,7 +538,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/figures/test_descent_comparison.py::<module>",
         "tests/figures/test_descent_comparison.py::test_comparison_from_real_aggregator",
         "tests/test_domain_retirement.py::<module>",
-        "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators"
+        "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
+        "tests/test_unified_domain_api.py::<module>",
+        "tests/test_unified_domain_api.py::test_six_substantive_scientific_controls_remain"
       ],
       "disposition": "retain-science",
       "historical_reader": "none-scientific-control",
@@ -568,7 +581,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_aggregation_comparators.py::<module>",
         "tests/fedference/test_aggregation_comparators.py::test_clr_median_is_valid_deterministic_and_permutation_invariant",
         "tests/fedference/test_aggregation_comparators.py::test_duplicate_majority_is_recognized_as_an_exact_weighted_median",
-        "tests/fedference/test_aggregation_comparators.py::test_identical_beliefs_recover_that_belief_and_differ_from_no_rule"
+        "tests/fedference/test_aggregation_comparators.py::test_identical_beliefs_recover_that_belief_and_differ_from_no_rule",
+        "tests/test_unified_domain_api.py::<module>",
+        "tests/test_unified_domain_api.py::test_six_substantive_scientific_controls_remain"
       ],
       "disposition": "retain-science",
       "historical_reader": "none-scientific-control",
@@ -609,7 +624,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_aggregation_comparators.py::<module>",
         "tests/fedference/test_aggregation_comparators.py::test_linear_pool_is_weighted_arithmetic_mixture",
         "tests/test_domain_retirement.py::<module>",
-        "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators"
+        "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
+        "tests/test_unified_domain_api.py::<module>",
+        "tests/test_unified_domain_api.py::test_six_substantive_scientific_controls_remain"
       ],
       "disposition": "retain-science",
       "historical_reader": "none-scientific-control",
@@ -670,61 +687,19 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/belief_sharing.py::SharingDiagnostics.shared_beliefs"
     },
     {
-      "callsites": [
-        "examples/03_federation_boundaries.py::<module>",
-        "examples/03_federation_boundaries.py::main",
-        "src/__init__.py::<module>",
-        "src/fedference/__init__.py::<module>",
-        "src/fedference/experiments/_common.py::<module>",
-        "src/fedference/experiments/_common.py::_consensus_accuracy",
-        "src/fedference/experiments/belief_sharing.py::<module>",
-        "src/fedference/experiments/belief_sharing.py::run_belief_sharing",
-        "src/fedference/experiments/complexity.py::<module>",
-        "src/fedference/experiments/complexity.py::_sharing_measurements._share",
-        "src/fedference/experiments/diagnostics.py::<module>",
-        "src/fedference/experiments/diagnostics.py::run_influence_weights_report",
-        "tests/fedference/test_aggregation_config.py::<module>",
-        "tests/fedference/test_aggregation_config.py::test_dispatch_rejects_non_configuration_objects",
-        "tests/fedference/test_aggregation_config.py::test_share_round_accepts_config_and_rejects_mixed_paths",
-        "tests/fedference/test_aggregation_config.py::test_share_round_generators_preserve_exact_global_and_leave_one_out_dispatch",
-        "tests/fedference/test_aggregation_config.py::test_share_round_global_consensus_is_bit_identical_to_direct_dispatch",
-        "tests/fedference/test_core_edges.py::<module>",
-        "tests/fedference/test_core_edges.py::test_share_round_rejects_invalid_states_and_belief_mass",
-        "tests/fedference/test_core_edges.py::test_share_round_rejects_unknown_method",
-        "tests/fedference/test_core_edges.py::test_share_round_robust_with_exclude_self_isolates_contaminated_agent",
-        "tests/fedference/test_core_edges.py::test_share_round_single_agent_and_no_truth",
-        "tests/fedference/test_core_edges.py::test_share_round_variational_dispatches_objective_backed_rule",
-        "tests/fedference/test_core_identities.py::<module>",
-        "tests/fedference/test_core_identities.py::test_robust_sharing_beats_naive_under_a_contaminated_sentinel",
-        "tests/fedference/test_core_identities.py::test_share_round_self_exclusion_changes_per_agent_consensus",
-        "tests/fedference/test_federation_health.py::<module>",
-        "tests/fedference/test_federation_health.py::test_share_round_preserves_historical_shape_and_nan_behavior",
-        "tests/fedference/test_property_based.py::test_share_round_exclude_self_uses_each_recipients_leave_one_out_pool",
-        "tests/fedference/test_property_based.py::test_share_round_returns_valid_pmfs",
-        "tests/fedference/test_review_hardening.py::<module>",
-        "tests/fedference/test_review_hardening.py::test_share_round_alias_conflicts_and_fail_closed_inputs",
-        "tests/fedference/test_review_hardening.py::test_share_round_canonical_fields_follow_log_product",
-        "tests/fedference/test_review_hardening.py::test_share_round_rejects_malformed_true_state",
-        "tests/fedference/test_strict_shape_boundaries.py::<module>",
-        "tests/fedference/test_strict_shape_boundaries.py::test_advertised_aggregation_and_federation_boundaries_reject_matrix_rows",
-        "tests/fedference/test_strict_shape_boundaries.py::test_advertised_weight_boundaries_reject_matrix_weights",
-        "tests/fedference/test_strict_shape_boundaries.py::test_outer_generators_cross_aggregate_and_sharing_boundaries",
-        "tests/test_domain_retirement.py::test_retired_result_properties_are_absent"
-      ],
+      "callsites": [],
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Promised SharingDiagnostics return contract; deprecated keyword forwarding is inventoried separately.",
-      "replacement": "share_round_result",
-      "scope": "explicit migration decision",
-      "status": "present",
+      "owner": "breaking-52",
+      "rationale": "Historical diagnostics projection duplicates rich result and invents NaN for unavailable metrics; retain typed None and explicit fields.",
+      "replacement": "share_round_result; consume shared_posteriors/global_aggregation",
+      "scope": "Task 52",
+      "status": "retired",
       "symbol": "src/fedference/belief_sharing.py::share_round"
     },
     {
-      "callsites": [
-        "tests/fedference/test_review_hardening.py::test_share_round_alias_conflicts_and_fail_closed_inputs"
-      ],
+      "callsites": [],
       "disposition": "remove-deprecated",
       "historical_reader": "none-runtime-alias",
       "kind": "keyword",
@@ -736,9 +711,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/belief_sharing.py::share_round(agent_beliefs=)"
     },
     {
-      "callsites": [
-        "tests/fedference/test_review_hardening.py::test_share_round_alias_conflicts_and_fail_closed_inputs"
-      ],
+      "callsites": [],
       "disposition": "remove-deprecated",
       "historical_reader": "none-runtime-alias",
       "kind": "keyword",
@@ -750,7 +723,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/belief_sharing.py::share_round(weights=)"
     },
     {
-      "callsites": [],
+      "callsites": [
+        "tests/fedference/test_review_hardening.py::test_share_round_alias_conflicts_and_fail_closed_inputs"
+      ],
       "disposition": "remove-deprecated",
       "historical_reader": "none-runtime-alias",
       "kind": "keyword",
@@ -762,7 +737,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/belief_sharing.py::share_round_result(agent_beliefs=)"
     },
     {
-      "callsites": [],
+      "callsites": [
+        "tests/fedference/test_review_hardening.py::test_share_round_alias_conflicts_and_fail_closed_inputs"
+      ],
       "disposition": "remove-deprecated",
       "historical_reader": "none-runtime-alias",
       "kind": "keyword",
@@ -774,20 +751,15 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/belief_sharing.py::share_round_result(weights=)"
     },
     {
-      "callsites": [
-        "tests/fedference/test_benchmark.py::<module>",
-        "tests/fedference/test_benchmark.py::test_clean_data_classified_perfectly",
-        "tests/fedference/test_benchmark.py::test_heavy_contamination_shows_measured_robust_edge",
-        "tests/fedference/test_benchmark.py::test_recovery_identity_holds_and_accuracies_valid"
-      ],
+      "callsites": [],
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Bundled synthetic CSV convenience path remains a bounded mechanics example; not external-data validation.",
-      "replacement": "run_benchmark or run_external_dataset_benchmark with declared inputs",
-      "scope": "explicit migration decision",
-      "status": "present",
+      "owner": "breaking-52",
+      "rationale": "Implicit bundled path is a redundant convenience route; preserve synthetic smoke dataset through explicit package-resource loading.",
+      "replacement": "load_tabular_csv(explicit_path) then run_benchmark(features, labels, ...); registered external loader for real data",
+      "scope": "Task 52",
+      "status": "retired",
       "symbol": "src/fedference/benchmark.py::run_tabular_benchmark"
     },
     {
@@ -807,7 +779,9 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_bnn_baseline.py::test_rcce_separation_is_not_a_knife_edge_in_loss_param",
         "tests/fedference/test_bnn_baseline.py::test_rcce_with_zero_param_recovers_nll",
         "tests/fedference/test_bnn_baseline.py::test_returns_accuracy_in_unit_interval",
-        "tests/fedference/test_bnn_baseline.py::test_weights_shape_is_features_plus_bias"
+        "tests/fedference/test_bnn_baseline.py::test_weights_shape_is_features_plus_bias",
+        "tests/test_unified_domain_api.py::<module>",
+        "tests/test_unified_domain_api.py::test_six_substantive_scientific_controls_remain"
       ],
       "disposition": "retain-science",
       "historical_reader": "none-scientific-control",
@@ -835,10 +809,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Optional Torch module reexports torch-free defaults; no warning or explicit removal authorization exists.",
+      "owner": "breaking-54",
+      "rationale": "One torch-free default owner; backend references the defaults module without reexport.",
       "replacement": "fedference.bnn_defaults.BNN_BETA_DEFAULT",
-      "scope": "explicit migration decision",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/bnn_baseline_torch.py::BNN_BETA_DEFAULT"
     },
@@ -857,10 +831,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Optional Torch module reexports torch-free defaults; no warning or explicit removal authorization exists.",
+      "owner": "breaking-54",
+      "rationale": "Duplicate reexport removed; value unchanged.",
       "replacement": "fedference.bnn_defaults.BNN_HIDDEN_DIM_DEFAULT",
-      "scope": "explicit migration decision",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/bnn_baseline_torch.py::BNN_HIDDEN_DIM_DEFAULT"
     },
@@ -876,10 +850,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Optional Torch module reexports torch-free defaults; no warning or explicit removal authorization exists.",
+      "owner": "breaking-54",
+      "rationale": "Duplicate reexport removed; value unchanged.",
       "replacement": "fedference.bnn_defaults.BNN_N_CLIENTS_DEFAULT",
-      "scope": "explicit migration decision",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/bnn_baseline_torch.py::BNN_N_CLIENTS_DEFAULT"
     },
@@ -897,10 +871,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Optional Torch module reexports torch-free defaults; no warning or explicit removal authorization exists.",
+      "owner": "breaking-54",
+      "rationale": "Duplicate reexport removed; value unchanged.",
       "replacement": "fedference.bnn_defaults.BNN_N_STEPS_DEFAULT",
-      "scope": "explicit migration decision",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/bnn_baseline_torch.py::BNN_N_STEPS_DEFAULT"
     },
@@ -917,10 +891,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Optional Torch module reexports torch-free defaults; no warning or explicit removal authorization exists.",
+      "owner": "breaking-54",
+      "rationale": "Duplicate reexport removed; value unchanged.",
       "replacement": "fedference.bnn_defaults.BNN_ROBUSTNESS_DEFAULT",
-      "scope": "explicit migration decision",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/bnn_baseline_torch.py::BNN_ROBUSTNESS_DEFAULT"
     },
@@ -976,10 +950,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Public split-package exports remain supported; warned _finite_cohens_d reexport has a separate removal row.",
-      "replacement": "canonical experiment submodules",
-      "scope": "explicit migration decision",
+      "owner": "breaking-54",
+      "rationale": "A coherent study interface is meaningful; remove compatibility-only private exports, not the entire package interface.",
+      "replacement": "Documented public study/configuration exports only; private helpers imported from their owning modules",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/experiments/__init__.py::__all__"
     },
@@ -1005,10 +979,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Unwarned backward-compatible private alias; an owner decision must precede removal.",
-      "replacement": "soft_colony",
-      "scope": "explicit migration decision",
+      "owner": "breaking-54",
+      "rationale": "Unwarned equality alias has no distinct behavior.",
+      "replacement": "fedference.colonies.soft_colony",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference/experiments/__init__.py::_soft_colony"
     },
@@ -1034,10 +1008,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "schema-or-return-migration",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Older report profile guard needs a corpus and versioned conversion before removal.",
-      "replacement": "explicit source-profile report schema",
-      "scope": "explicit migration decision",
+      "owner": "breaking-56",
+      "rationale": "Summary is substantive; the old-profile fallback silently changes the independent unit/estimand and must disappear.",
+      "replacement": "Require validated matched-trial per_rate_summary; reject its absence",
+      "scope": "Task 56",
       "status": "present",
       "symbol": "src/fedference/experiments/cross_study.py::summarize_cross_study"
     },
@@ -1050,10 +1024,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "schema-or-return-migration",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Current report also emits agent_weights; report-field retirement is a schema decision independent of Python property removal.",
-      "replacement": "normalized_effective_weights schema-2.0 field",
-      "scope": "explicit migration decision",
+      "owner": "breaking-56",
+      "rationale": "Report computation remains; remove duplicate agent_weights report key through explicit current schema migration.",
+      "replacement": "Current normalized_effective_weights report with exactly one field spelling",
+      "scope": "Task 56",
       "status": "present",
       "symbol": "src/fedference/experiments/diagnostics.py::run_influence_weights_report"
     },
@@ -1085,10 +1059,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "schema-or-return-migration",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Historical function/report stem remains bound to its actual configured control; preserve historical artifacts and avoid stronger BMR claims.",
-      "replacement": "configured lesion/control interpretation",
-      "scope": "explicit migration decision",
+      "owner": "breaking-56",
+      "rationale": "Name the actual configured deterministic surprise-threshold lesion/control; preserve values and no-generalization boundary, not an old BMR alias.",
+      "replacement": "run_hierarchical_surprise_control; hierarchical_surprise_control report/figure stems",
+      "scope": "Task 56",
       "status": "present",
       "symbol": "src/fedference/experiments/worlds.py::run_hierarchical_bmr"
     },
@@ -1113,10 +1087,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Promised consensus-array process wrapper; preserve while migrating warned keywords.",
-      "replacement": "run_multiprocess_round_result",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Redundant array wrapper; MultiprocessRoundResult.consensus is the canonical projection (process.py:45-48).",
+      "replacement": "run_multiprocess_round_result(...).consensus; full diagnostics in server_aggregation",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/process.py::run_multiprocess_round"
     },
@@ -1172,10 +1146,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Unwarned robustness parameter and config are mutually exclusive; do not silently remove the established constructor path.",
-      "replacement": "AggregationConfig via config",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Constructor is necessary. Migrate selector by keyword, not by deleting the class or constructor.",
+      "replacement": "Remove only robustness compatibility argument; use config=AggregationConfig(...)",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/server.py::FederationServer.__init__"
     },
@@ -1195,10 +1169,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Promised server consensus-array return API.",
-      "replacement": "FederationServer.run_round_result",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Redundant consensus projection.",
+      "replacement": "FederationServer.run_round_result(...).consensus",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/server.py::FederationServer.run_round"
     },
@@ -1214,10 +1188,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "In-memory guard remains supported and is not a multi-host security claim.",
-      "replacement": "PersistentReplayGuard when durable local replay protection is needed",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Distinct lifecycle semantics, not an alias; never claim ephemeral state is restart-durable or multi-host secure.",
+      "replacement": "ReplayGuard for explicitly ephemeral scope; PersistentReplayGuard for durable local scope",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/socket_transport.py::ReplayGuard"
     },
@@ -1226,10 +1200,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Private Boolean projection still has active callers; requires caller migration before removal.",
-      "replacement": "inspect_socket_replay",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Private boolean projection hides findings; migrate caller predicate explicitly.",
+      "replacement": "inspect_socket_replay(...).integrity_valid when that precise predicate is intended",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/socket_transport.py::_validate_socket_replay"
     },
@@ -1316,10 +1290,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "schema-or-return-migration",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Promised protocol-v1 mapping wrapper; array/dictionary return changes need a migration decision.",
-      "replacement": "run_socket_round_result",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Redundant dictionary/array return projection; protocol decoding remains a necessary current boundary.",
+      "replacement": "run_socket_round_result(...).server_aggregation and .replay",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/socket_transport.py::run_socket_round"
     },
@@ -1376,10 +1350,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Promised Boolean integrity-only adapter; solver-health semantics must remain distinct.",
-      "replacement": "inspect_socket_replay",
-      "scope": "explicit migration decision",
+      "owner": "breaking-53",
+      "rationale": "Do not collapse solver fallback/nonconvergence into transport-integrity failure during migration.",
+      "replacement": "inspect_socket_replay with separate integrity_valid and numerical-health findings",
+      "scope": "Task 53",
       "status": "present",
       "symbol": "src/fedference/federation/socket_transport.py::validate_socket_replay"
     },
@@ -1702,10 +1676,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Historical private facade import is explicitly promised by the API stability policy and emits no deprecation warning.",
-      "replacement": "fedference_cli._support._report_fallbacks internally; typed evidence APIs for new consumers",
-      "scope": "explicit migration decision",
+      "owner": "breaking-54",
+      "rationale": "Private facade reexport is unnecessary; canonical internal implementation remains.",
+      "replacement": "fedference_cli._support._report_fallbacks internally; typed evidence for public callers",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference_cli/__init__.py::_report_fallbacks"
     },
@@ -1784,10 +1758,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Stable installed CLI facade is explicitly promised.",
-      "replacement": "fedference_cli._parser.main implementation; fedference_cli.main public entrypoint",
-      "scope": "explicit migration decision",
+      "owner": "breaking-54",
+      "rationale": "This is the current CLI boundary, not an alias kept only for obsolete callers.",
+      "replacement": "fedference_cli.main remains the pyproject installed entrypoint",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/fedference_cli/__init__.py::main"
     },
@@ -1820,10 +1794,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
-      "owner": "project-owner",
-      "rationale": "Facade exports remain supported; warned _format_cohens_d has a separate removal row.",
-      "replacement": "manuscript_vars public API and canonical internal helpers",
-      "scope": "explicit migration decision",
+      "owner": "breaking-54",
+      "rationale": "Old module facade duplicates the current package; migrate scripts/tests and remove the facade.",
+      "replacement": "manuscript_vars public generate_variables/render_manuscript_tree/save_variables; owning internal modules for private helpers",
+      "scope": "Task 54",
       "status": "present",
       "symbol": "src/manuscript_variables.py::__all__"
     },
@@ -1862,6 +1836,280 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "scope": "Task 13",
       "status": "retired",
       "symbol": "src/manuscript_vars/tokens.py::_format_cohens_d"
+    }
+  ],
+  "owner_decisions": [
+    {
+      "id": "OD01",
+      "symbol": "src/fedference/aggregation.py::aggregate",
+      "disposition": "remove/migrate",
+      "canonical": "aggregate_result(..., config=AggregationConfig(...)).consensus",
+      "task": 52,
+      "rationale": "Redundant array projection and method/kwargs dispatch; no distinct mathematics.",
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "OD02",
+      "symbol": "src/fedference/belief_sharing.py::share_round",
+      "disposition": "remove/migrate",
+      "canonical": "share_round_result; consume shared_posteriors/global_aggregation",
+      "task": 52,
+      "rationale": "Historical diagnostics projection duplicates rich result and invents NaN for unavailable metrics; retain typed None and explicit fields.",
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "OD03",
+      "symbol": "src/fedference/benchmark.py::run_tabular_benchmark",
+      "disposition": "remove/migrate",
+      "canonical": "load_tabular_csv(explicit_path) then run_benchmark(features, labels, ...); registered external loader for real data",
+      "task": 52,
+      "rationale": "Implicit bundled path is a redundant convenience route; preserve synthetic smoke dataset through explicit package-resource loading.",
+      "implementation_status": "implemented"
+    },
+    {
+      "id": "OD04",
+      "symbol": "src/fedference/bnn_baseline_torch.py::BNN_BETA_DEFAULT",
+      "disposition": "remove/migrate",
+      "canonical": "fedference.bnn_defaults.BNN_BETA_DEFAULT",
+      "task": 54,
+      "rationale": "One torch-free default owner; backend references the defaults module without reexport.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD05",
+      "symbol": "src/fedference/bnn_baseline_torch.py::BNN_HIDDEN_DIM_DEFAULT",
+      "disposition": "remove/migrate",
+      "canonical": "fedference.bnn_defaults.BNN_HIDDEN_DIM_DEFAULT",
+      "task": 54,
+      "rationale": "Duplicate reexport removed; value unchanged.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD06",
+      "symbol": "src/fedference/bnn_baseline_torch.py::BNN_N_CLIENTS_DEFAULT",
+      "disposition": "remove/migrate",
+      "canonical": "fedference.bnn_defaults.BNN_N_CLIENTS_DEFAULT",
+      "task": 54,
+      "rationale": "Duplicate reexport removed; value unchanged.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD07",
+      "symbol": "src/fedference/bnn_baseline_torch.py::BNN_N_STEPS_DEFAULT",
+      "disposition": "remove/migrate",
+      "canonical": "fedference.bnn_defaults.BNN_N_STEPS_DEFAULT",
+      "task": 54,
+      "rationale": "Duplicate reexport removed; value unchanged.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD08",
+      "symbol": "src/fedference/bnn_baseline_torch.py::BNN_ROBUSTNESS_DEFAULT",
+      "disposition": "remove/migrate",
+      "canonical": "fedference.bnn_defaults.BNN_ROBUSTNESS_DEFAULT",
+      "task": 54,
+      "rationale": "Duplicate reexport removed; value unchanged.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD09",
+      "symbol": "src/fedference/experiments/__init__.py::__all__",
+      "disposition": "retain-current",
+      "canonical": "Documented public study/configuration exports only; private helpers imported from their owning modules",
+      "task": 54,
+      "rationale": "A coherent study interface is meaningful; remove compatibility-only private exports, not the entire package interface.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD10",
+      "symbol": "src/fedference/experiments/__init__.py::_soft_colony",
+      "disposition": "remove/migrate",
+      "canonical": "fedference.colonies.soft_colony",
+      "task": 54,
+      "rationale": "Unwarned equality alias has no distinct behavior.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD11",
+      "symbol": "src/fedference/experiments/cross_study.py::summarize_cross_study",
+      "disposition": "retain-current",
+      "canonical": "Require validated matched-trial per_rate_summary; reject its absence",
+      "task": 56,
+      "rationale": "Summary is substantive; the old-profile fallback silently changes the independent unit/estimand and must disappear.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD12",
+      "symbol": "src/fedference/experiments/diagnostics.py::run_influence_weights_report",
+      "disposition": "retain-current",
+      "canonical": "Current normalized_effective_weights report with exactly one field spelling",
+      "task": 56,
+      "rationale": "Report computation remains; remove duplicate agent_weights report key through explicit current schema migration.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD13",
+      "symbol": "src/fedference/experiments/worlds.py::run_hierarchical_bmr",
+      "disposition": "remove/migrate",
+      "canonical": "run_hierarchical_surprise_control; hierarchical_surprise_control report/figure stems",
+      "task": 56,
+      "rationale": "Name the actual configured deterministic surprise-threshold lesion/control; preserve values and no-generalization boundary, not an old BMR alias.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD14",
+      "symbol": "src/fedference/federation/process.py::run_multiprocess_round",
+      "disposition": "remove/migrate",
+      "canonical": "run_multiprocess_round_result(...).consensus; full diagnostics in server_aggregation",
+      "task": 53,
+      "rationale": "Redundant array wrapper; MultiprocessRoundResult.consensus is the canonical projection (process.py:45-48).",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD15",
+      "symbol": "src/fedference/federation/server.py::FederationServer.__init__",
+      "disposition": "retain-current",
+      "canonical": "Remove only robustness compatibility argument; use config=AggregationConfig(...)",
+      "task": 53,
+      "rationale": "Constructor is necessary. Migrate selector by keyword, not by deleting the class or constructor.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD16",
+      "symbol": "src/fedference/federation/server.py::FederationServer.run_round",
+      "disposition": "remove/migrate",
+      "canonical": "FederationServer.run_round_result(...).consensus",
+      "task": 53,
+      "rationale": "Redundant consensus projection.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD17",
+      "symbol": "src/fedference/federation/socket_transport.py::ReplayGuard",
+      "disposition": "retain-current",
+      "canonical": "ReplayGuard for explicitly ephemeral scope; PersistentReplayGuard for durable local scope",
+      "task": 53,
+      "rationale": "Distinct lifecycle semantics, not an alias; never claim ephemeral state is restart-durable or multi-host secure.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD18",
+      "symbol": "src/fedference/federation/socket_transport.py::_validate_socket_replay",
+      "disposition": "remove/migrate",
+      "canonical": "inspect_socket_replay(...).integrity_valid when that precise predicate is intended",
+      "task": 53,
+      "rationale": "Private boolean projection hides findings; migrate caller predicate explicitly.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD19",
+      "symbol": "src/fedference/federation/socket_transport.py::run_socket_round",
+      "disposition": "remove/migrate",
+      "canonical": "run_socket_round_result(...).server_aggregation and .replay",
+      "task": 53,
+      "rationale": "Redundant dictionary/array return projection; protocol decoding remains a necessary current boundary.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD20",
+      "symbol": "src/fedference/federation/socket_transport.py::validate_socket_replay",
+      "disposition": "remove/migrate",
+      "canonical": "inspect_socket_replay with separate integrity_valid and numerical-health findings",
+      "task": 53,
+      "rationale": "Do not collapse solver fallback/nonconvergence into transport-integrity failure during migration.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD21",
+      "symbol": "src/fedference_cli/__init__.py::_report_fallbacks",
+      "disposition": "remove/migrate",
+      "canonical": "fedference_cli._support._report_fallbacks internally; typed evidence for public callers",
+      "task": 54,
+      "rationale": "Private facade reexport is unnecessary; canonical internal implementation remains.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD22",
+      "symbol": "src/fedference_cli/__init__.py::main",
+      "disposition": "retain-current",
+      "canonical": "fedference_cli.main remains the pyproject installed entrypoint",
+      "task": 54,
+      "rationale": "This is the current CLI boundary, not an alias kept only for obsolete callers.",
+      "implementation_status": "pending"
+    },
+    {
+      "id": "OD23",
+      "symbol": "src/manuscript_variables.py::__all__",
+      "disposition": "remove/migrate",
+      "canonical": "manuscript_vars public generate_variables/render_manuscript_tree/save_variables; owning internal modules for private helpers",
+      "task": 54,
+      "rationale": "Old module facade duplicates the current package; migrate scripts/tests and remove the facade.",
+      "implementation_status": "pending"
+    }
+  ],
+  "historical_decisions": [
+    {
+      "id": "HD01",
+      "symbol": "src/fedference/evidence_contracts/run_schema.py::RunReceipt.from_dict",
+      "disposition": "Keep the current run1.2 constructor; remove its live1.1 dispatch only after the full available old corpus is verified through `fedference_archive`. Missing runtime provenance remains unavailable and cannot be fabricated or presented as an equivalent current run.",
+      "tasks": [
+        55
+      ],
+      "implementation_status": "pending"
+    },
+    {
+      "id": "HD02",
+      "symbol": "fedference.federation.socket_transport.aggregation_config_from_replay",
+      "disposition": "Retain-current: it interprets the single current wire-v1 replay configuration; no legacy alternate selector route.",
+      "tasks": [
+        53,
+        55
+      ],
+      "implementation_status": "pending"
+    },
+    {
+      "id": "HD03",
+      "symbol": "fedference.federation.transport.deserialize_envelope",
+      "disposition": "Retain-current: required current wire-v1 boundary, with strict version rejection.",
+      "tasks": [
+        53
+      ],
+      "implementation_status": "pending"
+    },
+    {
+      "id": "HD04",
+      "symbol": "fedference.federation.transport.deserialize_result",
+      "disposition": "Retain-current: decode current wire-v1 `agent_weights` as normalized effective influence into canonical Python semantics. Never conflate it with raw exponent/base weights.",
+      "tasks": [
+        53
+      ],
+      "implementation_status": "pending"
+    }
+  ],
+  "additional_retirements": [
+    {
+      "symbol": "src/fedference/aggregation.py::friston_belief_share",
+      "replacement": "log_linear_pool",
+      "task": 52,
+      "status": "retired"
+    },
+    {
+      "symbol": "src/fedference/belief_sharing.py::SharingDiagnostics",
+      "replacement": "SharingRoundResult",
+      "task": 52,
+      "status": "retired"
+    },
+    {
+      "symbol": "src/fedference/belief_sharing.py::share_round_result(method=)",
+      "replacement": "config=AggregationConfig(method=...)",
+      "task": 52,
+      "status": "retired"
+    },
+    {
+      "symbol": "src/fedference/belief_sharing.py::share_round_result(robustness=)",
+      "replacement": "config=AggregationConfig(robustness=...)",
+      "task": 52,
+      "status": "retired"
     }
   ]
 }
