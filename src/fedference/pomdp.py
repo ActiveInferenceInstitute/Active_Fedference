@@ -98,84 +98,11 @@ def normalise_columns(matrix: ArrayF) -> ArrayF:
     return arr / col_sums
 
 
-def _location_likelihood(acuity: float) -> ArrayF:
-    """Build the noisy location sensor ``P(o | s)`` of shape ``(9, 9)``.
-
-    With probability ``acuity`` the sentinel reports the true cell; the residual
-    ``1 - acuity`` is spread uniformly over the other eight cells.
-    """
-    if not 0.0 < acuity <= 1.0:
-        raise ValueError("acuity must lie in (0, 1]")
-    off = (1.0 - acuity) / (N_LOCATIONS - 1)
-    a = np.full((N_LOCATIONS, N_LOCATIONS), off, dtype=np.float64)
-    np.fill_diagonal(a, acuity)
-    return normalise_columns(a)
-
-
-def _column(row: int, side: int = GRID_SIDE) -> int:
-    """Grid column index of flat location ``row`` (row-major 3x3)."""
-    return row % side
-
-
-def _row(loc: int, side: int = GRID_SIDE) -> int:
-    """Grid row index of flat location ``loc`` (row-major 3x3)."""
-    return loc // side
-
-
-def _shift_column(loc: int, delta: int, side: int = GRID_SIDE) -> int:
-    """Move ``loc`` by ``delta`` columns, reflecting at the grid walls."""
-    r, c = _row(loc, side), _column(loc, side)
-    c_new = c + delta
-    if c_new < 0:
-        c_new = 0
-    elif c_new > side - 1:
-        c_new = side - 1
-    return r * side + c_new
-
-
-def _transition_tensor() -> ArrayF:
-    """Build ``P(s' | s, u)`` of shape ``(9, 9, 3)`` for still/left/right."""
-    n = N_LOCATIONS
-    b = np.zeros((n, n, len(CONTROL_LABELS)), dtype=np.float64)
-    for s in range(n):
-        # still: deterministic self-loop
-        b[s, s, 0] = 1.0
-        # left: decrement column (reflect)
-        b[_shift_column(s, -1), s, 1] = 1.0
-        # right: increment column (reflect)
-        b[_shift_column(s, +1), s, 2] = 1.0
-    # Each B[:, :, u] now has unit-sum columns by construction; normalize to be
-    # robust to any future stochastic edits and to satisfy ISC-15 explicitly.
-    for u in range(b.shape[2]):
-        b[:, :, u] = normalise_columns(b[:, :, u])
-    return b
-
-
-def _log_preference(goal_bonus: float) -> ArrayF:
-    """Log-preference ``C`` over outcomes, shape ``(9, 1)``.
-
-    Center cell (the den, flat index 4 on a 3x3 grid) carries a positive
-    log-preference bump; all other outcomes are neutral (zero log-preference).
-    """
-    c = np.zeros((N_LOCATIONS, 1), dtype=np.float64)
-    center = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
-    c[center, 0] = float(goal_bonus)
-    return c
-
-
-def _initial_prior() -> ArrayF:
-    """Initial prior ``D`` over location, shape ``(9, 1)`` — start at center."""
-    d = np.zeros((N_LOCATIONS, 1), dtype=np.float64)
-    center = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
-    d[center, 0] = 1.0
-    return normalise_columns(d)
-
-
 def build_sentinel_world(
     rng: np.random.Generator | None = None,
     *,
-    acuity: float = 0.9,
-    goal_bonus: float = 2.0,
+    acuity: float | None = None,
+    goal_bonus: float | None = None,
 ) -> dict[str, Any]:
     """Construct the categorical sentinel POMDP specialization (Friston et al.
     2024, Figs. 1/4).
@@ -203,28 +130,21 @@ def build_sentinel_world(
     Raises:
         ValueError: if ``acuity`` is outside ``(0, 1]``.
     """
-    if rng is None:
-        a = _location_likelihood(acuity)
-    else:
-        # Deterministic jitter: tighten acuity by a small non-negative amount so
-        # the column stays a valid pmf for any acuity in (0, 1].
-        jitter = float(rng.uniform(0.0, min(0.05, 1.0 - acuity + _EPS)))
-        a = _location_likelihood(min(1.0, acuity + jitter))
+    from .gnn.loader import load_sentinel
+    from .gnn.native import SentinelParameters, native_world, parameterize_sentinel
 
-    b = _transition_tensor()
-    c = _log_preference(goal_bonus)
-    d = _initial_prior()
-
-    return {
-        "A": [a],
-        "B": [b],
-        "C": [c],
-        "D": [d],
-        "n_states": N_LOCATIONS,
-        "n_obs": N_LOCATIONS,
-        "n_controls": len(CONTROL_LABELS),
-        "control_labels": CONTROL_LABELS,
-    }
+    model = load_sentinel()
+    effective_acuity = acuity
+    if rng is not None:
+        base = model.categorical.A.values[0] if acuity is None else acuity
+        if not np.isfinite(base) or not 0.0 < base <= 1.0:
+            raise ValueError("acuity must lie in (0, 1]")
+        jitter = float(rng.uniform(0.0, min(0.05, 1.0 - base + _EPS)))
+        effective_acuity = min(1.0, base + jitter)
+    world = native_world(parameterize_sentinel(
+        model, SentinelParameters(effective_acuity, goal_bonus),
+    ))
+    return dict(world)
 
 
 # --- V4: moving sentinel world ------------------------------------------------

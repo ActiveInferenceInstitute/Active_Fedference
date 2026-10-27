@@ -1231,3 +1231,14 @@ them.
   Probe: `test_shape_axis_duplicate_and_unsupported_kind`, malformed/family
   controls and concrete valid/mutated/refused IR command-line QA. Raw GNN
   duplicate detection remains the real parser/loader boundary's responsibility.
+
+- [x] ISC-276: Canonical sentinel construction consumes the packaged GNN asset
+  and hash-bound admitted IR. Explicit upstream extraction executes only verified
+  parser-closure snapshots; unmanifested modules cannot shadow the runtime.
+  Probe: `tests/fedference/test_gnn_sentinel.py`, real likelihood-mutation
+  posterior 5/6, stale/axis/source-drift refusals, oversized-JSON typed refusal,
+  canonical/seeded characterization and fresh installed-wheel offline execution.
+  Independent evidence: checkpoint-review-3 corrected Task 6 APPROVE. This is
+  categorical native model execution; CLI/backend/scientific/release acceptance
+  remain separate. Original custody/JSON failures and the failed first fix
+  are retained in the dated ULW evidence.

@@ -123,6 +123,8 @@ disable_error_code = ["import-untyped"]
 fedference = [
     "config/*.yaml",
     "data/*.csv",
+    "models/*.gnn.md",
+    "models/*.json",
     "py.typed",
 ]
 
