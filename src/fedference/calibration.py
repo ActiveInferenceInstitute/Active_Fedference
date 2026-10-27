@@ -8,7 +8,6 @@ not inspect or optimize any later evaluation episode.
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass
 from typing import Iterable
 
@@ -37,23 +36,8 @@ class CalibrationEpisode:
         world_family: str,
         local_posteriors: ArrayF | None = None,
         true_state: int | None = None,
-        **legacy: object,
     ) -> None:
-        """Construct one episode using canonical or warned legacy names."""
-        if "beliefs" in legacy:
-            if local_posteriors is not None:
-                raise TypeError(
-                    "local_posteriors and deprecated beliefs cannot both be supplied"
-                )
-            local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-            warnings.warn(
-                "beliefs is deprecated; use local_posteriors",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        if legacy:
-            names = ", ".join(sorted(legacy))
-            raise TypeError(f"unexpected keyword argument(s): {names}")
+        """Construct one episode from labeled canonical posterior data."""
         if local_posteriors is None:
             raise TypeError("local_posteriors is required")
         if true_state is None:
@@ -84,16 +68,6 @@ class CalibrationEpisode:
         matrix = matrix.copy()
         matrix.setflags(write=False)
         object.__setattr__(self, "local_posteriors", matrix)
-
-    @property
-    def beliefs(self) -> ArrayF:
-        """Deprecated alias for :attr:`local_posteriors`."""
-        warnings.warn(
-            "CalibrationEpisode.beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.local_posteriors
 
 
 @dataclass(frozen=True)

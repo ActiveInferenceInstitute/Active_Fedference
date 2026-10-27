@@ -24,7 +24,6 @@ from fedference.generalized_bayes import (
     update_factor,
 )
 from fedference.statistics import (
-    cohens_d_from_rank_biserial,
     d_equivalent_from_rank_biserial,
 )
 
@@ -34,18 +33,13 @@ BELIEFS = np.asarray(
 )
 
 
-def test_canonical_aggregation_keywords_and_deprecated_alias_parity() -> None:
-    canonical = log_linear_pool(
-        local_posteriors=BELIEFS,
-        base_weights=[1.0, 2.0, 1.0],
-    )
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        with pytest.warns(DeprecationWarning, match="weights"):
-            legacy = log_linear_pool(
-                beliefs=BELIEFS,
-                weights=[1.0, 2.0, 1.0],
-            )
-    assert np.array_equal(canonical, legacy)
+def test_canonical_aggregation_keywords_and_retired_alias_rejection() -> None:
+    canonical = log_linear_pool(local_posteriors=BELIEFS, base_weights=[1., 2., 1.])
+    expected = np.prod(BELIEFS ** np.array([1., 2., 1.])[:, None], axis=0)
+    expected /= expected.sum()
+    np.testing.assert_allclose(canonical, expected)
+    with pytest.raises(TypeError):
+        log_linear_pool(**{"beliefs": BELIEFS, "weights": [1., 2., 1.]})
 
 
 def test_raw_and_normalized_effective_weights_have_distinct_contracts() -> None:
@@ -56,8 +50,8 @@ def test_raw_and_normalized_effective_weights_have_distinct_contracts() -> None:
     )
     assert np.all(robust.raw_effective_weights <= np.asarray([1.0, 2.0, 1.0]) + 1e-12)
     assert np.isclose(robust.normalized_effective_weights.sum(), 1.0)
-    with pytest.warns(DeprecationWarning, match="agent_weights"):
-        assert np.array_equal(robust.agent_weights, robust.normalized_effective_weights)
+    with pytest.raises(AttributeError):
+        getattr(robust, "agent_weights")
 
     variational = variational_aggregate(
         local_posteriors=BELIEFS,
@@ -69,39 +63,34 @@ def test_raw_and_normalized_effective_weights_have_distinct_contracts() -> None:
     assert np.all(variational.raw_effective_weights <= np.asarray([1.0, 2.0, 1.0]) + 1e-12)
 
 
-def test_cavity_recombines_with_site_factor_and_alias_warns() -> None:
+def test_cavity_recombines_with_site_factor_and_rejects_retired_alias() -> None:
     global_posterior = np.asarray([0.55, 0.30, 0.15])
     site_factor = np.asarray([0.50, 0.25, 0.25])
-    result = cavity(
-        global_posterior=global_posterior,
-        site_factor=site_factor,
-    )
+    result = cavity(global_posterior=global_posterior, site_factor=site_factor)
     recombined = result * site_factor
     recombined /= recombined.sum()
-    assert np.allclose(recombined, global_posterior)
-    with pytest.warns(DeprecationWarning, match="posterior"):
-        with pytest.warns(DeprecationWarning, match="factor"):
-            legacy = cavity(posterior=global_posterior, factor=site_factor)
-    assert np.allclose(legacy, result)
+    np.testing.assert_allclose(recombined, global_posterior)
+    with pytest.raises(TypeError):
+        cavity(**{"posterior": global_posterior, "factor": site_factor})
 
 
-def test_generalized_bayes_loss_alias_preserves_result() -> None:
+def test_generalized_bayes_loss_has_known_tempered_solution() -> None:
     prior = np.log(np.asarray([0.4, 0.35, 0.25]))
     loss = np.asarray([0.1, 0.3, 0.8])
     canonical = generalized_posterior(prior, loss_by_state=loss, tau=0.7)
-    with pytest.warns(DeprecationWarning, match="loss_vec"):
-        with pytest.warns(DeprecationWarning, match="learning_rate"):
-            legacy = generalized_posterior(prior, loss_vec=loss, learning_rate=0.7)
-    assert np.allclose(canonical, legacy)
+    expected = np.exp(prior) * np.exp(-0.7 * loss)
+    np.testing.assert_allclose(canonical, expected / expected.sum())
+    with pytest.raises(TypeError):
+        generalized_posterior(prior, **{"loss_vec": loss})
 
 
-def test_canonical_tau_alias_has_the_same_semantics_as_learning_rate() -> None:
-    prior = np.log(np.asarray([0.4, 0.35, 0.25]))
+def test_canonical_tau_zero_preserves_prior_and_old_keyword_is_rejected() -> None:
+    prior = np.asarray([0.4, 0.35, 0.25])
     loss = np.asarray([0.1, 0.3, 0.8])
-    canonical = generalized_posterior(prior, loss_by_state=loss, tau=0.7)
-    with pytest.warns(DeprecationWarning, match="learning_rate"):
-        legacy = generalized_posterior(prior, loss_by_state=loss, learning_rate=0.7)
-    assert np.allclose(canonical, legacy)
+    canonical = generalized_posterior(np.log(prior), loss_by_state=loss, tau=0.0)
+    np.testing.assert_allclose(canonical, prior)
+    with pytest.raises(TypeError):
+        generalized_posterior(np.log(prior), loss_by_state=loss, **{"learning_rate": 0.0})
 
 
 def test_conditional_world_contrast_is_robust_minus_naive() -> None:
@@ -123,10 +112,8 @@ def test_conditional_world_contrast_is_robust_minus_naive() -> None:
     assert result["contrast"] == pytest.approx(result["robust"][0] - result["naive"][0])
 
 
-def test_d_equivalent_is_canonical_and_old_name_is_only_an_adapter() -> None:
+def test_d_equivalent_known_value_and_boundary() -> None:
     assert d_equivalent_from_rank_biserial(0.5) == pytest.approx(1.1547005383792515)
-    with pytest.warns(DeprecationWarning, match="d_equivalent"):
-        assert cohens_d_from_rank_biserial(0.5) == pytest.approx(d_equivalent_from_rank_biserial(0.5))
     assert np.isinf(d_equivalent_from_rank_biserial(1.0))
 
 
@@ -227,12 +214,12 @@ def test_aggregation_free_energy_rejects_negative_raw_weights() -> None:
         )
 
 
-def test_share_round_canonical_fields_and_legacy_alias() -> None:
+def test_share_round_canonical_fields_follow_log_product() -> None:
     canonical = share_round(local_posteriors=BELIEFS, exclude_self=False)
     assert canonical.shared_posteriors.shape == BELIEFS.shape
-    with pytest.warns(DeprecationWarning, match="agent_beliefs"):
-        legacy = share_round(agent_beliefs=BELIEFS, exclude_self=False)
-    assert np.allclose(canonical.shared_posteriors, legacy.shared_posteriors)
+    expected = np.prod(BELIEFS, axis=0)
+    expected /= expected.sum()
+    np.testing.assert_allclose(canonical.shared_posteriors, np.tile(expected, (3, 1)))
 
 
 @pytest.mark.parametrize(
@@ -245,9 +232,9 @@ def test_share_round_rejects_malformed_true_state(true_state: object) -> None:
 
 
 def test_share_round_alias_conflicts_and_fail_closed_inputs() -> None:
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         share_round(local_posteriors=BELIEFS, agent_beliefs=BELIEFS)
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         share_round(local_posteriors=BELIEFS, base_weights=[1.0, 1.0, 1.0], weights=[1.0, 1.0, 1.0])
     with pytest.raises(TypeError, match="unexpected"):
         share_round(local_posteriors=BELIEFS, typo=1)
@@ -270,9 +257,9 @@ def test_generalized_bayes_validation_and_alpha_branches() -> None:
         softmax(np.asarray([]))
     with pytest.raises(ValueError, match="finite"):
         softmax(np.asarray([np.nan]))
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         generalized_posterior(prior, loss, loss_vec=loss)
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         generalized_posterior(prior, loss, tau=0.5, learning_rate=1.0)
     with pytest.raises(TypeError, match="unexpected"):
         generalized_posterior(prior, loss, unsupported=1.0)
@@ -308,9 +295,9 @@ def test_generalized_bayes_validation_and_alpha_branches() -> None:
 def test_cavity_and_update_factor_fail_closed_compatibility_paths() -> None:
     posterior = np.asarray([0.55, 0.30, 0.15])
     factor = np.asarray([0.50, 0.25, 0.25])
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         cavity(global_posterior=posterior, posterior=posterior, site_factor=factor)
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         cavity(global_posterior=posterior, site_factor=factor, factor=factor)
     with pytest.raises(TypeError, match="unexpected"):
         cavity(global_posterior=posterior, site_factor=factor, typo=1)
@@ -322,14 +309,9 @@ def test_cavity_and_update_factor_fail_closed_compatibility_paths() -> None:
         old_global_posterior=posterior,
         new_global_posterior=np.asarray([0.7, 0.2, 0.1]),
     )
-    with pytest.warns(DeprecationWarning):
-        legacy = update_factor(
-            old_factor=factor,
-            old_posterior=posterior,
-            new_posterior=np.asarray([0.7, 0.2, 0.1]),
-        )
-    assert np.allclose(canonical, legacy)
-    with pytest.raises(TypeError, match="both"):
+    expected = factor * np.asarray([0.7, 0.2, 0.1]) / posterior
+    np.testing.assert_allclose(canonical, expected / expected.sum())
+    with pytest.raises(TypeError, match="unexpected keyword"):
         update_factor(
             old_site_factor=factor,
             old_factor=factor,
@@ -348,7 +330,7 @@ def test_cavity_and_update_factor_fail_closed_compatibility_paths() -> None:
 
 
 def test_aggregation_validation_alias_and_dispatch_paths() -> None:
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         log_linear_pool(local_posteriors=BELIEFS, beliefs=BELIEFS)
     with pytest.raises(TypeError, match="unexpected"):
         log_linear_pool(BELIEFS, typo=1)
@@ -388,11 +370,10 @@ def test_aggregation_validation_alias_and_dispatch_paths() -> None:
             robustness=1.0,
         )
 
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        aggregate(beliefs=BELIEFS)
+    aggregate(local_posteriors=BELIEFS)
     with pytest.raises(TypeError, match="required"):
         aggregate()
-    with pytest.raises(TypeError, match="both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         aggregate(BELIEFS, base_weights=[1.0, 1.0, 1.0], weights=[1.0, 1.0, 1.0])
     with pytest.raises(ValueError, match="unknown naive"):
         aggregate(BELIEFS, method="naive", robustness=1.0)

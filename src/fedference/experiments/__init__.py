@@ -15,7 +15,6 @@ from ._common import (
     ArrayF,
     _consensus_accuracy,
     _divergence_to_robustness,
-    _finite_cohens_d,
     _finite_d_equivalent,
     _sample_observation,
 )
@@ -81,7 +80,6 @@ __all__ = [
     "_divergence_to_robustness",
     "_DIRECTIONAL_KINDS",
     "_ENTROPY_KINDS",
-    "_finite_cohens_d",
     "_finite_d_equivalent",
     "_GALLERY_RELIABLE_WIN_FRACTION",
     "_sample_observation",

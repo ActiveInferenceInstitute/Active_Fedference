@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
-
 import numpy as np
 
 from ..aggregation import log_linear_pool
@@ -34,16 +32,6 @@ def _finite_d_equivalent(r: float) -> float:
     if not np.isfinite(d):
         return float(np.sign(d) * _D_EQUIVALENT_CAP)
     return float(d)
-
-
-def _finite_cohens_d(r: float) -> float:
-    """Deprecated compatibility alias for :func:`_finite_d_equivalent`."""
-    warnings.warn(
-        "_finite_cohens_d is deprecated; use _finite_d_equivalent",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _finite_d_equivalent(r)
 
 
 def _sample_observation(
@@ -88,7 +76,6 @@ __all__ = [
     "_N_BOOT",
     "_DIVERGENCE_ROBUSTNESS",
     "_finite_d_equivalent",
-    "_finite_cohens_d",
     "_sample_observation",
     "_divergence_to_robustness",
     "_consensus_accuracy",

@@ -35,7 +35,6 @@ from __future__ import annotations
 
 import json
 import logging
-import warnings
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from hashlib import sha256
@@ -61,35 +60,6 @@ AggregationSolverStatus = Literal[
 ]
 
 _log = logging.getLogger(__name__)
-
-
-def _resolve_compat_alias(
-    value: Any,
-    legacy: dict[str, Any],
-    *,
-    canonical: str,
-    aliases: tuple[str, ...],
-) -> Any:
-    """Resolve additive keyword aliases without silently accepting typos."""
-    for alias in aliases:
-        if alias not in legacy:
-            continue
-        if value is not None:
-            raise TypeError(f"{canonical} and deprecated {alias} cannot both be supplied")
-        value = legacy.pop(alias)
-        warnings.warn(
-            f"{alias} is deprecated; use {canonical}",
-            DeprecationWarning,
-            stacklevel=3,
-        )
-    return value
-
-
-def _reject_unexpected_keywords(legacy: dict[str, Any]) -> None:
-    """Fail closed after all compatibility aliases for one call are resolved."""
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
 
 
 def _stack(local_posteriors: Iterable[ArrayF]) -> ArrayF:
@@ -152,7 +122,6 @@ def _closed_simplex(values: ArrayF, *, n_states: int, name: str) -> ArrayF:
 def log_linear_pool(
     local_posteriors: Iterable[ArrayF] | None = None,
     base_weights: Iterable[float] | None = None,
-    **legacy: Any,
 ) -> ArrayF:
     """Return the project's product-of-experts consensus.
 
@@ -165,22 +134,8 @@ def log_linear_pool(
     flooring precedes normalization, so sufficiently small positive raw masses
     can change before pooling. The algebraic formula refers to those admitted pmfs.
 
-    ``local_posteriors`` and ``base_weights`` are the canonical names. The old
-    ``beliefs``/``weights`` keywords remain additive compatibility aliases.
+    ``base_weights`` act as nonnegative exponents at their supplied scale.
     """
-    local_posteriors = _resolve_compat_alias(
-        local_posteriors,
-        legacy,
-        canonical="local_posteriors",
-        aliases=("beliefs",),
-    )
-    base_weights = _resolve_compat_alias(
-        base_weights,
-        legacy,
-        canonical="base_weights",
-        aliases=("weights",),
-    )
-    _reject_unexpected_keywords(legacy)
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     mat = _stack(local_posteriors)
@@ -394,28 +349,6 @@ class AggregationResult:
             raise ValueError("aggregation solver_status is inconsistent with diagnostics")
         return result
 
-    @property
-    def agent_weights(self) -> ArrayF:
-        """Deprecated alias for normalized effective influence weights."""
-        warnings.warn(
-            "AggregationResult.agent_weights is deprecated; use "
-            "normalized_effective_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.normalized_effective_weights
-
-    @agent_weights.setter
-    def agent_weights(self, value: ArrayF) -> None:
-        """Set the deprecated alias for compatibility with older adapters."""
-        warnings.warn(
-            "AggregationResult.agent_weights is deprecated; use "
-            "normalized_effective_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self.normalized_effective_weights = value
-
 
 @dataclass(frozen=True)
 class AggregationConfig:
@@ -519,7 +452,6 @@ def robust_aggregate(
     robustness: float = 0.0,
     max_iter: int = 32,
     tol: float = 1e-9,
-    **legacy: Any,
 ) -> AggregationResult:
     """Robustly fuse agent beliefs by iterative divergence-reweighting.
 
@@ -535,19 +467,6 @@ def robust_aggregate(
     converged per-agent effective weights (normalized, for influence plots), the
     iteration count and a convergence flag.
     """
-    local_posteriors = _resolve_compat_alias(
-        local_posteriors,
-        legacy,
-        canonical="local_posteriors",
-        aliases=("beliefs",),
-    )
-    base_weights = _resolve_compat_alias(
-        base_weights,
-        legacy,
-        canonical="base_weights",
-        aliases=("weights",),
-    )
-    _reject_unexpected_keywords(legacy)
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     robustness = _nonnegative_scalar(robustness, name="robustness")
@@ -649,7 +568,6 @@ def aggregation_free_energy(
     base_weights: Iterable[float] | None = None,
     robustness: float,
     entropy_weight: float = 1.0,
-    **legacy: Any,
 ) -> float:
     r"""Variational free energy minimized by :func:`variational_aggregate`.
 
@@ -673,25 +591,6 @@ def aggregation_free_energy(
     in :func:`variational_aggregate`. Every completed block update is therefore
     non-increasing in ``F``; a converged fixed point is coordinatewise stationary.
     """
-    consensus_posterior = _resolve_compat_alias(
-        consensus_posterior,
-        legacy,
-        canonical="consensus_posterior",
-        aliases=("consensus",),
-    )
-    raw_effective_weights = _resolve_compat_alias(
-        raw_effective_weights,
-        legacy,
-        canonical="raw_effective_weights",
-        aliases=("agent_weights",),
-    )
-    local_posteriors = _resolve_compat_alias(
-        local_posteriors,
-        legacy,
-        canonical="local_posteriors",
-        aliases=("beliefs",),
-    )
-    _reject_unexpected_keywords(legacy)
     if consensus_posterior is None or raw_effective_weights is None or local_posteriors is None:
         raise TypeError("consensus_posterior, raw_effective_weights, and local_posteriors are required")
     robustness = _nonnegative_scalar(robustness, name="robustness")
@@ -751,7 +650,6 @@ def variational_aggregate(
     tol: float = 1e-9,
     multistart: bool = True,
     entropy_weight: float = 1.0,
-    **legacy: Any,
 ) -> AggregationResult:
     r"""Objective-backed conservative fusion on the stated finite-simplex free energy.
 
@@ -814,19 +712,6 @@ def variational_aggregate(
     trajectory as converged; the exact block-descent certificate does not apply
     to that fallback step.
     """
-    local_posteriors = _resolve_compat_alias(
-        local_posteriors,
-        legacy,
-        canonical="local_posteriors",
-        aliases=("beliefs",),
-    )
-    base_weights = _resolve_compat_alias(
-        base_weights,
-        legacy,
-        canonical="base_weights",
-        aliases=("weights",),
-    )
-    _reject_unexpected_keywords(legacy)
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     robustness = _nonnegative_scalar(robustness, name="robustness")
@@ -959,7 +844,6 @@ def aggregate_result(
     local_posteriors: Iterable[ArrayF] | None = None,
     config: AggregationConfig | None = None,
     base_weights: Iterable[float] | None = None,
-    **legacy: Any,
 ) -> AggregationResult:
     """Canonical aggregation dispatcher returning consensus and diagnostics.
 
@@ -975,19 +859,6 @@ def aggregate_result(
         diagnostics contract without changing :func:`aggregate`'s compatibility
         array-only return type.
     """
-    local_posteriors = _resolve_compat_alias(
-        local_posteriors,
-        legacy,
-        canonical="local_posteriors",
-        aliases=("beliefs",),
-    )
-    base_weights = _resolve_compat_alias(
-        base_weights,
-        legacy,
-        canonical="base_weights",
-        aliases=("weights",),
-    )
-    _reject_unexpected_keywords(legacy)
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     if config is not None and not isinstance(config, AggregationConfig):
@@ -1041,29 +912,14 @@ def aggregate(
     finite-simplex objective; ``robustness`` defaults to 1.0).
 
     ``config`` is the additive public configuration path. It is mutually
-    exclusive with the compatibility ``method`` and solver keyword path; ``weights``
+    exclusive with the compatibility ``method`` and solver keyword path; ``base_weights``
     remains per-call data and may be supplied with either path.
     """
     if local_posteriors is None:
-        local_posteriors = kwargs.pop("beliefs", None)
-        if local_posteriors is not None:
-            warnings.warn(
-                "beliefs is deprecated; use local_posteriors",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-    if local_posteriors is None:
         raise TypeError("local_posteriors is required")
+    if {"beliefs", "weights"} & kwargs.keys():
+        raise TypeError("unexpected keyword argument")
     base_weights = kwargs.pop("base_weights", None)
-    if "weights" in kwargs:
-        if base_weights is not None:
-            raise TypeError("base_weights and deprecated weights cannot both be supplied")
-        base_weights = kwargs.pop("weights")
-        warnings.warn(
-            "weights is deprecated; use base_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     if config is not None:
         if method is not None:
             raise ValueError("config and compatibility method are mutually exclusive")

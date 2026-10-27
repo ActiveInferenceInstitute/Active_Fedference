@@ -1,6 +1,9 @@
 # API and schema stability
 
-Active Fedference uses additive evolution throughout the current release line.
+Active Fedference follows the explicit API retirement inventory and schema
+contracts below. Domain spellings marked retired in the
+[retirement inventory](../development/api-retirement-20261027.md) are rejected;
+canonical numerical behavior and historical serialized readers are retained.
 
 ## Stable public surface
 
@@ -32,13 +35,13 @@ Active Fedference uses additive evolution throughout the current release line.
   `collect_source_provenance` expose installed runtime/source identity without
   retaining machine-local installation URLs or inventing source revisions.
 - `CalibrationEpisode.local_posteriors` is the canonical calibration input;
-  `beliefs` remains a warned compatibility alias. `CalibrationResult` binds its
+  the retired `beliefs` alias is rejected. `CalibrationResult` binds its
   selected configuration, candidate declarations/scores, episode IDs/content
   hashes/world families, and primary estimand in a self-verifying canonical
   digest. A malformed or tampered frozen selection fails closed.
 - Canonical aggregation vocabulary is `local_posteriors`, `base_weights`,
   `raw_effective_weights`, and `normalized_effective_weights`; belief/weight
-  spellings remain warned compatibility adapters. `shared_posteriors`,
+  spellings listed as retired in the API retirement inventory are rejected. `shared_posteriors`,
   `global_posterior`, `site_factor`, and `loss_by_state` are the corresponding
   canonical names in sharing, cavity, and generalized-Bayes APIs.
 - `fedference.federation.ReplayGuard` remains the in-memory compatibility

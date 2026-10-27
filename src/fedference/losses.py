@@ -20,8 +20,6 @@ which federated active inference reduces to Friston et al. (2024).
 
 from __future__ import annotations
 
-import warnings
-
 import numpy as np
 
 from ._validation import as_pmf
@@ -59,8 +57,6 @@ def rcce(
     p: ArrayF,
     o: int,
     q_loss: float | None = None,
-    *,
-    q: float | None = None,
 ) -> float:
     """Robust categorical cross-entropy (generalized cross-entropy, GCE).
 
@@ -72,21 +68,11 @@ def rcce(
     is the bounded mean-absolute-error loss ``1 - p(o)``, fully robust to
     outliers.
 
-    ``q`` remains a deprecated keyword-only compatibility alias. The explicit
-    ``q_loss`` name prevents a collision with the posterior distribution
+    The explicit ``q_loss`` name prevents a collision with the posterior distribution
     conventionally denoted ``q`` elsewhere in the model.
     """
-    if q_loss is not None and q is not None:
-        raise TypeError("pass q_loss or deprecated q, not both")
     if q_loss is None:
-        if q is None:
-            raise TypeError("rcce requires q_loss")
-        warnings.warn(
-            "rcce(q=...) is deprecated; use rcce(q_loss=...) instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        q_loss = q
+        raise TypeError("rcce requires q_loss")
     if not np.isfinite(q_loss) or not 0.0 <= q_loss <= 1.0:
         raise ValueError("rcce parameter q_loss must lie in [0, 1]")
     row = _row(p)

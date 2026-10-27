@@ -19,7 +19,7 @@ import pytest
 from fedference.statistics import (
     bh_fdr,
     bootstrap_ci,
-    cohens_d_from_rank_biserial,
+    d_equivalent_from_rank_biserial,
     interpret_effect_size,
     minimum_detectable_effect,
     paired_test,
@@ -301,33 +301,33 @@ def test_per_group_test_propagates_pair_validation():
         per_group_test([([1.0, 2.0], [1.0, 2.0])])
 
 
-# ---- cohens_d_from_rank_biserial ------------------------------------------
+# ---- d_equivalent_from_rank_biserial ------------------------------------------
 
-def test_cohens_d_zero_at_zero_r():
-    assert cohens_d_from_rank_biserial(0.0) == pytest.approx(0.0, abs=1e-12)
+def test_d_equivalent_zero_at_zero_r():
+    assert d_equivalent_from_rank_biserial(0.0) == pytest.approx(0.0, abs=1e-12)
 
 
-def test_cohens_d_matches_closed_form():
+def test_d_equivalent_matches_closed_form():
     # d = 2r / sqrt(1 - r^2)
-    assert cohens_d_from_rank_biserial(0.5) == pytest.approx(1.1547005383792515, abs=1e-12)
-    assert cohens_d_from_rank_biserial(-0.5) == pytest.approx(-1.1547005383792515, abs=1e-12)
+    assert d_equivalent_from_rank_biserial(0.5) == pytest.approx(1.1547005383792515, abs=1e-12)
+    assert d_equivalent_from_rank_biserial(-0.5) == pytest.approx(-1.1547005383792515, abs=1e-12)
 
 
-def test_cohens_d_diverges_at_unit_boundary():
-    assert cohens_d_from_rank_biserial(1.0) == float("inf")
-    assert cohens_d_from_rank_biserial(-1.0) == float("-inf")
+def test_d_equivalent_diverges_at_unit_boundary():
+    assert d_equivalent_from_rank_biserial(1.0) == float("inf")
+    assert d_equivalent_from_rank_biserial(-1.0) == float("-inf")
 
 
-def test_cohens_d_is_monotone_in_r():
+def test_d_equivalent_is_monotone_in_r():
     rs = [-0.9, -0.4, 0.0, 0.3, 0.7]
-    ds = [cohens_d_from_rank_biserial(r) for r in rs]
+    ds = [d_equivalent_from_rank_biserial(r) for r in rs]
     assert all(ds[i] < ds[i + 1] for i in range(len(ds) - 1))
 
 
 @pytest.mark.parametrize("bad", [1.01, -1.5, 2.0])
-def test_cohens_d_rejects_out_of_range(bad):
+def test_d_equivalent_rejects_out_of_range(bad):
     with pytest.raises(ValueError, match=r"\[-1, 1\]"):
-        cohens_d_from_rank_biserial(bad)
+        d_equivalent_from_rank_biserial(bad)
 
 
 # ---- interpret_effect_size ------------------------------------------------

@@ -20,7 +20,6 @@ not transfer any FedGVI client-side guarantee.
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from dataclasses import dataclass
 
@@ -103,24 +102,10 @@ def objective_weight_block(
     *,
     base_weights: Iterable[float] | None = None,
     robustness: float,
-    **legacy: object,
 ) -> ArrayF:
     """Exact ``a`` update for the declared forward-KL block objective."""
     if not np.isfinite(robustness) or robustness <= 0.0:
         raise ValueError("robustness must be finite and positive")
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     q = as_pmf(consensus, name="global_posterior")
@@ -141,24 +126,10 @@ def heuristic_weight_block(
     *,
     base_weights: Iterable[float] | None = None,
     robustness: float,
-    **legacy: object,
 ) -> ArrayF:
     """Reverse-KL weight update used by ``robust_aggregate``."""
     if not np.isfinite(robustness) or robustness <= 0.0:
         raise ValueError("robustness must be finite and positive")
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     q = as_pmf(consensus, name="global_posterior")
@@ -179,22 +150,8 @@ def construct_orientation_witness(
     *,
     base_weights: Iterable[float] | None = None,
     robustness: float = 1.0,
-    **legacy: object,
 ) -> ObjectiveOrientationWitness:
     """Construct the finite-simplex witness used by theory tests and reports."""
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     posterior_tuple = tuple(local_posteriors)

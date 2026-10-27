@@ -19,7 +19,6 @@ contamination resistance.
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import cast
@@ -47,27 +46,6 @@ class SharingDiagnostics:
     mean_surprise: float  # mean -log q(true_state) across agents
     mean_accuracy: float  # mean q(true_state) across agents
     normalized_effective_weights: ArrayF | None  # normalized influence (None if naive)
-
-    @property
-    def shared_beliefs(self) -> ArrayF:
-        """Deprecated alias for :attr:`shared_posteriors`."""
-        warnings.warn(
-            "SharingDiagnostics.shared_beliefs is deprecated; use shared_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.shared_posteriors
-
-    @property
-    def agent_weights(self) -> ArrayF | None:
-        """Deprecated alias for normalized effective influence weights."""
-        warnings.warn(
-            "SharingDiagnostics.agent_weights is deprecated; use "
-            "normalized_effective_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.normalized_effective_weights
 
 
 @dataclass(frozen=True)
@@ -147,7 +125,6 @@ def share_round_result(
     config: AggregationConfig | None = None,
     exclude_self: bool = True,
     true_state: int | None = None,
-    **legacy: object,
 ) -> SharingRoundResult:
     """Run one federated belief-sharing round over a shared factor.
 
@@ -165,27 +142,6 @@ def share_round_result(
     Returns :class:`SharingRoundResult` with the complete global and
     recipient-specific aggregation diagnostics.
     """
-    if "agent_beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError("local_posteriors and deprecated agent_beliefs cannot both be supplied")
-        local_posteriors = legacy.pop("agent_beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "agent_beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if "weights" in legacy:
-        if base_weights is not None:
-            raise TypeError("base_weights and deprecated weights cannot both be supplied")
-        base_weights = legacy.pop("weights")  # type: ignore[assignment]
-        warnings.warn(
-            "weights is deprecated; use base_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     raw_local_posteriors = list(local_posteriors)
@@ -266,7 +222,6 @@ def share_round(
     config: AggregationConfig | None = None,
     exclude_self: bool = True,
     true_state: int | None = None,
-    **legacy: object,
 ) -> SharingDiagnostics:
     """Run one round and return the historical compatibility diagnostics."""
     result = share_round_result(
@@ -277,7 +232,6 @@ def share_round(
         config=config,
         exclude_self=exclude_self,
         true_state=true_state,
-        **legacy,
     )
     global_weights = (
         None

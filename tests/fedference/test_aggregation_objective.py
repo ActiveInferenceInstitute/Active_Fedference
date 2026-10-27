@@ -83,11 +83,11 @@ def test_free_energy_supports_zero_base_weight_by_zeroing_effective_weight():
     beliefs = np.array([[0.7, 0.3], [0.2, 0.8]])
     result = variational_aggregate(
         beliefs,
-        weights=[1.0, 0.0],
+        base_weights=[1.0, 0.0],
         robustness=1.0,
     )
     assert np.isclose(result.consensus.sum(), 1.0)
-    assert result.agent_weights[1] == 0.0
+    assert result.normalized_effective_weights[1] == 0.0
 
 
 def test_variational_weight_collapse_is_receipted_and_not_convergence():
@@ -176,7 +176,7 @@ def test_diverging_agent_influence_collapses_to_zero():
         liar = (1 - drift) * np.array([0.5, 0.3, 0.2]) + drift * np.array([0.0, 0.0, 1.0])
         colony = np.vstack([base, liar])
         res = variational_aggregate(colony, robustness=1.5, max_iter=256, tol=1e-12)
-        w_liar = float(res.agent_weights[-1])
+        w_liar = float(res.normalized_effective_weights[-1])
         weights_seen.append(w_liar)
         if last_w is not None:
             assert w_liar <= last_w + 1e-9  # monotone non-increasing in divergence
@@ -199,7 +199,7 @@ def test_multistart_vetoes_near_vertex_adversary():
         liar = (1 - drift) * np.array([0.4, 0.3, 0.3]) + drift * np.array([0.0, 0.0, 1.0])
         r = variational_aggregate(np.vstack([honest, [liar]]), robustness=1.5,
                                   max_iter=512, tol=1e-12)
-        assert r.agent_weights[-1] < 0.05      # liar vetoed
+        assert r.normalized_effective_weights[-1] < 0.05      # liar vetoed
         assert np.argmax(r.consensus) == 0     # consensus follows the honest majority
 
 
@@ -215,9 +215,9 @@ def test_multistart_false_uses_single_pool_seed_and_can_be_captured():
     multi = variational_aggregate(colony, robustness=1.5, multistart=True,
                                   max_iter=512, tol=1e-12)
     # single-start (pool seed) is captured by the vertex adversary...
-    assert single.agent_weights[-1] > 0.5
+    assert single.normalized_effective_weights[-1] > 0.5
     # ...multi-start escapes to the lower-F vetoing basin.
-    assert multi.agent_weights[-1] < 0.05
+    assert multi.normalized_effective_weights[-1] < 0.05
     assert multi.free_energy_history[-1] <= single.free_energy_history[-1] + 1e-9
 
 
@@ -230,7 +230,7 @@ def test_multistart_reaches_lower_or_equal_free_energy_than_pool_seed():
     colony = np.vstack([honest, [liar]])
     r = variational_aggregate(colony, robustness=1.5, max_iter=512, tol=1e-12)
     # the reached basin vetoes the liar (the lower-F solution), not captures it
-    assert r.agent_weights[-1] < 0.05
+    assert r.normalized_effective_weights[-1] < 0.05
     assert np.argmax(r.consensus) == 0
 
 
@@ -269,8 +269,8 @@ def test_effective_weights_never_exceed_base():
     res = variational_aggregate(beliefs, robustness=3.0, max_iter=256, tol=1e-12)
     # normalized influence is a valid distribution; with equal base weights the
     # exp(-c CE) factor is <= 1, so no agent can dominate beyond the pool size.
-    assert np.all(res.agent_weights >= 0.0)
-    assert res.agent_weights.sum() == pytest.approx(1.0, abs=1e-12)
+    assert np.all(res.normalized_effective_weights >= 0.0)
+    assert res.normalized_effective_weights.sum() == pytest.approx(1.0, abs=1e-12)
 
 
 def test_raw_effective_weights_are_bounded_by_base_weights():
@@ -290,7 +290,7 @@ def test_raw_effective_weights_are_bounded_by_base_weights():
         mat = rng.dirichlet(np.ones(4), size=5)
         base = rng.uniform(0.5, 2.0, size=5)
         for c in (0.3, 1.5, 3.0):
-            res = variational_aggregate(mat, weights=base, robustness=c,
+            res = variational_aggregate(mat, base_weights=base, robustness=c,
                                         max_iter=512, tol=1e-12)
             q = res.consensus
             ce = -(np.log(mat) @ q)          # forward cross-entropy, per agent
@@ -300,7 +300,7 @@ def test_raw_effective_weights_are_bounded_by_base_weights():
             assert np.all(raw_eff > 0.0)
             # binding: returned normalized weights ARE this raw vector normalized.
             np.testing.assert_allclose(
-                res.agent_weights, raw_eff / raw_eff.sum(), atol=1e-12,
+                res.normalized_effective_weights, raw_eff / raw_eff.sum(), atol=1e-12,
                 err_msg=f"seed={seed} c={c}: agent_weights are not the "
                         f"normalization of base*exp(-c*CE(consensus))",
             )

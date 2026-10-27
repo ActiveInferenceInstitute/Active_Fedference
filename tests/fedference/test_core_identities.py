@@ -181,7 +181,7 @@ def test_robust_aggregate_downweights_the_outlier():
     # robust consensus should place MORE mass on the true state 0 than naive
     assert res.consensus[0] > naive[0]
     # the liar should carry the smallest influence weight
-    assert np.argmin(res.agent_weights) == 2
+    assert np.argmin(res.normalized_effective_weights) == 2
 
 
 # ---- belief sharing bridge ----------------------------------------------
@@ -191,7 +191,7 @@ def test_share_round_self_exclusion_changes_per_agent_consensus():
     beliefs = np.array([[0.8, 0.1, 0.1], [0.7, 0.2, 0.1], [0.1, 0.1, 0.8]])
     diag = share_round(beliefs, method="naive", exclude_self=True, true_state=0)
     # with self-exclusion the three agents do NOT all land on the same belief
-    assert not np.allclose(diag.shared_beliefs[0], diag.shared_beliefs[2], atol=1e-6)
+    assert not np.allclose(diag.shared_posteriors[0], diag.shared_posteriors[2], atol=1e-6)
     assert 0.0 <= diag.mean_accuracy <= 1.0
 
 

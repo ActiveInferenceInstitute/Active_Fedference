@@ -91,7 +91,7 @@ def test_matches_generalized_posterior_with_nll():
                   [0.2, 0.5, 0.9]])
     lp = np.log(np.array([0.2, 0.3, 0.5]))
     o = 0
-    gp = generalized_posterior(lp, loss_vector(A, o, loss="nll"), learning_rate=1.0)
+    gp = generalized_posterior(lp, loss_vector(A, o, loss="nll"), tau=1.0)
     assert infer_states(A, o, lp) == pytest.approx(gp, abs=1e-12)
 
 

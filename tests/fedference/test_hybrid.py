@@ -49,8 +49,8 @@ def test_positive_robustness_returns_valid_hybrid_and_reweighting():
     result = hybrid_aggregate(_beliefs(), robustness=1.0)
     assert np.isclose(result.consensus.discrete.sum(), 1.0)
     assert np.all(result.consensus.gaussian_var > 0.0)
-    assert np.isclose(result.agent_weights.sum(), 1.0)
-    assert np.all(result.agent_weights >= 0.0)
+    assert np.isclose(result.normalized_effective_weights.sum(), 1.0)
+    assert np.all(result.normalized_effective_weights >= 0.0)
 
 
 def test_hybrid_rejects_mismatched_or_invalid_components():
@@ -95,7 +95,7 @@ def test_hybrid_values_and_result_weights_are_owned_and_read_only() -> None:
 
     result = hybrid_aggregate(_beliefs(), robustness=1.0)
     with pytest.raises(ValueError, match="read-only"):
-        result.agent_weights[0] = 0.0
+        result.normalized_effective_weights[0] = 0.0
 
 
 @pytest.mark.parametrize(
@@ -153,18 +153,16 @@ def test_hybrid_belief_rejects_nonfinite_parameters(discrete, mean, variance, me
         HybridBelief(np.asarray(discrete), np.asarray(mean), np.asarray(variance))
 
 
-def test_hybrid_legacy_aliases_and_unknown_arguments_are_explicit() -> None:
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        pooled = hybrid_log_linear_pool(beliefs=_beliefs())
+def test_hybrid_canonical_inputs_and_retired_arguments() -> None:
+    pooled = hybrid_log_linear_pool(local_posteriors=_beliefs())
     assert pooled.n_components == 2
-    with pytest.warns(DeprecationWarning, match="weights"):
-        weighted = hybrid_log_linear_pool(beliefs=_beliefs(), weights=[1.0, 3.0])
+    weighted = hybrid_log_linear_pool(local_posteriors=_beliefs(), base_weights=[1.0, 3.0])
     assert weighted.n_components == 2
     with pytest.raises(TypeError, match="unexpected keyword"):
         hybrid_log_linear_pool(_beliefs(), unknown=True)
-    with pytest.raises(TypeError, match="cannot both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         hybrid_log_linear_pool(_beliefs(), beliefs=_beliefs())
-    with pytest.raises(TypeError, match="cannot both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         hybrid_log_linear_pool(_beliefs(), base_weights=[1.0, 1.0], weights=[1.0, 1.0])
 
 
@@ -192,14 +190,12 @@ def test_hybrid_aggregate_rejects_invalid_controls(kwargs, message) -> None:
         hybrid_aggregate(_beliefs(), **kwargs)
 
 
-def test_hybrid_aggregate_legacy_aliases_and_argument_conflicts() -> None:
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        result = hybrid_aggregate(beliefs=_beliefs(), robustness=0.0)
+def test_hybrid_aggregate_canonical_inputs_and_retired_arguments() -> None:
+    result = hybrid_aggregate(local_posteriors=_beliefs(), robustness=0.0)
     assert result.converged
-    with pytest.warns(DeprecationWarning, match="weights"):
-        result = hybrid_aggregate(beliefs=_beliefs(), weights=[1.0, 2.0], robustness=0.0)
+    result = hybrid_aggregate(local_posteriors=_beliefs(), base_weights=[1.0, 2.0], robustness=0.0)
     assert result.iterations == 0
-    with pytest.raises(TypeError, match="cannot both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         hybrid_aggregate(_beliefs(), beliefs=_beliefs())
     with pytest.raises(TypeError, match="unexpected keyword"):
         hybrid_aggregate(_beliefs(), unknown=True)

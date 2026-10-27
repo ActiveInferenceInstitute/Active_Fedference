@@ -50,6 +50,7 @@ class Inventory(TypedDict):
 
 
 class References(TypedDict):
+    class_members: list[str]
     names: dict[str, list[str]]
     keywords: dict[str, list[str]]
 
@@ -188,11 +189,19 @@ def reference_index(root: Path) -> References:
     """Index syntactic references once per tree; never cache across mutations."""
     names: dict[str, set[str]] = {}
     keywords: dict[str, set[str]] = {}
+    class_members: list[str] = []
     for directory in ("src", "tests", "examples", "scripts"):
         for path in sorted((root / directory).rglob("*.py")):
             if path.name == "test_retirement_inventory.py":
                 continue
             relative = path.relative_to(root).as_posix()
+            tree = ast.parse(path.read_text())
+            for name, definition in definitions(tree):
+                if isinstance(definition, (ast.FunctionDef, ast.AsyncFunctionDef)) and any(
+                    isinstance(d, ast.Name) and d.id in {"classmethod", "staticmethod"}
+                    for d in definition.decorator_list
+                ):
+                    class_members.append(relative + "::" + name)
 
             def visit(node: ast.AST, scope: tuple[str, ...] = ()) -> None:
                 location = relative + "::" + (".".join(scope) or "<module>")
@@ -200,6 +209,10 @@ def reference_index(root: Path) -> References:
                     name = node.id if isinstance(node, ast.Name) else node.attr
                     key = f"{relative}::{name}" if name == "__all__" else name
                     names.setdefault(key, set()).add(location)
+                    if isinstance(node, ast.Attribute):
+                        names.setdefault("@" + node.attr, set()).add(location)
+                        if isinstance(node.value, ast.Name):
+                            names.setdefault("@" + node.value.id + "." + node.attr, set()).add(location)
                 if isinstance(node, ast.ImportFrom):
                     for alias in node.names:
                         names.setdefault(alias.name, set()).add(location)
@@ -213,8 +226,9 @@ def reference_index(root: Path) -> References:
                 for child in ast.iter_child_nodes(node):
                     visit(child, scope)
 
-            visit(ast.parse(path.read_text()))
+            visit(tree)
     return {
+        "class_members": sorted(class_members),
         "names": {k: sorted(v) for k, v in names.items()},
         "keywords": {k: sorted(v) for k, v in keywords.items()},
     }
@@ -230,6 +244,10 @@ def callsites(index: References, surface: Surface) -> list[str]:
         leaf = qualified.split(".")[-2]
     if keyword is not None:
         return index["keywords"].get(f"{leaf}:{keyword}", [])
+    if surface["symbol"] in index["class_members"]:
+        leaf = "@" + qualified
+    elif "." in qualified and not qualified.endswith(".__init__"):
+        leaf = "@" + leaf
     if leaf == "__all__":
         leaf = surface["symbol"].split("::")[0] + "::__all__"
     return index["names"].get(leaf, [])
@@ -348,3 +366,25 @@ def test_caller_identity_ignores_layout_and_unrelated_stores(tmp_path: Path) -> 
     assert callsites(reference_index(tmp_path), surface) == before
     source.write_text(source.read_text().replace("old()", "new()"))
     assert callsites(reference_index(tmp_path), surface) == []
+
+
+def test_member_callers_exclude_local_names_and_other_classes(tmp_path: Path) -> None:
+    for directory in ("src", "tests", "examples", "scripts"):
+        (tmp_path / directory).mkdir()
+    (tmp_path / "src/api.py").write_text(
+        "class First:\n    @classmethod\n    def from_dict(cls, raw): return cls()\n"
+        "class Second:\n    @classmethod\n    def from_dict(cls, raw): return cls()\n"
+    )
+    source = tmp_path / "src/consumer.py"
+    source.write_text(
+        "from api import First, Second\ndef consumer():\n"
+        "    beliefs = [1]\n    Second.from_dict({})\n    return beliefs\n"
+    )
+    property_surface = Surface(symbol="src/api.py::Episode.beliefs", replacement="posterior", kind="symbol")
+    class_surface = Surface(symbol="src/api.py::First.from_dict", replacement="from_dict", kind="symbol")
+    assert callsites(reference_index(tmp_path), property_surface) == []
+    assert callsites(reference_index(tmp_path), class_surface) == []
+    source.write_text(source.read_text().replace("Second.from_dict", "First.from_dict"))
+    assert callsites(reference_index(tmp_path), class_surface) == ["src/consumer.py::consumer"]
+    source.write_text(source.read_text() + "def read_episode(episode):\n    return episode.beliefs\n")
+    assert callsites(reference_index(tmp_path), property_surface) == ["src/consumer.py::read_episode"]

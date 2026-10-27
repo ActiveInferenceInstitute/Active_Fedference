@@ -1242,3 +1242,12 @@ them.
   categorical native model execution; CLI/backend/scientific/release acceptance
   remain separate. Original custody/JSON failures and the failed first fix
   are retained in the dated ULW evidence.
+
+- [x] ISC-277: The 49 inventoried deprecated domain keyword, property and
+  helper surfaces are retired; active callers use canonical interfaces with
+  unchanged raw-weight exponent and scientific-comparator behavior. Probe:
+  `tests/test_domain_retirement.py` and the qualified caller inventory. The
+  original source fails 45 rejection controls while two canonical numerical
+  controls pass; current focused controls and 1,456 adjacent tests pass with
+  zero skips (34 slow-profile tests deselected). Historical failures remain.
+  Supported wrapper, federation and format migrations are separate units.

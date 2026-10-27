@@ -213,7 +213,7 @@ def test_confident_wrong_agent_is_downweighted_by_robust_pool():
     beliefs = [honest, honest, honest, adversary]
     res = robust_aggregate(beliefs, robustness=5.0)
     # the adversary (index 3) must hold strictly less influence than each honest
-    assert res.agent_weights[3] < res.agent_weights[0]
-    assert res.agent_weights[3] < 0.25  # below its equal share
+    assert res.normalized_effective_weights[3] < res.normalized_effective_weights[0]
+    assert res.normalized_effective_weights[3] < 0.25  # below its equal share
     # consensus stays close to the honest belief, not the adversarial spike
     assert np.argmax(res.consensus) == 0

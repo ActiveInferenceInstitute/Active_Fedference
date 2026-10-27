@@ -48,7 +48,8 @@ def test_bounded_influence_from_real_aggregator(tmp_path: Path) -> None:
     for d in drifts:
         liar = (1 - d) * np.array([0.5, 0.3, 0.2]) + d * np.array([0.0, 0.0, 1.0])
         colony = np.vstack([base, liar])
-        influence.append(float(variational_aggregate(colony, robustness=1.5).agent_weights[-1]))
+        result = variational_aggregate(colony, robustness=1.5)
+        influence.append(float(result.normalized_effective_weights[-1]))
     path = generate_bounded_influence(drifts, influence, 0.25, project_root=tmp_path)
     assert path.exists()
 

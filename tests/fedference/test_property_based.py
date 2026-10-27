@@ -15,7 +15,7 @@ Aggregation  (A1-A5) : log_linear_pool, robust_aggregate, variational_aggregate,
 Gen-Bayes    (G1-G2) : generalized_posterior closed form, cavity roundtrip
 Belief share (S1-S2) : share_round pmf validity, exclude_self differentiation
 Statistics   (T1-T4) : power_analysis in [0,1], bootstrap_ci lo<=hi,
-                        bh_fdr q-values in [0,1], cohens_d sign consistency
+                        bh_fdr q-values in [0,1], d_equivalent sign consistency
 
 18 property-based tests (>= 12 required).
 """
@@ -319,8 +319,8 @@ def test_robust_aggregate_agent_weights_sum_to_one(beliefs, robustness):
     from fedference.aggregation import robust_aggregate
 
     res = robust_aggregate(beliefs, robustness=robustness)
-    assert abs(res.agent_weights.sum() - 1.0) < 1e-9, (
-        f"agent_weights sum to {res.agent_weights.sum()} instead of 1"
+    assert abs(res.normalized_effective_weights.sum() - 1.0) < 1e-9, (
+        f"agent_weights sum to {res.normalized_effective_weights.sum()} instead of 1"
     )
 
 
@@ -352,7 +352,7 @@ def test_generalized_posterior_kld_nll_equals_bayes(prior, likelihood_row):
     lv = loss_vector(A, o, loss="nll")  # length n_s
     log_prior = np.log(prior)
 
-    q = generalized_posterior(log_prior, lv, learning_rate=1.0, divergence="KLD")
+    q = generalized_posterior(log_prior, lv, tau=1.0, divergence="KLD")
 
     # Standard Bayes: posterior ∝ prior × p(o=0|s) = prior × lik
     exact = prior * lik
@@ -397,7 +397,7 @@ def test_share_round_returns_valid_pmfs(beliefs, method):
     from fedference.belief_sharing import share_round
 
     diag = share_round(beliefs, method=method, robustness=1.0, exclude_self=True)
-    for i, row in enumerate(diag.shared_beliefs):
+    for i, row in enumerate(diag.shared_posteriors):
         assert _is_valid_pmf(row, atol=1e-6), f"Agent {i}'s shared belief is not a valid pmf: {row}"
     assert _is_valid_pmf(diag.consensus, atol=1e-6), f"Global consensus is not a valid pmf: {diag.consensus}"
 
@@ -505,7 +505,7 @@ def test_bh_fdr_qvalues_bounded(pvalues, alpha):
 
 
 # ===========================================================================
-# T4 — cohens_d_from_rank_biserial: sign consistency and finiteness
+# T4 — d_equivalent_from_rank_biserial: sign consistency and finiteness
 # ===========================================================================
 
 
@@ -513,15 +513,15 @@ def test_bh_fdr_qvalues_bounded(pvalues, alpha):
     st.floats(min_value=-0.99, max_value=0.99, allow_nan=False, allow_infinity=False),
 )
 @settings(max_examples=300, deadline=None)
-def test_cohens_d_from_rank_biserial_sign_and_zero(r):
-    """cohens_d(r) shares the sign of r; cohens_d(0) == 0; result is finite."""
-    from fedference.statistics import cohens_d_from_rank_biserial
+def test_d_equivalent_from_rank_biserial_sign_and_zero(r):
+    """d_equivalent(r) shares the sign of r; d_equivalent(0) == 0; result is finite."""
+    from fedference.statistics import d_equivalent_from_rank_biserial
 
-    d = cohens_d_from_rank_biserial(r)
-    assert math.isfinite(d), f"cohens_d({r}) returned non-finite {d}"
+    d = d_equivalent_from_rank_biserial(r)
+    assert math.isfinite(d), f"d_equivalent({r}) returned non-finite {d}"
     if r > 1e-10:
-        assert d > 0.0, f"cohens_d({r}) should be positive, got {d}"
+        assert d > 0.0, f"d_equivalent({r}) should be positive, got {d}"
     elif r < -1e-10:
-        assert d < 0.0, f"cohens_d({r}) should be negative, got {d}"
+        assert d < 0.0, f"d_equivalent({r}) should be negative, got {d}"
     else:
-        assert abs(d) < 1e-9, f"cohens_d(~0) should be ~0, got {d}"
+        assert abs(d) < 1e-9, f"d_equivalent(~0) should be ~0, got {d}"

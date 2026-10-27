@@ -438,22 +438,6 @@ def d_equivalent_from_rank_biserial(r: float) -> float:
     return float(2.0 * r_ / np.sqrt(1.0 - r_ * r_))
 
 
-def cohens_d_from_rank_biserial(r: float) -> float:
-    """Deprecated compatibility alias for :func:`d_equivalent_from_rank_biserial`.
-
-    The old name is retained for additive current-major compatibility, but the
-    returned value must not be described as an independently estimated Cohen's
-    ``d``.
-    """
-    warnings.warn(
-        "cohens_d_from_rank_biserial is deprecated; use "
-        "d_equivalent_from_rank_biserial",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return d_equivalent_from_rank_biserial(r)
-
-
 def interpret_effect_size(d: float) -> str:
     """Label a secondary ``d``-equivalent display value by magnitude.
 

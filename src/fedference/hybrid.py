@@ -16,7 +16,6 @@ objective or bounded-influence claim is transferred to the robust hybrid path.
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass
 from typing import Iterable
 
@@ -98,17 +97,6 @@ class HybridAggregationResult:
         object.__setattr__(self, "normalized_effective_weights", weights)
         object.__setattr__(self, "iterations", int(self.iterations))
 
-    @property
-    def agent_weights(self) -> ArrayF:
-        """Deprecated alias for normalized effective influence weights."""
-        warnings.warn(
-            "HybridAggregationResult.agent_weights is deprecated; use "
-            "normalized_effective_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.normalized_effective_weights
-
 
 def _stack(local_posteriors: Iterable[HybridBelief]) -> list[HybridBelief]:
     rows = list(local_posteriors)
@@ -149,22 +137,8 @@ def hybrid_log_linear_pool(
     local_posteriors: Iterable[HybridBelief] | None = None,
     *,
     base_weights: Iterable[float] | None = None,
-    **legacy: object,
 ) -> HybridBelief:
     """Combine hybrid beliefs by a categorical log pool and Gaussian precision pool."""
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError("local_posteriors and deprecated beliefs cannot both be supplied")
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn("beliefs is deprecated; use local_posteriors", DeprecationWarning, stacklevel=2)
-    if "weights" in legacy:
-        if base_weights is not None:
-            raise TypeError("base_weights and deprecated weights cannot both be supplied")
-        base_weights = legacy.pop("weights")  # type: ignore[assignment]
-        warnings.warn("weights is deprecated; use base_weights", DeprecationWarning, stacklevel=2)
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     rows = _stack(local_posteriors)
@@ -194,7 +168,6 @@ def hybrid_aggregate(
     robustness: float = 0.0,
     max_iter: int = 128,
     tol: float = 1e-12,
-    **legacy: object,
 ) -> HybridAggregationResult:
     """Aggregate hybrid beliefs with exact zero-robustness recovery.
 
@@ -227,19 +200,6 @@ def hybrid_aggregate(
         or tol <= 0.0
     ):
         raise ValueError("tol must be finite and positive")
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError("local_posteriors and deprecated beliefs cannot both be supplied")
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn("beliefs is deprecated; use local_posteriors", DeprecationWarning, stacklevel=2)
-    if "weights" in legacy:
-        if base_weights is not None:
-            raise TypeError("base_weights and deprecated weights cannot both be supplied")
-        base_weights = legacy.pop("weights")  # type: ignore[assignment]
-        warnings.warn("weights is deprecated; use base_weights", DeprecationWarning, stacklevel=2)
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     rows = _stack(local_posteriors)

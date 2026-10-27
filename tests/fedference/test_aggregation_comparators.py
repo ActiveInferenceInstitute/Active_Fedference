@@ -13,7 +13,7 @@ from fedference.aggregation_comparators import (
 
 def test_linear_pool_is_weighted_arithmetic_mixture() -> None:
     beliefs = np.asarray([[0.8, 0.2], [0.2, 0.8]])
-    result = linear_opinion_pool(beliefs, weights=[3.0, 1.0])
+    result = linear_opinion_pool(beliefs, base_weights=[3.0, 1.0])
     assert np.allclose(result, [0.65, 0.35])
 
 
@@ -39,7 +39,7 @@ def test_duplicate_majority_is_recognized_as_an_exact_weighted_median() -> None:
     outlier = np.asarray([0.1, 0.2, 0.7])
     result = clr_geometric_median_pool(
         [majority, majority, outlier],
-        weights=[0.26, 0.26, 0.48],
+        base_weights=[0.26, 0.26, 0.48],
         max_iter=4,
         tol=1e-12,
     )

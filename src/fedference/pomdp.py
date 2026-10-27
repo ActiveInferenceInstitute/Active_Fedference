@@ -37,7 +37,6 @@ column of each ``B[..., u]`` is a proper categorical pmf summing to 1.
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass
 from dataclasses import field as _field
 from typing import Any, cast
@@ -830,7 +829,6 @@ def build_3level_world(
 def efe_policy_select(
     local_posteriors=None,
     world_dict=None,
-    **legacy: object,
 ) -> list[int]:
     """Select one information-seeking action per agent by expected free energy.
 
@@ -857,19 +855,6 @@ def efe_policy_select(
     Returns:
         A list of ``n_agents`` integer action indices in ``[0, n_actions)``.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None or world_dict is None:
         raise TypeError("local_posteriors and world_dict are required")
     b = np.asarray(world_dict["B"], dtype=np.float64)

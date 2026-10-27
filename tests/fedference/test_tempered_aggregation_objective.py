@@ -174,8 +174,8 @@ def test_tempered_scenario_controls_adversary_weight():
     beliefs, true_s = _make_beliefs(5, n_agents=7)
     for lam in [0.3, 1.0, 2.5]:
         r = variational_aggregate(beliefs, robustness=1.5, entropy_weight=lam)
-        honest_mean = float(np.mean(r.agent_weights[2:5]))
-        adv_mean = float(np.mean(r.agent_weights[5:]))
+        honest_mean = float(np.mean(r.normalized_effective_weights[2:5]))
+        adv_mean = float(np.mean(r.normalized_effective_weights[5:]))
         assert honest_mean >= adv_mean - 0.05, f"declared adversary-weight control failed at lambda={lam}"
 
 
