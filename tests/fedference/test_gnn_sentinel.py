@@ -198,3 +198,32 @@ def test_raw_oversized_json_integer_has_stable_refusal(tmp_path: Path, upstream:
     with pytest.raises(GNNAdmissionError) as error:
         load_gnn(path, upstream_root=upstream)
     assert error.value.code == "GNN_JSON"
+
+
+def test_newline_byte_change_invalidates_offline_cache(tmp_path: Path) -> None:
+    asset = tmp_path / "changed-newlines.gnn.md"
+    asset.write_bytes(SENTINEL_ASSET.read_bytes().replace(b"\n", b"\r\n"))
+    with pytest.raises(GNNAdmissionError, match="GNN_STALE_CACHE"):
+        load_sentinel(asset=asset)
+
+
+@pytest.mark.parametrize("ending", ["\n", "\r\n", "\r"])
+def test_source_digest_binds_original_unicode_and_newline_bytes(
+    tmp_path: Path, upstream: Path, ending: str
+) -> None:
+    import hashlib
+
+    prefix, heading, tail = SENTINEL_ASSET.read_text().partition("## ModelName\n")
+    _, separator, rest = tail.partition("\n\n## ")
+    document = prefix + heading + "Sentinel α" + separator + rest
+    asset = tmp_path / "unicode.gnn.md"
+    payload = document.replace("\n", ending).encode("utf-8")
+    asset.write_bytes(payload)
+    model = load_gnn(asset, upstream_root=upstream)
+    assert model.metadata.name == "Sentinel α"
+    assert model.metadata.provenance.asset == hashlib.sha256(payload).hexdigest()
+    assert model.metadata.provenance.source == hashlib.sha256(payload).hexdigest()
+    assert model.categorical.A == load_sentinel().categorical.A
+    compiled = tmp_path / "unicode.ir.json"
+    compiled.write_text(dumps(model), encoding="utf-8")
+    assert load_sentinel(asset=asset, cache=compiled) == model

@@ -75,6 +75,7 @@ def _mapping(value: JSONValue, location: str) -> dict[str, JSONValue]:
 
 
 def _raw(document: str) -> tuple[dict[str, str], dict[str, JSONValue], dict[str, JSONValue]]:
+    document = document.replace("\r\n", "\n").replace("\r", "\n")
     sections: dict[str, str] = {}
     parts = re.split(r"(?m)^## ([^\n]+)\n", document)
     if not parts[0].startswith("# ") or len(parts) != 1 + 2 * len(_SECTIONS):
@@ -145,7 +146,9 @@ def _verify_parser(root: Path) -> str:
     return digest
 
 
-def _model(document: str, parser_digest: str, extracted: dict[str, JSONValue]) -> CategoricalModel:
+def _model(
+    document: str, parser_digest: str, extracted: dict[str, JSONValue], source_digest: str
+) -> CategoricalModel:
     sections, schema, parameters = _raw(document)
     if extracted.get("extraction_schema_version") != "1.0.0" or "status" in extracted:
         raise GNNAdmissionError("GNN_EXTRACTION_SCHEMA", "extraction")
@@ -172,7 +175,7 @@ def _model(document: str, parser_digest: str, extracted: dict[str, JSONValue]) -
             "shape": list(array.shape),
             "values": [float(value) for value in array.ravel()],
         }
-    digest = _sha(document.encode())
+    digest = source_digest
     payload = {
         "kind": "categorical",
         "categorical": categorical,
@@ -203,12 +206,13 @@ def load_gnn(path: Path, *, upstream_root: Path, python: Path | None = None) -> 
     Explicit upstream_root authorizes local source execution, never installation
     or network access. No extraction failure falls back to the packaged cache.
     """
-    document = path.read_text(encoding="utf-8")
+    source_bytes = path.read_bytes()
+    document = source_bytes.decode("utf-8")
     _raw(document)
     parser_digest = _verify_parser(upstream_root)
     with tempfile.TemporaryDirectory(prefix="fedference-gnn-") as directory:
         snapshot = Path(directory) / "model.gnn.md"
-        snapshot.write_text(document, encoding="utf-8")
+        snapshot.write_bytes(source_bytes)
         # Execute only verified closure bytes. The supplied source root may
         # contain unrelated modules that could otherwise shadow the stdlib.
         parser_source = Path(directory) / "parser"
@@ -257,7 +261,7 @@ def load_gnn(path: Path, *, upstream_root: Path, python: Path | None = None) -> 
     b = _mapping(provenance.get("B"), "matrix_provenance.B")
     if b.get("declared_order_explicit") is not True or b.get("detected_order") != _AXES["B"]:
         raise GNNAdmissionError("GNN_EXTRACTION_AXIS", "B")
-    return _model(document, parser_digest, extracted)
+    return _model(document, parser_digest, extracted, _sha(source_bytes))
 
 
 def load_sentinel(*, asset: Path = SENTINEL_ASSET, cache: Path = SENTINEL_CACHE) -> CategoricalModel:
@@ -265,15 +269,16 @@ def load_sentinel(*, asset: Path = SENTINEL_ASSET, cache: Path = SENTINEL_CACHE)
     model = loads(cache.read_text(encoding="utf-8"))
     if not isinstance(model, CategoricalModel):
         raise GNNAdmissionError("GNN_KIND", "cache")
-    document = asset.read_text(encoding="utf-8")
+    source_bytes = asset.read_bytes()
+    document = source_bytes.decode("utf-8")
     _, parser_digest = _manifest()
-    if model.metadata.provenance.asset != _sha(document.encode()):
+    if model.metadata.provenance.asset != _sha(source_bytes):
         raise GNNAdmissionError("GNN_STALE_CACHE", "asset")
     c = model.categorical
     extracted: dict[str, JSONValue] = {"extraction_schema_version": "1.0.0"}
     for name, tensor in (("A_matrix", c.A), ("B_matrix", c.B), ("C_vector", c.C), ("D_vector", c.D)):
         extracted[name] = np.array(tensor.values).reshape(tensor.shape).tolist()
-    expected = _model(document, parser_digest, extracted)
+    expected = _model(document, parser_digest, extracted, _sha(source_bytes))
     if dumps(model) != dumps(expected):
         raise GNNAdmissionError("GNN_STALE_CACHE", "content")
     return model
