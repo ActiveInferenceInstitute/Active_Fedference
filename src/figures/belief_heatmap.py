@@ -11,7 +11,6 @@ the numbers are supplied by the analysis workflow, this module only draws.
 
 from __future__ import annotations
 
-import warnings
 from pathlib import Path
 
 import numpy as np
@@ -37,7 +36,6 @@ def generate_belief_heatmap(
     *,
     project_root: Path | None = None,
     filename: str = "belief_heatmap.png",
-    **legacy: object,
 ) -> Path:
     """Render a colony's per-agent beliefs plus consensus as a heatmap.
 
@@ -54,18 +52,6 @@ def generate_belief_heatmap(
         ValueError: If ``local_posteriors`` is not 2-D or ``consensus`` length
             mismatches the belief width.
     """
-    if "agent_beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError("local_posteriors and deprecated agent_beliefs cannot both be supplied")
-        local_posteriors = legacy.pop("agent_beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "agent_beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if local_posteriors is None or consensus is None:
         raise TypeError("local_posteriors and consensus are required")
     local_posteriors_matrix = np.asarray(local_posteriors, dtype=np.float64)

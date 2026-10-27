@@ -13,14 +13,13 @@ from manuscript_vars.loaders import (
     _format_residual_math,
     _recovery_residuals,
 )
-from manuscript_vars.tokens import _format_cohens_d, _format_d_equivalent
+from manuscript_vars.tokens import _format_d_equivalent
 
 __all__ = [
     "_bnn_robustness_variables",
     "_bnn_torch_variables",
     "_count_tests",
     "_disjoint_fov_variables",
-    "_format_cohens_d",
     "_format_d_equivalent",
     "_format_residual",
     "_format_residual_math",

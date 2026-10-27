@@ -30,7 +30,6 @@ import sqlite3
 import struct
 import tempfile
 import threading
-import warnings
 from collections.abc import Mapping
 from contextlib import closing
 from copy import deepcopy
@@ -587,7 +586,6 @@ def inspect_socket_replay(
     robustness: float | None = None,
     config: AggregationConfig | None = None,
     config_assertions: Mapping[str, object] | None = None,
-    **legacy: object,
 ) -> ReplayValidationResult:
     """Inspect replay integrity and report solver health separately.
 
@@ -597,24 +595,6 @@ def inspect_socket_replay(
     compatibility ``robustness`` keyword asserts the historical robust socket
     configuration with ``max_iter=32``.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            return _replay_failure(
-                "input.malformed",
-                "local_posteriors and deprecated beliefs cannot both be supplied",
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        return _replay_failure(
-            "input.malformed",
-            "unexpected replay validation argument(s): "
-            + ", ".join(sorted(legacy)),
-        )
     if replay == []:
         return _replay_failure("replay.empty", "socket replay is empty")
     if not isinstance(replay, list) or any(
@@ -1040,7 +1020,6 @@ def validate_socket_replay(
     *,
     robustness: float | None = None,
     config: AggregationConfig | None = None,
-    **legacy: object,
 ) -> bool:
     """Validate replay integrity, returning ``False`` for malformed input.
 
@@ -1048,17 +1027,6 @@ def validate_socket_replay(
     failures.  Use :func:`inspect_socket_replay` when numerical health must be
     enforced or reported.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            return False
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        return False
     try:
         return inspect_socket_replay(
             replay,
@@ -1197,7 +1165,6 @@ def run_socket_round_result(
     auth_key: bytes | str | None = None,
     replay_path: str | PathLike[str] | None = None,
     replay_guard: ReplayGuard | None = None,
-    **legacy: object,
 ) -> SocketRoundResult:
     """Run one federation round over real loopback TCP sockets.
 
@@ -1225,19 +1192,6 @@ def run_socket_round_result(
     worker consensuses, transport metadata, and a structured replay verdict.
     :func:`run_socket_round` retains the historical dictionary projection.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     raw_local_posteriors = list(local_posteriors)
@@ -1464,7 +1418,6 @@ def run_socket_round(
     auth_key: bytes | str | None = None,
     replay_path: str | PathLike[str] | None = None,
     replay_guard: ReplayGuard | None = None,
-    **legacy: object,
 ) -> dict[str, Any]:
     """Run one loopback round and return the protocol-v1 compatibility mapping."""
     rich = run_socket_round_result(
@@ -1477,7 +1430,6 @@ def run_socket_round(
         auth_key=auth_key,
         replay_path=replay_path,
         replay_guard=replay_guard,
-        **legacy,
     )
     return {
         "consensus": rich.consensus,

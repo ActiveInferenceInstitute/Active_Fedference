@@ -62,7 +62,7 @@ from manuscript_vars.loaders import (
     _count_isc,
     _count_tests,
     _count_tests_by_name,
-    _federation_demo_beliefs,
+    _federation_demo_local_posteriors,
     _federation_variables,
     _hierarchical_variables,
     _nlevel3_variables,
@@ -106,7 +106,7 @@ def test_federation_bit_identical_token_matches_direct_recomputation() -> None:
 
     # Direct recomputation through the same worker/server queue transport on
     # the same deterministic beliefs.
-    beliefs = _federation_demo_beliefs()
+    beliefs = _federation_demo_local_posteriors()
     ref = robust_aggregate(beliefs, robustness=FEDERATION_ROBUSTNESS).consensus
     request_q: queue.Queue = queue.Queue()
     response_qs: dict[int, queue.Queue] = {i: queue.Queue() for i in range(FEDERATION_N_WORKERS)}

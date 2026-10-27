@@ -7,7 +7,6 @@ import logging
 import re
 import subprocess
 import sys
-import warnings
 from pathlib import Path
 from typing import Any
 
@@ -502,22 +501,6 @@ def _federation_demo_local_posteriors() -> list[np.ndarray]:
     local_posteriors[0] = b_adv
     local_posteriors[1] = b_adv.copy()
     return local_posteriors
-
-
-def _federation_demo_beliefs() -> list[np.ndarray]:
-    """Compatibility adapter for the pre-canonical demo helper name.
-
-    ``local_posteriors`` is the canonical manuscript-token vocabulary.  Keep
-    the old private helper importable for downstream token tests and local
-    integrations, but make the rename observable instead of silently
-    maintaining two implementations.
-    """
-    warnings.warn(
-        "_federation_demo_beliefs is deprecated; use _federation_demo_local_posteriors",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _federation_demo_local_posteriors()
 
 
 def _federation_variables(root: Path) -> dict[str, str]:

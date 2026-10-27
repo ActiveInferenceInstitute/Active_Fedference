@@ -20,7 +20,6 @@ Pure ``matplotlib`` (Agg); the weights come from the analysis workflow.
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -44,7 +43,6 @@ def generate_robust_influence_weights(
     *,
     project_root: Path | None = None,
     filename: str = "robust_influence_weights.png",
-    **legacy: object,
 ) -> Path:
     """Render per-agent robust influence weights with saboteurs highlighted.
 
@@ -61,20 +59,6 @@ def generate_robust_influence_weights(
     Raises:
         ValueError: If the influence vector is empty or an index is out of range.
     """
-    if "agent_weights" in legacy:
-        if normalized_effective_weights is not None:
-            raise TypeError(
-                "normalized_effective_weights and deprecated agent_weights cannot both be supplied"
-            )
-        normalized_effective_weights = legacy.pop("agent_weights")  # type: ignore[assignment]
-        warnings.warn(
-            "agent_weights is deprecated; use normalized_effective_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if normalized_effective_weights is None or contaminated_indices is None:
         raise TypeError("normalized_effective_weights and contaminated_indices are required")
     normalized_effective_weights_array = np.asarray(normalized_effective_weights, dtype=np.float64).ravel()

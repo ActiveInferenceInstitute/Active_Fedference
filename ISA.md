@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 272/274
+progress: 273/275
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1268,3 +1268,13 @@ them.
   payload controls pass; checkpoint6 and its small recheck approve this scope.
   Unsupported backend compositions refuse; scientific campaigns and protocol
   reproduction remain separate. Task59 retains the module-size advisory.
+
+- [x] ISC-280: The twelve deprecated federation, figure and manuscript-helper
+  boundary aliases are removed with canonical callers and current wire-v1
+  behavior preserved. Original twelve rejection cases fail before removal;
+  499 adjacent cases and fifteen named cases pass afterward. All 28 bound
+  protocol/figure/historical-fixture artifacts remain byte-identical. The
+  duplicate formatter rejection test was removed while canonical numeric and
+  required rejection coverage remain; independent checkpoint6 recheck approves.
+  Broader wrapper/schema retirement and receipt-module locator integration
+  remain separate units; this does not certify publication or scientific scope.
