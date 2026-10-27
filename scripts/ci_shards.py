@@ -147,10 +147,11 @@ def main() -> int:
                "Path(sys.argv[2]) if sys.argv[2] else None))",
                str(default_root), str(args.project_root) if args.project_root else ""]
     os.chdir(subprocess.check_output(command, text=True).strip())
+    pytest_root = ["-c", str(Path.cwd() / "pyproject.toml"), f"--rootdir={Path.cwd()}"]
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     if args.mode == "plan":
         inventory = Inventory()
-        status = pytest.main(["tests/", "--collect-only", "-q"], plugins=[inventory])
+        status = pytest.main([*pytest_root, "tests/", "--collect-only", "-q"], plugins=[inventory])
         if status:
             return int(status)
         weights = json.loads(args.weights.read_text())["modules"]
@@ -189,7 +190,7 @@ def main() -> int:
     inventory = Inventory(plan, args.index)
     # Partial shards cannot individually cover all src/. The final aggregate
     # gate combines every shard and enforces the unchanged >=90% threshold.
-    status = pytest.main(["tests/", "--cov=src", "--cov-fail-under=0", "-q",
+    status = pytest.main([*pytest_root, "tests/", "--cov=src", "--cov-fail-under=0", "-q",
                           "--durations=0", f"--junitxml={directory / 'junit.xml'}"],
                          plugins=[inventory])
     coverage_file = directory / f".coverage.shard-{args.index}"

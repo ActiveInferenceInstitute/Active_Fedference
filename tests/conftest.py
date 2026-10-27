@@ -1,19 +1,46 @@
-"""Pytest configuration for Active Fedference tests."""
+"""Pytest configuration and child-process isolation for Active Fedference."""
+
+from __future__ import annotations
 
 import os
+import shlex
 import sys
+from collections.abc import Iterator
+from pathlib import Path
 
-# Force headless backend for matplotlib in tests
+import pytest
+
 os.environ.setdefault("MPLBACKEND", "Agg")
 
-# Add src/ AND the repo root to path so the documented per-project pytest command
-# works from a clean environment. The project pyproject's `pythonpath` is
-# project-relative and omits the repo root, so without this the suite cannot
-# collect all project modules. The project lives at
-# `projects/working/<name>/`, so the repo root is three levels above ROOT.
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-SRC = os.path.join(ROOT, "src")
-REPO_ROOT = os.path.abspath(os.path.join(ROOT, "..", "..", ".."))
-for _path in (REPO_ROOT, SRC):
-    if _path not in sys.path:
-        sys.path.insert(0, _path)
+ROOT = Path(__file__).resolve().parents[1]
+for _path in (ROOT, ROOT / "src"):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def isolated_test_processes(tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
+    """Bound fixture discovery and use this populated interpreter in child builds."""
+    temporary_root = tmp_path_factory.getbasetemp().resolve()
+    if temporary_root.is_relative_to(ROOT):
+        raise pytest.UsageError(
+            "Test temporary storage must be outside the checkout; set TMPDIR or --basetemp"
+        )
+    ceilings = os.environ.get("GIT_CEILING_DIRECTORIES", "")
+    environment = {
+        "GIT_CEILING_DIRECTORIES": os.pathsep.join(filter(None, (ceilings, str(temporary_root)))),
+        # Child suites use the known project configuration, but their own cwd
+        # for node IDs. An explicit child -c/--rootdir still takes precedence.
+        "PYTEST_ADDOPTS": shlex.join(["-c", str(ROOT / "pyproject.toml"), "--rootdir=."]),
+        "UV_PYTHON": sys.executable,
+    }
+    previous = {key: os.environ.get(key) for key in environment}
+    os.environ.update(environment)
+    try:
+        yield
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
