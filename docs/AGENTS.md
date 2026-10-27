@@ -23,6 +23,7 @@ Technical index for `docs/`. Navigation hub:
 | `development/testing_philosophy.md` | Zero-mock; test inventory |
 | `development/style_guide.md` | Seven coding/manuscript rules |
 | `development/modularity.md` | Cross-layer extension and orchestration contract |
+| [`development/api-retirement-20261027.md`](development/api-retirement-20261027.md) | Reviewed migration inventory preserving scientific controls and historical readers/evidence |
 | **manuscript/** | |
 | `manuscript/README.md` | Manuscript-pipeline index and authoritative registry signposts |
 | `manuscript/accessibility.md` | Canonical HTML accessibility contract, PDF/UA no-claim boundary, and manual release review |
@@ -40,6 +41,7 @@ Technical index for `docs/`. Navigation hub:
 | `reference/README.md` | Reference-document index and metadata/release boundary signposts |
 | **research/** | |
 | `research/README.md` | Research-audit index, read order, and source-currentness boundary |
+| [`research/release-state-20261027.md`](research/release-state-20261027.md) | Dated hosted-byte observation; certification obligations remain open |
 | `research/repository-review-2026-10-27.md` | Dated sync/GNN review, retained negative control, normalization finding, and engineering/scientific follow-up scopes |
 | `research/literature-audit.md` | Primary-source scholarship and evidence-transfer boundaries |
 | `research/manuscript-claim-audit.md` | Manuscript-wide claim-status ledger |

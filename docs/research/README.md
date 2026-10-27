@@ -21,6 +21,8 @@ specialized audits relevant to the change under review.
 
 ## Architecture and implementation reviews
 
+- [`release-state-20261027.md`](release-state-20261027.md) — dated hosted-byte
+  observation; release certification obligations remain open.
 - [`repository-review-2026-10-27.md`](repository-review-2026-10-27.md) — live
   repository/GNN sync, bounded model exchange, reproduced boundary findings,
   and proposed medium engineering and major scientific scopes.

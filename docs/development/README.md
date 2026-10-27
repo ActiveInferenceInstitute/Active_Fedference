@@ -11,6 +11,7 @@ reviewer-snapshot workflows; software users should begin with the
 | [testing_philosophy.md](testing_philosophy.md) | Zero-mock policy; coverage gate; schema/contract gates; proof of detection |
 | [style_guide.md](style_guide.md) | Thin orchestrator, layer contract, show-not-tell |
 | [modularity.md](modularity.md) | Cross-layer software, CLI, script, report, figure, and documentation extension contract |
+| [api-retirement-20261027.md](api-retirement-20261027.md) | Reviewed migration inventory preserving scientific controls and historical readers/evidence |
 
 These pages are themselves contract surfaces: `tests/test_docs_contract.py`
 discovers every Markdown page under `docs/`, verifies that relative links
