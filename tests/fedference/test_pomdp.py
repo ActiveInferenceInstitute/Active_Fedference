@@ -57,6 +57,27 @@ def test_normalise_columns_rejects_zero_column():
         normalise_columns(np.array([[0.0, 1.0], [0.0, 1.0]]))
 
 
+@pytest.mark.parametrize("value", [np.nan, np.inf, -np.inf])
+def test_normalise_columns_rejects_nonfinite_entries(value: float) -> None:
+    matrix = np.array([[value, 1.0], [1.0, 1.0]])
+    with pytest.raises(ValueError, match="finite"):
+        normalise_columns(matrix)
+
+
+def test_normalise_columns_rejects_column_sum_overflow() -> None:
+    matrix = np.full((2, 1), 1e308)
+    with np.errstate(over="raise"), pytest.raises(ValueError, match="finite"):
+        normalise_columns(matrix)
+
+
+@pytest.mark.parametrize("value", [-1e-9, -1e-12, 0.0])
+def test_normalise_columns_preserves_tiny_negative_tolerance(value: float) -> None:
+    matrix = np.array([[value], [1.0]])
+    result = normalise_columns(matrix)
+    np.testing.assert_array_equal(result, [[0.0], [1.0]])
+    assert matrix[0, 0] == value
+
+
 # ---- build_sentinel_world shapes -----------------------------------------
 
 def test_world_has_nine_locations():

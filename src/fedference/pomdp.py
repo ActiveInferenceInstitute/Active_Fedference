@@ -74,16 +74,25 @@ def normalise_columns(matrix: ArrayF) -> ArrayF:
         A new ``float64`` array of the same shape with unit-sum columns.
 
     Raises:
-        ValueError: if ``matrix`` is not 2-D, is empty, has negative entries,
-            or contains an all-zero column.
+        ValueError: if ``matrix`` is not 2-D, is empty, has non-finite entries
+            or column sums, has negative entries below the ``-1e-9`` roundoff
+            tolerance, or contains a column with insufficient positive mass.
     """
     arr = np.asarray(matrix, dtype=np.float64)
     if arr.ndim != 2 or arr.size == 0:
         raise ValueError("matrix must be a non-empty 2-D array")
+    if not np.all(np.isfinite(arr)):
+        raise ValueError("matrix must contain only finite entries")
     if np.any(arr < -1e-9):
         raise ValueError("matrix has negative entries")
     arr = np.clip(arr, 0.0, None)
-    col_sums = arr.sum(axis=0)
+    try:
+        with np.errstate(over="raise"):
+            col_sums = arr.sum(axis=0)
+    except FloatingPointError as error:
+        raise ValueError("every column must have finite mass") from error
+    if not np.all(np.isfinite(col_sums)):
+        raise ValueError("every column must have finite mass")
     if np.any(col_sums <= _EPS):
         raise ValueError("every column must carry positive mass")
     return arr / col_sums
@@ -380,6 +389,22 @@ CONTEXT_PERSISTENCE: float = 0.9
 CONTEXT_SWITCH_PROB: float = 0.1
 
 
+def _is_probability_vector(prior: ArrayF, n_states: int, *, atol: float = 1e-9) -> bool:
+    """Check a supplied categorical pmf without clipping or renormalizing it."""
+    if (
+        prior.shape != (n_states,)
+        or not np.all(np.isfinite(prior))
+        or np.any(prior < 0.0)
+    ):
+        return False
+    try:
+        with np.errstate(over="raise"):
+            total = prior.sum()
+    except FloatingPointError:
+        return False
+    return bool(np.isfinite(total) and np.isclose(total, 1.0, atol=atol))
+
+
 def build_hierarchical_world(
     *,
     acuity: float = 0.9,
@@ -423,7 +448,7 @@ def build_hierarchical_world(
     """
     # ---- L2 prior and transition ----
     ctx_prior = np.asarray(context_prior, dtype=np.float64)
-    if ctx_prior.shape != (N_CONTEXTS,) or not np.isclose(ctx_prior.sum(), 1.0):
+    if not _is_probability_vector(ctx_prior, N_CONTEXTS, atol=1e-8):
         raise ValueError(f"context_prior must be a pmf of length {N_CONTEXTS}")
     ctx_trans = np.asarray(context_transition, dtype=np.float64)
     if ctx_trans.shape != (N_CONTEXTS, N_CONTEXTS):
@@ -431,9 +456,9 @@ def build_hierarchical_world(
             f"context_transition must be shape ({N_CONTEXTS}, {N_CONTEXTS})"
         )
     for row_i, row in enumerate(ctx_trans):
-        if not np.isclose(row.sum(), 1.0, atol=1e-9):
+        if not _is_probability_vector(row, N_CONTEXTS):
             raise ValueError(
-                f"context_transition row {row_i} must sum to 1 (got {row.sum()})"
+                f"context_transition row {row_i} must be a finite non-negative pmf that sums to 1"
             )
 
     # ---- Context-conditioned L1 priors ----
@@ -451,7 +476,7 @@ def build_hierarchical_world(
         if len(l1_priors_arr) != N_CONTEXTS:
             raise ValueError(f"l1_priors must supply {N_CONTEXTS} priors (one per context)")
         for ci, p in enumerate(l1_priors_arr):
-            if p.shape != (N_LOCATIONS,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, N_LOCATIONS):
                 raise ValueError(
                     f"l1_priors[{ci}] must be a pmf of length {N_LOCATIONS}"
                 )
@@ -632,7 +657,7 @@ def build_nlevel_world(
             prior = np.full(spec.n_states, 1.0 / spec.n_states, dtype=np.float64)
         else:
             prior = np.asarray(spec.default_prior, dtype=np.float64)
-        if prior.shape != (spec.n_states,) or not np.isclose(prior.sum(), 1.0, atol=1e-9):
+        if not _is_probability_vector(prior, spec.n_states):
             raise ValueError(f"layer {depth} default_prior is not a valid pmf")
         level_priors.append(prior)
 
@@ -655,7 +680,7 @@ def build_nlevel_world(
                 f"layer {depth} conditioned_priors must supply {parent.n_states} priors"
             )
         for si, p in enumerate(cp):
-            if p.shape != (child.n_states,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, child.n_states):
                 raise ValueError(
                     f"layer {depth} conditioned_prior[{si}] is not a valid pmf of "
                     f"length {child.n_states}"
@@ -811,7 +836,7 @@ def build_3level_world(
     """
     # ---- L3 prior ----
     l3_arr = np.asarray(l3_prior, dtype=np.float64)
-    if l3_arr.shape != (N_META_CONTEXTS,) or not np.isclose(l3_arr.sum(), 1.0, atol=1e-9):
+    if not _is_probability_vector(l3_arr, N_META_CONTEXTS):
         raise ValueError(f"l3_prior must be a pmf of length {N_META_CONTEXTS}")
 
     # ---- L2 priors conditioned on L3 ----
@@ -829,7 +854,7 @@ def build_3level_world(
         if len(l2_given_l3) != N_META_CONTEXTS:
             raise ValueError(f"l2_priors_given_l3 must supply {N_META_CONTEXTS} priors")
         for ci, p in enumerate(l2_given_l3):
-            if p.shape != (N_CONTEXTS,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, N_CONTEXTS):
                 raise ValueError(
                     f"l2_priors_given_l3[{ci}] must be a pmf of length {N_CONTEXTS}"
                 )
@@ -847,7 +872,7 @@ def build_3level_world(
         if len(l1_given_l2) != N_CONTEXTS:
             raise ValueError(f"l1_priors_given_l2 must supply {N_CONTEXTS} priors")
         for ci, p in enumerate(l1_given_l2):
-            if p.shape != (N_LOCATIONS,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, N_LOCATIONS):
                 raise ValueError(
                     f"l1_priors_given_l2[{ci}] must be a pmf of length {N_LOCATIONS}"
                 )
