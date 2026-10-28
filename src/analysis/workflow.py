@@ -31,48 +31,18 @@ import time
 from collections.abc import Mapping
 from dataclasses import replace
 from pathlib import Path
-from typing import TypedDict, cast
+from typing import cast
 
-import numpy as np
-
-from experiment_config import (
-    DEFAULT_SENSITIVITY_ACUITY,
-    DEFAULT_SENSITIVITY_COLONY_SIZES,
-    SENSITIVITY_NOISE_FLOOR,
-    ExperimentConfig,
-    load_experiment_config,
-    load_manuscript_config,
-)
-from fedference.aggregation import log_linear_pool
-from fedference.belief_updating import infer_states
+from experiment_config import ExperimentConfig, load_experiment_config, load_manuscript_config
 from fedference.experiments import (
     disjoint_fov_report,
     hierarchical_world_report,
-    moving_world_report,
     nlevel3_world_report,
-    run_belief_quality_sensitivity,
-    run_belief_sharing,
-    run_belief_sharing_sensitivity,
-    run_bnn_robustness_report,
     run_complexity_scaling,
-    run_conditional_world_generalization,
-    run_contamination_gallery,
-    run_efe_decomposition_report,
-    run_emergence,
     run_heuristic_characterization,
     run_hierarchical_bmr,
-    run_hierarchical_sensitivity,
-    run_influence_weights_report,
-    run_parameter_recovery,
-    run_review_grid,
-    run_robustness_onset,
-    run_robustness_sweep,
-    run_variational_aggregation_report,
     summarize_cross_study,
-    summarize_language_acquisition,
 )
-from fedference.pomdp import N_LOCATIONS, build_sentinel_world
-from fedference.statistics import bootstrap_ci
 from figures import (
     generate_aggregation_descent,
     generate_application_integrity_flow,
@@ -117,6 +87,63 @@ from .figure_exact_values import (
     build_figure_exact_values,
     render_figure_exact_values_markdown,
 )
+from .producers.belief import (
+    _belief_sharing_report as _belief_sharing_report,
+)
+from .producers.belief import (
+    _efe_terms as _efe_terms,
+)
+from .producers.belief import (
+    _emergence_report as _emergence_report,
+)
+from .producers.belief import (
+    _heatmap_inputs as _heatmap_inputs,
+)
+from .producers.belief import (
+    _language_report as _language_report,
+)
+from .producers.bnn import (
+    BnnTorchOptions as BnnTorchOptions,
+)
+from .producers.bnn import (
+    _bnn_report as _bnn_report,
+)
+from .producers.bnn import (
+    _bnn_torch_report as _bnn_torch_report,
+)
+from .producers.diagnostics import (
+    _belief_quality_report as _belief_quality_report,
+)
+from .producers.diagnostics import (
+    _sensitivity_report as _sensitivity_report,
+)
+from .producers.robustness import (
+    _contamination_gallery_report as _contamination_gallery_report,
+)
+from .producers.robustness import (
+    _influence_weights as _influence_weights,
+)
+from .producers.robustness import (
+    _review_grid_report as _review_grid_report,
+)
+from .producers.robustness import (
+    _robustness_onset_report as _robustness_onset_report,
+)
+from .producers.robustness import (
+    _robustness_report as _robustness_report,
+)
+from .producers.robustness import (
+    _variational_aggregation_report as _variational_aggregation_report,
+)
+from .producers.worlds import (
+    _conditional_world_report as _conditional_world_report,
+)
+from .producers.worlds import (
+    _moving_world_report as _moving_world_report,
+)
+from .producers.worlds import (
+    _parameter_recovery_report as _parameter_recovery_report,
+)
 from .visual_contracts import (
     application_integrity_flow_contract,
     evidence_replication_map_contract,
@@ -146,12 +173,28 @@ def _reports_dir(project_root: Path) -> Path:
     return out
 
 
+class DuplicateArtifactError(ValueError):
+    """A report producer attempted to reuse an accepted artifact key or path."""
+
+    def __init__(self, artifact_key: str, path: Path) -> None:
+        self.artifact_key = artifact_key
+        self.path = path
+        super().__init__(f"duplicate producer artifact {artifact_key!r}: {path}")
+
+
 def _write_json(
     payload: Mapping[str, object],
     path: Path,
     *,
     schema: str | None = None,
+    artifact: tuple[str, Mapping[str, Path]] | None = None,
 ) -> Path:
+    # Claim within this pipeline before validation or any accepted replacement.
+    # The caller records the returned path only after a successful write.
+    if artifact is not None:
+        key, produced = artifact
+        if key in produced or any(path.resolve() == prior.resolve() for prior in produced.values()):
+            raise DuplicateArtifactError(key, path)
     if schema is not None:
         report_schemas.validate_report(schema, payload)
     serialized = json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n"
@@ -334,9 +377,7 @@ def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) 
             raise ValueError(f"figure {label} references unknown exact-value fallback {fallback!r}")
         figures.append({**figure, "generated_by": generator, **metadata})
     used_identifiers = {
-        str(figure["exact_value_fallback"])
-        for figure in figures
-        if figure.get("exact_value_fallback")
+        str(figure["exact_value_fallback"]) for figure in figures if figure.get("exact_value_fallback")
     }
     return _write_json(
         {
@@ -351,210 +392,8 @@ def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) 
         },
         project_root / "output" / "figures" / "figure_registry.json",
         schema="figure_registry",
+        artifact=("figure_registry", artifact_paths),
     )
-
-
-def _belief_sharing_report(config: ExperimentConfig) -> dict:
-    """Aggregate per-seed belief-sharing free energies (communicating vs not)."""
-    communicating: list[float] = []
-    incommunicado: list[float] = []
-    for seed in config.seeds:
-        comm = run_belief_sharing(seed, communicate=True, n_agents=config.n_agents)
-        incom = run_belief_sharing(seed, communicate=False, n_agents=config.n_agents)
-        communicating.append(float(comm["mean_free_energy"]))
-        incommunicado.append(float(incom["mean_free_energy"]))
-    comm_mean = float(np.mean(communicating))
-    incom_mean = float(np.mean(incommunicado))
-    paired = [float(incom - comm) for incom, comm in zip(incommunicado, communicating)]
-    paired_mean = float(np.mean(paired))
-    paired_ci = bootstrap_ci(
-        np.asarray(paired, dtype=np.float64),
-        alpha=0.05,
-        n_boot=10_000,
-        rng=np.random.default_rng(config.seeds[0] + 5_000_003),
-    )
-    return {
-        "schema_version": "1.0",
-        "communicating_free_energy": communicating,
-        "incommunicado_free_energy": incommunicado,
-        "communicating_mean": comm_mean,
-        "incommunicado_mean": incom_mean,
-        "paired_free_energy_difference": paired,
-        "paired_difference_mean": paired_mean,
-        "paired_difference_ci": [float(paired_ci[0]), float(paired_ci[1])],
-        "difference_definition": "incommunicado_minus_communicating",
-        "analysis_unit": "configured seed with within-seed paired conditions",
-        "replication_unit": "configured seed",
-        "interval_method": "percentile_bootstrap_of_paired_seed_differences",
-        "interval_percent": 95,
-        "free_energy_gap": paired_mean,
-        "communication_helps": bool(comm_mean < incom_mean),
-        "n_agents": config.n_agents,
-        "n_seeds": config.n_seeds,
-    }
-
-
-def _sensitivity_report(*, seed: int, n_trials: int) -> dict[str, object]:
-    """Return the two configured sensitivity grids consumed by Figure 8."""
-    acuity_values = tuple(float(value) for value in DEFAULT_SENSITIVITY_ACUITY)
-    n_agents_values = tuple(int(value) for value in DEFAULT_SENSITIVITY_COLONY_SIZES)
-    belief_sharing = run_belief_sharing_sensitivity(
-        seed,
-        acuity_values=acuity_values,
-        n_agents_values=n_agents_values,
-        n_trials=n_trials,
-    )
-    hierarchical = run_hierarchical_sensitivity(
-        seed,
-        acuity_values=acuity_values,
-        n_agents_values=n_agents_values,
-        n_trials=n_trials,
-    )
-    return {
-        "schema_version": "1.0",
-        "seed": seed,
-        "n_trials": n_trials,
-        "acuity_values": list(acuity_values),
-        "n_agents_values": list(n_agents_values),
-        "noise_floor": float(SENSITIVITY_NOISE_FLOOR),
-        "belief_sharing": belief_sharing,
-        "hierarchical": hierarchical,
-        "estimands": {
-            "belief_sharing": "communicating minus isolated mean accuracy",
-            "hierarchical": "hierarchical minus flat location accuracy",
-        },
-        "unit": "fraction",
-        "analysis_unit": "configured acuity-by-colony-size cell",
-        "replication_unit": "synthetic trial nested within configured cell",
-        "uncertainty": "none displayed; each cell is a mean over nested trials",
-        "claim_boundary": (
-            "hatching denotes only the configured display band; it is not a confidence interval, "
-            "significance test, unreliability flag, or proof of zero effect"
-        ),
-    }
-
-
-def _language_report(config: ExperimentConfig) -> dict:
-    """Seed-level language-acquisition trajectory summary for publication."""
-    return summarize_language_acquisition(config.seeds)
-
-
-def _emergence_report(config: ExperimentConfig) -> dict:
-    """Bayesian-model-reduction emergence contrast at the first configured seed."""
-    seed = config.seeds[0]
-    result = run_emergence(seed)
-    return dict(result)
-
-
-def _robustness_report(config: ExperimentConfig) -> dict:
-    """Robustness sweep at the first seed, using the configured rates/divergences.
-
-    ``run_robustness_sweep`` does not echo back ``n_agents`` / ``n_contaminated``,
-    so we record the colony shape we asked for alongside its output (the
-    manuscript prose reports both).
-    """
-    seed = config.seeds[0]
-    n_contaminated = max(1, config.n_agents // 3)
-    report = run_robustness_sweep(
-        seed,
-        rates=config.contamination_rates,
-        divergences=config.divergences,
-        n_agents=config.n_agents,
-        n_contaminated=n_contaminated,
-        n_trials=config.n_trials,
-        fdr_alpha=config.fdr_alpha,
-        power_alpha=config.power_alpha,
-        power_alternative=config.power_alternative,
-        target_power=config.target_power,
-    )
-    report["n_agents"] = config.n_agents
-    report["n_contaminated"] = n_contaminated
-    return report
-
-
-def _efe_terms(config: ExperimentConfig) -> dict:
-    """Closed-form EFE decomposition of one sentinel policy."""
-    return run_efe_decomposition_report(config.seeds[0])
-
-
-def _influence_weights(config: ExperimentConfig) -> dict:
-    """Server-side robust pooling influence weights on a contaminated colony."""
-    return run_influence_weights_report(config.seeds[0], n_agents=config.n_agents)
-
-
-def _contamination_gallery_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Descriptive pooled-method gallery across the declared mechanisms.
-
-    Runs :func:`fedference.experiments.run_contamination_gallery` over
-    confident-wrong, byzantine, drift, uniform, and label-noise mechanisms. The
-    gallery chooses a pooled display method from these same seed-level results,
-    so it is not the selection-free inferential surface and cannot establish a
-    mechanism-wide or universal robustness conclusion. The review grid retains
-    every configured method and owns the all-method signed comparisons.
-    """
-    n_contaminated = max(1, config.n_agents // 3)
-    # The frozen config owns every stochastic budget. Smoke uses the same real
-    # code path with explicitly smaller units for temporary-project tests.
-    return run_contamination_gallery(
-        config.seeds[0],
-        n_agents=config.n_agents,
-        n_contaminated=n_contaminated,
-        divergences=config.divergences,
-        n_trials=min(config.gallery_n_trials, 4) if smoke else config.gallery_n_trials,
-        n_seeds=min(config.gallery_n_seeds, 2) if smoke else config.gallery_n_seeds,
-    )
-
-
-def _robustness_onset_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Per-mechanism robustness-onset curves for the pooled display contrast.
-
-    Maps the rate dependence the single-strength gallery cannot: for each
-    directional mechanism, the naive and pooled-display accuracy curves over a rate
-    grid plus the onset rate. Its seed and nested-trial budgets are frozen in
-    :class:`ExperimentConfig`, so the publication profile cannot silently use
-    the former hard-coded small grid.
-    """
-    n_contaminated = max(1, config.n_agents // 3)
-    return run_robustness_onset(
-        config.seeds[0],
-        n_agents=config.n_agents,
-        n_contaminated=n_contaminated,
-        divergences=config.divergences,
-        n_trials=min(config.onset_n_trials, 4) if smoke else config.onset_n_trials,
-        n_seeds=min(config.onset_n_seeds, 2) if smoke else config.onset_n_seeds,
-    )
-
-
-def _variational_aggregation_report(config: ExperimentConfig) -> dict:
-    """Diagnostics for the objective-backed variational aggregator."""
-    return run_variational_aggregation_report(config.seeds[0], n_agents=config.n_agents)
-
-
-def _bnn_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Exploratory point-estimate logistic accuracy under label contamination."""
-    if smoke:
-        return run_bnn_robustness_report(
-            config.seeds[0],
-            n_seeds=min(config.bnn_n_seeds, 4),
-            n_per=min(config.bnn_n_per, 20),
-        )
-    return run_bnn_robustness_report(
-        config.seeds[0],
-        n_seeds=config.bnn_n_seeds,
-        n_per=config.bnn_n_per,
-    )
-
-
-class BnnTorchOptions(TypedDict, total=False):
-    """Validated optional keyword arguments for the Torch complement."""
-
-    n_clients: int
-    n_per: int
-    hidden_dim: int
-    n_steps: int
-    robustness: float
-    beta: float
-    contamination_levels: tuple[float, ...]
 
 
 _HERMETIC_GIT = ("git", "-c", "core.fsmonitor=false", "-c", "core.untrackedcache=false")
@@ -616,6 +455,16 @@ def _bnn_torch_options(project_root: Path | None) -> BnnTorchOptions:
     return cast(BnnTorchOptions, options)
 
 
+def _configured_bnn_torch_report(config: ExperimentConfig, *, project_root: Path | None) -> dict:
+    """Admit the optional backend before reading its source-owned configuration."""
+    try:
+        from fedference.bnn_baseline_torch import run_bnn_torch_experiment
+    except ImportError as exc:  # PyTorch optional-extra not installed
+        return {"status": f"skipped: PyTorch unavailable ({exc})"}
+    options = _bnn_torch_options(project_root)
+    return _bnn_torch_report(config, options=options, run_experiment=run_bnn_torch_experiment)
+
+
 def resolve_analysis_profile(project_root: Path | None, *, override: str | None = None) -> str:
     """Return the effective workflow budget profile for a project root.
 
@@ -637,103 +486,6 @@ def resolve_analysis_profile(project_root: Path | None, *, override: str | None 
     if profile not in {"publication", "smoke"}:
         raise ValueError("analysis_profile/analysis profile must be 'publication' or 'smoke'")
     return profile
-
-
-def _bnn_torch_report(config: ExperimentConfig, *, project_root: Path | None = None) -> dict:
-    """PyTorch point-mass MLP FedGVI complement — executed when torch is present.
-
-    Runs :func:`fedference.bnn_baseline_torch.run_bnn_torch_experiment`, whose
-    every number is an executed result. When PyTorch is not installed the report
-    records a ``skipped`` status so the manuscript tokens degrade to a clearly
-    labeled ``N/A`` rather than a fabricated value.
-    """
-    try:
-        from fedference.bnn_baseline_torch import run_bnn_torch_experiment
-    except ImportError as exc:  # PyTorch optional-extra not installed
-        return {"status": f"skipped: PyTorch unavailable ({exc})"}
-    options = _bnn_torch_options(project_root)
-    return dict(run_bnn_torch_experiment(seed=config.seeds[0], **options))
-
-
-def _heatmap_inputs(config: ExperimentConfig) -> tuple[np.ndarray, np.ndarray]:
-    """Build a seeded colony of posteriors plus their consensus for the heatmap."""
-    rng = np.random.default_rng(config.seeds[0])
-    world = build_sentinel_world(rng, acuity=0.6)
-    A = np.asarray(world["A"][0], dtype=np.float64)  # type: ignore[index]
-    n_s = int(N_LOCATIONS)
-    true_state = int(rng.integers(0, n_s))
-    log_prior = np.log(np.full(n_s, 1.0 / n_s))
-    local_posteriors = np.empty((config.n_agents, n_s), dtype=np.float64)
-    for n in range(config.n_agents):
-        column = A[:, true_state]
-        o = int(rng.choice(n_s, p=column / column.sum()))
-        local_posteriors[n] = infer_states(A, o, log_prior)
-    consensus = log_linear_pool(local_posteriors=local_posteriors)
-    return local_posteriors, consensus
-
-
-def _moving_world_report(config: ExperimentConfig) -> dict:
-    """Moving-world experiment: isolated vs communicating vs EFE-guided (V4)."""
-    seed = config.seeds[0]
-    return moving_world_report(
-        seed,
-        n_trials=config.n_trials,
-        n_multiseed=config.replicate_seeds,
-    )
-
-
-def _parameter_recovery_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Measure finite-grid acuity recovery for the configured estimator (Study 9)."""
-    seed = config.seeds[0]
-    return dict(
-        run_parameter_recovery(
-            seed,
-            n_trials=config.n_trials,
-            n_observations=24 if smoke else 200,
-            fit_resolution=20 if smoke else 80,
-        )
-    )
-
-
-def _conditional_world_report(config: ExperimentConfig) -> dict:
-    """Conditional world/attack geometry grid with seed-level contrasts."""
-    return run_conditional_world_generalization(
-        config.seeds[0],
-        n_seeds=config.conditional_world_n_seeds,
-        n_trials=config.conditional_world_n_trials,
-        n_agents=config.n_agents,
-        robustness=1.5,
-    )
-
-
-def _review_grid_report(config: ExperimentConfig, *, smoke: bool = False) -> dict:
-    """Run the bounded source-bound review grid with explicit seed nesting."""
-    return run_review_grid(
-        config.seeds[0],
-        n_seeds=min(config.review_grid_n_seeds, 4) if smoke else config.review_grid_n_seeds,
-        n_trials=min(config.review_grid_n_trials, 4) if smoke else config.review_grid_n_trials,
-        n_agents=config.n_agents,
-        robustness=1.5,
-        rates=config.review_grid_rates,
-        divergences=config.divergences,
-        fdr_alpha=config.fdr_alpha,
-        power_alpha=config.power_alpha,
-        planning_alternative=config.power_alternative,
-        # Smoke verifies the same producer but intentionally does not claim to
-        # meet the publication precision stopping rule.
-        target_max_mcse=None if smoke else config.review_grid_target_max_mcse,
-    )
-
-
-def _belief_quality_report(config: ExperimentConfig) -> dict:
-    """Proper-score and reliability diagnostics on the conditional subset."""
-    return run_belief_quality_sensitivity(
-        config.seeds[0],
-        n_seeds=config.conditional_world_n_seeds,
-        n_trials=config.conditional_world_n_trials,
-        n_agents=config.n_agents,
-        robustness=1.5,
-    )
 
 
 def run_analysis_pipeline(
@@ -815,23 +567,29 @@ def run_analysis_pipeline(
         application_flow_report,
         reports / "application_integrity_flow.json",
         schema="application_integrity_flow",
+        artifact=("application_integrity_flow_report", paths),
     )
     evidence_map_report = evidence_replication_map_contract()
     paths["evidence_replication_map_report"] = _write_json(
         evidence_map_report,
         reports / "evidence_replication_map.json",
         schema="evidence_replication_map",
+        artifact=("evidence_replication_map_report", paths),
     )
     source_render_report = source_render_provenance_contract()
     paths["source_render_provenance_report"] = _write_json(
         source_render_report,
         reports / "source_render_provenance.json",
         schema="source_render_provenance",
+        artifact=("source_render_provenance_report", paths),
     )
 
     bs_report = _belief_sharing_report(cfg)
     paths["belief_sharing_report"] = _write_json(
-        bs_report, reports / "belief_sharing.json", schema="belief_sharing"
+        bs_report,
+        reports / "belief_sharing.json",
+        schema="belief_sharing",
+        artifact=("belief_sharing_report", paths),
     )
 
     lang_report = _language_report(cfg)
@@ -839,19 +597,28 @@ def run_analysis_pipeline(
         lang_report,
         reports / "language_acquisition.json",
         schema="language_acquisition",
+        artifact=("language_report", paths),
     )
 
     emergence_report = _emergence_report(cfg)
-    paths["emergence_report"] = _write_json(emergence_report, reports / "emergence.json", schema="emergence")
+    paths["emergence_report"] = _write_json(
+        emergence_report, reports / "emergence.json", schema="emergence", artifact=("emergence_report", paths)
+    )
 
     rob_report = _robustness_report(cfg)
     paths["robustness_report"] = _write_json(
-        rob_report, reports / "robustness_sweep.json", schema="robustness_sweep"
+        rob_report,
+        reports / "robustness_sweep.json",
+        schema="robustness_sweep",
+        artifact=("robustness_report", paths),
     )
 
     hier_bmr_report = run_hierarchical_bmr()
     paths["hierarchical_bmr_report"] = _write_json(
-        hier_bmr_report, reports / "hierarchical_bmr.json", schema="hierarchical_bmr"
+        hier_bmr_report,
+        reports / "hierarchical_bmr.json",
+        schema="hierarchical_bmr",
+        artifact=("hierarchical_bmr_report", paths),
     )
 
     heuristic_report = run_heuristic_characterization(cfg.seeds[0])
@@ -859,11 +626,15 @@ def run_analysis_pipeline(
         heuristic_report,
         reports / "heuristic_characterization.json",
         schema="heuristic_characterization",
+        artifact=("heuristic_characterization_report", paths),
     )
 
     efe_report = _efe_terms(cfg)
     paths["efe_report"] = _write_json(
-        efe_report, reports / "efe_decomposition.json", schema="efe_decomposition"
+        efe_report,
+        reports / "efe_decomposition.json",
+        schema="efe_decomposition",
+        artifact=("efe_report", paths),
     )
 
     weights_report = _influence_weights(cfg)
@@ -871,19 +642,25 @@ def run_analysis_pipeline(
         weights_report,
         reports / "robust_influence_weights.json",
         schema="robust_influence_weights",
+        artifact=("influence_weights_report", paths),
     )
 
     bnn_report = _bnn_report(cfg, smoke=smoke)
-    paths["bnn_report"] = _write_json(bnn_report, reports / "bnn_robustness.json", schema="bnn_robustness")
+    paths["bnn_report"] = _write_json(
+        bnn_report, reports / "bnn_robustness.json", schema="bnn_robustness", artifact=("bnn_report", paths)
+    )
 
-    bnn_torch_report = _bnn_torch_report(cfg, project_root=root)
-    paths["bnn_torch_report"] = _write_json(bnn_torch_report, reports / "bnn_torch.json", schema="bnn_torch")
+    bnn_torch_report = _configured_bnn_torch_report(cfg, project_root=root)
+    paths["bnn_torch_report"] = _write_json(
+        bnn_torch_report, reports / "bnn_torch.json", schema="bnn_torch", artifact=("bnn_torch_report", paths)
+    )
 
     var_report = _variational_aggregation_report(cfg)
     paths["variational_aggregation_report"] = _write_json(
         var_report,
         reports / "variational_aggregation.json",
         schema="variational_aggregation",
+        artifact=("variational_aggregation_report", paths),
     )
 
     gallery_report = _contamination_gallery_report(cfg, smoke=smoke)
@@ -891,11 +668,15 @@ def run_analysis_pipeline(
         gallery_report,
         reports / "contamination_gallery.json",
         schema="contamination_gallery",
+        artifact=("contamination_gallery_report", paths),
     )
 
     onset_report = _robustness_onset_report(cfg, smoke=smoke)
     paths["robustness_onset_report"] = _write_json(
-        onset_report, reports / "robustness_onset.json", schema="robustness_onset"
+        onset_report,
+        reports / "robustness_onset.json",
+        schema="robustness_onset",
+        artifact=("robustness_onset_report", paths),
     )
 
     conditional_report = _conditional_world_report(cfg)
@@ -903,6 +684,7 @@ def run_analysis_pipeline(
         conditional_report,
         reports / "conditional_world.json",
         schema="conditional_world",
+        artifact=("conditional_world_report", paths),
     )
 
     review_grid_report = _review_grid_report(cfg, smoke=smoke)
@@ -910,6 +692,7 @@ def run_analysis_pipeline(
         review_grid_report,
         reports / "robustness_review_grid.json",
         schema="robustness_review_grid",
+        artifact=("review_grid_report", paths),
     )
 
     quality_report = _belief_quality_report(cfg)
@@ -917,6 +700,7 @@ def run_analysis_pipeline(
         quality_report,
         reports / "belief_quality.json",
         schema="belief_quality",
+        artifact=("belief_quality_report", paths),
     )
 
     _t0 = time.time()
@@ -927,6 +711,7 @@ def run_analysis_pipeline(
         complexity_report,
         reports / "complexity_scaling.json",
         schema="complexity_scaling",
+        artifact=("complexity_scaling_report", paths),
     )
 
     _t0 = time.time()
@@ -936,13 +721,17 @@ def run_analysis_pipeline(
         sensitivity_report,
         reports / "sensitivity.json",
         schema="sensitivity",
+        artifact=("sensitivity_report", paths),
     )
 
     _t0 = time.time()
     moving_report = _moving_world_report(cfg)
     _timings["moving_world"] = time.time() - _t0
     paths["moving_world_report"] = _write_json(
-        moving_report, reports / "moving_world.json", schema="moving_world"
+        moving_report,
+        reports / "moving_world.json",
+        schema="moving_world",
+        artifact=("moving_world_report", paths),
     )
 
     _t0 = time.time()
@@ -952,6 +741,7 @@ def run_analysis_pipeline(
         param_rec_report,
         reports / "parameter_recovery.json",
         schema="parameter_recovery",
+        artifact=("parameter_recovery_report", paths),
     )
 
     _t0 = time.time()
@@ -967,16 +757,28 @@ def run_analysis_pipeline(
     disjoint_report = disjoint_fov_report(0, n_multiseed=cfg.replicate_seeds)
     _timings["hierarchical"] = time.time() - _t0
     paths["hierarchical_world_report"] = _write_json(
-        hier_report, reports / "hierarchical_world.json", schema="hierarchical_world"
+        hier_report,
+        reports / "hierarchical_world.json",
+        schema="hierarchical_world",
+        artifact=("hierarchical_world_report", paths),
     )
     paths["nlevel3_world_report"] = _write_json(
-        nl3_report, reports / "nlevel3_world.json", schema="nlevel3_world"
+        nl3_report,
+        reports / "nlevel3_world.json",
+        schema="nlevel3_world",
+        artifact=("nlevel3_world_report", paths),
     )
     paths["cross_study_report"] = _write_json(
-        cross_report, reports / "cross_study_summary.json", schema="cross_study_summary"
+        cross_report,
+        reports / "cross_study_summary.json",
+        schema="cross_study_summary",
+        artifact=("cross_study_report", paths),
     )
     paths["disjoint_fov_report"] = _write_json(
-        disjoint_report, reports / "disjoint_fov_world.json", schema="disjoint_fov_world"
+        disjoint_report,
+        reports / "disjoint_fov_world.json",
+        schema="disjoint_fov_world",
+        artifact=("disjoint_fov_report", paths),
     )
 
     exact_values = build_figure_exact_values(
@@ -994,6 +796,7 @@ def run_analysis_pipeline(
         exact_values,
         root / "output" / "figures" / "figure_exact_values.json",
         schema="figure_exact_values",
+        artifact=("figure_exact_values", paths),
     )
     paths["figure_exact_values_markdown"] = _write_text(
         render_figure_exact_values_markdown(exact_values),

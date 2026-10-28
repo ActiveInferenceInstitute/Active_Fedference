@@ -11,6 +11,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.figure_exact_values` | `build_figure_exact_values` | function | Build every declared exact-value fallback from the reports used to plot it. |
 | `analysis.figure_exact_values` | `conditional_display_summaries` | function | Return the review grid's grouped means and half min/max spans. |
 | `analysis.figure_exact_values` | `render_figure_exact_values_markdown` | function | Render deterministic, human-readable Markdown tables from exact values. |
+| `analysis.producers.bnn` | `BnnTorchOptions` | class | Validated optional keyword arguments for the Torch complement. |
 | `analysis.report_schemas` | `check_figure_contract` | function | Validate the declared report fields consumed by one figure generator. |
 | `analysis.report_schemas` | `validate_report` | function | Validate one report or figure-registry payload before it is written. |
 | `analysis.schemas.aggregation_diagnostics` | `HeuristicCharacterizationReport` | class | Top-level payload written to ``heuristic_characterization.json``. |
@@ -58,7 +59,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.visual_contracts` | `application_integrity_flow_contract` | function | Return a defensive copy of the application integrity flow contract. |
 | `analysis.visual_contracts` | `evidence_replication_map_contract` | function | Return a defensive copy of the evidence and replication map contract. |
 | `analysis.visual_contracts` | `source_render_provenance_contract` | function | Return a defensive copy of the source-to-render provenance contract. |
-| `analysis.workflow` | `BnnTorchOptions` | class | Validated optional keyword arguments for the Torch complement. |
+| `analysis.workflow` | `DuplicateArtifactError` | class | A report producer attempted to reuse an accepted artifact key or path. |
 | `analysis.workflow` | `main` | function | Run the analysis pipeline and print every artifact path to stdout. |
 | `analysis.workflow` | `resolve_analysis_profile` | function | Return the effective workflow budget profile for a project root. |
 | `analysis.workflow` | `run_analysis_pipeline` | function | Run every fedference experiment, write reports + figures, return paths. |

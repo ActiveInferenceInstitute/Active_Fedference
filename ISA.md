@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 282/284
+progress: 283/285
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1369,3 +1369,17 @@ them.
   credential-echo controls preserve explicit publication admission; the
   documented service GET/POST race, release and live publication remain
   separate. No external record or real credential was used in this work.
+
+
+- [x] ISC-290: Analysis report families consume explicit study inputs through
+  canonical domain operations while workflow owns source-configuration I/O,
+  optional Torch admission and validated report persistence. The pure Torch
+  producer receives typed options and the actual domain operation; original
+  defaults, seeds, report bytes and missing-extra behavior remain preserved.
+  Single-invocation key/resolved-path ownership rejects duplicate artifacts
+  before writing. Independent recheck passes all 603 scoped cases, retains
+  134 original test functions and 14 helpers, and measures 92.18 percent
+  combined coverage with 81.00 percent branch-only coverage. Five meaningful
+  source mutations fail before exact restoration. The first REVISE remains
+  retained. Cross-process Task19 custody, broader composition, visual,
+  scientific, release and publication acceptance remain separate.
