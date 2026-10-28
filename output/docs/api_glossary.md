@@ -228,55 +228,55 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.generalized_bayes` | `generalized_posterior` | function | Closed-form generalized posterior over hidden states. |
 | `fedference.generalized_bayes` | `softmax` | function | Numerically stable softmax returning a categorical pmf. |
 | `fedference.generalized_bayes` | `update_factor` | function | Return the refreshed local factor ``t_i`` after a client update. |
-| `fedference.gnn.admission` | `GNNAdmissionError` | class | Stable machine-readable refusal and exact IR location. |
 | `fedference.gnn.admission` | `admit` | function | Admit canonical IR with explicit family semantics; never execute a model. |
 | `fedference.gnn.admission` | `content_digest` | function | SHA-256 binds full admitted content and declared provenance, not its truth. |
 | `fedference.gnn.admission` | `dumps` | function | Serialize the immutable IR deterministically; re-admit to reject forged values. |
 | `fedference.gnn.admission` | `loads` | function | Lossless duplicate-aware JSON admission, not raw GNN duplicate detection. |
-| `fedference.gnn.backend` | `BackendConfig` | class |  |
-| `fedference.gnn.backend` | `BackendResult` | class |  |
+| `fedference.gnn.admission_values` | `GNNAdmissionError` | class | Stable machine-readable refusal and exact IR location. |
 | `fedference.gnn.backend` | `run_pymdp` | function | Execute admitted categorical data with a locked, isolated upstream process. |
-| `fedference.gnn.backend` | `verify_backend_output` | function | Read actual runtime files and reject refusal, truncation or replay mismatch. |
+| `fedference.gnn.backend_protocol` | `BackendConfig` | class |  |
+| `fedference.gnn.backend_protocol` | `BackendResult` | class |  |
 | `fedference.gnn.backend_registry` | `BackendProfile` | class | One admitted runtime identity, separate from its serialization. |
 | `fedference.gnn.backend_registry` | `BackendRegistry` | class | Immutable admitted views and an isolated JSON projection. |
 | `fedference.gnn.backend_registry` | `load_backend_registry` | function | Parse registry semantics once and retain their admitted field types. |
 | `fedference.gnn.backend_registry` | `read_backend_document` | function | Read one strict backend JSON boundary with its existing finding code. |
+| `fedference.gnn.backend_replay` | `verify_backend_output` | function | Read actual runtime files and reject refusal, truncation or replay mismatch. |
+| `fedference.gnn.gaussian` | `GaussianPosterior` | class | Multivariate conditioning result in the model coordinate units. |
+| `fedference.gnn.gaussian` | `gaussian_condition` | function | Condition a full Gaussian on a same-coordinate noisy observation. |
+| `fedference.gnn.hierarchy` | `HierarchyParameters` | class | Explicit source-preserving hierarchy overrides; no PMF normalization. |
+| `fedference.gnn.hierarchy` | `HierarchyWorld` | class |  |
+| `fedference.gnn.hierarchy` | `hierarchy_depth` | function | Select a source-defined suffix; its new root keeps its declared default prior. |
+| `fedference.gnn.hierarchy` | `hierarchy_leaf` | function | Expose the source leaf channel through the shared categorical adapter. |
+| `fedference.gnn.hierarchy` | `hierarchy_world` | function | Map source levels/conditional edges to the existing native inference contract. |
+| `fedference.gnn.hierarchy` | `infer_hierarchy` | function | Execute native message passing with the admitted source likelihood and gates. |
+| `fedference.gnn.hierarchy` | `parameterize_hierarchy` | function | Bind all declared overrides into the admitted IR and its digest. |
 | `fedference.gnn.loader` | `load_gnn` | function | Run the pinned real extractor against an immutable caller-owned snapshot. |
 | `fedference.gnn.loader` | `load_sentinel` | function | Load the compiled, source-bound sentinel offline; never invoke upstream. |
 | `fedference.gnn.loader` | `verify_sentinel_cache` | function | Build-time real-parser conformance gate; compare without overwriting. |
+| `fedference.gnn.moving` | `MovingParameters` | class | Explicit topology parameters; numeric sensor profiles remain source-owned. |
+| `fedference.gnn.moving` | `MovingWorld` | class |  |
+| `fedference.gnn.moving` | `moving_world` | function | Consume distinct threat and position tensors without flattening them. |
+| `fedference.gnn.moving` | `parameterize_moving` | function | Resize only the declared line template, retaining source sensor/prior values. |
 | `fedference.gnn.native` | `NativeWorld` | class |  |
 | `fedference.gnn.native` | `SentinelParameters` | class | Explicit overrides; None retains the numeric source value. |
 | `fedference.gnn.native` | `native_posterior` | function | Execute the existing native inference operation on GNN-derived values. |
 | `fedference.gnn.native` | `native_world` | function | Create writable native arrays from admitted immutable model data. |
 | `fedference.gnn.native` | `parameterize_sentinel` | function | Adjust the declared sensor and sole preferred outcome, retaining topology. |
-| `fedference.gnn.scientific` | `GaussianPosterior` | class | Multivariate conditioning result in the model coordinate units. |
-| `fedference.gnn.scientific` | `ScientificProgram` | class | Admitted family plus immutable source-bound native settings. |
-| `fedference.gnn.scientific` | `SiteRun` | class | Real cavity/replacement states and bounded protocol parity. |
-| `fedference.gnn.scientific` | `checkpoint` | function | Serialize an explicit native checkpoint bound to the full GNN source. |
-| `fedference.gnn.scientific` | `gaussian_condition` | function | Condition a full Gaussian on a same-coordinate noisy observation. |
-| `fedference.gnn.scientific` | `load_scientific` | function | Admit the payload preserved by the actual pinned Markdown parser. |
-| `fedference.gnn.scientific` | `restore_checkpoint` | function | Reject stale model binding before returning a native server state. |
-| `fedference.gnn.scientific` | `run_sites` | function | Run signed diagonal prior × sites, proper cavity, and factor replacement. |
-| `fedference.gnn.scientific` | `run_tracking` | function | Run the real native tracking consumer; seed is the explicit caller input. |
-| `fedference.gnn.scientific` | `tracking_config` | function | Bind target/noise/cue inputs; refuse unsupported dynamical semantics. |
+| `fedference.gnn.scientific_admission` | `ScientificProgram` | class | Admitted family plus immutable source-bound native settings. |
+| `fedference.gnn.scientific_admission` | `load_scientific` | function | Admit the payload preserved by the actual pinned Markdown parser. |
+| `fedference.gnn.site_checkpoint` | `checkpoint` | function | Serialize an explicit native checkpoint bound to the full GNN source. |
+| `fedference.gnn.site_checkpoint` | `restore_checkpoint` | function | Reject stale model binding before returning a native server state. |
+| `fedference.gnn.sites` | `SiteRun` | class | Real cavity/replacement states and bounded protocol parity. |
+| `fedference.gnn.sites` | `run_sites` | function | Run signed diagonal prior × sites, proper cavity, and factor replacement. |
 | `fedference.gnn.source` | `ParsedExtensions` | class | Immutable preserved payload and parser/source binding, not admission. |
 | `fedference.gnn.source` | `parse_extensions` | function | Execute the pinned normal parser import from a verified-only snapshot. |
-| `fedference.gnn.structured` | `HierarchyParameters` | class | Explicit source-preserving hierarchy overrides; no PMF normalization. |
-| `fedference.gnn.structured` | `HierarchyWorld` | class |  |
-| `fedference.gnn.structured` | `MovingParameters` | class | Explicit topology parameters; numeric sensor profiles remain source-owned. |
-| `fedference.gnn.structured` | `MovingWorld` | class |  |
-| `fedference.gnn.structured` | `StructuredProgram` | class | Immutable admitted model and source-bound native mapping. |
-| `fedference.gnn.structured` | `cached_structured` | function | Load a generated IR only when bound source/parser/full payload hashes agree. |
-| `fedference.gnn.structured` | `hierarchy_depth` | function | Select a source-defined suffix; its new root keeps its declared default prior. |
-| `fedference.gnn.structured` | `hierarchy_leaf` | function | Expose the source leaf channel through the shared categorical adapter. |
-| `fedference.gnn.structured` | `hierarchy_world` | function | Map source levels/conditional edges to the existing native inference contract. |
-| `fedference.gnn.structured` | `infer_hierarchy` | function | Execute native message passing with the admitted source likelihood and gates. |
-| `fedference.gnn.structured` | `load_structured` | function | Run the real pinned parser before strict project extension admission. |
-| `fedference.gnn.structured` | `moving_world` | function | Consume distinct threat and position tensors without flattening them. |
-| `fedference.gnn.structured` | `parameterize_hierarchy` | function | Bind all declared overrides into the admitted IR and its digest. |
-| `fedference.gnn.structured` | `parameterize_moving` | function | Resize only the declared line template, retaining source sensor/prior values. |
-| `fedference.gnn.structured` | `require_structured_backend` | function | Refuse unsupported compositions before any backend output is created. |
-| `fedference.gnn.structured` | `structured_tasks` | function | Load the two explicit grid task definitions; no ambient task defaults. |
+| `fedference.gnn.structured_admission` | `StructuredProgram` | class | Immutable admitted model and source-bound native mapping. |
+| `fedference.gnn.structured_admission` | `load_structured` | function | Run the real pinned parser before strict project extension admission. |
+| `fedference.gnn.structured_admission` | `require_structured_backend` | function | Refuse unsupported compositions before any backend output is created. |
+| `fedference.gnn.structured_admission` | `structured_tasks` | function | Load the two explicit grid task definitions; no ambient task defaults. |
+| `fedference.gnn.structured_cache` | `cached_structured` | function | Load a generated IR only when bound source/parser/full payload hashes agree. |
+| `fedference.gnn.tracking` | `run_tracking` | function | Run the real native tracking consumer; seed is the explicit caller input. |
+| `fedference.gnn.tracking` | `tracking_config` | function | Bind target/noise/cue inputs; refuse unsupported dynamical semantics. |
 | `fedference.gnn.types` | `Categorical` | class |  |
 | `fedference.gnn.types` | `CategoricalModel` | class |  |
 | `fedference.gnn.types` | `HierarchicalModel` | class |  |

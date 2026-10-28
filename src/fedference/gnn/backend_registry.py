@@ -11,8 +11,8 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Final, Literal, TypeAlias
 
+from ._documents import UPSTREAM_REVISION, _json, _mapping
 from .admission import GNNAdmissionError
-from .loader import UPSTREAM_REVISION, _json, _mapping
 from .types import JSONValue
 
 RTOL: Final = 1e-5

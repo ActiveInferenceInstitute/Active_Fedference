@@ -17,8 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
+from ._documents import MODEL_DIR, UPSTREAM_REVISION, _json, _mapping, _sha
 from .admission import GNNAdmissionError
-from .loader import MODEL_DIR, UPSTREAM_REVISION, _json, _mapping, _sha
 
 EXTENSION_MANIFEST: Final = MODEL_DIR / "extensions.parser.json"
 _STANDARD: Final = frozenset(

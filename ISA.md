@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 280/282
+progress: 281/283
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1344,3 +1344,14 @@ them.
   is 92.55 percent combined. The example process boundary now supplies typed
   row sequences. Later federation, schema, field and documentation migrations
   remain separate; this is no scientific or release acceptance.
+
+- [x] ISC-288: GNN admission, source custody, family execution, cache and
+  backend request/replay boundaries have focused owners with canonical direct
+  imports. Independent review approves 112 preserved declarations, 208 required
+  GNN cases and 37 native contracts, 71 byte-identical family artifacts and
+  meaningful staged rejection controls. Scoped coverage is 93.12 percent
+  combined and 87.45 percent branch-only; the largest owner is 198 pure lines.
+  Current EOF-only formatting corrections are recorded separately from
+  retained review and installed-wheel source byte snapshots. The qualified pinned runtime remains separate
+  from the dirty live upstream reference. Full installed CLI/packaging, hosted
+  CI, broader composition, scientific and release acceptance remain pending.
