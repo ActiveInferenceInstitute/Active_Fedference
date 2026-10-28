@@ -474,9 +474,10 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `publication.web.normalization` | `normalize_web_xrefs` | function | Atomically replace visible references with self-contained HTML links. |
 | `publication.web_package` | `validate_web_package` | function | Check generated HTML assets, links, markup, and accessibility structure. |
 | `publication.zenodo` | `ZenodoClient` | class | Small standard-library Zenodo REST client for release boundaries. |
-| `publication.zenodo` | `ZenodoDeposition` | class | Stable subset of a Zenodo deposition response. |
-| `publication.zenodo` | `ZenodoError` | class | Raised when Zenodo rejects or cannot complete a request. |
-| `publication.zenodo` | `ZenodoFile` | class | The server-side identity and checksum of one deposition file. |
-| `publication.zenodo` | `ZenodoMetadataSnapshot` | class | Immutable, canonical copy of one deposition's server metadata. |
-| `publication.zenodo` | `token_from_env_file` | function | Read the first configured Zenodo token from a dotenv-style file. |
-| `publication.zenodo` | `token_from_environment` | function | Read the first configured Zenodo token from process environment. |
+| `publication.zenodo_auth` | `token_from_env_file` | function | Read the first configured Zenodo token from a dotenv-style file. |
+| `publication.zenodo_auth` | `token_from_environment` | function | Read the first configured Zenodo token from process environment. |
+| `publication.zenodo_errors` | `ZenodoError` | class | Raised when Zenodo rejects or cannot complete a request. |
+| `publication.zenodo_models` | `ZenodoDeposition` | class | Stable subset of a Zenodo deposition response. |
+| `publication.zenodo_models` | `ZenodoFile` | class | The server-side identity and checksum of one deposition file. |
+| `publication.zenodo_models` | `ZenodoMetadataSnapshot` | class | Immutable, canonical copy of one deposition's server metadata. |
+| `publication.zenodo_transport` | `ZenodoTransport` | class | HTTP/auth safety shared by the explicit deposition phases. |

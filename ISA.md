@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 281/283
+progress: 282/284
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1355,3 +1355,17 @@ them.
   retained review and installed-wheel source byte snapshots. The qualified pinned runtime remains separate
   from the dirty live upstream reference. Full installed CLI/packaging, hosted
   CI, broader composition, scientific and release acceptance remain pending.
+
+- [x] ISC-289: Zenodo transport, response admission, identity/metadata checks,
+  file custody and release phases have focused owners behind one canonical
+  client. Independent review approves 55 preserved definitions, 65 direct
+  bindings, 21 effective method signatures and 159 passing cases, including
+  all 129 original cases. Scoped coverage is 94.40 percent combined and
+  90.91 percent branch-only. Ninety-eight recorded HTTP, finding, summary,
+  CLI and teardown events agree under the declared fixture normalization.
+  Three existing traceback locators expand inspection to the actual owners.
+  A separately reviewed one-byte EOF correction preserves whole-module AST
+  and source identity is qualified by its hash addendum. Real loopback and
+  credential-echo controls preserve explicit publication admission; the
+  documented service GET/POST race, release and live publication remain
+  separate. No external record or real credential was used in this work.
