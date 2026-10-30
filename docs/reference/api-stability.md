@@ -9,8 +9,7 @@ canonical numerical behavior and historical serialized readers are retained.
 
 - Top-level aggregation functions keep their current return behavior:
   `log_linear_pool` returns an array; `robust_aggregate` and
-  `variational_aggregate` return `AggregationResult`; legacy `aggregate`
-  returns the consensus array.
+  `variational_aggregate` return `AggregationResult`.
 - `AggregationConfig` plus `aggregate_result` is the canonical rich interface.
   `AggregationResult.as_dict()` and `solver_status` add finite JSON diagnostics
   without changing existing function return types. Status is exactly
@@ -24,9 +23,9 @@ canonical numerical behavior and historical serialized readers are retained.
   interpretation.
 - `share_round_result`, `FederationServer.run_round_result`,
   `run_multiprocess_round_result`, and `run_socket_round_result` propagate the
-  canonical `AggregationResult`. Existing `share_round`, consensus-returning
-  process helpers, and the legacy socket dictionary retain their exact return
-  types. Frozen rich results copy stored arrays and mark them read-only.
+  canonical `AggregationResult`. Frozen results copy stored arrays and mark
+  them read-only. Additional surface retirements follow their assigned
+  migration gates in the retirement inventory.
 - `inspect_socket_replay` returns `ReplayValidationResult` with stable
   integrity/solver `ReplayFinding` values. `validate_socket_replay` remains the
   integrity-only Boolean adapter. Recorded configuration is the default;
@@ -63,9 +62,8 @@ canonical numerical behavior and historical serialized readers are retained.
   `--require-nominal-solver` can strengthen its numerical-health exit policy.
 - The installed CLI's stable public facade is `fedference_cli.main`; the
   internal `_parser`, `_commands`, and `_support` modules are responsibility
-  boundaries rather than public API. Existing imports of
-  `fedference_cli._report_fallbacks` remain available for compatibility, but
-  new callers should use typed domain/evidence APIs instead of private helpers.
+  boundaries rather than public API. Callers use typed domain/evidence APIs
+  instead of importing private CLI helpers.
 - Torch is optional through the `bnn` extra. The default `fedference` import
   remains NumPy/SciPy-only. `fedference.__version__` exactly reflects the
   installed `active_fedference` distribution, and `py.typed` declares inline
@@ -86,11 +84,16 @@ documentation must say when they are outside the stable dispatch.
 
 ## Compatibility and deprecation
 
-Within the current 1.x major release line, new minor or patch releases may add
-fields with compatibility defaults, methods, experiments, profiles, or receipt
-schema versions. They must not silently reinterpret an existing field or change
-a top-level return type. A future major release requires an explicit migration
-plan rather than silently inheriting this 1.x promise.
+The resolved owner decisions in the retirement inventory authorize the current
+breaking API migrations. Each assigned migration must update active callers and
+guidance, preserve scientific controls and numerical meaning, and pass its
+verification gates before its surface is removed. This authorization does not
+permit silently reinterpreting serialized fields or rewriting historical evidence.
+Release authorization remains separate.
+
+Outside that resolved inventory, API and schema changes require an explicit
+migration plan. Additive fields, methods, experiments, profiles, and schema
+versions must keep their documented semantics.
 
 The v1.1 shape correction is the one intentional fail-closed compatibility
 change: an externally supplied categorical PMF or weight must already be one-
@@ -135,13 +138,12 @@ loopback convenience adapters currently use uniform base weights. The executable
 interface comparison and transport examples are in
 [`examples/README.md`](../../examples/README.md).
 
-Callers using `robust_aggregate(beliefs=..., weights=...)` or reading
-`result.agent_weights` receive a `DeprecationWarning` and parity is tested.
+Use `local_posteriors` and `base_weights` for numerical inputs, and
+`normalized_effective_weights` for relative-influence diagnostics.
+`aggregate_result` selects method and solver controls through `AggregationConfig`;
+its per-call `base_weights` retain their raw exponent semantics.
 
-A caller uses either `AggregationConfig` or legacy method/tuning arguments.
-Supplying both raises `ValueError`; no precedence rule is inferred.
-
-Any later deprecation requires:
+Future deprecations outside the resolved retirement inventory require:
 
 1. a migration note with old and new examples;
 2. a runtime warning for at least one minor release;

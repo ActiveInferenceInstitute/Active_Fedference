@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import json
 import re
+import runpy
 import shutil
 from pathlib import Path
 from typing import Final, TypedDict
@@ -297,11 +298,16 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
         assert decision["disposition"] in {"remove/migrate", "retain-current"}
         assert decision["canonical"] and decision["rationale"]
         assert decision["task"] in {52, 53, 54, 56}
-        expected = "implemented" if decision["task"] == 52 else "pending"
+        implemented = decision["task"] == 52 or (
+            decision["id"] == "OD21"
+            and decision["symbol"] == "src/fedference_cli/__init__.py::_report_fallbacks"
+            and decision["task"] == 54
+        )
+        expected = "implemented" if implemented else "pending"
         assert decision["implementation_status"] == expected
         entry = by_symbol[decision["symbol"]]
         assert entry["replacement"] == decision["canonical"]
-        assert entry["status"] == ("retired" if decision["task"] == 52 else "present")
+        assert entry["status"] == ("retired" if implemented else "present")
     history = inventory["historical_decisions"]
     assert {d["id"] for d in history} == {f"HD{i:02}" for i in range(1, 5)}
     assert history[0]["symbol"] == HISTORICAL_READERS[0]
@@ -450,3 +456,44 @@ def test_member_callers_exclude_local_names_and_other_classes(tmp_path: Path) ->
     assert callsites(reference_index(tmp_path), class_surface) == ["src/consumer.py::consumer"]
     source.write_text(source.read_text() + "def read_episode(episode):\n    return episode.beliefs\n")
     assert callsites(reference_index(tmp_path), property_surface) == ["src/consumer.py::read_episode"]
+
+
+@pytest.mark.parametrize("decision_id", ("OD22", "OD23"))
+@pytest.mark.parametrize("field", ("implementation_status", "status"))
+def test_other_task54_decisions_cannot_claim_completion(decision_id: str, field: str) -> None:
+    inventory = read_inventory(ROOT)
+    assert_contract(ROOT, inventory)
+    decision = next(row for row in inventory["owner_decisions"] if row["id"] == decision_id)
+    assert decision["task"] == 54
+    assert decision["implementation_status"] == "pending"
+    entry = next(row for row in inventory["entries"] if row["symbol"] == decision["symbol"])
+    assert entry["status"] == "present"
+    if field == "implementation_status":
+        decision["implementation_status"] = "implemented"
+    else:
+        entry["status"] = "retired"
+    with pytest.raises(AssertionError):
+        assert_contract(ROOT, inventory)
+
+
+def test_original_task52_guard_rejects_actual_migrated_inventory(tmp_path: Path) -> None:
+    inventory = read_inventory(ROOT)
+    assert_contract(ROOT, inventory)
+    source = Path(__file__).read_text()
+    tree = ast.parse(source)
+    function = next(
+        node for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "assert_contract"
+    )
+    assignment = next(
+        node for node in ast.walk(function)
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "implemented" for target in node.targets)
+    )
+    lines = source.splitlines(keepends=True)
+    lines[assignment.lineno - 1:assignment.end_lineno] = ['        implemented = decision["task"] == 52\n']
+    mutant_path = tmp_path / "old_guard.py"
+    mutant_path.write_text("".join(lines))
+    mutant = runpy.run_path(str(mutant_path))
+    with pytest.raises(AssertionError):
+        mutant["assert_contract"](ROOT, inventory)
