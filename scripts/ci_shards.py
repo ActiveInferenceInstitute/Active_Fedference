@@ -190,6 +190,11 @@ def main() -> int:
                str(default_root), str(args.project_root) if args.project_root else ""]
     os.chdir(subprocess.check_output(command, text=True).strip())
     pytest_root = ["-c", str(Path.cwd() / "pyproject.toml"), f"--rootdir={Path.cwd()}"]
+    # Supplied plans must fail on their own contract before requiring Git metadata.
+    # Valid plans still require the exact checkout HEAD and source digest below.
+    if args.mode != "plan":
+        plan = json.loads(args.plan.read_text())
+        validate_plan(plan)
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     if args.mode == "plan":
         inventory = Inventory()
@@ -211,8 +216,6 @@ def main() -> int:
         with args.plan.open("x") as stream:
             json.dump(plan, stream, indent=2)
         return 0
-    plan = json.loads(args.plan.read_text())
-    validate_plan(plan)
     if head != plan["head"]:
         raise ValueError("Checkout HEAD differs from plan HEAD")
     if checkout_digest() != plan["source_digest"]:
