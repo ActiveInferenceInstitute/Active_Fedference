@@ -27,12 +27,30 @@ class SiteRun:
 
 
 
-def run_sites(program: ScientificProgram) -> SiteRun:
-    """Run signed diagonal prior × sites, proper cavity, and factor replacement."""
-    native = _native(program)
+def site_configuration(
+    program: ScientificProgram,
+) -> tuple[FedGVIServerState, dict[int, DiagonalGaussian]]:
+    """Admit native site parameters and all cavities without advancing a round.
+
+    Signed factors remain signed; properness belongs to the combined Gaussian
+    and every cavity (Mildner et al., 2025). Reuse the native constructors so
+    configuration validation and execution cannot diverge.
+    """
+    try:
+        return _site_configuration(program)
+    except GNNAdmissionError:
+        raise
+    except ValueError as error:
+        raise GNNAdmissionError("GNN_SITE_CONFIGURATION", str(error)) from error
+
+
+def _site_configuration(
+    program: ScientificProgram,
+) -> tuple[FedGVIServerState, dict[int, DiagonalGaussian]]:
     model = program.model
     if not isinstance(model, SiteFactorModel):
-        raise GNNAdmissionError("GNN_KIND", "site runner")
+        raise GNNAdmissionError("GNN_KIND", "site configuration")
+    native = _native(program)
     n = len(model.coordinates)
     sites = []
     for factor in (model, *program.peers):
@@ -52,7 +70,12 @@ def run_sites(program: ScientificProgram) -> SiteRun:
         if not np.array_equal(covariance, np.diag(np.diag(covariance))):
             raise GNNAdmissionError("GNN_CAPABILITY", "non-diagonal client")
         clients[index] = DiagonalGaussian(client_means[index], np.diag(covariance))
-    state = FedGVIServerState(prior, tuple(sites))
+    return FedGVIServerState(prior, tuple(sites)), clients
+
+
+def run_sites(program: ScientificProgram) -> SiteRun:
+    """Run signed diagonal prior × sites, proper cavity, and factor replacement."""
+    state, clients = site_configuration(program)
     cavity = state.cavity(0)
     updated = state.advance_round(clients, schedule="parallel")
     parity = ProtocolParityMatrix(

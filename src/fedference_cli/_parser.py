@@ -16,6 +16,7 @@ from ._commands import (
     _run_command,
     _verify_command,
 )
+from ._models import _model_validate_command
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -25,6 +26,23 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Run and verify source-bound Active Fedference evidence",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    model_parser = subparsers.add_parser("model", help="inspect admitted GNN models")
+    model_commands = model_parser.add_subparsers(dest="model_command", required=True)
+    validate_parser = model_commands.add_parser("validate", help="validate a model without running it")
+    validate_parser.add_argument("--model", required=True, help="canonical JSON IR or GNN Markdown path")
+    validate_parser.add_argument(
+        "--format", choices=["auto", "native", "sentinel", "structured", "scientific"], default="auto",
+        help="input boundary (default: JSON suffix or declared GNN extension)",
+    )
+    validate_parser.add_argument("--gnn-root", help="explicit pinned upstream source root for Markdown")
+    validate_parser.add_argument("--gnn-python", help="parser interpreter (default: GNN_PYTHON or current)")
+    validate_parser.add_argument(
+        "--parser-dependencies", help="extension parser dependencies (default: GNN_PARSER_DEPENDENCIES)",
+    )
+    validate_parser.add_argument(
+        "--json", dest="as_json", action="store_true", help="emit canonical model JSON",
+    )
 
     list_parser = subparsers.add_parser("list", help="list research registry entries")
     list_parser.add_argument(
@@ -249,6 +267,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
     try:
+        if args.command == "model":
+            return _model_validate_command(args)
         if args.command == "list":
             if args.as_json:
                 print(json.dumps(registry_manifest(), indent=2, sort_keys=True))

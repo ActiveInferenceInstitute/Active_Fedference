@@ -508,3 +508,31 @@ Before trusting an application result, confirm all of the following:
   [`reference/api-stability.md`](reference/api-stability.md)
 - Reproduce tests and publication artifacts:
   [`development/quickstart.md`](development/quickstart.md)
+
+
+## Validate a model before execution
+
+The source CLI supports read-only admission of canonical `fedference.gnn/1`
+JSON and pinned upstream GNN Markdown from outside the checkout:
+
+```bash
+fedference model validate --model model.json --json
+fedference model validate --model model.gnn.md --gnn-root "$GNN_ROOT" --json
+```
+
+Markdown uses the actual upstream parser and packaged parser manifests;
+source drift fails without a cached-model fallback. Scientific and structured
+extensions require explicit parser dependencies through `--parser-dependencies`
+or `GNN_PARSER_DEPENDENCIES`; `GNN_PYTHON` optionally selects their interpreter.
+Canonical JSON needs no upstream checkout. The complete canonical model and
+content digest retain labels, tensor axes, values, and model identity.
+
+A successful exit 0 means the declared representation and any supplied native
+configuration were admitted. Malformed fields, nonfinite numbers, wrong axes,
+nonnormalized PMFs, or invalid signed-site prior/client configurations exit 2.
+The command does not normalize invalid probabilities, advance a site round,
+run a simulation, or certify scientific validity. Standalone JSON carries no
+native configuration: its result explicitly reports `not-provided`. See the
+[CLI contract](../src/fedference_cli/README.md#read-only-model-validation) for
+format selection and result fields. This source addition is separate from the
+previously published release assets.

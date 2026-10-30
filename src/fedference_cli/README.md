@@ -19,6 +19,7 @@ detailed command, receipt, and extension contract.
 | `_parser.py` | `argparse` grammar, command selection, process-facing error mapping, and the timestamp supplied to a run | Experiment algorithms, receipt construction, or direct file writes |
 | `_commands.py` | Dispatch for labeled `aggregate`, registry `run`/`benchmark`, receipt `verify`, and socket `replay` | Parser definition, duplicated aggregation math, or publication-snapshot writes |
 | `_support.py` | Atomic JSON writes, project-root and output isolation, seed/control validation, registry summaries, and receipt construction | Selecting a study, choosing scientific parameters, or parsing command-line arguments |
+| `_models.py` | Read-only model validation through canonical GNN loaders and native configuration admission | Model parsing, simulation, or duplicated numerical validation |
 | `__main__.py` | `python -m fedference_cli` process shim | Alternative command semantics |
 
 The direction is deliberately one-way:
@@ -61,6 +62,7 @@ not the package's domain API.
 | Command | Use it for | Writes |
 | --- | --- | --- |
 | `fedference aggregate` | Validate and aggregate a strict schema-1.0 labeled request. Configuration comes only from the request JSON. | Canonical `request.json`, `result.json`, and application `receipt.json` in a new or empty `--output-dir` |
+| `fedference model validate` | Admit canonical JSON IR or explicitly selected upstream GNN Markdown, retaining axes, labels, provenance, and content identity. | Nothing; upstream parsing uses temporary isolated snapshots |
 | `fedference list [--json]` | Inspect source, dataset, experiment, profile, runner, and no-claim declarations. Text output distinguishes executable and declared-only experiments. | Nothing |
 | `fedference run EXPERIMENT` | Run one registry entry that has an executable adapter. Use `--cache-dir` only for `external-tabular`; `--device` only affects `fedgvi-bnn`. | `config.json`, `report.json`, and `receipt.json` in a new or empty `--output-dir` |
 | `fedference benchmark` | Run the hash-checked registered UCI pack with explicit client and contamination controls. This boundary needs a caller-owned cache and may acquire external data. | The same three-file evidence directory |
@@ -233,3 +235,38 @@ See the project-wide [application guide](../../docs/application-guide.md),
 [modularity guide](../../docs/development/modularity.md),
 the [API stability policy](../../docs/reference/api-stability.md), and the
 [CLI contract tests](../../tests/test_fedference_cli.py).
+
+
+## Read-only model validation
+
+```bash
+fedference model validate --model model.json --json
+fedference model validate --model model.gnn.md --gnn-root "$GNN_ROOT" --json
+```
+
+Canonical JSON uses `fedference.gnn/1` and `fedference.gnn.admission.loads`.
+GNN Markdown invokes the real pinned upstream parser through the existing
+sentinel, structured, or scientific loader. `--gnn-root` explicitly authorizes
+that local source execution; a parser mismatch fails without cache fallback.
+Extension documents also require `--parser-dependencies` or
+`GNN_PARSER_DEPENDENCIES`; `--gnn-python` or `GNN_PYTHON` selects the parser
+interpreter. No installation or network access occurs.
+
+The default format selects JSON by its `.json` suffix and otherwise selects the
+GNN loader by its declared extension header. `--format native|sentinel|structured|scientific`
+resolves an unusual filename explicitly. Native JSON rejects explicit parser
+options, because that path does not invoke upstream parsing.
+
+Success exits 0. `--json` emits the complete admitted `model`, its
+`model_digest`, the source-bound `program_digest` when applicable, and
+`native_configuration`. The latter is `validated` for structured/scientific
+programs and `not-provided` for standalone IR/sentinel models. Signed-site
+configuration uses the same `site_configuration` boundary as `run_sites`;
+it admits prior/client arrays and all initial cavities without advancing a
+round. Invalid fields, nonfinite values, nonnormalized probabilities, wrong
+axes, unsupported native settings, or parser drift exit 2 with no success JSON.
+
+This command writes no model or report, runs no simulation or client optimizer,
+and does not certify a scientific claim, complete protocol, backend execution,
+or the truth of caller-declared JSON provenance. Installed packaged model and
+parser-manifest resources work independently of the current working directory.

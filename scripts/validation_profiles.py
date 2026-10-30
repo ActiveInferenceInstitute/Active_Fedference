@@ -9,6 +9,7 @@ from typing import Final
 import pytest
 
 GNN_MODULES: Final = frozenset({
+    "tests/integration/test_gnn_model_cli.py",
     "tests/integration/test_gnn_pymdp.py",
     "tests/test_gnn_interop.py",
     "tests/fedference/test_gnn_sentinel.py",
