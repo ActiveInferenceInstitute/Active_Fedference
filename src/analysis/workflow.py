@@ -31,7 +31,7 @@ import time
 from collections.abc import Mapping
 from dataclasses import replace
 from pathlib import Path
-from typing import cast
+from typing import Any, Callable, cast
 
 from experiment_config import ExperimentConfig, load_experiment_config, load_manuscript_config
 from fedference.experiments import (
@@ -494,27 +494,12 @@ def resolve_analysis_profile(project_root: Path | None, *, override: str | None 
     return profile
 
 
-def run_analysis_pipeline(
+def effective_analysis_config(
+    root: Path,
+    profile: str,
     config: ExperimentConfig | None = None,
-    *,
-    project_root: Path | None = None,
-    profile: str | None = None,
-) -> dict[str, Path]:
-    """Run every fedference experiment, write reports + figures, return paths.
-
-    Args:
-        config: Experiment configuration; loaded from ``manuscript/config.yaml``
-            when omitted.
-        project_root: Output root override (defaults to the project root).
-        profile: Optional explicit budget profile. ``publication`` is the
-            default; ``smoke`` uses the same real code paths with bounded
-            budgets for repeated verification runs.
-
-    Returns:
-        Mapping of artifact label -> written path (reports and figures).
-    """
-    root = Path(project_root or _project_root()).resolve()
-    configured_profile = resolve_analysis_profile(root)
+) -> ExperimentConfig:
+    """Resolve unchanged scientific budgets for direct and staged producers."""
     effective_profile = resolve_analysis_profile(root, override=profile)
     canonical_config = load_experiment_config(root)
     if config is not None and effective_profile == "publication" and config != canonical_config:
@@ -523,13 +508,6 @@ def run_analysis_pipeline(
             "an explicit non-equivalent config cannot mint publication evidence"
         )
     cfg = config or canonical_config
-    # Publication-scale analysis is long-running. Capture its declared inputs
-    # before it begins so the subsequent receipt cannot silently attest a
-    # source/configuration edit that occurred during the run. Smoke runs never
-    # mint a publication receipt and may use deliberately minimal test roots.
-    analysis_input_snapshot = (
-        capture_analysis_input_snapshot(root) if effective_profile == "publication" else None
-    )
     smoke = effective_profile == "smoke"
     if smoke:
         # An explicitly supplied ExperimentConfig can carry publication-scale
@@ -552,6 +530,63 @@ def run_analysis_pipeline(
             bnn_n_seeds=min(cfg.bnn_n_seeds, 4),
             bnn_n_per=min(cfg.bnn_n_per, 20),
         )
+    return cfg
+
+
+def run_analysis_pipeline(
+    config: ExperimentConfig | None = None,
+    *,
+    project_root: Path | None = None,
+    profile: str | None = None,
+    checkpoints: Path | None = None,
+) -> dict[str, Path]:
+    """Run every fedference experiment, write reports + figures, return paths.
+
+    Args:
+        config: Experiment configuration; loaded from ``manuscript/config.yaml``
+            when omitted.
+        project_root: Output root override (defaults to the project root).
+        profile: Optional explicit budget profile. ``publication`` is the
+            default; ``smoke`` uses the same real code paths with bounded
+            budgets for repeated verification runs.
+
+    Returns:
+        Mapping of artifact label -> written path (reports and figures).
+    """
+    root = Path(project_root or _project_root()).resolve()
+    configured_profile = resolve_analysis_profile(root)
+    effective_profile = resolve_analysis_profile(root, override=profile)
+    cfg = effective_analysis_config(root, effective_profile, config)
+    if effective_profile == "publication" and checkpoints is None:
+        raise ValueError(
+            "publication compute requires external report checkpoints; monolithic execution is refused"
+        )
+    analysis_input_snapshot = (
+        capture_analysis_input_snapshot(root) if effective_profile == "publication" else None
+    )
+    smoke = effective_profile == "smoke"
+    loaded: dict[str, dict[str, Any]] = {}
+    if checkpoints is not None:
+        from analysis.stage_catalog import STAGE_SCHEMAS
+        from analysis.stage_checkpoint import load_checkpoint
+        from analysis.stage_io import StageError
+        from analysis.stage_workspace import admit_workspace
+
+        if root != (checkpoints / "source").resolve():
+            raise StageError("checkpoint assembly must run in the workspace's frozen source")
+
+        manifest = admit_workspace(checkpoints, root)
+        if manifest["profile"] != effective_profile or config is not None:
+            raise StageError("checkpoint profile/configuration mismatch")
+        # Admit the complete report set before writing or rendering anything.
+        loaded = {
+            name: load_checkpoint(checkpoints, name, schema, manifest["identity"])
+            for name, schema in STAGE_SCHEMAS.items()
+        }
+
+    def _completed(name: str, producer: Callable[[], Mapping[str, Any]]) -> dict[str, Any]:
+        return loaded[name] if checkpoints is not None else dict(producer())
+
     reports = _reports_dir(root)
 
     paths: dict[str, Path] = {}
@@ -568,21 +603,23 @@ def run_analysis_pipeline(
     _pipeline_start = time.time()
 
     # --- Reports -----------------------------------------------------------
-    application_flow_report = application_integrity_flow_contract()
+    application_flow_report = _completed(
+        "application_integrity_flow", lambda: application_integrity_flow_contract()
+    )
     paths["application_integrity_flow_report"] = _write_json(
         application_flow_report,
         reports / "application_integrity_flow.json",
         schema="application_integrity_flow",
         artifact=("application_integrity_flow_report", paths),
     )
-    evidence_map_report = evidence_replication_map_contract()
+    evidence_map_report = _completed("evidence_replication_map", lambda: evidence_replication_map_contract())
     paths["evidence_replication_map_report"] = _write_json(
         evidence_map_report,
         reports / "evidence_replication_map.json",
         schema="evidence_replication_map",
         artifact=("evidence_replication_map_report", paths),
     )
-    source_render_report = source_render_provenance_contract()
+    source_render_report = _completed("source_render_provenance", lambda: source_render_provenance_contract())
     paths["source_render_provenance_report"] = _write_json(
         source_render_report,
         reports / "source_render_provenance.json",
@@ -590,7 +627,7 @@ def run_analysis_pipeline(
         artifact=("source_render_provenance_report", paths),
     )
 
-    bs_report = _belief_sharing_report(cfg)
+    bs_report = _completed("belief_sharing", lambda: _belief_sharing_report(cfg))
     paths["belief_sharing_report"] = _write_json(
         bs_report,
         reports / "belief_sharing.json",
@@ -598,7 +635,7 @@ def run_analysis_pipeline(
         artifact=("belief_sharing_report", paths),
     )
 
-    lang_report = _language_report(cfg)
+    lang_report = _completed("language_acquisition", lambda: _language_report(cfg))
     paths["language_report"] = _write_json(
         lang_report,
         reports / "language_acquisition.json",
@@ -606,12 +643,12 @@ def run_analysis_pipeline(
         artifact=("language_report", paths),
     )
 
-    emergence_report = _emergence_report(cfg)
+    emergence_report = _completed("emergence", lambda: _emergence_report(cfg))
     paths["emergence_report"] = _write_json(
         emergence_report, reports / "emergence.json", schema="emergence", artifact=("emergence_report", paths)
     )
 
-    rob_report = _robustness_report(cfg)
+    rob_report = _completed("robustness_sweep", lambda: _robustness_report(cfg))
     paths["robustness_report"] = _write_json(
         rob_report,
         reports / "robustness_sweep.json",
@@ -619,7 +656,7 @@ def run_analysis_pipeline(
         artifact=("robustness_report", paths),
     )
 
-    hier_bmr_report = run_hierarchical_bmr()
+    hier_bmr_report = _completed("hierarchical_bmr", lambda: run_hierarchical_bmr())
     paths["hierarchical_bmr_report"] = _write_json(
         hier_bmr_report,
         reports / "hierarchical_bmr.json",
@@ -627,7 +664,9 @@ def run_analysis_pipeline(
         artifact=("hierarchical_bmr_report", paths),
     )
 
-    heuristic_report = run_heuristic_characterization(cfg.seeds[0])
+    heuristic_report = _completed(
+        "heuristic_characterization", lambda: run_heuristic_characterization(cfg.seeds[0])
+    )
     paths["heuristic_characterization_report"] = _write_json(
         heuristic_report,
         reports / "heuristic_characterization.json",
@@ -635,7 +674,7 @@ def run_analysis_pipeline(
         artifact=("heuristic_characterization_report", paths),
     )
 
-    efe_report = _efe_terms(cfg)
+    efe_report = _completed("efe_decomposition", lambda: _efe_terms(cfg))
     paths["efe_report"] = _write_json(
         efe_report,
         reports / "efe_decomposition.json",
@@ -643,7 +682,7 @@ def run_analysis_pipeline(
         artifact=("efe_report", paths),
     )
 
-    weights_report = _influence_weights(cfg)
+    weights_report = _completed("robust_influence_weights", lambda: _influence_weights(cfg))
     paths["influence_weights_report"] = _write_json(
         weights_report,
         reports / "robust_influence_weights.json",
@@ -651,17 +690,17 @@ def run_analysis_pipeline(
         artifact=("influence_weights_report", paths),
     )
 
-    bnn_report = _bnn_report(cfg, smoke=smoke)
+    bnn_report = _completed("bnn_robustness", lambda: _bnn_report(cfg, smoke=smoke))
     paths["bnn_report"] = _write_json(
         bnn_report, reports / "bnn_robustness.json", schema="bnn_robustness", artifact=("bnn_report", paths)
     )
 
-    bnn_torch_report = _configured_bnn_torch_report(cfg, project_root=root)
+    bnn_torch_report = _completed("bnn_torch", lambda: _configured_bnn_torch_report(cfg, project_root=root))
     paths["bnn_torch_report"] = _write_json(
         bnn_torch_report, reports / "bnn_torch.json", schema="bnn_torch", artifact=("bnn_torch_report", paths)
     )
 
-    var_report = _variational_aggregation_report(cfg)
+    var_report = _completed("variational_aggregation", lambda: _variational_aggregation_report(cfg))
     paths["variational_aggregation_report"] = _write_json(
         var_report,
         reports / "variational_aggregation.json",
@@ -669,7 +708,9 @@ def run_analysis_pipeline(
         artifact=("variational_aggregation_report", paths),
     )
 
-    gallery_report = _contamination_gallery_report(cfg, smoke=smoke)
+    gallery_report = _completed(
+        "contamination_gallery", lambda: _contamination_gallery_report(cfg, smoke=smoke)
+    )
     paths["contamination_gallery_report"] = _write_json(
         gallery_report,
         reports / "contamination_gallery.json",
@@ -677,7 +718,7 @@ def run_analysis_pipeline(
         artifact=("contamination_gallery_report", paths),
     )
 
-    onset_report = _robustness_onset_report(cfg, smoke=smoke)
+    onset_report = _completed("robustness_onset", lambda: _robustness_onset_report(cfg, smoke=smoke))
     paths["robustness_onset_report"] = _write_json(
         onset_report,
         reports / "robustness_onset.json",
@@ -685,7 +726,7 @@ def run_analysis_pipeline(
         artifact=("robustness_onset_report", paths),
     )
 
-    conditional_report = _conditional_world_report(cfg)
+    conditional_report = _completed("conditional_world", lambda: _conditional_world_report(cfg))
     paths["conditional_world_report"] = _write_json(
         conditional_report,
         reports / "conditional_world.json",
@@ -693,7 +734,7 @@ def run_analysis_pipeline(
         artifact=("conditional_world_report", paths),
     )
 
-    review_grid_report = _review_grid_report(cfg, smoke=smoke)
+    review_grid_report = _completed("robustness_review_grid", lambda: _review_grid_report(cfg, smoke=smoke))
     paths["review_grid_report"] = _write_json(
         review_grid_report,
         reports / "robustness_review_grid.json",
@@ -701,7 +742,7 @@ def run_analysis_pipeline(
         artifact=("review_grid_report", paths),
     )
 
-    quality_report = _belief_quality_report(cfg)
+    quality_report = _completed("belief_quality", lambda: _belief_quality_report(cfg))
     paths["belief_quality_report"] = _write_json(
         quality_report,
         reports / "belief_quality.json",
@@ -711,7 +752,7 @@ def run_analysis_pipeline(
 
     _t0 = time.time()
     complexity_config = cfg.complexity.for_smoke() if smoke else cfg.complexity
-    complexity_report = run_complexity_scaling(complexity_config)
+    complexity_report = _completed("complexity_scaling", lambda: run_complexity_scaling(complexity_config))
     _timings["complexity"] = time.time() - _t0
     paths["complexity_scaling_report"] = _write_json(
         complexity_report,
@@ -721,7 +762,9 @@ def run_analysis_pipeline(
     )
 
     _t0 = time.time()
-    sensitivity_report = _sensitivity_report(seed=cfg.seeds[0], n_trials=5 if smoke else 20)
+    sensitivity_report = _completed(
+        "sensitivity", lambda: _sensitivity_report(seed=cfg.seeds[0], n_trials=5 if smoke else 20)
+    )
     _timings["sensitivity"] = time.time() - _t0
     paths["sensitivity_report"] = _write_json(
         sensitivity_report,
@@ -731,7 +774,7 @@ def run_analysis_pipeline(
     )
 
     _t0 = time.time()
-    moving_report = _moving_world_report(cfg)
+    moving_report = _completed("moving_world", lambda: _moving_world_report(cfg))
     _timings["moving_world"] = time.time() - _t0
     paths["moving_world_report"] = _write_json(
         moving_report,
@@ -741,7 +784,7 @@ def run_analysis_pipeline(
     )
 
     _t0 = time.time()
-    param_rec_report = _parameter_recovery_report(cfg, smoke=smoke)
+    param_rec_report = _completed("parameter_recovery", lambda: _parameter_recovery_report(cfg, smoke=smoke))
     _timings["parameter_recovery"] = time.time() - _t0
     paths["parameter_recovery_report"] = _write_json(
         param_rec_report,
@@ -751,16 +794,27 @@ def run_analysis_pipeline(
     )
 
     _t0 = time.time()
-    hier_report = hierarchical_world_report(
-        cfg.seeds[0], n_trials=cfg.n_trials, n_multiseed=cfg.replicate_seeds
+    hier_report = _completed(
+        "hierarchical_world",
+        lambda: hierarchical_world_report(
+            cfg.seeds[0], n_trials=cfg.n_trials, n_multiseed=cfg.replicate_seeds
+        ),
     )
-    nl3_report = nlevel3_world_report(cfg.seeds[0], n_trials=cfg.n_trials, n_multiseed=cfg.replicate_seeds)
-    cross_report = summarize_cross_study(
-        cfg.seeds[0],
-        n_seeds=cfg.replicate_seeds,
-        n_trials=cfg.cross_study_n_trials,
+    nl3_report = _completed(
+        "nlevel3_world",
+        lambda: nlevel3_world_report(cfg.seeds[0], n_trials=cfg.n_trials, n_multiseed=cfg.replicate_seeds),
     )
-    disjoint_report = disjoint_fov_report(0, n_multiseed=cfg.replicate_seeds)
+    cross_report = _completed(
+        "cross_study_summary",
+        lambda: summarize_cross_study(
+            cfg.seeds[0],
+            n_seeds=cfg.replicate_seeds,
+            n_trials=cfg.cross_study_n_trials,
+        ),
+    )
+    disjoint_report = _completed(
+        "disjoint_fov_world", lambda: disjoint_fov_report(0, n_multiseed=cfg.replicate_seeds)
+    )
     _timings["hierarchical"] = time.time() - _t0
     paths["hierarchical_world_report"] = _write_json(
         hier_report,

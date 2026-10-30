@@ -1,5 +1,8 @@
 # `active_fedference` — Manuscript package
 
+For publication compute, first complete the [bounded external stages](../docs/development/staged-analysis.md) and set `WORKSPACE` to that frozen workspace. The import commands
+below consume validated completions; they do not start missing reports.
+
 This folder contains the manuscript source for Active Fedference and the
 manuscript-driven validation gates that bind every claim to generated outputs.
 
@@ -30,7 +33,8 @@ uv run python scripts/01_run_invariants.py
 2. Run analyses:
 
 ```bash
-uv run python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 ```
 
 3. Complete the source-current token, render, and provenance sequence:

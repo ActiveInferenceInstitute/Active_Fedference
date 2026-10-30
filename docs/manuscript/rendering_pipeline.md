@@ -47,10 +47,17 @@ Symptom: `mmdc failed ... Could not find Chrome`. See
 
 ## Phase 1 — Analysis (pipeline stage 4)
 
-**Script:** `scripts/02_run_analysis.py`
+**Script:** `scripts/analysis_stages.py` (explicit external stages and guarded import)
+
+Publication compute now follows [bounded staged analysis](../development/staged-analysis.md).
+Freeze the source under a short lease, run the explicitly selected report
+stages and figure assembly externally, then import the validated bundle under
+a short destination lease. The monolithic publication invocation is refused;
+the script remains the internal assembler and temporary smoke entry point.
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --project-root "$AF_REPO" --workspace "$WORKSPACE" --stage figures
 ```
 
 **Logic:** `src/analysis/workflow.py::run_analysis_pipeline()`
@@ -115,7 +122,9 @@ export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
 uv run --locked python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
-uv run --locked python scripts/02_run_analysis.py
+# Complete the external staged-analysis procedure above before this import.
+uv run --locked python scripts/analysis_stages.py import \
+  --project-root "$AF_REPO" --workspace "$WORKSPACE" --stage figures
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 # First template pass: its hydrated inputs are deliberately provisional.

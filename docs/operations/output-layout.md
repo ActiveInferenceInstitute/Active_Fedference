@@ -1,5 +1,8 @@
 # Output layout
 
+For publication compute, first complete the [bounded external stages](../development/staged-analysis.md) and set `WORKSPACE` to that frozen workspace. The import commands
+below consume validated completions; they do not start missing reports.
+
 Two different repository roots own generated files:
 
 ```text
@@ -154,7 +157,8 @@ $TEMPLATE_REPO/output/working/active_fedference/
 
 ```bash
 # Analysis only
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 
 # Source-current variables + renderer passes
 # Follow the explicit provisional-render -> coverage receipt -> final-render

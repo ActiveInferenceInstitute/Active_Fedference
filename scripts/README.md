@@ -1,5 +1,8 @@
 # scripts/ — Quick reference
 
+For publication compute, first complete the [bounded external stages](../docs/development/staged-analysis.md) and set `WORKSPACE` to that frozen workspace. The import commands
+below consume validated completions; they do not start missing reports.
+
 Thin orchestrators for Active Fedference. Domain and publication logic lives in
 `../src/`; scripts own the command-line contract, checkout-root selection,
 subprocess sequencing, stdout/status mapping, and release-boundary safety.
@@ -30,7 +33,8 @@ in `src/`.
 | `ci_shards.py {plan,run,verify} --plan PATH [--project-root PATH]` | Complete collection plan, per-shard execution receipts, coverage and JUnit diagnostics under `.tmp/` | CI scheduling and complete-execution verification; final combined coverage remains required |
 | `bootstrap_gnn.py --upstream-root PATH --destination NEW_PATH --profile cpython312-cpu [--python PATH]` | Fresh pinned runtime, real Agent/parser qualification and `environment.json` | Required GNN CI provisioning; the 3.14 profile qualifies existing-runtime execution |
 | `validation_profiles.py` (internal pytest policy helper) | Native/GNN/full collection and required-runtime refusal | Imported by pytest configuration and the shard planner |
-| `02_run_analysis.py [--profile publication\|smoke] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
+| `analysis_stages.py {prepare,run,cancel,status,import} --workspace PATH` | Frozen external stages, validated completions and guarded imports | Required publication compute boundary |
+| `02_run_analysis.py [--profile smoke] [--checkpoints PATH] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |
 | `record_pipeline_stage.py render --template-root PATH [--timestamp UTC] [--project-root PATH]` | `output/data/pipeline_provenance.json` | REQUIRED after the completed, validated external render boundary; analysis/hydration receipts are producer-owned |
 | `validate_test_coverage.py [--verify] [--project-root PATH]` | `output/data/test_coverage_receipt.json` | REQUIRED full-suite receipt before final hydration |
 | `z_generate_manuscript_variables.py [--provisional-validation] [--project-root PATH]` | `output/data/manuscript_variables.json`, `output/manuscript/` | REQUIRED; final non-draft mode consumes the test/coverage receipt, while provisional mode never records hydration |
@@ -63,7 +67,9 @@ checkout. `00_preflight.py` additionally accepts `--template-root PATH` for
 the optional sibling template rendering environment.
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py                  # publication profile from config
+# After the bounded external stages have completed:
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 uv run --locked python scripts/02_run_analysis.py --profile smoke # bounded real smoke profile
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 uv run --locked --extra dev python scripts/validate_test_coverage.py
@@ -176,7 +182,8 @@ TEMPLATE_REPO=/path/to/template
 export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 cd "$TEMPLATE_REPO"

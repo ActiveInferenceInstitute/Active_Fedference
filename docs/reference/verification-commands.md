@@ -470,7 +470,9 @@ export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
 uv run --locked python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
-uv run --locked python scripts/02_run_analysis.py
+# First complete the explicitly selected external stages; see staged-analysis.md.
+uv run --locked python scripts/analysis_stages.py import \
+  --project-root "$AF_REPO" --workspace "$WORKSPACE" --stage figures
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 # Provisional renderer pass: hydrate has already happened above.

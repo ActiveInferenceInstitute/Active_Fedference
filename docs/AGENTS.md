@@ -23,6 +23,7 @@ Technical index for `docs/`. Navigation hub:
 | `development/testing_philosophy.md` | Zero-mock; test inventory |
 | `development/style_guide.md` | Seven coding/manuscript rules |
 | `development/modularity.md` | Cross-layer extension and orchestration contract |
+| `development/staged-analysis.md` | External frozen stages, idempotent checkpoints, budgets, cancellation and short imports |
 | [`development/api-retirement-20261027.md`](development/api-retirement-20261027.md) | Reviewed migration inventory preserving scientific controls and historical readers/evidence |
 | **manuscript/** | |
 | `manuscript/README.md` | Manuscript-pipeline index and authoritative registry signposts |
@@ -79,7 +80,8 @@ Technical index for `docs/`. Navigation hub:
 | `tests/` (all `test_*.py`) | REQUIRED | Coverage gate |
 | `../examples/*.py`, `../examples/README.md` | REQUIRED | Real subprocess smoke in `tests/test_examples.py`; Ruff and runtime-surface gates; source-distribution membership |
 | `tests/conftest.py` | REQUIRED | `MPLBACKEND=Agg` + `sys.path` |
-| `scripts/02_run_analysis.py` | REQUIRED | Pipeline stage 4 entry |
+| `scripts/analysis_stages.py` | REQUIRED | External bounded publication stages and guarded import |
+| `scripts/02_run_analysis.py` | Optional adapter | Temporary smoke or explicit frozen-checkpoint assembly |
 | `scripts/z_generate_manuscript_variables.py` | REQUIRED | Token hydration before PDF |
 | `scripts/01_run_invariants.py` | AESTHETIC | Local invariant runner |
 | `scripts/00_preflight.py` | AESTHETIC | Pre-render warnings |

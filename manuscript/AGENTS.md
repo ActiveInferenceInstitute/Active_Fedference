@@ -79,7 +79,7 @@ source-exact auxiliaries for their renderer consumers.
 
 Figures are all referenced via pandoc-crossref `[@fig:label]` (never raw
 `\ref{}` or hardcoded numbers), generated under `src/figures/` and wired into
-`src/analysis/workflow.py` (run via `scripts/02_run_analysis.py`):
+`src/analysis/workflow.py` (publication reports run via `scripts/analysis_stages.py`):
 
 The complete figure-label registry lives in
 [`SYNTAX.md`](SYNTAX.md) — that table is the source of truth; do not duplicate
@@ -128,7 +128,8 @@ probe separately for diagrams embedded in README/docs.
    honesty intact.
 2. Add/extend tests under the `tests/` mirror (`tests/fedference/…`, `tests/figures/…`).
 3. Run the locked-core numerical invariants gate: `uv run python scripts/01_run_invariants.py`.
-4. Regenerate analysis: `uv run python scripts/02_run_analysis.py`.
+4. Complete the [external staged-analysis procedure](../docs/development/staged-analysis.md)
+   and import its validated bundle under a short repository lease.
 5. Provisionally hydrate for the pre-test renderer pass:
    `uv run python scripts/z_generate_manuscript_variables.py --provisional-validation`.
 6. Render the provisional inputs from the template repo with explicit hydration

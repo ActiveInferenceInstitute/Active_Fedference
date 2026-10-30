@@ -32,6 +32,7 @@ GitHub publication does not establish Zenodo publication or current-source certi
 | Understand the mathematical scope | [`core/conceptual-foundations.md`](core/conceptual-foundations.md) |
 | Contribute software or documentation | [`development/quickstart.md`](development/quickstart.md); [`development/modularity.md`](development/modularity.md) |
 | Reproduce the manuscript surfaces | [`manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) |
+| Run or resume bounded analysis | [`development/staged-analysis.md`](development/staged-analysis.md) |
 | Audit a release boundary | [`reference/verification-commands.md`](reference/verification-commands.md); [`reference/zenodo-release.md`](reference/zenodo-release.md) |
 
 ## Subfolders

@@ -1400,3 +1400,13 @@ them.
   installed-wheel/sdist proof, complete coverage and independent review remain
   required before closing this acceptance item. Model admission is not
   simulation, protocol replication or scientific validation.
+
+- [ ] ISC-292: Publication analysis runs as explicitly selected bounded report
+  stages in frozen external workspaces, with exact source/configuration/seed/
+  runtime identities, atomic validated completion and process receipts,
+  cooperative cancellation, preservation of partial failures, safe checkpoint
+  reuse and short guarded imports. Interruption/resume, invalid/corrupt
+  checkpoints, changed inputs and changed destination outputs must be refused
+  by real-process controls. Report-stage recovery is not per-seed recovery,
+  scientific acceptance, native-custody qualification or publication authority.
+  Full software gates and independent review remain required for closure.

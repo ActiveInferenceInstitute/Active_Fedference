@@ -13,6 +13,10 @@ Importable analysis orchestration for Active Fedference.
   functions.
 - Keep generated file writes explicit and covered by tests.
 - Preserve deterministic experiment inputs from `experiment_config.py`.
+- Publication compute uses the `stage_*` owners listed in the adjacent README:
+  freeze/import under short repository leases, execute
+  explicit bounded stages externally, and reuse only fully validated completion
+  markers. See [staged analysis](../../docs/development/staged-analysis.md).
 
 ## Schema and validation boundary
 

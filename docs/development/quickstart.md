@@ -1,5 +1,8 @@
 # Contributor and reviewer-snapshot quickstart
 
+For publication compute, first complete the [bounded external stages](../development/staged-analysis.md) and set `WORKSPACE` to that frozen workspace. The import commands
+below consume validated completions; they do not start missing reports.
+
 Runnable-in-order recipe from a fresh checkout to a green baseline, generated
 reports and figures, hydrated manuscript tokens, and (optionally) a rendered
 PDF. This is the maintainer/reproduction path, not a prerequisite for using the
@@ -157,7 +160,8 @@ Parameters come from [`manuscript/config.yaml`](../../manuscript/config.yaml).
 From this repository root:
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 ```
 
 Writes JSON reports under `output/reports/` and PNG/PDF figures under
