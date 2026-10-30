@@ -6,7 +6,65 @@ without changing that historical evidence. GitVault remains the working
 collection. SanDisk is an independent GitHub-seeded collection and supplies
 neither local WIP nor runtime/reproduction evidence for this work.
 
-## Observed checkout and runtime
+## Integration update after the cancelled analysis
+
+This section supersedes the intake statuses below; the original observations
+and failed attempts remain historical evidence. Work uses the separate
+`codex/main-integration-20261030` worktree. The canonical checkout's unfinished
+native-custody changes remain outside these commits.
+
+| Unit | Completed engineering work | Remaining boundary |
+| --- | --- | --- |
+| GNN consumer | Qualified public pin `4582f99cec57b802cdbb7ee28d73eab2902b3013`, parser snapshots and lock-driven CI checkout committed. The companion owner's moving checkout was not treated as a pin. | Recheck public main before any successor refresh; the complete native/GNN software gate remains required. |
+| Installed model validation | `fedference model validate` and real native configuration refusal implemented, tested and committed; parser/backend and installed-consumer checks remain separately recorded. | Admission is not simulation, protocol replication or scientific validity. |
+| Retirements and source archive | OD21's obsolete CLI helper export removed; callers/current guidance migrated. The reviewed archive fixture rule is committed. | Scientific comparators and retained historical evidence are preserved. |
+| Frontmatter | Three explanatory plates, captions, registry entries and reading fragments committed. Template commit `7558ee58c624f7554d45b85dce1c9cc42f754610` is public in [PR 179](https://github.com/docxology/template/pull/179). | The real six-page engineering fixture places plates on physical pages 2/3/4. Complete current AF PDF/HTML/slides and accessibility/release validation remain open. |
+| Documentation failures | Current retired-symbol discovery and the three missing registry entries are repaired. All 65 documentation contracts passed in the bounded selection. | This does not validate complete rendered output or erase the original failures. |
+| Modular compute | Engine commit `22f37ad6b70de548b85194db7549ea751050dd21` adds explicit external stages, source/runtime/configuration/seed identities, atomic validated completions, cancellation, checked reuse and guarded imports. Independent bounded engineering review approved the exact source. | ISC-292 remains open for the complete software gate. Recovery is at report boundaries, not per trial or seed. |
+
+The original publication-scale analysis terminated at exit 143 and remains
+**CANCELLED/INCOMPLETE**. Its partial reports remain in the integration worktree
+and were excluded from commits. It was not automatically restarted. Follow
+[bounded staged analysis](../development/staged-analysis.md) for future explicit
+stage/resource decisions; heavy compute does not hold a repository lease.
+
+The final bounded selection passed **466 tests with zero skips**. All nine new
+modules measured **92.73% combined**, **94.86% statement** and **86.84% branch**
+coverage, with no exclusions and the unchanged 90% combined floor. Ruff and
+mypy passed. Real controls cover supervisor loss, inherited lock ownership,
+startup before numerical imports, cancellation, escalation, budgets, completed
+stage reuse, corrupt checkpoints and changed input/output refusal. The 27
+producer selections, seeds and smoke controls are preserved.
+
+Fresh `full` collection found **3,922 unique test IDs**. Collection is not a
+passing full suite. Earlier 3,858/3,864 collections are superseded inventory
+observations, not test passes. Required exact-once native/GNN execution and
+whole-source coverage are still pending.
+
+Evidence is retained under GitVault `Local/reviews/`:
+`fedference-main-integration-20261030-hggHfk` (command receipts, JUnit, coverage,
+source hashes and commit mapping), `fedference-modular-final-independent-FJ7GkHP4`
+(bounded independent source review), and `template-frontmatter-port-20261030-01`
+(real renderer fixtures). These local packets are not public release assets.
+Earlier broad coverage and 20-second smoke-budget failures remain explicit.
+Pytest rotated earlier disposable test workspaces before they were archived;
+their raw logs/JUnit remain, but those temporary bytes cannot be claimed as
+preserved. The final campaign uses its own retained directory. This loss did
+not affect the original cancelled publication reports or sealed packets.
+
+Independent review's narrow custody-order/launch-receipt qualifications remain
+separate from its engineering approval. Task19 native coverage/platform/custody,
+scientific source/replication and data-admission gates, complete rendered output,
+hosted CI and release/publication are not closed. No new Zenodo publication or
+unqualified main merge follows from this software slice.
+
+Next: finish package and hosted software checks, complete the explicit bounded
+publication stages only under an agreed resource decision, then perform final
+hydration and exact-pin PDF/HTML/slides review. Prune only integrated, unowned
+branches/worktrees through the supported removal procedure after main integration.
+
+## Historical intake observations
+
 
 These are dated observations, not permanently current constants. Recheck them
 under the supported repository/common-store lease before integration.
