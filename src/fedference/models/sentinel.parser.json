@@ -1,6 +1,6 @@
 {
   "files": {
-    "src/gnn/__init__.py": "02b1e2fd30437d9e181efa4ae9f160b411eb28fd3dc83093c76a53a1b1fac40a",
+    "src/gnn/__init__.py": "cd70221a85b46b80f3aa5e7b62dd7da54f312dd6ec1a4deda15db60356e6a23e",
     "src/gnn/extract/__init__.py": "baedcbf88025e9ddc77a594f7df6c60c90b262422b55486ff0580349e0f5d3ab",
     "src/gnn/extract/__main__.py": "eb164f49b092dec754873bce34907a1bf569dac969d96a926c701788b6e53a29",
     "src/gnn/extract/mcp.py": "8f8715cb6f6ee9e072d0ad32f48cfa572936c2c5e4a85c4472afc209d9a447f7",
@@ -14,5 +14,5 @@
     "src/gnn/utils/runtime_safety/__init__.py": "50545392d380534a3fdd0060314a426f31c737f9ec0dc9f4397ed947a18ee4b7",
     "src/gnn/utils/runtime_safety/safe_eval.py": "54dcec0a6cad18bf20d72f7d2f43ea5859a64f4f802f2789766b31001895c67c"
   },
-  "revision": "4582f99cec57b802cdbb7ee28d73eab2902b3013"
+  "revision": "a2383c0215a0d0b2591d150eb6d4d2aec53ee3e2"
 }

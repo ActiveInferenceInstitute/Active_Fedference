@@ -291,11 +291,11 @@
       "qualification": "existing-runtime-execution"
     }
   },
-  "revision": "4582f99cec57b802cdbb7ee28d73eab2902b3013",
+  "revision": "a2383c0215a0d0b2591d150eb6d4d2aec53ee3e2",
   "rtol": 1e-05,
   "schema": "fedference.gnn-backend/2",
   "source_files": {
-    "src/gnn/__init__.py": "02b1e2fd30437d9e181efa4ae9f160b411eb28fd3dc83093c76a53a1b1fac40a",
+    "src/gnn/__init__.py": "cd70221a85b46b80f3aa5e7b62dd7da54f312dd6ec1a4deda15db60356e6a23e",
     "src/gnn/execute/__init__.py": "5119b703424a680faca1be0914f0821a3828ec213c9498612fe69ac653e15d8e",
     "src/gnn/execute/data_extractors.py": "0ef72fbe786e3632a75bad80ab6cb97033d7f41d6c7758557daf1a455089666f",
     "src/gnn/execute/detection.py": "c8bf3a67dd31b34b65e7d5e83446ae6f382c5b5b7468e6d71ac39c696ddcaf73",

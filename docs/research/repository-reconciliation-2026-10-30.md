@@ -15,12 +15,19 @@ native-custody changes remain outside these commits.
 
 | Unit | Completed engineering work | Remaining boundary |
 | --- | --- | --- |
-| GNN consumer | Qualified public pin `4582f99cec57b802cdbb7ee28d73eab2902b3013`, parser snapshots and lock-driven CI checkout committed. The companion owner's moving checkout was not treated as a pin. | Recheck public main before any successor refresh; the complete native/GNN software gate remains required. |
+| GNN consumer | Qualified public pin `a2383c0215a0d0b2591d150eb6d4d2aec53ee3e2`, parser snapshots and lock-driven CI checkout committed. The companion owner's moving checkout was not treated as a pin. | Recheck public main before any successor refresh; the complete native/GNN software gate remains required. |
 | Installed model validation | `fedference model validate` and real native configuration refusal implemented, tested and committed; parser/backend and installed-consumer checks remain separately recorded. | Admission is not simulation, protocol replication or scientific validity. |
 | Retirements and source archive | OD21's obsolete CLI helper export removed; callers/current guidance migrated. The reviewed archive fixture rule is committed. | Scientific comparators and retained historical evidence are preserved. |
 | Frontmatter | Three explanatory plates, captions, registry entries and reading fragments committed. Template commit `7558ee58c624f7554d45b85dce1c9cc42f754610` is public in [PR 179](https://github.com/docxology/template/pull/179). | The real six-page engineering fixture places plates on physical pages 2/3/4. Complete current AF PDF/HTML/slides and accessibility/release validation remain open. |
 | Documentation failures | Current retired-symbol discovery and the three missing registry entries are repaired. All 65 documentation contracts passed in the bounded selection. | This does not validate complete rendered output or erase the original failures. |
 | Modular compute | Engine commit `22f37ad6b70de548b85194db7549ea751050dd21` adds explicit external stages, source/runtime/configuration/seed identities, atomic validated completions, cancellation, checked reuse and guarded imports. Independent bounded engineering review approved the exact source. | ISC-292 remains open for the complete software gate. Recovery is at report boundaries, not per trial or seed. |
+
+The successor public GNN pin was qualified in an independent snapshot after
+its actual main merge: **219 required GNN cases and 49 native/profile cases
+passed with zero skips**. Real parser/PyMDP wheel consumers and a manifest
+corruption/restoration control passed. Only version metadata changed in
+the consumed upstream closure; native model numbers, profiles and tolerances
+are unchanged. This does not certify upstream release/tag readiness.
 
 The original publication-scale analysis terminated at exit 143 and remains
 **CANCELLED/INCOMPLETE**. Its partial reports remain in the integration worktree
