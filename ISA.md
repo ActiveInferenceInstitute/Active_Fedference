@@ -1323,6 +1323,11 @@ them.
   incomplete receipts and corrupt coverage fail their real controls. Independent
   review approves the bounded bootstrap/profile scope. Hosted Linux execution,
   full production shard union and final combined coverage remain pending.
+  The 2026-10-30 maintenance follow-up validates supplied run/verify plans
+  before Git discovery. Real Git-free subprocess controls reject missing or
+  duplicate test assignments with the partition diagnostic; valid plans still
+  require Git metadata. The dated repository reconciliation separates the
+  historical collected inventory from completed test execution.
 
 - [x] ISC-286: HTML tokenization, reference rendering, resource/link policy,
   accessibility facts and transactional file custody have focused owners
@@ -1383,3 +1388,15 @@ them.
   source mutations fail before exact restoration. The first REVISE remains
   retained. Cross-process Task19 custody, broader composition, visual,
   scientific, release and publication acceptance remain separate.
+
+
+- [ ] ISC-291: The installed `fedference model validate` command is a read-only
+  adapter to canonical native/real-upstream admission, preserves complete model
+  content and scoped program digests, and rejects malformed matrices, axes,
+  site priors/clients and inapplicable explicit options before execution.
+  `tests/test_model_validation_cli.py`,
+  `tests/fedference/test_gnn_site_validation.py` and the required-profile
+  `tests/integration/test_gnn_model_cli.py` own the source contracts. Final
+  installed-wheel/sdist proof, complete coverage and independent review remain
+  required before closing this acceptance item. Model admission is not
+  simulation, protocol replication or scientific validation.

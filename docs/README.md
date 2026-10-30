@@ -9,7 +9,13 @@ AESTHETIC table for what is gate-checked versus convention.
 
 **Contract & identity:** [`../ISA.md`](../ISA.md) · [`../README.md`](../README.md) · [`../STANDALONE.md`](../STANDALONE.md)
 
-**Current public release v1.0.4:** [DOI `10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
+**Current source and GitHub release:**
+[v1.1.0](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0).
+See the [2026-10-30 reconciliation](research/repository-reconciliation-2026-10-30.md)
+for local changes, GNN pin drift, interrupted work, and validation still required.
+GitHub publication does not establish Zenodo publication or current-source certification.
+
+**Prior Zenodo version v1.0.4:** [DOI `10.5281/zenodo.21972644`](https://doi.org/10.5281/zenodo.21972644)
 · [GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.0.4)
 · [public GitHub repository](https://github.com/ActiveInferenceInstitute/Active_Fedference)
 · [Zenodo record](https://zenodo.org/records/21972644) · prior [v1.0.3 record](https://zenodo.org/records/21969756) · [v1.0.2 record](https://zenodo.org/records/21934992) · [v1.0.1 record](https://zenodo.org/records/21919307) · [v0.1.0 record](https://zenodo.org/records/21864004)

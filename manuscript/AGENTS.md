@@ -12,11 +12,14 @@ file roles, the `{{VARIABLE}}` token protocol, the figure protocol, and the
 numbered-formalism / cross-reference conventions. The acceptance contract is
 [`../ISA.md`](../ISA.md); the syntax reference is [`SYNTAX.md`](SYNTAX.md).
 
-## File Inventory (modular section set, render order = filename order)
+## File Inventory (modular sections; ordinary body order = filename order)
 
 | File | Role |
 |---|---|
 | `00_abstract.md` | Abstract; central identity plus evidence-scoped study and robustness headlines (result tokens) |
+| `00a_graphical_model.md` | Additional graphical abstract: generative model, local inference/action cycle and belief exchange |
+| `00b_graphical_robustness.md` | Additional graphical abstract: distinct client and server claim boundaries |
+| `00c_graphical_execution.md` | Additional graphical abstract: GNN consumption, execution and evidence |
 | `01_introduction.md` | Fragility of naive belief-sharing; FedGVI bridge; three-axis framing; contributions |
 | `02_gap.md` / `03_contributions.md` | Scope, three-axis honesty, contribution map |
 | `04_methods_overview.md` ... `13_methods_statistics.md` | Methods: generalized Bayes, divergences/losses, aggregation, belief sharing, POMDP world, learning, contamination, design, statistics |
@@ -32,6 +35,12 @@ numbered-formalism / cross-reference conventions. The acceptance contract is
 | `references.bib` | BibTeX (incl. `friston2024federated`, `mildner2025fedgvi`) |
 | `SYNTAX.md` | Citation / equation / figure / table / theorem label registry |
 | `README.md` / `AGENTS.md` | Human quick-reference / this agent guide |
+
+The `paper.frontmatter` list in `config.yaml` declares the additional graphical
+abstract order. Complete-paper placement after the cover and before the abstract
+requires renderer support that consumes this list once and excludes these files
+from ordinary body discovery. Until that producer is integrated and verified,
+the standalone frontmatter proof supplies placement evidence only.
 
 ## {{VARIABLE}} Protocol — no hardcoded numbers
 

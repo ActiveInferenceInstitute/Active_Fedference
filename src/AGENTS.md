@@ -42,8 +42,8 @@ Tests: `tests/fedference/test_*.py` (mirror module names).
 
 The installed CLI is split into a compatibility facade, parser, command
 handlers, and shared safety/receipt helpers. Keep the facade small and preserve
-the public `main` and `_report_fallbacks` imports; put research algorithms in
-`fedference/`, not in CLI handlers. The package-local contract is in
+the public `main` entry point. Keep `_report_fallbacks` internal to `_support`
+and research algorithms in `fedference/`. The package-local contract is in
 [`fedference_cli/README.md`](fedference_cli/README.md), and the cross-layer
 extension recipe is in
 [`../docs/development/modularity.md`](../docs/development/modularity.md).
@@ -64,7 +64,7 @@ extension recipe is in
 | `publication/zenodo.py` | Typed standard-library Zenodo draft/release boundary; no implicit publication |
 | `publication/web_package.py` | Web assets/references plus deterministic HTML accessibility invariants |
 | `publication/surface_validation.py` | Rendered PDF/slide/web surface invariants; no PDF/UA claim |
-| `fedference_cli/__init__.py` | Stable installed CLI facade; exports `main` and the legacy fallback helper |
+| `fedference_cli/__init__.py` | Stable installed CLI facade; exports the identical `_parser.main`; fallback diagnostics stay in `_support` |
 | `fedference_cli/_parser.py` | `argparse` grammar, command selection, and process-facing error mapping |
 | `fedference_cli/_commands.py` | Registry-backed run, benchmark, verify, and replay handlers |
 | `fedference_cli/_support.py` | Atomic writes, output isolation, validation, and receipt construction |

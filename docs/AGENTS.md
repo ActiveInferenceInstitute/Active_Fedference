@@ -41,6 +41,7 @@ Technical index for `docs/`. Navigation hub:
 | `reference/README.md` | Reference-document index and metadata/release boundary signposts |
 | **research/** | |
 | `research/README.md` | Research-audit index, read order, and source-currentness boundary |
+| `research/repository-reconciliation-2026-10-30.md` | Dated local/remote and runtime observations, interrupted-work reconciliation, and staged validation plan |
 | [`research/release-state-20261027.md`](research/release-state-20261027.md) | Dated hosted-byte observation; certification obligations remain open |
 | `research/repository-review-2026-10-27.md` | Dated sync/GNN review, retained negative control, normalization finding, and engineering/scientific follow-up scopes |
 | `research/literature-audit.md` | Primary-source scholarship and evidence-transfer boundaries |
