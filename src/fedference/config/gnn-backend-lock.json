@@ -291,7 +291,7 @@
       "qualification": "existing-runtime-execution"
     }
   },
-  "revision": "f0dfb68368280f3a43ff91ac28db058c968002d8",
+  "revision": "4582f99cec57b802cdbb7ee28d73eab2902b3013",
   "rtol": 1e-05,
   "schema": "fedference.gnn-backend/2",
   "source_files": {
@@ -302,7 +302,7 @@
     "src/gnn/execute/doctor.py": "935bb10679298c1fb1f2851d98722249dfcb9ffc882861a27b64c1be81fca44a",
     "src/gnn/execute/executor.py": "673a530eac6e83f11fc7035435f5013ec97a94bb728eb7734265af3c9ec35c1d",
     "src/gnn/execute/executor_report.py": "653dc7ae83d6a7a6acb56333d59d60019f4fed2a771c6e0ea85b58b13daa4473",
-    "src/gnn/execute/executor_specs.py": "b2aa02606ae9b84bd2966d2433a543157dc1b2c226dee3b07f3f5ddfcdc61842",
+    "src/gnn/execute/executor_specs.py": "f3dbe46dc1f119fc7d4233a192fa2470c024236b5eb644ad90d13772f91fed8f",
     "src/gnn/execute/julia_env.py": "756648281828a2dbdfe8d637d3e5a9717dae680786a4c2d52af33bf8ceca3674",
     "src/gnn/execute/julia_setup.py": "32c169ffefc8a080253cff8a3b10424f3b79cc674ec5ebcff41c5375ed46e6d8",
     "src/gnn/execute/metadata.py": "db89c94549e458d1065e5e0b1a65ba744cdae74b9371aeb7e2996fe04631ddd4",
