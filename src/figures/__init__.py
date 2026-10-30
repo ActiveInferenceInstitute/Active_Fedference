@@ -62,6 +62,9 @@ from .efe_decomposition import generate_efe_decomposition
 from .emergence_bmr import generate_emergence_bmr
 from .evidence_replication_map import generate_evidence_replication_map
 from .free_energy_comparison import generate_free_energy_comparison
+from .frontmatter_execution import generate_frontmatter_execution
+from .frontmatter_model import generate_frontmatter_model
+from .frontmatter_robustness import generate_frontmatter_robustness
 from .generative_model_schema import generate_generative_model_schema
 from .graphical_abstract import generate_graphical_abstract
 from .heuristic_breakdown import generate_heuristic_breakdown
@@ -104,6 +107,9 @@ __all__ = [
     "generate_heuristic_breakdown",
     "generate_hierarchical_bmr",
     "generate_free_energy_comparison",
+    "generate_frontmatter_execution",
+    "generate_frontmatter_model",
+    "generate_frontmatter_robustness",
     "generate_graphical_abstract",
     "generate_generative_model_schema",
     "generate_language_kl_decay",

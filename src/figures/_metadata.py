@@ -13,7 +13,7 @@ from typing import Final
 from analysis.visual_contracts import COMPLEX_FIGURE_GENERATORS
 
 FIGURE_SUPPORT_MODULES: Final[frozenset[str]] = frozenset({
-    "__init__", "_common", "_metadata", "_presentation",
+    "__init__", "_common", "_metadata", "_presentation", "_frontmatter",
     "_presentation_flows", "_presentation_robustness", "_presentation_diagnostics",
     "_presentation_estimates",
     "_presentation_schematics",
@@ -38,6 +38,9 @@ _GENERATORS: Final[tuple[str, ...]] = (
     "emergence_bmr",
     "evidence_replication_map",
     "free_energy_comparison",
+    "frontmatter_execution",
+    "frontmatter_model",
+    "frontmatter_robustness",
     "generative_model_schema",
     "graphical_abstract",
     "heuristic_breakdown",
@@ -64,6 +67,25 @@ _SOURCE_CITATION = "Friston et al. (2024), Federated inference and belief sharin
 # the claim boundary; the neighbouring manuscript caption remains the long
 # description with source-bound numeric tokens.
 _ALT_TEXT: Final[dict[str, str]] = {
+    'frontmatter_execution': (
+        'An admitted GNN model branches into native matrix consumption and a dashed opt'
+        'ional upstream path requiring a qualified runtime and actual run. Both lead to'
+        ' retained receipts. Integrity is distinct from scientific validity; parser suc'
+        'cess is not execution.'
+    ),
+    'frontmatter_model': (
+        'A model graph links initial beliefs, hidden states, transitions and observatio'
+        'ns. A lower solid loop connects observe, infer and act; dashed arrows exchange'
+        ' posterior and cavity beliefs with fusion. The shared-support Eq. 7 bridge doe'
+        's not reconstruct the full source protocol.'
+    ),
+    'frontmatter_robustness': (
+        'A source-conditional client update precedes a choice between H heuristic and V'
+        ' variational server boxes. H owns zero-robustness log-pool recovery; V owns ob'
+        'jective descent and raw-weight bounds. No client theorem transfers to either s'
+        'erver rule.'
+    ),
+
     "aggregation_descent": (
         "Line plot of variational free energy versus block-coordinate iteration. "
         "The trace drops steeply at first, then remains flat through convergence."
@@ -844,6 +866,90 @@ def _build_metadata() -> dict[str, dict[str, str]]:
         unit="pipeline stage or publication state",
         uncertainty="none; deterministic source-owned contract",
         replication_unit="not applicable",
+    )
+    # Conceptual opening pages: no new measurements or replication claims.
+    metadata['frontmatter_execution'].update(
+        status="explanatory conceptual frontmatter",
+        source_relation="original source-inspired conceptual schematic",
+        source_citation=(
+            'Source-owned implementation map: fedference.gnn.loader, native and backend; ex'
+            'amples/06_gnn_sentinel.py'
+        ),
+        source_figure='',
+        source_equation='',
+        estimand="not applicable; no measured estimand",
+        unit="not applicable; conceptual relationships",
+        uncertainty="not applicable; deterministic conceptual schematic",
+        replication_unit="not applicable; no empirical replication",
+        long_description=(
+            'Reading order: top to bottom. Solid arrows show model or data flow; dashed arr'
+            'ows distinguish communication or prerequisites.\n\nA GNN model document is admit'
+            'ted through a pinned parser, or the packaged sentinel uses its source-bound ca'
+            'che. Validate dimensions, axis order, support, and model matrices before consu'
+            'mption.\n\nNative execution consumes GNN-derived A, B, C, D values through nativ'
+            'e_world and native_posterior. The sentinel exchange example compares extracted'
+            ' matrices against the native model.\n\nOptional upstream execution requires an e'
+            'xplicit source root, qualified runtime and backend contract, followed by real '
+            'execution and parity checks. Dashed arrows mark prerequisites, not a backend s'
+            'upport or qualification claim.\n\nReceipts bind declared sources, inputs and out'
+            'puts. Integrity evidence does not establish scientific validity. Parser succes'
+            's is not execution; matrix parity is not protocol replication; scientific conc'
+            'lusions still require appropriate models, controls and scoped evidence.'
+        ),
+    )
+    metadata['frontmatter_model'].update(
+        status="explanatory conceptual frontmatter",
+        source_relation="original source-inspired conceptual schematic",
+        source_citation=(
+            'Friston et al. (2024), Figs. 1/4 and Eq. 7; manuscript/07, /08, /09; fedferenc'
+            'e.pomdp and belief_sharing'
+        ),
+        source_figure='Figs. 1 and 4',
+        source_equation='Eq. 7',
+        estimand="not applicable; no measured estimand",
+        unit="not applicable; conceptual relationships",
+        uncertainty="not applicable; deterministic conceptual schematic",
+        replication_unit="not applicable; no empirical replication",
+        long_description=(
+            'Reading order: top to bottom. Solid arrows show model or data flow; dashed arr'
+            'ows distinguish communication or prerequisites.\n\nGenerative model: D supplies '
+            'initial state beliefs. B maps state and action to the next state. A maps hidde'
+            'n states to observations. C supplies log preferences over outcomes.\n\nObserve o'
+            'utcomes, infer a local categorical posterior, evaluate policies with expected '
+            'free energy, then act and observe again. Solid arrows distinguish the closed p'
+            'erception and action cycle.\n\nShare posterior beliefs, not raw observations. Da'
+            'shed message edges take admitted posteriors to fusion and return recipient-spe'
+            "cific cavity beliefs, excluding the recipient's own message.\n\nThe Eq. 7 bridge"
+            ' assumes shared positive support, posterior log potentials, and fixed weights.'
+            ' It specializes categorical combination; it does not reconstruct the complete '
+            'source protocol.'
+        ),
+    )
+    metadata['frontmatter_robustness'].update(
+        status="explanatory conceptual frontmatter",
+        source_relation="original source-inspired conceptual schematic",
+        source_citation='Mildner et al. (2025); manuscript/06 and /07; fedference.fedgvi and aggregation',
+        source_figure='',
+        source_equation='',
+        estimand="not applicable; no measured estimand",
+        unit="not applicable; conceptual relationships",
+        uncertainty="not applicable; deterministic conceptual schematic",
+        replication_unit="not applicable; no empirical replication",
+        long_description=(
+            'Reading order: top to bottom. Solid arrows show model or data flow; dashed arr'
+            'ows distinguish communication or prerequisites.\n\nClient FedGVI: generalized va'
+            'riational updates combine a divergence and a loss. Bounded-loss influence clai'
+            "ms require the source's matching model and regularity assumptions. KL/NLL with"
+            ' beta zero recovers the project-local Bayes update.\n\nHeuristic server: robust_'
+            'aggregate discounts reports by disagreement with the emerging consensus. At ro'
+            'bustness zero it exactly returns log_linear_pool. Recovery only; no transferre'
+            'd client theorem.\n\nVariational server: variational_aggregate alternates consen'
+            'sus and raw effective-weight updates on a stated objective. Descent and raw-we'
+            'ight bounds do not prove estimator B-robustness.\n\nChoose one server rule after'
+            ' the client update. Guarantees stay with their own mathematical construction. '
+            'No universal robustness or source protocol replication follows from this diagr'
+            'am.'
+        ),
     )
     return metadata
 
