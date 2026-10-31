@@ -141,3 +141,7 @@ producers to check cancellation, timeout, resume, reuse, writer exclusion,
 malformed/corrupt markers and reports, and changed-input/output refusal.
 `test_stage_catalog.py` checks all producer call contracts and small real
 payloads. No full publication rerun is implied by these smoke checks.
+
+## GNN model consumption within a moving-world trial
+
+Each moving-world trial admits its GNN source and native parameterization once. Both action selection and observation updates consume that admitted per-position observation map throughout the trial. Observation updates retain independent likelihood copies; they do not repeatedly reload and revalidate the same source for each agent and step. Admission still occurs for every new trial, so there is no process-global source cache or skipped model validation. Seeds, RNG draw order, trial counts, solver settings and stage deadlines are unchanged.
