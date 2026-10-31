@@ -8,6 +8,7 @@ import importlib
 import importlib.machinery
 import importlib.util
 import json
+import sys
 from collections.abc import Callable
 from importlib import resources
 from pathlib import Path
@@ -143,7 +144,11 @@ def test_canonical_result_paths_preserve_numeric_controls(index: int) -> None:
     )
     # Then every numeric and diagnostic field matches the frozen characterization.
     _assert_pinned(direct, case["result"])
-    _assert_pinned(shared, case["sharing"])
+    reference = _sharing_reference().share_round_result(
+        case["rows"], config=config, base_weights=case["weights"],
+        exclude_self=case["exclude_self"], true_state=0,
+    )
+    _assert_exact_report(shared, reference)
 
 
 @pytest.mark.parametrize("iterations", (32, 64))
@@ -181,29 +186,59 @@ REFERENCE_SHA256 = "4408a7a80bfbe34ec58a62fce61f3424a33fa79bca08530726b97e251cee
 REFERENCE_PATH = Path(__file__).parent / "fixtures/api_migration/benchmark-3ec62f68.py.txt"
 
 
-def _benchmark_reference(path: Path = REFERENCE_PATH) -> ModuleType:
-    """Execute only the hash-bound original, with its own benchmark function."""
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == REFERENCE_SHA256
-    name = "fedference._benchmark_migration_reference"
+SHARING_REFERENCE_SHA256 = "7ae27fae8cf4dfa4e1a9b08aa9c5581260fdc3c298087fff033fad1cf68820e6"
+SHARING_REFERENCE_PATH = REFERENCE_PATH.with_name("sharing-3ec62f68.py.txt")
+
+
+def _reference_module(path: Path, expected_sha256: str, name: str) -> ModuleType:
+    """Load only an immutable original under its own test-only module name."""
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_sha256
     loader = importlib.machinery.SourceFileLoader(name, str(path))
     spec = importlib.util.spec_from_loader(name, loader)
     assert spec is not None
     module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
+    # Dataclass annotation resolution needs a registered module while it loads.
+    # This private name never replaces a production dependency or implementation.
+    previous = sys.modules.get(name)
+    sys.modules[name] = module
+    try:
+        loader.exec_module(module)
+    finally:
+        if previous is None:
+            del sys.modules[name]
+        else:
+            sys.modules[name] = previous
+    return module
+
+
+def _benchmark_reference(path: Path = REFERENCE_PATH) -> ModuleType:
+    module = _reference_module(path, REFERENCE_SHA256, "fedference._benchmark_migration_reference")
     assert module.run_benchmark is not run_benchmark
+    assert module.aggregate_result is aggregate_result
+    return module
+
+
+def _sharing_reference(path: Path = SHARING_REFERENCE_PATH) -> ModuleType:
+    module = _reference_module(path, SHARING_REFERENCE_SHA256, "fedference._sharing_migration_reference")
+    assert module.share_round_result is not share_round_result
     assert module.aggregate_result is aggregate_result
     return module
 
 
 def _assert_exact_report(actual: object, expected: object) -> None:
     """Retain exact report types, keys, values and integer diagnostics."""
+    if dataclasses.is_dataclass(actual):
+        assert dataclasses.is_dataclass(expected)
+        actual, expected = dataclasses.asdict(actual), dataclasses.asdict(expected)
     assert type(actual) is type(expected)
-    if isinstance(actual, dict):
+    if isinstance(actual, np.ndarray):
+        np.testing.assert_array_equal(actual, expected, strict=True)
+    elif isinstance(actual, dict):
         assert isinstance(expected, dict) and actual.keys() == expected.keys()
         for key in actual:
             _assert_exact_report(actual[key], expected[key])
-    elif isinstance(actual, list):
-        assert isinstance(expected, list) and len(actual) == len(expected)
+    elif isinstance(actual, (tuple, list)):
+        assert isinstance(expected, (tuple, list)) and len(actual) == len(expected)
         for value, reference in zip(actual, expected, strict=True):
             _assert_exact_report(value, reference)
     else:
@@ -263,6 +298,60 @@ def test_same_runtime_migration_oracle_rejects_wrong_current_parameters(field: s
     changed.update(dataset=resource.name, n_rows=int(features.shape[0]), n_features=int(features.shape[1]))
     with pytest.raises(AssertionError):
         _assert_exact_report(changed, reference)
+
+
+def test_sharing_reference_has_original_provenance_and_rejects_changed_bytes(tmp_path: Path) -> None:
+    metadata = json.loads((SHARING_REFERENCE_PATH.parent / "sharing-reference.json").read_text())
+    assert metadata["revision"] == "3ec62f68f08b03dc22323fa4e8a67b0c87be894e"
+    assert metadata["path"] == "src/fedference/belief_sharing.py"
+    assert metadata["sha256"] == SHARING_REFERENCE_SHA256
+    changed = tmp_path / "sharing.py.txt"
+    changed.write_bytes(SHARING_REFERENCE_PATH.read_bytes() + b"\n# changed\n")
+    with pytest.raises(AssertionError):
+        _sharing_reference(changed)
+    assert "fedference._sharing_migration_reference" not in sys.modules
+    assert _sharing_reference().share_round_result.__module__ == "fedference._sharing_migration_reference"
+    assert "fedference._sharing_migration_reference" not in sys.modules
+
+
+@pytest.mark.parametrize("field", ("exclude_self", "true_state"))
+def test_sharing_migration_refuses_changed_current_controls(field: str) -> None:
+    case = PIN["cases"][4]
+    kwargs = {"config": AggregationConfig(**case["config"]), "base_weights": case["weights"],
+              "exclude_self": case["exclude_self"], "true_state": 0}
+    reference = _sharing_reference().share_round_result(case["rows"], **kwargs)
+    kwargs[field] = not case["exclude_self"] if field == "exclude_self" else 1
+    changed = share_round_result(case["rows"], **kwargs)
+    with pytest.raises(AssertionError):
+        _assert_exact_report(changed, reference)
+
+
+@pytest.mark.parametrize("kind", ("iterations", "array", "mean_accuracy", "dtype"))
+def test_sharing_migration_refuses_changed_complete_diagnostics(kind: str) -> None:
+    case = PIN["cases"][4]
+    original = share_round_result(
+        case["rows"], config=AggregationConfig(**case["config"]), base_weights=case["weights"],
+        exclude_self=case["exclude_self"], true_state=0,
+    )
+    if kind == "iterations":
+        global_result = dataclasses.replace(original.global_aggregation,
+                                             iterations=original.global_aggregation.iterations + 1)
+        changed = dataclasses.replace(original, global_aggregation=global_result)
+    elif kind == "mean_accuracy":
+        assert original.mean_accuracy is not None
+        changed = dataclasses.replace(
+            original, mean_accuracy=float(np.nextafter(original.mean_accuracy, 1.0))
+        )
+    elif kind == "array":
+        shared = original.shared_posteriors.copy()
+        shared[0] = np.roll(shared[0], 1)
+        changed = dataclasses.replace(original, shared_posteriors=shared)
+    else:
+        with pytest.raises(AssertionError):
+            _assert_exact_report(np.array([0.5], dtype=np.float32), np.array([0.5], dtype=np.float64))
+        return
+    with pytest.raises(AssertionError):
+        _assert_exact_report(changed, original)
 
 
 def test_missing_truth_is_none_and_naive_influence_is_normalized() -> None:
