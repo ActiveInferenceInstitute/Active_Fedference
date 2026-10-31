@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from pathlib import Path
 
 from documentation import (
@@ -15,6 +16,23 @@ from documentation import (
 def test_build_api_reference_markdown_is_the_template() -> None:
     assert build_api_reference_markdown() == API_REFERENCE_TEMPLATE
     assert "API Reference" in build_api_reference_markdown()
+
+
+def test_api_reference_names_supported_result_interfaces() -> None:
+    reference = build_api_reference_markdown()
+    for module, name in (
+        ("fedference", "aggregate_result"),
+        ("fedference", "share_round_result"),
+        ("fedference.federation", "run_multiprocess_round_result"),
+        ("fedference.federation", "run_socket_round_result"),
+    ):
+        assert name in reference
+        assert callable(getattr(import_module(module), name))
+    for retired in ("aggregate", "share_round", "run_multiprocess_round", "run_socket_round"):
+        assert f"`{retired}(" not in reference
+    for retired in ("share_round", "run_multiprocess_round", "run_socket_round"):
+        assert f"`{retired}`" not in reference
+    assert "`aggregate` remains" not in reference
 
 
 def test_run_api_doc_generation_writes_reference(tmp_path: Path) -> None:

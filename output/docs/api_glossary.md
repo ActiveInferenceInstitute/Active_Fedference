@@ -49,6 +49,34 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.schemas.worlds` | `HierarchicalWorldReport` | class | Top-level payload written to ``hierarchical_world.json``. |
 | `analysis.schemas.worlds` | `MovingWorldReport` | class | Top-level payload written to ``moving_world.json``. |
 | `analysis.schemas.worlds` | `NLevel3WorldReport` | class | Top-level payload written to ``nlevel3_world.json``. |
+| `analysis.stage_bundle` | `assemble_bundle` | function | Generate derivatives without rerunning any completed scientific report. |
+| `analysis.stage_bundle` | `bundle_files` | function | Use the existing producer's declared artifact boundary, not a second roster. |
+| `analysis.stage_bundle` | `import_bundle` | function | Caller holds a short destination lease; partial imports cannot mint acceptance. |
+| `analysis.stage_bundle` | `validate_bundle` | function | Rehash the complete source-owned output inventory, including added/removed files. |
+| `analysis.stage_catalog` | `report_producers` | function | Bind lazy producers to an already effective configuration and explicit root. |
+| `analysis.stage_checkpoint` | `import_report` | function | Import one checked report under a short repository lease; no analysis receipt. |
+| `analysis.stage_checkpoint` | `load_checkpoint` | function | A filename alone is never a reusable checkpoint. |
+| `analysis.stage_checkpoint` | `preserve_import_target` | function | Refuse concurrent output edits and retain the previous admitted bytes. |
+| `analysis.stage_identity` | `output_baseline` | function | Bind replaceable outputs so later peer edits cannot be clobbered by import. |
+| `analysis.stage_identity` | `runtime_identity` | function | Bind actual Python, numerical packages and thread selectors, without host paths. |
+| `analysis.stage_identity` | `source_names` | function | Bind the full admitted source/resource roster, including additions. |
+| `analysis.stage_identity` | `validate_source_tree` | function | Reject source links before fingerprinting can read through them. |
+| `analysis.stage_io` | `StageError` | class | A staged run's identity, artifact or operation is inadmissible. |
+| `analysis.stage_io` | `atomic_bytes` | function | Replace one validated artifact atomically; retain interrupted temporaries. |
+| `analysis.stage_io` | `confined` | function | Refuse noncanonical names, symlinks and escapes beneath an owned root. |
+| `analysis.stage_io` | `digest` | function | Hash exact bytes rather than a path or modification time. |
+| `analysis.stage_io` | `encode` | function | Produce one finite canonical JSON representation. |
+| `analysis.stage_io` | `read_json` | function | Reject ambiguous JSON before interpreting a marker or report. |
+| `analysis.stage_process` | `StageCancelled` | class | A Python producer observed its owned supervisor's termination request. |
+| `analysis.stage_process` | `StageTimedOut` | class | The worker's own budget expired, independently of its supervisor. |
+| `analysis.stage_process` | `inherit_workspace_lock` | function | Keep the same kernel lock alive across supervisor death, before recording a PID. |
+| `analysis.stage_process` | `request_cancel` | function | Request cooperative cancellation of one named attempt, without signalling others. |
+| `analysis.stage_process` | `workspace_lock` | function | Serialize this external workspace only; never acquire a collection lease. |
+| `analysis.stage_process` | `writer_held` | function | Observe the kernel lock without creating files or trusting an active record. |
+| `analysis.stage_runner` | `run_stage` | function | Run or reuse exactly one requested stage, with fail-closed identity validation. |
+| `analysis.stage_worker` | `worker` | function | Execute the admitted frozen producer and commit its report before its marker. |
+| `analysis.stage_workspace` | `admit_workspace` | function | Revalidate the complete identity before compute, reuse or import. |
+| `analysis.stage_workspace` | `prepare_workspace` | function | Freeze source/config/seed inputs under a short caller-held repository lease. |
 | `analysis.visual_contracts` | `ApplicationIntegrityFlowReport` | class | Typed payload for the application integrity and solver-health figure. |
 | `analysis.visual_contracts` | `EvidenceLane` | class | One claim-owner lane in the evidence and replication map. |
 | `analysis.visual_contracts` | `EvidenceReplicationMapReport` | class | Typed payload for the evidence-class and replication-unit map. |
@@ -60,6 +88,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `analysis.visual_contracts` | `evidence_replication_map_contract` | function | Return a defensive copy of the evidence and replication map contract. |
 | `analysis.visual_contracts` | `source_render_provenance_contract` | function | Return a defensive copy of the source-to-render provenance contract. |
 | `analysis.workflow` | `DuplicateArtifactError` | class | A report producer attempted to reuse an accepted artifact key or path. |
+| `analysis.workflow` | `effective_analysis_config` | function | Resolve unchanged scientific budgets for direct and staged producers. |
 | `analysis.workflow` | `main` | function | Run the analysis pipeline and print every artifact path to stdout. |
 | `analysis.workflow` | `resolve_analysis_profile` | function | Return the effective workflow budget profile for a project root. |
 | `analysis.workflow` | `run_analysis_pipeline` | function | Run every fedference experiment, write reports + figures, return paths. |
@@ -269,6 +298,7 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.gnn.site_checkpoint` | `restore_checkpoint` | function | Reject stale model binding before returning a native server state. |
 | `fedference.gnn.sites` | `SiteRun` | class | Real cavity/replacement states and bounded protocol parity. |
 | `fedference.gnn.sites` | `run_sites` | function | Run signed diagonal prior × sites, proper cavity, and factor replacement. |
+| `fedference.gnn.sites` | `site_configuration` | function | Admit native site parameters and all cavities without advancing a round. |
 | `fedference.gnn.source` | `ParsedExtensions` | class | Immutable preserved payload and parser/source binding, not admission. |
 | `fedference.gnn.source` | `parse_extensions` | function | Execute the pinned normal parser import from a verified-only snapshot. |
 | `fedference.gnn.structured_admission` | `StructuredProgram` | class | Immutable admitted model and source-bound native mapping. |
@@ -377,6 +407,12 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `figures.emergence_bmr` | `generate_emergence_bmr` | function | Render the redundant-vs-supported model-reduction free-energy contrast. |
 | `figures.evidence_replication_map` | `generate_evidence_replication_map` | function | Render an aligned evidence ledger plus nesting and no-transfer strips. |
 | `figures.free_energy_comparison` | `generate_free_energy_comparison` | function | Render paired free energies and their signed seed-level differences. |
+| `figures.frontmatter_execution` | `build_figure` | function | Branch admitted model data into native and conditional upstream routes. |
+| `figures.frontmatter_execution` | `generate_frontmatter_execution` | function | Generate the execution/evidence pair and complete reading panels. |
+| `figures.frontmatter_model` | `build_figure` | function | Draw a model graph above an explicit perception/action/sharing cycle. |
+| `figures.frontmatter_model` | `generate_frontmatter_model` | function | Generate the conceptual pair plus source-owned reading panels. |
+| `figures.frontmatter_robustness` | `build_figure` | function | Place the conditional client owner above two distinct server branches. |
+| `figures.frontmatter_robustness` | `generate_frontmatter_robustness` | function | Generate the three-axis conceptual pair and complete reading panels. |
 | `figures.generative_model_schema` | `generate_generative_model_schema` | function | Generate the formal categorical generative-model schematic. |
 | `figures.graphical_abstract` | `generate_graphical_abstract` | function | Generate the refreshed graphical abstract and manuscript cover. |
 | `figures.graphical_abstract` | `main` | function | Generate the graphical abstract and print its output paths. |

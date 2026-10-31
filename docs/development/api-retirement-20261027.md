@@ -757,7 +757,10 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "symbol": "src/fedference/belief_sharing.py::share_round_result(weights=)"
     },
     {
-      "callsites": [],
+      "callsites": [
+        "tests/test_unified_domain_api.py::test_explicit_benchmark_inputs_preserve_reports",
+        "tests/test_unified_domain_api.py::test_same_runtime_migration_oracle_rejects_wrong_current_parameters"
+      ],
       "disposition": "owner-decision",
       "historical_reader": "none-supported-interface",
       "kind": "retained-interface",
@@ -1006,10 +1009,12 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     },
     {
       "callsites": [
+        "src/analysis/stage_catalog.py::report_producers",
         "src/analysis/workflow.py::<module>",
         "src/analysis/workflow.py::run_analysis_pipeline",
         "src/fedference/experiments/__init__.py::<module>",
-        "src/figures/cross_study_summary.py::_load_cross_study_report"
+        "src/figures/cross_study_summary.py::_load_cross_study_report",
+        "tests/analysis/test_stage_catalog.py::_input_contract"
       ],
       "disposition": "owner-decision",
       "historical_reader": "schema-or-return-migration",
@@ -1051,11 +1056,15 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     },
     {
       "callsites": [
+        "src/analysis/stage_catalog.py::report_producers",
         "src/analysis/workflow.py::<module>",
         "src/analysis/workflow.py::run_analysis_pipeline",
         "src/fedference/experiments/__init__.py::<module>",
         "tests/analysis/test_report_schemas.py::<module>",
         "tests/analysis/test_report_schemas.py::_base_valid_payload_for_name",
+        "tests/analysis/test_stage_catalog.py::_input_contract",
+        "tests/analysis/test_stage_catalog.py::test_call_contract_accepts_real_helpers_and_partials_and_rejects_wrong_seed",
+        "tests/analysis/test_stage_catalog.py::test_observation_restores_profile_after_real_producer_failure",
         "tests/fedference/test_hierarchical_bmr.py::<module>",
         "tests/fedference/test_hierarchical_bmr.py::test_report_identifies_surprise_threshold_as_primary_control",
         "tests/fedference/test_hierarchical_bmr.py::test_report_rejects_invalid_control_configuration",
@@ -1701,6 +1710,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "scripts/02_run_analysis.py::<module>",
         "scripts/_generate_api_docs.py::<module>",
         "scripts/_generate_api_docs.py::main",
+        "scripts/analysis_stages.py::<module>",
         "scripts/bootstrap_gnn.py::<module>",
         "scripts/build_release.py::<module>",
         "scripts/ci_shards.py::<module>",

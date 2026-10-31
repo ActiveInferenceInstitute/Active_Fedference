@@ -14,9 +14,9 @@ diagnostic policy, start with the source-owned
 | Need | Public boundary |
 | --- | --- |
 | Deterministic categorical aggregation | `AggregationConfig` + `aggregate_result` |
-| Per-recipient in-process belief sharing | `share_round` |
-| One-machine process isolation | `run_multiprocess_round` |
-| Loopback transport and replay testing | `run_socket_round` / `validate_socket_replay` |
+| Per-recipient in-process belief sharing | `share_round_result` |
+| One-machine process isolation | `run_multiprocess_round_result` |
+| Loopback transport and replay testing | `run_socket_round_result` / `validate_socket_replay` |
 | Isolated research runs and receipts | installed `fedference` CLI |
 
 Runnable programs for every row are in [`examples/`](../../examples/README.md).
@@ -54,21 +54,20 @@ normalized influence diagnostic.
 - `variational_aggregate(..., robustness=..., entropy_weight=1.0, ...)` is the
   objective-backed conservative server rule. Its raw effective-weight bound and
   block-descent certificate are not estimator-level B-robustness.
-- `aggregate(...)` remains the array-returning compatibility dispatcher.
 
 The low-level robust solvers default to zero robustness, whereas an explicitly
-robust `AggregationConfig` retains the compatibility default of one. New code
+robust `AggregationConfig` defaults to one. New code
 should always set robustness explicitly.
 
 ## Belief sharing and federation
 
-- `share_round(..., config=..., exclude_self=True)` performs one in-process
+- `share_round_result(..., config=..., exclude_self=True)` performs one in-process
   round. `consensus` is the global aggregation; `shared_posteriors` are
   recipient-specific leave-one-out values when self-exclusion is enabled.
-- `run_multiprocess_round(..., config=...)` runs the uniform-base-weight global
+- `run_multiprocess_round_result(..., config=...)` runs the uniform-base-weight global
   aggregation through spawned OS processes on one machine. Call it from a real
   guarded script (`if __name__ == "__main__":`) so spawn can import safely.
-- `run_socket_round(..., config=..., auth_key=..., replay_path=...)` exercises
+- `run_socket_round_result(..., config=..., auth_key=..., replay_path=...)` exercises
   the same uniform-base-weight rule over loopback TCP. HMAC protects frames
   under a caller-supplied key; it is not TLS, key exchange, or cross-host
   deployment security.
@@ -81,7 +80,7 @@ weights; use direct aggregation or sharing when non-uniform coefficients are
 required.
 
 Construct and retain one explicit `AggregationConfig` across direct, sharing,
-process, socket, and replay boundaries. Adapter-specific compatibility defaults
+process, socket, and replay boundaries. Adapter-specific defaults
 can recover the same numeric pool while carrying different method declarations,
 iteration budgets, and configuration fingerprints.
 
@@ -115,7 +114,8 @@ from both server-side zero-robustness recovery statements.
 automatically citable evidence. The research registry declares estimands,
 units, falsifiers, budgets, profiles, and no-claim outcomes.
 
-The installed CLI exposes `list`, `run`, `benchmark`, `verify`, and `replay`.
+The installed CLI exposes `list`, `run`, `benchmark`, `verify`, `replay`,
+`aggregate`, and `model validate`.
 Write commands require an explicit empty directory outside committed `output/`.
 Smoke and pilot profiles test mechanics; they do not become confirmatory or
 manuscript evidence merely because a receipt verifies.

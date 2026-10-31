@@ -398,6 +398,22 @@ def test_inventory_covers_deprecated_runtime_symbols() -> None:
     assert_contract(ROOT, read_inventory(ROOT))
 
 
+def test_inventory_rejects_missing_current_stage_caller() -> None:
+    """A source-derived caller refresh must retain its ability to reject drift."""
+    inventory = read_inventory(ROOT)
+    assert_contract(ROOT, inventory)
+    symbol = "src/fedference/experiments/cross_study.py::summarize_cross_study"
+    entry = next(row for row in inventory["entries"] if row["symbol"] == symbol)
+    caller = "src/analysis/stage_catalog.py::report_producers"
+    assert caller in entry["callsites"]
+    entry["callsites"].remove(caller)
+    with pytest.raises(AssertionError, match="caller inventory drift"):
+        assert_contract(ROOT, inventory)
+    entry["callsites"].append(caller)
+    entry["callsites"].sort()
+    assert_contract(ROOT, inventory)
+
+
 def test_unclassified_symbol_or_historical_reader_removal(tmp_path: Path) -> None:
     """Real disposable source copies reject additions and protected removals."""
     for directory in ("src", "tests", "examples", "scripts"):
