@@ -15,7 +15,14 @@ from analysis.stage_io import StageError, confined, digest
 
 def runtime_identity() -> dict[str, Any]:
     """Bind actual Python, numerical packages and thread selectors, without host paths."""
-    packages = sorted((item.metadata["Name"], item.version) for item in importlib.metadata.distributions())
+    # Caller sys.path can contain duplicate editable/source metadata that an
+    # isolated worker never sees. Bind the selected interpreter's installation
+    # directories instead; source files have their own independent identity.
+    package_roots = sorted({sysconfig.get_path("purelib"), sysconfig.get_path("platlib")})
+    packages = sorted(
+        (item.metadata["Name"], item.version)
+        for item in importlib.metadata.distributions(path=package_roots)
+    )
     return {
         "python": platform.python_version(),
         "implementation": sys.implementation.name,

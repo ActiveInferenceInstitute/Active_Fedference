@@ -66,6 +66,13 @@ Direct library and temporary smoke workflows remain available for tests.
 profile and therefore all configured seeds and budgets, actual Python/platform,
 interpreter binary/ABI, installed distribution versions, and numerical thread selectors. Preparation verifies
 its pre/post input snapshot. Every execution, reuse and import revalidates it.
+The installed-distribution roster comes from the selected interpreter's
+`purelib` and `platlib` directories, with an identical directory counted once.
+Caller-only metadata and duplicate `sys.path` entries do not describe a changed
+installed environment. Actual installed name/version changes, interpreter/ABI
+changes and numerical thread-selector changes still invalidate reuse. Source
+bytes are bound separately; this does not permit an old workspace to adopt
+changed code or an unqualified interpreter.
 Changed code, config, seed or runtime requires a new workspace; it cannot reuse
 old reports by filename. Completion is not an authenticity or scientific-validity
 claim about caller-controlled files.
