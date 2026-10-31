@@ -239,6 +239,7 @@ def test_cache_consistent_digest_still_rejects_payload_change(tmp_path: Path) ->
 def test_real_parser_closure_tamper_and_cleanup(tmp_path: Path) -> None:
     # Given a copy of the exact parser closure with one modified file.
     import shutil
+    import tempfile
 
     from fedference.gnn.source import EXTENSION_MANIFEST
 
@@ -251,14 +252,15 @@ def test_real_parser_closure_tamper_and_cleanup(tmp_path: Path) -> None:
         shutil.copyfile(upstream / relative, destination)
     target = root / "src/gnn/parsers/markdown_parser.py"
     target.write_text(target.read_text() + "\n# tampered\n")
-    before = sorted(p.name for p in Path(os.environ["TMPDIR"]).glob("fedference-extensions-*"))
+    temporary_root = Path(tempfile.gettempdir())
+    before = sorted(p.name for p in temporary_root.glob("fedference-extensions-*"))
     # When the genuine extraction boundary checks its closure before execution.
     with pytest.raises(GNNAdmissionError, match="GNN_PARSER_DRIFT"):
         load_structured(
             MOVING_ASSET, upstream_root=root, dependency_root=Path(os.environ["GNN_PARSER_DEPENDENCIES"])
         )
     # Then temporary parser snapshots are cleaned and upstream was not changed.
-    assert sorted(p.name for p in Path(os.environ["TMPDIR"]).glob("fedference-extensions-*")) == before
+    assert sorted(p.name for p in temporary_root.glob("fedference-extensions-*")) == before
     assert (upstream / "src/gnn/parsers/markdown_parser.py").read_bytes() != target.read_bytes()
 
 
