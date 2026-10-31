@@ -17,6 +17,12 @@ fusion for active-inference agents. This introduction states the problem and its
 evidence boundary; [@sec:gap] scopes the reviewed gap, and [@sec:contributions]
 lists the contributions together with what each result does not establish.
 
+The opening graphical abstracts provide a reading map: the generative model and
+belief-exchange cycle in [@fig:frontmatter-model], the distinct client and server
+robustness boundaries in [@fig:frontmatter-robustness], and the model-to-execution
+evidence chain in [@fig:frontmatter-execution]. These conceptual schematics orient
+the detailed assumptions, methods, and evidence that follow.
+
 ## Active inference supplies generative agents and shared beliefs {#sec:intro-active-inference}
 
 Active inference casts perception, learning, and action as the minimization of
