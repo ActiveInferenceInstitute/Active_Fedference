@@ -5,10 +5,13 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import importlib
+import importlib.machinery
+import importlib.util
 import json
 from collections.abc import Callable
 from importlib import resources
 from pathlib import Path
+from types import ModuleType
 from typing import TypeAlias
 
 import numpy as np
@@ -51,7 +54,7 @@ PinnedValue: TypeAlias = (
 
 
 def _assert_pinned(actual: PinnedValue, expected: PinnedValue) -> None:
-    """Compare all stored diagnostic fields, including solver histories exactly."""
+    """Pin structure exactly and float64 values within cross-libm roundoff."""
     if dataclasses.is_dataclass(actual):
         actual = {field.name: getattr(actual, field.name) for field in dataclasses.fields(actual)}
     if isinstance(actual, dict):
@@ -64,8 +67,64 @@ def _assert_pinned(actual: PinnedValue, expected: PinnedValue) -> None:
         assert len(actual) == len(expected)
         for value, pinned in zip(actual, expected, strict=True):
             _assert_pinned(value, pinned)
+    elif isinstance(expected, float):
+        assert isinstance(actual, (float, np.floating))
+        assert np.isfinite(actual) and np.isfinite(expected)
+        # The retained macOS fixture and Linux libm differ in their last bits.
+        # No absolute slack: an expected zero must still be exactly zero.
+        np.testing.assert_allclose(actual, expected, rtol=1e-14, atol=0, equal_nan=False)
+    elif isinstance(expected, bool):
+        assert isinstance(actual, (bool, np.bool_))
+        assert bool(actual) is expected
+    elif isinstance(expected, int):
+        assert isinstance(actual, (int, np.integer)) and not isinstance(actual, (bool, np.bool_))
+        assert actual == expected
     else:
         assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ("actual", "expected"),
+    (
+        (0.02940496133272336, 0.029404961332723373),
+        (1.0814907801671152, 1.0814907801671154),
+        (0.0188324550232095, 0.018832455023209495),
+        (0.01883245459245099, 0.018832454592450972),
+        (0.2413399864597576, 0.24133998645975765),
+        (0.007811403127670776, 0.007811403127670778),
+        (0.004944319068453697, 0.004944319068453693),
+        (-0.00962311143579847, -0.009623111435798474),
+    ),
+)
+def test_frozen_characterization_accepts_observed_float64_platform_roundoff(
+    actual: float, expected: float
+) -> None:
+    """Replay Linux values against the unchanged macOS characterization bytes."""
+    _assert_pinned({"history": [actual]}, {"history": [expected]})
+
+
+@pytest.mark.parametrize(
+    ("actual", "expected"),
+    (
+        (0.25 + 1e-12, 0.25),
+        (1e-300, 0.0),
+        (float("nan"), 0.25),
+        (float("inf"), float("inf")),
+        (True, 1),
+        (1, True),
+        (1.0, 1),
+        ({"iterations": 33}, {"iterations": 32}),
+        ({"converged": False}, {"converged": True}),
+        ({"fallback_events": ["changed"]}, {"fallback_events": []}),
+        ({"history": [0.25]}, {"history": [0.25, 0.75]}),
+        ({"extra": 0.25}, {"history": [0.25]}),
+    ),
+)
+def test_frozen_characterization_rejects_semantic_or_structural_drift(
+    actual: PinnedValue, expected: PinnedValue
+) -> None:
+    with pytest.raises(AssertionError):
+        _assert_pinned(actual, expected)
 
 
 @pytest.mark.parametrize("index", range(6))
@@ -118,16 +177,92 @@ def test_six_substantive_scientific_controls_remain() -> None:
     _assert_pinned(fed_gvi_logreg(n_clients=2, n_per=12, seed=52), controls["fed_gvi_logreg"])
 
 
+REFERENCE_SHA256 = "4408a7a80bfbe34ec58a62fce61f3424a33fa79bca08530726b97e251ceea0f7"
+REFERENCE_PATH = Path(__file__).parent / "fixtures/api_migration/benchmark-3ec62f68.py.txt"
+
+
+def _benchmark_reference(path: Path = REFERENCE_PATH) -> ModuleType:
+    """Execute only the hash-bound original, with its own benchmark function."""
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == REFERENCE_SHA256
+    name = "fedference._benchmark_migration_reference"
+    loader = importlib.machinery.SourceFileLoader(name, str(path))
+    spec = importlib.util.spec_from_loader(name, loader)
+    assert spec is not None
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    assert module.run_benchmark is not run_benchmark
+    assert module.aggregate_result is aggregate_result
+    return module
+
+
+def _assert_exact_report(actual: object, expected: object) -> None:
+    """Retain exact report types, keys, values and integer diagnostics."""
+    assert type(actual) is type(expected)
+    if isinstance(actual, dict):
+        assert isinstance(expected, dict) and actual.keys() == expected.keys()
+        for key in actual:
+            _assert_exact_report(actual[key], expected[key])
+    elif isinstance(actual, list):
+        assert isinstance(expected, list) and len(actual) == len(expected)
+        for value, reference in zip(actual, expected, strict=True):
+            _assert_exact_report(value, reference)
+    else:
+        assert actual == expected
+
+
 @pytest.mark.parametrize("index", range(3))
 def test_explicit_benchmark_inputs_preserve_reports(index: int) -> None:
     resource = resources.files("fedference").joinpath("data", "synthetic_tabular.csv")
     assert hashlib.sha256(resource.read_bytes()).hexdigest() == PIN["dataset_sha256"]
+    case = PIN["benchmark"][index]
     with resources.as_file(resource) as path:
         features, labels = load_tabular_csv(path)
-    case = PIN["benchmark"][index]
+        reference = _benchmark_reference().run_tabular_benchmark(path, seed=0, **case["kwargs"])
     report = run_benchmark(features, labels, seed=0, **case["kwargs"])
     report.update(dataset=resource.name, n_rows=int(features.shape[0]), n_features=int(features.shape[1]))
-    assert report == case["report"]
+    # The JSON remains historical Mac evidence. Iteration counts are compared
+    # exactly to the original boundary executed in this same runtime, not to a
+    # cross-platform numerical reproducibility claim it never established.
+    _assert_exact_report(report, reference)
+
+
+def test_benchmark_reference_and_historical_record_keep_source_provenance(tmp_path: Path) -> None:
+    metadata = json.loads((REFERENCE_PATH.parent / "benchmark-reference.json").read_text())
+    assert metadata["revision"] == "3ec62f68f08b03dc22323fa4e8a67b0c87be894e"
+    assert metadata["path"] == "src/fedference/benchmark.py"
+    assert metadata["sha256"] == REFERENCE_SHA256
+    historical = REFERENCE_PATH.parent / "domain-characterization.json"
+    assert hashlib.sha256(historical.read_bytes()).hexdigest() == metadata["historical_json_sha256"]
+    changed = tmp_path / "changed.py.txt"
+    changed.write_bytes(REFERENCE_PATH.read_bytes() + b"\n# changed reference\n")
+    with pytest.raises(AssertionError):
+        _benchmark_reference(changed)
+    assert _benchmark_reference().run_benchmark.__module__.startswith("fedference._benchmark_migration")
+
+
+@pytest.mark.parametrize(
+    ("actual", "expected"),
+    ((16, 15), (13, 15), (0.25 + 1e-15, 0.25), (True, 1), (1.0, 1),
+     ([0.25], [0.25, 0.75]), ({"extra": 1}, {"iterations": 1})),
+)
+def test_same_runtime_migration_oracle_rejects_changed_report(actual: object, expected: object) -> None:
+    with pytest.raises(AssertionError):
+        _assert_exact_report(actual, expected)
+
+
+@pytest.mark.parametrize("field", ("seed", "robustness", "n_contaminated"))
+def test_same_runtime_migration_oracle_rejects_wrong_current_parameters(field: str) -> None:
+    resource = resources.files("fedference").joinpath("data", "synthetic_tabular.csv")
+    case = PIN["benchmark"][2]
+    kwargs = dict(case["kwargs"], seed=0)
+    with resources.as_file(resource) as path:
+        features, labels = load_tabular_csv(path)
+        reference = _benchmark_reference().run_tabular_benchmark(path, **kwargs)
+    kwargs[field] = {"seed": 1, "robustness": 2.25, "n_contaminated": 3}[field]
+    changed = run_benchmark(features, labels, **kwargs)
+    changed.update(dataset=resource.name, n_rows=int(features.shape[0]), n_features=int(features.shape[1]))
+    with pytest.raises(AssertionError):
+        _assert_exact_report(changed, reference)
 
 
 def test_missing_truth_is_none_and_naive_influence_is_normalized() -> None:
