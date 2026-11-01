@@ -6,6 +6,11 @@
 # prose is a generated token hydrated from analysis outputs — never hand-typed.
 
 paper:
+  # Placement intent; requires the sibling producer extension before acceptance.
+  frontmatter:
+    - "00a_graphical_model.md"
+    - "00b_graphical_robustness.md"
+    - "00c_graphical_execution.md"
   title: "Robust Belief Sharing in Federated Active Inference"
   subtitle: "A Recovery-Tested Generalized-Variational Framework for Categorical Contamination-Aware Consensus"
   cover:

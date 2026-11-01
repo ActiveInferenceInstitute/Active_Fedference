@@ -13,6 +13,11 @@
 # manuscript token directly from those constants.
 
 paper:
+  # Placement intent; requires the sibling producer extension before acceptance.
+  frontmatter:
+    - "00a_graphical_model.md"
+    - "00b_graphical_robustness.md"
+    - "00c_graphical_execution.md"
   # Follow the RASP standard: titles must be objective and descriptive
   title: "Your Active Fedference Title"
   subtitle: "Optional Subtitle Describing the Contribution"

@@ -124,3 +124,7 @@ uv run pytest tests/test_xref_integrity.py \
   tests/test_token_provenance.py \
   tests/test_manuscript_variables.py -q
 ```
+
+## Opening conceptual pages
+
+`00a_graphical_model.md`, `00b_graphical_robustness.md` and `00c_graphical_execution.md` own the new captions and ordered diagram pages. `paper.frontmatter` declares their position immediately after the unchanged overview cover and before the abstract. This is source intent pending the sibling renderer extension and actual complete-paper PDF/HTML placement checks; a standalone frontmatter proof does not satisfy those gates.

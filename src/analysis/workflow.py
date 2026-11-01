@@ -60,6 +60,9 @@ from figures import (
     generate_emergence_bmr,
     generate_evidence_replication_map,
     generate_free_energy_comparison,
+    generate_frontmatter_execution,
+    generate_frontmatter_model,
+    generate_frontmatter_robustness,
     generate_generative_model_schema,
     generate_graphical_abstract,
     generate_heuristic_breakdown,
@@ -239,6 +242,9 @@ def _normalise_caption(caption: str) -> str:
 
 
 def _declared_manuscript_figures(project_root: Path) -> list[dict[str, str]]:
+    from figures._frontmatter import validate_frontmatter
+
+    validate_frontmatter(project_root, required=False)
     source_manuscript = project_root / "manuscript"
     if not source_manuscript.exists():
         return []
@@ -826,6 +832,9 @@ def run_analysis_pipeline(
         project_root=root,
     )
     paths["graphical_abstract"] = generate_graphical_abstract(project_root=root)
+    paths["frontmatter_execution"] = generate_frontmatter_execution(project_root=root)
+    paths["frontmatter_model"] = generate_frontmatter_model(project_root=root)
+    paths["frontmatter_robustness"] = generate_frontmatter_robustness(project_root=root)
     paths["system_overview"] = generate_system_overview(project_root=root)
     paths["generative_model_schema"] = generate_generative_model_schema(project_root=root)
     paths["message_passing"] = generate_message_passing(project_root=root)

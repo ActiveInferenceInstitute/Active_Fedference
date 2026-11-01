@@ -467,3 +467,11 @@ Do **not** duplicate package imports already in the infrastructure renderer or r
 - [`AGENTS.md`](AGENTS.md) — RASP protocol and AI agent constraints
 - [`preamble.md`](preamble.md) — Active LaTeX preamble (theorem envs, caption; cleveref/titlesec not loaded)
 - [`config.yaml`](config.yaml) — paper metadata, keywords, `experiment:` parameters
+
+## Opening conceptual figures
+
+| Label | PNG | Generator |
+| --- | --- | --- |
+| `{#fig:frontmatter-execution}` | `frontmatter_execution.png` | `generate_frontmatter_execution()` |
+| `{#fig:frontmatter-model}` | `frontmatter_model.png` | `generate_frontmatter_model()` |
+| `{#fig:frontmatter-robustness}` | `frontmatter_robustness.png` | `generate_frontmatter_robustness()` |

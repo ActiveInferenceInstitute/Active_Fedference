@@ -372,3 +372,7 @@ Experiment keys mirror keyword arguments of `fedference.experiments` functions.
 - Manuscript editing: [`../../manuscript/AGENTS.md`](../../manuscript/AGENTS.md)
 - Tokens: [`tokens-and-labels.md`](tokens-and-labels.md)
 - Verification commands: [`../reference/verification-commands.md`](../reference/verification-commands.md)
+
+## Additional opening diagrams
+
+`paper.frontmatter` in the source configuration declares model, robustness-owner and GNN execution/evidence pages in that order after the overview cover. Captions are owned by `manuscript/00a_graphical_model.md`, `00b_graphical_robustness.md` and `00c_graphical_execution.md`. The sibling producer must consume this ordered list once, exclude its members from ordinary section discovery, insert one physical page per entry before the abstract, and preserve the same figure alternatives and order in HTML. Until that source extension and source-current rendering are admitted, complete-paper placement remains pending. A separately labeled FRONTMATTER PROOF validates only the candidate composition and physical order.
