@@ -45,6 +45,9 @@ __pycache__/
 # Egg-info from local installs (any location — guards against renamed-fork drift).
 **/*.egg-info/
 
+# Regeneratable setuptools build tree; `uv build` writes an explicit out-dir.
+build/
+
 # Project-local virtualenvs (root .venv is shared)
 .venv/
 
