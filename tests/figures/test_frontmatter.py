@@ -14,6 +14,7 @@ from matplotlib.text import Annotation, Text
 from PIL import Image
 
 from analysis.artifacts import ANALYSIS_FIGURE_FILENAMES, PRESENTATION_FIGURE_STEMS
+from analysis.visual_contracts import COMPLEX_FIGURE_GENERATORS
 from analysis.workflow import _declared_manuscript_figures, _write_figure_registry, _write_json
 from fedference.aggregation import log_linear_pool, robust_aggregate
 from figures import FIGURE_METADATA
@@ -65,7 +66,11 @@ def test_frontmatter_pair_geometry_and_repeatability(tmp_path: Path, stem: str, 
     assert validate_presentation_files(first.with_suffix(".slides.json"))
     assert stem + ".png" in ANALYSIS_FIGURE_FILENAMES
     assert stem in PRESENTATION_FIGURE_STEMS
-    assert len(FIGURE_METADATA[stem]["long_description"].split()) >= 90
+    # Deferred reader surfaces: a plate rejoins COMPLEX_FIGURE_GENERATORS with
+    # its structured long description once the pinned producer renders the
+    # matching 00a-00c HTML page; see docs/todo/visual-scholarship-integration.md.
+    assert stem not in COMPLEX_FIGURE_GENERATORS
+    assert "long_description" not in FIGURE_METADATA[stem]
     assert (ROOT / "manuscript" / filename).is_file()
 
 
@@ -122,7 +127,8 @@ def test_frontmatter_canonical_registry_boundary(tmp_path: Path) -> None:
     original_registry = registry.read_bytes()
     entries = json.loads(registry.read_text())["figures"]
     assert {entry["generated_by"] for entry in entries} == {stem for stem, _ in FRONTMATTER}
-    assert all(entry["long_description"] and entry["presentation_manifest"] for entry in entries)
+    assert all(entry["presentation_manifest"] for entry in entries)
+    assert all("long_description" not in entry for entry in entries)
     missing = paths["frontmatter_model"]
     original = missing.read_bytes()
     try:
@@ -169,7 +175,7 @@ def test_frontmatter_optional_fixture_and_required_configuration(tmp_path: Path)
         validate_frontmatter(tmp_path)
 
 
-@pytest.mark.parametrize("field", ["alt_text", "long_description"])
+@pytest.mark.parametrize("field", ["alt_text"])
 def test_frontmatter_rejects_empty_real_registry_alternatives(field: str) -> None:
     metadata = FIGURE_METADATA["frontmatter_model"]
     original = dict(metadata)

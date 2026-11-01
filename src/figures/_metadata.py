@@ -881,21 +881,6 @@ def _build_metadata() -> dict[str, dict[str, str]]:
         unit="not applicable; conceptual relationships",
         uncertainty="not applicable; deterministic conceptual schematic",
         replication_unit="not applicable; no empirical replication",
-        long_description=(
-            'Reading order: top to bottom. Solid arrows show model or data flow; dashed arr'
-            'ows distinguish communication or prerequisites.\n\nA GNN model document is admit'
-            'ted through a pinned parser, or the packaged sentinel uses its source-bound ca'
-            'che. Validate dimensions, axis order, support, and model matrices before consu'
-            'mption.\n\nNative execution consumes GNN-derived A, B, C, D values through nativ'
-            'e_world and native_posterior. The sentinel exchange example compares extracted'
-            ' matrices against the native model.\n\nOptional upstream execution requires an e'
-            'xplicit source root, qualified runtime and backend contract, followed by real '
-            'execution and parity checks. Dashed arrows mark prerequisites, not a backend s'
-            'upport or qualification claim.\n\nReceipts bind declared sources, inputs and out'
-            'puts. Integrity evidence does not establish scientific validity. Parser succes'
-            's is not execution; matrix parity is not protocol replication; scientific conc'
-            'lusions still require appropriate models, controls and scoped evidence.'
-        ),
     )
     metadata['frontmatter_model'].update(
         status="explanatory conceptual frontmatter",
@@ -910,20 +895,6 @@ def _build_metadata() -> dict[str, dict[str, str]]:
         unit="not applicable; conceptual relationships",
         uncertainty="not applicable; deterministic conceptual schematic",
         replication_unit="not applicable; no empirical replication",
-        long_description=(
-            'Reading order: top to bottom. Solid arrows show model or data flow; dashed arr'
-            'ows distinguish communication or prerequisites.\n\nGenerative model: D supplies '
-            'initial state beliefs. B maps state and action to the next state. A maps hidde'
-            'n states to observations. C supplies log preferences over outcomes.\n\nObserve o'
-            'utcomes, infer a local categorical posterior, evaluate policies with expected '
-            'free energy, then act and observe again. Solid arrows distinguish the closed p'
-            'erception and action cycle.\n\nShare posterior beliefs, not raw observations. Da'
-            'shed message edges take admitted posteriors to fusion and return recipient-spe'
-            "cific cavity beliefs, excluding the recipient's own message.\n\nThe Eq. 7 bridge"
-            ' assumes shared positive support, posterior log potentials, and fixed weights.'
-            ' It specializes categorical combination; it does not reconstruct the complete '
-            'source protocol.'
-        ),
     )
     metadata['frontmatter_robustness'].update(
         status="explanatory conceptual frontmatter",
@@ -935,21 +906,6 @@ def _build_metadata() -> dict[str, dict[str, str]]:
         unit="not applicable; conceptual relationships",
         uncertainty="not applicable; deterministic conceptual schematic",
         replication_unit="not applicable; no empirical replication",
-        long_description=(
-            'Reading order: top to bottom. Solid arrows show model or data flow; dashed arr'
-            'ows distinguish communication or prerequisites.\n\nClient FedGVI: generalized va'
-            'riational updates combine a divergence and a loss. Bounded-loss influence clai'
-            "ms require the source's matching model and regularity assumptions. KL/NLL with"
-            ' beta zero recovers the project-local Bayes update.\n\nHeuristic server: robust_'
-            'aggregate discounts reports by disagreement with the emerging consensus. At ro'
-            'bustness zero it exactly returns log_linear_pool. Recovery only; no transferre'
-            'd client theorem.\n\nVariational server: variational_aggregate alternates consen'
-            'sus and raw effective-weight updates on a stated objective. Descent and raw-we'
-            'ight bounds do not prove estimator B-robustness.\n\nChoose one server rule after'
-            ' the client update. Guarantees stay with their own mathematical construction. '
-            'No universal robustness or source protocol replication follows from this diagr'
-            'am.'
-        ),
     )
     return metadata
 

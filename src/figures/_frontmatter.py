@@ -129,6 +129,8 @@ def validate_frontmatter(project_root: Path, *, required: bool = True) -> None:
 
     This validates source intent only. It does not certify a sibling producer,
     physical complete-paper placement, HTML accessibility, or publication.
+    The plates' structured long descriptions are deferred with the reader
+    surfaces they disclose; see docs/todo/visual-scholarship-integration.md.
     """
     from ._metadata import FIGURE_METADATA
 
@@ -149,5 +151,5 @@ def validate_frontmatter(project_root: Path, *, required: bool = True) -> None:
         if "Source relation:" not in text or "no measured estimand" not in text:
             raise ValueError(f"missing conceptual caption: {stem}")
         metadata = FIGURE_METADATA[stem]
-        if not metadata["alt_text"] or not metadata["long_description"]:
+        if not metadata["alt_text"]:
             raise ValueError(f"missing frontmatter alternative: {stem}")
