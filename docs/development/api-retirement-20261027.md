@@ -240,8 +240,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     {
       "callsites": [
         "src/__init__.py::<module>",
-        "src/analysis/workflow.py::<module>",
-        "src/analysis/workflow.py::_heatmap_inputs",
+        "src/analysis/producers/belief.py::<module>",
+        "src/analysis/producers/belief.py::_heatmap_inputs",
         "src/fedference/__init__.py::<module>",
         "src/fedference/aggregation.py::aggregate_result",
         "src/fedference/benchmark.py::<module>",
@@ -318,6 +318,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_tempered_aggregation.py::test_tempered_log_linear_recovery",
         "tests/fedference/test_tempered_aggregation_objective.py::<module>",
         "tests/fedference/test_tempered_aggregation_objective.py::test_c_to_zero_recovery_tempered",
+        "tests/figures/test_frontmatter.py::<module>",
+        "tests/figures/test_frontmatter.py::test_frontmatter_claims_match_owners_and_actual_recovery",
         "tests/test_domain_retirement.py::<module>",
         "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
         "tests/test_domain_retirement.py::test_retired_assimilation_keyword_leaves_state_unchanged",
@@ -429,6 +431,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_strict_shape_boundaries.py::test_outer_generators_cross_aggregate_and_sharing_boundaries",
         "tests/fedference/test_tempered_aggregation_objective.py::<module>",
         "tests/fedference/test_tempered_aggregation_objective.py::test_lambda_star_empirical",
+        "tests/figures/test_frontmatter.py::<module>",
+        "tests/figures/test_frontmatter.py::test_frontmatter_claims_match_owners_and_actual_recovery",
         "tests/test_domain_retirement.py::<module>",
         "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
         "tests/test_domain_retirement.py::test_retired_result_properties_are_absent",
@@ -1017,8 +1021,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     },
     {
       "callsites": [
-        "src/analysis/workflow.py::<module>",
-        "src/analysis/workflow.py::_influence_weights",
+        "src/analysis/producers/robustness.py::<module>",
+        "src/analysis/producers/robustness.py::_influence_weights",
         "src/fedference/experiments/__init__.py::<module>"
       ],
       "disposition": "owner-decision",
