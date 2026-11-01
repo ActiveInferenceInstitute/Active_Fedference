@@ -221,6 +221,14 @@ $$\bar{q}_l = \sum_k q_{l+1}[k] \cdot D_{l|k}$$
 where $D_{l|k}$ is the conditioned prior over level-$l$ states given level-$(l+1)$
 state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 
+**GNN hierarchy array boundary.** `hierarchy_world` materializes each
+parent-conditioned probability vector as an independent, contiguous float64
+array, matching the native factories. Values and axis order are preserved
+without normalization. This keeps source-driven and native inference on the
+same array-storage contract; transposed views can select a different numerical
+reduction path on some NumPy/BLAS builds. Exact parity assertions remain in
+place; this is not a cross-platform bitwise-reproducibility claim.
+
 ### Ensemble, statistics, experiments
 
 | Module | Role |

@@ -487,3 +487,28 @@ print(json.dumps([{**{k:[v.tolist() for v in w["L1"][k]] for k in ("A","B","C","
         )
         np.testing.assert_array_equal(np.array(world["D"][0]).ravel(), [1, 0, 0, 0, 0, 0, 0, 0, 0])
     np.testing.assert_array_equal(worlds[1]["leaf_prior"], [1, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+@pytest.mark.parametrize("depth", [2, 3, 4])
+def test_hierarchy_prior_vectors_match_native_storage_contract(depth: int) -> None:
+    """Real source adapters retain native owned, contiguous parent-PMF vectors."""
+    program = hierarchy_depth(_load(HIERARCHY_ASSET), depth)
+    before = program.model
+    world = hierarchy_world(program)
+    for edge, rows in enumerate(world["conditioned_priors"]):
+        tensor = program.model.layers[edge + 1].conditioned_prior
+        assert tensor is not None
+        children, parents = tensor.shape
+        assert len(rows) == parents
+        for parent, row in enumerate(rows):
+            expected = np.array(
+                [tensor.values[child * parents + parent] for child in range(children)],
+                dtype=np.float64,
+            )
+            np.testing.assert_array_equal(row, expected, strict=True)
+            assert row.flags.c_contiguous and row.flags.owndata
+            pristine = row.copy()
+            row[0] += 0.01
+            fresh = hierarchy_world(program)["conditioned_priors"][edge][parent]
+            np.testing.assert_array_equal(fresh, pristine, strict=True)
+    assert program.model == before

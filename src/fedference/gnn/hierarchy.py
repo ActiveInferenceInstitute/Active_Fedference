@@ -81,7 +81,10 @@ def hierarchy_world(program: StructuredProgram) -> HierarchyWorld:
     conditioned = []
     for layer in model.layers[1:]:
         assert layer.conditioned_prior is not None
-        conditioned.append(list(_array(layer.conditioned_prior).T))
+        # Native factories expose owned, contiguous parent-PMF vectors.
+        # Retaining transposed views selects a different strided dot-product
+        # path on some NumPy/BLAS builds, breaking exact native parity.
+        conditioned.append([prior.copy() for prior in _array(layer.conditioned_prior).T])
     priors = [_array(layer.categorical.D) for layer in model.layers]
     layers = [
         LayerSpec(
