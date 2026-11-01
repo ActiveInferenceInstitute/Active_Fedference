@@ -145,3 +145,11 @@ payloads. No full publication rerun is implied by these smoke checks.
 ## GNN model consumption within a moving-world trial
 
 Each moving-world trial admits its GNN source and native parameterization once. Both action selection and observation updates consume that admitted per-position observation map throughout the trial. Observation updates retain independent likelihood copies; they do not repeatedly reload and revalidate the same source for each agent and step. Admission still occurs for every new trial, so there is no process-global source cache or skipped model validation. Seeds, RNG draw order, trial counts, solver settings and stage deadlines are unchanged.
+
+
+Parameter-recovery trials likewise share a fixed candidate likelihood grid
+within one invocation. Each candidate GNN model is admitted once for that
+invocation, and each true-acuity world is still constructed separately. The
+next invocation rebuilds the grid; there is no global source cache. Candidate
+values, observation RNG draws, likelihood arithmetic, trial counts, estimator
+selection and stage deadlines stay unchanged.

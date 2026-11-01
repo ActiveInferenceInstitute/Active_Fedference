@@ -26,10 +26,11 @@ def run_parameter_recovery(
        construction keeps the declared acuity equal to the data-generating
        acuity rather than adding the colony-heterogeneity jitter used by other
        experiments.
-    2. Runs a grid search over ``fit_resolution`` candidate acuity values in
-       ``[0.51, 0.99]``; for each candidate it builds a world, computes the
-       marginal log-likelihood ``sum_obs log(mean_col(A_c[obs, :]) + eps)``, and
-       picks the argmax.
+    2. Uses the fixed ``fit_resolution`` candidate worlds in ``[0.51, 0.99]``,
+       built once per invocation and shared across true-acuity points and trials.
+       Each candidate's latent-state marginal log-likelihood is
+       ``logsumexp_s(sum_obs log(A_c[obs, s] + eps)) - log(n_s)``;
+       the estimator picks the argmax.
     3. Collects every per-trial recovered acuity, its mean, and the 2.5th /
        97.5th empirical percentile interval across independent trials. These
        are descriptive trial-distribution quantiles, not bootstrap confidence
@@ -79,6 +80,12 @@ def run_parameter_recovery(
 
     rng = np.random.default_rng(seed)
     fit_grid = np.linspace(0.51, 0.99, fit_resolution)
+    # Models depend on the fixed candidate grid, not on generated observations.
+    # Rebuild on each invocation; no process-global source cache is introduced.
+    fit_likelihoods = []
+    for cand_acuity in fit_grid:
+        world_c = build_sentinel_world(None, acuity=float(cand_acuity))
+        fit_likelihoods.append(np.asarray(world_c["A"][0], dtype=np.float64))
 
     true_acuity_list: list[float] = []
     recovered_acuity_list: list[float] = []
@@ -104,9 +111,7 @@ def run_parameter_recovery(
             observations = rng.choice(len(obs_probs), size=n_observations, p=obs_probs)
 
             log_likelihoods: list[float] = []
-            for cand_acuity in fit_grid:
-                world_c = build_sentinel_world(None, acuity=float(cand_acuity))
-                A_c = np.asarray(world_c["A"][0], dtype=np.float64)
+            for A_c in fit_likelihoods:
                 n_s_fit = A_c.shape[1]
                 # Marginal log-likelihood: log p(obs|acuity) = log sum_s [p(s) prod_obs p(obs|s,acuity)]
                 # With uniform state prior: log-sum-exp over states of [sum_obs log A_c[obs,s]] - log(n_s)
