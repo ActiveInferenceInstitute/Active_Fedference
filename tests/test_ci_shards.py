@@ -222,3 +222,35 @@ def test_real_artifact_verifier_refuses_incomplete_evidence(
     # Then green subprocess status cannot substitute for complete evidence.
     with pytest.raises(ValueError):
         verify_shard_artifacts(plan, target)
+
+
+
+@pytest.mark.parametrize("mode", ["run", "verify"])
+@pytest.mark.parametrize("fault", ["missing", "duplicate", "valid"])
+def test_cli_admits_plan_before_git_discovery(tmp_path: Path, mode: str, fault: str) -> None:
+    """Malformed plans retain their diagnostics in a real Git-free export."""
+    plan = _plan()
+    if fault == "missing":
+        plan["groups"][0].pop()
+    elif fault == "duplicate":
+        plan["groups"][0].append(plan["groups"][0][0])
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(plan))
+    results = tmp_path / "results"
+    environment = dict(os.environ, GIT_CEILING_DIRECTORIES=str(tmp_path.parent))
+    for selector in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR"):
+        environment.pop(selector, None)
+    source = Path(__file__).resolve().parents[1]
+    command = [sys.executable, str(source / "scripts/ci_shards.py"), mode,
+               "--project-root", str(tmp_path), "--plan", str(plan_path),
+               "--results", str(results)]
+    result = subprocess.run(command, cwd=tmp_path, env=environment, capture_output=True,
+                            text=True, timeout=60, check=False)
+    assert result.returncode != 0, result.stdout + result.stderr
+    if fault == "valid":
+        assert "not a git repository" in result.stderr
+    else:
+        assert "Shard union differs from complete test collection" in result.stderr
+        assert "not a git repository" not in result.stderr
+    assert not results.exists()
+
