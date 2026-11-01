@@ -22,3 +22,4 @@ include src/fedference/py.typed
 recursive-include manuscript *.bib *.md *.png *.yaml *.yaml.example *.tex
 recursive-include scripts *.py *.md
 recursive-include tests *.md *.py *.cjs
+recursive-include tests/fixtures *.json
