@@ -158,3 +158,10 @@ invocation, and each true-acuity world is still constructed separately. The
 next invocation rebuilds the grid; there is no global source cache. Candidate
 values, observation RNG draws, likelihood arithmetic, trial counts, estimator
 selection and stage deadlines stay unchanged.
+
+The disjoint-FOV report's EFE-navigation comparison also uses each trial's
+admitted observation map for both guided and random observation updates.
+It retains a fresh model admission and the original seed draw for every trial,
+and copies each selected likelihood. It does not rebuild the same GNN model
+for each observation or share a model across trials. Trial counts, action
+selection, observation draws, pooling, scoring and deadlines are unchanged.

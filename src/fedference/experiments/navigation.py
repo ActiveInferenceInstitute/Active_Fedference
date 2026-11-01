@@ -183,7 +183,7 @@ def run_efe_navigation_test(
         Dict with ``efe_accuracy``, ``random_accuracy``, ``efe_gap``
         (efe minus random), and run parameters.
     """
-    from ..pomdp import _moving_likelihood, build_moving_world, efe_policy_select
+    from ..pomdp import build_moving_world, efe_policy_select
 
     _EPS = 1e-12
     rng = np.random.default_rng(seed)
@@ -202,6 +202,7 @@ def run_efe_navigation_test(
             seed=int(rng.integers(0, 100_000)),
         )
         B = np.asarray(world["B"], dtype=np.float64)
+        observation_map = np.asarray(world["observation_map"], dtype=np.float64)
         true_state = int(rng.integers(0, n_states))
 
         # Initialise per-condition beliefs and positions.
@@ -232,12 +233,7 @@ def run_efe_navigation_test(
                     (efe_local_posteriors, efe_positions),
                     (rnd_local_posteriors, rnd_positions),
                 ):
-                    A_i = _moving_likelihood(
-                        positions[i],
-                        fov_width=int(world["fov_width"]),
-                        n_positions=n_positions,
-                        n_states=n_states,
-                    )
+                    A_i = observation_map[:, :, positions[i]].copy()
                     p_obs = A_i[:, true_state]
                     p_obs = np.clip(p_obs, 0.0, None)
                     p_obs = p_obs / p_obs.sum()
