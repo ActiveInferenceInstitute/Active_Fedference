@@ -1323,6 +1323,11 @@ them.
   incomplete receipts and corrupt coverage fail their real controls. Independent
   review approves the bounded bootstrap/profile scope. Hosted Linux execution,
   full production shard union and final combined coverage remain pending.
+  The 2026-10-30 maintenance follow-up validates supplied run/verify plans
+  before Git discovery. Real Git-free subprocess controls reject missing or
+  duplicate test assignments with the partition diagnostic; valid plans still
+  require Git metadata. The dated repository reconciliation separates the
+  historical collected inventory from completed test execution.
 
 - [x] ISC-286: HTML tokenization, reference rendering, resource/link policy,
   accessibility facts and transactional file custody have focused owners

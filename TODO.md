@@ -22,10 +22,17 @@ surface of the remaining work, not whether its gate is optional: a Minor item
 can still block a release. The source-indexed dependency map is
 [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-plan.md).
 
-The [2026-10-27 repository review](docs/research/repository-review-2026-10-27.md)
-records current sync evidence, the optional GNN exchange boundary, and proposed
-engineering follow-ups. Its proposals do not promote parked scientific work
-or close any release/reproduction gate in this backlog.
+The [2026-10-30 reconciliation](docs/research/repository-reconciliation-2026-10-30.md)
+owns the latest dated sync observations, interrupted-work dispositions, and
+engineering/validation sequence. The
+[2026-10-27 repository review](docs/research/repository-review-2026-10-27.md)
+remains historical evidence. Neither closes a release or scientific gate.
+
+The v1.1.0 GitHub release already exists. Retire its creation as a future
+action; MED-5 remains open for the outstanding certification, asset/DOI
+verification, publication approval, and private-synchronization obligations.
+The release sequence below describes those obligations and must not be used
+to recreate or move an existing tag or repeat a completed publication.
 
 ## Non-negotiable scientific boundary
 
@@ -57,9 +64,10 @@ The active critical path is:
    green post-merge public-main CI;
 4. certify that exact final public-main merge commit through MIN-2's sequential
    two-clone campaign and obtain the selected identified owner-author verdict;
-5. run MED-5B's publication phase: after an exact-SHA `pass`, create the
-   immutable tag and verified GitHub release, update and verify the Zenodo draft,
-   pause for fresh approval, then publish and independently verify Zenodo;
+5. run MED-5B's publication phase: after an exact-SHA
+   `pass`, verify the existing immutable tag and GitHub release, update and
+   verify the Zenodo draft, pause for fresh approval, then publish and
+   independently verify Zenodo;
 6. complete and normally merge MIN-3's public documentation and repository-
    discovery handoff, including removal of its closed forward-backlog entry;
 7. finish MED-5B by synchronizing that final public `main` into private
