@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import urllib.parse
 from pathlib import Path
 
@@ -567,44 +568,86 @@ def test_source_to_render_mermaid_uses_the_exact_source_owned_branching_dag() ->
     assert "| `source` | `reports`, `figures`, `provisional`, `coverage`, `final_hydration` |" in provenance
 
 
-def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> None:
+def _retired_platform_offenders(root: Path) -> list[str]:
+    """Scan tracked and nonignored working files, never retained local evidence.
+
+    The index keeps tracked files in scope even if an ignore rule matches them;
+    untracked current source is also checked before it can be committed.
+    """
+    inventory = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        check=True,
+        capture_output=True,
+        timeout=30,
+    )
     markers = ("hum" + "os", "hum" + " " + "os", "human operating" + " system")
-    ignored_directories = {
-        ".git",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".playwright-cli",
-        ".ruff_cache",
-        ".tmp",
-        ".venv",
-        "build",
-        "node_modules",
-    }
     text_suffixes = {
-        ".cff",
-        ".html",
-        ".json",
-        ".md",
-        ".py",
-        ".tex",
-        ".toml",
-        ".txt",
-        ".yaml",
-        ".yml",
+        ".cff", ".html", ".json", ".md", ".py", ".tex", ".toml", ".txt", ".yaml", ".yml",
     }
     offenders: list[str] = []
-    for directory, directory_names, file_names in os.walk(ROOT):
-        directory_names[:] = [
-            name for name in directory_names if name not in ignored_directories
-        ]
-        for file_name in file_names:
-            path = Path(directory) / file_name
-            if path.suffix.lower() not in text_suffixes:
-                continue
-            text = path.read_text(encoding="utf-8", errors="ignore").lower()
-            if any(marker in text for marker in markers):
-                offenders.append(path.relative_to(ROOT).as_posix())
-    assert offenders == []
+    for relative in sorted({os.fsdecode(name) for name in inventory.stdout.split(b"\0") if name}):
+        path = root / relative
+        if path.suffix.lower() not in text_suffixes:
+            continue
+        if path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+            raise ValueError(f"Textual repository surface is a symlink or escapes its root: {relative}")
+        text = path.read_text(encoding="utf-8").lower()
+        if any(marker in text for marker in markers):
+            offenders.append(relative)
+    return offenders
+
+
+def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> None:
+    assert _retired_platform_offenders(ROOT) == []
+
+
+def test_retired_platform_inventory_preserves_current_sources_and_ignored_evidence(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, timeout=30)
+    (tmp_path / ".gitignore").write_text(".omo/\nignored-current.md\n", encoding="utf-8")
+    historical = tmp_path / ".omo" / "evidence"
+    historical.mkdir(parents=True)
+    marker = "hum" + "os"
+    retained = historical / "prior-report.md"
+    retained.write_text(marker, encoding="utf-8")
+    dangling = historical / "artifact.json"
+    dangling.symlink_to(historical / "missing.json")
+    assert _retired_platform_offenders(tmp_path) == []
+    current = tmp_path / "new-source.md"
+    current.write_text(marker.upper(), encoding="utf-8")
+    tracked = tmp_path / "ignored-current.md"
+    tracked.write_text(marker, encoding="utf-8")
+    subprocess.run(
+        ["git", "-C", str(tmp_path), "add", "-f", tracked.name],
+        check=True, capture_output=True, timeout=30,
+    )
+    assert _retired_platform_offenders(tmp_path) == [tracked.name, current.name]
+    current.write_text("Current project guidance.\n", encoding="utf-8")
+    tracked.write_text("Tracked project guidance.\n", encoding="utf-8")
+    assert _retired_platform_offenders(tmp_path) == []
+    assert retained.read_text(encoding="utf-8") == marker
+    assert dangling.is_symlink() and not dangling.exists()
+
+
+@pytest.mark.parametrize("defect", ["dangling", "external", "unreadable"])
+def test_retired_platform_inventory_rejects_unsafe_current_surface(tmp_path: Path, defect: str) -> None:
+    root = tmp_path / "repository"
+    subprocess.run(["git", "init", str(root)], check=True, capture_output=True, timeout=30)
+    surface = root / "current.md"
+    if defect == "dangling":
+        surface.symlink_to(root / "missing.md")
+    elif defect == "external":
+        outside = tmp_path / "outside.md"
+        outside.write_text("Outside the source boundary.\n", encoding="utf-8")
+        surface.symlink_to(outside)
+    else:
+        surface.write_text("Current project guidance.\n", encoding="utf-8")
+        subprocess.run(
+            ["git", "-C", str(root), "add", surface.name],
+            check=True, capture_output=True, timeout=30,
+        )
+        surface.unlink()
+    with pytest.raises((ValueError, FileNotFoundError), match="current.md"):
+        _retired_platform_offenders(root)
 
 
 def test_publication_lifecycle_and_historical_release_identity_are_separated() -> None:
