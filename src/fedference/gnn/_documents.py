@@ -13,7 +13,7 @@ MODEL_DIR: Final = Path(__file__).resolve().parents[1] / "models"
 
 
 
-UPSTREAM_REVISION: Final = "f0dfb68368280f3a43ff91ac28db058c968002d8"
+UPSTREAM_REVISION: Final = "8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1"
 
 
 

@@ -254,3 +254,33 @@ def test_cli_admits_plan_before_git_discovery(tmp_path: Path, mode: str, fault: 
         assert "not a git repository" not in result.stderr
     assert not results.exists()
 
+
+@pytest.mark.parametrize("valid", [False, True])
+def test_hosted_gnn_checkout_uses_admitted_lock_revision(tmp_path: Path, valid: bool) -> None:
+    """Execute the actual hosted admission script; a moving ref cannot pass."""
+    import yaml
+
+    source = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load((source / ".github/workflows/ci.yml").read_text())
+    steps = workflow["jobs"]["gnn-shard"]["steps"]
+    admission = next(step for step in steps if step.get("id") == "gnn-source")
+    checkout = next(step for step in steps if step.get("with", {}).get("repository")
+                    == "ActiveInferenceInstitute/Generalized_Notation_Notation")
+    assert checkout["with"]["ref"] == "${{ steps.gnn-source.outputs.revision }}"
+    locked = json.loads((source / "src/fedference/config/gnn-backend-lock.json").read_text())
+    fixture = tmp_path / "src/fedference/config/gnn-backend-lock.json"
+    fixture.parent.mkdir(parents=True)
+    revision = locked["revision"] if valid else "main"
+    fixture.write_text(json.dumps({"revision": revision}))
+    output = tmp_path / "github-output"
+    environment = dict(os.environ, GITHUB_OUTPUT=str(output))
+    environment["PATH"] = str(Path(sys.executable).parent) + os.pathsep + environment["PATH"]
+    result = subprocess.run(["bash", "-eu", "-c", admission["run"]], cwd=tmp_path,
+                            env=environment, capture_output=True, text=True, timeout=30, check=False)
+    if valid:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert output.read_text() == f"revision={revision}\n"
+    else:
+        assert result.returncode != 0
+        assert "GNN source revision must be an exact commit SHA" in result.stderr
+        assert not output.exists()

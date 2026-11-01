@@ -1,12 +1,12 @@
 {
-  "revision": "f0dfb68368280f3a43ff91ac28db058c968002d8",
+  "revision": "8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1",
   "capability": "markdown-only-pure-python/1",
   "dependency_versions": {
     "defusedxml": "0.7.1",
     "PyYAML": "6.0.3"
   },
   "files": {
-    "src/gnn/__init__.py": "02b1e2fd30437d9e181efa4ae9f160b411eb28fd3dc83093c76a53a1b1fac40a",
+    "src/gnn/__init__.py": "4303d2cec14db42ad1a3f9ca557aaf48f42efc6b1566bcf099d2bf878c2b26ff",
     "src/gnn/parsers/converters.py": "e1ef9366ee5f3014fed75867f1b02c4f141b8496819b3bb47d6eaa5915fed9c0",
     "src/gnn/parsers/common.py": "c27da82a05058ec2f96b4c675374a848e64535122bf3a63155a47b8b23e3076e",
     "src/gnn/types/definitions.py": "2e1d0aa9a18edd13cb815bb131326111d28ca447cc16b6dfe478c75c0b6a5519",
