@@ -45,6 +45,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"BROKEN_XREF {broken}", file=sys.stderr)
     for malformed in result.malformed_markup:
         print(f"MALFORMED_MARKUP {malformed}", file=sys.stderr)
+    for issue in result.accessibility_issues:
+        print(f"ACCESSIBILITY {issue}", file=sys.stderr)
     print("web_package: FAIL", file=sys.stderr)
     return 1
 

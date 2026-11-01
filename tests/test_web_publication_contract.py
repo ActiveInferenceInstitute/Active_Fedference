@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import signal
+import subprocess
 import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -211,6 +212,32 @@ def _write_web_fixture(root: Path) -> None:
         r"\(\ref{thm:recovery}\)</span>.</main></body></html>",
         encoding="utf-8",
     )
+
+
+def test_prepare_web_package_cli_reports_accessibility_failures(tmp_path: Path) -> None:
+    _write_web_fixture(tmp_path)
+    index = tmp_path / "output" / "web" / "index.html"
+    original = index.read_text(encoding="utf-8")
+    index.write_text(original.replace('<html lang="en">', "<html>"), encoding="utf-8")
+    script = Path(__file__).resolve().parents[1] / "scripts" / "prepare_web_package.py"
+    command = [sys.executable, str(script), "--project-root", str(tmp_path)]
+
+    failed = subprocess.run(command, capture_output=True, text=True, check=False, timeout=30)
+
+    assert failed.returncode == 1, failed.stdout + failed.stderr
+    assert "ACCESSIBILITY " in failed.stderr
+    assert "non-empty html lang" in failed.stderr
+    assert "web_package: FAIL" in failed.stderr
+    assert not any(
+        category in failed.stderr
+        for category in ("MISSING_ASSET", "RAW_XREF", "BROKEN_XREF", "MALFORMED_MARKUP")
+    )
+
+    index.write_text(original, encoding="utf-8")
+    restored = subprocess.run(command, capture_output=True, text=True, check=False, timeout=30)
+    assert restored.returncode == 0, restored.stdout + restored.stderr
+    assert "web_package: PASS" in restored.stdout
+    assert "ACCESSIBILITY " not in restored.stderr
 
 
 def test_prepare_web_package_mirrors_figures_and_normalizes_xrefs(tmp_path: Path) -> None:
