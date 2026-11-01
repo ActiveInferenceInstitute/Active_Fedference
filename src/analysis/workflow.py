@@ -43,45 +43,6 @@ from fedference.experiments import (
     run_hierarchical_bmr,
     summarize_cross_study,
 )
-from figures import (
-    generate_aggregation_descent,
-    generate_application_integrity_flow,
-    generate_belief_heatmap,
-    generate_belief_quality,
-    generate_bnn_robustness,
-    generate_bounded_influence,
-    generate_complexity_scaling,
-    generate_conditional_world,
-    generate_contamination_gallery,
-    generate_cross_study_summary,
-    generate_descent_comparison,
-    generate_disjoint_fov_figure,
-    generate_efe_decomposition,
-    generate_emergence_bmr,
-    generate_evidence_replication_map,
-    generate_free_energy_comparison,
-    generate_frontmatter_execution,
-    generate_frontmatter_model,
-    generate_frontmatter_robustness,
-    generate_generative_model_schema,
-    generate_graphical_abstract,
-    generate_heuristic_breakdown,
-    generate_hierarchical_bmr,
-    generate_hierarchical_pomdp,
-    generate_language_kl_decay,
-    generate_message_passing,
-    generate_moving_world,
-    generate_parameter_recovery,
-    generate_pomdp_loop,
-    generate_robust_influence_weights,
-    generate_robustness_onset,
-    generate_robustness_review_grid,
-    generate_robustness_sweep,
-    generate_sensitivity_heatmap,
-    generate_source_render_provenance,
-    generate_system_overview,
-)
-from figures._metadata import figure_metadata
 from project_paths import resolve_env_project_root
 from publication.pipeline_freshness import capture_analysis_input_snapshot
 
@@ -329,6 +290,8 @@ def _require_unique_declared_figures(figures: list[dict[str, str]]) -> None:
 
 
 def _write_figure_registry(project_root: Path, artifact_paths: dict[str, Path]) -> Path:
+    from figures._metadata import figure_metadata
+
     # Pipeline-produced figures (keyed by the .png they write, since the
     # manuscript embeds the PNG even when the generator returns the .pdf path).
     generated_by_filename = {
@@ -864,6 +827,46 @@ def run_analysis_pipeline(
     )
 
     # --- Figures (consume the report dicts above) --------------------------
+    # Report-only workers reserve their memory for the numerical backend.
+    from figures import (
+        generate_aggregation_descent,
+        generate_application_integrity_flow,
+        generate_belief_heatmap,
+        generate_belief_quality,
+        generate_bnn_robustness,
+        generate_bounded_influence,
+        generate_complexity_scaling,
+        generate_conditional_world,
+        generate_contamination_gallery,
+        generate_cross_study_summary,
+        generate_descent_comparison,
+        generate_disjoint_fov_figure,
+        generate_efe_decomposition,
+        generate_emergence_bmr,
+        generate_evidence_replication_map,
+        generate_free_energy_comparison,
+        generate_frontmatter_execution,
+        generate_frontmatter_model,
+        generate_frontmatter_robustness,
+        generate_generative_model_schema,
+        generate_graphical_abstract,
+        generate_heuristic_breakdown,
+        generate_hierarchical_bmr,
+        generate_hierarchical_pomdp,
+        generate_language_kl_decay,
+        generate_message_passing,
+        generate_moving_world,
+        generate_parameter_recovery,
+        generate_pomdp_loop,
+        generate_robust_influence_weights,
+        generate_robustness_onset,
+        generate_robustness_review_grid,
+        generate_robustness_sweep,
+        generate_sensitivity_heatmap,
+        generate_source_render_provenance,
+        generate_system_overview,
+    )
+
     report_schemas.check_figure_contract(
         "application_integrity_flow", "application_integrity_flow", application_flow_report
     )

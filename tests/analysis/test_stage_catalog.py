@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import ast
 import inspect
+import json
+import subprocess
 import sys
 from collections.abc import Callable
 from functools import partial
@@ -20,6 +22,45 @@ from analysis.stage_catalog import STAGE_SCHEMAS, report_producers
 from experiment_config import ExperimentConfig
 from fedference import experiments
 from fedference.complexity import ComplexityBenchmarkConfig
+
+
+@pytest.mark.parametrize("stage", ["belief_sharing", "bnn_torch"])
+def test_report_production_does_not_load_plotting_stack(tmp_path: Path, stage: str) -> None:
+    """A report worker must reserve its memory for its numerical backend."""
+    root = Path(__file__).resolve().parents[2]
+    manuscript = tmp_path / "manuscript"
+    manuscript.mkdir()
+    (manuscript / "config.yaml").write_text(
+        '{"experiment":{"bnn_torch":{"n_clients":2,"n_per":8,'
+        '"hidden_dim":4,"n_steps":3,"contamination_levels":[0.0,0.5]}}}',
+        encoding="utf-8",
+    )
+    code = """
+import json, sys
+from pathlib import Path
+root, project, stage = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
+sys.path.insert(0, str(root / "src"))
+from analysis import workflow
+from analysis.stage_catalog import report_producers
+from experiment_config import ExperimentConfig
+assert Path(workflow.__file__).resolve() == root / "src/analysis/workflow.py"
+report = report_producers(ExperimentConfig(n_agents=3, n_seeds=2), project, smoke=True)[stage]()
+workflow._write_json(report, project / "report.json", schema=stage)
+print(json.dumps({"loaded_plotting": sorted(name for name in sys.modules
+    if name == "figures" or name.startswith("figures.")
+    or name == "matplotlib" or name.startswith("matplotlib."))}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-IB", "-c", code, str(root), str(tmp_path), stage],
+        capture_output=True, text=True, timeout=90, check=False,
+    )
+    assert result.returncode == 0, (result.stdout, result.stderr)
+    assert json.loads(result.stdout)["loaded_plotting"] == []
+    payload = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
+    validate_report(stage, payload)
+    if stage == "belief_sharing":
+        expected = workflow._belief_sharing_report(ExperimentConfig(n_agents=3, n_seeds=2))
+        assert payload == expected
 
 
 def test_catalog_covers_every_original_report_in_workflow_order(tmp_path: Path) -> None:

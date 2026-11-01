@@ -35,6 +35,11 @@ The catalog exposes each existing report independently. Calling `run` again
 reuses its admitted completion without starting another producer. No command
 implicitly schedules every report. Do not wrap numerical execution in
 `vault with-repo`: the source and output namespace are already independent.
+Report-only workers defer figure generators and their plotting dependencies
+until the figure-assembly boundary. The optional Torch report therefore uses
+its RSS allowance for its numerical backend instead of loading every plot
+module first. The selected memory and wall-time limits still apply unchanged;
+installed backend overhead can itself exhaust a budget and remains a failure.
 An explicit selected-stage budget must account for the study's frozen design;
 reaching a budget is an incomplete attempt, never permission to shrink seeds
 or change the estimand.
