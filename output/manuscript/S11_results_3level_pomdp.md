@@ -32,19 +32,19 @@ uniform prior.
 **Three-level condition.** Agents run 4
 alternating-minimization iterations across all three levels before federating.
 
-The measured location accuracies are 0.984 (flat) and
-0.966 (3-level), a gap of -0.019.
+The measured location accuracies are 0.982 (flat) and
+0.969 (3-level), a gap of -0.014.
 
 Across
 128 independent seeds the 3-level location accuracy is
-0.976 (SD 0.005; 95 % CI
+0.977 (SD 0.005; 95 % CI
 0.976–0.977) versus flat
-0.981 (95 % CI
-0.980–0.981), a mean accuracy gap of
--0.004 (95 % CI
--0.005–-0.003;
-Wilcoxon signed-rank $p = 2.88 \times 10^{-12}$, effect size
-$r = 0.724$, medium). The signed mean gap
+0.983 (95 % CI
+0.982–0.984), a mean accuracy gap of
+-0.007 (95 % CI
+-0.007–-0.006;
+Wilcoxon signed-rank $p = 4.95 \times 10^{-19}$, effect size
+$r = 0.918$, large). The signed mean gap
 and its interval describe the location-accuracy cost of this configured
 three-level condition relative to the flat baseline.
 

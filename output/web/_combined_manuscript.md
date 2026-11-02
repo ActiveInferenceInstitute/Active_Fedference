@@ -1,3 +1,78 @@
+```{=html}
+<div id="paper-frontmatter" class="paper-frontmatter">
+```
+
+```{=html}
+<div id="paper-frontmatter-1" class="paper-frontmatter-page">
+```
+
+```{=latex}
+% template-paper-frontmatter-begin:1
+```
+
+# From a world model to shared beliefs
+
+![From a world model to shared beliefs. Source relation: original source-inspired conceptual schematic; see Friston et al. (2024) and the implementation locators in the figure metadata. The x-axis is not quantitative; the y-axis rows give the reading order from top to bottom. The upper rows trace the generative model: initial belief D, hidden state s, observation likelihood A, action-conditioned transition B and preferred-outcome log potentials C. The lower rows connect observation, inference and action in a solid loop; dashed arrows broadcast local posterior beliefs and return a cavity belief excluding the recipient. Shared positive support, admitted posterior log potentials and fixed weights qualify the categorical Eq. 7 bridge. It does not reconstruct the full source protocol. Estimand: not applicable; no measured estimand. Units, uncertainty and replication unit are not applicable: this deterministic conceptual map has no observations, intervals or empirical replication counts.](../figures/frontmatter_model.png){#fig:frontmatter-model width=100% data-slide-manifest="../figures/frontmatter_model.slides.json"}
+
+```{=latex}
+% template-paper-frontmatter-end:1
+```
+
+```{=html}
+</div>
+```
+
+
+```{=html}
+<div id="paper-frontmatter-2" class="paper-frontmatter-page">
+```
+
+```{=latex}
+% template-paper-frontmatter-begin:2
+```
+
+# Robustness has distinct claim owners
+
+![Robustness has distinct claim owners. Source relation: original source-inspired conceptual schematic; see Mildner et al. (2025) and the implementation locators in the figure metadata. The x-axis is not quantitative; the y-axis rows give the reading order from top to bottom. The upper row places source-conditional client FedGVI before the server choice; the lower rows separate H heuristic reweighting from V variational aggregation. Bounded-loss client influence statements require the cited matching assumptions. H owns exact zero-robustness recovery of log_linear_pool. V owns block descent on the positive-robustness, positive-entropy-weight objective and raw effective-weight bounds; these are not estimator B-robustness. No client theorem transfers to either server rule. Estimand: not applicable; no measured estimand. Units, uncertainty and replication unit are not applicable: this deterministic conceptual map has no observations, intervals or empirical replication counts.](../figures/frontmatter_robustness.png){#fig:frontmatter-robustness width=100% data-slide-manifest="../figures/frontmatter_robustness.slides.json"}
+
+```{=latex}
+% template-paper-frontmatter-end:2
+```
+
+```{=html}
+</div>
+```
+
+
+```{=html}
+<div id="paper-frontmatter-3" class="paper-frontmatter-page">
+```
+
+```{=latex}
+% template-paper-frontmatter-begin:3
+```
+
+# A model file must reach real execution
+
+![A model file must reach real execution. Source relation: original source-inspired conceptual schematic; see Friston et al. (2024) and the implementation locators in the figure metadata. The x-axis is not quantitative; the y-axis rows give the reading order from top to bottom. The top row admits a GNN document through a pinned parser or source-bound sentinel cache, with matrix and axis checks. The middle row separates native_world/native_posterior consumption of model values from optional upstream execution, shown by dashed arrows and requiring explicit source/runtime inputs and real parity checks. The bottom row retains declared input/output receipts. Parser success is not execution, matrix parity is not protocol replication, and integrity evidence does not establish scientific validity or certify a backend. Estimand: not applicable; no measured estimand. Units, uncertainty and replication unit are not applicable: this deterministic conceptual map has no observations, intervals or empirical replication counts.](../figures/frontmatter_execution.png){#fig:frontmatter-execution width=100% data-slide-manifest="../figures/frontmatter_execution.slides.json"}
+
+```{=latex}
+% template-paper-frontmatter-end:3
+```
+
+```{=html}
+</div>
+```
+
+```{=html}
+</div>
+<div id="paper-body" class="paper-body">
+```
+
+```{=latex}
+% template-paper-frontmatter-body
+```
+
 # Abstract {#sec:abstract}
 
 Multi-agent active inference gives a natural account of belief sharing: agents
@@ -76,6 +151,12 @@ not, however, provide a single tested treatment of robust categorical belief
 fusion for active-inference agents. This introduction states the problem and its
 evidence boundary; [@sec:gap] scopes the reviewed gap, and [@sec:contributions]
 lists the contributions together with what each result does not establish.
+
+The opening graphical abstracts provide a reading map: the generative model and
+belief-exchange cycle in [@fig:frontmatter-model], the distinct client and server
+robustness boundaries in [@fig:frontmatter-robustness], and the model-to-execution
+evidence chain in [@fig:frontmatter-execution]. These conceptual schematics orient
+the detailed assumptions, methods, and evidence that follow.
 
 ## Active inference supplies generative agents and shared beliefs {#sec:intro-active-inference}
 
@@ -2446,17 +2527,17 @@ $1$ time(s) and measured $5$ time(s),
 with median time plotted and the observed repeat range shown as a min--max bar.
 
 The fixed input seed is $20260728$ on the $arm64$
-machine using Python $3.13.11$ and NumPy $2.4.2$.
+machine using Python $3.14.9$ and NumPy $2.4.2$.
 
 The measured log--log slopes are descriptive checks of the expected orders, not
-performance guarantees: agent-axis slopes are 0.93
-(log-linear), 0.94 (iterative robust),
-0.79 (variational), 1.62
-(naive self-excluding sharing), and 1.89
+performance guarantees: agent-axis slopes are 0.94
+(log-linear), 0.90 (iterative robust),
+0.78 (variational), 1.64
+(naive self-excluding sharing), and 1.91
 (robust self-excluding sharing); state-axis slopes
-are 0.97, 0.95, and
-0.94; the modality-axis inference slope is
-0.66.
+are 0.98, 0.96, and
+0.96; the modality-axis inference slope is
+0.72.
 
 The slope fit is a timing diagnostic on this
 machine, not an inferential test and not evidence that the same constants hold
@@ -2469,7 +2550,7 @@ is the governing claim, not equality between a finite-grid slope and its exponen
 The timing plot in [@fig:complexity-scaling] visualizes the implementation-derived orders
 and the corresponding finite-grid timing diagnostic.
 
-![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on $arm64$ with Python $3.13.11$, NumPy $2.4.2$, seed $20260728$, and $5$ measured repeat(s) after $1$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../figures/complexity_scaling.png){#fig:complexity-scaling width=95% data-slide-manifest="../figures/complexity_scaling.slides.json"}
+![Implementation-derived complexity and seeded machine-scaling diagnostic. Source relation: original project computational-complexity study; estimand: median wall-clock time for categorical aggregation, naive and iterative self-excluding sharing, and state inference as one declared dimension changes. The x-axis is agent, state, or modality count on a log scale; the y-axis is median elapsed seconds on a log scale. Panels show agent scaling for aggregation, $N^2$ leave-one-out sharing, state scaling for aggregation, and modality scaling for one-step inference. Circle, square, triangle, and additional distinct marker-and-dash combinations identify simultaneously plotted operations; open versus filled marks and direct endpoint labels duplicate color. Vertical whiskers are recorded minimum-to-maximum timing spans around the median, not confidence intervals. Dark dotted lines are normalized $\Theta$-order guides derived from implementation accounting, not fitted results. The fixed seeded benchmark ran on $arm64$ with Python $3.14.9$, NumPy $2.4.2$, seed $20260728$, and $5$ measured repeat(s) after $1$ warmup(s); timing repeats within each grid point are the replication unit. These timings support only the implemented paths, fixed machine, and measured grid; they do not establish an asymptotic lower bound, portable throughput, distributed scaling, or a universal hardware benchmark.](../figures/complexity_scaling.png){#fig:complexity-scaling width=95% data-slide-manifest="../figures/complexity_scaling.slides.json"}
 
 
 
@@ -2955,9 +3036,9 @@ at the level of the recovery limits is what lets the robustness claims of
 [@sec:results-robustness] and [@sec:results-baseline] rest on the per-agent axis
 without leaning on the heuristic.
 
-266 of 268 acceptance criteria are verified. The
+283 of 287 acceptance criteria are verified. The
 pure-NumPy/SciPy core carries project test coverage of
-90.58% (gate $\ge 90\%$), with every stochastic step threaded
+92.47% (gate $\ge 90\%$), with every stochastic step threaded
 through a single seeded `np.random.default_rng(0)`.
 [@sec:reproducibility] records the full environment fingerprint, and the
 expected-free-energy identity that underwrites the active-inference substrate is
@@ -3531,13 +3612,13 @@ Linear→ReLU→Linear→softmax with 16 hidden units. Clients use the
 density-power $\beta$-loss at $\beta = 0.5$ for
 200 Adam steps, and per-test-point predictions are fused with
 `robust_aggregate` at `robustness = 0.5` under PyTorch
-not installed.
+2.12.1.
 
 The executed consensus is a valid probability simplex, with maximum unit-mass
-deviation N/A, and repeated seeded runs are bit-identical
-(N/A). At contamination N/A, held-out
-consensus accuracy is N/A (PyTorch not run) for the $\beta\to 0$ client and
-N/A (PyTorch not run) for the $\beta=0.5$ client.
+deviation 2.22e-16, and repeated seeded runs are bit-identical
+(Yes). At contamination 0.40, held-out
+consensus accuracy is 0.558 for the $\beta\to 0$ client and
+0.545 for the $\beta=0.5$ client.
 
 This single-seed endpoint demonstrates API transfer and deterministic execution,
 not posterior-uncertainty inference, model-class universality, or a robust-loss
@@ -4626,13 +4707,13 @@ rendered.
 
 | Field | Value |
 |---|---|
-| Python | 3.13.11 |
+| Python | 3.14.9 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | not installed |
+| PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | e707fcb26b557c57 |
-| Reproducible build epoch (UTC) | 2026-09-19T00:00:00Z |
+| Config hash (SHA-256, first 16) | edc5644854c9e524 |
+| Reproducible build epoch (UTC) | 2026-11-02T00:16:14Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -4672,13 +4753,13 @@ insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
-**Acceptance criteria.** 268 total, 266 passing.
+**Acceptance criteria.** 287 total, 283 passing.
 
-**Project test suite.** 2860 collected cases; the bound successful
+**Project test suite.** 3992 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
-**Combined line and branch coverage on `src/`.** 90.58%,
+**Combined line and branch coverage on `src/`.** 92.47%,
 achieved by the bound full gate with branch measurement enabled. The shared
 coverage threshold is $\ge 90\%$ on this combined measure.
 
@@ -4706,10 +4787,10 @@ z_generate_manuscript_variables.py
 
 | Category | Count |
 |---|---|
-| Figures | 1226 |
+| Figures | 1285 |
 | Data files | 5 |
 | Reports | 36 |
-| Total | 1267 |
+| Total | 1326 |
 
 : Top-level generated files in `output/figures`, `output/data`, and
 `output/reports` at token-hydration time. The generated release manifest is the
@@ -6045,22 +6126,22 @@ We compare two conditions over 960 seeded trials with
 * **Hierarchical** — agents run 4 alternating-minimization
   iterations to couple L1 and L2 beliefs before federating.
 
-The measured location accuracies are 0.982 (flat) and
-0.969 (hierarchical), a gap of -0.014.
+The measured location accuracies are 0.979 (flat) and
+0.969 (hierarchical), a gap of -0.010.
 
 Across
 128 independent seeds the hierarchical location accuracy is
 0.974 (SD 0.005; 95 % CI 0.973–0.975)
-versus flat 0.982 (95 % CI
-0.981–0.982), a mean accuracy gap of
--0.008 (95 % CI -0.009–-0.007;
-Wilcoxon signed-rank $p = 3.59 \times 10^{-20}$, effect size
-$r = 0.940$, large).
+versus flat 0.984 (95 % CI
+0.983–0.985), a mean accuracy gap of
+-0.010 (95 % CI -0.011–-0.009;
+Wilcoxon signed-rank $p = 9.45 \times 10^{-23}$, effect size
+$r = 0.999$, large).
 
 On location the gap is small
 but statistically reliable in the *negative* direction — the paired test rejects
 at $\alpha = 0.05$ and the gap's confidence interval
-(-0.009–-0.007) excludes zero on the
+(-0.011–-0.009) excludes zero on the
 negative side — so the hierarchy does not improve location accuracy in this
 regime; if anything it pays a small, consistent location cost for carrying the
 extra latent level.
@@ -6207,19 +6288,19 @@ uniform prior.
 **Three-level condition.** Agents run 4
 alternating-minimization iterations across all three levels before federating.
 
-The measured location accuracies are 0.984 (flat) and
-0.966 (3-level), a gap of -0.019.
+The measured location accuracies are 0.982 (flat) and
+0.969 (3-level), a gap of -0.014.
 
 Across
 128 independent seeds the 3-level location accuracy is
-0.976 (SD 0.005; 95 % CI
+0.977 (SD 0.005; 95 % CI
 0.976–0.977) versus flat
-0.981 (95 % CI
-0.980–0.981), a mean accuracy gap of
--0.004 (95 % CI
--0.005–-0.003;
-Wilcoxon signed-rank $p = 2.88 \times 10^{-12}$, effect size
-$r = 0.724$, medium). The signed mean gap
+0.983 (95 % CI
+0.982–0.984), a mean accuracy gap of
+-0.007 (95 % CI
+-0.007–-0.006;
+Wilcoxon signed-rank $p = 4.95 \times 10^{-19}$, effect size
+$r = 0.918$, large). The signed mean gap
 and its interval describe the location-accuracy cost of this configured
 three-level condition relative to the flat baseline.
 
@@ -6767,4 +6848,8 @@ b=$p/manuscript/references.bib
 uv run python -m \
   infrastructure.reference.\
 citation.cli validate "$b" --strict
+```
+
+```{=html}
+</div>
 ```

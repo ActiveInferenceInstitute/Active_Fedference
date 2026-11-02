@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -278,12 +283,12 @@
 finite-breakdown characterization}
 \protect\phantomsection\label{sec:results-heuristic-characterization}
 The server-side \texttt{robust\_aggregate} rule is the sharp heuristic
-axis of the three-axes design (sec.~7.2.1).
+axis of the three-axes design (sec.~10.2.1).
 \end{frame}
 
 \begin{frame}{Sharp server heuristic (part 2)}
 It has BH-rejected positive contrasts in the configured accuracy verdict
-in sec.~7.5.2 but has declared reversals elsewhere.
+in sec.~10.5.2 but has declared reversals elsewhere.
 \end{frame}
 
 \begin{frame}[fragile]{Sharp server heuristic (part 3)}
@@ -312,7 +317,7 @@ and the measurement makes its honesty boundary concrete.
 \end{frame}
 
 \begin{frame}[fragile]{Sharp server heuristic (part 7)}
-We measure two things (fig.~33). First, a
+We measure two things (fig.~36). First, a
 \textbf{numerical influence function}: we drag one agent's belief a
 growing fraction toward a confident-wrong contamination point and read
 its converged pooling weight. At \texttt{robustness\ =\ 0} the weight is
@@ -375,7 +380,10 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Complete numerical influence paths for the reference and heuristic with the equal-weight reference.}]{../figures/heuristic_breakdown.slide-influence.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Complete
+numerical influence paths for the reference and heuristic with the
+equal-weight
+reference.}]{../figures/heuristic_breakdown.slide-influence.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -383,7 +391,10 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Endpoint weight drop: reference minus heuristic = 0.1435. Empirical at these settings, not a guarantee.}]{../figures/heuristic_breakdown.slide-influence-drop.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Endpoint
+weight drop: reference minus heuristic = 0.1435. Empirical at these
+settings, not a
+guarantee.}]{../figures/heuristic_breakdown.slide-influence-drop.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -391,7 +402,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic: observed finite-search argmax capture at k=2 adversaries.}]{../figures/heuristic_breakdown.slide-heuristic.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic:
+observed finite-search argmax capture at k=2
+adversaries.}]{../figures/heuristic_breakdown.slide-heuristic.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -399,7 +412,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic: argmax captured at k=2.}]{../figures/heuristic_breakdown.slide-heuristic-capture.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic:
+argmax captured at
+k=2.}]{../figures/heuristic_breakdown.slide-heuristic-capture.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -407,7 +422,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational: observed finite-search argmax capture at k=4 adversaries.}]{../figures/heuristic_breakdown.slide-variational.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational:
+observed finite-search argmax capture at k=4
+adversaries.}]{../figures/heuristic_breakdown.slide-variational.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -415,7 +432,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational: argmax captured at k=4.}]{../figures/heuristic_breakdown.slide-variational-capture.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational:
+argmax captured at
+k=4.}]{../figures/heuristic_breakdown.slide-variational-capture.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -423,7 +442,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong: 16/16 declared rows have finite heuristic capture (100\%).}]{../figures/heuristic_breakdown.slide-attack-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong:
+16/16 declared rows have finite heuristic capture
+(100\%).}]{../figures/heuristic_breakdown.slide-attack-1.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -431,7 +452,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong: 16/16 rows with finite capture = 100\%.}]{../figures/heuristic_breakdown.slide-attack-1-count.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong: 16/16 rows with finite capture =
+100\%.}]{../figures/heuristic_breakdown.slide-attack-1-count.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -439,7 +462,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise: 0/16 declared rows have finite heuristic capture (0\%).}]{../figures/heuristic_breakdown.slide-attack-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise:
+0/16 declared rows have finite heuristic capture
+(0\%).}]{../figures/heuristic_breakdown.slide-attack-2.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -447,7 +472,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label noise: 0/16 rows with finite capture = 0\%.}]{../figures/heuristic_breakdown.slide-attack-2-count.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label
+noise: 0/16 rows with finite capture =
+0\%.}]{../figures/heuristic_breakdown.slide-attack-2-count.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -455,7 +482,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: 0/16 declared rows have finite heuristic capture (0\%).}]{../figures/heuristic_breakdown.slide-attack-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+0/16 declared rows have finite heuristic capture
+(0\%).}]{../figures/heuristic_breakdown.slide-attack-3.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -463,7 +492,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: 0/16 rows with finite capture = 0\%.}]{../figures/heuristic_breakdown.slide-attack-3-count.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+0/16 rows with finite capture =
+0\%.}]{../figures/heuristic_breakdown.slide-attack-3-count.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -471,7 +502,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation: 16/16 declared rows have finite heuristic capture (100\%).}]{../figures/heuristic_breakdown.slide-attack-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation:
+16/16 declared rows have finite heuristic capture
+(100\%).}]{../figures/heuristic_breakdown.slide-attack-4.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -479,7 +512,9 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation: 16/16 rows with finite capture = 100\%.}]{../figures/heuristic_breakdown.slide-attack-4-count.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation:
+16/16 rows with finite capture =
+100\%.}]{../figures/heuristic_breakdown.slide-attack-4-count.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -487,7 +522,10 @@ budget.''
 \begin{frame}{Sharp server heuristic (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Finite-search capture and grid frequencies describe the declared settings. They are not global breakdown probabilities or universal robustness guarantees.}]{../figures/heuristic_breakdown.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Finite-search
+capture and grid frequencies describe the declared settings. They are
+not global breakdown probabilities or universal robustness
+guarantees.}]{../figures/heuristic_breakdown.slide-scope.png}
 \refstepcounter{figure}\label{fig:heuristic-breakdown-slide-panel-15}
 \end{figure}
 \end{frame}

@@ -344,7 +344,7 @@ aria-label="Learning stack: EFE, Dirichlet updates, and BMR, part 3" role="group
 aria-label="Learning stack: EFE, Dirichlet updates, and BMR, part 3" id="slide-heading-e6006ecd8bad">Learning
 stack (part 3)</h2>
 <p>We reimplement each in closed form so the language-acquisition,
-expected-free-energy, and emergence studies of <span class="cross-reference">Section 5.22</span>
+expected-free-energy, and emergence studies of <span class="cross-reference">Section 8.22</span>
 rest on machine-checkable quantities rather than fitted curves.</p>
 </section>
 <section id="sec:methods-dirichlet" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2ae70bf7e18e">
@@ -371,11 +371,10 @@ aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 3" role
 <h2 class="equation-led"
 aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 3" id="slide-heading-dac6450c6444">Conjugate
 Dirichlet learning… (part 3)</h2>
-<p><span class="math display" id="eq:dirichlet-update">\[
-a \;\leftarrow\; a + \text{counts},
+<p><span class="math display" id="eq:dirichlet-update">\[a \;\leftarrow\; a + \text{counts},
 \qquad
-\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o&#39;} a_{o&#39; s}},
-\]</span></p>
+\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o&#39;} a_{o&#39;
+s}},\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f3cfe858e37b">
@@ -425,13 +424,11 @@ aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 8" role
 <h2 class="equation-led"
 aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 8" id="slide-heading-b417f5d13f39">Conjugate
 Dirichlet learning… (part 8)</h2>
-<p><span class="math display" id="eq:dirichlet-kl">\[
-\begin{aligned}
+<p><span class="math display" id="eq:dirichlet-kl">\[\begin{aligned}
 \mathrm{KL}\big(A^{\star}\|\mathbb{E}[A]\big)
 &amp;= \sum_s\sum_o A^{\star}_{os}\\
 &amp;\quad\cdot\ln\frac{A^{\star}_{os}}{\mathbb{E}[A]_{os}}.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1a6dbce93846">
@@ -449,7 +446,7 @@ aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 10" rol
 <h2 class="prose-slide"
 aria-label="Conjugate Dirichlet learning from co-occurrence counts, part 10" id="slide-heading-ec64c49d4852">Conjugate
 Dirichlet learning… (part 10)</h2>
-<p>and the language-acquisition study of <span class="cross-reference">Section 5.22</span>
+<p>and the language-acquisition study of <span class="cross-reference">Section 8.22</span>
 reports the descent of <a class="cross-reference" href="#eq:dirichlet-kl">Equation (19)</a>
 across 24 steps.</p>
 </section>
@@ -502,7 +499,7 @@ aria-label="Expected free energy as the action-selection objective, part 3" id="
 free energy as… (part 3)</h2>
 <p>The two views are the same scalar rearranged, stated as <span class="cross-reference">Equation (22)</span>
 and pinned to a zero residual by the algebraic identity <span class="cross-reference">Equation (23)</span>
-in <span class="cross-reference">Section 6</span>.</p>
+in <span class="cross-reference">Section 9</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Expected free energy as the action-selection objective, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bac30eddfce6">
@@ -568,7 +565,7 @@ preference-matched predictions lower risk).</p>
 aria-label="Epistemic value, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-006ecfe8b520">
 <h2 class="prose-slide" aria-label="Epistemic value, part 4" id="slide-heading-006ecfe8b520">Epistemic
 value (part 4)</h2>
-<p><span class="cross-reference">Figure 8</span>
+<p><span class="cross-reference">Figure 11</span>
 visualizes the additive cost view and the signed pragmatic/epistemic
 waterfall terminating at <span
 class="math inline">\(G(\boldsymbol{\pi})\)</span> — a deterministic
@@ -611,8 +608,7 @@ aria-label="Bayesian model reduction for the configured pruning sign control, pa
 <h2 class="equation-led"
 aria-label="Bayesian model reduction for the configured pruning sign control, part 4" id="slide-heading-d32944f1bef8">Bayesian
 model reduction… (part 4)</h2>
-<p><span class="math display" id="eq:bmr-deltaf">\[
-\begin{aligned}
+<p><span class="math display" id="eq:bmr-deltaf">\[\begin{aligned}
 \Delta F
 &amp;\;=\; \ln B(\text{prior}) - \ln B(\text{post})\\
 &amp;\qquad + \ln B(\text{reduced\_post})\\
@@ -620,8 +616,7 @@ model reduction… (part 4)</h2>
 \ln B(a)
 &amp;\;=\; \textstyle\sum_k \ln\Gamma(a_k)
 - \ln\Gamma\!\big(\sum_k a_k\big).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Bayesian model reduction for the configured pruning sign control, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d3ce71406877">
@@ -649,12 +644,12 @@ aria-label="Bayesian model reduction for the configured pruning sign control, pa
 <h2 class="prose-slide"
 aria-label="Bayesian model reduction for the configured pruning sign control, part 7" id="slide-heading-390ae37bcd8c">Bayesian
 model reduction… (part 7)</h2>
-<p>The configured BMR sign-control study of <span class="cross-reference">Section 5.22</span>
+<p>The configured BMR sign-control study of <span class="cross-reference">Section 8.22</span>
 uses this operation over <span class="math inline">\(n = 4\)</span>
 candidate states. It contrasts a redundant reduction (<span
 class="math inline">\(\Delta F = 3.68\)</span> nats; adopt) with a
 supported one (<span class="math inline">\(\Delta F = -27.67\)</span>
-nats; reject) in <span class="cross-reference">Figure 12</span>.</p>
+nats; reject) in <span class="cross-reference">Figure 15</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Bayesian model reduction for the configured pruning sign control, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-470cbd1bd682">
@@ -671,9 +666,10 @@ structure discovery or universal emergence.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

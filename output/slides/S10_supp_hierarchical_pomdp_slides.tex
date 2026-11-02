@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -262,7 +267,7 @@
 \begin{frame}{Supplement: hierarchical POMDP methods and parameters}
 \protect\phantomsection\label{sec:supp-hierarchical}
 This supplement makes the two-level construction of
-sec.~14.9 concrete: how location (L1) is
+sec.~17.9 concrete: how location (L1) is
 coupled to context (L2) through context-conditioned priors,
 \end{frame}
 
@@ -276,7 +281,7 @@ It answers the question the main section brackets --- \emph{by what
 mechanism does a second latent level enter the inference at all} --- and
 thereby fixes why the hierarchy resolves context above chance while
 retaining the separate location-accuracy contrast reported in
-sec.~14.9.
+sec.~17.9.
 \end{frame}
 
 \begin{frame}[fragile]{Generative model for context-gated location

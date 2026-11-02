@@ -68,13 +68,13 @@ rendered.
 
 | Field | Value |
 |---|---|
-| Python | 3.13.11 |
+| Python | 3.14.9 |
 | NumPy | 2.4.2 |
 | SciPy | 1.18.0 |
-| PyTorch (MLP complement) | not installed |
+| PyTorch (MLP complement) | 2.12.1 |
 | Platform | Darwin arm64 |
-| Config hash (SHA-256, first 16) | e707fcb26b557c57 |
-| Reproducible build epoch (UTC) | 2026-09-19T00:00:00Z |
+| Config hash (SHA-256, first 16) | edc5644854c9e524 |
+| Reproducible build epoch (UTC) | 2026-11-02T00:16:14Z |
 
 : Software and configuration fingerprint for the hydrated manuscript. The build epoch is derived from `SOURCE_DATE_EPOCH`; an unreleased build records an explicit omitted sentinel rather than wall-clock time. {#tbl:repro_env}
 
@@ -114,13 +114,13 @@ insufficient.
 
 ## Test and coverage evidence for the claim surface {#sec:repro-tests}
 
-**Acceptance criteria.** 268 total, 266 passing.
+**Acceptance criteria.** 287 total, 283 passing.
 
-**Project test suite.** 2860 collected cases; the bound successful
+**Project test suite.** 3992 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
-**Combined line and branch coverage on `src/`.** 90.58%,
+**Combined line and branch coverage on `src/`.** 92.47%,
 achieved by the bound full gate with branch measurement enabled. The shared
 coverage threshold is $\ge 90\%$ on this combined measure.
 
@@ -148,10 +148,10 @@ z_generate_manuscript_variables.py
 
 | Category | Count |
 |---|---|
-| Figures | 1226 |
+| Figures | 1285 |
 | Data files | 5 |
 | Reports | 36 |
-| Total | 1267 |
+| Total | 1326 |
 
 : Top-level generated files in `output/figures`, `output/data`, and
 `output/reports` at token-hydration time. The generated release manifest is the

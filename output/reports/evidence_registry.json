@@ -1,17 +1,17 @@
 {
   "claim_boundary": "Compact evidence summary for manuscript validation; full fact dumps are opt-in debug output.",
-  "fact_count": 820142,
+  "fact_count": 820785,
   "freshness_warnings": [],
   "kind_counts": {
-    "artifact": 2672,
+    "artifact": 2804,
     "citation": 65,
     "equation": 86,
-    "figure": 2526,
-    "number": 814479,
+    "figure": 2650,
+    "number": 814866,
     "section": 278,
     "table": 36
   },
-  "omitted_fact_count": 819942,
+  "omitted_fact_count": 820585,
   "sample_facts": [
     {
       "active": true,
@@ -608,6 +608,30 @@
       "source": "output/reports/disjoint_fov_world.json:$.multiseed.communicating_vs_isolated.paired_test.effect_size",
       "source_field": "$.multiseed.communicating_vs_isolated.paired_test.effect_size",
       "source_path": "output/reports/disjoint_fov_world.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-11-02T00:16:14Z",
+      "kind": "number",
+      "source": "output/reports/hierarchical_world.json:$.location_accuracy_gap (numeric variant)",
+      "source_field": "$.location_accuracy_gap",
+      "source_path": "output/reports/hierarchical_world.json",
+      "source_tier": "generated_metric",
+      "stale": false,
+      "tolerance": 0.0,
+      "value": "-1"
+    },
+    {
+      "active": true,
+      "checked_at": "2026-11-02T00:16:14Z",
+      "kind": "number",
+      "source": "output/reports/hierarchical_world.json:$.multiseed.gap.mean (numeric variant)",
+      "source_field": "$.multiseed.gap.mean",
+      "source_path": "output/reports/hierarchical_world.json",
       "source_tier": "generated_metric",
       "stale": false,
       "tolerance": 0.0,
@@ -2388,39 +2412,15 @@
       "stale": false,
       "tolerance": 0.0,
       "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-09-08T04:27:07Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[34] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[34]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
-    },
-    {
-      "active": true,
-      "checked_at": "2026-09-08T04:27:07Z",
-      "kind": "number",
-      "source": "output/reports/robustness_review_grid.json:$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[35] (numeric variant)",
-      "source_field": "$.statistics.by_mechanism.confident_wrong.by_rate.0.4.methods.rcce.contrast_by_seed[35]",
-      "source_path": "output/reports/robustness_review_grid.json",
-      "source_tier": "generated_metric",
-      "stale": false,
-      "tolerance": 0.0,
-      "value": "-1"
     }
   ],
   "schema": "template-evidence-registry-report-v1",
   "source_tiers": {
-    "artifact": 5598,
+    "artifact": 5854,
     "bibliography": 65,
     "claim_ledger": 46,
     "configuration": 232,
     "data_source": 2640,
-    "generated_metric": 811561
+    "generated_metric": 811948
   }
 }

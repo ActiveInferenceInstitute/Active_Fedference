@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -272,8 +277,7 @@ a general divergence \(\mathcal D\):
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 3)}
-\begin{equation}\tag{2}\protect\phantomsection\label{eq:gen-bayes}{
-\begin{aligned}
+\begin{equation}\tag{2}\protect\phantomsection\label{eq:gen-bayes}{\begin{aligned}
 q_n^\ast(s)
 &= \arg\min_{q_n}
 \left\{
@@ -282,8 +286,7 @@ q_n^\ast(s)
 &\quad + \tfrac{1}{\tau}\,\mathcal D\!\big(q_n \,\|\, \pi_0\big)
 \end{aligned}
 \right\}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 4)}
@@ -314,9 +317,7 @@ minimizer is the tempered softmax in (3).
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 8)}
-\begin{equation}\tag{3}\protect\phantomsection\label{eq:tempered-softmax}{
-q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),
-}\end{equation}
+\begin{equation}\tag{3}\protect\phantomsection\label{eq:tempered-softmax}{q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Generalized Bayes (part 9)}
@@ -340,7 +341,7 @@ The recovery to standard Bayes follows by choosing the loss.
 With \(L=\mathrm{NLL}\), \(\mathrm{NLL}(p, o) = -\log p(o)\), the
 exponential in that tempered softmax becomes a product of likelihoods
 and the minimizer is \emph{exactly} standard Bayes;
-eq.~11 in sec.~5.8 states
+eq.~11 in sec.~8.8 states
 that corner,
 \end{frame}
 
@@ -352,7 +353,7 @@ closed-form prior-times-likelihood product.
 \begin{frame}[fragile]{Generalized Bayes (part 14)}
 The largest observed discrepancy between \texttt{generalized\_posterior}
 in this regime and the analytic Bayes posterior is 5.55e-17, reported in
-sec.~7.1 --- exact to machine precision (a
+sec.~10.1 --- exact to machine precision (a
 maximum deviation of about one ULP), not merely close.
 \end{frame}
 
@@ -372,16 +373,14 @@ site factor and recombines it with that cavity according to
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 17)}
-\begin{equation}\tag{4}\protect\phantomsection\label{eq:cavity}{
-\begin{aligned}
+\begin{equation}\tag{4}\protect\phantomsection\label{eq:cavity}{\begin{aligned}
 q_{-n}(s)
 &=
 \frac{q(s)/t_n(s)}{\sum_{s'} q(s')/t_n(s')}
 \\
 &=
 \operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 18)}
@@ -390,9 +389,7 @@ re-multiplying the original site factor restores the global posterior:
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 19)}
-\begin{equation}\tag{5}\protect\phantomsection\label{eq:factor-replacement}{
-q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s'}q_{-n}(s')t_n(s')},
-}\end{equation}
+\begin{equation}\tag{5}\protect\phantomsection\label{eq:factor-replacement}{q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s'}q_{-n}(s')t_n(s')},}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Generalized Bayes (part 20)}
@@ -414,18 +411,18 @@ imported here so that the per-agent generalized-Bayes update of
 eq.~2 is computed against the colony belief with the
 agent's own contribution removed --- exactly the sensory-attenuation
 discipline the belief-sharing round of
-sec.~5.9 requires.
+sec.~8.9 requires.
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 23)}
 What remains unspecified in eq.~2 are its two
 ingredients --- the divergence \(\mathcal D\) and the loss \(L\) ---
 whose robust members and standard-Bayes limits
-sec.~5.6 develops next;
+sec.~8.6 develops next;
 \end{frame}
 
 \begin{frame}{Generalized Bayes (part 24)}
-the aggregation identity (sec.~5.8) then
+the aggregation identity (sec.~8.8) then
 federates the resulting per-agent posteriors.
 \end{frame}
 
@@ -460,7 +457,7 @@ true likelihood.
 \begin{frame}{Conjugate likelihood\ldots{} (part 4)}
 Convergence is measured by the per-column KL divergence summed over
 hidden states, which decreases monotonically toward the standard-Bayes
-fixed point; sec.~7.3 reports the learning curve,
+fixed point; sec.~10.3 reports the learning curve,
 where the KL falls from 3.4231 to 0.0027 across 24 count batches.
 \end{frame}
 
@@ -515,7 +512,7 @@ score is identically zero,
 \begin{frame}[fragile]{Bayesian model reduction\ldots{} (part 6)}
 the no-reduction fixed point.
 
-sec.~7.4 reports \(\Delta F = 3.68\) for a
+sec.~10.4 reports \(\Delta F = 3.68\) for a
 redundant reduction (accepted) against \(\Delta F = -27.67\) for a
 supported one (rejected). The implementation is
 \texttt{bayesian\_model\_reduction.reduce}.

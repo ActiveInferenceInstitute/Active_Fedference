@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -358,13 +363,16 @@ separate publication gates.
 variational inference, belief sharing, robustness, FedGVI
 
 The complete system schematic is shown in
-fig.~1.
+fig.~4.
 \end{frame}
 
 \begin{frame}{Abstract (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-1-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-1-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -372,7 +380,10 @@ fig.~1.
 \begin{frame}{Abstract (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-1-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-1-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -380,7 +391,10 @@ fig.~1.
 \begin{frame}{Abstract (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-1-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-1-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -388,7 +402,10 @@ fig.~1.
 \begin{frame}{Abstract (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-2-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-2-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -396,7 +413,10 @@ fig.~1.
 \begin{frame}{Abstract (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-2-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-2-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -404,7 +424,10 @@ fig.~1.
 \begin{frame}{Abstract (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-2-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-2-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -412,7 +435,10 @@ fig.~1.
 \begin{frame}{Abstract (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-3-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-3-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -420,7 +446,10 @@ fig.~1.
 \begin{frame}{Abstract (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-3-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-3-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -428,7 +457,10 @@ fig.~1.
 \begin{frame}{Abstract (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-3-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-3-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -436,7 +468,10 @@ fig.~1.
 \begin{frame}{Abstract (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-4-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-4-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -444,7 +479,10 @@ fig.~1.
 \begin{frame}{Abstract (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-4-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-4-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -452,7 +490,10 @@ fig.~1.
 \begin{frame}{Abstract (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-4-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-4-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -460,7 +501,10 @@ fig.~1.
 \begin{frame}{Abstract (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-5-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-5-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -468,7 +512,10 @@ fig.~1.
 \begin{frame}{Abstract (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-5-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-5-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -476,7 +523,10 @@ fig.~1.
 \begin{frame}{Abstract (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-5-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/graphical_abstract.slide-row-5-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -484,7 +534,11 @@ fig.~1.
 \begin{frame}{Abstract (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-6-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+consensus: source-derived posterior masses for states 1 to 3, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when
+present.}]{../figures/graphical_abstract.slide-row-6-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -492,7 +546,11 @@ fig.~1.
 \begin{frame}{Abstract (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-6-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+consensus: source-derived posterior masses for states 4 to 6, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when
+present.}]{../figures/graphical_abstract.slide-row-6-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -500,7 +558,11 @@ fig.~1.
 \begin{frame}{Abstract (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-6-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+consensus: source-derived posterior masses for states 7 to 8, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when
+present.}]{../figures/graphical_abstract.slide-row-6-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -508,7 +570,11 @@ fig.~1.
 \begin{frame}{Abstract (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-7-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+consensus: source-derived posterior masses for states 1 to 3, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when
+present.}]{../figures/graphical_abstract.slide-row-7-states-1-3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -516,7 +582,11 @@ fig.~1.
 \begin{frame}{Abstract (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-7-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+consensus: source-derived posterior masses for states 4 to 6, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when
+present.}]{../figures/graphical_abstract.slide-row-7-states-4-6.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -524,7 +594,11 @@ fig.~1.
 \begin{frame}{Abstract (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/graphical_abstract.slide-row-7-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+consensus: source-derived posterior masses for states 7 to 8, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when
+present.}]{../figures/graphical_abstract.slide-row-7-states-7-8.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -532,7 +606,10 @@ fig.~1.
 \begin{frame}{Abstract (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/graphical_abstract.slide-weights-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived
+normalized heuristic influence weights; adversarial bars are
+crosshatched and agent labels preserve their
+roles.}]{../figures/graphical_abstract.slide-weights-1-2.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -540,7 +617,10 @@ fig.~1.
 \begin{frame}{Abstract (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/graphical_abstract.slide-weights-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived
+normalized heuristic influence weights; adversarial bars are
+crosshatched and agent labels preserve their
+roles.}]{../figures/graphical_abstract.slide-weights-3-4.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -548,7 +628,10 @@ fig.~1.
 \begin{frame}{Abstract (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/graphical_abstract.slide-weights-5-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived
+normalized heuristic influence weights; adversarial bars are
+crosshatched and agent labels preserve their
+roles.}]{../figures/graphical_abstract.slide-weights-5-5.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -556,7 +639,9 @@ fig.~1.
 \begin{frame}{Abstract (part 37)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40\%. True state: 3.}]{../figures/graphical_abstract.slide-colony.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured
+colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40\%. True
+state: 3.}]{../figures/graphical_abstract.slide-colony.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -564,7 +649,9 @@ fig.~1.
 \begin{frame}{Abstract (part 38)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive equal-weight log pool: true-state mass 39\%; argmax state 6.}]{../figures/graphical_abstract.slide-naive.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+equal-weight log pool: true-state mass 39\%; argmax state
+6.}]{../figures/graphical_abstract.slide-naive.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-26}
 \end{figure}
 \end{frame}
@@ -572,7 +659,9 @@ fig.~1.
 \begin{frame}{Abstract (part 39)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic robust aggregation: true-state mass 50\%; argmax state 3. Robustness 1.5.}]{../figures/graphical_abstract.slide-heuristic.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+robust aggregation: true-state mass 50\%; argmax state 3. Robustness
+1.5.}]{../figures/graphical_abstract.slide-heuristic.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-27}
 \end{figure}
 \end{frame}
@@ -580,7 +669,10 @@ fig.~1.
 \begin{frame}{Abstract (part 40)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A / crosshatching: adversarial; H / plain: honest. All probability panels share a 0--1 scale. The true state is green; other states are gray.}]{../figures/graphical_abstract.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A /
+crosshatching: adversarial; H / plain: honest. All probability panels
+share a 0--1 scale. The true state is green; other states are
+gray.}]{../figures/graphical_abstract.slide-key.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-28}
 \end{figure}
 \end{frame}
@@ -588,7 +680,10 @@ fig.~1.
 \begin{frame}{Abstract (part 41)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One deterministic configured colony, not a replicated benchmark. True-state mass percentages are not deployment accuracy estimates. No uncertainty interval applies.}]{../figures/graphical_abstract.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One
+deterministic configured colony, not a replicated benchmark. True-state
+mass percentages are not deployment accuracy estimates. No uncertainty
+interval applies.}]{../figures/graphical_abstract.slide-scope.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-29}
 \end{figure}
 \end{frame}
@@ -596,7 +691,9 @@ fig.~1.
 \begin{frame}{Abstract (part 42)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent A1 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-a1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent
+A1 → Fusion server: Posterior message;
+data\_dependency.}]{../figures/graphical_abstract.slide-network-a1.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-30}
 \end{figure}
 \end{frame}
@@ -604,7 +701,9 @@ fig.~1.
 \begin{frame}{Abstract (part 43)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent A2 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-a2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent
+A2 → Fusion server: Posterior message;
+data\_dependency.}]{../figures/graphical_abstract.slide-network-a2.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-31}
 \end{figure}
 \end{frame}
@@ -612,7 +711,9 @@ fig.~1.
 \begin{frame}{Abstract (part 44)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent H1 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-h1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent
+H1 → Fusion server: Posterior message;
+data\_dependency.}]{../figures/graphical_abstract.slide-network-h1.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-32}
 \end{figure}
 \end{frame}
@@ -620,7 +721,9 @@ fig.~1.
 \begin{frame}{Abstract (part 45)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent H2 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-h2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent
+H2 → Fusion server: Posterior message;
+data\_dependency.}]{../figures/graphical_abstract.slide-network-h2.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-33}
 \end{figure}
 \end{frame}
@@ -628,7 +731,9 @@ fig.~1.
 \begin{frame}{Abstract (part 46)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent H3 → Fusion server: Posterior message; data\_dependency.}]{../figures/graphical_abstract.slide-network-h3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent
+H3 → Fusion server: Posterior message;
+data\_dependency.}]{../figures/graphical_abstract.slide-network-h3.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-34}
 \end{figure}
 \end{frame}
@@ -636,7 +741,10 @@ fig.~1.
 \begin{frame}{Abstract (part 47)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={The variational server is a separate objective-backed route. The displayed naive-versus-heuristic colony values do not measure its performance.}]{../figures/graphical_abstract.slide-variational-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={The
+variational server is a separate objective-backed route. The displayed
+naive-versus-heuristic colony values do not measure its
+performance.}]{../figures/graphical_abstract.slide-variational-scope.png}
 \refstepcounter{figure}\label{fig:graphical-abstract-slide-panel-35}
 \end{figure}
 \end{frame}

@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.11" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>01_introduction.md.web</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -308,7 +316,7 @@ mjx-container[display="true"] { max-width: 100%; overflow: visible; }
   outline: 3px solid var(--brand-1);
   outline-offset: 3px;
 }
-.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
+.table-scroll > table { margin-block: 0; display: table; min-width: 100%; width: 100%; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -414,6 +422,9 @@ pre {
 }
 
 pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
   overflow-wrap: inherit;
   white-space: inherit;
   word-break: inherit;
@@ -466,8 +477,9 @@ table {
 
 .table-scroll > table {
   margin-block: 0;
+  display: table;
   min-width: 100%;
-  width: max-content;
+  width: 100%;
 }
 
 figure {
@@ -484,6 +496,15 @@ th, td {
 th {
   background-color: #1f6f8b;
   color: white;
+}
+
+/* Preserve a complete inline-code header within the table's scroll region. */
+th code {
+  color: inherit;
+  background-color: transparent;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 img {
@@ -626,6 +647,7 @@ mjx-container[display="true"] {
 }
 
 </style>
+<script data-template-source-font-loader src="assets/source-web-fonts.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -644,9 +666,15 @@ methods for inference under misspecification or contamination.</p>
 <p>The cited literatures do not, however, provide a single tested
 treatment of robust categorical belief fusion for active-inference
 agents. This introduction states the problem and its evidence boundary;
-<a class="xref" href="index.html#sec:gap">Section 3</a> scopes the
-reviewed gap, and <a class="xref" href="index.html#sec:contributions">Section 4</a> lists the
+<a class="xref" href="index.html#sec:gap">Section 6</a> scopes the
+reviewed gap, and <a class="xref" href="index.html#sec:contributions">Section 7</a> lists the
 contributions together with what each result does not establish.</p>
+<p>The opening graphical abstracts provide a reading map: the generative
+model and belief-exchange cycle in <a class="xref" href="index.html#fig:frontmatter-model">Figure 1</a>, the
+distinct client and server robustness boundaries in <a class="xref" href="index.html#fig:frontmatter-robustness">Figure 2</a>,
+and the model-to-execution evidence chain in <a class="xref" href="index.html#fig:frontmatter-execution">Figure 3</a>.
+These conceptual schematics orient the detailed assumptions, methods,
+and evidence that follow.</p>
 <h2 id="sec:intro-active-inference">Active inference supplies generative
 agents and shared beliefs</h2>
 <p>Active inference casts perception, learning, and action as the
@@ -678,7 +706,7 @@ has been framed directly in active-inference terms
 one shared categorical factor — a predator’s location, say — and forms a
 project log-linear pool (<a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>). Under the
 explicit finite-shared-support, posterior-log-potential, and
-fixed-weight assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+fixed-weight assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>,
 that weighted geometric pool is a specialization of Friston et al.’s Eq.
 7 message-combination term <span class="citation">(Friston et al. 2024)</span>.</p>
 <p>It is not a reconstruction of the source message construction,
@@ -688,12 +716,12 @@ classical logarithmic-pooling literature <span class="citation">(Genest and Zide
 <span class="citation">(Carvalho et al. 2023)</span>, to product-of-experts geometry in machine
 learning <span class="citation">(Hinton 2002)</span>, and to distributed Bayesian estimators
 <span class="citation">(Tresp 2000)</span>. In the reproduced baseline, communication lowers
-mean free energy relative to the matched incommunicado condition (<a class="xref" href="index.html#sec:results-belief_sharing">Section 7.2</a>).</p>
+mean free energy relative to the matched incommunicado condition (<a class="xref" href="index.html#sec:results-belief_sharing">Section 10.2</a>).</p>
 <p>Friston et al. <span class="citation">(Friston et al. 2024)</span> crystallized the colony
 mechanism into three worked simulations — communicating-colony
 free-energy convergence, Dirichlet language acquisition, and Bayesian
 model reduction structure emergence — whose mechanisms motivate three
-reduced categorical analogues in this repository (<a class="xref" href="index.html#sec:results-recovery">Section 7.1</a>). They
+reduced categorical analogues in this repository (<a class="xref" href="index.html#sec:results-recovery">Section 10.1</a>). They
 are not numerical or exact protocol replications; a source-parity
 reconstruction remains future work before evaluating source-level
 equivalence.</p>
@@ -702,7 +730,7 @@ itself: active inference connects naturally to Bayesian optimal
 experimental design and model selection <span class="citation">(Smith et al. 2022)</span>, and post-hoc
 Bayesian model reduction prunes redundant structure by comparing
 free-energy bounds <span class="citation">(Friston and Penny 2011)</span> — the algebra used by our
-configured BMR sign control (<a class="xref" href="index.html#sec:results-emergence">Section 7.4</a>).</p>
+configured BMR sign control (<a class="xref" href="index.html#sec:results-emergence">Section 10.4</a>).</p>
 <p>The reviewed active-inference belief-sharing work does not
 systematically characterize fusion under explicit contamination or
 intentionally wrong belief broadcasts.</p>
@@ -758,8 +786,8 @@ this manuscript supplies the recasting.</p>
 <p>Robust generalized Bayes therefore does not replace exact-Bayes
 belief fusion; it contains the standard pool as a tested zero-robustness
 recovery limit. That containment is the hinge this paper tests, and the
-recovery limits are stated formally as numbered results in <a class="xref" href="index.html#sec:formalism">Section 6</a> and
-the central identity in <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>.</p>
+recovery limits are stated formally as numbered results in <a class="xref" href="index.html#sec:formalism">Section 9</a> and
+the central identity in <a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>.</p>
 <p>The historical framing is deliberately modest. The manuscript uses
 early probability, inverse-probability, utility, and collective-judgment
 sources as a conceptual genealogy for belief, evidence, expectation, and
@@ -787,32 +815,32 @@ recovery behave in the accompanying categorical extensions?</p>
 <p>The first question is answered algebraically and by machine-precision
 checks; the others are conditional simulation results. The independent
 unit, resampling scheme, and fixed hidden-state/attack-target estimand
-are specified in <a class="xref" href="index.html#sec:methods-experimental-design">Section 5.22</a>
-and <a class="xref" href="index.html#sec:methods-statistics">Section 5.27</a>.</p>
+are specified in <a class="xref" href="index.html#sec:methods-experimental-design">Section 8.22</a>
+and <a class="xref" href="index.html#sec:methods-statistics">Section 8.27</a>.</p>
 <h3 id="sec:intro-visual-map">How to read the visual architecture</h3>
 <p>The manuscript uses two complementary visual layers. The formal
 schematics adapt the generative-model and posterior-sharing perspective
 of Friston et al. <span class="citation">(Friston et al. 2024)</span> to the categorical
-implementation: <a class="xref" href="index.html#fig:generative-model-schema">Figure 4</a>
+implementation: <a class="xref" href="index.html#fig:generative-model-schema">Figure 7</a>
 shows the private sensory report and <span
-class="math inline">\(A/B/C/D\)</span> substrate, <a class="xref" href="index.html#fig:message-passing">Figure 3</a> shows how
-three local posterior messages become server inputs, and <a class="xref" href="index.html#fig:pomdp-loop">Figure 5</a>
+class="math inline">\(A/B/C/D\)</span> substrate, <a class="xref" href="index.html#fig:message-passing">Figure 6</a> shows how
+three local posterior messages become server inputs, and <a class="xref" href="index.html#fig:pomdp-loop">Figure 8</a>
 shows the hidden-state, agent, and active-control context. These
 diagrams are explanatory maps, not additional empirical
 observations.</p>
 <p>The data-bearing figures then report the executed recovery checks,
 conditional contamination sweep, and objective/descent diagnostics;
 their captions identify the relevant uncertainty and resampling unit.
-The graphical abstract in <a class="xref" href="index.html#fig:graphical-abstract">Figure 1</a>
+The graphical abstract in <a class="xref" href="index.html#fig:graphical-abstract">Figure 4</a>
 compresses the same logic into a recovery anchor, a federation pathway,
 and three explicitly non-transferable robustness axes.</p>
-<p><a class="xref" href="index.html#fig:system-overview">Figure 2</a>
+<p><a class="xref" href="index.html#fig:system-overview">Figure 5</a>
 illustrates one configured failure-and-repair case: a partially
 contaminated colony broadcasts beliefs (Panel A), the equal-weight
 log-linear pool is pulled toward the attack target (Panel B), and the
 server-side heuristic reweights the broadcasts (Panel C). It is a
 deterministic schematic, not a universal robustness claim; the three
-axes and their distinct guarantees are defined in <a class="xref" href="index.html#sec:gap">Section 3</a> and <a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a>.</p>
+axes and their distinct guarantees are defined in <a class="xref" href="index.html#sec:gap">Section 6</a> and <a class="xref" href="index.html#sec:robustness-axes">Section 6.3</a>.</p>
 <figure id="fig:system-overview">
 <a class="figure-full-size-link" href="../figures/system_overview.png" target="_blank" rel="noopener" aria-label="Open full-size figure, System overview of one configured failure-and-repair diagnostic."><img src="../figures/system_overview.png" style="width:100.0%"
 data-slide-manifest="../figures/system_overview.slides.json"

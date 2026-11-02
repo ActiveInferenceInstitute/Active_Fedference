@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -290,15 +295,15 @@ main-text result and each connects back to it.
 
 \begin{frame}{Supplement: extended\ldots{} (part 3)}
 The additional contamination models, gallery, and onset sweep
-stress-test the robustness verdict of sec.~7.5
+stress-test the robustness verdict of sec.~10.5
 beyond its single confident-wrong mechanism; the Gaussian divergence
 bridge points toward the continuous-state direction of
-sec.~8.22;
+sec.~11.22;
 \end{frame}
 
 \begin{frame}{Supplement: extended\ldots{} (part 4)}
 and greedy multi-hypothesis reduction extends the configured BMR sign
-control of sec.~7.4 from one pruned state to a
+control of sec.~10.4 from one pruned state to a
 family.
 \end{frame}
 
@@ -321,8 +326,7 @@ Kullback--Leibler divergence
 \end{frame}
 
 \begin{frame}{Continuous-state divergence\ldots{} (part 3)}
-\begin{equation}\tag{32}\protect\phantomsection\label{eq:gaussian-kl}{
-\begin{aligned}
+\begin{equation}\tag{32}\protect\phantomsection\label{eq:gaussian-kl}{\begin{aligned}
 &\mathrm{KL}\!\big(
   \mathcal N(\mu_q,\sigma_q^2)\,\|\,\mathcal N(\mu_p,\sigma_p^2)\big)\\
 &\quad = \tfrac12\!\left[
@@ -332,8 +336,7 @@ Kullback--Leibler divergence
 &\quad - 1 + \log\tfrac{\sigma_p^2}{\sigma_q^2}
 \end{aligned}
 \right].
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Continuous-state divergence\ldots{} (part 4)}
@@ -342,15 +345,13 @@ and the \(\alpha\)-Rényi divergence with interpolated variance
 \end{frame}
 
 \begin{frame}{Continuous-state divergence\ldots{} (part 5)}
-\begin{equation}\tag{33}\protect\phantomsection\label{eq:gaussian-renyi}{
-\begin{aligned}
+\begin{equation}\tag{33}\protect\phantomsection\label{eq:gaussian-renyi}{\begin{aligned}
 &D_\alpha\!\big(\mathcal N_q\,\|\,\mathcal N_p\big)\\
 &\quad = \frac{\alpha(\mu_q-\mu_p)^2}{2\sigma_\alpha^2}\\
 &\qquad - \frac{1}{2(\alpha-1)}
 \log\frac{\sigma_\alpha^2}
 {\sigma_q^{2(1-\alpha)}\sigma_p^{2\alpha}}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Continuous-state divergence\ldots{} (part 6)}
@@ -426,7 +427,7 @@ which the displayed member beats naive.
 
 \begin{frame}{Contamination gallery by\ldots{} (part 4)}
 This is not the selection-free inferential surface; the main-text
-all-method review grid in sec.~7.5.1 serves that
+all-method review grid in sec.~10.5.1 serves that
 role.
 \end{frame}
 
@@ -557,7 +558,7 @@ attacks: Yes).
 \end{frame}
 
 \begin{frame}{Contamination gallery by\ldots{} (part 12)}
-fig.~22 draws all mechanisms with their win
+fig.~25 draws all mechanisms with their win
 fractions. This is the honest scope of this configured gallery: its
 displayed members separate from naive under the declared \emph{sustained
 additive} directional contamination, stay close under the declared
@@ -578,7 +579,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.}]{../figures/contamination_gallery.slide-mechanism-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine:
+reference versus selected server preset, its own source interval, and
+the declared filled or dotted display
+flag.}]{../figures/contamination_gallery.slide-mechanism-1.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -586,7 +590,9 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine: selected preset beta; descriptive win fraction 0.62; below bar.}]{../figures/contamination_gallery.slide-mechanism-1-selection.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine:
+selected preset beta; descriptive win fraction 0.62; below
+bar.}]{../figures/contamination_gallery.slide-mechanism-1-selection.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -594,7 +600,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.}]{../figures/contamination_gallery.slide-mechanism-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong:
+reference versus selected server preset, its own source interval, and
+the declared filled or dotted display
+flag.}]{../figures/contamination_gallery.slide-mechanism-2.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -602,7 +611,9 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong: selected preset AR; descriptive win fraction 1.00; flagged.}]{../figures/contamination_gallery.slide-mechanism-2-selection.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong: selected preset AR; descriptive win fraction 1.00;
+flagged.}]{../figures/contamination_gallery.slide-mechanism-2-selection.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -610,7 +621,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.}]{../figures/contamination_gallery.slide-mechanism-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift:
+reference versus selected server preset, its own source interval, and
+the declared filled or dotted display
+flag.}]{../figures/contamination_gallery.slide-mechanism-3.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -618,7 +632,9 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift: selected preset AR; descriptive win fraction 1.00; flagged.}]{../figures/contamination_gallery.slide-mechanism-3-selection.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift:
+selected preset AR; descriptive win fraction 1.00;
+flagged.}]{../figures/contamination_gallery.slide-mechanism-3-selection.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -626,7 +642,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.}]{../figures/contamination_gallery.slide-mechanism-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise:
+reference versus selected server preset, its own source interval, and
+the declared filled or dotted display
+flag.}]{../figures/contamination_gallery.slide-mechanism-4.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -634,7 +653,9 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label noise: selected preset AR; descriptive win fraction 0.00; below bar.}]{../figures/contamination_gallery.slide-mechanism-4-selection.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label
+noise: selected preset AR; descriptive win fraction 0.00; below
+bar.}]{../figures/contamination_gallery.slide-mechanism-4-selection.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -642,7 +663,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: reference versus selected server preset, its own source interval, and the declared filled or dotted display flag.}]{../figures/contamination_gallery.slide-mechanism-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+reference versus selected server preset, its own source interval, and
+the declared filled or dotted display
+flag.}]{../figures/contamination_gallery.slide-mechanism-5.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -650,7 +674,9 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: selected preset AR; descriptive win fraction 0.00; below bar.}]{../figures/contamination_gallery.slide-mechanism-5-selection.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+selected preset AR; descriptive win fraction 0.00; below
+bar.}]{../figures/contamination_gallery.slide-mechanism-5-selection.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -658,7 +684,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Open reference bars retain their hatch. Selected presets use full fill when flagged and pale dotted fill below the display bar. Color is not the sole flag encoding.}]{../figures/contamination_gallery.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Open
+reference bars retain their hatch. Selected presets use full fill when
+flagged and pale dotted fill below the display bar. Color is not the
+sole flag encoding.}]{../figures/contamination_gallery.slide-key.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -666,7 +695,9 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Each bar has its own 95\% seed-bootstrap interval.}]{../figures/contamination_gallery.slide-uncertainty.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Each
+bar has its own 95\% seed-bootstrap
+interval.}]{../figures/contamination_gallery.slide-uncertainty.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -674,7 +705,10 @@ selection-free inference.
 \begin{frame}{Contamination gallery by\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Display flags: 2/5. Win fractions are descriptive, not p-values. Selected presets do not define fixed-preset confirmatory contrasts.}]{../figures/contamination_gallery.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Display
+flags: 2/5. Win fractions are descriptive, not p-values. Selected
+presets do not define fixed-preset confirmatory
+contrasts.}]{../figures/contamination_gallery.slide-scope.png}
 \refstepcounter{figure}\label{fig:contamination-gallery-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -697,7 +731,7 @@ and that member's versus naive accuracy at the worst (highest) swept
 rate. These display summaries are not selection-free inference;
 
 the main-text all-method review grid in
-sec.~7.5.1 is the inferential surface:
+sec.~10.5.1 is the inferential surface:
 \end{frame}
 
 \begin{frame}{Robustness onset by\ldots{} (part 4)}
@@ -755,7 +789,7 @@ tbl.~16.
 
 \begin{frame}{Robustness onset by\ldots{} (part 6)}
 The rate dependence sharpens the gallery's snapshot, and
-fig.~23 draws it. The additive confident-wrong
+fig.~26 draws it. The additive confident-wrong
 and drift attacks degrade the naive pool gradually; past their onset
 rate the robust member stays above it through to the worst rate.
 \end{frame}
@@ -776,7 +810,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine: complete reference and pooled display-preset curves with their source-supplied seed bands and onset marker.}]{../figures/robustness_onset.slide-mechanism-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine:
+complete reference and pooled display-preset curves with their
+source-supplied seed bands and onset
+marker.}]{../figures/robustness_onset.slide-mechanism-1.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -784,7 +821,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine. Onset: 0.4. Gap at maximum rate: -0.016. Each curve has its own 95\% seed-bootstrap band.}]{../figures/robustness_onset.slide-mechanism-1-notes.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine.
+Onset: 0.4. Gap at maximum rate: -0.016. Each curve has its own 95\%
+seed-bootstrap
+band.}]{../figures/robustness_onset.slide-mechanism-1-notes.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -792,7 +832,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Arrow: declared byzantine veto cliff near the penultimate rate. The onset window does not establish universal robustness.}]{../figures/robustness_onset.slide-veto-cliff.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Arrow:
+declared byzantine veto cliff near the penultimate rate. The onset
+window does not establish universal
+robustness.}]{../figures/robustness_onset.slide-veto-cliff.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -800,7 +843,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong: complete reference and pooled display-preset curves with their source-supplied seed bands and onset marker.}]{../figures/robustness_onset.slide-mechanism-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong:
+complete reference and pooled display-preset curves with their
+source-supplied seed bands and onset
+marker.}]{../figures/robustness_onset.slide-mechanism-2.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -808,7 +854,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong. Onset: 0.6. Gap at maximum rate: +0.110. Each curve has its own 95\% seed-bootstrap band.}]{../figures/robustness_onset.slide-mechanism-2-notes.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong. Onset: 0.6. Gap at maximum rate: +0.110. Each curve has its own
+95\% seed-bootstrap
+band.}]{../figures/robustness_onset.slide-mechanism-2-notes.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -816,7 +865,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift: complete reference and pooled display-preset curves with their source-supplied seed bands and onset marker.}]{../figures/robustness_onset.slide-mechanism-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift:
+complete reference and pooled display-preset curves with their
+source-supplied seed bands and onset
+marker.}]{../figures/robustness_onset.slide-mechanism-3.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -824,7 +876,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift. Onset: 0.6. Gap at maximum rate: +0.110. Each curve has its own 95\% seed-bootstrap band.}]{../figures/robustness_onset.slide-mechanism-3-notes.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift.
+Onset: 0.6. Gap at maximum rate: +0.110. Each curve has its own 95\%
+seed-bootstrap
+band.}]{../figures/robustness_onset.slide-mechanism-3-notes.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -832,7 +887,10 @@ transient against the multiplicative mechanism.
 \begin{frame}{Robustness onset by\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled circles / solid: reference log pool. Open squares / dashed: pooled display server preset. This selected display curve is not a fixed-preset confirmatory contrast.}]{../figures/robustness_onset.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled
+circles / solid: reference log pool. Open squares / dashed: pooled
+display server preset. This selected display curve is not a fixed-preset
+confirmatory contrast.}]{../figures/robustness_onset.slide-key.png}
 \refstepcounter{figure}\label{fig:robustness-onset-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -863,13 +921,16 @@ mass in that finite cell.
 \begin{frame}[fragile]{Conditional world and\ldots{} (part 5)}
 The robustness-zero control is pass, and the report remains explicitly
 labelled \texttt{conditional\_finite\_grid}. The resulting conditional
-surface is shown in fig.~24.
+surface is shown in fig.~27.
 \end{frame}
 
 \begin{frame}{Conditional world and\ldots{} (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-1-cells-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-1-cells-1-2.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -877,7 +938,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-1-cells-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-1-cells-3-4.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -885,7 +949,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.}]{../figures/conditional_world.slide-attack-1-range.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean:
+finite-grid mean with asymmetric capped minimum-to-maximum range on the
+common contrast
+scale.}]{../figures/conditional_world.slide-attack-1-range.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -893,7 +960,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-2-cells-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-2-cells-1-2.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -901,7 +971,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-2-cells-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-2-cells-3-4.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -909,7 +982,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.}]{../figures/conditional_world.slide-attack-2-range.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident\_wrong:
+finite-grid mean with asymmetric capped minimum-to-maximum range on the
+common contrast
+scale.}]{../figures/conditional_world.slide-attack-2-range.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -917,7 +993,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-3-cells-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-3-cells-1-2.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -925,7 +1004,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-3-cells-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-3-cells-3-4.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -933,7 +1015,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.}]{../figures/conditional_world.slide-attack-3-range.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation:
+finite-grid mean with asymmetric capped minimum-to-maximum range on the
+common contrast
+scale.}]{../figures/conditional_world.slide-attack-3-range.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -941,7 +1026,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-4-cells-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-4-cells-1-2.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -949,7 +1037,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-4-cells-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-4-cells-3-4.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -957,7 +1048,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.}]{../figures/conditional_world.slide-attack-4-range.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label\_noise:
+finite-grid mean with asymmetric capped minimum-to-maximum range on the
+common contrast
+scale.}]{../figures/conditional_world.slide-attack-4-range.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -965,7 +1059,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-5-cells-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-5-cells-1-2.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -973,7 +1070,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: signed seed-level contrasts for the two displayed world cells; fixed symmetric color scale.}]{../figures/conditional_world.slide-attack-5-cells-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+signed seed-level contrasts for the two displayed world cells; fixed
+symmetric color
+scale.}]{../figures/conditional_world.slide-attack-5-cells-3-4.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -981,7 +1081,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: finite-grid mean with asymmetric capped minimum-to-maximum range on the common contrast scale.}]{../figures/conditional_world.slide-attack-5-range.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+finite-grid mean with asymmetric capped minimum-to-maximum range on the
+common contrast
+scale.}]{../figures/conditional_world.slide-attack-5-range.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -989,7 +1092,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Seed-level true-state-mass contrast: naive error minus robust error. Positive values favor the heuristic on the declared finite grid.}]{../figures/conditional_world.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Seed-level
+true-state-mass contrast: naive error minus robust error. Positive
+values favor the heuristic on the declared finite
+grid.}]{../figures/conditional_world.slide-key.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -997,7 +1103,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heatmap: adversary weight 1. State s0/s1; observability o45/o70. Common color scale: {[}-0.4889, 0.4889{]}. Every cell prints its signed mean.}]{../figures/conditional_world.slide-grid.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heatmap:
+adversary weight 1. State s0/s1; observability o45/o70. Common color
+scale: {[}-0.4889, 0.4889{]}. Every cell prints its signed
+mean.}]{../figures/conditional_world.slide-grid.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -1005,7 +1114,11 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Summary circles: finite-grid means across configured cells per attack. Asymmetric capped whiskers reach the observed minimum and maximum; they are not confidence intervals.}]{../figures/conditional_world.slide-ranges.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Summary
+circles: finite-grid means across configured cells per attack.
+Asymmetric capped whiskers reach the observed minimum and maximum; they
+are not confidence
+intervals.}]{../figures/conditional_world.slide-ranges.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -1013,7 +1126,10 @@ surface is shown in fig.~24.
 \begin{frame}{Conditional world and\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Dark dotted rule: zero method contrast. This finite-grid summary does not support population, deployment or universal robustness claims.}]{../figures/conditional_world.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Dark
+dotted rule: zero method contrast. This finite-grid summary does not
+support population, deployment or universal robustness
+claims.}]{../figures/conditional_world.slide-scope.png}
 \refstepcounter{figure}\label{fig:conditional-world-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -1043,13 +1159,15 @@ The control ordering gate is \texttt{pass},
 \begin{frame}[fragile]{Proper scores and\ldots{} (part 4)}
 and the confidently-wrong-versus-uniform control is \texttt{pass}, using
 64 independent seeds and 24 nested trials per seed. The diagnostic is
-shown in fig.~25.
+shown in fig.~28.
 \end{frame}
 
 \begin{frame}{Proper scores and\ldots{} (part 5)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={oracle: mean categorical log score and its seed-bootstrap interval on the common nats scale.}]{../figures/belief_quality.slide-oracle-score.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={oracle:
+mean categorical log score and its seed-bootstrap interval on the common
+nats scale.}]{../figures/belief_quality.slide-oracle-score.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -1057,7 +1175,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={oracle: every finite reliability-bin confidence and accuracy, with the perfect-calibration identity reference.}]{../figures/belief_quality.slide-oracle-reliability.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={oracle:
+every finite reliability-bin confidence and accuracy, with the
+perfect-calibration identity
+reference.}]{../figures/belief_quality.slide-oracle-reliability.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -1065,7 +1186,9 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: mean categorical log score and its seed-bootstrap interval on the common nats scale.}]{../figures/belief_quality.slide-uniform-score.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+mean categorical log score and its seed-bootstrap interval on the common
+nats scale.}]{../figures/belief_quality.slide-uniform-score.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -1073,7 +1196,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: every finite reliability-bin confidence and accuracy, with the perfect-calibration identity reference.}]{../figures/belief_quality.slide-uniform-reliability.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+every finite reliability-bin confidence and accuracy, with the
+perfect-calibration identity
+reference.}]{../figures/belief_quality.slide-uniform-reliability.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -1081,7 +1207,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong: mean categorical log score and its seed-bootstrap interval on the common nats scale.}]{../figures/belief_quality.slide-confident-wrong-score.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong: mean categorical log score and its seed-bootstrap interval on the
+common nats
+scale.}]{../figures/belief_quality.slide-confident-wrong-score.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -1089,7 +1218,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong: every finite reliability-bin confidence and accuracy, with the perfect-calibration identity reference.}]{../figures/belief_quality.slide-confident-wrong-reliability.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong: every finite reliability-bin confidence and accuracy, with the
+perfect-calibration identity
+reference.}]{../figures/belief_quality.slide-confident-wrong-reliability.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -1097,7 +1229,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Categorical log score in nats: higher is better. Whiskers are 95\% seed-bootstrap intervals; seed is the independent unit.}]{../figures/belief_quality.slide-score-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Categorical
+log score in nats: higher is better. Whiskers are 95\% seed-bootstrap
+intervals; seed is the independent
+unit.}]{../figures/belief_quality.slide-score-key.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -1105,7 +1240,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Reliability is a descriptive control diagnostic. Every finite bin is drawn on common 0--1 axes. The dark dotted identity marks perfect calibration.}]{../figures/belief_quality.slide-reliability-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Reliability
+is a descriptive control diagnostic. Every finite bin is drawn on common
+0--1 axes. The dark dotted identity marks perfect
+calibration.}]{../figures/belief_quality.slide-reliability-key.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -1113,7 +1251,10 @@ shown in fig.~25.
 \begin{frame}{Proper scores and\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Oracle, uniform and confident-wrong controls check score and reliability behavior. They do not establish deployment calibration or universal robustness.}]{../figures/belief_quality.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Oracle,
+uniform and confident-wrong controls check score and reliability
+behavior. They do not establish deployment calibration or universal
+robustness.}]{../figures/belief_quality.slide-scope.png}
 \refstepcounter{figure}\label{fig:belief-quality-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -1121,7 +1262,7 @@ shown in fig.~25.
 \begin{frame}[fragile]{Greedy multi-hypothesis model reduction beyond
 the main BMR study}
 \protect\phantomsection\label{sec:supp-greedy-bmr}
-The single-step reduction of sec.~5.4 scores one
+The single-step reduction of sec.~8.4 scores one
 candidate reduced prior. \texttt{bayesian\_model\_reduction.py} adds
 \texttt{greedy\_reduce}, which performs structure learning over a
 \emph{family} of redundant states:
@@ -1144,7 +1285,7 @@ evidence yields \(\Delta F < 0\) when pruned and is kept.
 
 \begin{frame}{Greedy multi-hypothesis\ldots{} (part 4)}
 This is the multi-state analogue of the configured BMR sign-control
-result of sec.~7.4, and is verified directly in
+result of sec.~10.4, and is verified directly in
 the model-reduction tests.
 \end{frame}
 

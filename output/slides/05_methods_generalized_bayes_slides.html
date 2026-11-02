@@ -342,8 +342,7 @@ aria-label="Generalized Bayes: the route back to standard Bayes, part 3" role="g
 <h2 class="equation-led"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 3" id="slide-heading-e646b128e59f">Generalized
 Bayes (part 3)</h2>
-<p><span class="math display" id="eq:gen-bayes">\[
-\begin{aligned}
+<p><span class="math display" id="eq:gen-bayes">\[\begin{aligned}
 q_n^\ast(s)
 &amp;= \arg\min_{q_n}
 \left\{
@@ -352,8 +351,7 @@ q_n^\ast(s)
 &amp;\quad + \tfrac{1}{\tau}\,\mathcal D\!\big(q_n \,\|\, \pi_0\big)
 \end{aligned}
 \right\}.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e95549dc92bd">
@@ -398,10 +396,8 @@ aria-label="Generalized Bayes: the route back to standard Bayes, part 8" role="g
 <h2 class="equation-led"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 8" id="slide-heading-e9d94b6677b3">Generalized
 Bayes (part 8)</h2>
-<p><span class="math display" id="eq:tempered-softmax">\[
-q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s;
-o_i)\big),
-\]</span></p>
+<p><span class="math display" id="eq:tempered-softmax">\[q_n^\ast(s) \;\propto\;
+\pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5c0c6d465875">
@@ -439,7 +435,7 @@ Bayes (part 12)</h2>
 class="math inline">\(\mathrm{NLL}(p, o) = -\log p(o)\)</span>, the
 exponential in that tempered softmax becomes a product of likelihoods
 and the minimizer is <em>exactly</em> standard Bayes; <span class="cross-reference">Equation (11)</span>
-in <span class="cross-reference">Section 5.8</span>
+in <span class="cross-reference">Section 8.8</span>
 states that corner,</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -457,7 +453,7 @@ aria-label="Generalized Bayes: the route back to standard Bayes, part 14" id="sl
 Bayes (part 14)</h2>
 <p>The largest observed discrepancy between
 <code>generalized_posterior</code> in this regime and the analytic Bayes
-posterior is 5.55e-17, reported in <span class="cross-reference">Section 7.1</span>
+posterior is 5.55e-17, reported in <span class="cross-reference">Section 10.1</span>
 — exact to machine precision (a maximum deviation of about one ULP), not
 merely close.</p>
 </section>
@@ -482,16 +478,14 @@ aria-label="Generalized Bayes: the route back to standard Bayes, part 17" role="
 <h2 class="equation-led"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 17" id="slide-heading-2aa90ed1b7e0">Generalized
 Bayes (part 17)</h2>
-<p><span class="math display" id="eq:cavity">\[
-\begin{aligned}
+<p><span class="math display" id="eq:cavity">\[\begin{aligned}
 q_{-n}(s)
 &amp;=
 \frac{q(s)/t_n(s)}{\sum_{s&#39;} q(s&#39;)/t_n(s&#39;)}
 \\
 &amp;=
 \operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 18" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-822cced5526a">
@@ -507,9 +501,8 @@ aria-label="Generalized Bayes: the route back to standard Bayes, part 19" role="
 <h2 class="equation-led"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 19" id="slide-heading-8dafbb47bbfe">Generalized
 Bayes (part 19)</h2>
-<p><span class="math display" id="eq:factor-replacement">\[
-q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s&#39;}q_{-n}(s&#39;)t_n(s&#39;)},
-\]</span></p>
+<p><span
+class="math display" id="eq:factor-replacement">\[q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s&#39;}q_{-n}(s&#39;)t_n(s&#39;)},\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 20" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0285f0beca0c">
@@ -540,7 +533,7 @@ Bayes (part 22)</h2>
 <p>imported here so that the per-agent generalized-Bayes update of <a class="cross-reference" href="#eq:gen-bayes">Equation (2)</a> is
 computed against the colony belief with the agent’s own contribution
 removed — exactly the sensory-attenuation discipline the belief-sharing
-round of <span class="cross-reference">Section 5.9</span>
+round of <span class="cross-reference">Section 8.9</span>
 requires.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -552,7 +545,7 @@ Bayes (part 23)</h2>
 its two ingredients — the divergence <span
 class="math inline">\(\mathcal D\)</span> and the loss <span
 class="math inline">\(L\)</span> — whose robust members and
-standard-Bayes limits <span class="cross-reference">Section 5.6</span>
+standard-Bayes limits <span class="cross-reference">Section 8.6</span>
 develops next;</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -560,7 +553,7 @@ aria-label="Generalized Bayes: the route back to standard Bayes, part 24" role="
 <h2 class="prose-slide"
 aria-label="Generalized Bayes: the route back to standard Bayes, part 24" id="slide-heading-d908f94d02d8">Generalized
 Bayes (part 24)</h2>
-<p>the aggregation identity (<span class="cross-reference">Section 5.8</span>)
+<p>the aggregation identity (<span class="cross-reference">Section 8.8</span>)
 then federates the resulting per-agent posteriors.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -611,7 +604,7 @@ aria-label="Conjugate likelihood learning for the shared model, part 4" id="slid
 likelihood… (part 4)</h2>
 <p>Convergence is measured by the per-column KL divergence summed over
 hidden states, which decreases monotonically toward the standard-Bayes
-fixed point; <span class="cross-reference">Section 7.3</span>
+fixed point; <span class="cross-reference">Section 10.3</span>
 reports the learning curve, where the KL falls from 3.4231 to 0.0027
 across 24 count batches.</p>
 </section>
@@ -687,7 +680,7 @@ aria-label="Bayesian model reduction for structure comparison, part 6" role="gro
 aria-label="Bayesian model reduction for structure comparison, part 6" id="slide-heading-0ab495da580c">Bayesian
 model reduction… (part 6)</h2>
 <p>the no-reduction fixed point.</p>
-<p><span class="cross-reference">Section 7.4</span>
+<p><span class="cross-reference">Section 10.4</span>
 reports <span class="math inline">\(\Delta F = 3.68\)</span> for a
 redundant reduction (accepted) against <span
 class="math inline">\(\Delta F = -27.67\)</span> for a supported one
@@ -700,9 +693,10 @@ class="math inline">\(\Delta F = -27.67\)</span> for a supported one
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

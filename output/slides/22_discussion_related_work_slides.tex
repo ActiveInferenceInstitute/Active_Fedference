@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -299,8 +304,8 @@ inversion. The executable recovery identity is instead a modern,
 \end{frame}
 
 \begin{frame}{Pre-modern probability\ldots{} (part 4)}
-project-local result of sec.~5.8 and
-sec.~6.
+project-local result of sec.~8.8 and
+sec.~9.
 \end{frame}
 
 \begin{frame}{Pre-modern probability\ldots{} (part 5)}
@@ -331,14 +336,14 @@ The discrete synthesis (Da Costa et al. 2020), pymdp (Heins et al.
 \begin{frame}{Active inference (part 3)}
 This project reimplements the categorical substrate and its
 risk--ambiguity decomposition (eq.~22,
-eq.~23, fig.~8), then evaluates
+eq.~23, fig.~11), then evaluates
 explicit robustness controls at belief fusion.
 \end{frame}
 
 \begin{frame}{Active inference (part 4)}
 The fusion operator itself is not new as a mathematical object. Under
 the explicit categorical posterior-log-potential and fixed-weight bridge
-of sec.~5.8,
+of sec.~8.8,
 \end{frame}
 
 \begin{frame}{Active inference (part 5)}
@@ -387,7 +392,7 @@ colony (Heins et al. 2024), epistemic communities (Albarracin et al.
 The belief-sharing thread (Friston et al. 2024) is one member of this
 family. Agents fuse beliefs, and our colony scenario is a reduced
 categorical standard- Bayes-limit analogue of its worked example
-(eq.~14, sec.~7.2).
+(eq.~14, sec.~10.2).
 \end{frame}
 
 \begin{frame}{Active inference (part 12)}
@@ -395,7 +400,7 @@ Structure learning completes the conceptual frame. Active inference with
 Bayesian optimal design selects and reduces models (Smith et al. 2022),
 while post-hoc BMR (Friston and Penny 2011) motivates our configured
 sign control (eq.~20,
-sec.~7.4).
+sec.~10.4).
 \end{frame}
 
 \begin{frame}{Active inference (part 13)}
@@ -409,7 +414,7 @@ used here. Fusion is treated as trusting in that scoped comparison.
 Friston et al. (2024) present communicating-colony free-energy
 convergence, Dirichlet language acquisition, and Bayesian model
 reduction. We use reduced categorical standard-Bayes-limit analogues of
-those mechanisms (sec.~7.1) before the robust
+those mechanisms (sec.~10.1) before the robust
 extension.
 \end{frame}
 
@@ -569,15 +574,15 @@ categorical bridge, that pool specializes only the Eq.
 \begin{frame}{The specific bridge added\ldots{} (part 6)}
 \textbf{Additional executed studies.} The source simulations motivate
 mechanism analogues, not protocol recovery checks. Added studies cover
-declared contamination (sec.~7.5), active
-movement (sec.~14.7), two- and three-level POMDPs
-(sec.~14.9,
+declared contamination (sec.~10.5), active
+movement (sec.~17.7), two- and three-level POMDPs
+(sec.~17.9,
 \end{frame}
 
 \begin{frame}{The specific bridge added\ldots{} (part 7)}
-sec.~14.11), finite acuity-by-colony sensitivity, and
-finite-grid acuity recovery (sec.~14.13,
-sec.~15).
+sec.~17.11), finite acuity-by-colony sensitivity, and
+finite-grid acuity recovery (sec.~17.13,
+sec.~18).
 \end{frame}
 
 \begin{frame}{The specific bridge added\ldots{} (part 8)}
@@ -598,7 +603,7 @@ analyses, not claims about the source paper.
 \texttt{variational\_aggregate} descends its stated free energy
 (eq.~12); a converged fixed point is
 coordinatewise stationary. The rule has a raw effective-weight bound and
-a finite redescending diagnostic (fig.~17).
+a finite redescending diagnostic (fig.~20).
 \end{frame}
 
 \begin{frame}{The specific bridge added\ldots{} (part 11)}

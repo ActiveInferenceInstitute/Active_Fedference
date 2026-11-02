@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -312,7 +317,7 @@ reduce Monte-Carlo noise at the cell level.
 \end{frame}
 
 \begin{frame}{Signed accuracy contrasts\ldots{} (part 6)}
-The resulting heatmaps (fig.~29) show the
+The resulting heatmaps (fig.~32) show the
 accuracy gap for both systems as a function of acuity and colony size.
 The signed scale is centered on zero: brown cells encode positive gaps,
 blue cells encode negative gaps, and the neutral midpoint encodes zero.
@@ -380,9 +385,9 @@ under its own trial and seed budget.
 
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 4)}
 The full parameter grid and protocol details are in the supplement
-(sec.~14.14). A native-unit cross-study overview of
+(sec.~17.14). A native-unit cross-study overview of
 the headline metrics across all 9 studies is shown in
-fig.~30.
+fig.~33.
 \end{frame}
 
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 5)}
@@ -396,7 +401,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-1-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.40: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-1-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -404,7 +412,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-1-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.40: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-1-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -412,7 +423,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-2-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.55: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-2-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -420,7 +434,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-2-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.55: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-2-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -428,7 +445,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-3-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.70: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-3-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -436,7 +456,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-3-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.70: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-3-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -444,7 +467,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-4-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.85: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-4-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -452,7 +478,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-4-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.85: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-4-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -460,7 +489,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-5-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.95: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-5-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -468,7 +500,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-5-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing,
+acuity 0.95: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-sharing-acuity-5-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -476,7 +511,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing: max \textbar gap\textbar{} = 0.586; positive cells above the display band = 19/25.}]{../figures/sensitivity_heatmap.slide-sharing-summary.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing:
+max \textbar gap\textbar{} = 0.586; positive cells above the display
+band =
+19/25.}]{../figures/sensitivity_heatmap.slide-sharing-summary.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -484,7 +522,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-1-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.40: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-1-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -492,7 +533,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.40: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-1-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.40: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-1-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -500,7 +544,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-2-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.55: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-2-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -508,7 +555,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.55: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-2-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.55: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-2-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -516,7 +566,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-3-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.70: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-3-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -524,7 +577,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.70: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-3-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.70: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-3-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -532,7 +588,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-4-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.85: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-4-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -540,7 +599,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.85: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-4-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.85: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-4-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -548,7 +610,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-5-columns-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.95: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-5-columns-1-3.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -556,7 +621,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy, acuity 0.95: every signed accuracy gap in the displayed colony-size cells; common symmetric color scale and display-band hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-5-columns-4-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy,
+acuity 0.95: every signed accuracy gap in the displayed colony-size
+cells; common symmetric color scale and display-band
+hatch.}]{../figures/sensitivity_heatmap.slide-hierarchy-acuity-5-columns-4-5.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -564,7 +632,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy: max \textbar gap\textbar{} = 0.450; positive cells above the display band = 4/25.}]{../figures/sensitivity_heatmap.slide-hierarchy-summary.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hierarchy:
+max \textbar gap\textbar{} = 0.450; positive cells above the display
+band =
+4/25.}]{../figures/sensitivity_heatmap.slide-hierarchy-summary.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -572,7 +643,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing: communicating minus isolated accuracy. Hierarchy: hierarchical minus flat location accuracy. Positive and negative values retain their sign.}]{../figures/sensitivity_heatmap.slide-direction.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sharing:
+communicating minus isolated accuracy. Hierarchy: hierarchical minus
+flat location accuracy. Positive and negative values retain their
+sign.}]{../figures/sensitivity_heatmap.slide-direction.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -580,7 +654,10 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Common signed color scale: {[}-0.5861, 0.5861{]}. Every cell prints its value; panels keep original acuity and colony ordering.}]{../figures/sensitivity_heatmap.slide-scale.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Common
+signed color scale: {[}-0.5861, 0.5861{]}. Every cell prints its value;
+panels keep original acuity and colony
+ordering.}]{../figures/sensitivity_heatmap.slide-scale.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -588,7 +665,11 @@ applicable native-unit panel.
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hatching uses unrounded gaps: \textbar gap\textbar{} ≤ 0.05. Printed values are rounded; equal printed values can have different hatching. It is not a CI, significance test, unreliability flag or proof of zero effect.}]{../figures/sensitivity_heatmap.slide-hatching.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hatching
+uses unrounded gaps: \textbar gap\textbar{} ≤ 0.05. Printed values are
+rounded; equal printed values can have different hatching. It is not a
+CI, significance test, unreliability flag or proof of zero
+effect.}]{../figures/sensitivity_heatmap.slide-hatching.png}
 \refstepcounter{figure}\label{fig:sensitivity-heatmap-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -597,7 +678,9 @@ applicable native-unit panel.
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 1
-Belief sharing: mean and seed-bootstrap interval on the shared fraction facet scale.}]{../figures/cross_study_summary.slide-fraction-study-1.png}
+Belief sharing: mean and seed-bootstrap interval on the shared fraction
+facet
+scale.}]{../figures/cross_study_summary.slide-fraction-study-1.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -605,7 +688,9 @@ Belief sharing: mean and seed-bootstrap interval on the shared fraction facet sc
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 1 Belief sharing. Mean +0.437; 95\% interval {[}+0.4034, +0.4675{]} fraction.}]{../figures/cross_study_summary.slide-fraction-study-1-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 1
+Belief sharing. Mean +0.437; 95\% interval {[}+0.4034, +0.4675{]}
+fraction.}]{../figures/cross_study_summary.slide-fraction-study-1-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -614,8 +699,9 @@ Belief sharing: mean and seed-bootstrap interval on the shared fraction facet sc
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 4
-Within-run
-display-selected maximum: mean and seed-bootstrap interval on the shared fraction facet scale.}]{../figures/cross_study_summary.slide-fraction-study-2.png}
+Within-run display-selected maximum: mean and seed-bootstrap interval on
+the shared fraction facet
+scale.}]{../figures/cross_study_summary.slide-fraction-study-2.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -623,7 +709,10 @@ display-selected maximum: mean and seed-bootstrap interval on the shared fractio
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 4 Within-run display-selected maximum. Mean +0.1175; 95\% interval {[}+0.109, +0.1262{]} fraction.}]{../figures/cross_study_summary.slide-fraction-study-2-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 4
+Within-run display-selected maximum. Mean +0.1175; 95\% interval
+{[}+0.109, +0.1262{]}
+fraction.}]{../figures/cross_study_summary.slide-fraction-study-2-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -632,7 +721,9 @@ display-selected maximum: mean and seed-bootstrap interval on the shared fractio
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 5
-Moving world (EFE): mean and seed-bootstrap interval on the shared fraction facet scale.}]{../figures/cross_study_summary.slide-fraction-study-3.png}
+Moving world (EFE): mean and seed-bootstrap interval on the shared
+fraction facet
+scale.}]{../figures/cross_study_summary.slide-fraction-study-3.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -640,7 +731,9 @@ Moving world (EFE): mean and seed-bootstrap interval on the shared fraction face
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 5 Moving world (EFE). Mean -0.01758; 95\% interval {[}-0.02305, -0.0125{]} fraction.}]{../figures/cross_study_summary.slide-fraction-study-3-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 5
+Moving world (EFE). Mean -0.01758; 95\% interval {[}-0.02305, -0.0125{]}
+fraction.}]{../figures/cross_study_summary.slide-fraction-study-3-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -649,7 +742,9 @@ Moving world (EFE): mean and seed-bootstrap interval on the shared fraction face
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 6
-2-level hierarchical POMDP: mean and seed-bootstrap interval on the shared fraction facet scale.}]{../figures/cross_study_summary.slide-fraction-study-4.png}
+2-level hierarchical POMDP: mean and seed-bootstrap interval on the
+shared fraction facet
+scale.}]{../figures/cross_study_summary.slide-fraction-study-4.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -657,7 +752,10 @@ Moving world (EFE): mean and seed-bootstrap interval on the shared fraction face
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 38)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 6 2-level hierarchical POMDP. Mean -0.001563; 95\% interval {[}-0.008203, +0.004687{]} fraction.}]{../figures/cross_study_summary.slide-fraction-study-4-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 6
+2-level hierarchical POMDP. Mean -0.006641; 95\% interval {[}-0.0125,
+-0.001172{]}
+fraction.}]{../figures/cross_study_summary.slide-fraction-study-4-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -666,7 +764,9 @@ Moving world (EFE): mean and seed-bootstrap interval on the shared fraction face
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 7
-3-level hierarchical POMDP: mean and seed-bootstrap interval on the shared fraction facet scale.}]{../figures/cross_study_summary.slide-fraction-study-5.png}
+3-level hierarchical POMDP: mean and seed-bootstrap interval on the
+shared fraction facet
+scale.}]{../figures/cross_study_summary.slide-fraction-study-5.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -674,7 +774,10 @@ Moving world (EFE): mean and seed-bootstrap interval on the shared fraction face
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 40)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 7 3-level hierarchical POMDP. Mean -0.004297; 95\% interval {[}-0.01211, +0.003906{]} fraction.}]{../figures/cross_study_summary.slide-fraction-study-5-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 7
+3-level hierarchical POMDP. Mean -0.007812; 95\% interval {[}-0.01445,
+-0.0007813{]}
+fraction.}]{../figures/cross_study_summary.slide-fraction-study-5-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -683,7 +786,9 @@ Moving world (EFE): mean and seed-bootstrap interval on the shared fraction face
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 8
-Sensitivity sweep: mean and seed-bootstrap interval on the shared fraction facet scale.}]{../figures/cross_study_summary.slide-fraction-study-6.png}
+Sensitivity sweep: mean and seed-bootstrap interval on the shared
+fraction facet
+scale.}]{../figures/cross_study_summary.slide-fraction-study-6.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -691,7 +796,9 @@ Sensitivity sweep: mean and seed-bootstrap interval on the shared fraction facet
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 42)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 8 Sensitivity sweep. Mean +0.2433; 95\% interval {[}+0.2411, +0.2455{]} fraction.}]{../figures/cross_study_summary.slide-fraction-study-6-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 8
+Sensitivity sweep. Mean +0.2433; 95\% interval {[}+0.2411, +0.2455{]}
+fraction.}]{../figures/cross_study_summary.slide-fraction-study-6-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -700,7 +807,9 @@ Sensitivity sweep: mean and seed-bootstrap interval on the shared fraction facet
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 2
-Language acquisition: mean and seed-bootstrap interval on the shared nats facet scale.}]{../figures/cross_study_summary.slide-nats-study-1.png}
+Language acquisition: mean and seed-bootstrap interval on the shared
+nats facet
+scale.}]{../figures/cross_study_summary.slide-nats-study-1.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -708,7 +817,9 @@ Language acquisition: mean and seed-bootstrap interval on the shared nats facet 
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 44)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 2 Language acquisition. Mean +3.42; 95\% interval {[}+3.42, +3.421{]} nats.}]{../figures/cross_study_summary.slide-nats-study-1-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 2
+Language acquisition. Mean +3.42; 95\% interval {[}+3.42, +3.421{]}
+nats.}]{../figures/cross_study_summary.slide-nats-study-1-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -717,8 +828,9 @@ Language acquisition: mean and seed-bootstrap interval on the shared nats facet 
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 3
-Configured BMR
-sign control: mean and seed-bootstrap interval on the shared nats facet scale.}]{../figures/cross_study_summary.slide-nats-study-2.png}
+Configured BMR sign control: mean and seed-bootstrap interval on the
+shared nats facet
+scale.}]{../figures/cross_study_summary.slide-nats-study-2.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -726,7 +838,10 @@ sign control: mean and seed-bootstrap interval on the shared nats facet scale.}]
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 46)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 3 Configured BMR sign control. Mean +3.716; 95\% interval {[}+3.71, +3.722{]} nats.}]{../figures/cross_study_summary.slide-nats-study-2-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 3
+Configured BMR sign control. Mean +3.716; 95\% interval {[}+3.71,
++3.722{]}
+nats.}]{../figures/cross_study_summary.slide-nats-study-2-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -735,7 +850,8 @@ sign control: mean and seed-bootstrap interval on the shared nats facet scale.}]
 \begin{figure}
 \centering
 \includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 9
-Parameter recovery: mean and seed-bootstrap interval on the shared R-sq facet scale.}]{../figures/cross_study_summary.slide-rsq-study-1.png}
+Parameter recovery: mean and seed-bootstrap interval on the shared R-sq
+facet scale.}]{../figures/cross_study_summary.slide-rsq-study-1.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -743,7 +859,9 @@ Parameter recovery: mean and seed-bootstrap interval on the shared R-sq facet sc
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 48)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 9 Parameter recovery. Mean +0.8861; 95\% interval {[}+0.8716, +0.9005{]} R-sq.}]{../figures/cross_study_summary.slide-rsq-study-1-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Study 9
+Parameter recovery. Mean +0.8861; 95\% interval {[}+0.8716, +0.9005{]}
+R-sq.}]{../figures/cross_study_summary.slide-rsq-study-1-values.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -751,7 +869,10 @@ Parameter recovery: mean and seed-bootstrap interval on the shared R-sq facet sc
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 49)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Separate harmonized seed-level rerun: n = 128 independent seeds. Whiskers are 95\% percentile-bootstrap intervals.}]{../figures/cross_study_summary.slide-uncertainty.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Separate
+harmonized seed-level rerun: n = 128 independent seeds. Whiskers are
+95\% percentile-bootstrap
+intervals.}]{../figures/cross_study_summary.slide-uncertainty.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -759,7 +880,10 @@ Parameter recovery: mean and seed-bootstrap interval on the shared R-sq facet sc
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 50)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={/// positive; xxx negative; dots within 0.001 of zero. Hatches describe the mean sign, not statistical significance. Direction remains metric-specific.}]{../figures/cross_study_summary.slide-direction.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={///
+positive; xxx negative; dots within 0.001 of zero. Hatches describe the
+mean sign, not statistical significance. Direction remains
+metric-specific.}]{../figures/cross_study_summary.slide-direction.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -767,7 +891,10 @@ Parameter recovery: mean and seed-bootstrap interval on the shared R-sq facet sc
 \begin{frame}{Pattern 3: a conditional\ldots{} (part 51)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Native-unit facets stay separate. R² is a fit statistic, not an effect contrast. No cross-unit ranking; Study 4 is a within-run display-selected maximum.}]{../figures/cross_study_summary.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Native-unit
+facets stay separate. R² is a fit statistic, not an effect contrast. No
+cross-unit ranking; Study 4 is a within-run display-selected
+maximum.}]{../figures/cross_study_summary.slide-scope.png}
 \refstepcounter{figure}\label{fig:cross-study-summary-slide-panel-21}
 \end{figure}
 \end{frame}

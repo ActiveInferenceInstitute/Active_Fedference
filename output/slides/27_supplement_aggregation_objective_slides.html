@@ -330,7 +330,7 @@ aria-label="Supplement: variational aggregation objective and weight control, pa
 <h2 class="section-overview prose-slide"
 aria-label="Supplement: variational aggregation objective and weight control, part 2" id="slide-heading-d76c1106f8e9-2">Supplement:
 variational aggregation objective and weight control</h2>
-<p>This supplement gives the full derivation behind <span class="cross-reference">Section 5.8.2</span>:
+<p>This supplement gives the full derivation behind <span class="cross-reference">Section 8.8.2</span>:
 the server-side aggregator <code>robust_aggregate</code> is a
 heuristic,</p>
 </section>
@@ -402,9 +402,8 @@ aria-label="Why the sharp heuristic is not yet variational, part 5" role="group"
 <h2 class="equation-led"
 aria-label="Why the sharp heuristic is not yet variational, part 5" id="slide-heading-24ae55ef0ef3">Why
 the sharp heuristic is… (part 5)</h2>
-<p><span class="math display" id="eq:raw-log-pool-block">\[
-Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)
-\]</span></p>
+<p><span class="math display" id="eq:raw-log-pool-block">\[Q(a;s) \;=\;
+\operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Why the sharp heuristic is not yet variational, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ec41f6b407ca">
@@ -419,13 +418,11 @@ aria-label="Why the sharp heuristic is not yet variational, part 7" role="group"
 <h2 class="equation-led"
 aria-label="Why the sharp heuristic is not yet variational, part 7" id="slide-heading-d1b68c672fec">Why
 the sharp heuristic is… (part 7)</h2>
-<p><span class="math display" id="eq:separable-server-objective">\[
-\begin{aligned}
+<p><span class="math display" id="eq:separable-server-objective">\[\begin{aligned}
 F(q,a;s,w)
 &amp;= \sum_n a_n\,\mathrm{KL}(q\,\|\,s_n)\\
 &amp;\quad + R(a,w) + G(q).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Why the sharp heuristic is not yet variational, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a5f59aa1498c">
@@ -462,10 +459,8 @@ aria-label="Why the sharp heuristic is not yet variational, part 11" role="group
 <h2 class="equation-led"
 aria-label="Why the sharp heuristic is not yet variational, part 11" id="slide-heading-2256a8c2a4fd">Why
 the sharp heuristic is… (part 11)</h2>
-<p><span class="math display" id="eq:raw-log-pool-witness-source">\[
-s_i^{(\alpha)} \;=\;
-\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.
-\]</span></p>
+<p><span class="math display" id="eq:raw-log-pool-witness-source">\[s_i^{(\alpha)} \;=\;
+\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Why the sharp heuristic is not yet variational, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9f55b7afafb7">
@@ -562,7 +557,7 @@ aria-label="Why the sharp heuristic is not yet variational, part 19" role="group
 <h2 class="prose-slide"
 aria-label="Why the sharp heuristic is not yet variational, part 19" id="slide-heading-43553e578f06">Why
 the sharp heuristic is… (part 19)</h2>
-<p>Thus <span class="cross-reference">Section 5.8</span>
+<p>Thus <span class="cross-reference">Section 8.8</span>
 retains the heuristic label and claims only the recovery limit, the
 scoped negative result above, and conditional empirical behavior — never
 a bounded-influence property or an objective-backed status.</p>
@@ -590,15 +585,13 @@ aria-label="Aggregation free energy and its block minimizers, part 3" role="grou
 <h2 class="equation-led"
 aria-label="Aggregation free energy and its block minimizers, part 3" id="slide-heading-26d3e2b53bfa">Aggregation
 free energy… (part 3)</h2>
-<p><span class="math display" id="eq:agg-q-objective">\[
-\begin{aligned}
+<p><span class="math display" id="eq:agg-q-objective">\[\begin{aligned}
 J(q;a)
 &amp;=\sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q),\\
 J(q;a)
 &amp;=\lambda\sum_i q_i\log q_i\\
 &amp;\quad-\sum_i\sum_n q_i a_n\log q_{n,i}.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Aggregation free energy and its block minimizers, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f4801c9d94cf">
@@ -615,16 +608,14 @@ aria-label="Aggregation free energy and its block minimizers, part 5" role="grou
 <h2 class="equation-led"
 aria-label="Aggregation free energy and its block minimizers, part 5" id="slide-heading-9c9ca495227d">Aggregation
 free energy… (part 5)</h2>
-<p><span class="math display" id="eq:agg-q-min">\[
-\begin{aligned}
+<p><span class="math display" id="eq:agg-q-min">\[\begin{aligned}
 q_i
 &amp;\propto \exp\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_{n,i}\Big),\\
 q_i
 &amp;= \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_n\Big)_i.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Aggregation free energy and its block minimizers, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a7e99b5dda4b">
@@ -653,9 +644,8 @@ aria-label="Aggregation free energy and its block minimizers, part 8" role="grou
 <h2 class="equation-led"
 aria-label="Aggregation free energy and its block minimizers, part 8" id="slide-heading-4df613456a50">Aggregation
 free energy… (part 8)</h2>
-<p><span class="math display" id="eq:agg-a-min">\[
-a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),
-\]</span></p>
+<p><span class="math display" id="eq:agg-a-min">\[a_n \;=\;
+w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Aggregation free energy and its block minimizers, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ba1dfab14d8c">
@@ -711,7 +701,7 @@ aria-label="Conservative-server properties, part 2" id="slide-heading-6ae88a6483
 (part 2)</h2>
 <p>The variational aggregator therefore shares the project
 log-linear-pool corner of (<span class="cross-reference">10</span>).
-Under the qualified bridge of <span class="cross-reference">Section 5.8</span>,
+Under the qualified bridge of <span class="cross-reference">Section 8.8</span>,
 this is only the categorical message-combination specialization, not the
 complete source protocol.</p>
 </section>
@@ -790,7 +780,7 @@ aria-label="Conservative-server properties, part 9" id="slide-heading-9f469ddfdc
 lower-<span class="math inline">\(F\)</span> <em>vetoing</em> basin, so
 the saboteur is suppressed even at the simplex vertex (pinned
 qualitatively by the near-vertex multi-start test) — the 267.1<span
-class="math inline">\(\times\)</span> suppression of <span class="cross-reference">Figure 17</span>
+class="math inline">\(\times\)</span> suppression of <span class="cross-reference">Figure 20</span>
 is measured across the swept contamination grid,</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -823,7 +813,7 @@ aria-label="Conservative-server properties, part 13" role="group" aria-roledescr
 <h2 class="prose-slide"
 aria-label="Conservative-server properties, part 13" id="slide-heading-91467f075b5b">Conservative-server…
 (part 13)</h2>
-<p><span class="cross-reference">Figure 21</span>
+<p><span class="cross-reference">Figure 24</span>
 makes the capture and the escape concrete on a near-vertex colony: the
 single (log-linear-pool) start settles at <span class="math inline">\(F
 = 1.3092\)</span> (the higher observed basin, where the saboteur keeps
@@ -972,7 +962,7 @@ aria-label="Numerical witnesses for descent and influence bounds, part 3" role="
 <h2 class="prose-slide"
 aria-label="Numerical witnesses for descent and influence bounds, part 3" id="slide-heading-ce642c6eafec">Numerical
 witnesses for… (part 3)</h2>
-<p>witnessed numerically and drawn in <span class="cross-reference">Figure 16</span>.</p>
+<p>witnessed numerically and drawn in <span class="cross-reference">Figure 19</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Numerical witnesses for descent and influence bounds, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-540f79e03c7b">
@@ -992,14 +982,14 @@ aria-label="Numerical witnesses for descent and influence bounds, part 5" role="
 aria-label="Numerical witnesses for descent and influence bounds, part 5" id="slide-heading-618d195a91cc">Numerical
 witnesses for… (part 5)</h2>
 <p>not the display-rounded values above) below the fixed 0.143 the naive
-pool would still grant it (<span class="cross-reference">Figure 17</span>).</p>
+pool would still grant it (<span class="cross-reference">Figure 20</span>).</p>
 <p>This makes the redescending normalized-weight behavior visible on the
 tested path; it is not an estimator-level B-robustness proof.</p>
 </section>
 <section id="sec:supp-tempered" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f13a6c56e874">
 <h2 class="prose-slide" id="slide-heading-f13a6c56e874">Tempered aggregation family for the
 accuracy-guarantee trade</h2>
-<p>The aggregator of <a class="cross-reference" href="#sec:supp-derivation">Section 12.2</a>
+<p>The aggregator of <a class="cross-reference" href="#sec:supp-derivation">Section 15.2</a>
 fixes the entropy term at unit weight. Relaxing that single coefficient
 generates a one-parameter <em>tempered</em> family. Introduce an entropy
 weight <span class="math inline">\(\lambda &gt; 0\)</span> —</p>
@@ -1017,13 +1007,11 @@ aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 3
 <h2 class="equation-led"
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 3" id="slide-heading-58c1b8ccaef0">Tempered
 aggregation… (part 3)</h2>
-<p><span class="math display" id="eq:tempered-family">\[
-\begin{aligned}
+<p><span class="math display" id="eq:tempered-family">\[\begin{aligned}
 F_\lambda(q, a)
 &amp;= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &amp;\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-49e30e333684">
@@ -1041,15 +1029,13 @@ aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 5
 <h2 class="equation-led"
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 5" id="slide-heading-66192a42f77f">Tempered
 aggregation… (part 5)</h2>
-<p><span class="math display" id="eq:tempered-updates">\[
-\begin{aligned}
+<p><span class="math display" id="eq:tempered-updates">\[\begin{aligned}
 q
 &amp;\propto \exp\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &amp;= w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4664cdbec317">
@@ -1072,7 +1058,7 @@ class="math inline">\(\lambda\)</span></strong>: the bound <span
 class="math inline">\(a_n \le w_n\)</span> with collapse <span
 class="math inline">\(a_n \to 0\)</span> as <span
 class="math inline">\(\mathrm{KL}(q\,\|\,q_n) \to \infty\)</span> is
-unchanged, so the <strong>raw effective-weight bound of <a class="cross-reference" href="#sec:supp-theorem">Section 12.3</a>
+unchanged, so the <strong>raw effective-weight bound of <a class="cross-reference" href="#sec:supp-theorem">Section 15.3</a>
 holds for every</strong> <span class="math inline">\(\lambda &gt;
 0\)</span>.</p>
 </section>
@@ -1091,7 +1077,7 @@ aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 9
 <h2 class="prose-slide"
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 9" id="slide-heading-f3f377c33b39">Tempered
 aggregation… (part 9)</h2>
-<p>The <span class="math inline">\(c \to 0\)</span> recovery of <a class="cross-reference" href="#sec:supp-theorem">Section 12.3</a>
+<p>The <span class="math inline">\(c \to 0\)</span> recovery of <a class="cross-reference" href="#sec:supp-theorem">Section 15.3</a>
 generalizes to the <em>tempered</em> log-linear pool <span
 class="math inline">\(q \propto \exp(\tfrac{1}{\lambda}\sum_n w_n \log
 q_n)\)</span>; at <span class="math inline">\(\lambda = 1.0\)</span>
@@ -1105,7 +1091,7 @@ aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 1
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 10" id="slide-heading-afbfe2ebf4a8">Tempered
 aggregation… (part 10)</h2>
 <p>Under the shared-support, posterior-log-potential, and fixed-weight
-assumptions of <span class="cross-reference">Section 5.8</span>,
+assumptions of <span class="cross-reference">Section 8.8</span>,
 that pool is a categorical specialization of Friston Eq. 7’s
 message-combination term, not a reconstruction of the complete source
 protocol.</p>
@@ -1143,7 +1129,7 @@ of 0.0008. <strong>A lambda* narrows the tested accuracy gap while
 preserving the stated weight bound on this grid.</strong> If no <span
 class="math inline">\(\lambda\)</span> closes that gap while preserving
 the derived weight update, the result is the conservatism trade-off of
-<span class="cross-reference">Section 8.13</span>,</p>
+<span class="cross-reference">Section 11.13</span>,</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Tempered aggregation family for the accuracy-guarantee trade, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8b696a8dd28f">
@@ -1158,9 +1144,10 @@ aggregation… (part 14)</h2>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

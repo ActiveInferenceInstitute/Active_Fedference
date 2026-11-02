@@ -31,20 +31,20 @@ _REPORT_HASHES = {
         "e4592f8d897a3fa6ed7fee617ef4bccb18873b7c0389cef2395687202a47ccb2",
     ),
     "belief_sharing": (
-        "f878b3764cb545eb68d54a8cb9655af75d7094cf5b7418d2466bc416f1b0d66d",
-        "f878b3764cb545eb68d54a8cb9655af75d7094cf5b7418d2466bc416f1b0d66d",
+        "a8fec311d901ca1942a6343b77ab55fb2a5aa729cecc16a159a75063af12cab8",
+        "a8fec311d901ca1942a6343b77ab55fb2a5aa729cecc16a159a75063af12cab8",
     ),
     "bnn_robustness": (
         "011bb4b34ab5bdc0ed8573916a032c83115cef80024931519c72362b0a632406",
         "011bb4b34ab5bdc0ed8573916a032c83115cef80024931519c72362b0a632406",
     ),
     "bnn_torch": (
-        "0b0fd1169dfbff267692bf5f4628fac5a96cad8e82dc1e8a5fde67b738dc999d",
-        "0b0fd1169dfbff267692bf5f4628fac5a96cad8e82dc1e8a5fde67b738dc999d",
+        "a28888d3e3fac6f98bc0804a3618b879a7b84e8620ac5ab85e0c982646d4b3e2",
+        "a28888d3e3fac6f98bc0804a3618b879a7b84e8620ac5ab85e0c982646d4b3e2",
     ),
     "complexity_scaling": (
-        "35af65c9f67cd5124884da4400908f6b2eafaa2febcb04f5887fa64fc440db2e",
-        "35af65c9f67cd5124884da4400908f6b2eafaa2febcb04f5887fa64fc440db2e",
+        "61bd5103db7d938d49b9a466139d21fc1d3525c014c85d44696cffeea3f4e61c",
+        "61bd5103db7d938d49b9a466139d21fc1d3525c014c85d44696cffeea3f4e61c",
     ),
     "conditional_world": (
         "d580ba7f7c3b307cfd72b3dd3145ff17a06a326e54d7a94959d3ee4c620a30ed",
@@ -55,16 +55,16 @@ _REPORT_HASHES = {
         "154ea98465f2daf07c36b0a61ee0f73cf310979e9a8719583d3b5b5bc59ad562",
     ),
     "cross_study_summary": (
-        "8244f2c8ab6529e1561be892896791b3cf154763b6f57c98affbaa935d9e3a99",
-        "8244f2c8ab6529e1561be892896791b3cf154763b6f57c98affbaa935d9e3a99",
+        "c4acde7f5f6664158e171ac25e11814dd02abbae1ce4f95991747574cda4676d",
+        "c4acde7f5f6664158e171ac25e11814dd02abbae1ce4f95991747574cda4676d",
     ),
     "disjoint_fov_world": (
         "9ea790ccc7693da531d566d1184405e83b3facec1bc8a3d47bcdfbdcb0b4490a",
         "9ea790ccc7693da531d566d1184405e83b3facec1bc8a3d47bcdfbdcb0b4490a",
     ),
     "efe_decomposition": (
-        "028331e574a59ffc0666391c6433c11422e726e2f8f141da822403ec9de346f0",
-        "028331e574a59ffc0666391c6433c11422e726e2f8f141da822403ec9de346f0",
+        "6e6a7be09c508810f0aeed233558f30fddcdfc5dcfd77a0e392b810e29a49140",
+        "6e6a7be09c508810f0aeed233558f30fddcdfc5dcfd77a0e392b810e29a49140",
     ),
     "emergence": (
         "1fef4cc26d63e10b8b14e0d7e9024d8c8108beebdaac402f937c77b99e1db765",
@@ -83,8 +83,8 @@ _REPORT_HASHES = {
         "207f8d9f7454d32085dbf827bbb4f7659d2c693ceea66bd36d2b6411307dd040",
     ),
     "hierarchical_world": (
-        "81d795bf4ce3c47667e6291f0e0a8ff40adb8d07b8ffad92e72f441f2205031d",
-        "81d795bf4ce3c47667e6291f0e0a8ff40adb8d07b8ffad92e72f441f2205031d",
+        "df057f458a7da1ba5c2509695051ff97268bb819a8e9778193da3386115ed83b",
+        "df057f458a7da1ba5c2509695051ff97268bb819a8e9778193da3386115ed83b",
     ),
     "language_acquisition": (
         "9aa575021186aa458c6b66335a539668f2b41e6206cae2fa7929141153dbd8f1",
@@ -95,8 +95,8 @@ _REPORT_HASHES = {
         "949ac6b3da51efc160a31979d5426e574a39c2129cc437aa6b21f29bcbfafe3f",
     ),
     "nlevel3_world": (
-        "c55398a55581cef22a29707f89d9ecb34120b1b35ca4e7262dff423a1af26acb",
-        "c55398a55581cef22a29707f89d9ecb34120b1b35ca4e7262dff423a1af26acb",
+        "a12dcd180cafbb60b7897c3d8cfdade86996eed728d18fd6233be860a3902047",
+        "a12dcd180cafbb60b7897c3d8cfdade86996eed728d18fd6233be860a3902047",
     ),
     "parameter_recovery": (
         "80bd649f7ab2673f1fae7931770b67cf74e3f18013ea2fa217ee8bd193b83bd2",
@@ -119,8 +119,8 @@ _REPORT_HASHES = {
         "be0b03f7aa770ef6806bec0e1a648766d8c0b12a8f623864cf705f9ba0d0cef1",
     ),
     "sensitivity": (
-        "5912c0f93de0d89e2e6b9289b9382bea052bc0a81daa6257d445d8a8b43c02b0",
-        "5912c0f93de0d89e2e6b9289b9382bea052bc0a81daa6257d445d8a8b43c02b0",
+        "5b8f4aa835db5f0fdbd85e9825ed5588bcfeab30c456f508e890b3630bf73687",
+        "5b8f4aa835db5f0fdbd85e9825ed5588bcfeab30c456f508e890b3630bf73687",
     ),
     "source_render_provenance": (
         "73caad46172beadbed66ad68901ab83e9429da96dcdbc39c5d4c90344c6c6e3c",

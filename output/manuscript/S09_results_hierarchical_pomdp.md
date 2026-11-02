@@ -23,22 +23,22 @@ We compare two conditions over 960 seeded trials with
 * **Hierarchical** — agents run 4 alternating-minimization
   iterations to couple L1 and L2 beliefs before federating.
 
-The measured location accuracies are 0.982 (flat) and
-0.969 (hierarchical), a gap of -0.014.
+The measured location accuracies are 0.979 (flat) and
+0.969 (hierarchical), a gap of -0.010.
 
 Across
 128 independent seeds the hierarchical location accuracy is
 0.974 (SD 0.005; 95 % CI 0.973–0.975)
-versus flat 0.982 (95 % CI
-0.981–0.982), a mean accuracy gap of
--0.008 (95 % CI -0.009–-0.007;
-Wilcoxon signed-rank $p = 3.59 \times 10^{-20}$, effect size
-$r = 0.940$, large).
+versus flat 0.984 (95 % CI
+0.983–0.985), a mean accuracy gap of
+-0.010 (95 % CI -0.011–-0.009;
+Wilcoxon signed-rank $p = 9.45 \times 10^{-23}$, effect size
+$r = 0.999$, large).
 
 On location the gap is small
 but statistically reliable in the *negative* direction — the paired test rejects
 at $\alpha = 0.05$ and the gap's confidence interval
-(-0.009–-0.007) excludes zero on the
+(-0.011–-0.009) excludes zero on the
 negative side — so the hierarchy does not improve location accuracy in this
 regime; if anything it pays a small, consistent location cost for carrying the
 extra latent level.

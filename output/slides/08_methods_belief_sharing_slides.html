@@ -324,7 +324,7 @@ class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-
 <h2 class="prose-slide" id="slide-heading-ef3a2aba9b44">Belief sharing: the standard aggregation
 corner</h2>
 <p><code>belief_sharing.share_round</code> lifts the aggregation rule of
-<span class="cross-reference">Section 5.8</span>
+<span class="cross-reference">Section 8.8</span>
 to a colony of categorical sentinel agents.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -352,9 +352,8 @@ aria-label="Belief sharing: the standard aggregation corner, part 4" role="group
 <h2 class="equation-led"
 aria-label="Belief sharing: the standard aggregation corner, part 4" id="slide-heading-aeb1807baaf2">Belief
 sharing (part 4)</h2>
-<p><span class="math display" id="eq:belief-round">\[
-q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),
-\]</span></p>
+<p><span class="math display" id="eq:belief-round">\[q_{-n} \;=\;
+\mathrm{normalize}\!\left(q/t_n\right),\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-617185c34830">
@@ -373,7 +372,7 @@ aria-label="Belief sharing: the standard aggregation corner, part 6" role="group
 aria-label="Belief sharing: the standard aggregation corner, part 6" id="slide-heading-c6158caa170f">Belief
 sharing (part 6)</h2>
 <p>Under the explicit shared-support, posterior-log-potential, and
-fixed-weight assumptions of <span class="cross-reference">Section 5.8</span>,
+fixed-weight assumptions of <span class="cross-reference">Section 8.8</span>,
 it specializes Eq. 7’s message-combination term; it does not reconstruct
 the complete source protocol.</p>
 </section>
@@ -384,7 +383,7 @@ aria-label="Belief sharing: the standard aggregation corner, part 7" id="slide-h
 sharing (part 7)</h2>
 <p>With the server-side robust rule it yields a hive-mind that can
 down-weight a contaminated sentinel — an effect the contamination sweep
-of <span class="cross-reference">Section 7.5</span>
+of <span class="cross-reference">Section 10.5</span>
 measures rather than assumes, and one that carries no guarantee beyond
 the recovery limit.</p>
 </section>
@@ -403,7 +402,7 @@ aria-label="Belief sharing: the standard aggregation corner, part 9" role="group
 <h2 class="prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 9" id="slide-heading-bb48d638fe33">Belief
 sharing (part 9)</h2>
-<p><span class="cross-reference">Figure 3</span>
+<p><span class="cross-reference">Figure 6</span>
 makes this concrete: three sentinel cards begin with different private
 categorical views of the nine-cell world, convert those views into local
 posteriors, and send only those posteriors to a fusion route. The return
@@ -425,8 +424,8 @@ aria-label="Belief sharing: the standard aggregation corner, part 11" id="slide-
 sharing (part 11)</h2>
 <p>The figure remains a protocol map rather than a new result; the
 empirical belief matrix and free-energy comparison remain the evidence
-surfaces in <span class="cross-reference">Figure 10</span>
-and <span class="cross-reference">Figure 9</span>.</p>
+surfaces in <span class="cross-reference">Figure 13</span>
+and <span class="cross-reference">Figure 12</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-143e8f3d0a48">
@@ -457,7 +456,7 @@ aria-label="Belief sharing: the standard aggregation corner, part 14" role="grou
 <h2 class="prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 14" id="slide-heading-be02c4556083">Belief
 sharing (part 14)</h2>
-<p><span class="cross-reference">Section 7.2</span>
+<p><span class="cross-reference">Section 10.2</span>
 reports that communicating colonies reach a mean variational free energy
 of 13.2190 nats against 16.5298 nats for incommunicado colonies across
 480 seeds,</p>
@@ -468,18 +467,18 @@ aria-label="Belief sharing: the standard aggregation corner, part 15" role="grou
 aria-label="Belief sharing: the standard aggregation corner, part 15" id="slide-heading-d140f6bd7f7b">Belief
 sharing (part 15)</h2>
 <p>with the per-agent belief matrix before and after a round shown in
-<span class="cross-reference">Figure 10</span>
-and the colony comparison in <span class="cross-reference">Figure 9</span>.</p>
+<span class="cross-reference">Figure 13</span>
+and the colony comparison in <span class="cross-reference">Figure 12</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-fac0b0528424">
 <h2 class="prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 16" id="slide-heading-fac0b0528424">Belief
 sharing (part 16)</h2>
-<p>The honesty boundary of <span class="cross-reference">Section 3.3</span>
+<p>The honesty boundary of <span class="cross-reference">Section 6.3</span>
 carries through the lift unchanged. The robustness that <a class="cross-reference" href="#eq:belief-round">Equation (14)</a>
 inherits when the colony fuses with the server-side heuristic is the
-divergence-reweighting device of <span class="cross-reference">Section 5.8</span>,</p>
+divergence-reweighting device of <span class="cross-reference">Section 8.8</span>,</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 17" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dc559f883ad9">
@@ -495,7 +494,7 @@ aria-label="Belief sharing: the standard aggregation corner, part 18" role="grou
 aria-label="Belief sharing: the standard aggregation corner, part 18" id="slide-heading-19fdbde98b07">Belief
 sharing (part 18)</h2>
 <p>The per-agent FedGVI bounded-influence result enters the colony only
-through the rcce/AR client losses of <span class="cross-reference">Section 5.7</span>,
+through the rcce/AR client losses of <span class="cross-reference">Section 8.7</span>,
 under the source theorem’s matching assumptions, applied inside each
 agent’s local generalized-Bayes update.</p>
 </section>
@@ -504,9 +503,9 @@ aria-label="Belief sharing: the standard aggregation corner, part 19" role="grou
 <h2 class="prose-slide"
 aria-label="Belief sharing: the standard aggregation corner, part 19" id="slide-heading-5cf911d0e525">Belief
 sharing (part 19)</h2>
-<p>The robustness sweep in <span class="cross-reference">Section 7.5</span>
-and the variational supplement in <span class="cross-reference">Section 12</span>
-keep the three axes distinct. The federation transport (<span class="cross-reference">Section 13.4</span>)
+<p>The robustness sweep in <span class="cross-reference">Section 10.5</span>
+and the variational supplement in <span class="cross-reference">Section 15</span>
+keep the three axes distinct. The federation transport (<span class="cross-reference">Section 16.4</span>)
 realizes this sharing over queue-backed worker channels;</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -525,9 +524,10 @@ multi-machine network transport as future work.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

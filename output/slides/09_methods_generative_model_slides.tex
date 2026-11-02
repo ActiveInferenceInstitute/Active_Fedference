@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -305,7 +310,7 @@ the shared latent factor they federate beliefs about.
 \end{frame}
 
 \begin{frame}{Generative model (part 5)}
-The structural map in fig.~4 follows the
+The structural map in fig.~7 follows the
 same generative-model vocabulary while making the implementation
 boundary visible: Panel A shows what one agent actually sees --- one
 noisy categorical report over the 9 possible locations ---
@@ -326,7 +331,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden location s: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/generative_model_schema.slide-hidden-location.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden
+location s: nine-cell topology; cell 5 is hatched. Schematic only, no
+measured probability
+scale.}]{../figures/generative_model_schema.slide-hidden-location.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -334,7 +342,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private outcome o: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/generative_model_schema.slide-outcome.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private
+outcome o: nine-cell topology; cell 5 is hatched. Schematic only, no
+measured probability
+scale.}]{../figures/generative_model_schema.slide-outcome.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -342,7 +353,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden location s \texorpdfstring{\ensuremath{\to}}{->} Private outcome o: A{[}o,s{]} = P(o\textbar s); data\_dependency.}]{../figures/generative_model_schema.slide-sensor.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden
+location s \texorpdfstring{\ensuremath{\to}}{->} Private outcome o: A{[}o,s{]} = P(o\textbar s);
+data\_dependency.}]{../figures/generative_model_schema.slide-sensor.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -350,7 +363,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A: sensory likelihood → Local posterior q(s): Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-likelihood.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A:
+sensory likelihood → Local posterior q(s): Model factor;
+data\_dependency.}]{../figures/generative_model_schema.slide-likelihood.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -358,7 +373,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={B: state transition → Local inference / action: Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-dynamics.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={B:
+state transition → Local inference / action: Model factor;
+data\_dependency.}]{../figures/generative_model_schema.slide-dynamics.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -366,7 +383,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={C: preferred outcomes → Local inference / action: Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-preferences.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={C:
+preferred outcomes → Local inference / action: Model factor;
+data\_dependency.}]{../figures/generative_model_schema.slide-preferences.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -374,7 +393,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={D0: initial prior → Local posterior q(s): Model factor; data\_dependency.}]{../figures/generative_model_schema.slide-prior.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={D0:
+initial prior → Local posterior q(s): Model factor;
+data\_dependency.}]{../figures/generative_model_schema.slide-prior.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -382,7 +403,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden state s(t) → Private report o(t): Observation; data\_dependency.}]{../figures/generative_model_schema.slide-time-sensing.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden
+state s(t) → Private report o(t): Observation;
+data\_dependency.}]{../figures/generative_model_schema.slide-time-sensing.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -390,7 +413,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private report o(t) → Posterior q(t): Inference; data\_dependency.}]{../figures/generative_model_schema.slide-time-inference.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private
+report o(t) → Posterior q(t): Inference;
+data\_dependency.}]{../figures/generative_model_schema.slide-time-inference.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -398,7 +423,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior q(t) → Control u(t): EFE-guided action; data\_dependency.}]{../figures/generative_model_schema.slide-time-control.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior
+q(t) → Control u(t): EFE-guided action;
+data\_dependency.}]{../figures/generative_model_schema.slide-time-control.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -406,7 +433,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Control u(t) → Next state s(t+1): B = P(s′\textbar s,u); data\_dependency.}]{../figures/generative_model_schema.slide-time-transition.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Control
+u(t) → Next state s(t+1): B = P(s′\textbar s,u);
+data\_dependency.}]{../figures/generative_model_schema.slide-time-transition.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -414,7 +443,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Meta-context s(L) → Context s(2): Top-down context; data\_dependency.}]{../figures/generative_model_schema.slide-meta-context.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Meta-context
+s(L) → Context s(2): Top-down context;
+data\_dependency.}]{../figures/generative_model_schema.slide-meta-context.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -422,7 +453,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Context s(2) → Location s(1): Conditional prior; data\_dependency.}]{../figures/generative_model_schema.slide-context-location.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Context
+s(2) → Location s(1): Conditional prior;
+data\_dependency.}]{../figures/generative_model_schema.slide-context-location.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -430,7 +463,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Location s(1) → Local posterior q1: Location evidence; data\_dependency.}]{../figures/generative_model_schema.slide-location-posterior.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Location
+s(1) → Local posterior q1: Location evidence;
+data\_dependency.}]{../figures/generative_model_schema.slide-location-posterior.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -438,7 +473,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Context s(2) → Local posterior q1: Context conditions prior; data\_dependency.}]{../figures/generative_model_schema.slide-context-posterior.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Context
+s(2) → Local posterior q1: Context conditions prior;
+data\_dependency.}]{../figures/generative_model_schema.slide-context-posterior.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -446,7 +483,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Meta-context s(L) → Local posterior q1: Optional higher context; retained\_warning.}]{../figures/generative_model_schema.slide-meta-posterior.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Meta-context
+s(L) → Local posterior q1: Optional higher context;
+retained\_warning.}]{../figures/generative_model_schema.slide-meta-posterior.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -454,7 +493,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Diagonal mass is sensor acuity; residual mass is categorical noise. Raw outcomes remain private; only posteriors are broadcast.}]{../figures/generative_model_schema.slide-sensor-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Diagonal
+mass is sensor acuity; residual mass is categorical noise. Raw outcomes
+remain private; only posteriors are
+broadcast.}]{../figures/generative_model_schema.slide-sensor-key.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -462,7 +504,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={\$q(s)=\textbackslash mathrm\{softmax\}(\textbackslash ln D\_0+\textbackslash ln A{[}o,\textbackslash cdot{]})\$}]{../figures/generative_model_schema.slide-local-equation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={\$q(s)=\textbackslash
+mathrm\{softmax\}(\textbackslash ln D\_0+\textbackslash ln
+A{[}o,\textbackslash
+cdot{]})\$}]{../figures/generative_model_schema.slide-local-equation.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -470,7 +515,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Project recovery identity: robust\_aggregate(0) = log\_linear\_pool. This limit does not reconstruct the full source protocol.}]{../figures/generative_model_schema.slide-recovery.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Project
+recovery identity: robust\_aggregate(0) = log\_linear\_pool. This limit
+does not reconstruct the full source
+protocol.}]{../figures/generative_model_schema.slide-recovery.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -478,7 +526,9 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={\$\textbackslash bar q\_1=\textbackslash sum\_kq\_2{[}k{]}D\_\{1\textbar k\}\$}]{../figures/generative_model_schema.slide-mixture-equation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={\$\textbackslash
+bar q\_1=\textbackslash sum\_kq\_2{[}k{]}D\_\{1\textbar
+k\}\$}]{../figures/generative_model_schema.slide-mixture-equation.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -486,7 +536,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Flat studies stop after posterior sharing. Moving-world studies execute B and EFE-guided control. Hierarchy is an optional extension.}]{../figures/generative_model_schema.slide-optional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Flat
+studies stop after posterior sharing. Moving-world studies execute B and
+EFE-guided control. Hierarchy is an optional
+extension.}]{../figures/generative_model_schema.slide-optional.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -494,7 +547,10 @@ simultaneously estimated in every study.
 \begin{frame}{Generative model (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic formalization, not an empirical estimate. Private sensory outcomes become posterior messages; fusion uses the shared categorical state.}]{../figures/generative_model_schema.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic
+formalization, not an empirical estimate. Private sensory outcomes
+become posterior messages; fusion uses the shared categorical
+state.}]{../figures/generative_model_schema.slide-scope.png}
 \refstepcounter{figure}\label{fig:generative-model-schema-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -514,7 +570,7 @@ This single location factor is precisely the latent the colony gossips
 about: it is the shared argument of the log-linear pool
 (eq.~9) and of every belief-sharing round
 (eq.~14). Fixing one hidden factor keeps the recovery
-limits of sec.~6 closed-form and exactly testable,
+limits of sec.~9 closed-form and exactly testable,
 \end{frame}
 
 \begin{frame}{State space: one shared\ldots{} (part 3)}
@@ -547,15 +603,13 @@ the single location modality is one \((n_s, n_s)\) matrix:
 \end{frame}
 
 \begin{frame}{Four categorical tensors (part 5)}
-\begin{equation}\tag{15}\protect\phantomsection\label{eq:observation-likelihood}{
-\begin{aligned}
+\begin{equation}\tag{15}\protect\phantomsection\label{eq:observation-likelihood}{\begin{aligned}
 A_{o s} &= \text{acuity}
 && \text{if }o=s,\\
 A_{o s} &= \frac{1-\text{acuity}}{n_s-1}
 && \text{if }o\neq s,\\
 \sum_o A_{o s} &= 1.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Four categorical tensors (part 6)}
@@ -607,7 +661,7 @@ and zero elsewhere.
 
 \begin{frame}{Four categorical tensors (part 13)}
 The preferred-outcome distribution that the expected-free-energy
-decomposition of sec.~5.15 uses is
+decomposition of sec.~8.15 uses is
 \(p_C(o) = \mathrm{softmax}(C)[o]\).
 \end{frame}
 
@@ -636,15 +690,13 @@ summed over any conditionally independent modalities \(m\),
 \end{frame}
 
 \begin{frame}{One-step variational state\ldots{} (part 3)}
-\begin{equation}\tag{16}\protect\phantomsection\label{eq:state-inference}{
-q(s)
+\begin{equation}\tag{16}\protect\phantomsection\label{eq:state-inference}{q(s)
 = \mathrm{softmax}\!\left(
 \begin{aligned}
 &\ln D_0(s)\\
 &\quad + \textstyle\sum_m \ln A_m[o_m, s]
 \end{aligned}
-\right).
-}\end{equation}
+\right).}\end{equation}
 \end{frame}
 
 \begin{frame}{One-step variational state\ldots{} (part 4)}
@@ -656,8 +708,7 @@ eq.~16 minimizes, is
 \end{frame}
 
 \begin{frame}{One-step variational state\ldots{} (part 5)}
-\begin{equation}\tag{17}\protect\phantomsection\label{eq:variational-free-energy}{
-\begin{aligned}
+\begin{equation}\tag{17}\protect\phantomsection\label{eq:variational-free-energy}{\begin{aligned}
 F[q]
 &= \mathbb{E}_q\!\left[
 \begin{aligned}
@@ -667,8 +718,7 @@ F[q]
 \right]\\
 &= \mathrm{KL}\big(q \,\|\, D_0\big)
    - \mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big].
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{One-step variational state\ldots{} (part 6)}
@@ -682,7 +732,7 @@ Both live in \texttt{belief\_updating.infer\_states} and
 \texttt{belief\_updating.vfe}, and the free energy of
 eq.~17 is the quantity the
 communicating-versus-incommunicado colony comparison of
-sec.~5.22 scores.
+sec.~8.22 scores.
 \end{frame}
 
 \begin{frame}{One-step variational state\ldots{} (part 8)}
@@ -695,18 +745,18 @@ locked softmax.
 \begin{frame}{One-step variational state\ldots{} (part 9)}
 That client identity recovers the stated categorical Bayes substrate at
 its trusting limits. The separate server identity in
-sec.~5.8 then yields the project log-linear
+sec.~8.8 then yields the project log-linear
 pool under its qualified Eq. 7 message-combination bridge;
 \end{frame}
 
 \begin{frame}{One-step variational state\ldots{} (part 10)}
 together these do not recover the complete Friston protocol
-(sec.~6).
+(sec.~9).
 \end{frame}
 
 \begin{frame}{Hidden-state to action loop: the POMDP substrate}
 \protect\phantomsection\label{sec:methods-pomdp-loop}
-The categorical POMDP loop in fig.~5 separates the
+The categorical POMDP loop in fig.~8 separates the
 common latent-state substrate from the federation transport. In the
 sentinel interpretation, an agent is a location-sensitive observer:
 \end{frame}
@@ -732,7 +782,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 5)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Shared world; D = den: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-world.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Shared
+world; D = den: nine-cell topology; cell 5 is hatched. Schematic only,
+no measured probability scale.}]{../figures/pomdp_loop.slide-world.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -740,7 +792,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel 1 → Shared hidden location: Visual field; retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel
+1 → Shared hidden location: Visual field;
+retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-1.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -748,7 +802,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel 2 → Shared hidden location: Visual field; retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel
+2 → Shared hidden location: Visual field;
+retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-2.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -756,7 +812,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel n → Shared hidden location: Visual field; retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-n.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Sentinel
+n → Shared hidden location: Visual field;
+retained\_warning.}]{../figures/pomdp_loop.slide-visual-field-n.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -764,7 +822,10 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic local posterior q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-local-posterior-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic
+local posterior q1: nine-cell topology; cell 1 is hatched. Schematic
+only, no measured probability
+scale.}]{../figures/pomdp_loop.slide-local-posterior-1.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -772,7 +833,10 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic local posterior q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-local-posterior-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic
+local posterior q2: nine-cell topology; cell 5 is hatched. Schematic
+only, no measured probability
+scale.}]{../figures/pomdp_loop.slide-local-posterior-2.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -780,7 +844,10 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic local posterior qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale.}]{../figures/pomdp_loop.slide-local-posterior-n.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Schematic
+local posterior qn: nine-cell topology; cell 9 is hatched. Schematic
+only, no measured probability
+scale.}]{../figures/pomdp_loop.slide-local-posterior-n.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -788,7 +855,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q1 → Server: Posterior message; data\_dependency.}]{../figures/pomdp_loop.slide-message-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior q1 → Server: Posterior message;
+data\_dependency.}]{../figures/pomdp_loop.slide-message-1.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -796,7 +865,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q2 → Server: Posterior message; data\_dependency.}]{../figures/pomdp_loop.slide-message-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior q2 → Server: Posterior message;
+data\_dependency.}]{../figures/pomdp_loop.slide-message-2.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -804,7 +875,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior qn → Server: Posterior message; data\_dependency.}]{../figures/pomdp_loop.slide-message-n.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior qn → Server: Posterior message;
+data\_dependency.}]{../figures/pomdp_loop.slide-message-n.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -812,7 +885,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Qualified Eq. 7 pool / robust route → Posterior excluding recipient: Server return; data\_dependency.}]{../figures/pomdp_loop.slide-return.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Qualified
+Eq. 7 pool / robust route → Posterior excluding recipient: Server
+return; data\_dependency.}]{../figures/pomdp_loop.slide-return.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -820,7 +895,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior excluding recipient → Recipient n; m ≠ n: Self-exclusion; retained\_warning.}]{../figures/pomdp_loop.slide-recipient.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior
+excluding recipient → Recipient n; m ≠ n: Self-exclusion;
+retained\_warning.}]{../figures/pomdp_loop.slide-recipient.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -828,7 +905,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden location s(t) → Private outcome o(t): A = P(o\textbar s); data\_dependency.}]{../figures/pomdp_loop.slide-sensing.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Hidden
+location s(t) → Private outcome o(t): A = P(o\textbar s);
+data\_dependency.}]{../figures/pomdp_loop.slide-sensing.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -836,7 +915,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private outcome o(t) → Local posterior q(t): Local inference; data\_dependency.}]{../figures/pomdp_loop.slide-inference.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private
+outcome o(t) → Local posterior q(t): Local inference;
+data\_dependency.}]{../figures/pomdp_loop.slide-inference.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -844,7 +925,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q(t) → Action: still / left / right: C preferences / EFE; data\_dependency.}]{../figures/pomdp_loop.slide-policy.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior q(t) → Action: still / left / right: C preferences / EFE;
+data\_dependency.}]{../figures/pomdp_loop.slide-policy.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -852,7 +935,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Action u(t) → Next hidden state s(t+1): B = P(s′\textbar s,u); data\_dependency.}]{../figures/pomdp_loop.slide-transition.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Action
+u(t) → Next hidden state s(t+1): B = P(s′\textbar s,u);
+data\_dependency.}]{../figures/pomdp_loop.slide-transition.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -860,7 +945,9 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Next hidden state s(t+1) → Hidden location next step: Temporal loop; data\_dependency.}]{../figures/pomdp_loop.slide-next-step.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Next
+hidden state s(t+1) → Hidden location next step: Temporal loop;
+data\_dependency.}]{../figures/pomdp_loop.slide-next-step.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -868,7 +955,10 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents share beliefs about one hidden location. Private outcomes and controls remain local; no raw sensory data are pooled.}]{../figures/pomdp_loop.slide-privacy.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents
+share beliefs about one hidden location. Private outcomes and controls
+remain local; no raw sensory data are
+pooled.}]{../figures/pomdp_loop.slide-privacy.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -876,7 +966,10 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Flat federation uses inference and communication. The moving-world extension also executes B and EFE-guided control.}]{../figures/pomdp_loop.slide-optional-control.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Flat
+federation uses inference and communication. The moving-world extension
+also executes B and EFE-guided
+control.}]{../figures/pomdp_loop.slide-optional-control.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -884,7 +977,10 @@ latent or policy quantity.
 \begin{frame}{Hidden-state to action loop (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Model schematic, not an empirical result. Hatched cells only illustrate topology or posterior emphasis; they are not measured probability values.}]{../figures/pomdp_loop.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Model
+schematic, not an empirical result. Hatched cells only illustrate
+topology or posterior emphasis; they are not measured probability
+values.}]{../figures/pomdp_loop.slide-scope.png}
 \refstepcounter{figure}\label{fig:pomdp-loop-slide-panel-20}
 \end{figure}
 \end{frame}

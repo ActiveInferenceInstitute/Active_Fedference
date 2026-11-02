@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -292,7 +297,7 @@ optionally with a scalar base weight \(w_n\).
 
 Two fusion rules act directly on these broadcasts, and a third --- the
 objective-backed \texttt{variational\_aggregate} of
-sec.~5.8.2 --- refines the second into descent on
+sec.~8.8.2 --- refines the second into descent on
 a stated objective.
 \end{frame}
 
@@ -311,12 +316,10 @@ local posteriors (Hinton 2002):
 \end{frame}
 
 \begin{frame}{Aggregation and message\ldots{} (part 6)}
-\begin{equation}\tag{9}\protect\phantomsection\label{eq:log-linear-pool}{
-\begin{aligned}
+\begin{equation}\tag{9}\protect\phantomsection\label{eq:log-linear-pool}{\begin{aligned}
 &\operatorname{log\_linear\_pool}(\{q_n\})\\
 &\qquad = \mathrm{softmax}\!\Big(\textstyle\sum_n w_n \log q_n\Big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Aggregation and message\ldots{} (part 7)}
@@ -375,8 +378,8 @@ diagnostic regimes.
 \begin{frame}{Aggregation and message\ldots{} (part 15)}
 This independently motivated rule does not transfer FedGVI's client
 theorem to the server side: it is the \textbf{heuristic robustness axis}
-of sec.~3.3, distinct from the per-agent rigorous
-axis of sec.~5.7.
+of sec.~6.3, distinct from the per-agent rigorous
+axis of sec.~8.7.
 \end{frame}
 
 \begin{frame}{Aggregation and message\ldots{} (part 16)}
@@ -395,11 +398,9 @@ pool is the log-linear pool unchanged.
 \end{frame}
 
 \begin{frame}{Aggregation and message\ldots{} (part 18)}
-\begin{equation}\tag{10}\protect\phantomsection\label{eq:robust-identity}{
-\operatorname{robust\_aggregate}(0)
+\begin{equation}\tag{10}\protect\phantomsection\label{eq:robust-identity}{\operatorname{robust\_aggregate}(0)
 \;\equiv\;
-\operatorname{log\_linear\_pool}.
-}\end{equation}
+\operatorname{log\_linear\_pool}.}\end{equation}
 \end{frame}
 
 \begin{frame}{Aggregation and message\ldots{} (part 19)}
@@ -411,7 +412,7 @@ nor certifies the complete source protocol (Friston et al. 2024).
 
 \begin{frame}{Protocol map: local updates, broadcast, and server fusion}
 \protect\phantomsection\label{sec:method-message-passing}
-The visual map in fig.~3 makes the protocol
+The visual map in fig.~6 makes the protocol
 boundary explicit: each client updates and broadcasts a categorical
 posterior; the server chooses the standard pool, heuristic, or
 variational route.
@@ -428,7 +429,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 3)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private update: local q1: nine-cell topology; cell 1 is hatched. Schematic only, no measured probability scale.}]{../figures/message_passing.slide-posterior-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private
+update: local q1: nine-cell topology; cell 1 is hatched. Schematic only,
+no measured probability
+scale.}]{../figures/message_passing.slide-posterior-1.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -436,7 +440,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 4)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q1 → Posterior-only broadcast: Private outcome stays local; data\_dependency.}]{../figures/message_passing.slide-broadcast-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior q1 → Posterior-only broadcast: Private outcome stays local;
+data\_dependency.}]{../figures/message_passing.slide-broadcast-1.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -444,7 +450,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 5)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private update: local q2: nine-cell topology; cell 5 is hatched. Schematic only, no measured probability scale.}]{../figures/message_passing.slide-posterior-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private
+update: local q2: nine-cell topology; cell 5 is hatched. Schematic only,
+no measured probability
+scale.}]{../figures/message_passing.slide-posterior-2.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -452,7 +461,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior q2 → Posterior-only broadcast: Private outcome stays local; data\_dependency.}]{../figures/message_passing.slide-broadcast-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior q2 → Posterior-only broadcast: Private outcome stays local;
+data\_dependency.}]{../figures/message_passing.slide-broadcast-2.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -460,7 +471,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private update: local qn: nine-cell topology; cell 9 is hatched. Schematic only, no measured probability scale.}]{../figures/message_passing.slide-posterior-n.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Private
+update: local qn: nine-cell topology; cell 9 is hatched. Schematic only,
+no measured probability
+scale.}]{../figures/message_passing.slide-posterior-n.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -468,7 +482,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local posterior qn → Posterior-only broadcast: Private outcome stays local; data\_dependency.}]{../figures/message_passing.slide-broadcast-n.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Local
+posterior qn → Posterior-only broadcast: Private outcome stays local;
+data\_dependency.}]{../figures/message_passing.slide-broadcast-n.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -476,7 +492,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Client route: NLL/KLD/β = 0 is a project recovery identity.}]{../figures/message_passing.slide-client-recovery.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Client
+route: NLL/KLD/β = 0 is a project recovery
+identity.}]{../figures/message_passing.slide-client-recovery.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -484,7 +502,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Robust client losses: source theorem under its assumptions. Client guarantees do not transfer to server routes.}]{../figures/message_passing.slide-client-theorem.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Robust
+client losses: source theorem under its assumptions. Client guarantees
+do not transfer to server
+routes.}]{../figures/message_passing.slide-client-theorem.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -492,7 +513,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Protocol-v1 payload: categorical posterior q(n). No private outcome o(n) is broadcast.}]{../figures/message_passing.slide-transport.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Protocol-v1
+payload: categorical posterior q(n). No private outcome o(n) is
+broadcast.}]{../figures/message_passing.slide-transport.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -500,7 +523,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior-only broadcast → Log-linear pool: N · Server route; naive.}]{../figures/message_passing.slide-route-naive.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior-only
+broadcast → Log-linear pool: N · Server route;
+naive.}]{../figures/message_passing.slide-route-naive.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -508,7 +533,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={N: softmax of the weighted sum of log posteriors. Qualified categorical Eq. 7 specialization.}]{../figures/message_passing.slide-owner-naive.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={N:
+softmax of the weighted sum of log posteriors. Qualified categorical Eq.
+7 specialization.}]{../figures/message_passing.slide-owner-naive.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -516,7 +543,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Log-linear pool → Recipient n: N · Senders m ≠ n only; naive.}]{../figures/message_passing.slide-return-naive.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Log-linear
+pool → Recipient n: N · Senders m ≠ n only;
+naive.}]{../figures/message_passing.slide-return-naive.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -524,7 +553,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior-only broadcast → Heuristic robust: H · Server route; heuristic\_robust.}]{../figures/message_passing.slide-route-heuristic-robust.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior-only
+broadcast → Heuristic robust: H · Server route;
+heuristic\_robust.}]{../figures/message_passing.slide-route-heuristic-robust.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -532,7 +563,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H: robust\_aggregate uses configured divergence reweighting. Conditional heuristic evidence.}]{../figures/message_passing.slide-owner-heuristic-robust.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H:
+robust\_aggregate uses configured divergence reweighting. Conditional
+heuristic
+evidence.}]{../figures/message_passing.slide-owner-heuristic-robust.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -540,7 +574,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic robust → Recipient n: H · Senders m ≠ n only; heuristic\_robust.}]{../figures/message_passing.slide-return-heuristic-robust.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+robust → Recipient n: H · Senders m ≠ n only;
+heuristic\_robust.}]{../figures/message_passing.slide-return-heuristic-robust.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -548,7 +584,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior-only broadcast → Variational server: V · Server route; variational.}]{../figures/message_passing.slide-route-variational.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior-only
+broadcast → Variational server: V · Server route;
+variational.}]{../figures/message_passing.slide-route-variational.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -556,7 +594,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={V: variational\_aggregate uses q,a block updates of F(q,a). Objective-backed weight property.}]{../figures/message_passing.slide-owner-variational.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={V:
+variational\_aggregate uses q,a block updates of F(q,a).
+Objective-backed weight
+property.}]{../figures/message_passing.slide-owner-variational.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -564,7 +605,9 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational server → Recipient n: V · Senders m ≠ n only; variational.}]{../figures/message_passing.slide-return-variational.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational
+server → Recipient n: V · Senders m ≠ n only;
+variational.}]{../figures/message_passing.slide-return-variational.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -572,7 +615,10 @@ and the variational route owns objective/descent/raw-weight properties.
 \begin{frame}{Protocol map (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Deterministic protocol schematic; no empirical estimate or uncertainty interval. Self-exclusion is preserved. The Eq. 7 bridge does not reconstruct the full source protocol.}]{../figures/message_passing.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Deterministic
+protocol schematic; no empirical estimate or uncertainty interval.
+Self-exclusion is preserved. The Eq. 7 bridge does not reconstruct the
+full source protocol.}]{../figures/message_passing.slide-scope.png}
 \refstepcounter{figure}\label{fig:message-passing-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -604,9 +650,7 @@ categorical combination term, not its complete protocol.
 \end{frame}
 
 \begin{frame}{Protocol map (part 25)}
-\begin{equation}\tag{11}\protect\phantomsection\label{eq:standard-bayes}{
-q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),
-}\end{equation}
+\begin{equation}\tag{11}\protect\phantomsection\label{eq:standard-bayes}{q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),}\end{equation}
 \end{frame}
 
 \begin{frame}{Protocol map (part 26)}
@@ -624,7 +668,7 @@ the analytic Bayes posterior is 5.55e-17,
 
 \begin{frame}{Protocol map (part 28)}
 exact to machine precision (about one ULP); both are reported in
-sec.~7.1, so eq.~10 and
+sec.~10.1, so eq.~10 and
 eq.~11 are verified identities rather than
 approximations.
 \end{frame}
@@ -632,7 +676,7 @@ approximations.
 \begin{frame}[fragile]{Protocol map (part 29)}
 The honesty contract binds at exactly this point. The recovery theorem
 and its corollary cover only the recovery identity and the per-agent
-rigorous axis of sec.~5.7; no statement \emph{about
+rigorous axis of sec.~8.7; no statement \emph{about
 \texttt{robust\_aggregate}} transfers a bounded-influence guarantee to
 that divergence-reweighting,
 \end{frame}
@@ -646,11 +690,11 @@ eq.~10.
 A scoped no-go rejects a declared separable objective class without
 supplying a broader objective certificate. The per-agent influence
 weights that the heuristic produces under contamination are
-\emph{illustrated}, not guaranteed, in fig.~15.
+\emph{illustrated}, not guaranteed, in fig.~18.
 \end{frame}
 
 \begin{frame}{Protocol map (part 32)}
-The separate fig.~18 is an exploratory
+The separate fig.~21 is an exploratory
 generalized-Bayes point-estimate logistic-regression baseline comparing
 joint NLL/L2 and RCCE/L2 configurations. Because both loss and shrinkage
 differ, it does not isolate an RCCE-only effect or test the genuine
@@ -658,7 +702,7 @@ per-client FedGVI property,
 \end{frame}
 
 \begin{frame}{Protocol map (part 33)}
-which remains source-conditional in sec.~5.7.
+which remains source-conditional in sec.~8.7.
 
 The next subsection closes this exact gap on the server side with a
 \emph{different}, objective-backed aggregator.
@@ -679,13 +723,11 @@ treat the consensus \(q\) and a vector of effective weights
 \end{frame}
 
 \begin{frame}{Variational aggregation with\ldots{} (part 3)}
-\begin{equation}\tag{12}\protect\phantomsection\label{eq:agg-free-energy}{
-\begin{aligned}
+\begin{equation}\tag{12}\protect\phantomsection\label{eq:agg-free-energy}{\begin{aligned}
 F_\lambda(q, a)
 &= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Variational aggregation with\ldots{} (part 4)}
@@ -703,15 +745,13 @@ Each block of \(F_\lambda\) has a closed-form minimizer, so alternating
 \end{frame}
 
 \begin{frame}{Variational aggregation with\ldots{} (part 6)}
-\begin{equation}\tag{13}\protect\phantomsection\label{eq:agg-updates}{
-\begin{aligned}
+\begin{equation}\tag{13}\protect\phantomsection\label{eq:agg-updates}{\begin{aligned}
 q
 &\leftarrow \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &\leftarrow w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Variational aggregation with\ldots{} (part 7)}
@@ -749,19 +789,19 @@ otherwise the lowest unfinished trace is returned with
 \texttt{converged=False}) so a near-one-hot adversary is not left at the
 product-of-experts seed in the tested contamination regimes --- the
 detail that supports the effective-weight diagnostic
-(sec.~12).
+(sec.~15).
 \end{frame}
 
 \begin{frame}{Variational aggregation with\ldots{} (part 13)}
 The full derivation, the formal statement (block descent, \(c\to0\)
 recovery, and the raw effective-weight bound), and the numerical
-witnesses are in sec.~12;
+witnesses are in sec.~15;
 \end{frame}
 
 \begin{frame}{Variational aggregation with\ldots{} (part 14)}
 the empirical descent and influence collapse are shown in
-fig.~16 and fig.~17
-and reported in sec.~7.5.3.
+fig.~19 and fig.~20
+and reported in sec.~10.5.3.
 \end{frame}
 
 \begin{frame}{Variational aggregation with\ldots{} (part 15)}
@@ -797,9 +837,9 @@ roles, both reported:
 
 \begin{frame}[fragile]{Variational aggregation\ldots{} (part 20)}
 the sharp \texttt{robust\_aggregate} heuristic for accuracy under
-contamination (sec.~7.5.2) and the conservative
+contamination (sec.~10.5.2) and the conservative
 \texttt{variational\_aggregate} for a server-side objective with stated
-weight control (sec.~7.5.3).
+weight control (sec.~10.5.3).
 \end{frame}
 
 \begin{frame}[fragile]{Variational aggregation with\ldots{} (part 21)}
@@ -810,7 +850,7 @@ objective to \(F_\lambda\); lower \(\lambda\) sharpens the variational
 \end{frame}
 
 \begin{frame}{Variational aggregation\ldots{} (part 22)}
-The tempered family (sec.~12.5; objective
+The tempered family (sec.~15.5; objective
 eq.~30) recovers the full-entropy variational
 aggregator at \(\lambda = 1.0\) and has a separately implemented
 deterministic tied-argmax endpoint as \(\lambda\downarrow0\);

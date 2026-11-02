@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -313,7 +318,7 @@ recovers the project log-linear pool.
 
 \begin{frame}{2. A recovery-tested\ldots{} (part 3)}
 Under the explicit shared-support, posterior-log-potential, and
-fixed-weight assumptions in sec.~5.8, that pool
+fixed-weight assumptions in sec.~8.8, that pool
 specializes Friston et al.'s Eq. 7 message-combination term (Friston et
 al. 2024), not the complete source protocol.
 \end{frame}
@@ -343,18 +348,18 @@ inference}
 \protect\phantomsection\label{end-to-end-evaluation-of-robust-federated-active-inference}
 Three worked categorical source-mechanism analogues cover communicating
 colonies reaching lower free energy
-(sec.~7.2), Dirichlet language acquisition
-(sec.~7.3),
+(sec.~10.2), Dirichlet language acquisition
+(sec.~10.3),
 \end{frame}
 
 \begin{frame}{3. End-to-end evaluation of\ldots{} (part 2)}
 and a configured Bayesian-model- reduction pruning sign control (Friston
-and Penny 2011) (sec.~7.4).
+and Penny 2011) (sec.~10.4).
 \end{frame}
 
 \begin{frame}{3. End-to-end evaluation of\ldots{} (part 3)}
 A contaminated-sentinel robustness sweep
-(sec.~7.5) shows the naive pool degrading while
+(sec.~10.5) shows the naive pool degrading while
 at least one server-side robust member clears the configured threshold
 at the most severe swept rate.
 \end{frame}
@@ -391,7 +396,7 @@ token.
 
 \begin{frame}{5. An explicit accounting of the robustness axes}
 \protect\phantomsection\label{an-explicit-accounting-of-the-robustness-axes}
-The map in sec.~3.3 separates the client-side
+The map in sec.~6.3 separates the client-side
 per-agent update, which inherits FedGVI's bounded-influence result under
 its stated source assumptions, from both server rules.
 \end{frame}
@@ -414,7 +419,7 @@ redescending weights}
 \protect\phantomsection\label{an-objective-backed-server-aggregator-with-redescending-weights}
 We derive an aggregation free energy eq.~12 whose
 exact block updates define the \texttt{variational\_aggregate} rule
-(sec.~5.8.2, sec.~12).
+(sec.~8.8.2, sec.~15).
 \end{frame}
 
 \begin{frame}{6. An objective-backed\ldots{} (part 2)}
@@ -431,7 +436,7 @@ or reports the best unfinished trace as non-converged.
 The rule recovers the standard log-linear pool in the trusting limit
 (eq.~10) and --- unlike the sharp heuristic ---
 carries a proven raw effective-weight bound
-(fig.~16, fig.~17).
+(fig.~19, fig.~20).
 \end{frame}
 
 \begin{frame}{6. An objective-backed\ldots{} (part 5)}
@@ -449,7 +454,7 @@ acuity by marginal-likelihood grid search over the declared finite grid.
 
 \begin{frame}{7. Executed finite-grid\ldots{} (part 2)}
 The observed mean absolute error is 0.0232 with \(R^2 = 0.9999\)
-(fig.~31). Acuity-by-colony-size behavior
+(fig.~34). Acuity-by-colony-size behavior
 belongs to the separate sensitivity study; it is not a
 parameter-recovery result.
 \end{frame}
@@ -457,17 +462,15 @@ parameter-recovery result.
 \begin{frame}{8. The tempered aggregation family}
 \protect\phantomsection\label{the-tempered-aggregation-family}
 A one-parameter \(\lambda>0\) generalization of the variational
-aggregate (sec.~12.5) is the objective
+aggregate (sec.~15.5) is the objective
 \end{frame}
 
 \begin{frame}{8. The tempered\ldots{} (part 2)}
-\begin{equation}\tag{1}\protect\phantomsection\label{eq:contribution-tempered-family}{
-\begin{aligned}
+\begin{equation}\tag{1}\protect\phantomsection\label{eq:contribution-tempered-family}{\begin{aligned}
 F_\lambda(q,a)
 &= \sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q)\\
 &\quad +\frac{1}{c}\,\mathrm{KL}_{\mathrm{gen}}(a\Vert w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{8. The tempered\ldots{} (part 3)}
@@ -480,7 +483,7 @@ algebraically recover \texttt{robust\_aggregate}.
 
 \begin{frame}{8. The tempered\ldots{} (part 4)}
 The raw effective-weight update and its bound are preserved for all
-\(\lambda\). The full derivation is in sec.~12.5.
+\(\lambda\). The full derivation is in sec.~15.5.
 \end{frame}
 
 \begin{frame}[fragile]{9. An aggregation-API transfer demonstration}
@@ -497,14 +500,14 @@ as the per-client model.
 
 \begin{frame}[fragile]{9. An aggregation-API\ldots{} (part 3)}
 This supports portability of the server API to one additional model
-class (sec.~7.6) when the optional \texttt{torch}
-extra is installed (sec.~5.26). Without it, the
+class (sec.~10.6) when the optional \texttt{torch}
+extra is installed (sec.~8.26). Without it, the
 MLP run is skipped and its tokens render accordingly.
 \end{frame}
 
 \begin{frame}{10. Communication contrast under disjoint observations}
 \protect\phantomsection\label{communication-contrast-under-disjoint-observations}
-A multi-agent extension (sec.~14.7.1) in
+A multi-agent extension (sec.~17.7.1) in
 \end{frame}
 
 \begin{frame}{10. Communication contrast\ldots{} (part 2)}
@@ -528,21 +531,21 @@ theorem.
 \end{frame}
 
 \begin{frame}{10. Communication contrast\ldots{} (part 5)}
-The remainder of the paper proceeds as follows. sec.~5
+The remainder of the paper proceeds as follows. sec.~8
 develops the FedGVI core and the recovery limits;
-sec.~6 states the numbered recovery theorems and the
+sec.~9 states the numbered recovery theorems and the
 expected-free-energy identity;
-sec.~5.22 fixes the configuration;
+sec.~8.22 fixes the configuration;
 \end{frame}
 
 \begin{frame}{10. Communication contrast\ldots{} (part 6)}
-sec.~7 reports the 9 studies, beginning with the
-recovery checks (sec.~7.1).
+sec.~10 reports the 9 studies, beginning with the
+recovery checks (sec.~10.1).
 \end{frame}
 
 \begin{frame}{10. Communication contrast\ldots{} (part 7)}
-sec.~8 and sec.~9 synthesize; and
-sec.~10 and sec.~8.15
+sec.~11 and sec.~12 synthesize; and
+sec.~13 and sec.~11.15
 document determinism, scope, limitations, and the standing of each
 robustness axis.
 \end{frame}

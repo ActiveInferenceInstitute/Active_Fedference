@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -275,7 +280,7 @@ them at the heart of the federated belief-sharing scenario.
 \begin{frame}{Learning stack (part 3)}
 We reimplement each in closed form so the language-acquisition,
 expected-free-energy, and emergence studies of
-sec.~5.22 rest on machine-checkable
+sec.~8.22 rest on machine-checkable
 quantities rather than fitted curves.
 \end{frame}
 
@@ -293,11 +298,9 @@ and reads off the column-normalized posterior mean,
 \end{frame}
 
 \begin{frame}{Conjugate Dirichlet learning\ldots{} (part 3)}
-\begin{equation}\tag{18}\protect\phantomsection\label{eq:dirichlet-update}{
-a \;\leftarrow\; a + \text{counts},
+\begin{equation}\tag{18}\protect\phantomsection\label{eq:dirichlet-update}{a \;\leftarrow\; a + \text{counts},
 \qquad
-\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o'} a_{o' s}},
-}\end{equation}
+\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o'} a_{o' s}},}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Conjugate Dirichlet learning\ldots{} (part 4)}
@@ -330,13 +333,11 @@ KL divergence summed over hidden states,
 \end{frame}
 
 \begin{frame}{Conjugate Dirichlet learning\ldots{} (part 8)}
-\begin{equation}\tag{19}\protect\phantomsection\label{eq:dirichlet-kl}{
-\begin{aligned}
+\begin{equation}\tag{19}\protect\phantomsection\label{eq:dirichlet-kl}{\begin{aligned}
 \mathrm{KL}\big(A^{\star}\|\mathbb{E}[A]\big)
 &= \sum_s\sum_o A^{\star}_{os}\\
 &\quad\cdot\ln\frac{A^{\star}_{os}}{\mathbb{E}[A]_{os}}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Conjugate Dirichlet learning\ldots{} (part 9)}
@@ -348,7 +349,7 @@ finite throughout. ISC-17 pins the monotone-decreasing KL trajectory,
 
 \begin{frame}{Conjugate Dirichlet learning\ldots{} (part 10)}
 and the language-acquisition study of
-sec.~5.22 reports the descent of
+sec.~8.22 reports the descent of
 eq.~19 across 24 steps.
 \end{frame}
 
@@ -382,7 +383,7 @@ epistemic value.
 The two views are the same scalar rearranged, stated as
 eq.~22 and pinned to a zero residual by the
 algebraic identity eq.~23 in
-sec.~6.
+sec.~9.
 \end{frame}
 
 \begin{frame}[fragile]{Expected free energy as\ldots{} (part 4)}
@@ -439,7 +440,7 @@ predictions lower risk).
 \end{frame}
 
 \begin{frame}{Epistemic value (part 4)}
-fig.~8 visualizes the additive cost view and the
+fig.~11 visualizes the additive cost view and the
 signed pragmatic/epistemic waterfall terminating at
 \(G(\boldsymbol{\pi})\) --- a deterministic identity (Proposition
 7), not a fitted result.
@@ -469,8 +470,7 @@ log multivariate Beta functions,
 \end{frame}
 
 \begin{frame}{Bayesian model reduction\ldots{} (part 4)}
-\begin{equation}\tag{20}\protect\phantomsection\label{eq:bmr-deltaf}{
-\begin{aligned}
+\begin{equation}\tag{20}\protect\phantomsection\label{eq:bmr-deltaf}{\begin{aligned}
 \Delta F
 &\;=\; \ln B(\text{prior}) - \ln B(\text{post})\\
 &\qquad + \ln B(\text{reduced\_post})\\
@@ -478,8 +478,7 @@ log multivariate Beta functions,
 \ln B(a)
 &\;=\; \textstyle\sum_k \ln\Gamma(a_k)
  - \ln\Gamma\!\big(\sum_k a_k\big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Bayesian model reduction\ldots{} (part 5)}
@@ -498,10 +497,10 @@ exact algebra, a zero point the suite pins to machine precision
 
 \begin{frame}{Bayesian model reduction\ldots{} (part 7)}
 The configured BMR sign-control study of
-sec.~5.22 uses this operation over
+sec.~8.22 uses this operation over
 \(n = 4\) candidate states. It contrasts a redundant reduction
 (\(\Delta F = 3.68\) nats; adopt) with a supported one
-(\(\Delta F = -27.67\) nats; reject) in fig.~12.
+(\(\Delta F = -27.67\) nats; reject) in fig.~15.
 \end{frame}
 
 \begin{frame}{Bayesian model reduction\ldots{} (part 8)}

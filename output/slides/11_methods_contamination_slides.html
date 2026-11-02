@@ -365,7 +365,7 @@ aria-label="Contamination models: declared failure modes for belief fusion, part
 models (part 5)</h2>
 <p>This section defines the corruption process that lets us test fusion
 robustness inside the active-inference colony — the experimental
-complement of the robust aggregation rule of <span class="cross-reference">Section 5.8</span>.</p>
+complement of the robust aggregation rule of <span class="cross-reference">Section 8.8</span>.</p>
 </section>
 <section id="sec:methods-corruption" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2dc9f6ce19dd">
 <h2 class="prose-slide" id="slide-heading-2dc9f6ce19dd">Corruption process for adversarial belief
@@ -390,9 +390,8 @@ aria-label="Corruption process for adversarial belief broadcasts, part 3" role="
 <h2 class="equation-led"
 aria-label="Corruption process for adversarial belief broadcasts, part 3" id="slide-heading-f5493d03e23c">Corruption
 process for… (part 3)</h2>
-<p><span class="math display" id="eq:contamination-mix">\[
-\tilde b \;=\; (1 - r)\, b \;+\; r\, t,
-\]</span></p>
+<p><span class="math display" id="eq:contamination-mix">\[\tilde b \;=\; (1 - r)\, b \;+\; r\,
+t,\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Corruption process for adversarial belief broadcasts, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dfe2579fda31">
@@ -440,7 +439,7 @@ aria-label="Corruption process for adversarial belief broadcasts, part 8" id="sl
 process for… (part 8)</h2>
 <p>Two further mechanisms (<code>byzantine</code> and
 <code>drift</code>) extend the same convex-mix contract and are
-introduced in the extended-methods supplement (<span class="cross-reference">Section 13.2</span>).</p>
+introduced in the extended-methods supplement (<span class="cross-reference">Section 16.2</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Corruption process for adversarial belief broadcasts, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ccb2bf353fb1">
@@ -461,7 +460,7 @@ aria-label="Corruption process for adversarial belief broadcasts, part 10" role=
 aria-label="Corruption process for adversarial belief broadcasts, part 10" id="slide-heading-c7b041a32225">Corruption
 process for… (part 10)</h2>
 <p>Callers choose <span class="math inline">\(s_{\text{wrong}}\)</span>
-explicitly; the verdict sweep of <span class="cross-reference">Section 5.22</span>
+explicitly; the verdict sweep of <span class="cross-reference">Section 8.22</span>
 fixes it once per colony as the state diametrically opposite the true
 state on the location grid, held constant across the entire rate sweep,
 rather than deriving it from the agent’s current belief.</p>
@@ -553,7 +552,7 @@ vanishes.</p>
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-90d75dc59f8e">
 <h2 class="prose-slide" id="slide-heading-90d75dc59f8e">How contamination meets the three robustness
 axes</h2>
-<p>The authoritative guarantee taxonomy is <span class="cross-reference">Section 3.3</span>;
+<p>The authoritative guarantee taxonomy is <span class="cross-reference">Section 6.3</span>;
 this section only records where the declared corruption enters each
 route.</p>
 </section>
@@ -561,7 +560,7 @@ route.</p>
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ced85de13a83">
 <h2 class="prose-slide" id="slide-heading-ced85de13a83">Client bounded-loss route</h2>
 <p>A corrupted local observation enters the per-agent generalized-Bayes
-update of <span class="cross-reference">Section 5.7</span>.
+update of <span class="cross-reference">Section 8.7</span>.
 FedGVI’s bounded-influence result applies only under the source
 theorem’s matching loss, divergence, model, and regularity assumptions
 <span class="citation" data-cites="mildner2025fedgvi">(Mildner et al.
@@ -572,7 +571,7 @@ aria-label="Client bounded-loss route, part 2" role="group" aria-roledescription
 <h2 class="prose-slide"
 aria-label="Client bounded-loss route, part 2" id="slide-heading-e9eccc31a1e1">Client bounded-loss route
 (part 2)</h2>
-<p>The logistic-regression comparison in <span class="cross-reference">Figure 18</span>
+<p>The logistic-regression comparison in <span class="cross-reference">Figure 21</span>
 is a narrower exploratory proxy: it compares RCCE and NLL point-estimate
 gradients under two L2 coefficients. Its legacy <code>AR</code> argument
 selects the larger coefficient;</p>
@@ -591,7 +590,7 @@ class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-
 <p>A corrupted posterior broadcast enters <code>robust_aggregate</code>
 at fusion. Divergence reweighting can assign a smaller effective weight
 to a report far from the current consensus, as the finite diagnostics
-<span class="cross-reference">Figure 13</span>; <span class="cross-reference">Figure 15</span> illustrate.</p>
+<span class="cross-reference">Figure 16</span>; <span class="cross-reference">Figure 18</span> illustrate.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Heuristic server route, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7412e91f2e6f">
@@ -608,7 +607,7 @@ class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-
 <h2 class="prose-slide" id="slide-heading-91cfd6601e41">Objective-backed variational server route</h2>
 <p>The same corrupted posterior can instead enter
 <code>variational_aggregate</code>, whose declared free energy,
-block-descent property, and effective-weight bound are given in <span class="cross-reference">Section 5.8.2</span>.</p>
+block-descent property, and effective-weight bound are given in <span class="cross-reference">Section 8.8.2</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Objective-backed variational server route, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-aef1c318162b">
@@ -634,9 +633,10 @@ heuristic-server, and variational-server lanes.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -283,27 +288,27 @@ aggregation}\label{sec:formalism}
 \newtheorem{proposition}{Proposition}
 \fi
 
-The primitives of sec.~5 are governed by a compact set
+The primitives of sec.~8 are governed by a compact set
 of machine-checkable identities.
 \end{frame}
 
 \begin{frame}{Formalism: recovery\ldots{} (part 2)}
 Their counter is monotone across the methods and this section.
 Definitions 1 and 2 cover the
-posterior and cavity / PVI update (sec.~5.3).
+posterior and cavity / PVI update (sec.~8.3).
 \end{frame}
 
 \begin{frame}{Formalism: recovery\ldots{} (part 3)}
 Lemma 3 gives the Rényi KL limit
-(sec.~5.6).
+(sec.~8.6).
 \end{frame}
 
 \begin{frame}{Formalism: recovery\ldots{} (part 4)}
 Proposition 4 gives the \(\beta\)-loss and
-rcce NLL limits (sec.~5.7). Theorem
+rcce NLL limits (sec.~8.7). Theorem
 5 and Corollary
 6 give belief-sharing and Bayes recovery
-(sec.~5.8).
+(sec.~8.8).
 \end{frame}
 
 \begin{frame}[fragile]{Formalism: recovery\ldots{} (part 5)}
@@ -312,7 +317,7 @@ expected-free-energy identity.
 
 Each carries a tested residual. None grants a bounded-influence
 guarantee to the server-side \texttt{robust\_aggregate} heuristic; that
-boundary is stated in sec.~3.3.
+boundary is stated in sec.~6.3.
 \end{frame}
 
 \begin{frame}[fragile]{Recovery limits as the proof surface}
@@ -326,7 +331,7 @@ project's standard server pool.
 
 \begin{frame}{Recovery limits as the\ldots{} (part 2)}
 Under the explicit shared-support, posterior-log-potential, and
-fixed-weight assumptions in sec.~5.8, that pool
+fixed-weight assumptions in sec.~8.8, that pool
 is a categorical specialization of Eq. 7's message-combination term, not
 recovery of the complete source protocol (Friston et al. 2024).
 \end{frame}
@@ -334,7 +339,7 @@ recovery of the complete source protocol (Friston et al. 2024).
 \begin{frame}{Recovery limits as the\ldots{} (part 3)}
 We collect the five residuals that pin those limited claims, each
 emitted by the test-suite and reported in
-sec.~7.1, never hardcoded.
+sec.~10.1, never hardcoded.
 \end{frame}
 
 \begin{frame}{Recovery limits as the\ldots{} (part 4)}
@@ -418,7 +423,7 @@ bridge is deliberately narrow.
 
 \begin{frame}{Recovery limits as the\ldots{} (part 12)}
 Take the admitted posteriors defined in
-sec.~5.8, on a finite common support with
+sec.~8.8, on a finite common support with
 \(q_n(s)>0\), and represent each Eq. 7 softmax input as a posterior log
 potential \(m_n(s)=\log q_n(s)+\kappa_n\), with \(\kappa_n\) constant in
 \(s\) and fixed declared weights \(w_n\) independent of the emerging
@@ -437,7 +442,7 @@ scheduling, generative factors, or the complete protocol.
 
 \begin{frame}{Recovery limits as the\ldots{} (part 15)}
 Theorem 5
-(sec.~5.8) states that specialization and the
+(sec.~8.8) states that specialization and the
 local \(c=0\) identity; the residual 0 above pins the latter.
 \end{frame}
 
@@ -470,7 +475,7 @@ separable objective class without certifying another.
 \begin{frame}{Expected-free-energy identity as an algebraic check}
 \protect\phantomsection\label{sec:formalism-efe}
 The active-inference substrate that drives the studies of
-sec.~7 is a categorical specialization of the
+sec.~10 is a categorical specialization of the
 expected-free-energy algebra discussed by Friston et al. (Friston et al.
 2024).
 \end{frame}
@@ -488,13 +493,11 @@ pragmatic-plus-epistemic (value) view are the same scalar
 \end{frame}
 
 \begin{frame}{Expected-free-energy\ldots{} (part 4)}
-\begin{equation}\tag{22}\protect\phantomsection\label{eq:efe-decomposition}{
-\begin{aligned}
+\begin{equation}\tag{22}\protect\phantomsection\label{eq:efe-decomposition}{\begin{aligned}
 G(\boldsymbol{\pi})
 &= \underbrace{\text{risk} + \text{ambiguity}}_{\text{cost view}}\\
 &= -\underbrace{\big(\text{pragmatic} + \text{epistemic}\big)}_{\text{value view}}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Expected-free-energy\ldots{} (part 5)}
@@ -514,13 +517,11 @@ below):
 \end{frame}
 
 \begin{frame}{Expected-free-energy\ldots{} (part 7)}
-\begin{equation}\tag{23}\protect\phantomsection\label{eq:efe-identity}{
-\begin{aligned}
+\begin{equation}\tag{23}\protect\phantomsection\label{eq:efe-identity}{\begin{aligned}
 &\big(\text{risk} + \text{ambiguity}\big)\\
 &\quad + \big(\text{pragmatic} + \text{epistemic}\big)
 \equiv 0.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Expected-free-energy\ldots{} (part 8)}
@@ -554,7 +555,7 @@ the state-outcome mutual information
 
 \begin{frame}{Expected-free-energy\ldots{} (part 12)}
 The executed formal-specialization diagnostic of
-fig.~8 uses a uniform prior over the nine locations.
+fig.~11 uses a uniform prior over the nine locations.
 This is intentional: the canonical sentinel-world \(D_0\) is a point
 mass at the den,
 \end{frame}
@@ -572,7 +573,7 @@ condition, not a missing term.
 \end{frame}
 
 \begin{frame}{Expected-free-energy\ldots{} (part 15)}
-fig.~8 shows the additive risk-plus-ambiguity view
+fig.~11 shows the additive risk-plus-ambiguity view
 beside a signed pragmatic/epistemic waterfall whose terminal endpoint is
 \(G(\boldsymbol{\pi})\), labels epistemic value as
 \(I(s;o\mid\boldsymbol{\pi})\), and annotates the identity residual; it
@@ -586,7 +587,9 @@ not a fitted result, so it carries no error bars.
 \begin{frame}{Expected-free-energy\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Risk plus ambiguity and signed pragmatic minus epistemic waterfall share the same terminal G.}]{../figures/efe_decomposition.slide-identity.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Risk
+plus ambiguity and signed pragmatic minus epistemic waterfall share the
+same terminal G.}]{../figures/efe_decomposition.slide-identity.png}
 \refstepcounter{figure}\label{fig:efe-decomp-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -594,7 +597,9 @@ not a fitted result, so it carries no error bars.
 \begin{frame}{Expected-free-energy\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Cost: risk 1.187 plus ambiguity 4.271 nats. Hatched upper segment is ambiguity.}]{../figures/efe_decomposition.slide-cost.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Cost:
+risk 1.187 plus ambiguity 4.271 nats. Hatched upper segment is
+ambiguity.}]{../figures/efe_decomposition.slide-cost.png}
 \refstepcounter{figure}\label{fig:efe-decomp-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -602,7 +607,10 @@ not a fitted result, so it carries no error bars.
 \begin{frame}{Expected-free-energy\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Value: −pragmatic 7.534 plus −epistemic -2.077 nats. Crosshatching marks the signed epistemic correction.}]{../figures/efe_decomposition.slide-value.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Value:
+−pragmatic 7.534 plus −epistemic -2.077 nats. Crosshatching marks the
+signed epistemic
+correction.}]{../figures/efe_decomposition.slide-value.png}
 \refstepcounter{figure}\label{fig:efe-decomp-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -610,7 +618,9 @@ not a fitted result, so it carries no error bars.
 \begin{frame}{Expected-free-energy\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Terminal diamond: G = 5.457 nats. The right endpoint equals G; the intermediate top need not equal G.}]{../figures/efe_decomposition.slide-endpoint.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Terminal
+diamond: G = 5.457 nats. The right endpoint equals G; the intermediate
+top need not equal G.}]{../figures/efe_decomposition.slide-endpoint.png}
 \refstepcounter{figure}\label{fig:efe-decomp-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -618,7 +628,9 @@ not a fitted result, so it carries no error bars.
 \begin{frame}{Expected-free-energy\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Identity residual: -2.665e-15 nats. G = risk + ambiguity = −(pragmatic + epistemic).}]{../figures/efe_decomposition.slide-residual.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Identity
+residual: 0.000e+00 nats. G = risk + ambiguity = −(pragmatic +
+epistemic).}]{../figures/efe_decomposition.slide-residual.png}
 \refstepcounter{figure}\label{fig:efe-decomp-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -626,7 +638,10 @@ not a fitted result, so it carries no error bars.
 \begin{frame}{Expected-free-energy\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Uniform diagnostic prior makes information gain visible. One categorical identity diagnostic; no stochastic replication or uncertainty interval.}]{../figures/efe_decomposition.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Uniform
+diagnostic prior makes information gain visible. One categorical
+identity diagnostic; no stochastic replication or uncertainty
+interval.}]{../figures/efe_decomposition.slide-scope.png}
 \refstepcounter{figure}\label{fig:efe-decomp-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -648,7 +663,7 @@ categorical bridge,
 
 \begin{frame}{Expected-free-energy\ldots{} (part 25)}
 and the policy scoring decomposes exactly --- so every robustness result
-in sec.~7 is a controlled departure from a known, tested
+in sec.~10 is a controlled departure from a known, tested
 fixed point rather than an unmoored claim.
 \end{frame}
 
@@ -663,7 +678,7 @@ buys and what it costs.
 
 \begin{frame}{Tempered aggregation free\ldots{} (part 2)}
 The objective-backed variational aggregator of
-sec.~12 holds its consensus-entropy term at unit
+sec.~15 holds its consensus-entropy term at unit
 weight.
 \end{frame}
 
@@ -693,7 +708,7 @@ $a_n \le w_n$ omit $\lambda$ and hold for every $\lambda > 0$.
 \begin{frame}{Tempered aggregation free\ldots{} (part 6)}
 At that default, the endpoint-selection rule also reduces bit-for-bit to
 the standard variational aggregate (Definition
-10; sec.~12).
+10; sec.~15).
 \end{frame}
 
 \begin{frame}{Tempered aggregation free\ldots{} (part 7)}
@@ -778,7 +793,7 @@ eq.~9.
 
 \begin{frame}{Recovery at the qualified\ldots{} (part 4)}
 Under the shared-support, posterior-log-potential, and fixed-weight
-assumptions of sec.~5.8, that is the
+assumptions of sec.~8.8, that is the
 categorical specialization of Eq. 7's message-combination term; it is
 not the complete belief-sharing protocol of (Friston et al. 2024). Away
 from that default,

@@ -86,9 +86,6 @@
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \newsavebox\pandoc@box
@@ -166,21 +163,22 @@
   pdfcreator={LaTeX via pandoc}}
 
 \ifXeTeX
-\special{pdf:trailerid [ <9a04287d30e9c7ff6cdaece65bde045a> <9a04287d30e9c7ff6cdaece65bde045a> ]}
+\special{pdf:trailerid [ <646cea1e5370eb3ea87be13b388162b8> <646cea1e5370eb3ea87be13b388162b8> ]}
 \fi
 \ifPDFTeX
 \pdftrailerid{}
-\pdftrailer{/ID [ <9a04287d30e9c7ff6cdaece65bde045a> <9a04287d30e9c7ff6cdaece65bde045a> ]}
+\pdftrailer{/ID [ <646cea1e5370eb3ea87be13b388162b8> <646cea1e5370eb3ea87be13b388162b8> ]}
 \fi
 \ifLuaTeX
-\pdfvariable trailerid {[ <9a04287d30e9c7ff6cdaece65bde045a> <9a04287d30e9c7ff6cdaece65bde045a> ]}
+\pdfvariable trailerid {[ <646cea1e5370eb3ea87be13b388162b8> <646cea1e5370eb3ea87be13b388162b8> ]}
 \fi
 
 \title{Robust Belief Sharing in Federated Active Inference}
 \author{Daniel Ari Friedman}
 \date{}
 
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \title{Robust Belief Sharing in Federated Active Inference}
@@ -285,6 +283,12 @@
 % and emits "Missing character" warnings on every \mid in math mode.
 \setmathfont{latinmodern-math.otf}
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
+\usepackage{float}
+\newsavebox{\templatepaperfrontmatterbox}
 \begin{document}
 \begin{titlepage}
 \centering
@@ -308,8 +312,123 @@
 \vfill
 \end{titlepage}
 \thispagestyle{empty}
+\clearpage
+
+\clearpage
+\begin{lrbox}{\templatepaperfrontmatterbox}
+\begin{minipage}{\textwidth}
+
+\section{From a world model to shared
+beliefs}\label{from-a-world-model-to-shared-beliefs}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio,alt={A model graph links initial beliefs, hidden states, transitions and observations. A lower solid loop connects observe, infer and act; dashed arrows exchange posterior and cavity beliefs with fusion. The shared-support Eq. 7 bridge does not reconstruct the full source protocol.}]{../figures/frontmatter_model.png}
+\caption{From a world model to shared beliefs. Source relation: original
+source-inspired conceptual schematic; see Friston et al.~(2024) and the
+implementation locators in the figure metadata. The x-axis is not
+quantitative; the y-axis rows give the reading order from top to bottom.
+The upper rows trace the generative model: initial belief D, hidden
+state s, observation likelihood A, action-conditioned transition B and
+preferred-outcome log potentials C. The lower rows connect observation,
+inference and action in a solid loop; dashed arrows broadcast local
+posterior beliefs and return a cavity belief excluding the recipient.
+Shared positive support, admitted posterior log potentials and fixed
+weights qualify the categorical Eq. 7 bridge. It does not reconstruct
+the full source protocol. Estimand: not applicable; no measured
+estimand. Units, uncertainty and replication unit are not applicable:
+this deterministic conceptual map has no observations, intervals or
+empirical replication counts.}\label{fig:frontmatter-model}
+\end{figure}
+
+
+\end{minipage}
+\end{lrbox}
+\ifdim\dimexpr\ht\templatepaperfrontmatterbox+\dp\templatepaperfrontmatterbox\relax>\textheight
+\PackageError{paperfrontmatter}{paper.frontmatter page overflow}{Shorten the authored region; text is never shrunk}
+\fi
+\noindent\usebox{\templatepaperfrontmatterbox}
+\clearpage
+
+
+\clearpage
+\begin{lrbox}{\templatepaperfrontmatterbox}
+\begin{minipage}{\textwidth}
+
+\section{Robustness has distinct claim
+owners}\label{robustness-has-distinct-claim-owners}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio,alt={A source-conditional client update precedes a choice between H heuristic and V variational server boxes. H owns zero-robustness log-pool recovery; V owns objective descent and raw-weight bounds. No client theorem transfers to either server rule.}]{../figures/frontmatter_robustness.png}
+\caption{Robustness has distinct claim owners. Source relation: original
+source-inspired conceptual schematic; see Mildner et al.~(2025) and the
+implementation locators in the figure metadata. The x-axis is not
+quantitative; the y-axis rows give the reading order from top to bottom.
+The upper row places source-conditional client FedGVI before the server
+choice; the lower rows separate H heuristic reweighting from V
+variational aggregation. Bounded-loss client influence statements
+require the cited matching assumptions. H owns exact zero-robustness
+recovery of log\_linear\_pool. V owns block descent on the
+positive-robustness, positive-entropy-weight objective and raw
+effective-weight bounds; these are not estimator B-robustness. No client
+theorem transfers to either server rule. Estimand: not applicable; no
+measured estimand. Units, uncertainty and replication unit are not
+applicable: this deterministic conceptual map has no observations,
+intervals or empirical replication
+counts.}\label{fig:frontmatter-robustness}
+\end{figure}
+
+
+\end{minipage}
+\end{lrbox}
+\ifdim\dimexpr\ht\templatepaperfrontmatterbox+\dp\templatepaperfrontmatterbox\relax>\textheight
+\PackageError{paperfrontmatter}{paper.frontmatter page overflow}{Shorten the authored region; text is never shrunk}
+\fi
+\noindent\usebox{\templatepaperfrontmatterbox}
+\clearpage
+
+
+\clearpage
+\begin{lrbox}{\templatepaperfrontmatterbox}
+\begin{minipage}{\textwidth}
+
+\section{A model file must reach real
+execution}\label{a-model-file-must-reach-real-execution}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio,alt={An admitted GNN model branches into native matrix consumption and a dashed optional upstream path requiring a qualified runtime and actual run. Both lead to retained receipts. Integrity is distinct from scientific validity; parser success is not execution.}]{../figures/frontmatter_execution.png}
+\caption{A model file must reach real execution. Source relation:
+original source-inspired conceptual schematic; see Friston et al.~(2024)
+and the implementation locators in the figure metadata. The x-axis is
+not quantitative; the y-axis rows give the reading order from top to
+bottom. The top row admits a GNN document through a pinned parser or
+source-bound sentinel cache, with matrix and axis checks. The middle row
+separates native\_world/native\_posterior consumption of model values
+from optional upstream execution, shown by dashed arrows and requiring
+explicit source/runtime inputs and real parity checks. The bottom row
+retains declared input/output receipts. Parser success is not execution,
+matrix parity is not protocol replication, and integrity evidence does
+not establish scientific validity or certify a backend. Estimand: not
+applicable; no measured estimand. Units, uncertainty and replication
+unit are not applicable: this deterministic conceptual map has no
+observations, intervals or empirical replication
+counts.}\label{fig:frontmatter-execution}
+\end{figure}
+
+
+\end{minipage}
+\end{lrbox}
+\ifdim\dimexpr\ht\templatepaperfrontmatterbox+\dp\templatepaperfrontmatterbox\relax>\textheight
+\PackageError{paperfrontmatter}{paper.frontmatter page overflow}{Shorten the authored region; text is never shrunk}
+\fi
+\noindent\usebox{\templatepaperfrontmatterbox}
+\clearpage
+
+
 \tableofcontents
-\newpage
+\clearpage
 
 \section{Abstract}\label{sec:abstract}
 
@@ -420,6 +539,14 @@ introduction states the problem and its evidence boundary;
 sec.~\ref{sec:gap} scopes the reviewed gap, and
 sec.~\ref{sec:contributions} lists the contributions together with what
 each result does not establish.
+
+The opening graphical abstracts provide a reading map: the generative
+model and belief-exchange cycle in fig.~\ref{fig:frontmatter-model}, the
+distinct client and server robustness boundaries in
+fig.~\ref{fig:frontmatter-robustness}, and the model-to-execution
+evidence chain in fig.~\ref{fig:frontmatter-execution}. These conceptual
+schematics orient the detailed assumptions, methods, and evidence that
+follow.
 
 \subsection{Active inference supplies generative agents and shared
 beliefs}\label{sec:intro-active-inference}
@@ -945,13 +1072,11 @@ family}\label{the-tempered-aggregation-family}
 A one-parameter \(\lambda>0\) generalization of the variational
 aggregate (sec.~\ref{sec:supp-tempered}) is the objective
 
-\begin{equation}\protect\phantomsection\label{eq:contribution-tempered-family}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:contribution-tempered-family}{\begin{aligned}
 F_\lambda(q,a)
 &= \sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q)\\
 &\quad +\frac{1}{c}\,\mathrm{KL}_{\mathrm{gen}}(a\Vert w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 In eq.~\ref{eq:contribution-tempered-family}, at \(\lambda = 1.0\), the
 temperature is unity and the objective reduces to the standard
@@ -1149,8 +1274,7 @@ posterior
 which trades the likelihood for a loss \(L\) and the KL regularizer for
 a general divergence \(\mathcal D\):
 
-\begin{equation}\protect\phantomsection\label{eq:gen-bayes}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:gen-bayes}{\begin{aligned}
 q_n^\ast(s)
 &= \arg\min_{q_n}
 \left\{
@@ -1159,8 +1283,7 @@ q_n^\ast(s)
 &\quad + \tfrac{1}{\tau}\,\mathcal D\!\big(q_n \,\|\, \pi_0\big)
 \end{aligned}
 \right\}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 with prior \(\pi_0\), learning rate \(\tau\), and regularizing
 divergence \(\mathcal D\). The learning rate is part of the inferential
@@ -1178,9 +1301,7 @@ $\mathcal D$, the generalized-Bayes posterior $q_n^\ast$ minimizes
 minimizer is the tempered softmax in (\ref{eq:tempered-softmax}).
 \end{definition}
 
-\begin{equation}\protect\phantomsection\label{eq:tempered-softmax}{
-q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:tempered-softmax}{q_n^\ast(s) \;\propto\; \pi_0(s)\,\exp\!\big(-\tau \textstyle\sum_i L(s; o_i)\big),}\end{equation}
 
 The implementation surface is the \breaktt{generalized\_posterior}
 function in the \breaktt{generalized\_bayes} module.
@@ -1215,23 +1336,19 @@ site factor and recombines it with that cavity according to
 (\ref{eq:factor-replacement}).
 \end{definition}
 
-\begin{equation}\protect\phantomsection\label{eq:cavity}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:cavity}{\begin{aligned}
 q_{-n}(s)
 &=
 \frac{q(s)/t_n(s)}{\sum_{s'} q(s')/t_n(s')}
 \\
 &=
 \operatorname{softmax}\!\big(\log q(s)-\log t_n(s)\big),
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The final expression makes normalization explicit. Taking a cavity and
 re-multiplying the original site factor restores the global posterior:
 
-\begin{equation}\protect\phantomsection\label{eq:factor-replacement}{
-q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s'}q_{-n}(s')t_n(s')},
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:factor-replacement}{q(s)=\frac{q_{-n}(s)t_n(s)}{\sum_{s'}q_{-n}(s')t_n(s')},}\end{equation}
 
 This is the recombination identity satisfied by
 \breaktt{generalized\_bayes.cavity} and
@@ -1347,9 +1464,7 @@ standard \(\alpha\)-Rényi diagnostic, FedGVI's Alpha-Rényi normalization
 The single most important recovery property is that the robust members
 recover the KL divergence in a limit:
 
-\begin{equation}\protect\phantomsection\label{eq:renyi-limit}{
-D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q \,\|\, p).
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:renyi-limit}{D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q \,\|\, p).}\end{equation}
 
 \begin{lemma}[KL is the \(\alpha\to1\) limit of the Rényi family]\label{lem:renyi-kl-limit}
 For finite-support categorical pmfs \(q, p\),
@@ -1410,27 +1525,23 @@ The density-power (\(\beta\)) loss
 \citep{basu1998robust, fujisawa2008robust, ghosh2015robust, futami2018robustvi}
 is recentered so that the scalar limit is exact:
 
-\begin{equation}\protect\phantomsection\label{eq:beta-loss}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:beta-loss}{\begin{aligned}
 L_\beta(p, o)
 &= -\frac{p(o)^\beta - 1}{\beta}
    + \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},\\
 L_\beta
 &\xrightarrow[\beta\to 0]{} \mathrm{NLL}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The robust categorical cross-entropy (generalized cross-entropy)
 \citep{zhang2018generalized} is
 
-\begin{equation}\protect\phantomsection\label{eq:rcce-loss}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:rcce-loss}{\begin{aligned}
 L_{q_{\text{loss}}}(p, o)
 &= \frac{1 - p(o)^{q_{\text{loss}}}}{q_{\text{loss}}},\\
 L_{q_{\text{loss}}}
 &\xrightarrow[q_{\text{loss}}\to 0]{} \mathrm{NLL}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 which by l'Hôpital recovers NLL as \(q_{\text{loss}}\to 0\) and at
 \(q_{\text{loss}}=1\) is the bounded mean-absolute-error loss
@@ -1488,12 +1599,10 @@ inference
 in machine-learning terms it is the product-of-experts normalization of
 local posteriors \citep{hinton2002products}:
 
-\begin{equation}\protect\phantomsection\label{eq:log-linear-pool}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:log-linear-pool}{\begin{aligned}
 &\operatorname{log\_linear\_pool}(\{q_n\})\\
 &\qquad = \mathrm{softmax}\!\Big(\textstyle\sum_n w_n \log q_n\Big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 In the floating-point implementation, \(q_n\) denotes the admitted
 posterior after input validation, lower flooring of masses, and row
@@ -1542,11 +1651,9 @@ guarantee.
 The defining identity is bit-level: at zero robustness the reweighted
 pool is the log-linear pool unchanged.
 
-\begin{equation}\protect\phantomsection\label{eq:robust-identity}{
-\operatorname{robust\_aggregate}(0)
+\begin{equation}\protect\phantomsection\label{eq:robust-identity}{\operatorname{robust\_aggregate}(0)
 \;\equiv\;
-\operatorname{log\_linear\_pool}.
-}\end{equation}
+\operatorname{log\_linear\_pool}.}\end{equation}
 
 This is an exact project-local code identity. Under the stated
 posterior-log-potential assumptions, its right-hand side specializes the
@@ -1612,9 +1719,7 @@ product in (\ref{eq:standard-bayes}). Thus
 categorical combination term, not its complete protocol.
 \end{corollary}
 
-\begin{equation}\protect\phantomsection\label{eq:standard-bayes}{
-q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:standard-bayes}{q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),}\end{equation}
 
 Pooling gives the project log-linear pool of
 eq.~\ref{eq:log-linear-pool}.
@@ -1658,13 +1763,11 @@ cross-entropy update. For \(c>0\) and \(\lambda>0\), treat the consensus
 \(q\) and a vector of effective weights \(a = (a_n)\) as joint
 variational parameters and define the \textbf{aggregation free energy}
 
-\begin{equation}\protect\phantomsection\label{eq:agg-free-energy}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:agg-free-energy}{\begin{aligned}
 F_\lambda(q, a)
 &= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 where \(\mathrm{CE}(q, q_n) = -\sum_i q_i \log q_{n,i}\) is the
 cross-entropy of the consensus relative to agent \(n\), \(H(q)\) is the
@@ -1675,15 +1778,13 @@ is the generalized KL between the effective and base weights.
 
 Each block of \(F_\lambda\) has a closed-form minimizer, so alternating
 
-\begin{equation}\protect\phantomsection\label{eq:agg-updates}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:agg-updates}{\begin{aligned}
 q
 &\leftarrow \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &\leftarrow w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 is exact block-coordinate descent on eq.~\ref{eq:agg-free-energy}
 (\breaktt{variational\_aggregate}) for \(c>0\) and \(\lambda>0\).
@@ -1766,9 +1867,7 @@ formulation of belief sharing imposes \citep{friston2024federated} ---
 ``agents do not hear themselves'' --- an agent's heard consensus
 excludes its own message:
 
-\begin{equation}\protect\phantomsection\label{eq:belief-round}{
-q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:belief-round}{q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),}\end{equation}
 
 so the round in eq.~\ref{eq:belief-round} implements the declared
 categorical colony-hive-mind mechanism. With the naive fusion rule of
@@ -1933,15 +2032,13 @@ observes the creature's cell through a noisy sensor. With probability
 With outcome cardinality \(n_o = n_s\), the single location modality is
 one \((n_s, n_s)\) matrix:
 
-\begin{equation}\protect\phantomsection\label{eq:observation-likelihood}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:observation-likelihood}{\begin{aligned}
 A_{o s} &= \text{acuity}
 && \text{if }o=s,\\
 A_{o s} &= \frac{1-\text{acuity}}{n_s-1}
 && \text{if }o\neq s,\\
 \sum_o A_{o s} &= 1.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The acuity in eq.~\ref{eq:observation-likelihood} tunes how peaked the
 sensor is: high acuity gives a near-diagonal \(A\) that pins the
@@ -1993,15 +2090,13 @@ creature's location by a single softmax step (Friston et al.
 additive log-likelihood message, summed over any conditionally
 independent modalities \(m\),
 
-\begin{equation}\protect\phantomsection\label{eq:state-inference}{
-q(s)
+\begin{equation}\protect\phantomsection\label{eq:state-inference}{q(s)
 = \mathrm{softmax}\!\left(
 \begin{aligned}
 &\ln D_0(s)\\
 &\quad + \textstyle\sum_m \ln A_m[o_m, s]
 \end{aligned}
-\right).
-}\end{equation}
+\right).}\end{equation}
 
 The message \(\ln A_m[o_m, \cdot]\) is the row of \(A_m\) that the
 observed outcome selects; summing messages over modalities makes each
@@ -2009,8 +2104,7 @@ modality an additive evidence term --- the categorical
 product-of-experts. The companion variational free energy, the scalar
 eq.~\ref{eq:state-inference} minimizes, is
 
-\begin{equation}\protect\phantomsection\label{eq:variational-free-energy}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:variational-free-energy}{\begin{aligned}
 F[q]
 &= \mathbb{E}_q\!\left[
 \begin{aligned}
@@ -2020,8 +2114,7 @@ F[q]
 \right]\\
 &= \mathrm{KL}\big(q \,\|\, D_0\big)
    - \mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big].
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 reported in nats. The one-step posterior of eq.~\ref{eq:state-inference}
 is its unique minimizer, where \(F\) equals the negative log model
@@ -2117,11 +2210,9 @@ conjugately from observation-state co-occurrence counts (Friston et al.
 step adds the expected sufficient statistics for that step and reads off
 the column-normalized posterior mean,
 
-\begin{equation}\protect\phantomsection\label{eq:dirichlet-update}{
-a \;\leftarrow\; a + \text{counts},
+\begin{equation}\protect\phantomsection\label{eq:dirichlet-update}{a \;\leftarrow\; a + \text{counts},
 \qquad
-\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o'} a_{o' s}},
-}\end{equation}
+\mathbb{E}[A]_{o s} \;=\; \frac{a_{o s}}{\sum_{o'} a_{o' s}},}\end{equation}
 
 implemented by \breaktt{learn\_likelihood} in the
 \breaktt{dirichlet\_learning} module. Intuitively, each concentration
@@ -2141,13 +2232,11 @@ likelihood \(\mathbb{E}[A]\) converges to the data-generating
 \(A^{\star}\); convergence is measured by the per-column KL divergence
 summed over hidden states,
 
-\begin{equation}\protect\phantomsection\label{eq:dirichlet-kl}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:dirichlet-kl}{\begin{aligned}
 \mathrm{KL}\big(A^{\star}\|\mathbb{E}[A]\big)
 &= \sum_s\sum_o A^{\star}_{os}\\
 &\quad\cdot\ln\frac{A^{\star}_{os}}{\mathbb{E}[A]_{os}}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 which decreases monotonically toward zero --- the standard-Bayes / KL
 fixed point. The learned likelihood always has full support (the
@@ -2238,8 +2327,7 @@ closed form,
 and the change in (negative) variational free energy is a difference of
 log multivariate Beta functions,
 
-\begin{equation}\protect\phantomsection\label{eq:bmr-deltaf}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:bmr-deltaf}{\begin{aligned}
 \Delta F
 &\;=\; \ln B(\text{prior}) - \ln B(\text{post})\\
 &\qquad + \ln B(\text{reduced\_post})\\
@@ -2247,8 +2335,7 @@ log multivariate Beta functions,
 \ln B(a)
 &\;=\; \textstyle\sum_k \ln\Gamma(a_k)
  - \ln\Gamma\!\big(\sum_k a_k\big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 computed in \breaktt{bayesian\_model\_reduction.reduce}. A positive
 \(\Delta F\) in eq.~\ref{eq:bmr-deltaf} means the reduced model carries
@@ -2301,9 +2388,7 @@ corrupted reports. Every corruption is a convex mixture of the agent's
 belief \(b\) with a corruption target \(t\), governed by a single rate
 \(r \in [0, 1]\),
 
-\begin{equation}\protect\phantomsection\label{eq:contamination-mix}{
-\tilde b \;=\; (1 - r)\, b \;+\; r\, t,
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:contamination-mix}{\tilde b \;=\; (1 - r)\, b \;+\; r\, t,}\end{equation}
 
 so the experiments sweep exactly one knob. The convex form of
 eq.~\ref{eq:contamination-mix} gives a clean limit and is the anchor of
@@ -2484,17 +2569,19 @@ extension, and Study 5 is the moving-world supplement
 (sec.~\ref{sec:results-moving}).}\label{tbl:study-measures}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Study
+S\allowbreak{}t\allowbreak{}u\allowbreak{}d\allowbreak{}y
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Declared measure
+D\allowbreak{}e\allowbreak{}c\allowbreak{}l\allowbreak{}a\allowbreak{}r\allowbreak{}e\allowbreak{}d
+m\allowbreak{}e\allowbreak{}a\allowbreak{}s\allowbreak{}u\allowbreak{}r\allowbreak{}e
 \end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Study
+S\allowbreak{}t\allowbreak{}u\allowbreak{}d\allowbreak{}y
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Declared measure
+D\allowbreak{}e\allowbreak{}c\allowbreak{}l\allowbreak{}a\allowbreak{}r\allowbreak{}e\allowbreak{}d
+m\allowbreak{}e\allowbreak{}a\allowbreak{}s\allowbreak{}u\allowbreak{}r\allowbreak{}e
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -2521,11 +2608,15 @@ samples carried into statistics are the belief-sharing sample
 \(n = 480\) independent seeds), and the paired robustness trials
 (\(n = 960\) per condition).}\label{tbl:study_params}\tabularnewline
 \toprule\noalign{}
-Study & Key parameters \\
+S\allowbreak{}t\allowbreak{}u\allowbreak{}d\allowbreak{}y &
+K\allowbreak{}e\allowbreak{}y
+p\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}s \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Study & Key parameters \\
+S\allowbreak{}t\allowbreak{}u\allowbreak{}d\allowbreak{}y &
+K\allowbreak{}e\allowbreak{}y
+p\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r\allowbreak{}s \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -3033,14 +3124,14 @@ with median time plotted and the observed repeat range shown as a
 min--max bar.
 
 The fixed input seed is \(20260728\) on the \(arm64\) machine using
-Python \(3.13.11\) and NumPy \(2.4.2\).
+Python \(3.14.9\) and NumPy \(2.4.2\).
 
 The measured log--log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.93
-(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.62 (naive
-self-excluding sharing), and 1.89 (robust self-excluding sharing);
-state-axis slopes are 0.97, 0.95, and 0.94; the modality-axis inference
-slope is 0.66.
+orders, not performance guarantees: agent-axis slopes are 0.94
+(log-linear), 0.90 (iterative robust), 0.78 (variational), 1.64 (naive
+self-excluding sharing), and 1.91 (robust self-excluding sharing);
+state-axis slopes are 0.98, 0.96, and 0.96; the modality-axis inference
+slope is 0.72.
 
 The slope fit is a timing diagnostic on this machine, not an inferential
 test and not evidence that the same constants hold under another BLAS,
@@ -3073,7 +3164,7 @@ Vertical whiskers are recorded minimum-to-maximum timing spans around
 the median, not confidence intervals. Dark dotted lines are normalized
 \(\Theta\)-order guides derived from implementation accounting, not
 fitted results. The fixed seeded benchmark ran on \(arm64\) with Python
-\(3.13.11\), NumPy \(2.4.2\), seed \(20260728\), and \(5\) measured
+\(3.14.9\), NumPy \(2.4.2\), seed \(20260728\), and \(5\) measured
 repeat(s) after \(1\) warmup(s); timing repeats within each grid point
 are the replication unit. These timings support only the implemented
 paths, fixed machine, and measured grid; they do not establish an
@@ -3170,21 +3261,27 @@ approximations. The labeled presentation of these residuals lives in
 sec.~\ref{sec:results-recovery}.}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Identity (owner statement)
+I\allowbreak{}d\allowbreak{}e\allowbreak{}n\allowbreak{}t\allowbreak{}i\allowbreak{}t\allowbreak{}y
+(owner statement)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trusting limit
+T\allowbreak{}r\allowbreak{}u\allowbreak{}s\allowbreak{}t\allowbreak{}i\allowbreak{}n\allowbreak{}g
+l\allowbreak{}i\allowbreak{}m\allowbreak{}i\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Tested residual
+T\allowbreak{}e\allowbreak{}s\allowbreak{}t\allowbreak{}e\allowbreak{}d
+r\allowbreak{}e\allowbreak{}s\allowbreak{}i\allowbreak{}d\allowbreak{}u\allowbreak{}a\allowbreak{}l
 \end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Identity (owner statement)
+I\allowbreak{}d\allowbreak{}e\allowbreak{}n\allowbreak{}t\allowbreak{}i\allowbreak{}t\allowbreak{}y
+(owner statement)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trusting limit
+T\allowbreak{}r\allowbreak{}u\allowbreak{}s\allowbreak{}t\allowbreak{}i\allowbreak{}n\allowbreak{}g
+l\allowbreak{}i\allowbreak{}m\allowbreak{}i\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Tested residual
+T\allowbreak{}e\allowbreak{}s\allowbreak{}t\allowbreak{}e\allowbreak{}d
+r\allowbreak{}e\allowbreak{}s\allowbreak{}i\allowbreak{}d\allowbreak{}u\allowbreak{}a\allowbreak{}l
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -3251,13 +3348,11 @@ risk-plus-ambiguity (cost) view and the negated pragmatic-plus-epistemic
 (value) view are the same scalar \(G(\boldsymbol{\pi})\) rearranged
 \citep{dacosta2020active, friston2024federated}:
 
-\begin{equation}\protect\phantomsection\label{eq:efe-decomposition}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:efe-decomposition}{\begin{aligned}
 G(\boldsymbol{\pi})
 &= \underbrace{\text{risk} + \text{ambiguity}}_{\text{cost view}}\\
 &= -\underbrace{\big(\text{pragmatic} + \text{epistemic}\big)}_{\text{value view}}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The two views are not approximations of one another; they are the same
 scalar rearranged. In the implementation the shared entropy term enters
@@ -3269,13 +3364,11 @@ The scientific content lives in the per-term semantics, which are pinned
 independently of the identity (see the closing clause of the proposition
 below):
 
-\begin{equation}\protect\phantomsection\label{eq:efe-identity}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:efe-identity}{\begin{aligned}
 &\big(\text{risk} + \text{ambiguity}\big)\\
 &\quad + \big(\text{pragmatic} + \text{epistemic}\big)
 \equiv 0.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 \begin{proposition}[Expected-free-energy decomposition identity]\label{prop:efe-decomposition}
 For the categorical model in \breaktt{expected\_free\_energy.py}, the cost and
@@ -3621,8 +3714,8 @@ what lets the robustness claims of sec.~\ref{sec:results-robustness} and
 sec.~\ref{sec:results-baseline} rest on the per-agent axis without
 leaning on the heuristic.
 
-266 of 268 acceptance criteria are verified. The pure-NumPy/SciPy core
-carries project test coverage of 90.58\% (gate \(\ge 90\%\)), with every
+283 of 287 acceptance criteria are verified. The pure-NumPy/SciPy core
+carries project test coverage of 92.47\% (gate \(\ge 90\%\)), with every
 stochastic step threaded through a single seeded
 \breaktt{np.random.default\_rng(0)}. sec.~\ref{sec:reproducibility}
 records the full environment fingerprint, and the expected-free-energy
@@ -3895,11 +3988,19 @@ heuristic constants listed above in the same seeded colony. This table
 is descriptive; inferential paired evidence appears
 below.}\label{tbl:robustness_sweep}\tabularnewline
 \toprule\noalign{}
-Contamination rate & KLD & RKL & AR & beta & rcce \\
+C\allowbreak{}o\allowbreak{}n\allowbreak{}t\allowbreak{}a\allowbreak{}m\allowbreak{}i\allowbreak{}n\allowbreak{}a\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n
+r\allowbreak{}a\allowbreak{}t\allowbreak{}e &
+K\allowbreak{}L\allowbreak{}D & R\allowbreak{}K\allowbreak{}L & AR &
+b\allowbreak{}e\allowbreak{}t\allowbreak{}a &
+r\allowbreak{}c\allowbreak{}c\allowbreak{}e \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Contamination rate & KLD & RKL & AR & beta & rcce \\
+C\allowbreak{}o\allowbreak{}n\allowbreak{}t\allowbreak{}a\allowbreak{}m\allowbreak{}i\allowbreak{}n\allowbreak{}a\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n
+r\allowbreak{}a\allowbreak{}t\allowbreak{}e &
+K\allowbreak{}L\allowbreak{}D & R\allowbreak{}K\allowbreak{}L & AR &
+b\allowbreak{}e\allowbreak{}t\allowbreak{}a &
+r\allowbreak{}c\allowbreak{}c\allowbreak{}e \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -3938,11 +4039,19 @@ key reconstructs every source row exactly; the label and
 \(d\)-equivalent do not add an independent world-level
 estimand.}\label{tbl:paired-by-rate}\tabularnewline
 \toprule\noalign{}
-Server preset & Rate & Rank-biserial-derived \(d\)-equivalent & Label \\
+S\allowbreak{}e\allowbreak{}r\allowbreak{}v\allowbreak{}e\allowbreak{}r
+p\allowbreak{}r\allowbreak{}e\allowbreak{}s\allowbreak{}e\allowbreak{}t
+& R\allowbreak{}a\allowbreak{}t\allowbreak{}e & Rank-biserial-derived
+\(d\)-equivalent &
+L\allowbreak{}a\allowbreak{}b\allowbreak{}e\allowbreak{}l \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Server preset & Rate & Rank-biserial-derived \(d\)-equivalent & Label \\
+S\allowbreak{}e\allowbreak{}r\allowbreak{}v\allowbreak{}e\allowbreak{}r
+p\allowbreak{}r\allowbreak{}e\allowbreak{}s\allowbreak{}e\allowbreak{}t
+& R\allowbreak{}a\allowbreak{}t\allowbreak{}e & Rank-biserial-derived
+\(d\)-equivalent &
+L\allowbreak{}a\allowbreak{}b\allowbreak{}e\allowbreak{}l \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -3979,11 +4088,19 @@ decision. The 960 trials are nested within one fixed seeded world, not
 tbl.~\ref{tbl:paired-by-rate} to recover the complete source
 row.}\label{tbl:paired-by-rate-inference}\tabularnewline
 \toprule\noalign{}
-Server preset & Rate & Raw p & q & Reject \\
+S\allowbreak{}e\allowbreak{}r\allowbreak{}v\allowbreak{}e\allowbreak{}r
+p\allowbreak{}r\allowbreak{}e\allowbreak{}s\allowbreak{}e\allowbreak{}t
+& R\allowbreak{}a\allowbreak{}t\allowbreak{}e &
+R\allowbreak{}a\allowbreak{}w p & q &
+R\allowbreak{}e\allowbreak{}j\allowbreak{}e\allowbreak{}c\allowbreak{}t \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Server preset & Rate & Raw p & q & Reject \\
+S\allowbreak{}e\allowbreak{}r\allowbreak{}v\allowbreak{}e\allowbreak{}r
+p\allowbreak{}r\allowbreak{}e\allowbreak{}s\allowbreak{}e\allowbreak{}t
+& R\allowbreak{}a\allowbreak{}t\allowbreak{}e &
+R\allowbreak{}a\allowbreak{}w p & q &
+R\allowbreak{}e\allowbreak{}j\allowbreak{}e\allowbreak{}c\allowbreak{}t \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -4144,11 +4261,23 @@ when the BH-adjusted null is rejected \emph{and} the effect is positive,
 with FDR scoped to this declared
 family.}\label{tbl:robustness_verdict}\tabularnewline
 \toprule\noalign{}
-Server preset & Effect size & Raw p & q & Wins \\
+S\allowbreak{}e\allowbreak{}r\allowbreak{}v\allowbreak{}e\allowbreak{}r
+p\allowbreak{}r\allowbreak{}e\allowbreak{}s\allowbreak{}e\allowbreak{}t
+&
+E\allowbreak{}f\allowbreak{}f\allowbreak{}e\allowbreak{}c\allowbreak{}t
+s\allowbreak{}i\allowbreak{}z\allowbreak{}e &
+R\allowbreak{}a\allowbreak{}w p & q &
+W\allowbreak{}i\allowbreak{}n\allowbreak{}s \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Server preset & Effect size & Raw p & q & Wins \\
+S\allowbreak{}e\allowbreak{}r\allowbreak{}v\allowbreak{}e\allowbreak{}r
+p\allowbreak{}r\allowbreak{}e\allowbreak{}s\allowbreak{}e\allowbreak{}t
+&
+E\allowbreak{}f\allowbreak{}f\allowbreak{}e\allowbreak{}c\allowbreak{}t
+s\allowbreak{}i\allowbreak{}z\allowbreak{}e &
+R\allowbreak{}a\allowbreak{}w p & q &
+W\allowbreak{}i\allowbreak{}n\allowbreak{}s \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -4181,11 +4310,11 @@ world effect, calibration result, or universal server
 ranking.}\label{tbl:verdict-effect-estimates}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Method
+M\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Derived \(d_{\rm eq}\)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Label
+L\allowbreak{}a\allowbreak{}b\allowbreak{}e\allowbreak{}l
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Mean \(\Delta\) accuracy
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -4195,11 +4324,11 @@ Mean \(\Delta\) accuracy
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Method
+M\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Derived \(d_{\rm eq}\)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Label
+L\allowbreak{}a\allowbreak{}b\allowbreak{}e\allowbreak{}l
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Mean \(\Delta\) accuracy
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -4231,11 +4360,19 @@ confirmation, calibration, a guarantee of future power, or evidence
 beyond the declared world and
 rate.}\label{tbl:verdict-inference-power}\tabularnewline
 \toprule\noalign{}
-Method & Raw p & q & Power & Target \(n_{\rm trial}\) & Reject \\
+M\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
+& R\allowbreak{}a\allowbreak{}w p & q &
+P\allowbreak{}o\allowbreak{}w\allowbreak{}e\allowbreak{}r & Target
+\(n_{\rm trial}\) &
+R\allowbreak{}e\allowbreak{}j\allowbreak{}e\allowbreak{}c\allowbreak{}t \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Method & Raw p & q & Power & Target \(n_{\rm trial}\) & Reject \\
+M\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
+& R\allowbreak{}a\allowbreak{}w p & q &
+P\allowbreak{}o\allowbreak{}w\allowbreak{}e\allowbreak{}r & Target
+\(n_{\rm trial}\) &
+R\allowbreak{}e\allowbreak{}j\allowbreak{}e\allowbreak{}c\allowbreak{}t \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -4255,11 +4392,19 @@ The standard pool sits at 0.9021 (\([0.8993, 0.9049]\)); the headline
 display method RKL has pooled mean 0.9829
 (\([0.9827, 0.9832]\)).}\label{tbl:accuracy-at-verdict}\tabularnewline
 \toprule\noalign{}
-Method & n & Mean acc. @ verdict rate & 95\% CI \\
+M\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
+& n & M\allowbreak{}e\allowbreak{}a\allowbreak{}n
+a\allowbreak{}c\allowbreak{}c\allowbreak{}. @
+v\allowbreak{}e\allowbreak{}r\allowbreak{}d\allowbreak{}i\allowbreak{}c\allowbreak{}t
+r\allowbreak{}a\allowbreak{}t\allowbreak{}e & 95\% CI \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Method & n & Mean acc. @ verdict rate & 95\% CI \\
+M\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
+& n & M\allowbreak{}e\allowbreak{}a\allowbreak{}n
+a\allowbreak{}c\allowbreak{}c\allowbreak{}. @
+v\allowbreak{}e\allowbreak{}r\allowbreak{}d\allowbreak{}i\allowbreak{}c\allowbreak{}t
+r\allowbreak{}a\allowbreak{}t\allowbreak{}e & 95\% CI \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -4525,13 +4670,12 @@ point-mass MLP family: Linear\texorpdfstring{\ensuremath{\to}}{->}ReLU\texorpdfs
 Clients use the density-power \(\beta\)-loss at \(\beta = 0.5\) for 200
 Adam steps, and per-test-point predictions are fused with
 \breaktt{robust\_aggregate} at \breaktt{robustness\ =\ 0.5} under PyTorch
-not installed.
+2.12.1.
 
 The executed consensus is a valid probability simplex, with maximum
-unit-mass deviation N/A, and repeated seeded runs are bit-identical
-(N/A). At contamination N/A, held-out consensus accuracy is N/A (PyTorch
-not run) for the \(\beta\to 0\) client and N/A (PyTorch not run) for the
-\(\beta=0.5\) client.
+unit-mass deviation 2.22e-16, and repeated seeded runs are bit-identical
+(Yes). At contamination 0.40, held-out consensus accuracy is 0.558 for
+the \(\beta\to 0\) client and 0.545 for the \(\beta=0.5\) client.
 
 This single-seed endpoint demonstrates API transfer and deterministic
 execution, not posterior-uncertainty inference, model-class
@@ -5708,22 +5852,24 @@ manuscript. The build epoch is derived from
 explicit omitted sentinel rather than wall-clock
 time.}\label{tbl:repro_env}\tabularnewline
 \toprule\noalign{}
-Field & Value \\
+F\allowbreak{}i\allowbreak{}e\allowbreak{}l\allowbreak{}d &
+V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Field & Value \\
+F\allowbreak{}i\allowbreak{}e\allowbreak{}l\allowbreak{}d &
+V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Python & 3.13.11 \\
+Python & 3.14.9 \\
 NumPy & 2.4.2 \\
 SciPy & 1.18.0 \\
-PyTorch (MLP complement) & not installed \\
+PyTorch (MLP complement) & 2.12.1 \\
 Platform & Darwin arm64 \\
-Config hash (SHA-256, first 16) & e707fcb26b557c57 \\
-Reproducible build epoch (UTC) & 2026-09-19T00:00:00Z \\
+Config hash (SHA-256, first 16) & edc5644854c9e524 \\
+Reproducible build epoch (UTC) & 2026-11-02T00:16:14Z \\
 \end{longtable}
 
 The exact environment used for the reported run is recorded in
@@ -5764,13 +5910,13 @@ alone are insufficient.
 \subsection{Test and coverage evidence for the claim
 surface}\label{sec:repro-tests}
 
-\textbf{Acceptance criteria.} 268 total, 266 passing.
+\textbf{Acceptance criteria.} 287 total, 283 passing.
 
-\textbf{Project test suite.} 2860 collected cases; the bound successful
+\textbf{Project test suite.} 3992 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 
-\textbf{Combined line and branch coverage on \texttt{src/}.} 90.58\%,
+\textbf{Combined line and branch coverage on \texttt{src/}.} 92.47\%,
 achieved by the bound full gate with branch measurement enabled. The
 shared coverage threshold is \(\ge 90\%\) on this combined measure.
 
@@ -5809,19 +5955,21 @@ truth for the larger recursive publication bundle. Artifacts are
 regenerable reviewer snapshots and must not be
 hand-edited.}\label{tbl:repro_artifacts}\tabularnewline
 \toprule\noalign{}
-Category & Count \\
+C\allowbreak{}a\allowbreak{}t\allowbreak{}e\allowbreak{}g\allowbreak{}o\allowbreak{}r\allowbreak{}y
+& C\allowbreak{}o\allowbreak{}u\allowbreak{}n\allowbreak{}t \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Category & Count \\
+C\allowbreak{}a\allowbreak{}t\allowbreak{}e\allowbreak{}g\allowbreak{}o\allowbreak{}r\allowbreak{}y
+& C\allowbreak{}o\allowbreak{}u\allowbreak{}n\allowbreak{}t \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Figures & 1226 \\
+Figures & 1285 \\
 Data files & 5 \\
 Reports & 36 \\
-Total & 1267 \\
+Total & 1326 \\
 \end{longtable}
 
 The top-level artifact counts in tbl.~\ref{tbl:repro_artifacts}
@@ -5963,20 +6111,16 @@ The \(q\)-minimizer is the \emph{arithmetic} (linear) pool
 orientation witness confirms this finite-simplex mismatch. The following
 proposition goes further, while retaining a deliberately narrow scope.
 
-\begin{equation}\protect\phantomsection\label{eq:raw-log-pool-block}{
-Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:raw-log-pool-block}{Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)}\end{equation}
 
 The proposed raw \(q\)-block is the map in
 eq.~\ref{eq:raw-log-pool-block}.
 
-\begin{equation}\protect\phantomsection\label{eq:separable-server-objective}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:separable-server-objective}{\begin{aligned}
 F(q,a;s,w)
 &= \sum_n a_n\,\mathrm{KL}(q\,\|\,s_n)\\
 &\quad + R(a,w) + G(q).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 \begin{proposition}[Scoped separable raw-log-pool no-go]\label{prop:raw-log-pool-no-go}
 For \(K\geq2\), no objective in (\ref{eq:separable-server-objective}) satisfying
@@ -5993,10 +6137,8 @@ raw-weight heuristic.
 scalar \(\alpha\), and one local posterior constructed in
 eq.~\ref{eq:raw-log-pool-witness-source}:
 
-\begin{equation}\protect\phantomsection\label{eq:raw-log-pool-witness-source}{
-s_i^{(\alpha)} \;=\;
-\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:raw-log-pool-witness-source}{s_i^{(\alpha)} \;=\;
+\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.}\end{equation}
 
 Then \(Q(\alpha;s^{(\alpha)})=q\). Writing \(\Pi\) for projection onto
 the tangent space of the simplex, first-order stationarity of
@@ -6025,17 +6167,25 @@ interval or deployment claim is
 implied.}\label{tbl:server-theory-witness}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Artifact
+A\allowbreak{}r\allowbreak{}t\allowbreak{}i\allowbreak{}f\allowbreak{}a\allowbreak{}c\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Implementation surface and declared scope
+I\allowbreak{}m\allowbreak{}p\allowbreak{}l\allowbreak{}e\allowbreak{}m\allowbreak{}e\allowbreak{}n\allowbreak{}t\allowbreak{}a\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n
+s\allowbreak{}u\allowbreak{}r\allowbreak{}f\allowbreak{}a\allowbreak{}c\allowbreak{}e
+a\allowbreak{}n\allowbreak{}d
+d\allowbreak{}e\allowbreak{}c\allowbreak{}l\allowbreak{}a\allowbreak{}r\allowbreak{}e\allowbreak{}d
+s\allowbreak{}c\allowbreak{}o\allowbreak{}p\allowbreak{}e
 \end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Artifact
+A\allowbreak{}r\allowbreak{}t\allowbreak{}i\allowbreak{}f\allowbreak{}a\allowbreak{}c\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Implementation surface and declared scope
+I\allowbreak{}m\allowbreak{}p\allowbreak{}l\allowbreak{}e\allowbreak{}m\allowbreak{}e\allowbreak{}n\allowbreak{}t\allowbreak{}a\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n
+s\allowbreak{}u\allowbreak{}r\allowbreak{}f\allowbreak{}a\allowbreak{}c\allowbreak{}e
+a\allowbreak{}n\allowbreak{}d
+d\allowbreak{}e\allowbreak{}c\allowbreak{}l\allowbreak{}a\allowbreak{}r\allowbreak{}e\allowbreak{}d
+s\allowbreak{}c\allowbreak{}o\allowbreak{}p\allowbreak{}e
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -6077,31 +6227,27 @@ For \(c,\lambda>0\), consensus \(q\), and nonnegative effective weights
 \(q\)-dependent part of \(F_\lambda\) is denoted \(J(q;a)\) and can be
 written in either of two equivalent forms:
 
-\begin{equation}\protect\phantomsection\label{eq:agg-q-objective}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:agg-q-objective}{\begin{aligned}
 J(q;a)
 &=\sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q),\\
 J(q;a)
 &=\lambda\sum_i q_i\log q_i\\
 &\quad-\sum_i\sum_n q_i a_n\log q_{n,i}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 Adding a Lagrange multiplier to the block in
 eq.~\ref{eq:agg-q-objective} for \(\sum_i q_i = 1\) and differentiating
 gives \(\lambda\log q_i + \lambda - \sum_n a_n \log q_{n,i} + \mu = 0\),
 i.e.
 
-\begin{equation}\protect\phantomsection\label{eq:agg-q-min}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:agg-q-min}{\begin{aligned}
 q_i
 &\propto \exp\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_{n,i}\Big),\\
 q_i
 &= \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_n\Big)_i.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 the product of the weighted experts --- the consensus update of
 eq.~\ref{eq:agg-updates}. At the default \(\lambda=1.0\), the \(-H(q)\)
@@ -6113,9 +6259,7 @@ rather than a geometric average).
 \(\partial F/\partial a_n = \mathrm{CE}(q,q_n) + \tfrac{1}{c}\log(a_n/w_n) = 0\),
 so
 
-\begin{equation}\protect\phantomsection\label{eq:agg-a-min}{
-a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:agg-a-min}{a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),}\end{equation}
 
 the weight update of eq.~\ref{eq:agg-updates}. Because
 \(\mathrm{CE}(q,q_n) = H(q) + \mathrm{KL}(q\,\|\,q_n)\), the forward
@@ -6260,27 +6404,23 @@ one-parameter \emph{tempered} family. Introduce an entropy weight
 \(\lambda > 0\) --- the \textbf{inverse temperature is} \(1/\lambda\)
 --- and minimize
 
-\begin{equation}\protect\phantomsection\label{eq:tempered-family}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:tempered-family}{\begin{aligned}
 F_\lambda(q, a)
 &= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 Repeating the \(q\)-block derivation of eq.~\ref{eq:agg-q-min} with the
 entropy scaled by \(\lambda\) leaves the \(a\)-block \textbf{untouched}
 and tempers only the consensus update:
 
-\begin{equation}\protect\phantomsection\label{eq:tempered-updates}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:tempered-updates}{\begin{aligned}
 q
 &\propto \exp\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &= w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The \(\lambda\downarrow0\) endpoint is separately implemented as a
 deterministic tied-argmax rule; it is not obtained by substituting
@@ -6352,8 +6492,7 @@ over to the Gaussian beliefs a continuous-state active-inference
 extension would use, \texttt{divergences.py} adds closed forms for 1-D
 Gaussians: the Kullback--Leibler divergence
 
-\begin{equation}\protect\phantomsection\label{eq:gaussian-kl}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:gaussian-kl}{\begin{aligned}
 &\mathrm{KL}\!\big(
   \mathcal N(\mu_q,\sigma_q^2)\,\|\,\mathcal N(\mu_p,\sigma_p^2)\big)\\
 &\quad = \tfrac12\!\left[
@@ -6363,21 +6502,18 @@ Gaussians: the Kullback--Leibler divergence
 &\quad - 1 + \log\tfrac{\sigma_p^2}{\sigma_q^2}
 \end{aligned}
 \right].
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 and the \(\alpha\)-Rényi divergence with interpolated variance
 \(\sigma_\alpha^2 = \alpha\sigma_p^2 + (1-\alpha)\sigma_q^2\),
 
-\begin{equation}\protect\phantomsection\label{eq:gaussian-renyi}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:gaussian-renyi}{\begin{aligned}
 &D_\alpha\!\big(\mathcal N_q\,\|\,\mathcal N_p\big)\\
 &\quad = \frac{\alpha(\mu_q-\mu_p)^2}{2\sigma_\alpha^2}\\
 &\qquad - \frac{1}{2(\alpha-1)}
 \log\frac{\sigma_\alpha^2}
 {\sigma_q^{2(1-\alpha)}\sigma_p^{2\alpha}}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 As in the categorical case (eq.~\ref{eq:renyi-limit} and Lemma
 \ref{lem:renyi-kl-limit}), eq.~\ref{eq:gaussian-renyi} recovers
@@ -6440,11 +6576,23 @@ projection to tbl.~\ref{tbl:contamination-gallery-contrast} on mechanism
 reconstructs every source row exactly and does not create selection-free
 inference.}\label{tbl:contamination-gallery}\tabularnewline
 \toprule\noalign{}
-Mechanism & Class & Naive mean & Display robust mean (preset) \\
+M\allowbreak{}e\allowbreak{}c\allowbreak{}h\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}s\allowbreak{}m
+& C\allowbreak{}l\allowbreak{}a\allowbreak{}s\allowbreak{}s &
+N\allowbreak{}a\allowbreak{}i\allowbreak{}v\allowbreak{}e
+m\allowbreak{}e\allowbreak{}a\allowbreak{}n &
+D\allowbreak{}i\allowbreak{}s\allowbreak{}p\allowbreak{}l\allowbreak{}a\allowbreak{}y
+r\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+m\allowbreak{}e\allowbreak{}a\allowbreak{}n (preset) \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Mechanism & Class & Naive mean & Display robust mean (preset) \\
+M\allowbreak{}e\allowbreak{}c\allowbreak{}h\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}s\allowbreak{}m
+& C\allowbreak{}l\allowbreak{}a\allowbreak{}s\allowbreak{}s &
+N\allowbreak{}a\allowbreak{}i\allowbreak{}v\allowbreak{}e
+m\allowbreak{}e\allowbreak{}a\allowbreak{}n &
+D\allowbreak{}i\allowbreak{}s\allowbreak{}p\allowbreak{}l\allowbreak{}a\allowbreak{}y
+r\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+m\allowbreak{}e\allowbreak{}a\allowbreak{}n (preset) \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -6467,11 +6615,25 @@ inference; read it with tbl.~\ref{tbl:contamination-gallery} to recover
 the complete source
 row.}\label{tbl:contamination-gallery-contrast}\tabularnewline
 \toprule\noalign{}
-Mechanism & Mean robust \texorpdfstring{\ensuremath{-}}{-} naive & 95\% CI & Win fraction & Reliable \\
+M\allowbreak{}e\allowbreak{}c\allowbreak{}h\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}s\allowbreak{}m
+& M\allowbreak{}e\allowbreak{}a\allowbreak{}n
+r\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+\texorpdfstring{\ensuremath{-}}{-} n\allowbreak{}a\allowbreak{}i\allowbreak{}v\allowbreak{}e & 95\% CI &
+W\allowbreak{}i\allowbreak{}n
+f\allowbreak{}r\allowbreak{}a\allowbreak{}c\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n
+&
+R\allowbreak{}e\allowbreak{}l\allowbreak{}i\allowbreak{}a\allowbreak{}b\allowbreak{}l\allowbreak{}e \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Mechanism & Mean robust \texorpdfstring{\ensuremath{-}}{-} naive & 95\% CI & Win fraction & Reliable \\
+M\allowbreak{}e\allowbreak{}c\allowbreak{}h\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}s\allowbreak{}m
+& M\allowbreak{}e\allowbreak{}a\allowbreak{}n
+r\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+\texorpdfstring{\ensuremath{-}}{-} n\allowbreak{}a\allowbreak{}i\allowbreak{}v\allowbreak{}e & 95\% CI &
+W\allowbreak{}i\allowbreak{}n
+f\allowbreak{}r\allowbreak{}a\allowbreak{}c\allowbreak{}t\allowbreak{}i\allowbreak{}o\allowbreak{}n
+&
+R\allowbreak{}e\allowbreak{}l\allowbreak{}i\allowbreak{}a\allowbreak{}b\allowbreak{}l\allowbreak{}e \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -6571,29 +6733,39 @@ result, or universal crossover
 claim.}\label{tbl:robustness-onset}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Mechanism
+M\allowbreak{}e\allowbreak{}c\allowbreak{}h\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}s\allowbreak{}m
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Onset rate
+O\allowbreak{}n\allowbreak{}s\allowbreak{}e\allowbreak{}t
+r\allowbreak{}a\allowbreak{}t\allowbreak{}e
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Naive @ worst
+N\allowbreak{}a\allowbreak{}i\allowbreak{}v\allowbreak{}e @
+w\allowbreak{}o\allowbreak{}r\allowbreak{}s\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Robust @ worst
+R\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+@ w\allowbreak{}o\allowbreak{}r\allowbreak{}s\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Robust method @ worst
+R\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+m\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
+@ w\allowbreak{}o\allowbreak{}r\allowbreak{}s\allowbreak{}t
 \end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Mechanism
+M\allowbreak{}e\allowbreak{}c\allowbreak{}h\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}s\allowbreak{}m
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Onset rate
+O\allowbreak{}n\allowbreak{}s\allowbreak{}e\allowbreak{}t
+r\allowbreak{}a\allowbreak{}t\allowbreak{}e
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Naive @ worst
+N\allowbreak{}a\allowbreak{}i\allowbreak{}v\allowbreak{}e @
+w\allowbreak{}o\allowbreak{}r\allowbreak{}s\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Robust @ worst
+R\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+@ w\allowbreak{}o\allowbreak{}r\allowbreak{}s\allowbreak{}t
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Robust method @ worst
+R\allowbreak{}o\allowbreak{}b\allowbreak{}u\allowbreak{}s\allowbreak{}t
+m\allowbreak{}e\allowbreak{}t\allowbreak{}h\allowbreak{}o\allowbreak{}d
+@ w\allowbreak{}o\allowbreak{}r\allowbreak{}s\allowbreak{}t
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -6836,7 +7008,9 @@ factors}\label{states-posteriors-and-site-factors}
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-Symbol & Meaning \\
+S\allowbreak{}y\allowbreak{}m\allowbreak{}b\allowbreak{}o\allowbreak{}l
+&
+M\allowbreak{}e\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}n\allowbreak{}g \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -6872,7 +7046,9 @@ quantities}\label{priors-policies-and-pomdp-quantities}
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-Symbol & Meaning \\
+S\allowbreak{}y\allowbreak{}m\allowbreak{}b\allowbreak{}o\allowbreak{}l
+&
+M\allowbreak{}e\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}n\allowbreak{}g \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -6925,7 +7101,9 @@ terms}\label{generalized-bayes-and-aggregation-terms}
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-Symbol & Meaning \\
+S\allowbreak{}y\allowbreak{}m\allowbreak{}b\allowbreak{}o\allowbreak{}l
+&
+M\allowbreak{}e\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}n\allowbreak{}g \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -6968,7 +7146,9 @@ controls}\label{robustness-divergences-and-loss-controls}
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-Symbol & Meaning \\
+S\allowbreak{}y\allowbreak{}m\allowbreak{}b\allowbreak{}o\allowbreak{}l
+&
+M\allowbreak{}e\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}n\allowbreak{}g \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -6998,25 +7178,21 @@ table order.
 For the objective-backed server rule, the complete scalar-control
 contract is defined for \(c>0\) and \(\lambda>0\):
 
-\begin{equation}\protect\phantomsection\label{eq:notation-variational-objective}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:notation-variational-objective}{\begin{aligned}
 F_\lambda(q,a)
  &= \sum_n a_n\,\mathrm{CE}(q,q_n)
     -\lambda H(q)\\
  &\qquad +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 Its two coordinate updates are shown separately so each display remains
 legible at the presentation typography floor:
 
-\begin{equation}\protect\phantomsection\label{eq:notation-variational-updates}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:notation-variational-updates}{\begin{aligned}
 q &\propto \exp\!\left(
 \frac{1}{\lambda}\sum_n a_n\log q_n\right),\\
 a_n &= w_n\exp\!\big[-c\,\mathrm{CE}(q,q_n)\big].
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The coordinate updates eq.~\ref{eq:notation-variational-updates} use
 \(\lambda=1.0\) by default; the \texttt{entropy\_weight} argument
@@ -7032,25 +7208,21 @@ update.
 For a positive-support global posterior and site term, the cavity
 operation is defined in log space and then normalized:
 
-\begin{equation}\protect\phantomsection\label{eq:notation-cavity}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:notation-cavity}{\begin{aligned}
 q_{-n}(s)
 &= \frac{q(s)/t_n(s)}{\sum_{s'}q(s')/t_n(s')}\\
 &= \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 The corresponding factor replacement is
 
-\begin{equation}\protect\phantomsection\label{eq:notation-factor-replacement}{
-\begin{aligned}
+\begin{equation}\protect\phantomsection\label{eq:notation-factor-replacement}{\begin{aligned}
 \ell_n(s)
 &= \log t_n^{\mathrm{old}}(s)\\
 &\quad +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),\\
 t_n^{\mathrm{new}}(s)
 &\leftarrow \operatorname{softmax}(\ell_n)(s).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 
 Here \(\ell_n\) is the transient, unnormalized log-site vector; the
 softmax is exactly the exponential normalization of that vector.
@@ -7077,9 +7249,10 @@ nesting}\label{statistical-notation-and-nesting}
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symbol
+S\allowbreak{}y\allowbreak{}m\allowbreak{}b\allowbreak{}o\allowbreak{}l
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Contractual meaning
+C\allowbreak{}o\allowbreak{}n\allowbreak{}t\allowbreak{}r\allowbreak{}a\allowbreak{}c\allowbreak{}t\allowbreak{}u\allowbreak{}a\allowbreak{}l
+m\allowbreak{}e\allowbreak{}a\allowbreak{}n\allowbreak{}i\allowbreak{}n\allowbreak{}g
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -7446,18 +7619,18 @@ acuity 0.85:
   iterations to couple L1 and L2 beliefs before federating.
 \end{itemize}
 
-The measured location accuracies are 0.982 (flat) and 0.969
-(hierarchical), a gap of -0.014.
+The measured location accuracies are 0.979 (flat) and 0.969
+(hierarchical), a gap of -0.010.
 
 Across 128 independent seeds the hierarchical location accuracy is 0.974
-(SD 0.005; 95 \% CI 0.973--0.975) versus flat 0.982 (95 \% CI
-0.981--0.982), a mean accuracy gap of -0.008 (95 \% CI -0.009---0.007;
-Wilcoxon signed-rank \(p = 3.59 \times 10^{-20}\), effect size
-\(r = 0.940\), large).
+(SD 0.005; 95 \% CI 0.973--0.975) versus flat 0.984 (95 \% CI
+0.983--0.985), a mean accuracy gap of -0.010 (95 \% CI -0.011---0.009;
+Wilcoxon signed-rank \(p = 9.45 \times 10^{-23}\), effect size
+\(r = 0.999\), large).
 
 On location the gap is small but statistically reliable in the
 \emph{negative} direction --- the paired test rejects at
-\(\alpha = 0.05\) and the gap's confidence interval (-0.009---0.007)
+\(\alpha = 0.05\) and the gap's confidence interval (-0.011---0.009)
 excludes zero on the negative side --- so the hierarchy does not improve
 location accuracy in this regime; if anything it pays a small,
 consistent location cost for carrying the extra latent level.
@@ -7577,11 +7750,13 @@ seeded trial budget, observation acuity, alternating-minimization
 iterations, and the L2/L1 state cardinalities used by the two-level
 condition.}\label{tbl:hier-params}\tabularnewline
 \toprule\noalign{}
-Parameter & Value \\
+P\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r
+& V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Parameter & Value \\
+P\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r
+& V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -7610,13 +7785,9 @@ a context variable (L2; 2 states: \texttt{quiet} / \texttt{alert}) and
 further to a meta-context variable (L3; 2 states: \texttt{low\_threat} /
 \texttt{high\_threat}) that gates the L2 prior.
 
-\begin{equation}\protect\phantomsection\label{eq:l3-to-l2-message}{
-\tilde{D}_{\text{L2}} = \sum_k q_{\text{L3}}[k]\,p_{\text{L2|L3}}[k]
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:l3-to-l2-message}{\tilde{D}_{\text{L2}} = \sum_k q_{\text{L3}}[k]\,p_{\text{L2|L3}}[k]}\end{equation}
 
-\begin{equation}\protect\phantomsection\label{eq:l2-to-l1-message}{
-\tilde{D}_{\text{L1}} = \sum_c q_{\text{L2}}[c]\,p_{\text{L1|L2}}[c]
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:l2-to-l1-message}{\tilde{D}_{\text{L1}} = \sum_c q_{\text{L2}}[c]\,p_{\text{L1|L2}}[c]}\end{equation}
 
 The inference algorithm (\breaktt{fedference.pomdp.nlevel\_infer})
 performs 4 passes of top-down / bottom-up alternating minimization: the
@@ -7634,14 +7805,14 @@ under a uniform prior.
 \textbf{Three-level condition.} Agents run 4 alternating-minimization
 iterations across all three levels before federating.
 
-The measured location accuracies are 0.984 (flat) and 0.966 (3-level), a
-gap of -0.019.
+The measured location accuracies are 0.982 (flat) and 0.969 (3-level), a
+gap of -0.014.
 
-Across 128 independent seeds the 3-level location accuracy is 0.976 (SD
-0.005; 95 \% CI 0.976--0.977) versus flat 0.981 (95 \% CI 0.980--0.981),
-a mean accuracy gap of -0.004 (95 \% CI -0.005---0.003; Wilcoxon
-signed-rank \(p = 2.88 \times 10^{-12}\), effect size \(r = 0.724\),
-medium). The signed mean gap and its interval describe the
+Across 128 independent seeds the 3-level location accuracy is 0.977 (SD
+0.005; 95 \% CI 0.976--0.977) versus flat 0.983 (95 \% CI 0.982--0.984),
+a mean accuracy gap of -0.007 (95 \% CI -0.007---0.006; Wilcoxon
+signed-rank \(p = 4.95 \times 10^{-19}\), effect size \(r = 0.918\),
+large). The signed mean gap and its interval describe the
 location-accuracy cost of this configured three-level condition relative
 to the flat baseline.
 
@@ -7704,7 +7875,9 @@ eq.~\ref{eq:l2-to-l1-message}):
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-L3 state & L2 prior (quiet, alert) \\
+L3 s\allowbreak{}t\allowbreak{}a\allowbreak{}t\allowbreak{}e & L2
+p\allowbreak{}r\allowbreak{}i\allowbreak{}o\allowbreak{}r (quiet,
+alert) \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -7720,9 +7893,9 @@ L3 state & L2 prior (quiet, alert) \\
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-L2 state
+L2 s\allowbreak{}t\allowbreak{}a\allowbreak{}t\allowbreak{}e
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-L1 prior
+L1 p\allowbreak{}r\allowbreak{}i\allowbreak{}o\allowbreak{}r
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -7782,11 +7955,13 @@ alternating-minimization iterations, and the L3/L2/L1 state
 cardinalities used by the three-level
 condition.}\label{tbl:nlevel3-params}\tabularnewline
 \toprule\noalign{}
-Parameter & Value \\
+P\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r
+& V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Parameter & Value \\
+P\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r
+& V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -7965,9 +8140,7 @@ acuity values and a tuple of colony sizes. In the
 \(n_{\text{trials}}\) independent trials, each seeded via a
 deterministic formula:
 
-\begin{equation}\protect\phantomsection\label{eq:sensitivity-seed}{
-\text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j \cdot 10^3 + t
-}\end{equation}
+\begin{equation}\protect\phantomsection\label{eq:sensitivity-seed}{\text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j \cdot 10^3 + t}\end{equation}
 
 where \(i\) indexes acuity, \(j\) indexes colony size, and \(t\) indexes
 the trial within a cell. The deterministic rule
@@ -7991,7 +8164,9 @@ size}\label{grid-parameters-for-acuity-and-colony-size}
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-Parameter & Values \\
+P\allowbreak{}a\allowbreak{}r\allowbreak{}a\allowbreak{}m\allowbreak{}e\allowbreak{}t\allowbreak{}e\allowbreak{}r
+&
+V\allowbreak{}a\allowbreak{}l\allowbreak{}u\allowbreak{}e\allowbreak{}s \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -8076,9 +8251,9 @@ counts.
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Study
+S\allowbreak{}t\allowbreak{}u\allowbreak{}d\allowbreak{}y
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Metric
+M\allowbreak{}e\allowbreak{}t\allowbreak{}r\allowbreak{}i\allowbreak{}c
 \end{minipage} \\
 \midrule\noalign{}
 \endhead

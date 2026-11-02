@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -280,7 +285,7 @@ checks}\label{sec:repro-production}
 \begin{frame}{Producer order, stale invalidation, and publication
 authority}
 \protect\phantomsection\label{sec:repro-provenance-map}
-The provenance map in fig.~20 records
+The provenance map in fig.~23 records
 the source-owned producer contract rather than inferring it from the
 release manifest.
 \end{frame}
@@ -320,7 +325,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1  Source · tests · manuscript → P1 Typed reports: P · execute; producer.}]{../figures/source_render_provenance.slide-producer-source-reports.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1
+Source · tests · manuscript → P1 Typed reports: P · execute;
+producer.}]{../figures/source_render_provenance.slide-producer-source-reports.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -328,7 +335,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2  Configuration · claim contracts → P1 Typed reports: P · configure; producer.}]{../figures/source_render_provenance.slide-producer-config-reports.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2
+Configuration · claim contracts → P1 Typed reports: P · configure;
+producer.}]{../figures/source_render_provenance.slide-producer-config-reports.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -336,7 +345,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I3  Lockfile · runtime metadata → P1 Typed reports: P · bind environment; producer.}]{../figures/source_render_provenance.slide-producer-lockfile-reports.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I3
+Lockfile · runtime metadata → P1 Typed reports: P · bind environment;
+producer.}]{../figures/source_render_provenance.slide-producer-lockfile-reports.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -344,7 +355,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1  Source · tests · manuscript → P2 Figures + a11y: P · run generators; producer.}]{../figures/source_render_provenance.slide-producer-source-figures.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1
+Source · tests · manuscript → P2 Figures + a11y: P · run generators;
+producer.}]{../figures/source_render_provenance.slide-producer-source-figures.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -352,7 +365,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1 Typed reports → P2 Figures + a11y: P · render typed values; producer.}]{../figures/source_render_provenance.slide-producer-reports-figures.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1
+Typed reports → P2 Figures + a11y: P · render typed values;
+producer.}]{../figures/source_render_provenance.slide-producer-reports-figures.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -360,7 +375,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I4  Figure · accessibility registry → P2 Figures + a11y: P · bind semantics; producer.}]{../figures/source_render_provenance.slide-producer-registry-figures.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I4
+Figure · accessibility registry → P2 Figures + a11y: P · bind semantics;
+producer.}]{../figures/source_render_provenance.slide-producer-registry-figures.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -368,7 +385,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1  Source · tests · manuscript → P3 Provisional hydration: P · hydrate manuscript; producer.}]{../figures/source_render_provenance.slide-producer-source-provisional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1
+Source · tests · manuscript → P3 Provisional hydration: P · hydrate
+manuscript;
+producer.}]{../figures/source_render_provenance.slide-producer-source-provisional.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -376,7 +396,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2  Configuration · claim contracts → P3 Provisional hydration: P · bind tokens; producer.}]{../figures/source_render_provenance.slide-producer-config-provisional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2
+Configuration · claim contracts → P3 Provisional hydration: P · bind
+tokens;
+producer.}]{../figures/source_render_provenance.slide-producer-config-provisional.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -384,7 +407,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1 Typed reports → P3 Provisional hydration: P · supply values; producer.}]{../figures/source_render_provenance.slide-producer-reports-provisional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1
+Typed reports → P3 Provisional hydration: P · supply values;
+producer.}]{../figures/source_render_provenance.slide-producer-reports-provisional.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -392,7 +417,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1  Source · tests · manuscript → G4 Tests + coverage: G · test source; gate.}]{../figures/source_render_provenance.slide-producer-source-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1
+Source · tests · manuscript → G4 Tests + coverage: G · test source;
+gate.}]{../figures/source_render_provenance.slide-producer-source-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -400,7 +427,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2  Configuration · claim contracts → G4 Tests + coverage: G · test configuration; gate.}]{../figures/source_render_provenance.slide-producer-config-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2
+Configuration · claim contracts → G4 Tests + coverage: G · test
+configuration;
+gate.}]{../figures/source_render_provenance.slide-producer-config-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -408,7 +438,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I3  Lockfile · runtime metadata → G4 Tests + coverage: G · lock test runtime; gate.}]{../figures/source_render_provenance.slide-producer-lockfile-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I3
+Lockfile · runtime metadata → G4 Tests + coverage: G · lock test
+runtime;
+gate.}]{../figures/source_render_provenance.slide-producer-lockfile-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -416,7 +449,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3 Provisional hydration → G4 Tests + coverage: G · test provisional surface; gate.}]{../figures/source_render_provenance.slide-producer-provisional-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3
+Provisional hydration → G4 Tests + coverage: G · test provisional
+surface;
+gate.}]{../figures/source_render_provenance.slide-producer-provisional-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -424,7 +460,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4 Tests + coverage → P5 Final hydration: G · bind receipt; gate.}]{../figures/source_render_provenance.slide-producer-coverage-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4
+Tests + coverage → P5 Final hydration: G · bind receipt;
+gate.}]{../figures/source_render_provenance.slide-producer-coverage-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -432,7 +470,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1  Source · tests · manuscript → P5 Final hydration: P · hydrate final source; producer.}]{../figures/source_render_provenance.slide-producer-source-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I1
+Source · tests · manuscript → P5 Final hydration: P · hydrate final
+source;
+producer.}]{../figures/source_render_provenance.slide-producer-source-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -440,7 +481,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2  Configuration · claim contracts → P5 Final hydration: P · bind final tokens; producer.}]{../figures/source_render_provenance.slide-producer-config-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I2
+Configuration · claim contracts → P5 Final hydration: P · bind final
+tokens;
+producer.}]{../figures/source_render_provenance.slide-producer-config-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -448,7 +492,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1 Typed reports → P5 Final hydration: P · supply final values; producer.}]{../figures/source_render_provenance.slide-producer-reports-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1
+Typed reports → P5 Final hydration: P · supply final values;
+producer.}]{../figures/source_render_provenance.slide-producer-reports-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -456,7 +502,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5 Final hydration → E6 Clean render: P · render manuscript; producer.}]{../figures/source_render_provenance.slide-producer-final-hydration-render.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5
+Final hydration → E6 Clean render: P · render manuscript;
+producer.}]{../figures/source_render_provenance.slide-producer-final-hydration-render.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -464,7 +512,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2 Figures + a11y → E6 Clean render: P · embed figures; producer.}]{../figures/source_render_provenance.slide-producer-figures-render.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2
+Figures + a11y → E6 Clean render: P · embed figures;
+producer.}]{../figures/source_render_provenance.slide-producer-figures-render.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -472,7 +522,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I5  Exact clean Template commit → E6 Clean render: P · execute exact renderer; producer.}]{../figures/source_render_provenance.slide-producer-template-renderer-render.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={I5
+Exact clean Template commit → E6 Clean render: P · execute exact
+renderer;
+producer.}]{../figures/source_render_provenance.slide-producer-template-renderer-render.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -480,7 +533,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6 Clean render → S7 PDF · HTML slides: P · produce; producer.}]{../figures/source_render_provenance.slide-producer-render-surfaces.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6
+Clean render → S7 PDF · HTML slides: P · produce;
+producer.}]{../figures/source_render_provenance.slide-producer-render-surfaces.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -488,7 +543,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={S7 PDF · HTML slides → G8 Surface QA: G · validate; gate.}]{../figures/source_render_provenance.slide-producer-surfaces-surface-validation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={S7 PDF
+· HTML slides → G8 Surface QA: G · validate;
+gate.}]{../figures/source_render_provenance.slide-producer-surfaces-surface-validation.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -496,7 +553,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G8 Surface QA → R9 Provenance: R · record; receipt.}]{../figures/source_render_provenance.slide-producer-surface-validation-provenance.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G8
+Surface QA → R9 Provenance: R · record;
+receipt.}]{../figures/source_render_provenance.slide-producer-surface-validation-provenance.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -504,7 +563,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={S7 PDF · HTML slides → R10 Manifest + checksums: R · inventory bytes; receipt.}]{../figures/source_render_provenance.slide-producer-surfaces-release-manifest.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={S7 PDF
+· HTML slides → R10 Manifest + checksums: R · inventory bytes;
+receipt.}]{../figures/source_render_provenance.slide-producer-surfaces-release-manifest.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -512,7 +573,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R9 Provenance → R10 Manifest + checksums: R · seal receipts; receipt.}]{../figures/source_render_provenance.slide-producer-provenance-release-manifest.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R9
+Provenance → R10 Manifest + checksums: R · seal receipts;
+receipt.}]{../figures/source_render_provenance.slide-producer-provenance-release-manifest.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -520,7 +583,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R10 Manifest + checksums → A1  GitHub tag · release: A · review + authorize; authorization.}]{../figures/source_render_provenance.slide-producer-release-manifest-github.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R10
+Manifest + checksums → A1 GitHub tag · release: A · review + authorize;
+authorization.}]{../figures/source_render_provenance.slide-producer-release-manifest-github.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-26}
 \end{figure}
 \end{frame}
@@ -528,7 +593,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1  GitHub tag · release → A2  Zenodo publication: A · verify + fresh approval; authorization.}]{../figures/source_render_provenance.slide-producer-github-zenodo.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1
+GitHub tag · release → A2 Zenodo publication: A · verify + fresh
+approval;
+authorization.}]{../figures/source_render_provenance.slide-producer-github-zenodo.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-27}
 \end{figure}
 \end{frame}
@@ -536,7 +604,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1 Typed reports → I1  Source · tests · manuscript: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-reports.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1
+Typed reports → I1 Source · tests · manuscript: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-reports.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-28}
 \end{figure}
 \end{frame}
@@ -544,7 +615,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1 Typed reports → I2  Configuration · claim contracts: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-reports.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1
+Typed reports → I2 Configuration · claim contracts: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-reports.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-29}
 \end{figure}
 \end{frame}
@@ -552,7 +626,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1 Typed reports → I3  Lockfile · runtime metadata: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-lockfile-reports.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P1
+Typed reports → I3 Lockfile · runtime metadata: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-lockfile-reports.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-30}
 \end{figure}
 \end{frame}
@@ -560,7 +637,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 37)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2 Figures + a11y → I1  Source · tests · manuscript: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-figures.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2
+Figures + a11y → I1 Source · tests · manuscript: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-figures.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-31}
 \end{figure}
 \end{frame}
@@ -568,7 +648,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 38)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2 Figures + a11y → P1 Typed reports: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-reports-figures.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2
+Figures + a11y → P1 Typed reports: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-reports-figures.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-32}
 \end{figure}
 \end{frame}
@@ -576,7 +658,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 39)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2 Figures + a11y → I4  Figure · accessibility registry: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-registry-figures.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P2
+Figures + a11y → I4 Figure · accessibility registry: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-registry-figures.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-33}
 \end{figure}
 \end{frame}
@@ -584,7 +669,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 40)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3 Provisional hydration → I1  Source · tests · manuscript: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-provisional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3
+Provisional hydration → I1 Source · tests · manuscript: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-provisional.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-34}
 \end{figure}
 \end{frame}
@@ -592,7 +680,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 41)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3 Provisional hydration → I2  Configuration · claim contracts: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-provisional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3
+Provisional hydration → I2 Configuration · claim contracts: Stale
+dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-provisional.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-35}
 \end{figure}
 \end{frame}
@@ -600,7 +691,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 42)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3 Provisional hydration → P1 Typed reports: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-reports-provisional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P3
+Provisional hydration → P1 Typed reports: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-reports-provisional.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-36}
 \end{figure}
 \end{frame}
@@ -608,7 +701,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 43)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4 Tests + coverage → I1  Source · tests · manuscript: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4
+Tests + coverage → I1 Source · tests · manuscript: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-37}
 \end{figure}
 \end{frame}
@@ -616,7 +712,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 44)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4 Tests + coverage → I2  Configuration · claim contracts: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4
+Tests + coverage → I2 Configuration · claim contracts: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-38}
 \end{figure}
 \end{frame}
@@ -624,7 +723,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 45)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4 Tests + coverage → I3  Lockfile · runtime metadata: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-lockfile-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4
+Tests + coverage → I3 Lockfile · runtime metadata: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-lockfile-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-39}
 \end{figure}
 \end{frame}
@@ -632,7 +734,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 46)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4 Tests + coverage → P3 Provisional hydration: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-provisional-coverage.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G4
+Tests + coverage → P3 Provisional hydration: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-provisional-coverage.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-40}
 \end{figure}
 \end{frame}
@@ -640,7 +745,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 47)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5 Final hydration → G4 Tests + coverage: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-coverage-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5
+Final hydration → G4 Tests + coverage: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-coverage-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-41}
 \end{figure}
 \end{frame}
@@ -648,7 +755,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 48)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5 Final hydration → I1  Source · tests · manuscript: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5
+Final hydration → I1 Source · tests · manuscript: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-source-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-42}
 \end{figure}
 \end{frame}
@@ -656,7 +766,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 49)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5 Final hydration → I2  Configuration · claim contracts: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5
+Final hydration → I2 Configuration · claim contracts: Stale dependency
+after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-config-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-43}
 \end{figure}
 \end{frame}
@@ -664,7 +777,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 50)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5 Final hydration → P1 Typed reports: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-reports-final-hydration.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={P5
+Final hydration → P1 Typed reports: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-reports-final-hydration.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-44}
 \end{figure}
 \end{frame}
@@ -672,7 +787,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 51)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6 Clean render → P5 Final hydration: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-final-hydration-render.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6
+Clean render → P5 Final hydration: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-final-hydration-render.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-45}
 \end{figure}
 \end{frame}
@@ -680,7 +797,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 52)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6 Clean render → P2 Figures + a11y: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-figures-render.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6
+Clean render → P2 Figures + a11y: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-figures-render.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-46}
 \end{figure}
 \end{frame}
@@ -688,7 +807,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 53)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6 Clean render → I5  Exact clean Template commit: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-template-renderer-render.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={E6
+Clean render → I5 Exact clean Template commit: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-template-renderer-render.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-47}
 \end{figure}
 \end{frame}
@@ -696,7 +818,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 54)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={S7 PDF · HTML slides → E6 Clean render: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-render-surfaces.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={S7 PDF
+· HTML slides → E6 Clean render: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-render-surfaces.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-48}
 \end{figure}
 \end{frame}
@@ -704,7 +828,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 55)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G8 Surface QA → S7 PDF · HTML slides: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-surfaces-surface-validation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={G8
+Surface QA → S7 PDF · HTML slides: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-surfaces-surface-validation.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-49}
 \end{figure}
 \end{frame}
@@ -712,7 +838,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 56)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R9 Provenance → G8 Surface QA: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-surface-validation-provenance.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R9
+Provenance → G8 Surface QA: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-surface-validation-provenance.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-50}
 \end{figure}
 \end{frame}
@@ -720,7 +848,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 57)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R10 Manifest + checksums → S7 PDF · HTML slides: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-surfaces-release-manifest.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R10
+Manifest + checksums → S7 PDF · HTML slides: Stale dependency after
+change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-surfaces-release-manifest.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-51}
 \end{figure}
 \end{frame}
@@ -728,7 +859,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 58)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R10 Manifest + checksums → R9 Provenance: Stale dependency after change; invalidation.}]{../figures/source_render_provenance.slide-invalidation-provenance-release-manifest.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R10
+Manifest + checksums → R9 Provenance: Stale dependency after change;
+invalidation.}]{../figures/source_render_provenance.slide-invalidation-provenance-release-manifest.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-52}
 \end{figure}
 \end{frame}
@@ -736,7 +869,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 59)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={green engineering and rendering gates are necessary inputs to review; they do not automatically authorize a merge, tag, GitHub release, or Zenodo publication}]{../figures/source_render_provenance.slide-authorization-boundary.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={green
+engineering and rendering gates are necessary inputs to review; they do
+not automatically authorize a merge, tag, GitHub release, or Zenodo
+publication}]{../figures/source_render_provenance.slide-authorization-boundary.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-53}
 \end{figure}
 \end{frame}
@@ -744,7 +880,10 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 60)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={this figure is generated from this source-owned contract and never reads the downstream release manifest that later inventories it}]{../figures/source_render_provenance.slide-manifest-cycle-boundary.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={this
+figure is generated from this source-owned contract and never reads the
+downstream release manifest that later inventories
+it}]{../figures/source_render_provenance.slide-manifest-cycle-boundary.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-54}
 \end{figure}
 \end{frame}
@@ -752,7 +891,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 61)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={a green build is not scientific validation}]{../figures/source_render_provenance.slide-no-claim-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={a green
+build is not scientific
+validation}]{../figures/source_render_provenance.slide-no-claim-1.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-55}
 \end{figure}
 \end{frame}
@@ -760,7 +901,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 62)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={tagged PDF structure is not PDF/UA conformance}]{../figures/source_render_provenance.slide-no-claim-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={tagged
+PDF structure is not PDF/UA
+conformance}]{../figures/source_render_provenance.slide-no-claim-2.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-56}
 \end{figure}
 \end{frame}
@@ -768,7 +911,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 63)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={HTML accessibility enhancements are not a WCAG conformance claim}]{../figures/source_render_provenance.slide-no-claim-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={HTML
+accessibility enhancements are not a WCAG conformance
+claim}]{../figures/source_render_provenance.slide-no-claim-3.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-57}
 \end{figure}
 \end{frame}
@@ -776,7 +921,9 @@ manifest that later inventories it, avoiding a circular dependency.
 \begin{frame}{Producer order, stale\ldots{} (part 64)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={a GitHub release or DOI does not enlarge the scientific claim surface}]{../figures/source_render_provenance.slide-no-claim-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={a
+GitHub release or DOI does not enlarge the scientific claim
+surface}]{../figures/source_render_provenance.slide-no-claim-4.png}
 \refstepcounter{figure}\label{fig:source-render-provenance-slide-panel-58}
 \end{figure}
 \end{frame}
@@ -796,7 +943,7 @@ eq.~11).
 
 \begin{frame}{Recovery-limit certificate\ldots{} (part 3)}
 Under the explicit shared-support, posterior-log-potential, and
-fixed-weight assumptions of sec.~5.8, that pool
+fixed-weight assumptions of sec.~8.8, that pool
 specializes Eq. 7's message-combination term; it does not reproduce the
 complete source protocol. These deviations are computed on every build.
 \end{frame}
@@ -825,7 +972,7 @@ has maximum difference 0, while rcce versus NLL as
 Any drift in these limits beyond machine precision would mean the robust
 generalization no longer contains its standard-Bayes client limit and
 project-local log-linear-pool server limit
-(sec.~7.1) --- and would fail the core test suite
+(sec.~10.1) --- and would fail the core test suite
 before this certificate could render.
 \end{frame}
 
@@ -834,7 +981,7 @@ The certificate covers the recovery identity and the client-side result
 under the cited source theorem's matching assumptions only; the
 server-side \texttt{robust\_aggregate} heuristic is certified here for
 its recovery limit alone, not for any bounded-influence property
-(sec.~8.13).
+(sec.~11.13).
 \end{frame}
 
 \begin{frame}{Recovery-limit certificate\ldots{} (part 9)}

@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -288,7 +293,7 @@ outside the generative-model-bearing POMDP setting.
 This section defines the corruption process that lets us test fusion
 robustness inside the active-inference colony --- the experimental
 complement of the robust aggregation rule of
-sec.~5.8.
+sec.~8.8.
 \end{frame}
 
 \begin{frame}[fragile]{Corruption process for adversarial belief
@@ -306,9 +311,7 @@ corruption target \(t\), governed by a single rate \(r \in [0, 1]\),
 \end{frame}
 
 \begin{frame}{Corruption process for\ldots{} (part 3)}
-\begin{equation}\tag{21}\protect\phantomsection\label{eq:contamination-mix}{
-\tilde b \;=\; (1 - r)\, b \;+\; r\, t,
-}\end{equation}
+\begin{equation}\tag{21}\protect\phantomsection\label{eq:contamination-mix}{\tilde b \;=\; (1 - r)\, b \;+\; r\, t,}\end{equation}
 \end{frame}
 
 \begin{frame}{Corruption process for\ldots{} (part 4)}
@@ -339,7 +342,7 @@ toward a qualitatively different destination in each case.
 \begin{frame}[fragile]{Corruption process for\ldots{} (part 8)}
 Two further mechanisms (\texttt{byzantine} and \texttt{drift}) extend
 the same convex-mix contract and are introduced in the extended-methods
-supplement (sec.~13.2).
+supplement (sec.~16.2).
 \end{frame}
 
 \begin{frame}[fragile]{Corruption process for\ldots{} (part 9)}
@@ -352,7 +355,7 @@ toward a confident, mistaken delta.
 
 \begin{frame}{Corruption process for\ldots{} (part 10)}
 Callers choose \(s_{\text{wrong}}\) explicitly; the verdict sweep of
-sec.~5.22 fixes it once per colony as
+sec.~8.22 fixes it once per colony as
 the state diametrically opposite the true state on the location grid,
 held constant across the entire rate sweep, rather than deriving it from
 the agent's current belief.
@@ -413,7 +416,7 @@ accuracy to zero and the robust-versus-naive contrast vanishes.
 
 \begin{frame}{How contamination meets the three robustness axes}
 \protect\phantomsection\label{sec:methods-contamination-axes}
-The authoritative guarantee taxonomy is sec.~3.3;
+The authoritative guarantee taxonomy is sec.~6.3;
 this section only records where the declared corruption enters each
 route.
 \end{frame}
@@ -421,13 +424,13 @@ route.
 \begin{frame}{Client bounded-loss route}
 \protect\phantomsection\label{sec:methods-contamination-client}
 A corrupted local observation enters the per-agent generalized-Bayes
-update of sec.~5.7. FedGVI's bounded-influence
+update of sec.~8.7. FedGVI's bounded-influence
 result applies only under the source theorem's matching loss,
 divergence, model, and regularity assumptions (Mildner et al. 2025).
 \end{frame}
 
 \begin{frame}[fragile]{Client bounded-loss route (part 2)}
-The logistic-regression comparison in fig.~18 is a
+The logistic-regression comparison in fig.~21 is a
 narrower exploratory proxy: it compares RCCE and NLL point-estimate
 gradients under two L2 coefficients. Its legacy \texttt{AR} argument
 selects the larger coefficient;
@@ -443,7 +446,7 @@ theorem from the observed curve.
 A corrupted posterior broadcast enters \texttt{robust\_aggregate} at
 fusion. Divergence reweighting can assign a smaller effective weight to
 a report far from the current consensus, as the finite diagnostics
-figs.~13, 15 illustrate.
+figs.~16, 18 illustrate.
 \end{frame}
 
 \begin{frame}{Heuristic server route (part 2)}
@@ -457,7 +460,7 @@ guarantee, or universal robustness theorem.
 The same corrupted posterior can instead enter
 \texttt{variational\_aggregate}, whose declared free energy,
 block-descent property, and effective-weight bound are given in
-sec.~5.8.2.
+sec.~8.8.2.
 \end{frame}
 
 \begin{frame}[fragile]{Objective-backed variational\ldots{} (part 2)}

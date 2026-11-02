@@ -322,7 +322,7 @@ main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh;
 <section id="sec:results-3level" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4cbf1c1a55f5">
 <h2 class="prose-slide" id="slide-heading-4cbf1c1a55f5">Three-level hierarchical POMDP: an executed test
 of the N-level template</h2>
-<p>The 2-level hierarchical POMDP (<span class="cross-reference">Section 14.9</span>)
+<p>The 2-level hierarchical POMDP (<span class="cross-reference">Section 17.9</span>)
 couples location inference to a single global context.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -349,18 +349,16 @@ aria-label="Three-level hierarchical POMDP: an executed test of the N-level temp
 <h2 class="equation-led"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 4" id="slide-heading-ca7cffd0f1c8">Three-level
 hierarchical… (part 4)</h2>
-<p><span class="math display" id="eq:l3-to-l2-message">\[
-\tilde{D}_{\text{L2}} = \sum_k q_{\text{L3}}[k]\,p_{\text{L2|L3}}[k]
-\]</span></p>
+<p><span class="math display" id="eq:l3-to-l2-message">\[\tilde{D}_{\text{L2}} = \sum_k
+q_{\text{L3}}[k]\,p_{\text{L2|L3}}[k]\]</span></p>
 </section>
 <section class="slide level2 equation-led"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f9f43fed7992">
 <h2 class="equation-led"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 5" id="slide-heading-f9f43fed7992">Three-level
 hierarchical… (part 5)</h2>
-<p><span class="math display" id="eq:l2-to-l1-message">\[
-\tilde{D}_{\text{L1}} = \sum_c q_{\text{L2}}[c]\,p_{\text{L1|L2}}[c]
-\]</span></p>
+<p><span class="math display" id="eq:l2-to-l1-message">\[\tilde{D}_{\text{L1}} = \sum_c
+q_{\text{L2}}[c]\,p_{\text{L1|L2}}[c]\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4046d29ba7a5">
@@ -398,20 +396,20 @@ aria-label="Three-level hierarchical POMDP: an executed test of the N-level temp
 <h2 class="prose-slide"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 9" id="slide-heading-b26a3e3f489a">Three-level
 hierarchical… (part 9)</h2>
-<p>The measured location accuracies are 0.984 (flat) and 0.966
-(3-level), a gap of -0.019.</p>
+<p>The measured location accuracies are 0.982 (flat) and 0.969
+(3-level), a gap of -0.014.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-013bf8946e77">
 <h2 class="prose-slide"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 10" id="slide-heading-013bf8946e77">Three-level
 hierarchical… (part 10)</h2>
-<p>Across 128 independent seeds the 3-level location accuracy is 0.976
-(SD 0.005; 95 % CI 0.976–0.977) versus flat 0.981 (95 % CI 0.980–0.981),
-a mean accuracy gap of -0.004 (95 % CI -0.005–-0.003; Wilcoxon
-signed-rank <span class="math inline">\(p = 2.88 \times
-10^{-12}\)</span>, effect size <span class="math inline">\(r =
-0.724\)</span>, medium).</p>
+<p>Across 128 independent seeds the 3-level location accuracy is 0.977
+(SD 0.005; 95 % CI 0.976–0.977) versus flat 0.983 (95 % CI 0.982–0.984),
+a mean accuracy gap of -0.007 (95 % CI -0.007–-0.006; Wilcoxon
+signed-rank <span class="math inline">\(p = 4.95 \times
+10^{-19}\)</span>, effect size <span class="math inline">\(r =
+0.918\)</span>, large).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4064d03627d3">
@@ -453,10 +451,10 @@ aria-label="Three-level hierarchical POMDP: an executed test of the N-level temp
 aria-label="Three-level hierarchical POMDP: an executed test of the N-level template, part 14" id="slide-heading-cefa0b99b969">Three-level
 hierarchical… (part 14)</h2>
 <p>The full figure comparing 2-level and 3-level belief dynamics is
-<span class="cross-reference">Figure 28</span>.
+<span class="cross-reference">Figure 31</span>.
 The declarative layer specification used by the generic constructor is
-documented in the supplement (<span class="cross-reference">Section 14.12</span>).
-For the effect of acuity and colony size on these results, see <span class="cross-reference">Section 14.13</span>.</p>
+documented in the supplement (<span class="cross-reference">Section 17.12</span>).
+For the effect of acuity and colony size on these results, see <span class="cross-reference">Section 17.13</span>.</p>
 </section>
     </div>
   </div>
@@ -464,9 +462,10 @@ For the effect of acuity and colony size on these results, see <span class="cros
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

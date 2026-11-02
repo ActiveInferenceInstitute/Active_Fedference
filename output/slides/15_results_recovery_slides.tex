@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -288,7 +293,7 @@ All runs are deterministic under seed 0.
 We lead with the recovery limits, not with a study, because they are
 what makes the studies a single coherent system rather than a collection
 of unrelated experiments. The generalized-Bayes machinery of
-sec.~5 contains the standard-Bayes client corner,
+sec.~8 contains the standard-Bayes client corner,
 \end{frame}
 
 \begin{frame}{Results: recovery checks\ldots{} (part 6)}
@@ -297,7 +302,7 @@ log-linear-pool identity.
 \end{frame}
 
 \begin{frame}{Results: recovery checks\ldots{} (part 7)}
-Under the explicit bridge in sec.~5.8, that
+Under the explicit bridge in sec.~8.8, that
 pool is a categorical specialization of Eq. 7's message-combination term
 rather than the complete source protocol. We verify those limited
 identities to machine precision before reporting anything built on top
@@ -313,7 +318,7 @@ are exact to machine precision}
 The identities that anchor every result are the client recovery of
 standard Bayes at the KL/NLL/\(\beta\to0\) and \(q_{\text{loss}}\to0\)
 limits plus the project-local server recovery to the log-linear pool at
-\(c=0\) --- the scoped claims of sec.~6 (Corollary
+\(c=0\) --- the scoped claims of sec.~9 (Corollary
 6,
 \end{frame}
 
@@ -356,7 +361,7 @@ is the \emph{naive-recovery} limit of the server-side heuristic ---
 
 \begin{frame}{Recovery limits (part 8)}
 the only property proven for that axis (see
-sec.~3.3).
+sec.~6.3).
 \end{frame}
 
 \begin{frame}{Recovery limits (part 9)}
@@ -444,23 +449,23 @@ under matching assumptions.
 
 \begin{frame}{Recovery limits (part 21)}
 Keeping the three axes distinct at the level of the recovery limits is
-what lets the robustness claims of sec.~7.5 and
-sec.~7.6 rest on the per-agent axis without
+what lets the robustness claims of sec.~10.5 and
+sec.~10.6 rest on the per-agent axis without
 leaning on the heuristic.
 \end{frame}
 
 \begin{frame}[fragile]{Recovery limits (part 22)}
-266 of 268 acceptance criteria are verified. The pure-NumPy/SciPy core
-carries project test coverage of 90.58\% (gate \(\ge 90\%\)), with every
+283 of 287 acceptance criteria are verified. The pure-NumPy/SciPy core
+carries project test coverage of 92.47\% (gate \(\ge 90\%\)), with every
 stochastic step threaded through a single seeded
-\texttt{np.random.default\_rng(0)}. sec.~10
+\texttt{np.random.default\_rng(0)}. sec.~13
 records the full environment fingerprint,
 \end{frame}
 
 \begin{frame}{Recovery limits (part 23)}
 and the expected-free-energy identity that underwrites the
 active-inference substrate is proven and visualized in
-sec.~6.2 (fig.~8).
+sec.~9.2 (fig.~11).
 \end{frame}
 
 \end{document}
