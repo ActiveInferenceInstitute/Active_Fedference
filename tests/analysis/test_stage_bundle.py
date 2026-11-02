@@ -55,7 +55,13 @@ def test_explicit_smoke_report_set_and_figure_bundle(prepared: tuple[Path, Path]
         # The retained broad-instrumentation run also exhausted disjoint's
         # 20s allowance; the producer inputs and seeds stay unchanged.
         seconds = "90" if name in {"bnn_torch", "disjoint_fov_world"} else "20"
-        run(workspace, name, seconds)
+        # The Torch lane needs an explicit memory allowance for the same reason:
+        # sampled peaks for this stage are 1084.4 MB and 1100.7 MB against the
+        # generic 1024 MB default, while the same test has passed under that
+        # default in shard 2. 1280 MB leaves about 16 % headroom over the observed
+        # ceiling and, like the time allowance above, is not a scientific budget.
+        rss = "1280" if name == "bnn_torch" else None
+        run(workspace, name, seconds, max_rss_mb=rss)
     first = run(workspace, "figures", "120")
     assert first["status"] == "complete"
     bundle = read_json(workspace / "completed/figures/report.json")

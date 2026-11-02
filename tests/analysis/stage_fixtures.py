@@ -44,8 +44,16 @@ def cli(workspace: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
 
 
-def run(workspace: Path, stage: str = "belief_sharing", seconds: str = "20") -> dict:
-    result = cli(workspace, "run", "--stage", stage, "--max-seconds", seconds)
+def run(
+    workspace: Path,
+    stage: str = "belief_sharing",
+    seconds: str = "20",
+    max_rss_mb: str | None = None,
+) -> dict:
+    arguments = ["run", "--stage", stage, "--max-seconds", seconds]
+    if max_rss_mb is not None:
+        arguments += ["--max-rss-mb", max_rss_mb]
+    result = cli(workspace, *arguments)
     assert result.returncode == 0, (result.stdout, result.stderr)
     return json.loads(result.stdout)
 
