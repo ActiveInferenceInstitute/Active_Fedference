@@ -101,7 +101,7 @@ jobs:
           retention-days: 30
 
   gnn-shard:
-    name: Required pinned GNN runtime
+    name: gnn conformance (pinned v5.0.3)
     needs: test-plan
     runs-on: ubuntu-latest
     timeout-minutes: 45
