@@ -102,7 +102,14 @@ jobs:
 
   gate:
     needs: [fast-checks, test-shards, compatibility]
-    if: always()
+    # `cancelled()` is true exactly when the run was cancelled, which is what
+    # happens when a newer push supersedes this run: the prerequisite jobs then
+    # report "cancelled" and a bare `always()` made this guard fail on a run that
+    # never finished, leaving a phantom red on the branch after the cause is
+    # gone. Keep `always()` so a genuinely failed prerequisite still fails the
+    # gate, and keep asserting `success` below so a sibling leg cancelled inside
+    # a live run (matrix fail-fast) still fails it.
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     # This final job verifies combined coverage, reproducible distributions,
     # installed-package behavior and every publication surface. Preserve
