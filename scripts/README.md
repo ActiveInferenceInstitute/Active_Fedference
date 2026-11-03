@@ -30,6 +30,7 @@ in `src/`.
 
 | Script | Output | Status |
 | --- | --- | --- |
+| `ci_gate.py --results JSON [--superseded]` | Gate verdict over the `needs` context; exit 1 names every blocking job | CI guard; a superseded run tolerates cancelled or skipped prerequisites, a failed one stays red |
 | `ci_shards.py {plan,run,verify} --plan PATH [--project-root PATH]` | Complete collection plan, per-shard execution receipts, coverage and JUnit diagnostics under `.tmp/` | CI scheduling and complete-execution verification; final combined coverage remains required |
 | `bootstrap_gnn.py --upstream-root PATH --destination NEW_PATH --profile cpython312-cpu [--python PATH]` | Fresh pinned runtime, real Agent/parser qualification and `environment.json` | Required GNN CI provisioning; the 3.14 profile qualifies existing-runtime execution |
 | `validation_profiles.py` (internal pytest policy helper) | Native/GNN/full collection and required-runtime refusal | Imported by pytest configuration and the shard planner |

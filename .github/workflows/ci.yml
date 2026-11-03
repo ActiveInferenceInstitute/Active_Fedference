@@ -171,7 +171,13 @@ jobs:
 
   gate:
     needs: [fast-checks, test-shards, gnn-shard, compatibility]
-    if: always()
+    # A superseded PR head is not evidence about the new head. `always()`
+    # still runs this guard after a genuine prerequisite failure, while
+    # `!cancelled()` skips it when the run itself was cancelled, so a
+    # superseded run cannot record a permanent "cancelled != success"
+    # failure on the merge commit. A prerequisite cancelled inside a live
+    # run (matrix fail-fast) still fails the guard below.
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     # This final job verifies combined coverage, reproducible distributions,
     # installed-package behavior and every publication surface. Preserve
@@ -180,11 +186,12 @@ jobs:
     permissions:
       contents: read
     steps:
+      - uses: actions/checkout@v4
+
       - name: Require every prerequisite job to pass
         env:
           RESULTS: ${{ toJSON(needs) }}
-        run: python -c 'import json, os; assert all(job["result"] == "success" for job in json.loads(os.environ["RESULTS"]).values())'
-      - uses: actions/checkout@v4
+        run: python3 scripts/ci_gate.py --results "$RESULTS"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5

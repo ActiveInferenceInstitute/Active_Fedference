@@ -17,6 +17,7 @@ tests/
 ├── test_documentation.py
 ├── test_examples.py
 ├── test_scripts_smoke.py
+├── test_ci_gate.py
 ├── test_project_paths.py
 ├── test_docs_contract.py
 ├── test_token_provenance.py
