@@ -38,7 +38,6 @@ the full shared latent rather than location alone.
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 
@@ -284,7 +283,6 @@ class SentinelEnsemble:
         consensus: ArrayF,
         *,
         tau: float = 1.0,
-        **legacy: object,
     ) -> None:
         """Fold a heard ``consensus`` shared-vector back into each agent.
 
@@ -300,17 +298,6 @@ class SentinelEnsemble:
             ValueError: if ``consensus`` has the wrong length or ``tau`` is
                 negative.
         """
-        if "learning_rate" in legacy:
-            if tau != 1.0:
-                raise TypeError("tau and deprecated learning_rate cannot both be supplied")
-            tau = legacy.pop("learning_rate")  # type: ignore[assignment]
-            warnings.warn(
-                "learning_rate is deprecated; use tau",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        if legacy:
-            raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
         vec = np.asarray(consensus)
         if vec.ndim != 1:
             raise ValueError("consensus must be one-dimensional")

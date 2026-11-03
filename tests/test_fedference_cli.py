@@ -11,13 +11,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import fedference_cli
 from fedference import __version__
 from fedference.aggregation import AggregationConfig
 from fedference.evidence import load_run_receipt
 from fedference.federation import run_socket_round
-from fedference_cli import _report_fallbacks, main
+from fedference_cli import main
 from fedference_cli._parser import main as parser_main
-from fedference_cli._support import _report_fallbacks as support_report_fallbacks
+from fedference_cli._support import _report_fallbacks
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -63,7 +64,12 @@ def _labeled_request(*, method: str = "naive", max_iter: int = 64) -> dict[str, 
 def test_cli_facade_preserves_public_imports_and_delegates_by_responsibility() -> None:
     facade = (ROOT / "src/fedference_cli/__init__.py").read_text(encoding="utf-8")
     assert main is parser_main
-    assert _report_fallbacks is support_report_fallbacks
+    with pytest.raises(ImportError, match="_report_fallbacks"):
+        from fedference_cli import _report_fallbacks as retired_report_fallbacks
+
+        del retired_report_fallbacks
+    assert not hasattr(fedference_cli, "_report_fallbacks")
+    assert "_report_fallbacks" not in fedference_cli.__all__
     assert "argparse" not in facade
     assert "run_external_benchmark_pack" not in facade
     assert "def _build_parser" not in facade

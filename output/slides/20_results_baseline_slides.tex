@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -277,7 +282,7 @@
 \begin{frame}{Exploratory generalized-Bayes logistic-regression
 baseline}
 \protect\phantomsection\label{sec:results-baseline}
-The sweep of sec.~7.5 characterizes the
+The sweep of sec.~10.5 characterizes the
 heuristic server axis. This exploratory baseline instead probes the
 client-side axis in a synthetic point-estimate logistic-regression
 setting.
@@ -312,7 +317,7 @@ The estimand is therefore a composite contrast between two joint
 loss-and-shrinkage configurations, not an isolated RCCE effect. RCCE's
 \(q\to0\) gradient limit recovers the NLL gradient, while the separate
 categorical recovery identities remain in
-sec.~7.1.
+sec.~10.1.
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 6)}
@@ -368,7 +373,7 @@ precalibrated or confirmatory robustness result.
 \begin{frame}{Exploratory\ldots{} (part 14)}
 The separation in this small logistic-regression setting is modest. The
 recovery identities establish implementation compatibility at the named
-limit (sec.~7.1); the bounded-influence result
+limit (sec.~10.1); the bounded-influence result
 comes from the cited FedGVI theorem under its assumptions (Mildner et
 al. 2025),
 \end{frame}
@@ -376,13 +381,16 @@ al. 2025),
 \begin{frame}{Exploratory\ldots{} (part 15)}
 not from this curve's gap. Source-dataset parity, leakage-free
 calibration, and posterior-uncertainty experiments remain open
-(sec.~8.19).
+(sec.~11.19).
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={nll / L2=0.05 (standard proxy): complete held-out accuracy curve and supplied interval band on shared axes.}]{../figures/bnn_robustness.slide-configuration-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={nll /
+L2=0.05 (standard proxy): complete held-out accuracy curve and supplied
+interval band on shared
+axes.}]{../figures/bnn_robustness.slide-configuration-1.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -390,7 +398,9 @@ calibration, and posterior-uncertainty experiments remain open
 \begin{frame}{Exploratory\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={nll / L2=0.05 (standard proxy)}]{../figures/bnn_robustness.slide-configuration-1-identity.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={nll /
+L2=0.05 (standard
+proxy)}]{../figures/bnn_robustness.slide-configuration-1-identity.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -398,7 +408,10 @@ calibration, and posterior-uncertainty experiments remain open
 \begin{frame}{Exploratory\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={rcce / L2=0.10 (exploratory proxy): complete held-out accuracy curve and supplied interval band on shared axes.}]{../figures/bnn_robustness.slide-configuration-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={rcce /
+L2=0.10 (exploratory proxy): complete held-out accuracy curve and
+supplied interval band on shared
+axes.}]{../figures/bnn_robustness.slide-configuration-2.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -406,7 +419,9 @@ calibration, and posterior-uncertainty experiments remain open
 \begin{frame}{Exploratory\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={rcce / L2=0.10 (exploratory proxy)}]{../figures/bnn_robustness.slide-configuration-2-identity.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={rcce /
+L2=0.10 (exploratory
+proxy)}]{../figures/bnn_robustness.slide-configuration-2-identity.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -414,10 +429,10 @@ calibration, and posterior-uncertainty experiments remain open
 \begin{frame}{Exploratory\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Composite NLL/L2=0.05 versus
-RCCE/L2=0.10 point-estimate proxy.
-The joint change cannot identify an
-RCCE-only effect.}]{../figures/bnn_robustness.slide-composite-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Composite
+NLL/L2=0.05 versus RCCE/L2=0.10 point-estimate proxy. The joint change
+cannot identify an RCCE-only
+effect.}]{../figures/bnn_robustness.slide-composite-1.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -425,10 +440,10 @@ RCCE-only effect.}]{../figures/bnn_robustness.slide-composite-1.png}
 \begin{frame}{Exploratory\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={peak\_margin\_contamination is
-selected within the displayed
-contamination sweep by maximum
-composite-configuration held-out}]{../figures/bnn_robustness.slide-selection-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={peak\_margin\_contamination
+is selected within the displayed contamination sweep by maximum
+composite-configuration
+held-out}]{../figures/bnn_robustness.slide-selection-1.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -436,9 +451,10 @@ composite-configuration held-out}]{../figures/bnn_robustness.slide-selection-1.p
 \begin{frame}{Exploratory\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={accuracy margin; robust\_loss\_param
-and n\_per are configured inputs, not
-selected by this report}]{../figures/bnn_robustness.slide-selection-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={accuracy
+margin; robust\_loss\_param and n\_per are configured inputs, not
+selected by this
+report}]{../figures/bnn_robustness.slide-selection-2.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -446,8 +462,9 @@ selected by this report}]{../figures/bnn_robustness.slide-selection-2.png}
 \begin{frame}{Exploratory\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Largest displayed margin: 2.8\% at
-35\% contamination.}]{../figures/bnn_robustness.slide-peak-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Largest
+displayed margin: 2.8\% at 35\%
+contamination.}]{../figures/bnn_robustness.slide-peak-1.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -455,9 +472,9 @@ selected by this report}]{../figures/bnn_robustness.slide-selection-2.png}
 \begin{frame}{Exploratory\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Shaded bands retain the
-source-supplied intervals. They do
-not represent FedGVI posterior
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Shaded
+bands retain the source-supplied intervals. They do not represent FedGVI
+posterior
 uncertainty.}]{../figures/bnn_robustness.slide-uncertainty-1.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-9}
 \end{figure}
@@ -466,23 +483,23 @@ uncertainty.}]{../figures/bnn_robustness.slide-uncertainty-1.png}
 \begin{frame}{Exploratory\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Exploratory proxy only: no
-Alpha-Renyi objective, calibration,
-universal robustness, or exact
-source-protocol replication.}]{../figures/bnn_robustness.slide-scope-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Exploratory
+proxy only: no Alpha-Renyi objective, calibration, universal robustness,
+or exact source-protocol
+replication.}]{../figures/bnn_robustness.slide-scope-1.png}
 \refstepcounter{figure}\label{fig:bnn-robustness-slide-panel-10}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 26)}
-fig.~18 is exploratory per-client proxy evidence.
+fig.~21 is exploratory per-client proxy evidence.
 Its loss-limit check, finite synthetic contrast, and the separate
 source-conditional theorem have different roles; none comes from the
-server comparison of sec.~7.5.2.
+server comparison of sec.~10.5.2.
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 27)}
-The authoritative three-axis boundary is sec.~3.3.
+The authoritative three-axis boundary is sec.~6.3.
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 28)}
@@ -495,15 +512,14 @@ Adam steps,
 
 \begin{frame}[fragile]{Exploratory\ldots{} (part 29)}
 and per-test-point predictions are fused with \texttt{robust\_aggregate}
-at \texttt{robustness\ =\ 0.5} under PyTorch not installed.
+at \texttt{robustness\ =\ 0.5} under PyTorch 2.12.1.
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 30)}
 The executed consensus is a valid probability simplex, with maximum
-unit-mass deviation N/A, and repeated seeded runs are bit-identical
-(N/A). At contamination N/A, held-out consensus accuracy is N/A (PyTorch
-not run) for the \(\beta\to 0\) client and N/A (PyTorch not run) for the
-\(\beta=0.5\) client.
+unit-mass deviation 2.22e-16, and repeated seeded runs are bit-identical
+(Yes). At contamination 0.40, held-out consensus accuracy is 0.558 for
+the \(\beta\to 0\) client and 0.545 for the \(\beta=0.5\) client.
 \end{frame}
 
 \begin{frame}{Exploratory\ldots{} (part 31)}
@@ -517,7 +533,7 @@ and from the source-conditional theorem.
 \begin{frame}[fragile]{Exploratory\ldots{} (part 32)}
 When PyTorch is absent, the pipeline records unavailable-value
 sentinels; builds exercising this optional lane install the
-\texttt{torch} extra (sec.~10).
+\texttt{torch} extra (sec.~13).
 \end{frame}
 
 \end{document}

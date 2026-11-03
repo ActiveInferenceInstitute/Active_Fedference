@@ -1,19 +1,20 @@
 # Active Fedference — Technical Reference
 
 **Standalone research project** (separate git repository at
-``docxology/active_fedference``). Reimplements **FedGVI**
+``ActiveInferenceInstitute/Active_Fedference``). Reimplements **FedGVI**
 (Mildner et al., 2025) in the discrete-categorical setting and connects it to
 Friston et al. (2024) federated **belief-sharing**.
 
 **Acceptance contract:** [`ISA.md`](ISA.md) · **Documentation hub:** [`docs/README.md`](docs/README.md)
 
-This checkout is intentionally a standalone development and review repository;
-the v1.0.4 public snapshot is published at the target below; v1.0.3, v1.0.2,
-v1.0.1, and v0.1.0 remain prior Zenodo versions.
-The configured interim remote is
+The canonical public repository is
+[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference),
+configured as `origin` in this public checkout. The source version is `1.1.0`;
+the tagged public snapshot is available at its
+[GitHub release](https://github.com/ActiveInferenceInstitute/Active_Fedference/releases/tag/v1.1.0).
 [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
-(`origin`); the public destination is
-[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference).
+is the separate interim evidence mirror. Remote aliases are checkout-local:
+inspect `git remote -v` before any synchronization or release action.
 Work on a `codex/*` branch. Commit, push, and Zenodo publication are separate
 release actions and require explicit authorization; do not force-push or reset
 a dirty worktree.
@@ -52,17 +53,18 @@ Full module map, experiments, and artifacts:
 - Pure domain operations are importable from `fedference`; use
   `AgentPosterior` + `LabeledAggregationRequest` + `aggregate_labeled` for
   caller-labeled application data, or `AggregationConfig` + `aggregate_result`
-  for the smallest numeric integration. Retain `aggregate`,
-  `log_linear_pool`, and `robust_aggregate` for compatibility.
+  for the smallest numeric integration. The scientific controls are
+  `log_linear_pool`, `robust_aggregate`, and `variational_aggregate`;
+  migrate callers through the [retirement inventory](docs/development/api-retirement-20261027.md).
 - Direct belief sharing, one-machine process federation, and loopback sockets
-  consume the same validated configuration and expose additive rich-result
-  adapters; legacy return types and protocol-v1 envelopes remain. Transport
-  adapters must not duplicate aggregation math.
+  consume the same validated configuration through `share_round_result`,
+  `run_multiprocess_round_result`, and `run_socket_round_result`. Transport
+  adapters must not duplicate aggregation math or reinterpret versioned wire fields.
 - Evidence, checkpoint, external-data, replay, DOI, and report-writing code is
   explicit boundary code. Reports cross the typed `_write_json` boundary only;
   optional Torch/BNN modules stay outside the default import graph.
 - The installed `fedference_cli` is a composable adapter, not a second domain
-  implementation: `__init__.py` is the compatibility facade, `_parser.py`
+  implementation: `__init__.py` exposes the `main` entry point, `_parser.py`
   owns process grammar, `_commands.py` owns registry dispatch, and `_support.py`
   owns output isolation and receipt construction. `fedference aggregate` is the
   receipt-writing labeled own-data path; its receipt proves declared
@@ -71,6 +73,15 @@ Full module map, experiments, and artifacts:
   [`src/fedference_cli/README.md`](src/fedference_cli/README.md).
 - Figures are generated through `src/figures/`, whose metadata registry,
   manuscript captions, report payloads, and output filenames must agree.
+- `fedference model validate --model PATH --json` admits canonical native JSON.
+  For GNN Markdown, select the locked source with `--gnn-root PATH`; validation
+  runs its actual parser and the family's native-configuration admission without
+  simulation. Structured/scientific parser dependencies remain explicit. The
+  resulting digests establish admitted content, not scientific validity.
+- For GNN model exchange, use the optional
+  [sentinel example](examples/README.md#6-exchange-the-canonical-sentinel-model-with-gnn).
+  Select an explicit current `GNN_ROOT` and verify native matrix parity; GNN
+  extraction success alone is not model or protocol validation.
 
 ## Conventions
 
@@ -102,13 +113,26 @@ Full module map, experiments, and artifacts:
 
 ## Validation commands
 
+Pytest defaults to `--validation-profile=native`. The `gnn` profile owns
+the external parser/runtime modules; `full` includes both profiles. Required
+`gnn`/`full` execution fails when `GNN_ROOT` or
+`GNN_PARSER_DEPENDENCIES` is absent and rejects skipped tests. Provision
+a fresh pinned runtime with `scripts/bootstrap_gnn.py --upstream-root PATH
+--destination NEW_PATH --profile cpython312-cpu`, then export the values from
+its `environment.json`. Bootstrap provisions `cpython312-cpu`; the
+`cpython314-cpu` registry profile qualifies a caller-supplied existing runtime.
+`GNN_PYTHON` selects the interpreter independently of the upstream source.
+Both profiles require exact Python and whole installed-distribution matches.
+CI requires the exact-once union of native and GNN
+shards before enforcing combined source coverage.
+
 ```bash
-uv run --locked --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ --validation-profile=full \
   --cov=src --cov-fail-under=90
 
-# Fast feedback and explicit integration/publication profiles
-uv run --locked pytest tests/ -m "not slow" -q
-uv run --locked pytest tests/ -m integration -q
+# Native feedback (default): no external GNN runtime required
+uv run --locked pytest tests/ --validation-profile=native -m "not slow" -q
+uv run --locked pytest tests/ --validation-profile=full -m integration -q
 uv run --locked pytest tests/ -m publication -q
 
 # Real-subprocess public API, federation, replay, and CLI examples

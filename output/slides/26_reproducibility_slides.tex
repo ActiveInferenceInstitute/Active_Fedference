@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -342,7 +347,7 @@ health without adding a decision or interpretation.
 \end{frame}
 
 \begin{frame}[fragile]{Application integrity and\ldots{} (part 3)}
-The application flow in fig.~19 reads
+The application flow in fig.~22 reads
 from top to bottom. Panel A follows validation and canonical hashing;
 Panel B places the exact two-by-two \texttt{solver\_status} key below
 the result classifier; Panel C separates the upper atomic-write row from
@@ -365,7 +370,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Labeled JSON or Python request → Strict schema + 1-D categorical shape: parse; normal.}]{../figures/application_integrity_flow.slide-request-strict-validation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Labeled
+JSON or Python request → Strict schema + 1-D categorical shape: parse;
+normal.}]{../figures/application_integrity_flow.slide-request-strict-validation.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -373,7 +380,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Strict schema + 1-D categorical shape → Canonical request + SHA-256: valid; normal.}]{../figures/application_integrity_flow.slide-strict-validation-canonical-request.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Strict
+schema + 1-D categorical shape → Canonical request + SHA-256: valid;
+normal.}]{../figures/application_integrity_flow.slide-strict-validation-canonical-request.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -381,7 +390,10 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Strict schema + 1-D categorical shape → Exit 2 · invalid request no directory created: invalid request; rejected.}]{../figures/application_integrity_flow.slide-strict-validation-invalid-request.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Strict
+schema + 1-D categorical shape → Exit 2 · invalid request no directory
+created: invalid request;
+rejected.}]{../figures/application_integrity_flow.slide-strict-validation-invalid-request.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -389,7 +401,10 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Canonical request + SHA-256 → Destination + source provenance safety: validated semantics; normal.}]{../figures/application_integrity_flow.slide-canonical-request-destination-safety.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Canonical
+request + SHA-256 → Destination + source provenance safety: validated
+semantics;
+normal.}]{../figures/application_integrity_flow.slide-canonical-request-destination-safety.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -397,7 +412,10 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Destination + source provenance safety → Exit 2 · unsafe destination or provenance unavailable: unsafe path or provenance failure; rejected.}]{../figures/application_integrity_flow.slide-destination-safety-unsafe-destination.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Destination
++ source provenance safety → Exit 2 · unsafe destination or provenance
+unavailable: unsafe path or provenance failure;
+rejected.}]{../figures/application_integrity_flow.slide-destination-safety-unsafe-destination.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -405,7 +423,10 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Destination + source provenance safety → aggregate\_result called once: single delegation; normal.}]{../figures/application_integrity_flow.slide-destination-safety-aggregate-result.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Destination
++ source provenance safety → aggregate\_result called once: single
+delegation;
+normal.}]{../figures/application_integrity_flow.slide-destination-safety-aggregate-result.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -413,7 +434,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={aggregate\_result called once → Consensus, weights, and histories: finite result; data\_dependency.}]{../figures/application_integrity_flow.slide-aggregate-result-rich-result.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={aggregate\_result
+called once → Consensus, weights, and histories: finite result;
+data\_dependency.}]{../figures/application_integrity_flow.slide-aggregate-result-rich-result.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -421,7 +444,10 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Consensus, weights, and histories → Classify convergence × fallback: classify health; normal.}]{../figures/application_integrity_flow.slide-rich-result-solver-status.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Consensus,
+weights, and histories → Classify convergence × fallback: classify
+health;
+normal.}]{../figures/application_integrity_flow.slide-rich-result-solver-status.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -429,7 +455,10 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Classify convergence × fallback → Exit 1 · retain valid non-nominal artifacts: fallback or nonconvergence; retained\_warning.}]{../figures/application_integrity_flow.slide-solver-status-non-nominal.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Classify
+convergence × fallback → Exit 1 · retain valid non-nominal artifacts:
+fallback or nonconvergence;
+retained\_warning.}]{../figures/application_integrity_flow.slide-solver-status-non-nominal.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -437,7 +466,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Canonical request + SHA-256 → 1  request.json: semantic input; data\_dependency.}]{../figures/application_integrity_flow.slide-canonical-request-request-json.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Canonical
+request + SHA-256 → 1 request.json: semantic input;
+data\_dependency.}]{../figures/application_integrity_flow.slide-canonical-request-request-json.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -445,7 +476,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Consensus, weights, and histories → 2  result.json: semantic output; data\_dependency.}]{../figures/application_integrity_flow.slide-rich-result-result-json.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Consensus,
+weights, and histories → 2 result.json: semantic output;
+data\_dependency.}]{../figures/application_integrity_flow.slide-rich-result-result-json.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -453,7 +486,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1  request.json → 3  receipt.json: bind request hash; data\_dependency.}]{../figures/application_integrity_flow.slide-request-json-receipt-json.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1
+request.json → 3 receipt.json: bind request hash;
+data\_dependency.}]{../figures/application_integrity_flow.slide-request-json-receipt-json.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -461,7 +496,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2  result.json → 3  receipt.json: bind result hash + provenance; data\_dependency.}]{../figures/application_integrity_flow.slide-result-json-receipt-json.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2
+result.json → 3 receipt.json: bind result hash + provenance;
+data\_dependency.}]{../figures/application_integrity_flow.slide-result-json-receipt-json.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -469,7 +506,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3  receipt.json → Verify receipt: verify; normal.}]{../figures/application_integrity_flow.slide-receipt-json-verification.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3
+receipt.json → Verify receipt: verify;
+normal.}]{../figures/application_integrity_flow.slide-receipt-json-verification.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -477,7 +516,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Verify receipt → Mismatch · report exact finding; do not reinterpret: mismatch; rejected.}]{../figures/application_integrity_flow.slide-verification-mismatch.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Verify
+receipt → Mismatch · report exact finding; do not reinterpret: mismatch;
+rejected.}]{../figures/application_integrity_flow.slide-verification-mismatch.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -485,7 +526,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1  request.json → 2  result.json: Atomic write order; write\_order.}]{../figures/application_integrity_flow.slide-write-request-json-result-json.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1
+request.json → 2 result.json: Atomic write order;
+write\_order.}]{../figures/application_integrity_flow.slide-write-request-json-result-json.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -493,7 +536,9 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2  result.json → 3  receipt.json: Atomic write order; write\_order.}]{../figures/application_integrity_flow.slide-write-result-json-receipt-json.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2
+result.json → 3 receipt.json: Atomic write order;
+write\_order.}]{../figures/application_integrity_flow.slide-write-result-json-receipt-json.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -501,7 +546,8 @@ suitability, scientific validity, decision correctness, or acceptance.
 \begin{frame}{Application integrity and\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={converged · no fallback
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={converged
+· no fallback
 nominal}]{../figures/application_integrity_flow.slide-status-nominal.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-18}
 \end{figure}
@@ -510,7 +556,8 @@ nominal}]{../figures/application_integrity_flow.slide-status-nominal.png}
 \begin{frame}{Application integrity and\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={converged · fallback
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={converged
+· fallback
 converged\_with\_fallback}]{../figures/application_integrity_flow.slide-status-converged-with-fallback.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-19}
 \end{figure}
@@ -519,7 +566,8 @@ converged\_with\_fallback}]{../figures/application_integrity_flow.slide-status-c
 \begin{frame}{Application integrity and\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={not converged · no fallback
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={not
+converged · no fallback
 not\_converged}]{../figures/application_integrity_flow.slide-status-not-converged.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-20}
 \end{figure}
@@ -528,7 +576,8 @@ not\_converged}]{../figures/application_integrity_flow.slide-status-not-converge
 \begin{frame}{Application integrity and\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={not converged · fallback
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={not
+converged · fallback
 not\_converged\_with\_fallback}]{../figures/application_integrity_flow.slide-status-not-converged-with-fallback.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-21}
 \end{figure}
@@ -537,8 +586,9 @@ not\_converged\_with\_fallback}]{../figures/application_integrity_flow.slide-sta
 \begin{frame}{Application integrity and\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Artifact integrity
-Establishes: recorded request/result bytes match the receipt}]{../figures/application_integrity_flow.slide-artifact-integrity-establishes.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Artifact
+integrity Establishes: recorded request/result bytes match the
+receipt}]{../figures/application_integrity_flow.slide-artifact-integrity-establishes.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -546,8 +596,10 @@ Establishes: recorded request/result bytes match the receipt}]{../figures/applic
 \begin{frame}{Application integrity and\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Artifact integrity
-Does not establish: equivalence to another source checkout or nominal solver health}]{../figures/application_integrity_flow.slide-artifact-integrity-does-not-establish.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Artifact
+integrity Does not establish: equivalence to another source checkout or
+nominal solver
+health}]{../figures/application_integrity_flow.slide-artifact-integrity-does-not-establish.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -555,8 +607,9 @@ Does not establish: equivalence to another source checkout or nominal solver hea
 \begin{frame}{Application integrity and\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source equivalence
-Establishes: requested source inputs match recorded source provenance}]{../figures/application_integrity_flow.slide-source-equivalence-establishes.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source
+equivalence Establishes: requested source inputs match recorded source
+provenance}]{../figures/application_integrity_flow.slide-source-equivalence-establishes.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -564,8 +617,10 @@ Establishes: requested source inputs match recorded source provenance}]{../figur
 \begin{frame}{Application integrity and\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source equivalence
-Does not establish: calibration, domain suitability, or scientific validity}]{../figures/application_integrity_flow.slide-source-equivalence-does-not-establish.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source
+equivalence Does not establish: calibration, domain suitability, or
+scientific
+validity}]{../figures/application_integrity_flow.slide-source-equivalence-does-not-establish.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -573,8 +628,9 @@ Does not establish: calibration, domain suitability, or scientific validity}]{..
 \begin{frame}{Application integrity and\ldots{} (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Nominal solver health
-Establishes: the recorded run converged without fallback}]{../figures/application_integrity_flow.slide-nominal-solver-establishes.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Nominal
+solver health Establishes: the recorded run converged without
+fallback}]{../figures/application_integrity_flow.slide-nominal-solver-establishes.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-26}
 \end{figure}
 \end{frame}
@@ -582,8 +638,10 @@ Establishes: the recorded run converged without fallback}]{../figures/applicatio
 \begin{frame}{Application integrity and\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Nominal solver health
-Does not establish: a downstream decision, acceptance, or truth of an interpretation}]{../figures/application_integrity_flow.slide-nominal-solver-does-not-establish.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Nominal
+solver health Does not establish: a downstream decision, acceptance, or
+truth of an
+interpretation}]{../figures/application_integrity_flow.slide-nominal-solver-does-not-establish.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-27}
 \end{figure}
 \end{frame}
@@ -591,7 +649,8 @@ Does not establish: a downstream decision, acceptance, or truth of an interpreta
 \begin{frame}{Application integrity and\ldots{} (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application receipt does not establish:
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application
+receipt does not establish:
 calibration}]{../figures/application_integrity_flow.slide-no-claim-1.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-28}
 \end{figure}
@@ -600,8 +659,9 @@ calibration}]{../figures/application_integrity_flow.slide-no-claim-1.png}
 \begin{frame}{Application integrity and\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application receipt does not establish:
-domain suitability}]{../figures/application_integrity_flow.slide-no-claim-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application
+receipt does not establish: domain
+suitability}]{../figures/application_integrity_flow.slide-no-claim-2.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-29}
 \end{figure}
 \end{frame}
@@ -609,8 +669,9 @@ domain suitability}]{../figures/application_integrity_flow.slide-no-claim-2.png}
 \begin{frame}{Application integrity and\ldots{} (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application receipt does not establish:
-scientific validity}]{../figures/application_integrity_flow.slide-no-claim-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application
+receipt does not establish: scientific
+validity}]{../figures/application_integrity_flow.slide-no-claim-3.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-30}
 \end{figure}
 \end{frame}
@@ -618,8 +679,9 @@ scientific validity}]{../figures/application_integrity_flow.slide-no-claim-3.png
 \begin{frame}{Application integrity and\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application receipt does not establish:
-downstream decision correctness}]{../figures/application_integrity_flow.slide-no-claim-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application
+receipt does not establish: downstream decision
+correctness}]{../figures/application_integrity_flow.slide-no-claim-4.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-31}
 \end{figure}
 \end{frame}
@@ -627,7 +689,8 @@ downstream decision correctness}]{../figures/application_integrity_flow.slide-no
 \begin{frame}{Application integrity and\ldots{} (part 37)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application receipt does not establish:
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Application
+receipt does not establish:
 acceptance}]{../figures/application_integrity_flow.slide-no-claim-5.png}
 \refstepcounter{figure}\label{fig:application-integrity-flow-slide-panel-32}
 \end{figure}
@@ -679,10 +742,10 @@ Value
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-Python & 3.13.11 \\
+Python & 3.14.9 \\
 NumPy & 2.4.2 \\
 SciPy & 1.18.0 \\
-PyTorch (MLP complement) & not installed \\
+PyTorch (MLP complement) & 2.12.1 \\
 \bottomrule\noalign{}
 \end{longtable}
 \endgroup
@@ -743,17 +806,17 @@ alone are insufficient.
 
 \begin{frame}{Test and coverage evidence for the claim surface}
 \protect\phantomsection\label{sec:repro-tests}
-\textbf{Acceptance criteria.} 268 total, 266 passing.
+\textbf{Acceptance criteria.} 287 total, 283 passing.
 \end{frame}
 
 \begin{frame}{Test and coverage evidence\ldots{} (part 2)}
-\textbf{Project test suite.} 2860 collected cases; the bound successful
+\textbf{Project test suite.} 3992 collected cases; the bound successful
 receipt records zero failed cases. The project no-mocks policy remains a
 separately executable source contract.
 \end{frame}
 
 \begin{frame}[fragile]{Test and coverage evidence\ldots{} (part 3)}
-\textbf{Combined line and branch coverage on \texttt{src/}.} 90.58\%,
+\textbf{Combined line and branch coverage on \texttt{src/}.} 92.47\%,
 achieved by the bound full gate with branch measurement enabled. The
 shared coverage threshold is \(\ge 90\%\) on this combined measure.
 \end{frame}
@@ -814,7 +877,7 @@ Count
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
-Figures & 1226 \\
+Figures & 1285 \\
 Data files & 5 \\
 Reports & 36 \\
 \bottomrule\noalign{}

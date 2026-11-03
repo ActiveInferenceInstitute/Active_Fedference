@@ -334,7 +334,7 @@ aria-label="Divergences: robust objectives and the KL limit, part 2" role="group
 aria-label="Divergences: robust objectives and the KL limit, part 2" id="slide-heading-74e45f5c9e19">Divergences:
 robust… (part 2)</h2>
 <p>This section develops both — the divergence family first, the robust
-loss family in <a class="cross-reference" href="#sec:method-losses">Section 5.7</a>
+loss family in <a class="cross-reference" href="#sec:method-losses">Section 8.7</a>
 — and shows that each carries a limit in which it collapses to its
 standard counterpart,</p>
 <p>KL for the divergence and NLL for the loss.</p>
@@ -345,7 +345,7 @@ aria-label="Divergences: robust objectives and the KL limit, part 3" role="group
 aria-label="Divergences: robust objectives and the KL limit, part 3" id="slide-heading-0057e5611890">Divergences:
 robust… (part 3)</h2>
 <p>Those client-side limits establish recovery to standard Bayes. The
-distinct categorical server bridge in <span class="cross-reference">Section 5.8</span>
+distinct categorical server bridge in <span class="cross-reference">Section 8.8</span>
 then identifies a qualified log-linear message-combination
 specialization; it does not recover the complete source belief-sharing
 protocol.</p>
@@ -379,10 +379,8 @@ aria-label="Divergences: robust objectives and the KL limit, part 6" role="group
 <h2 class="equation-led"
 aria-label="Divergences: robust objectives and the KL limit, part 6" id="slide-heading-b3e5a72ff603">Divergences:
 robust… (part 6)</h2>
-<p><span class="math display" id="eq:renyi-limit">\[
-D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q
-\,\|\, p).
-\]</span></p>
+<p><span class="math display" id="eq:renyi-limit">\[D_\alpha(q \,\|\, p)
+\;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q \,\|\, p).\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Divergences: robust objectives and the KL limit, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ed3695965782">
@@ -399,7 +397,7 @@ robust… (part 8)</h2>
 <p>KL is the divergence that makes generalized Bayes collapse to
 standard Bayes. When local posteriors are then combined by the
 separately specified categorical message-combination specialization in
-<span class="cross-reference">Section 5.8</span>,
+<span class="cross-reference">Section 8.8</span>,
 the project recovers its log-linear-pool corner;</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -419,7 +417,7 @@ robust… (part 10)</h2>
 <p>Everything robust is a controlled departure from that fixed point;
 Lemma <a class="cross-reference" href="#lem:renyi-kl-limit">3</a>
 is the formal hinge, and the largest observed Rényi-versus-KL
-discrepancy in the recovery band is 0 (reported in <span class="cross-reference">Section 7.1</span>).</p>
+discrepancy in the recovery band is 0 (reported in <span class="cross-reference">Section 10.1</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Divergences: robust objectives and the KL limit, part 11" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5436f1f3be56">
@@ -449,14 +447,14 @@ robust… (part 13)</h2>
 <p>This distinction keeps the reported limit and the implemented
 objective aligned. The <code>AR</code> regularizer is not merely a
 diagnostic: it is exercised as a client divergence in the categorical
-FedGVI baseline of <span class="cross-reference">Section 7.6</span>,</p>
+FedGVI baseline of <span class="cross-reference">Section 10.6</span>,</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Divergences: robust objectives and the KL limit, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-2bc53a65fa1a">
 <h2 class="prose-slide"
 aria-label="Divergences: robust objectives and the KL limit, part 14" id="slide-heading-2bc53a65fa1a">Divergences:
 robust… (part 14)</h2>
-<p>where it pairs with the rcce loss of <a class="cross-reference" href="#sec:method-losses">Section 5.7</a>
+<p>where it pairs with the rcce loss of <a class="cross-reference" href="#sec:method-losses">Section 8.7</a>
 to constitute the genuine per-client robustness axis.</p>
 </section>
 <section id="sec:method-losses" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cf9aa86980fd">
@@ -518,15 +516,13 @@ aria-label="Robust losses: bounded influence at the Bayes corner, part 6" role="
 <h2 class="equation-led"
 aria-label="Robust losses: bounded influence at the Bayes corner, part 6" id="slide-heading-d7f985c3ddc0">Robust
 losses (part 6)</h2>
-<p><span class="math display" id="eq:beta-loss">\[
-\begin{aligned}
+<p><span class="math display" id="eq:beta-loss">\[\begin{aligned}
 L_\beta(p, o)
 &amp;= -\frac{p(o)^\beta - 1}{\beta}
    + \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},\\
 L_\beta
 &amp;\xrightarrow[\beta\to 0]{} \mathrm{NLL}.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Robust losses: bounded influence at the Bayes corner, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-013d0cda3a3d">
@@ -542,14 +538,12 @@ aria-label="Robust losses: bounded influence at the Bayes corner, part 8" role="
 <h2 class="equation-led"
 aria-label="Robust losses: bounded influence at the Bayes corner, part 8" id="slide-heading-d9e2878fb501">Robust
 losses (part 8)</h2>
-<p><span class="math display" id="eq:rcce-loss">\[
-\begin{aligned}
+<p><span class="math display" id="eq:rcce-loss">\[\begin{aligned}
 L_{q_{\text{loss}}}(p, o)
 &amp;= \frac{1 - p(o)^{q_{\text{loss}}}}{q_{\text{loss}}},\\
 L_{q_{\text{loss}}}
 &amp;\xrightarrow[q_{\text{loss}}\to 0]{} \mathrm{NLL}.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Robust losses: bounded influence at the Bayes corner, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9c73ae5993a8">
@@ -574,8 +568,8 @@ aria-label="Robust losses: bounded influence at the Bayes corner, part 11" role=
 <h2 class="prose-slide"
 aria-label="Robust losses: bounded influence at the Bayes corner, part 11" id="slide-heading-353b32491615">Robust
 losses (part 11)</h2>
-<p>The largest observed discrepancies are 0 and 0, respectively (<span class="cross-reference">Section 7.1</span>).
-<span class="cross-reference">Section 7.5</span>
+<p>The largest observed discrepancies are 0 and 0, respectively (<span class="cross-reference">Section 10.1</span>).
+<span class="cross-reference">Section 10.5</span>
 validates the bounded-loss robustness.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -587,7 +581,7 @@ losses (part 12)</h2>
 class="math inline">\(\beta\to0\)</span> or <span
 class="math inline">\(q_{\text{loss}}\to0\)</span>) reproduces standard
 Bayes. Combining those local posteriors through the qualified
-categorical specialization in <span class="cross-reference">Section 5.8</span>
+categorical specialization in <span class="cross-reference">Section 8.8</span>
 is a separate server step, not a recovery claim for the complete
 belief-sharing protocol of Friston et al. <span class="citation"
 data-cites="friston2024federated">(2024)</span>.</p>
@@ -616,8 +610,8 @@ aria-label="Robust losses: bounded influence at the Bayes corner, part 15" role=
 aria-label="Robust losses: bounded influence at the Bayes corner, part 15" id="slide-heading-facb556f5a8d">Robust
 losses (part 15)</h2>
 <p>The complementary server-side divergence-reweighting heuristic of
-<span class="cross-reference">Section 5.8</span>
-is a distinct device and is never granted this guarantee (<span class="cross-reference">Section 3.3</span>).</p>
+<span class="cross-reference">Section 8.8</span>
+is a distinct device and is never granted this guarantee (<span class="cross-reference">Section 6.3</span>).</p>
 </section>
     </div>
   </div>
@@ -625,9 +619,10 @@ is a distinct device and is never granted this guarantee (<span class="cross-ref
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

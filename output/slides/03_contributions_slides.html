@@ -403,7 +403,7 @@ aria-label="2. A recovery-tested connection between categorical pooling and robu
 aria-label="2. A recovery-tested connection between categorical pooling and robust Bayes, part 3" id="slide-heading-51c462193b69">2.
 A recovery-tested… (part 3)</h2>
 <p>Under the explicit shared-support, posterior-log-potential, and
-fixed-weight assumptions in <span class="cross-reference">Section 5.8</span>,
+fixed-weight assumptions in <span class="cross-reference">Section 8.8</span>,
 that pool specializes Friston et al.’s Eq. 7 message-combination term
 <span class="citation" data-cites="friston2024federated">(Friston et al.
 2024)</span>, not the complete source protocol.</p>
@@ -443,8 +443,8 @@ class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-
 <h2 class="prose-slide" id="slide-heading-31d5bd2b3b15">3. End-to-end evaluation of robust federated
 active inference</h2>
 <p>Three worked categorical source-mechanism analogues cover
-communicating colonies reaching lower free energy (<span class="cross-reference">Section 7.2</span>),
-Dirichlet language acquisition (<span class="cross-reference">Section 7.3</span>),</p>
+communicating colonies reaching lower free energy (<span class="cross-reference">Section 10.2</span>),
+Dirichlet language acquisition (<span class="cross-reference">Section 10.3</span>),</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="3. End-to-end evaluation of robust federated active inference, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-cfecff3219c6">
@@ -453,14 +453,14 @@ aria-label="3. End-to-end evaluation of robust federated active inference, part 
 End-to-end evaluation of… (part 2)</h2>
 <p>and a configured Bayesian-model- reduction pruning sign control <span
 class="citation" data-cites="friston2011post">(Friston and Penny
-2011)</span> (<span class="cross-reference">Section 7.4</span>).</p>
+2011)</span> (<span class="cross-reference">Section 10.4</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="3. End-to-end evaluation of robust federated active inference, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-97e052c7b750">
 <h2 class="prose-slide"
 aria-label="3. End-to-end evaluation of robust federated active inference, part 3" id="slide-heading-97e052c7b750">3.
 End-to-end evaluation of… (part 3)</h2>
-<p>A contaminated-sentinel robustness sweep (<span class="cross-reference">Section 7.5</span>)
+<p>A contaminated-sentinel robustness sweep (<span class="cross-reference">Section 10.5</span>)
 shows the naive pool degrading while at least one server-side robust
 member clears the configured threshold at the most severe swept
 rate.</p>
@@ -512,7 +512,7 @@ token.</p>
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a431794615d9">
 <h2 class="prose-slide" id="slide-heading-a431794615d9">5. An explicit accounting of the robustness
 axes</h2>
-<p>The map in <span class="cross-reference">Section 3.3</span>
+<p>The map in <span class="cross-reference">Section 6.3</span>
 separates the client-side per-agent update, which inherits FedGVI’s
 bounded-influence result under its stated source assumptions, from both
 server rules.</p>
@@ -543,8 +543,8 @@ class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-
 redescending weights</h2>
 <p>We derive an aggregation free energy <span class="cross-reference">Equation (12)</span>
 whose exact block updates define the <code>variational_aggregate</code>
-rule (<span class="cross-reference">Section 5.8.2</span>,
-<span class="cross-reference">Section 12</span>).</p>
+rule (<span class="cross-reference">Section 8.8.2</span>,
+<span class="cross-reference">Section 15</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="6. An objective-backed server aggregator with redescending weights, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a118ea829418">
@@ -571,8 +571,8 @@ An objective-backed… (part 4)</h2>
 <p>The rule recovers the standard log-linear pool in the trusting limit
 (<span class="cross-reference">10</span>)
 and — unlike the sharp heuristic — carries a proven raw effective-weight
-bound (<span class="cross-reference">Figure 16</span>,
-<span class="cross-reference">Figure 17</span>).</p>
+bound (<span class="cross-reference">Figure 19</span>,
+<span class="cross-reference">Figure 20</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="6. An objective-backed server aggregator with redescending weights, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-567469dfb29c">
@@ -599,7 +599,7 @@ aria-label="7. Executed finite-grid acuity-recovery experiment, part 2" role="gr
 aria-label="7. Executed finite-grid acuity-recovery experiment, part 2" id="slide-heading-8d37299eed49">7.
 Executed finite-grid… (part 2)</h2>
 <p>The observed mean absolute error is 0.0232 with <span
-class="math inline">\(R^2 = 0.9999\)</span> (<span class="cross-reference">Figure 31</span>).
+class="math inline">\(R^2 = 0.9999\)</span> (<span class="cross-reference">Figure 34</span>).
 Acuity-by-colony-size behavior belongs to the separate sensitivity
 study; it is not a parameter-recovery result.</p>
 </section>
@@ -607,7 +607,7 @@ study; it is not a parameter-recovery result.</p>
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-38ef59d698f1">
 <h2 class="prose-slide" id="slide-heading-38ef59d698f1">8. The tempered aggregation family</h2>
 <p>A one-parameter <span class="math inline">\(\lambda&gt;0\)</span>
-generalization of the variational aggregate (<span class="cross-reference">Section 12.5</span>)
+generalization of the variational aggregate (<span class="cross-reference">Section 15.5</span>)
 is the objective</p>
 </section>
 <section class="slide level2 equation-led"
@@ -615,13 +615,11 @@ aria-label="8. The tempered aggregation family, part 2" role="group" aria-rolede
 <h2 class="equation-led"
 aria-label="8. The tempered aggregation family, part 2" id="slide-heading-854e44a0209b">8. The tempered…
 (part 2)</h2>
-<p><span class="math display" id="eq:contribution-tempered-family">\[
-\begin{aligned}
+<p><span class="math display" id="eq:contribution-tempered-family">\[\begin{aligned}
 F_\lambda(q,a)
 &amp;= \sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q)\\
 &amp;\quad +\frac{1}{c}\,\mathrm{KL}_{\mathrm{gen}}(a\Vert w).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="8. The tempered aggregation family, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-14d404f2df05">
@@ -643,7 +641,7 @@ aria-label="8. The tempered aggregation family, part 4" id="slide-heading-87154c
 (part 4)</h2>
 <p>The raw effective-weight update and its bound are preserved for all
 <span class="math inline">\(\lambda\)</span>. The full derivation is in
-<span class="cross-reference">Section 12.5</span>.</p>
+<span class="cross-reference">Section 15.5</span>.</p>
 </section>
 <section id="an-aggregation-api-transfer-demonstration"
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c430338649e3">
@@ -668,8 +666,8 @@ aria-label="9. An aggregation-API transfer demonstration, part 3" role="group" a
 aria-label="9. An aggregation-API transfer demonstration, part 3" id="slide-heading-43790e3de3a2">9. An
 aggregation-API… (part 3)</h2>
 <p>This supports portability of the server API to one additional model
-class (<span class="cross-reference">Section 7.6</span>)
-when the optional <code>torch</code> extra is installed (<span class="cross-reference">Section 5.26</span>).
+class (<span class="cross-reference">Section 10.6</span>)
+when the optional <code>torch</code> extra is installed (<span class="cross-reference">Section 8.26</span>).
 Without it, the MLP run is skipped and its tokens render
 accordingly.</p>
 </section>
@@ -677,7 +675,7 @@ accordingly.</p>
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5b85d2bd8459">
 <h2 class="prose-slide" id="slide-heading-5b85d2bd8459">10. Communication contrast under disjoint
 observations</h2>
-<p>A multi-agent extension (<span class="cross-reference">Section 14.7.1</span>)
+<p>A multi-agent extension (<span class="cross-reference">Section 17.7.1</span>)
 in</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -715,10 +713,10 @@ aria-label="10. Communication contrast under disjoint observations, part 5" role
 <h2 class="prose-slide"
 aria-label="10. Communication contrast under disjoint observations, part 5" id="slide-heading-ca23380ea35e">10.
 Communication contrast… (part 5)</h2>
-<p>The remainder of the paper proceeds as follows. <span class="cross-reference">Section 5</span> develops
-the FedGVI core and the recovery limits; <span class="cross-reference">Section 6</span>
+<p>The remainder of the paper proceeds as follows. <span class="cross-reference">Section 8</span> develops
+the FedGVI core and the recovery limits; <span class="cross-reference">Section 9</span>
 states the numbered recovery theorems and the expected-free-energy
-identity; <span class="cross-reference">Section 5.22</span>
+identity; <span class="cross-reference">Section 8.22</span>
 fixes the configuration;</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -726,18 +724,18 @@ aria-label="10. Communication contrast under disjoint observations, part 6" role
 <h2 class="prose-slide"
 aria-label="10. Communication contrast under disjoint observations, part 6" id="slide-heading-0ed644dadda5">10.
 Communication contrast… (part 6)</h2>
-<p><span class="cross-reference">Section 7</span> reports
-the 9 studies, beginning with the recovery checks (<span class="cross-reference">Section 7.1</span>).</p>
+<p><span class="cross-reference">Section 10</span> reports
+the 9 studies, beginning with the recovery checks (<span class="cross-reference">Section 10.1</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="10. Communication contrast under disjoint observations, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b6702ffe1acf">
 <h2 class="prose-slide"
 aria-label="10. Communication contrast under disjoint observations, part 7" id="slide-heading-b6702ffe1acf">10.
 Communication contrast… (part 7)</h2>
-<p><span class="cross-reference">Section 8</span>
-and <span class="cross-reference">Section 9</span>
-synthesize; and <span class="cross-reference">Section 10</span>
-and <span class="cross-reference">Section 8.15</span>
+<p><span class="cross-reference">Section 11</span>
+and <span class="cross-reference">Section 12</span>
+synthesize; and <span class="cross-reference">Section 13</span>
+and <span class="cross-reference">Section 11.15</span>
 document determinism, scope, limitations, and the standing of each
 robustness axis.</p>
 </section></section>
@@ -747,9 +745,10 @@ robustness axis.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

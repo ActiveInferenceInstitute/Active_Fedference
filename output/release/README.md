@@ -1,13 +1,13 @@
 # Active Fedference — release bundle provenance
 
-Generated at: 2026-09-19T00:00:00Z by `src/publication/release_manifest.py`
+Generated at: omitted for a byte-reproducible unreleased build.
 (invoked via `uv run --locked python scripts/build_release.py`).
 
 Pipeline profile: `publication`; generator version: `6`.
 
 Artifact scope: `publication-payload-v1`.
 
-Artifacts: 2723 files, 149875676 bytes, over:
+Artifacts: 2858 files, 158655839 bytes, over:
 
 - `.zenodo.json`: 1 file(s)
 - `CITATION.cff`: 1 file(s)
@@ -15,12 +15,12 @@ Artifacts: 2723 files, 149875676 bytes, over:
 - `codemeta.json`: 1 file(s)
 - `output/data`: 5 file(s)
 - `output/docs`: 2 file(s)
-- `output/figures`: 1226 file(s)
-- `output/manuscript`: 47 file(s)
+- `output/figures`: 1285 file(s)
+- `output/manuscript`: 50 file(s)
 - `output/pdf`: 4 file(s)
 - `output/reports`: 29 file(s)
-- `output/slides`: 133 file(s)
-- `output/web`: 1273 file(s)
+- `output/slides`: 142 file(s)
+- `output/web`: 1337 file(s)
 
 Verify integrity from the project root:
 

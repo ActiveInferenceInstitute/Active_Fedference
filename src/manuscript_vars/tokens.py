@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import warnings
 from typing import Any
 
 from .loaders import _fmt, _format_residual, _format_residual_math
@@ -507,16 +506,6 @@ def _format_d_equivalent(value: Any) -> str:
         # d = 2r/sqrt(1-r^2) diverges as rank-biserial r saturates at +-1.
         return "saturated (r=+1)" if d > 0 else "saturated (r=-1)"
     return f"{d:.2f}"
-
-
-def _format_cohens_d(value: Any) -> str:
-    """Deprecated compatibility alias for :func:`_format_d_equivalent`."""
-    warnings.warn(
-        "_format_cohens_d is deprecated; use _format_d_equivalent",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _format_d_equivalent(value)
 
 
 def _sweep_variables(sweep: dict[str, Any]) -> dict[str, str]:

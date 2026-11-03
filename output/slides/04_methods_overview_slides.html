@@ -334,7 +334,7 @@ the federated active-inference stack</h2>
 <p>This section develops the federated generalized variational inference
 (FedGVI) core in the discrete-categorical setting and defines its
 primitives. Their recovery limits are stated as numbered theorems in
-<span class="cross-reference">Section 6</span>.</p>
+<span class="cross-reference">Section 9</span>.</p>
 </section>
 <section class="slide level2 section-overview prose-slide"
 aria-label="Methods: the federated active-inference stack, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-bee091860555">
@@ -422,7 +422,7 @@ the federated… (part 9)</h2>
 data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span> per agent
 inside an active-inference ensemble, proves the standard-Bayes client
 limits, and tests the project-local zero-robustness log-linear-pool
-identity. Under the qualified categorical bridge of <span class="cross-reference">Section 5.8</span>,</p>
+identity. Under the qualified categorical bridge of <span class="cross-reference">Section 8.8</span>,</p>
 </section>
 <section class="slide level2 section-overview prose-slide"
 aria-label="Methods: the federated active-inference stack, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-15d13b030d97">
@@ -430,7 +430,7 @@ aria-label="Methods: the federated active-inference stack, part 10" role="group"
 aria-label="Methods: the federated active-inference stack, part 10" id="slide-heading-15d13b030d97">Methods:
 the federated… (part 10)</h2>
 <p>that pool specializes Eq. 7’s message-combination term rather than
-the complete source protocol. <span class="cross-reference">Figure 2</span>
+the complete source protocol. <span class="cross-reference">Figure 5</span>
 illustrates the three-axis architecture and the recovery hierarchy.</p>
 </section>
 <section id="sec:method-protocol" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-85d13e2ae45e">
@@ -499,14 +499,14 @@ aria-label="3. Aggregation, part 4" role="group" aria-roledescription="slide" ar
 Aggregation (part 4)</h2>
 <p>while a scoped proposition rejects one declared separable objective
 class.</p>
-<p><span class="cross-reference">Section 3.3</span>
+<p><span class="cross-reference">Section 6.3</span>
 holds this boundary; no figure, table, or sentence in this work grants
 the server-side heuristic the per-agent FedGVI guarantee.</p>
 </section>
 <section id="sec:method-notation" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e19d72588ada">
 <h2 class="prose-slide" id="slide-heading-e19d72588ada">Notation for beliefs, losses, and
 divergences</h2>
-<p>The authoritative symbol and API contract is <span class="cross-reference">Section 14</span>.
+<p>The authoritative symbol and API contract is <span class="cross-reference">Section 17</span>.
 In the main text, <span class="math inline">\(q_n(s)\)</span> denotes
 agent <span class="math inline">\(n\)</span>’s local posterior, <span
 class="math inline">\(q(s)\)</span> the global consensus, and <span
@@ -567,7 +567,7 @@ for beliefs, losses… (part 6)</h2>
 <p>we also implement FedGVI in a deterministic MLP complement trained
 with the density-power <span class="math inline">\(\beta\)</span>-loss —
 generalized variational inference with a point-mass variational family
-(<span class="cross-reference">Section 7.6</span>).</p>
+(<span class="cross-reference">Section 10.6</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Notation for beliefs, losses, and divergences, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-348988bf80b7">
@@ -575,17 +575,17 @@ aria-label="Notation for beliefs, losses, and divergences, part 7" role="group" 
 aria-label="Notation for beliefs, losses, and divergences, part 7" id="slide-heading-348988bf80b7">Notation
 for beliefs, losses… (part 7)</h2>
 <p>The remaining methodology subsections develop each primitive in turn:
-the generalized-Bayes update and its recovery to standard Bayes (<span class="cross-reference">Section 5.3</span>),</p>
+the generalized-Bayes update and its recovery to standard Bayes (<span class="cross-reference">Section 8.3</span>),</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Notation for beliefs, losses, and divergences, part 8" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-c61c1db47162">
 <h2 class="prose-slide"
 aria-label="Notation for beliefs, losses, and divergences, part 8" id="slide-heading-c61c1db47162">Notation
 for beliefs, losses… (part 8)</h2>
-<p>the divergence family and its KL limit (<span class="cross-reference">Section 5.6</span>)
-and the robust loss family and its NLL limit (<span class="cross-reference">Section 5.7</span>),
-the aggregation identity (<span class="cross-reference">Section 5.8</span>),
-the lift to a belief-sharing round (<span class="cross-reference">Section 5.9</span>),</p>
+<p>the divergence family and its KL limit (<span class="cross-reference">Section 8.6</span>)
+and the robust loss family and its NLL limit (<span class="cross-reference">Section 8.7</span>),
+the aggregation identity (<span class="cross-reference">Section 8.8</span>),
+the lift to a belief-sharing round (<span class="cross-reference">Section 8.9</span>),</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Notation for beliefs, losses, and divergences, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-36f8abd5bb9b">
@@ -593,7 +593,7 @@ aria-label="Notation for beliefs, losses, and divergences, part 9" role="group" 
 aria-label="Notation for beliefs, losses, and divergences, part 9" id="slide-heading-36f8abd5bb9b">Notation
 for beliefs, losses… (part 9)</h2>
 <p>and the paired statistics that earn every “robust beats naive”
-verdict (<span class="cross-reference">Section 5.27</span>).</p>
+verdict (<span class="cross-reference">Section 8.27</span>).</p>
 </section></section>
     </div>
   </div>
@@ -601,9 +601,10 @@ verdict (<span class="cross-reference">Section 5.27</span>).</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

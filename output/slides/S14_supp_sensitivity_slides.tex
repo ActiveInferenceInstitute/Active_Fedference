@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -262,7 +267,7 @@
 \begin{frame}{Supplement: parameter-sensitivity methods}
 \protect\phantomsection\label{sec:supp-sensitivity}
 This supplement documents how the sensitivity grid of
-sec.~14.13 is generated and --- importantly for
+sec.~17.13 is generated and --- importantly for
 a reader trying to reconcile numbers across studies ---
 \end{frame}
 
@@ -293,9 +298,7 @@ a deterministic formula:
 \end{frame}
 
 \begin{frame}{Experimental protocol for\ldots{} (part 3)}
-\begin{equation}\tag{40}\protect\phantomsection\label{eq:sensitivity-seed}{
-\text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j \cdot 10^3 + t
-}\end{equation}
+\begin{equation}\tag{40}\protect\phantomsection\label{eq:sensitivity-seed}{\text{seed}_{\text{cell}} = \text{seed}_{\text{base}} + i \cdot 10^5 + j \cdot 10^3 + t}\end{equation}
 \end{frame}
 
 \begin{frame}{Experimental protocol for\ldots{} (part 4)}

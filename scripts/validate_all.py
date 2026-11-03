@@ -108,6 +108,7 @@ _PROFILES: dict[str, tuple[Command, ...]] = {
             "dev",
             "pytest",
             "tests/",
+            "--validation-profile=full",
             "--cov=src",
             "--cov-fail-under=90",
         ),

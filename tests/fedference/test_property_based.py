@@ -13,9 +13,9 @@ Losses       (L1-L3) : nll, beta_loss, rcce
 Aggregation  (A1-A5) : log_linear_pool, robust_aggregate, variational_aggregate,
                         aggregate dispatch, agent_weights normalization
 Gen-Bayes    (G1-G2) : generalized_posterior closed form, cavity roundtrip
-Belief share (S1-S2) : share_round pmf validity, exclude_self differentiation
+Belief share (S1-S2) : share_round_result pmf validity, exclude_self differentiation
 Statistics   (T1-T4) : power_analysis in [0,1], bootstrap_ci lo<=hi,
-                        bh_fdr q-values in [0,1], cohens_d sign consistency
+                        bh_fdr q-values in [0,1], d_equivalent sign consistency
 
 18 property-based tests (>= 12 required).
 """
@@ -28,6 +28,8 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
+
+from fedference import AggregationConfig
 
 # ---------------------------------------------------------------------------
 # Shared strategies — all use lazy imports inside each test body so that any
@@ -297,10 +299,12 @@ def test_variational_aggregate_zero_robustness_equals_log_linear_pool(beliefs):
 @settings(max_examples=150, deadline=None, suppress_health_check=[HealthCheck.too_slow])
 def test_aggregate_dispatch_naive_consistent(beliefs):
     """aggregate(method='naive') returns the same result as log_linear_pool directly."""
-    from fedference.aggregation import aggregate, log_linear_pool
+    from fedference.aggregation import aggregate_result, log_linear_pool
 
     direct = log_linear_pool(beliefs)
-    dispatched = aggregate(beliefs, method="naive")
+    dispatched = aggregate_result(
+        beliefs, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9)
+    ).consensus
     np.testing.assert_allclose(direct, dispatched, atol=1e-12)
 
 
@@ -319,8 +323,8 @@ def test_robust_aggregate_agent_weights_sum_to_one(beliefs, robustness):
     from fedference.aggregation import robust_aggregate
 
     res = robust_aggregate(beliefs, robustness=robustness)
-    assert abs(res.agent_weights.sum() - 1.0) < 1e-9, (
-        f"agent_weights sum to {res.agent_weights.sum()} instead of 1"
+    assert abs(res.normalized_effective_weights.sum() - 1.0) < 1e-9, (
+        f"agent_weights sum to {res.normalized_effective_weights.sum()} instead of 1"
     )
 
 
@@ -352,7 +356,7 @@ def test_generalized_posterior_kld_nll_equals_bayes(prior, likelihood_row):
     lv = loss_vector(A, o, loss="nll")  # length n_s
     log_prior = np.log(prior)
 
-    q = generalized_posterior(log_prior, lv, learning_rate=1.0, divergence="KLD")
+    q = generalized_posterior(log_prior, lv, tau=1.0, divergence="KLD")
 
     # Standard Bayes: posterior ∝ prior × p(o=0|s) = prior × lik
     exact = prior * lik
@@ -383,7 +387,7 @@ def test_cavity_factor_roundtrip(posterior_factor):
 
 
 # ===========================================================================
-# S1 — share_round always returns valid pmfs for every agent
+# S1 — share_round_result always returns valid pmfs for every agent
 # ===========================================================================
 
 
@@ -393,17 +397,23 @@ def test_cavity_factor_roundtrip(posterior_factor):
 )
 @settings(max_examples=150, deadline=None, suppress_health_check=[HealthCheck.too_slow])
 def test_share_round_returns_valid_pmfs(beliefs, method):
-    """share_round always produces valid (non-negative, normalized) per-agent beliefs."""
-    from fedference.belief_sharing import share_round
+    """share_round_result always produces valid (non-negative, normalized) per-agent beliefs."""
+    from fedference.belief_sharing import share_round_result
 
-    diag = share_round(beliefs, method=method, robustness=1.0, exclude_self=True)
-    for i, row in enumerate(diag.shared_beliefs):
+    diag = share_round_result(
+        beliefs,
+        config=AggregationConfig(
+            method=method, robustness=1.0, max_iter=(64 if method == "variational" else 32), tol=1e-9
+        ),
+        exclude_self=True,
+    )
+    for i, row in enumerate(diag.shared_posteriors):
         assert _is_valid_pmf(row, atol=1e-6), f"Agent {i}'s shared belief is not a valid pmf: {row}"
     assert _is_valid_pmf(diag.consensus, atol=1e-6), f"Global consensus is not a valid pmf: {diag.consensus}"
 
 
 # ===========================================================================
-# S2 — share_round with exclude_self=True: every recipient omits itself
+# S2 — share_round_result with exclude_self=True: every recipient omits itself
 # ===========================================================================
 
 
@@ -418,10 +428,12 @@ def test_share_round_exclude_self_uses_each_recipients_leave_one_out_pool(belief
     at the same state even though each pool has a different membership.
     """
     from fedference.aggregation import log_linear_pool
-    from fedference.belief_sharing import share_round
+    from fedference.belief_sharing import share_round_result
 
     beliefs_arr = np.asarray(beliefs, dtype=np.float64)
-    diag = share_round(beliefs_arr, method="naive", exclude_self=True)
+    diag = share_round_result(
+        beliefs_arr, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9), exclude_self=True
+    )
     all_indices = np.arange(len(beliefs_arr))
     for recipient in all_indices:
         expected = log_linear_pool(beliefs_arr[all_indices != recipient])
@@ -505,7 +517,7 @@ def test_bh_fdr_qvalues_bounded(pvalues, alpha):
 
 
 # ===========================================================================
-# T4 — cohens_d_from_rank_biserial: sign consistency and finiteness
+# T4 — d_equivalent_from_rank_biserial: sign consistency and finiteness
 # ===========================================================================
 
 
@@ -513,15 +525,15 @@ def test_bh_fdr_qvalues_bounded(pvalues, alpha):
     st.floats(min_value=-0.99, max_value=0.99, allow_nan=False, allow_infinity=False),
 )
 @settings(max_examples=300, deadline=None)
-def test_cohens_d_from_rank_biserial_sign_and_zero(r):
-    """cohens_d(r) shares the sign of r; cohens_d(0) == 0; result is finite."""
-    from fedference.statistics import cohens_d_from_rank_biserial
+def test_d_equivalent_from_rank_biserial_sign_and_zero(r):
+    """d_equivalent(r) shares the sign of r; d_equivalent(0) == 0; result is finite."""
+    from fedference.statistics import d_equivalent_from_rank_biserial
 
-    d = cohens_d_from_rank_biserial(r)
-    assert math.isfinite(d), f"cohens_d({r}) returned non-finite {d}"
+    d = d_equivalent_from_rank_biserial(r)
+    assert math.isfinite(d), f"d_equivalent({r}) returned non-finite {d}"
     if r > 1e-10:
-        assert d > 0.0, f"cohens_d({r}) should be positive, got {d}"
+        assert d > 0.0, f"d_equivalent({r}) should be positive, got {d}"
     elif r < -1e-10:
-        assert d < 0.0, f"cohens_d({r}) should be negative, got {d}"
+        assert d < 0.0, f"d_equivalent({r}) should be negative, got {d}"
     else:
-        assert abs(d) < 1e-9, f"cohens_d(~0) should be ~0, got {d}"
+        assert abs(d) < 1e-9, f"d_equivalent(~0) should be ~0, got {d}"

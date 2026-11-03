@@ -563,13 +563,6 @@ def test_d_equivalent_sentinel_renders_saturated() -> None:
     assert _format_d_equivalent(-1e6) == "saturated (r=-1)"
 
 
-def test_old_d_equivalent_formatter_name_is_warned_adapter() -> None:
-    from manuscript_variables import _format_cohens_d
-
-    with pytest.warns(DeprecationWarning):
-        assert _format_cohens_d(0.83) == "0.83"
-
-
 def test_coverage_percent_ignores_stale_project_artifact(tmp_path: Path) -> None:
     """A live coverage database must not hydrate prose from an older JSON file."""
     coverage_json = tmp_path / "coverage_project.json"

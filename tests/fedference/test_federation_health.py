@@ -14,10 +14,8 @@ import pytest
 
 from fedference import (
     AggregationConfig,
-    SharingDiagnostics,
     SharingRoundResult,
     aggregate_result,
-    share_round,
     share_round_result,
 )
 from fedference.federation import (
@@ -75,12 +73,7 @@ def one_worker_socket_result() -> SocketRoundResult:
 
 
 def test_sharing_round_result_retains_every_aggregation_diagnostic() -> None:
-    result = share_round_result(
-        BELIEFS,
-        config=CONFIG,
-        exclude_self=True,
-        true_state=0,
-    )
+    result = share_round_result(BELIEFS, config=CONFIG, exclude_self=True, true_state=0)
     direct = aggregate_result(BELIEFS, config=CONFIG)
     assert isinstance(result, SharingRoundResult)
     assert len(result.recipient_aggregations) == len(BELIEFS)
@@ -92,24 +85,30 @@ def test_sharing_round_result_retains_every_aggregation_diagnostic() -> None:
     assert result.shared_posteriors.flags.writeable is False
     assert result.global_aggregation.consensus.flags.writeable is False
     assert all(
-        aggregation.consensus.flags.writeable is False
-        for aggregation in result.recipient_aggregations
+        aggregation.consensus.flags.writeable is False for aggregation in result.recipient_aggregations
     )
     with pytest.raises(ValueError, match="read-only"):
         result.shared_posteriors[0, 0] = 0.0
 
 
 def test_share_round_preserves_historical_shape_and_nan_behavior() -> None:
-    rich = share_round_result(BELIEFS, method="naive", exclude_self=False)
-    legacy = share_round(BELIEFS, method="naive", exclude_self=False)
-    assert isinstance(legacy, SharingDiagnostics)
-    assert np.array_equal(legacy.consensus, rich.consensus)
-    assert np.array_equal(legacy.shared_posteriors, rich.shared_posteriors)
-    assert legacy.normalized_effective_weights is None
-    assert np.isnan(legacy.mean_accuracy)
-    assert np.isnan(legacy.mean_surprise)
+    import importlib
+
+    rich = share_round_result(
+        BELIEFS,
+        config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+        exclude_self=False,
+    )
+    direct = aggregate_result(BELIEFS)
+    assert isinstance(rich, SharingRoundResult)
+    np.testing.assert_array_equal(rich.consensus, direct.consensus)
+    np.testing.assert_array_equal(rich.shared_posteriors, np.tile(direct.consensus, (len(BELIEFS), 1)))
+    np.testing.assert_array_equal(rich.normalized_effective_weights, np.full(len(BELIEFS), 1 / len(BELIEFS)))
     assert rich.mean_accuracy is None
     assert rich.mean_surprise is None
+    for name in ("share_round", "SharingDiagnostics"):
+        with pytest.raises(AttributeError):
+            getattr(importlib.import_module("fedference.belief_sharing"), name)
 
 
 def test_server_rich_round_retains_result_but_wire_payload_is_unchanged() -> None:
@@ -204,11 +203,7 @@ def test_protocol_v1_result_and_envelope_fixtures_remain_byte_identical() -> Non
 
 def test_nonunit_positive_masses_are_bit_identical_across_every_boundary() -> None:
     direct = aggregate_result(NONUNIT_MASSES, config=CONFIG)
-    sharing = share_round_result(
-        NONUNIT_MASSES,
-        config=CONFIG,
-        exclude_self=False,
-    )
+    sharing = share_round_result(NONUNIT_MASSES, config=CONFIG, exclude_self=False)
 
     request_queue: queue.Queue = queue.Queue()
     response_queues: dict[int, queue.Queue] = {
@@ -512,30 +507,20 @@ def test_solver_health_is_visible_in_direct_and_every_sharing_result(
     expected_status: str,
 ) -> None:
     direct = aggregate_result(BELIEFS, config=config)
-    shared = share_round_result(
-        BELIEFS,
-        config=config,
-        exclude_self=True,
-    )
+    shared = share_round_result(BELIEFS, config=config, exclude_self=True)
     assert direct.solver_status == expected_status
     assert shared.global_aggregation.solver_status == expected_status
-    assert [
-        result.solver_status for result in shared.recipient_aggregations
-    ] == [expected_status] * len(BELIEFS)
+    assert [result.solver_status for result in shared.recipient_aggregations] == [expected_status] * len(
+        BELIEFS
+    )
     if expected_status.endswith("with_fallback"):
         assert direct.fallback_events
         assert shared.global_aggregation.fallback_events
-        assert all(
-            result.fallback_events
-            for result in shared.recipient_aggregations
-        )
+        assert all(result.fallback_events for result in shared.recipient_aggregations)
     else:
         assert not direct.fallback_events
         assert not shared.global_aggregation.fallback_events
-        assert all(
-            not result.fallback_events
-            for result in shared.recipient_aggregations
-        )
+        assert all(not result.fallback_events for result in shared.recipient_aggregations)
 
 
 @pytest.mark.integration

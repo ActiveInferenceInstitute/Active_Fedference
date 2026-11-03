@@ -71,7 +71,7 @@ def run_robustness_sweep(
     the naive project pool (:func:`fedference.aggregation.log_linear_pool`,
     robustness 0), a categorical Eq. 7 specialization under the documented
     bridge assumptions rather than a full source-protocol reconstruction. The
-    rest are robust pools (:func:`fedference.belief_sharing.share_round` with
+    rest are robust pools (:func:`fedference.belief_sharing.share_round_result` with
     a positive robustness). The labels retain the FedGVI vocabulary for
     cross-reference only; the returned ``server_robustness_by_label`` mapping
     records the actual constants used by this server heuristic.
@@ -152,16 +152,12 @@ def run_robustness_sweep(
 
     # --- The rate sweep (ISC-27/30 trend claims) ----------------------------
     # One fixed seeded colony; the only varying knob is the contamination rate.
-    sweep_colony = soft_colony(
-        true_state, n_agents, n_s, healthy_confidence, rng, jitter=0.03
-    )
+    sweep_colony = soft_colony(true_state, n_agents, n_s, healthy_confidence, rng, jitter=0.03)
     accuracy: dict[str, dict[str, float]] = {d: {} for d in divergences}
     for rate in rates:
         local_posteriors = contaminate_colony(sweep_colony, rate)
         for d in divergences:
-            accuracy[d][f"{rate:g}"] = _consensus_accuracy(
-                local_posteriors, d, true_state
-            )
+            accuracy[d][f"{rate:g}"] = _consensus_accuracy(local_posteriors, d, true_state)
 
     naive_curve = np.array([accuracy["KLD"][f"{r:g}"] for r in rates])
     # Monotone non-increasing (allow a tiny numerical slack).
@@ -191,17 +187,11 @@ def run_robustness_sweep(
     naive_trials: list[float] = []
     robust_trials: dict[str, list[float]] = {d: [] for d in robust_methods}
     for _ in range(n_trials):
-        trial_clean = soft_colony(
-            true_state, n_agents, n_s, healthy_confidence, rng, jitter=0.08
-        )
+        trial_clean = soft_colony(true_state, n_agents, n_s, healthy_confidence, rng, jitter=0.08)
         trial_local_posteriors = contaminate_colony(trial_clean, verdict_rate)
-        naive_trials.append(
-            _consensus_accuracy(trial_local_posteriors, "KLD", true_state)
-        )
+        naive_trials.append(_consensus_accuracy(trial_local_posteriors, "KLD", true_state))
         for d in robust_methods:
-            robust_trials[d].append(
-                _consensus_accuracy(trial_local_posteriors, d, true_state)
-            )
+            robust_trials[d].append(_consensus_accuracy(trial_local_posteriors, d, true_state))
 
     verdict: dict[str, dict] = {}
     pvalues = []
@@ -221,9 +211,7 @@ def run_robustness_sweep(
         # boundary is represented by an explicit saturation sentinel). This quantifies
         # the planning strength of the AGGREGATION HEURISTIC's contrast — it
         # does NOT certify the beta/rcce per-agent FedGVI guarantee.
-        pa = power_analysis(
-            d_equivalent, n_trials, alpha=power_alpha, alternative=power_alternative
-        )
+        pa = power_analysis(d_equivalent, n_trials, alpha=power_alpha, alternative=power_alternative)
         verdict[d] = {
             "pvalue": float(test["pvalue"]),
             "effect_size": float(test["effect_size"]),
@@ -252,9 +240,7 @@ def run_robustness_sweep(
     # we report its mean and a bootstrap CI of that mean, and (for every robust
     # method) the bootstrap CI of the per-trial robust-minus-naive accuracy
     # difference — the standardized-effect's interval companion for the verdict.
-    naive_lo, naive_hi = bootstrap_ci(
-        naive_trials, alpha=0.05, n_boot=_N_BOOT, rng=rng
-    )
+    naive_lo, naive_hi = bootstrap_ci(naive_trials, alpha=0.05, n_boot=_N_BOOT, rng=rng)
     accuracy_at_verdict_rate: dict[str, dict] = {
         "KLD": {
             "n": int(n_trials),
@@ -263,9 +249,7 @@ def run_robustness_sweep(
         }
     }
     for d in robust_methods:
-        d_lo, d_hi = bootstrap_ci(
-            robust_trials[d], alpha=0.05, n_boot=_N_BOOT, rng=rng
-        )
+        d_lo, d_hi = bootstrap_ci(robust_trials[d], alpha=0.05, n_boot=_N_BOOT, rng=rng)
         accuracy_at_verdict_rate[d] = {
             "n": int(n_trials),
             "mean": float(np.mean(robust_trials[d])),
@@ -273,9 +257,7 @@ def run_robustness_sweep(
         }
         # CI of the paired (robust - naive) accuracy difference: the interval
         # companion to the headline standardized effect size.
-        diffs = [
-            robust_trials[d][t] - naive_trials[t] for t in range(n_trials)
-        ]
+        diffs = [robust_trials[d][t] - naive_trials[t] for t in range(n_trials)]
         diff_lo, diff_hi = bootstrap_ci(diffs, alpha=0.05, n_boot=_N_BOOT, rng=rng)
         verdict[d]["mean_accuracy_diff"] = float(np.mean(diffs))
         verdict[d]["mean_accuracy_diff_ci"] = [diff_lo, diff_hi]
@@ -295,26 +277,18 @@ def run_robustness_sweep(
     for rate in rates:
         rkey = f"{rate:g}"
         for _ in range(n_trials):
-            trial_clean = soft_colony(
-                true_state, n_agents, n_s, healthy_confidence, rng, jitter=0.08
-            )
+            trial_clean = soft_colony(true_state, n_agents, n_s, healthy_confidence, rng, jitter=0.08)
             trial_local_posteriors = contaminate_colony(trial_clean, rate)
-            per_rate_naive[rkey].append(
-                _consensus_accuracy(trial_local_posteriors, "KLD", true_state)
-            )
+            per_rate_naive[rkey].append(_consensus_accuracy(trial_local_posteriors, "KLD", true_state))
             for d in robust_methods:
-                per_rate_robust[rkey][d].append(
-                    _consensus_accuracy(trial_local_posteriors, d, true_state)
-                )
+                per_rate_robust[rkey][d].append(_consensus_accuracy(trial_local_posteriors, d, true_state))
 
     # Build the {method: {rate: contrast}} structure, then BH-deflate each
     # method's family of per-rate raw p-values.
     paired_tests_by_rate: dict[str, dict[str, dict]] = {d: {} for d in robust_methods}
     for d in robust_methods:
         rate_keys = [f"{r:g}" for r in rates]
-        groups = [
-            (per_rate_naive[rk], per_rate_robust[rk][d]) for rk in rate_keys
-        ]
+        groups = [(per_rate_naive[rk], per_rate_robust[rk][d]) for rk in rate_keys]
         results = per_group_test(groups)
         raw_p = np.array([res["pvalue"] for res in results])
         fdr_d = bh_fdr(raw_p, alpha=fdr_alpha)
@@ -343,21 +317,12 @@ def run_robustness_sweep(
     summary_rng = np.random.default_rng(seed + 10_000)
     for rate in rates:
         rate_key = f"{rate:g}"
-        methods = {
-            "KLD": summary_statistics(
-                per_rate_naive[rate_key], n_boot=_N_BOOT, rng=summary_rng
-            )
-        }
+        methods = {"KLD": summary_statistics(per_rate_naive[rate_key], n_boot=_N_BOOT, rng=summary_rng)}
         for d in robust_methods:
-            methods[d] = summary_statistics(
-                per_rate_robust[rate_key][d], n_boot=_N_BOOT, rng=summary_rng
-            )
+            methods[d] = summary_statistics(per_rate_robust[rate_key][d], n_boot=_N_BOOT, rng=summary_rng)
         differences = {
             d: summary_statistics(
-                [
-                    per_rate_robust[rate_key][d][i] - per_rate_naive[rate_key][i]
-                    for i in range(n_trials)
-                ],
+                [per_rate_robust[rate_key][d][i] - per_rate_naive[rate_key][i] for i in range(n_trials)],
                 n_boot=_N_BOOT,
                 rng=summary_rng,
             )
@@ -369,13 +334,9 @@ def run_robustness_sweep(
             "differences": differences,
         }
 
-    robust_mean_diff = {
-        d: float(verdict[d]["mean_accuracy_diff"]) for d in robust_methods
-    }
+    robust_mean_diff = {d: float(verdict[d]["mean_accuracy_diff"]) for d in robust_methods}
     largest_mean_difference_method = (
-        max(robust_methods, key=lambda method: robust_mean_diff[method])
-        if robust_methods
-        else ""
+        max(robust_methods, key=lambda method: robust_mean_diff[method]) if robust_methods else ""
     )
     worst_profile_methods = per_rate_summary[worst_rate_key]["methods"]
     worst_rate_best_method = (
@@ -405,9 +366,7 @@ def run_robustness_sweep(
         best_effect = max(float(verdict[d]["effect_size"]) for d in robust_methods)
         tie_tolerance = 1e-12
         headline_tie_set = [
-            d
-            for d in robust_methods
-            if abs(float(verdict[d]["effect_size"]) - best_effect) <= tie_tolerance
+            d for d in robust_methods if abs(float(verdict[d]["effect_size"]) - best_effect) <= tie_tolerance
         ]
         best_method = headline_tie_set[0]
     else:  # pragma: no cover - robust_methods is non-empty whenever KLD has peers
@@ -479,12 +438,10 @@ def run_robustness_sweep(
             "sentinels are not literal million-scale effects"
         ),
         "analysis_unit": (
-            "matched trial for the fixed verdict world; per-rate summaries are "
-            "nested trial profiles"
+            "matched trial for the fixed verdict world; per-rate summaries are nested trial profiles"
         ),
         "trial_structure": (
-            "trials redraw a heterogeneous colony while true state and attack "
-            "target remain fixed"
+            "trials redraw a heterogeneous colony while true state and attack target remain fixed"
         ),
         "true_state": true_state,
         "attack_target_state": wrong_state,

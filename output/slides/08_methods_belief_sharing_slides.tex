@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -262,7 +267,7 @@
 \begin{frame}[fragile]{Belief sharing: the standard aggregation corner}
 \protect\phantomsection\label{sec:method-belief-sharing}
 \texttt{belief\_sharing.share\_round} lifts the aggregation rule of
-sec.~5.8 to a colony of categorical sentinel
+sec.~8.8 to a colony of categorical sentinel
 agents.
 \end{frame}
 
@@ -279,9 +284,7 @@ themselves'' --- an agent's heard consensus excludes its own message:
 \end{frame}
 
 \begin{frame}{Belief sharing (part 4)}
-\begin{equation}\tag{14}\protect\phantomsection\label{eq:belief-round}{
-q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),
-}\end{equation}
+\begin{equation}\tag{14}\protect\phantomsection\label{eq:belief-round}{q_{-n} \;=\; \mathrm{normalize}\!\left(q/t_n\right),}\end{equation}
 \end{frame}
 
 \begin{frame}{Belief sharing (part 5)}
@@ -293,7 +296,7 @@ standard log-linear-pool consensus.
 
 \begin{frame}{Belief sharing (part 6)}
 Under the explicit shared-support, posterior-log-potential, and
-fixed-weight assumptions of sec.~5.8, it
+fixed-weight assumptions of sec.~8.8, it
 specializes Eq. 7's message-combination term; it does not reconstruct
 the complete source protocol.
 \end{frame}
@@ -301,7 +304,7 @@ the complete source protocol.
 \begin{frame}{Belief sharing (part 7)}
 With the server-side robust rule it yields a hive-mind that can
 down-weight a contaminated sentinel --- an effect the contamination
-sweep of sec.~7.5 measures rather than assumes,
+sweep of sec.~10.5 measures rather than assumes,
 and one that carries no guarantee beyond the recovery limit.
 \end{frame}
 
@@ -313,7 +316,7 @@ Studies 1 and 4.
 \end{frame}
 
 \begin{frame}{Belief sharing (part 9)}
-fig.~3 makes this concrete: three sentinel cards
+fig.~6 makes this concrete: three sentinel cards
 begin with different private categorical views of the nine-cell world,
 convert those views into local posteriors, and send only those
 posteriors to a fusion route. The return path is a cavity message,
@@ -327,8 +330,8 @@ so the consensus heard by agent \(n\) excludes the local posterior
 \begin{frame}{Belief sharing (part 11)}
 The figure remains a protocol map rather than a new result; the
 empirical belief matrix and free-energy comparison remain the evidence
-surfaces in fig.~10 and
-fig.~9.
+surfaces in fig.~13 and
+fig.~12.
 \end{frame}
 
 \begin{frame}[fragile]{Belief sharing (part 12)}
@@ -347,22 +350,22 @@ literature (Friston et al. 2024; Heins et al. 2024).
 \end{frame}
 
 \begin{frame}{Belief sharing (part 14)}
-sec.~7.2 reports that communicating
+sec.~10.2 reports that communicating
 colonies reach a mean variational free energy of 13.2190 nats against
 16.5298 nats for incommunicado colonies across 480 seeds,
 \end{frame}
 
 \begin{frame}{Belief sharing (part 15)}
 with the per-agent belief matrix before and after a round shown in
-fig.~10 and the colony comparison in
-fig.~9.
+fig.~13 and the colony comparison in
+fig.~12.
 \end{frame}
 
 \begin{frame}{Belief sharing (part 16)}
-The honesty boundary of sec.~3.3 carries through
+The honesty boundary of sec.~6.3 carries through
 the lift unchanged. The robustness that eq.~14
 inherits when the colony fuses with the server-side heuristic is the
-divergence-reweighting device of sec.~5.8,
+divergence-reweighting device of sec.~8.8,
 \end{frame}
 
 \begin{frame}{Belief sharing (part 17)}
@@ -372,15 +375,15 @@ separable objective class has a scoped no-go result.
 
 \begin{frame}{Belief sharing (part 18)}
 The per-agent FedGVI bounded-influence result enters the colony only
-through the rcce/AR client losses of sec.~5.7, under
+through the rcce/AR client losses of sec.~8.7, under
 the source theorem's matching assumptions, applied inside each agent's
 local generalized-Bayes update.
 \end{frame}
 
 \begin{frame}{Belief sharing (part 19)}
-The robustness sweep in sec.~7.5 and the
-variational supplement in sec.~12 keep the three
-axes distinct. The federation transport (sec.~13.4)
+The robustness sweep in sec.~10.5 and the
+variational supplement in sec.~15 keep the three
+axes distinct. The federation transport (sec.~16.4)
 realizes this sharing over queue-backed worker channels;
 \end{frame}
 

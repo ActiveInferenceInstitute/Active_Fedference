@@ -923,3 +923,31 @@ def test_fingerprint_ignores_cache_files(tmp_path: Path) -> None:
     (tmp_path / "src" / "__pycache__" / "junk.pyc").write_bytes(b"cache")
 
     assert compute_fingerprint(tmp_path) == baseline
+
+
+
+@pytest.mark.parametrize("relative", [
+    "src/fedference/config/gnn-backend-lock.json",
+    "src/fedference/models/sentinel.ir.json",
+    "src/fedference/models/extensions.parser.json",
+])
+@pytest.mark.parametrize("operation", ["add", "change", "remove"])
+def test_packaged_json_changes_invalidate_release(
+    tmp_path: Path, relative: str, operation: str,
+) -> None:
+    # Given valid evidence over real source/config files.
+    _make_artifacts(tmp_path)
+    _make_source_tree(tmp_path)
+    path = tmp_path / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if operation != "add":
+        path.write_text('{"revision":"before"}')
+    build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
+    assert verify_release(tmp_path) == []
+    # When a packaged JSON source is added, changed or removed.
+    if operation == "remove":
+        path.unlink()
+    else:
+        path.write_text('{"revision":"after"}')
+    # Then old evidence cannot qualify the changed source tree.
+    assert any("provenance fingerprint mismatch" in item for item in verify_release(tmp_path))

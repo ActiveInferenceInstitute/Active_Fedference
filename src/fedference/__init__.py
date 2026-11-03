@@ -21,10 +21,8 @@ from .aggregation import (
     AggregationMethod,
     AggregationResult,
     AggregatorProtocol,
-    aggregate,
     aggregate_result,
     aggregation_free_energy,
-    friston_belief_share,
     log_linear_pool,
     robust_aggregate,
     variational_aggregate,
@@ -37,9 +35,7 @@ from .application import (
 )
 from .bayesian_model_reduction import greedy_reduce, hierarchical_reduce
 from .belief_sharing import (
-    SharingDiagnostics,
     SharingRoundResult,
-    share_round,
     share_round_result,
 )
 from .continuous_recovery import (
@@ -111,9 +107,7 @@ __all__ = [
     "softmax",
     # aggregation
     "log_linear_pool",
-    "friston_belief_share",
     "robust_aggregate",
-    "aggregate",
     "aggregate_result",
     "variational_aggregate",
     "aggregation_free_energy",
@@ -127,9 +121,7 @@ __all__ = [
     "LabeledAggregationResult",
     "aggregate_labeled",
     # belief sharing
-    "share_round",
     "share_round_result",
-    "SharingDiagnostics",
     "SharingRoundResult",
     # evidence contracts
     "DatasetSpec",

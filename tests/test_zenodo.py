@@ -1514,12 +1514,12 @@ def test_http_error_retains_no_echoed_token_or_raw_payload(
     assert error.__cause__ is None
     assert error.__context__ is None
 
-    adapter_path = Path(__file__).resolve().parents[1] / "src" / "publication" / "zenodo.py"
+    adapter_paths = set((Path(__file__).resolve().parents[1] / "src" / "publication").glob("zenodo*.py"))
     adapter_frames = []
     traceback = error.__traceback__
     while traceback is not None:
         frame = traceback.tb_frame
-        if Path(frame.f_code.co_filename).resolve() == adapter_path:
+        if Path(frame.f_code.co_filename).resolve() in adapter_paths:
             adapter_frames.append((frame.f_code.co_name, dict(frame.f_locals)))
         traceback = traceback.tb_next
 
@@ -1557,12 +1557,12 @@ def test_malformed_success_response_retains_no_raw_payload(
     error = caught.value
     assert error.__cause__ is None
     assert error.__context__ is None
-    adapter_path = Path(__file__).resolve().parents[1] / "src" / "publication" / "zenodo.py"
+    adapter_paths = set((Path(__file__).resolve().parents[1] / "src" / "publication").glob("zenodo*.py"))
     adapter_frames = []
     traceback = error.__traceback__
     while traceback is not None:
         frame = traceback.tb_frame
-        if Path(frame.f_code.co_filename).resolve() == adapter_path:
+        if Path(frame.f_code.co_filename).resolve() in adapter_paths:
             adapter_frames.append((frame.f_code.co_name, dict(frame.f_locals)))
         traceback = traceback.tb_next
 
@@ -1594,12 +1594,12 @@ def test_semantically_malformed_success_with_token_echo_fails_closed(
     error = caught.value
     assert error.__cause__ is None
     assert error.__context__ is None
-    adapter_path = Path(__file__).resolve().parents[1] / "src" / "publication" / "zenodo.py"
+    adapter_paths = set((Path(__file__).resolve().parents[1] / "src" / "publication").glob("zenodo*.py"))
     adapter_frames = []
     traceback = error.__traceback__
     while traceback is not None:
         frame = traceback.tb_frame
-        if Path(frame.f_code.co_filename).resolve() == adapter_path:
+        if Path(frame.f_code.co_filename).resolve() in adapter_paths:
             adapter_frames.append((frame.f_code.co_name, dict(frame.f_locals)))
         traceback = traceback.tb_next
 

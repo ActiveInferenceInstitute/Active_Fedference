@@ -367,7 +367,7 @@ aria-label="Generative model: categorical states, observations, actions, and hie
 <h2 class="prose-slide"
 aria-label="Generative model: categorical states, observations, actions, and hierarchy, part 5" id="slide-heading-c2a5c5adcf44">Generative
 model (part 5)</h2>
-<p>The structural map in <span class="cross-reference">Figure 4</span>
+<p>The structural map in <span class="cross-reference">Figure 7</span>
 follows the same generative-model vocabulary while making the
 implementation boundary visible: Panel A shows what one agent actually
 sees — one noisy categorical report over the 9 possible locations —</p>
@@ -885,7 +885,7 @@ one shared… (part 2)</h2>
 <p>This single location factor is precisely the latent the colony
 gossips about: it is the shared argument of the log-linear pool (<span class="cross-reference">9</span>)
 and of every belief-sharing round (<span class="cross-reference">14</span>).
-Fixing one hidden factor keeps the recovery limits of <span class="cross-reference">Section 6</span>
+Fixing one hidden factor keeps the recovery limits of <span class="cross-reference">Section 9</span>
 closed-form and exactly testable,</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -938,15 +938,13 @@ aria-label="Four categorical tensors: likelihood, transitions, preferences, prio
 <h2 class="equation-led"
 aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 5" id="slide-heading-d0311e0040c7">Four
 categorical tensors (part 5)</h2>
-<p><span class="math display" id="eq:observation-likelihood">\[
-\begin{aligned}
+<p><span class="math display" id="eq:observation-likelihood">\[\begin{aligned}
 A_{o s} &amp;= \text{acuity}
 &amp;&amp; \text{if }o=s,\\
 A_{o s} &amp;= \frac{1-\text{acuity}}{n_s-1}
 &amp;&amp; \text{if }o\neq s,\\
 \sum_o A_{o s} &amp;= 1.
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-16f7cbebb42d">
@@ -1030,7 +1028,7 @@ aria-label="Four categorical tensors: likelihood, transitions, preferences, prio
 aria-label="Four categorical tensors: likelihood, transitions, preferences, priors, part 13" id="slide-heading-acf1aae36da1">Four
 categorical tensors (part 13)</h2>
 <p>The preferred-outcome distribution that the expected-free-energy
-decomposition of <span class="cross-reference">Section 5.15</span>
+decomposition of <span class="cross-reference">Section 8.15</span>
 uses is <span class="math inline">\(p_C(o) =
 \mathrm{softmax}(C)[o]\)</span>.</p>
 </section>
@@ -1080,15 +1078,13 @@ aria-label="One-step variational state inference in the grid world, part 3" role
 <h2 class="equation-led"
 aria-label="One-step variational state inference in the grid world, part 3" id="slide-heading-2140cab80e99">One-step
 variational state… (part 3)</h2>
-<p><span class="math display" id="eq:state-inference">\[
-q(s)
+<p><span class="math display" id="eq:state-inference">\[q(s)
 = \mathrm{softmax}\!\left(
 \begin{aligned}
 &amp;\ln D_0(s)\\
 &amp;\quad + \textstyle\sum_m \ln A_m[o_m, s]
 \end{aligned}
-\right).
-\]</span></p>
+\right).\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="One-step variational state inference in the grid world, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f4b8eff1c6fe">
@@ -1107,8 +1103,7 @@ aria-label="One-step variational state inference in the grid world, part 5" role
 <h2 class="equation-led"
 aria-label="One-step variational state inference in the grid world, part 5" id="slide-heading-ec54145b41e5">One-step
 variational state… (part 5)</h2>
-<p><span class="math display" id="eq:variational-free-energy">\[
-\begin{aligned}
+<p><span class="math display" id="eq:variational-free-energy">\[\begin{aligned}
 F[q]
 &amp;= \mathbb{E}_q\!\left[
 \begin{aligned}
@@ -1118,8 +1113,7 @@ F[q]
 \right]\\
 &amp;= \mathrm{KL}\big(q \,\|\, D_0\big)
    - \mathbb{E}_q\!\big[\textstyle\sum_m \ln A_m[o_m, s]\big].
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="One-step variational state inference in the grid world, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d0210067e502">
@@ -1138,7 +1132,7 @@ variational state… (part 7)</h2>
 <p>Both live in <code>belief_updating.infer_states</code> and
 <code>belief_updating.vfe</code>, and the free energy of <a class="cross-reference" href="#eq:variational-free-energy">Equation (17)</a>
 is the quantity the communicating-versus-incommunicado colony comparison
-of <span class="cross-reference">Section 5.22</span>
+of <span class="cross-reference">Section 8.22</span>
 scores.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -1157,7 +1151,7 @@ aria-label="One-step variational state inference in the grid world, part 9" role
 aria-label="One-step variational state inference in the grid world, part 9" id="slide-heading-87a282f0aff3">One-step
 variational state… (part 9)</h2>
 <p>That client identity recovers the stated categorical Bayes substrate
-at its trusting limits. The separate server identity in <span class="cross-reference">Section 5.8</span>
+at its trusting limits. The separate server identity in <span class="cross-reference">Section 8.8</span>
 then yields the project log-linear pool under its qualified Eq. 7
 message-combination bridge;</p>
 </section>
@@ -1166,12 +1160,12 @@ aria-label="One-step variational state inference in the grid world, part 10" rol
 <h2 class="prose-slide"
 aria-label="One-step variational state inference in the grid world, part 10" id="slide-heading-36c672863da8">One-step
 variational state… (part 10)</h2>
-<p>together these do not recover the complete Friston protocol (<span class="cross-reference">Section 6</span>).</p>
+<p>together these do not recover the complete Friston protocol (<span class="cross-reference">Section 9</span>).</p>
 </section>
 <section id="sec:methods-pomdp-loop" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-da94d40b041c">
 <h2 class="prose-slide" id="slide-heading-da94d40b041c">Hidden-state to action loop: the POMDP
 substrate</h2>
-<p>The categorical POMDP loop in <span class="cross-reference">Figure 5</span>
+<p>The categorical POMDP loop in <span class="cross-reference">Figure 8</span>
 separates the common latent-state substrate from the federation
 transport. In the sentinel interpretation, an agent is a
 location-sensitive observer:</p>
@@ -1629,9 +1623,10 @@ alt="Model schematic, not an empirical result. Hatched cells only illustrate top
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

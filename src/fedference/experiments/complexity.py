@@ -20,8 +20,14 @@ from pathlib import Path
 
 import numpy as np
 
-from ..aggregation import log_linear_pool, robust_aggregate, variational_aggregate
-from ..belief_sharing import share_round
+from ..aggregation import (
+    AggregationConfig,
+    AggregationMethod,
+    log_linear_pool,
+    robust_aggregate,
+    variational_aggregate,
+)
+from ..belief_sharing import share_round_result
 from ..belief_updating import infer_states
 from ..complexity import (
     ComplexityBenchmarkConfig,
@@ -279,10 +285,11 @@ def _aggregation_measurements(config: ComplexityBenchmarkConfig) -> list[dict[st
 def _sharing_measurements(config: ComplexityBenchmarkConfig) -> list[dict[str, object]]:
     """Measure naive and iterative-robust quadratic leave-one-out fan-out."""
     measurements: list[dict[str, object]] = []
-    for method, operation, iterations in (
+    methods: tuple[tuple[AggregationMethod, str, int], ...] = (
         ("naive", "share_round_naive", 1),
         ("robust", "share_round_robust", _ROBUST_SHARING_ITERATIONS),
-    ):
+    )
+    for method, operation, iterations in methods:
         samples: list[list[float]] = []
         digests: list[str] = []
         work: list[int] = []
@@ -292,10 +299,9 @@ def _sharing_measurements(config: ComplexityBenchmarkConfig) -> list[dict[str, o
             )
 
             def _share() -> object:
-                return share_round(
+                return share_round_result(
                     local_posteriors,
-                    method=method,
-                    robustness=1.0,
+                    config=AggregationConfig(method=method, robustness=1.0, max_iter=32, tol=1e-9),
                     exclude_self=True,
                 )
 

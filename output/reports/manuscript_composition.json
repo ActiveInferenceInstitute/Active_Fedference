@@ -1,277 +1,295 @@
 {
-  "algorithm": "web-renderer-combine-v1",
-  "binding_sha256": "ff8bec2c3127ac4c2bca2b9ae7e842594b77ffa64239ca8b88c562b1522450ff",
+  "algorithm": "web-renderer-paper-frontmatter-v1",
+  "binding_sha256": "efe93102dda9c564831d6af277a84e9439cc1d5a384f015bba3d1ba0a3e24a53",
   "combined_path": "output/web/_combined_manuscript.md",
-  "combined_sha256": "cb6182b7e99baff4b86371e4cd33d9199af599899dd7dc2859b43bd38d3900e4",
-  "combined_size_bytes": 360317,
+  "combined_sha256": "61f9ad61fdcab0f5448cd33335fb37a73c467f29a07df73450286d4e4761e85f",
+  "combined_size_bytes": 365058,
   "input_root_kind": "hydrated",
   "ordered_inputs": [
     {
       "ordinal": 1,
+      "path": "output/manuscript/00a_graphical_model.md",
+      "sha256": "6efe59065b349d313e3468cc229e14e899c86408f5f7d488deacbe99b27743df",
+      "size_bytes": 1184
+    },
+    {
+      "ordinal": 2,
+      "path": "output/manuscript/00b_graphical_robustness.md",
+      "sha256": "ececa95cb0778ffca00ad3740cc10e2d4927953e6e7d54e156fc35fa886d3d2e",
+      "size_bytes": 1189
+    },
+    {
+      "ordinal": 3,
+      "path": "output/manuscript/00c_graphical_execution.md",
+      "sha256": "138d998a4e8a6ec534947256bcf7271da0a365aff3c0e89758266683179e848d",
+      "size_bytes": 1229
+    },
+    {
+      "ordinal": 4,
       "path": "output/manuscript/00_abstract.md",
       "sha256": "fa5eaa165ad700a0a7d76eec8c690537a00f8fe2f7ab617bbad019b5fb9ab881",
       "size_bytes": 4544
     },
     {
-      "ordinal": 2,
+      "ordinal": 5,
       "path": "output/manuscript/01_introduction.md",
-      "sha256": "8dc88bc2bdc487f2c6c2122a70ece1a914ef9f0435c39a07b6b34798dd20e0e1",
-      "size_bytes": 13165
+      "sha256": "0fc43a6a323c9e17a190109cd29ec03f5713330690fe4c7ec766bc0293823ede",
+      "size_bytes": 13555
     },
     {
-      "ordinal": 3,
+      "ordinal": 6,
       "path": "output/manuscript/02_gap.md",
       "sha256": "28e5c5d6646a29d92e04de7881da639eb427fabc44edf90fba4e5b2c1d40bf0f",
       "size_bytes": 6955
     },
     {
-      "ordinal": 4,
+      "ordinal": 7,
       "path": "output/manuscript/03_contributions.md",
       "sha256": "571eb83478a871944e9f3f61ceec578153ff8b966c88f97dfc28f4ceb3b37d5b",
       "size_bytes": 8603
     },
     {
-      "ordinal": 5,
+      "ordinal": 8,
       "path": "output/manuscript/04_methods_overview.md",
       "sha256": "dded2de5a95078d0853858fccbc73f942cd9f7459cb919568f43c2e782417942",
       "size_bytes": 6140
     },
     {
-      "ordinal": 6,
+      "ordinal": 9,
       "path": "output/manuscript/05_methods_generalized_bayes.md",
       "sha256": "e700f5200ff1cceb8b0e9d26693c05f53ad59bc3772858ed5f41c4f4425b48c2",
       "size_bytes": 7372
     },
     {
-      "ordinal": 7,
+      "ordinal": 10,
       "path": "output/manuscript/06_methods_divergences_and_losses.md",
       "sha256": "7c5d8ee89ed7da885e3ce376e4d3f4136ee63d3992815365a8783aa27966ea51",
       "size_bytes": 6390
     },
     {
-      "ordinal": 8,
+      "ordinal": 11,
       "path": "output/manuscript/07_methods_aggregation.md",
       "sha256": "e80defbd24457c5d119616aee9839f25e573593422924543861c17844b69340b",
       "size_bytes": 13330
     },
     {
-      "ordinal": 9,
+      "ordinal": 12,
       "path": "output/manuscript/08_methods_belief_sharing.md",
       "sha256": "50c34a0599e02b73424590d060d2da4d7625a447f1d9a5e393d38bbf0f328088",
       "size_bytes": 4122
     },
     {
-      "ordinal": 10,
+      "ordinal": 13,
       "path": "output/manuscript/09_methods_generative_model.md",
       "sha256": "d41c4f59f1ef07446cc396f36d89c4ee8ccb168b2d8f5eba51131eace1a8552e",
       "size_bytes": 11516
     },
     {
-      "ordinal": 11,
+      "ordinal": 14,
       "path": "output/manuscript/10_methods_learning.md",
       "sha256": "6c6b48b54d02474005b858698e277f074b3f9bcb40cd0dbd81f4cef982d2da69",
       "size_bytes": 7356
     },
     {
-      "ordinal": 12,
+      "ordinal": 15,
       "path": "output/manuscript/11_methods_contamination.md",
       "sha256": "5c2d21c8c275ed2684c0039b4c586a2239acce26d6ba1c7330ce274d10b244f8",
       "size_bytes": 6647
     },
     {
-      "ordinal": 13,
+      "ordinal": 16,
       "path": "output/manuscript/12_methods_experimental_design.md",
       "sha256": "a008f800875bc11562356eb3c015e3052e8fecf0e1f50b37dfb0a401ca2659ee",
       "size_bytes": 12697
     },
     {
-      "ordinal": 14,
+      "ordinal": 17,
       "path": "output/manuscript/13_methods_statistics.md",
-      "sha256": "5a7dceb8380824a501ef19d62c5948247568cbf680bea8bdf50383b999975fda",
-      "size_bytes": 17502
+      "sha256": "421c520f09b906d94075d456a3b29511172f5e2cd1b3a0bc0a55ca563b395e82",
+      "size_bytes": 17500
     },
     {
-      "ordinal": 15,
+      "ordinal": 18,
       "path": "output/manuscript/14_formalism.md",
       "sha256": "1aa8117d1df4cd34f7a2f83812c19b9eeabe955406fb906f92245245afaf87a8",
       "size_bytes": 18595
     },
     {
-      "ordinal": 16,
+      "ordinal": 19,
       "path": "output/manuscript/15_results_recovery.md",
-      "sha256": "98c14742eda07f44acf236fd9495bf2ffa991d96344cc7d5a24f74117390ecf3",
+      "sha256": "57f22b1d7fec7aa35b414b338d65810ebd905ac4104486c0bb08085ce0f1e92a",
       "size_bytes": 6054
     },
     {
-      "ordinal": 17,
+      "ordinal": 20,
       "path": "output/manuscript/16_results_belief_sharing.md",
       "sha256": "e18db3539a0c7c9fe76756cb17458e9e45aad4ee911cdebcc2ff34d87861f8b7",
       "size_bytes": 5231
     },
     {
-      "ordinal": 18,
+      "ordinal": 21,
       "path": "output/manuscript/17_results_language.md",
       "sha256": "1c035ca03d52e951b605828d69a13a8a076161a9af39c3f09ea5124cdf51448e",
       "size_bytes": 2963
     },
     {
-      "ordinal": 19,
+      "ordinal": 22,
       "path": "output/manuscript/18_results_emergence.md",
       "sha256": "7b0af7e4f17dc1afc4284ed0e2820a756966042466d4fd5508cc46a1af1b41d6",
       "size_bytes": 3366
     },
     {
-      "ordinal": 20,
+      "ordinal": 23,
       "path": "output/manuscript/19_results_robustness.md",
       "sha256": "ee85a10e61268e1ff16f0a8d598c77b93ccac68f9f647b7a34033c8e6c1104df",
       "size_bytes": 24241
     },
     {
-      "ordinal": 21,
+      "ordinal": 24,
       "path": "output/manuscript/20_results_baseline.md",
-      "sha256": "4a0fca7e759db464324c6b3055aa0ac7e2eafb05e36ea2d367f96697a9542c3c",
-      "size_bytes": 6052
+      "sha256": "482c7fe1f750b4f53b5fc91ddbfc373b47f4aad65e3f3101a7d8b28a49615df0",
+      "size_bytes": 6019
     },
     {
-      "ordinal": 22,
+      "ordinal": 25,
       "path": "output/manuscript/21_discussion_findings.md",
       "sha256": "65a78e6bf07f43e6d57adbfa64150ff208ba999b36d4356c5529a93b7f3fe14b",
       "size_bytes": 10390
     },
     {
-      "ordinal": 23,
+      "ordinal": 26,
       "path": "output/manuscript/22_discussion_related_work.md",
       "sha256": "9bd90deed029d0fc5eb9188cb1958d5f96228f0aab5e73dd7d950f7a5a1ccaa7",
       "size_bytes": 11661
     },
     {
-      "ordinal": 24,
+      "ordinal": 27,
       "path": "output/manuscript/23_discussion_limitations.md",
       "sha256": "891510c37b9bf052482c0bac15bcf917ff615846ff1f1bacf173e2c58f9ea5ee",
       "size_bytes": 8275
     },
     {
-      "ordinal": 25,
+      "ordinal": 28,
       "path": "output/manuscript/24_discussion_future.md",
       "sha256": "d7f6771ee3786c91839a8fdf53da1e74a6ec70f504dce4255de5eb9cf46fb2db",
       "size_bytes": 11286
     },
     {
-      "ordinal": 26,
+      "ordinal": 29,
       "path": "output/manuscript/25_conclusion.md",
       "sha256": "300b2d75c7cd40e47b831b9f2ff3a16666c8a068638cb7877267f94d5985aeca",
       "size_bytes": 10017
     },
     {
-      "ordinal": 27,
+      "ordinal": 30,
       "path": "output/manuscript/26_reproducibility.md",
-      "sha256": "59cced4bad532e4d80395fd2b40b0b05207f31d1fe0ab4c9502edaca13329d4d",
-      "size_bytes": 9286
+      "sha256": "80978eaf00a09bc792952e9d60b843ec6014abb159575607e0e4fb72f9324166",
+      "size_bytes": 9278
     },
     {
-      "ordinal": 28,
+      "ordinal": 31,
       "path": "output/manuscript/26_reproducibility_provenance.md",
       "sha256": "0175966e5f208df42919824dd1b3717164a741b6f47d4805fc41d6b710c29393",
       "size_bytes": 4852
     },
     {
-      "ordinal": 29,
+      "ordinal": 32,
       "path": "output/manuscript/27_supplement_aggregation_objective.md",
       "sha256": "c467f7576b13be606d9342ee1a3c79e5ad0bf5ac4219145b41630365ee8d078a",
       "size_bytes": 16236
     },
     {
-      "ordinal": 30,
+      "ordinal": 33,
       "path": "output/manuscript/28_supplement_extended_methods.md",
       "sha256": "36fea56002278ad45fc5279fd64ef25632279a2e2cae82deb1d70fef88849f83",
       "size_bytes": 18485
     },
     {
-      "ordinal": 31,
+      "ordinal": 34,
       "path": "output/manuscript/29_supplement_federation_protocol.md",
       "sha256": "b5f9b0a1290f29243b83d3018784a0fe709f7989ff61f11e81069ef25f28ff29",
       "size_bytes": 2981
     },
     {
-      "ordinal": 32,
+      "ordinal": 35,
       "path": "output/manuscript/30_supplement_notation.md",
       "sha256": "a572d585c9906d250becb2fd280b8ea50efea7e63948ab8dec556974488e40c0",
       "size_bytes": 13619
     },
     {
-      "ordinal": 33,
+      "ordinal": 36,
       "path": "output/manuscript/S05_results_moving_world.md",
       "sha256": "44465d556b57ca4158a698bc746382e34031c6977d2d02645eb5c1ad6112aae6",
       "size_bytes": 9159
     },
     {
-      "ordinal": 34,
+      "ordinal": 37,
       "path": "output/manuscript/S06_supp_moving_world.md",
       "sha256": "02ffcb446d8efe6f61657c0a30cbbc03b8738e2e08dfdee8a7567e68e649dfb5",
       "size_bytes": 2290
     },
     {
-      "ordinal": 35,
+      "ordinal": 38,
       "path": "output/manuscript/S09_results_hierarchical_pomdp.md",
-      "sha256": "c2105306410ada8996d2a6972b0a7fe580dacaed47a40499cd9260aae5b68296",
+      "sha256": "e590fa2519b0f223827c65703bfd34117840d895da7f5f67f5eb772cb3e3dc3e",
       "size_bytes": 4389
     },
     {
-      "ordinal": 36,
+      "ordinal": 39,
       "path": "output/manuscript/S10_supp_hierarchical_pomdp.md",
       "sha256": "db606d8515ee86d8b9874f91d6de0638b4bda175cf19508176fb187b64ab5f02",
       "size_bytes": 2841
     },
     {
-      "ordinal": 37,
+      "ordinal": 40,
       "path": "output/manuscript/S11_results_3level_pomdp.md",
-      "sha256": "210a3e8c22369e89f19bb88e40183f49922c565b2320b931e88b56fdd620a78a",
-      "size_bytes": 2896
+      "sha256": "05cad047b40f1e500448acf40418e6d42e9152cfdd5d3cda08b9fad0dba1b2c8",
+      "size_bytes": 2895
     },
     {
-      "ordinal": 38,
+      "ordinal": 41,
       "path": "output/manuscript/S12_supp_3level_pomdp.md",
       "sha256": "20141fac68bc0e86e04e6b273f8557ae069384844123e294b7b79f7308c03a80",
       "size_bytes": 3678
     },
     {
-      "ordinal": 39,
+      "ordinal": 42,
       "path": "output/manuscript/S13_results_sensitivity.md",
       "sha256": "2b618ff6cfd87ee461402570acef02f0d7b200b4eb4eb96dbfb7f52e40beef24",
       "size_bytes": 6847
     },
     {
-      "ordinal": 40,
+      "ordinal": 43,
       "path": "output/manuscript/S14_supp_sensitivity.md",
       "sha256": "369a55979aa17f498ec2bdf0c88d4c236d1a9e314c7659fd966b4d9baaf2150d",
       "size_bytes": 6029
     },
     {
-      "ordinal": 41,
+      "ordinal": 44,
       "path": "output/manuscript/S15_results_parameter_recovery.md",
       "sha256": "157a7f555d6bea5d3a77e4be64143ce921ecc2a85b7885cfc5acc2c6ed9ec504",
       "size_bytes": 2420
     },
     {
-      "ordinal": 42,
+      "ordinal": 45,
       "path": "output/manuscript/S16_results_hierarchical_bmr.md",
       "sha256": "9bca5e3b19b2394045283dbce06406ee7836c506c361ed2f496952006588d16e",
       "size_bytes": 3706
     },
     {
-      "ordinal": 43,
+      "ordinal": 46,
       "path": "output/manuscript/S17_results_heuristic_characterization.md",
       "sha256": "6c315c36ad1a61dd5a06d9603b835ae2caef97a25469e868080ee023e10505c0",
       "size_bytes": 4776
     },
     {
-      "ordinal": 44,
+      "ordinal": 47,
       "path": "output/manuscript/99_references.md",
       "sha256": "20d90f9895cf488a2e122246643f5b31547fe030b226db9f454394707066a1c9",
       "size_bytes": 1278
     }
   ],
-  "ordered_inputs_sha256": "828de65e8dfc4bd1765d484950e8401a6d32a0b59af4ecb4b41012893205fe6d",
+  "ordered_inputs_sha256": "bba2e01c00e0ac616e2e28da32b56fc8381380c8cb1d582149ecfd756a0a7534",
   "project": "working/active_fedference",
   "schema_version": "template-manuscript-composition-v1"
 }

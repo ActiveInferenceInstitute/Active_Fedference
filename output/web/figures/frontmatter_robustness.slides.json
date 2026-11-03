@@ -1,0 +1,53 @@
+{
+  "panels": [
+    {
+      "alt": "Client FedGVI: generalized\nvariational updates combine a\ndivergence and a loss. Bounded-loss\ninfluence claims require the",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "25059c5ce2ace9803ad1f863c04b938c1e6d848d95c239521110d568fea8aa60",
+      "src": "../figures/frontmatter_robustness.slide-reading-1-1.png"
+    },
+    {
+      "alt": "source's matching model and\nregularity assumptions. KL/NLL with\nbeta zero recovers the project-local\nBayes update.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2634766d98da9faa610ce35c8206cbc043ac1595246f455aa1f948902e5c0959",
+      "src": "../figures/frontmatter_robustness.slide-reading-1-2.png"
+    },
+    {
+      "alt": "Heuristic server: robust_aggregate\ndiscounts reports by disagreement\nwith the emerging consensus. At\nrobustness zero it exactly returns",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "fc9d62815cb783bf46e3a07ca43bbe2a464a34f21f7aaa4a0d1f2327facf3111",
+      "src": "../figures/frontmatter_robustness.slide-reading-2-1.png"
+    },
+    {
+      "alt": "log_linear_pool. Recovery only; no\ntransferred client theorem.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1a7ff85f511a25794ad3f0947b00600375c7ba7b3891a1473157279f023d4a1f",
+      "src": "../figures/frontmatter_robustness.slide-reading-2-2.png"
+    },
+    {
+      "alt": "Variational server:\nvariational_aggregate alternates\nconsensus and raw effective-weight\nupdates on a stated objective.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "47e76b8c69b13d2d1c30aadcbac68f0b6460e34d26f3c9bedf5939354b6228b0",
+      "src": "../figures/frontmatter_robustness.slide-reading-3-1.png"
+    },
+    {
+      "alt": "Descent and raw-weight bounds do not\nprove estimator B-robustness.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "af8cfa745134785c9d5350c82a09f2a9b7006adf835fcad5479f44f82b067433",
+      "src": "../figures/frontmatter_robustness.slide-reading-3-2.png"
+    },
+    {
+      "alt": "Choose one server rule after the\nclient update. Guarantees stay with\ntheir own mathematical construction.\nNo universal robustness or source",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "f449655d1b636db476f4bc8da9951631346cf8394e00cea9b60867a485e7fc1a",
+      "src": "../figures/frontmatter_robustness.slide-reading-4-1.png"
+    },
+    {
+      "alt": "protocol replication follows from\nthis diagram.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1540d03d598528809f6605572cd3e61ae919b84ba370df483b0bab4113d541ca",
+      "src": "../figures/frontmatter_robustness.slide-reading-4-2.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

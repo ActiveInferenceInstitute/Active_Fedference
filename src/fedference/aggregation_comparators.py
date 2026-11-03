@@ -7,7 +7,6 @@ inherit parameter-space robust-federated-learning guarantees.
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from dataclasses import dataclass
 
@@ -32,31 +31,8 @@ class ComparatorResult:
 def linear_opinion_pool(
     local_posteriors: Iterable[ArrayF] | None = None,
     base_weights: Iterable[float] | None = None,
-    **legacy: object,
 ) -> ArrayF:
     """Weighted arithmetic mixture of categorical beliefs."""
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if "weights" in legacy:
-        if base_weights is not None:
-            raise TypeError("base_weights and deprecated weights cannot both be supplied")
-        base_weights = legacy.pop("weights")  # type: ignore[assignment]
-        warnings.warn(
-            "weights is deprecated; use base_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     matrix = as_pmf_matrix(local_posteriors)
@@ -98,7 +74,6 @@ def clr_geometric_median_pool(
     base_weights: Iterable[float] | None = None,
     max_iter: int = 256,
     tol: float = 1e-10,
-    **legacy: object,
 ) -> ComparatorResult:
     """Pool beliefs by a weighted geometric median in CLR coordinates.
 
@@ -111,28 +86,6 @@ def clr_geometric_median_pool(
         raise ValueError("max_iter must be a positive integer")
     if not np.isfinite(tol) or tol < 0.0:
         raise ValueError("tol must be a finite non-negative value")
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if "weights" in legacy:
-        if base_weights is not None:
-            raise TypeError("base_weights and deprecated weights cannot both be supplied")
-        base_weights = legacy.pop("weights")  # type: ignore[assignment]
-        warnings.warn(
-            "weights is deprecated; use base_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     matrix = as_pmf_matrix(local_posteriors)

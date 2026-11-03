@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -301,12 +306,25 @@ methods for inference under misspecification or contamination.
 The cited literatures do not, however, provide a single tested treatment
 of robust categorical belief fusion for active-inference agents. This
 introduction states the problem and its evidence boundary;
-sec.~3 scopes the reviewed gap,
+sec.~6 scopes the reviewed gap,
 \end{frame}
 
 \begin{frame}{Introduction (part 5)}
-and sec.~4 lists the contributions together with
+and sec.~7 lists the contributions together with
 what each result does not establish.
+\end{frame}
+
+\begin{frame}{Introduction (part 6)}
+The opening graphical abstracts provide a reading map: the generative
+model and belief-exchange cycle in fig.~1, the
+distinct client and server robustness boundaries in
+fig.~2,
+\end{frame}
+
+\begin{frame}{Introduction (part 7)}
+and the model-to-execution evidence chain in
+fig.~3. These conceptual schematics orient
+the detailed assumptions, methods, and evidence that follow.
 \end{frame}
 
 \begin{frame}{Active inference supplies generative agents and shared
@@ -363,7 +381,7 @@ explicit finite-shared-support, posterior-log-potential,
 \end{frame}
 
 \begin{frame}{Active inference supplies\ldots{} (part 9)}
-and fixed-weight assumptions of sec.~5.8, that
+and fixed-weight assumptions of sec.~8.8, that
 weighted geometric pool is a specialization of Friston et al.'s Eq. 7
 message-combination term (Friston et al. 2024).
 \end{frame}
@@ -385,7 +403,7 @@ baseline,
 
 \begin{frame}{Active inference supplies\ldots{} (part 12)}
 communication lowers mean free energy relative to the matched
-incommunicado condition (sec.~7.2).
+incommunicado condition (sec.~10.2).
 \end{frame}
 
 \begin{frame}{Active inference supplies\ldots{} (part 13)}
@@ -397,7 +415,7 @@ emergence ---
 
 \begin{frame}{Active inference supplies\ldots{} (part 14)}
 whose mechanisms motivate three reduced categorical analogues in this
-repository (sec.~7.1). They are not numerical or
+repository (sec.~10.1). They are not numerical or
 exact protocol replications; a source-parity reconstruction remains
 future work before evaluating source-level equivalence.
 \end{frame}
@@ -412,7 +430,7 @@ design and model selection (Smith et al. 2022),
 and post-hoc Bayesian model reduction prunes redundant structure by
 comparing free-energy bounds (Friston and Penny 2011) --- the algebra
 used by our configured BMR sign control
-(sec.~7.4).
+(sec.~10.4).
 \end{frame}
 
 \begin{frame}{Active inference supplies\ldots{} (part 17)}
@@ -528,8 +546,8 @@ recovery limit. That containment is the hinge this paper tests,
 
 \begin{frame}{Robust and federated Bayes\ldots{} (part 14)}
 and the recovery limits are stated formally as numbered results in
-sec.~6 and the central identity in
-sec.~5.8.
+sec.~9 and the central identity in
+sec.~8.8.
 \end{frame}
 
 \begin{frame}{Robust and federated Bayes\ldots{} (part 15)}
@@ -586,8 +604,8 @@ behave in the accompanying categorical extensions?
 The first question is answered algebraically and by machine-precision
 checks; the others are conditional simulation results. The independent
 unit, resampling scheme, and fixed hidden-state/attack-target estimand
-are specified in sec.~5.22 and
-sec.~5.27.
+are specified in sec.~8.22 and
+sec.~8.27.
 \end{frame}
 
 \begin{frame}{How to read the visual architecture}
@@ -595,13 +613,13 @@ sec.~5.27.
 The manuscript uses two complementary visual layers. The formal
 schematics adapt the generative-model and posterior-sharing perspective
 of Friston et al. (2024) to the categorical implementation:
-fig.~4 shows the private sensory report
+fig.~7 shows the private sensory report
 and \(A/B/C/D\) substrate,
 \end{frame}
 
 \begin{frame}{How to read the visual\ldots{} (part 2)}
-fig.~3 shows how three local posterior messages
-become server inputs, and fig.~5 shows the
+fig.~6 shows how three local posterior messages
+become server inputs, and fig.~8 shows the
 hidden-state, agent, and active-control context. These diagrams are
 explanatory maps, not additional empirical observations.
 \end{frame}
@@ -613,13 +631,13 @@ their captions identify the relevant uncertainty and resampling unit.
 \end{frame}
 
 \begin{frame}{How to read the visual\ldots{} (part 4)}
-The graphical abstract in fig.~1 compresses
+The graphical abstract in fig.~4 compresses
 the same logic into a recovery anchor, a federation pathway, and three
 explicitly non-transferable robustness axes.
 \end{frame}
 
 \begin{frame}{How to read the visual\ldots{} (part 5)}
-fig.~2 illustrates one configured
+fig.~5 illustrates one configured
 failure-and-repair case: a partially contaminated colony broadcasts
 beliefs (Panel A), the equal-weight log-linear pool is pulled toward the
 attack target (Panel B), and the server-side heuristic reweights the
@@ -628,14 +646,17 @@ broadcasts (Panel C). It is a deterministic schematic,
 
 \begin{frame}{How to read the visual\ldots{} (part 6)}
 not a universal robustness claim; the three axes and their distinct
-guarantees are defined in sec.~3 and
-sec.~3.3.
+guarantees are defined in sec.~6 and
+sec.~6.3.
 \end{frame}
 
 \begin{frame}{How to read the visual\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-1-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-1-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -643,7 +664,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-1-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-1-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -651,7 +675,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-1-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A1:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-1-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -659,7 +686,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-2-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-2-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -667,7 +697,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-2-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-2-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -675,7 +708,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-2-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A2:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-2-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -683,7 +719,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-3-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-3-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -691,7 +730,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-3-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-3-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -699,7 +741,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-3-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H1:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-3-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -707,7 +752,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-4-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-4-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -715,7 +763,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-4-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-4-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -723,7 +774,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-4-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H2:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-4-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -731,7 +785,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-5-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3:
+source-derived posterior masses for states 1 to 3, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-5-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -739,7 +796,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-5-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3:
+source-derived posterior masses for states 4 to 6, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-5-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -747,7 +807,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-5-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={H3:
+source-derived posterior masses for states 7 to 8, common 0--1
+probability scale; arrow marks this row\textquotesingle s argmax when
+present.}]{../figures/system_overview.slide-row-5-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -755,7 +818,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-6-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+consensus: source-derived posterior masses for states 1 to 3, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when present.}]{../figures/system_overview.slide-row-6-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -763,7 +829,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-6-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+consensus: source-derived posterior masses for states 4 to 6, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when present.}]{../figures/system_overview.slide-row-6-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -771,7 +840,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive consensus: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-6-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+consensus: source-derived posterior masses for states 7 to 8, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when present.}]{../figures/system_overview.slide-row-6-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -779,7 +851,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 1 to 3, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-7-states-1-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+consensus: source-derived posterior masses for states 1 to 3, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when present.}]{../figures/system_overview.slide-row-7-states-1-3.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -787,7 +862,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 4 to 6, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-7-states-4-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+consensus: source-derived posterior masses for states 4 to 6, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when present.}]{../figures/system_overview.slide-row-7-states-4-6.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -795,7 +873,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic consensus: source-derived posterior masses for states 7 to 8, common 0--1 probability scale; arrow marks this row\textquotesingle s argmax when present.}]{../figures/system_overview.slide-row-7-states-7-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+consensus: source-derived posterior masses for states 7 to 8, common
+0--1 probability scale; arrow marks this row\textquotesingle s argmax
+when present.}]{../figures/system_overview.slide-row-7-states-7-8.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -803,7 +884,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/system_overview.slide-weights-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived
+normalized heuristic influence weights; adversarial bars are
+crosshatched and agent labels preserve their
+roles.}]{../figures/system_overview.slide-weights-1-2.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -811,7 +895,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/system_overview.slide-weights-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived
+normalized heuristic influence weights; adversarial bars are
+crosshatched and agent labels preserve their
+roles.}]{../figures/system_overview.slide-weights-3-4.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -819,7 +906,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived normalized heuristic influence weights; adversarial bars are crosshatched and agent labels preserve their roles.}]{../figures/system_overview.slide-weights-5-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source-derived
+normalized heuristic influence weights; adversarial bars are
+crosshatched and agent labels preserve their
+roles.}]{../figures/system_overview.slide-weights-5-5.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -827,7 +917,9 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40\%. True state: 3.}]{../figures/system_overview.slide-colony.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured
+colony: 5 agents; 2 adversarial, 3 honest. Contamination: 40\%. True
+state: 3.}]{../figures/system_overview.slide-colony.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -835,7 +927,9 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive equal-weight log pool: true-state mass 39\%; argmax state 6.}]{../figures/system_overview.slide-naive.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Naive
+equal-weight log pool: true-state mass 39\%; argmax state
+6.}]{../figures/system_overview.slide-naive.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-26}
 \end{figure}
 \end{frame}
@@ -843,7 +937,9 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic robust aggregation: true-state mass 50\%; argmax state 3. Robustness 1.5.}]{../figures/system_overview.slide-heuristic.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Heuristic
+robust aggregation: true-state mass 50\%; argmax state 3. Robustness
+1.5.}]{../figures/system_overview.slide-heuristic.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-27}
 \end{figure}
 \end{frame}
@@ -851,7 +947,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A / crosshatching: adversarial; H / plain: honest. All probability panels share a 0--1 scale. The true state is green; other states are gray.}]{../figures/system_overview.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={A /
+crosshatching: adversarial; H / plain: honest. All probability panels
+share a 0--1 scale. The true state is green; other states are
+gray.}]{../figures/system_overview.slide-key.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-28}
 \end{figure}
 \end{frame}
@@ -859,7 +958,10 @@ sec.~3.3.
 \begin{frame}{How to read the visual\ldots{} (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One deterministic configured colony, not a replicated benchmark. True-state mass percentages are not deployment accuracy estimates. No uncertainty interval applies.}]{../figures/system_overview.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One
+deterministic configured colony, not a replicated benchmark. True-state
+mass percentages are not deployment accuracy estimates. No uncertainty
+interval applies.}]{../figures/system_overview.slide-scope.png}
 \refstepcounter{figure}\label{fig:system-overview-slide-panel-29}
 \end{figure}
 \end{frame}

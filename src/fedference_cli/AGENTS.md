@@ -6,11 +6,12 @@ point.
 
 ## Required boundaries
 
-- Keep `__init__.py` a compatibility facade. Export `main` and the historical
-  `_report_fallbacks` name; do not put parser, runner, receipt, or numerical
-  logic there.
+- Keep `__init__.py` the installed entry-point facade and export only `main`.
+  `_report_fallbacks` remains internal to `_support.py`; do not reexport it or
+  put parser, runner, receipt, or numerical logic in the facade.
 - Keep parser grammar and process error mapping in `_parser.py`.
 - Keep registry-to-runner dispatch in `_commands.py`.
+- Keep read-only GNN validation in `_models.py`; delegate parsing and native configuration checks to the domain loaders. Never run simulations to report admission.
 - Keep atomic writes, project-root/output isolation, validation, registry
   summaries, and receipt construction in `_support.py`.
 - Keep research algorithms in `src/fedference/` and schemas in

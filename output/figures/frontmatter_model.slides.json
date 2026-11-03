@@ -1,0 +1,53 @@
+{
+  "panels": [
+    {
+      "alt": "Generative model: D supplies initial\nstate beliefs. B maps state and\naction to the next state. A maps\nhidden states to observations. C",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "331361a516e1b249de333956df9d9e29cc5718f3919fe15bb7528d55835e18f4",
+      "src": "../figures/frontmatter_model.slide-reading-1-1.png"
+    },
+    {
+      "alt": "supplies log preferences over\noutcomes.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "0bf601bd213b74316be26f2f2e9672ec2447aae0f667440ccfa5f8ce9a20dacb",
+      "src": "../figures/frontmatter_model.slide-reading-1-2.png"
+    },
+    {
+      "alt": "Observe outcomes, infer a local\ncategorical posterior, evaluate\npolicies with expected free energy,\nthen act and observe again. Solid",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "260dce8e00b26ef8e4323e23cab276cb0299a48da07d6fc785a127e5f481881a",
+      "src": "../figures/frontmatter_model.slide-reading-2-1.png"
+    },
+    {
+      "alt": "arrows distinguish the closed\nperception and action cycle.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "b71d05f87afb1cfb84be0acd1aab6d2a87411db639b7ae5415e1c4e67dc8bca3",
+      "src": "../figures/frontmatter_model.slide-reading-2-2.png"
+    },
+    {
+      "alt": "Share posterior beliefs, not raw\nobservations. Dashed message edges\ntake admitted posteriors to fusion\nand return recipient-specific cavity",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "ce31b502824213032a30192a4f7fcd7c78fb37bb7810d1e6dd703e1871bdc064",
+      "src": "../figures/frontmatter_model.slide-reading-3-1.png"
+    },
+    {
+      "alt": "beliefs, excluding the recipient's\nown message.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "6717c2829c1f7ad044c8892470b612b57edf9924e5b772e4c99bf0c45b205002",
+      "src": "../figures/frontmatter_model.slide-reading-3-2.png"
+    },
+    {
+      "alt": "The Eq. 7 bridge assumes shared\npositive support, posterior log\npotentials, and fixed weights. It\nspecializes categorical combination;",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bff6cd29aec956f091fec7d2575a3e011465c9f4923a468b77c514323a4e8523",
+      "src": "../figures/frontmatter_model.slide-reading-4-1.png"
+    },
+    {
+      "alt": "it does not reconstruct the complete\nsource protocol.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "cf68acdddf551ebe557d96fe3eab330458411188bf38ac5b19aea89be67aadb9",
+      "src": "../figures/frontmatter_model.slide-reading-4-2.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

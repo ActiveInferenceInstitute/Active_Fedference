@@ -419,7 +419,7 @@ aria-label="Application integrity and solver-health receipts, part 3" role="grou
 <h2 class="prose-slide"
 aria-label="Application integrity and solver-health receipts, part 3" id="slide-heading-d7f98d3e5a71">Application
 integrity and… (part 3)</h2>
-<p>The application flow in <span class="cross-reference">Figure 19</span>
+<p>The application flow in <span class="cross-reference">Figure 22</span>
 reads from top to bottom. Panel A follows validation and canonical
 hashing; Panel B places the exact two-by-two <code>solver_status</code>
 key below the result classifier; Panel C separates the upper
@@ -1204,7 +1204,7 @@ fingerprint for… (part 4)</h2>
 <tbody>
 <tr>
 <td>Python</td>
-<td>3.13.11</td>
+<td>3.14.9</td>
 </tr>
 <tr>
 <td>NumPy</td>
@@ -1216,7 +1216,7 @@ fingerprint for… (part 4)</h2>
 </tr>
 <tr>
 <td>PyTorch (MLP complement)</td>
-<td>not installed</td>
+<td>2.12.1</td>
 </tr>
 </tbody>
 </table></div>
@@ -1297,14 +1297,14 @@ extraction alone are insufficient.</p>
 <section id="sec:repro-tests" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-8334da6283d4">
 <h2 class="prose-slide" id="slide-heading-8334da6283d4">Test and coverage evidence for the claim
 surface</h2>
-<p><strong>Acceptance criteria.</strong> 268 total, 266 passing.</p>
+<p><strong>Acceptance criteria.</strong> 287 total, 283 passing.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Test and coverage evidence for the claim surface, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-9adfb4019eae">
 <h2 class="prose-slide"
 aria-label="Test and coverage evidence for the claim surface, part 2" id="slide-heading-9adfb4019eae">Test
 and coverage evidence… (part 2)</h2>
-<p><strong>Project test suite.</strong> 2860 collected cases; the bound
+<p><strong>Project test suite.</strong> 3992 collected cases; the bound
 successful receipt records zero failed cases. The project no-mocks
 policy remains a separately executable source contract.</p>
 </section>
@@ -1314,7 +1314,7 @@ aria-label="Test and coverage evidence for the claim surface, part 3" role="grou
 aria-label="Test and coverage evidence for the claim surface, part 3" id="slide-heading-abf477b4273b">Test
 and coverage evidence… (part 3)</h2>
 <p><strong>Combined line and branch coverage on
-<code>src/</code>.</strong> 90.58%, achieved by the bound full gate with
+<code>src/</code>.</strong> 92.47%, achieved by the bound full gate with
 branch measurement enabled. The shared coverage threshold is <span
 class="math inline">\(\ge 90\%\)</span> on this combined measure.</p>
 </section>
@@ -1392,7 +1392,7 @@ reports</h2>
 <tbody>
 <tr>
 <td>Figures</td>
-<td>1226</td>
+<td>1285</td>
 </tr>
 <tr>
 <td>Data files</td>
@@ -1419,9 +1419,10 @@ complement the recursive, checksum-bearing release manifest.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

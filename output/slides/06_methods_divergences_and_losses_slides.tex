@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -274,7 +279,7 @@ fidelity.
 
 \begin{frame}{Divergences: robust\ldots{} (part 2)}
 This section develops both --- the divergence family first, the robust
-loss family in sec.~5.7 --- and shows that each
+loss family in sec.~8.7 --- and shows that each
 carries a limit in which it collapses to its standard counterpart,
 
 KL for the divergence and NLL for the loss.
@@ -282,7 +287,7 @@ KL for the divergence and NLL for the loss.
 
 \begin{frame}{Divergences: robust\ldots{} (part 3)}
 Those client-side limits establish recovery to standard Bayes. The
-distinct categorical server bridge in sec.~5.8
+distinct categorical server bridge in sec.~8.8
 then identifies a qualified log-linear message-combination
 specialization; it does not recover the complete source belief-sharing
 protocol.
@@ -306,9 +311,7 @@ recover the KL divergence in a limit:
 \end{frame}
 
 \begin{frame}{Divergences: robust\ldots{} (part 6)}
-\begin{equation}\tag{6}\protect\phantomsection\label{eq:renyi-limit}{
-D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q \,\|\, p).
-}\end{equation}
+\begin{equation}\tag{6}\protect\phantomsection\label{eq:renyi-limit}{D_\alpha(q \,\|\, p) \;\xrightarrow[\alpha\to 1]{}\; \mathrm{KL}(q \,\|\, p).}\end{equation}
 \end{frame}
 
 \begin{frame}{Divergences: robust\ldots{} (part 7)}
@@ -325,7 +328,7 @@ KL closed form, making equality exact there rather than asymptotic.
 KL is the divergence that makes generalized Bayes collapse to standard
 Bayes. When local posteriors are then combined by the separately
 specified categorical message-combination specialization in
-sec.~5.8, the project recovers its
+sec.~8.8, the project recovers its
 log-linear-pool corner;
 \end{frame}
 
@@ -338,7 +341,7 @@ Friston et al. (Friston et al. 2024).
 Everything robust is a controlled departure from that fixed point; Lemma
 3 is the formal hinge, and the largest observed
 Rényi-versus-KL discrepancy in the recovery band is 0 (reported in
-sec.~7.1).
+sec.~10.1).
 \end{frame}
 
 \begin{frame}[fragile]{Divergences: robust\ldots{} (part 11)}
@@ -358,11 +361,11 @@ power-softmax shortcut.
 This distinction keeps the reported limit and the implemented objective
 aligned. The \texttt{AR} regularizer is not merely a diagnostic: it is
 exercised as a client divergence in the categorical FedGVI baseline of
-sec.~7.6,
+sec.~10.6,
 \end{frame}
 
 \begin{frame}{Divergences: robust\ldots{} (part 14)}
-where it pairs with the rcce loss of sec.~5.7 to
+where it pairs with the rcce loss of sec.~8.7 to
 constitute the genuine per-client robustness axis.
 \end{frame}
 
@@ -403,15 +406,13 @@ that the scalar limit is exact:
 \end{frame}
 
 \begin{frame}{Robust losses (part 6)}
-\begin{equation}\tag{7}\protect\phantomsection\label{eq:beta-loss}{
-\begin{aligned}
+\begin{equation}\tag{7}\protect\phantomsection\label{eq:beta-loss}{\begin{aligned}
 L_\beta(p, o)
 &= -\frac{p(o)^\beta - 1}{\beta}
    + \frac{\sum_k p_k^{\,\beta+1} - 1}{\beta+1},\\
 L_\beta
 &\xrightarrow[\beta\to 0]{} \mathrm{NLL}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Robust losses (part 7)}
@@ -420,14 +421,12 @@ and Sabuncu 2018) is
 \end{frame}
 
 \begin{frame}{Robust losses (part 8)}
-\begin{equation}\tag{8}\protect\phantomsection\label{eq:rcce-loss}{
-\begin{aligned}
+\begin{equation}\tag{8}\protect\phantomsection\label{eq:rcce-loss}{\begin{aligned}
 L_{q_{\text{loss}}}(p, o)
 &= \frac{1 - p(o)^{q_{\text{loss}}}}{q_{\text{loss}}},\\
 L_{q_{\text{loss}}}
 &\xrightarrow[q_{\text{loss}}\to 0]{} \mathrm{NLL}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Robust losses (part 9)}
@@ -447,7 +446,7 @@ NLL diverges.
 
 \begin{frame}{Robust losses (part 11)}
 The largest observed discrepancies are 0 and 0, respectively
-(sec.~7.1). sec.~7.5
+(sec.~10.1). sec.~10.5
 validates the bounded-loss robustness.
 \end{frame}
 
@@ -455,7 +454,7 @@ validates the bounded-loss robustness.
 Taking the loss-parameter limits (\(\beta\to0\) or
 \(q_{\text{loss}}\to0\)) reproduces standard Bayes. Combining those
 local posteriors through the qualified categorical specialization in
-sec.~5.8 is a separate server step, not a
+sec.~8.8 is a separate server step, not a
 recovery claim for the complete belief-sharing protocol of Friston et
 al. (2024).
 \end{frame}
@@ -474,8 +473,8 @@ under the cited matching assumptions.
 
 \begin{frame}{Robust losses (part 15)}
 The complementary server-side divergence-reweighting heuristic of
-sec.~5.8 is a distinct device and is never
-granted this guarantee (sec.~3.3).
+sec.~8.8 is a distinct device and is never
+granted this guarantee (sec.~6.3).
 \end{frame}
 
 \end{document}

@@ -2,7 +2,7 @@
 project: active_fedference
 effort: E5
 phase: verify
-progress: 266/268
+progress: 283/287
 iteration: 50-measured-presentation-panels
 updated_by: iteration-50-2026-09-07
 mode: ALGORITHM
@@ -1218,3 +1218,195 @@ them.
   ISC-89 or ISC-242 or supply the final owner-author release verdict. Probe:
   presentation boundary, figure/caption contracts, real paired renderer,
   full artifact inventory, and complete final PDF/HTML visual inspection.
+
+- [x] ISC-274: Canonical `fedference.gnn/1` IR admits immutable categorical,
+  moving-observer, hierarchical, hybrid-Gaussian, and signed site-factor
+  representations with explicit labels, axes, units, capabilities, schedules
+  and digest provenance. Probe: `tests/fedference/test_gnn_contract.py`.
+  This is representation admission, not raw GNN parsing, execution or scientific
+  equivalence; source/parser/backend/native digest declarations are not attestations.
+- [x] ISC-275: Canonical JSON rejects duplicate keys before information loss;
+  admission rejects unsupported semantics, nonfinite/negative/non-normalized
+  PMFs, axis/shape mismatches and improper covariance without normalization.
+  Probe: `test_shape_axis_duplicate_and_unsupported_kind`, malformed/family
+  controls and concrete valid/mutated/refused IR command-line QA. Raw GNN
+  duplicate detection remains the real parser/loader boundary's responsibility.
+
+- [x] ISC-276: Canonical sentinel construction consumes the packaged GNN asset
+  and hash-bound admitted IR. Explicit upstream extraction executes only verified
+  parser-closure snapshots; unmanifested modules cannot shadow the runtime.
+  Probe: `tests/fedference/test_gnn_sentinel.py`, real likelihood-mutation
+  posterior 5/6, stale/axis/source-drift refusals, oversized-JSON typed refusal,
+  canonical/seeded characterization and fresh installed-wheel offline execution.
+  Independent evidence: checkpoint-review-3 corrected Task 6 APPROVE. This is
+  categorical native model execution; CLI/backend/scientific/release acceptance
+  remain separate. Original custody/JSON failures and the failed first fix
+  are retained in the dated ULW evidence.
+
+- [x] ISC-277: The 49 inventoried deprecated domain keyword, property and
+  helper surfaces are retired; active callers use canonical interfaces with
+  unchanged raw-weight exponent and scientific-comparator behavior. Probe:
+  `tests/test_domain_retirement.py` and the qualified caller inventory. The
+  original source fails 45 rejection controls while two canonical numerical
+  controls pass; current focused controls and 1,456 adjacent tests pass with
+  zero skips (34 slow-profile tests deselected). Historical failures remain.
+  Supported wrapper, federation and format migrations are separate units.
+
+- [x] ISC-278: Source-bound GNN scientific extensions preserve original-byte
+  and closed-parser provenance, execute declared native Gaussian/tracking and
+  two-client signed-site/cavity operations, and refuse unsupported semantics
+  and altered checkpoints. Valid tiny observation noise retains positive
+  covariance; large finite inputs and noncommuting covariance known answers
+  pass. Checkpoint6 independently approves Task9; original REDs remain.
+  This does not establish source client optimization or scientific campaigns.
+
+- [x] ISC-279: Moving-observer and two/three/four-level hierarchy adapters
+  consume admitted GNN source values with distinct threat/position factors,
+  source-preserving public hierarchy leaves and explicit override semantics.
+  Offline caches re-admit typed source/header content; resizing refuses
+  non-template controls or priors. Source mutation, seed/oracle and invalid
+  payload controls pass; checkpoint6 and its small recheck approve this scope.
+  Unsupported backend compositions refuse; scientific campaigns and protocol
+  reproduction remain separate. Task59 retains the module-size advisory.
+
+- [x] ISC-280: The twelve deprecated federation, figure and manuscript-helper
+  boundary aliases are removed with canonical callers and current wire-v1
+  behavior preserved. Original twelve rejection cases fail before removal;
+  499 adjacent cases and fifteen named cases pass afterward. All 28 bound
+  protocol/figure/historical-fixture artifacts remain byte-identical. The
+  duplicate formatter rejection test was removed while canonical numeric and
+  required rejection coverage remain; independent checkpoint6 recheck approves.
+  Broader wrapper/schema retirement and receipt-module locator integration
+  remain separate units; this does not certify publication or scientific scope.
+
+- [x] ISC-281: Evidence specifications, schema/strict-JSON, hashing, custody
+  and verification have focused owners with unchanged current and synthetic
+  historical receipt semantics, canonical public objects and finding codes.
+  Independent review confirms original definition equivalence, byte/corpus
+  preservation, installed CLI verification and meaningful mutation failures.
+  Current scoped 184 tests pass at 97.61 percent branch-aware coverage;
+  protected inventory locators and twelve source-reference refusals pass.
+  Actual external historical corpus, race hardening and live-schema retirement
+  remain separate; no scientific or publication acceptance is inferred.
+
+- [x] ISC-282: Shared validation and release provenance input policies bind
+  present source JSON resources, including GNN parser/cache/backend registry
+  data. Real addition, content change and removal invalidate prior identities;
+  optional absence preserves intentionally minimal fixture scopes. Independent
+  review approves all four source/test files with no quality blockers and
+  eighteen genuine before-fix failures retained. This is content custody,
+  not resource completeness, final-source certification or release acceptance.
+
+- [x] ISC-283: Analysis report schema families, shared primitives and figure
+  dependency owners are separated behind one canonical validation boundary.
+  Independent review reproduces 70 unchanged definitions, 27 real canonical
+  report outputs and 346 exact malformed-field diagnostics. Runtime figure
+  consumer-field refusals replace an opaque metadata hash check and fail under
+  deliberate validator bypass. All 461 scoped cases pass; original branch-aware
+  coverage is 92.26 percent with production bytes unchanged by test cleanup.
+  Report-field migrations, scientific results and final reader delivery remain
+  separate; current source report/figure contracts are preserved.
+
+- [x] ISC-284: Real upstream PyMDP state-inference execution consumes admitted
+  GNN models through a source-bound isolated backend. Strict request/model,
+  runtime-registry, numeric output and native replay checks reject tampering;
+  independent review approves the typed registry fix and 55 backend cases.
+  Fresh installed-wheel/default-registry checks pass without optional backend
+  imports. This qualifies CPU float32 state inference, not planning, learning,
+  complete source protocols or scientific equivalence.
+
+- [x] ISC-285: Required native/GNN validation profiles share complete test
+  inventory and exact-once shard verification with a combined 90 percent source
+  coverage floor. Fresh pinned Python 3.12 CPU provisioning, dependency checks,
+  actual Agent execution and normal upstream parsing pass locally; Python 3.14
+  is qualified only for existing-runtime execution. Missing runtimes, skips,
+  incomplete receipts and corrupt coverage fail their real controls. Independent
+  review approves the bounded bootstrap/profile scope. Hosted Linux execution,
+  full production shard union and final combined coverage remain pending.
+  The 2026-10-30 maintenance follow-up validates supplied run/verify plans
+  before Git discovery. Real Git-free subprocess controls reject missing or
+  duplicate test assignments with the partition diagnostic; valid plans still
+  require Git metadata. The dated repository reconciliation separates the
+  historical collected inventory from completed test execution.
+
+- [x] ISC-286: HTML tokenization, reference rendering, resource/link policy,
+  accessibility facts and transactional file custody have focused owners
+  behind the canonical publication boundary. Independent review approves
+  73 unchanged definitions, 186 passing cases, 90.69 percent scoped branch
+  coverage and three intended mutation failures. Real CLI rejection, original
+  and current byte/finding/link characterization, and a source-bound glossary
+  agree. Resource refusal remains read-only validation; normalization retains
+  its existing path and changed-original guards. This extraction does not
+  establish browser rendering, WCAG/PDF-UA, release or scientific acceptance.
+
+- [x] ISC-287: Domain orchestration uses canonical result/configuration
+  boundaries and explicit CSV inputs. Redundant aggregation/sharing/benchmark
+  wrappers and aliases are removed with current callers and installed smoke
+  paths migrated. Independent review approves 514 scoped and 99 adjacent cases,
+  all 175 original test-function mappings and six preserved scientific controls.
+  Solver budgets, numerical operations and declared benchmark reports remain
+  source-pinned; actual removed imports/selectors reject. Fresh scoped coverage
+  is 92.55 percent combined. The example process boundary now supplies typed
+  row sequences. Later federation, schema, field and documentation migrations
+  remain separate; this is no scientific or release acceptance.
+
+- [x] ISC-288: GNN admission, source custody, family execution, cache and
+  backend request/replay boundaries have focused owners with canonical direct
+  imports. Independent review approves 112 preserved declarations, 208 required
+  GNN cases and 37 native contracts, 71 byte-identical family artifacts and
+  meaningful staged rejection controls. Scoped coverage is 93.12 percent
+  combined and 87.45 percent branch-only; the largest owner is 198 pure lines.
+  Current EOF-only formatting corrections are recorded separately from
+  retained review and installed-wheel source byte snapshots. The qualified pinned runtime remains separate
+  from the dirty live upstream reference. Full installed CLI/packaging, hosted
+  CI, broader composition, scientific and release acceptance remain pending.
+
+- [x] ISC-289: Zenodo transport, response admission, identity/metadata checks,
+  file custody and release phases have focused owners behind one canonical
+  client. Independent review approves 55 preserved definitions, 65 direct
+  bindings, 21 effective method signatures and 159 passing cases, including
+  all 129 original cases. Scoped coverage is 94.40 percent combined and
+  90.91 percent branch-only. Ninety-eight recorded HTTP, finding, summary,
+  CLI and teardown events agree under the declared fixture normalization.
+  Three existing traceback locators expand inspection to the actual owners.
+  A separately reviewed one-byte EOF correction preserves whole-module AST
+  and source identity is qualified by its hash addendum. Real loopback and
+  credential-echo controls preserve explicit publication admission; the
+  documented service GET/POST race, release and live publication remain
+  separate. No external record or real credential was used in this work.
+
+
+- [x] ISC-290: Analysis report families consume explicit study inputs through
+  canonical domain operations while workflow owns source-configuration I/O,
+  optional Torch admission and validated report persistence. The pure Torch
+  producer receives typed options and the actual domain operation; original
+  defaults, seeds, report bytes and missing-extra behavior remain preserved.
+  Single-invocation key/resolved-path ownership rejects duplicate artifacts
+  before writing. Independent recheck passes all 603 scoped cases, retains
+  134 original test functions and 14 helpers, and measures 92.18 percent
+  combined coverage with 81.00 percent branch-only coverage. Five meaningful
+  source mutations fail before exact restoration. The first REVISE remains
+  retained. Cross-process Task19 custody, broader composition, visual,
+  scientific, release and publication acceptance remain separate.
+
+
+- [ ] ISC-291: The installed `fedference model validate` command is a read-only
+  adapter to canonical native/real-upstream admission, preserves complete model
+  content and scoped program digests, and rejects malformed matrices, axes,
+  site priors/clients and inapplicable explicit options before execution.
+  `tests/test_model_validation_cli.py`,
+  `tests/fedference/test_gnn_site_validation.py` and the required-profile
+  `tests/integration/test_gnn_model_cli.py` own the source contracts. Final
+  installed-wheel/sdist proof, complete coverage and independent review remain
+  required before closing this acceptance item. Model admission is not
+  simulation, protocol replication or scientific validation.
+
+- [ ] ISC-292: Publication analysis runs as explicitly selected bounded report
+  stages in frozen external workspaces, with exact source/configuration/seed/
+  runtime identities, atomic validated completion and process receipts,
+  cooperative cancellation, preservation of partial failures, safe checkpoint
+  reuse and short guarded imports. Interruption/resume, invalid/corrupt
+  checkpoints, changed inputs and changed destination outputs must be refused
+  by real-process controls. Report-stage recovery is not per-seed recovery,
+  scientific acceptance, native-custody qualification or publication authority.
+  Full software gates and independent review remain required for closure.

@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -518,14 +523,12 @@ contract is defined for \(c>0\) and \(\lambda>0\):
 \end{frame}
 
 \begin{frame}{Robustness, divergences\ldots{} (part 6)}
-\begin{equation}\tag{34}\protect\phantomsection\label{eq:notation-variational-objective}{
-\begin{aligned}
+\begin{equation}\tag{34}\protect\phantomsection\label{eq:notation-variational-objective}{\begin{aligned}
 F_\lambda(q,a)
  &= \sum_n a_n\,\mathrm{CE}(q,q_n)
     -\lambda H(q)\\
  &\qquad +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Robustness, divergences\ldots{} (part 7)}
@@ -534,13 +537,11 @@ legible at the presentation typography floor:
 \end{frame}
 
 \begin{frame}{Robustness, divergences\ldots{} (part 8)}
-\begin{equation}\tag{35}\protect\phantomsection\label{eq:notation-variational-updates}{
-\begin{aligned}
+\begin{equation}\tag{35}\protect\phantomsection\label{eq:notation-variational-updates}{\begin{aligned}
 q &\propto \exp\!\left(
 \frac{1}{\lambda}\sum_n a_n\log q_n\right),\\
 a_n &= w_n\exp\!\big[-c\,\mathrm{CE}(q,q_n)\big].
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}[fragile]{Robustness, divergences\ldots{} (part 9)}
@@ -564,13 +565,11 @@ operation is defined in log space and then normalized:
 \end{frame}
 
 \begin{frame}{Cavity and factor algebra (part 2)}
-\begin{equation}\tag{36}\protect\phantomsection\label{eq:notation-cavity}{
-\begin{aligned}
+\begin{equation}\tag{36}\protect\phantomsection\label{eq:notation-cavity}{\begin{aligned}
 q_{-n}(s)
 &= \frac{q(s)/t_n(s)}{\sum_{s'}q(s')/t_n(s')}\\
 &= \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Cavity and factor algebra (part 3)}
@@ -578,15 +577,13 @@ The corresponding factor replacement is
 \end{frame}
 
 \begin{frame}{Cavity and factor algebra (part 4)}
-\begin{equation}\tag{37}\protect\phantomsection\label{eq:notation-factor-replacement}{
-\begin{aligned}
+\begin{equation}\tag{37}\protect\phantomsection\label{eq:notation-factor-replacement}{\begin{aligned}
 \ell_n(s)
 &= \log t_n^{\mathrm{old}}(s)\\
 &\quad +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),\\
 t_n^{\mathrm{new}}(s)
 &\leftarrow \operatorname{softmax}(\ell_n)(s).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Cavity and factor algebra (part 5)}

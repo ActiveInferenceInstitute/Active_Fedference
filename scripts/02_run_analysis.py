@@ -45,6 +45,12 @@ def main() -> int:
         default=None,
         help="standalone checkout to read and write (default: this checkout)",
     )
+    parser.add_argument(
+        "--checkpoints",
+        type=Path,
+        default=None,
+        help="validated report-stage workspace; publication assembly runs only in its frozen source",
+    )
     args = parser.parse_args()
 
     from analysis.workflow import resolve_analysis_profile, run_analysis_pipeline
@@ -63,7 +69,18 @@ def main() -> int:
         # prevents a config-selected smoke run (with no CLI override) from being
         # misclassified as publication merely because ``args.profile`` is None.
         effective_profile = resolve_analysis_profile(root, override=args.profile)
-        paths = run_analysis_pipeline(project_root=root, profile=effective_profile)
+        if effective_profile == "publication" and args.checkpoints is None:
+            raise ValueError(
+                "publication compute requires explicit external stages: use analysis_stages.py "
+                "prepare/run, then run --stage figures; no monolithic publication rerun is allowed"
+            )
+        if args.checkpoints is not None and root != (args.checkpoints / "source").resolve():
+            raise ValueError("checkpoint assembly must run in the workspace's frozen source")
+        paths = run_analysis_pipeline(
+            project_root=root,
+            profile=effective_profile,
+            checkpoints=args.checkpoints,
+        )
         # Smoke subprocesses never create publication receipts. A publication
         # receipt is minted only after the producer has written the sidecar that
         # attests both configured and effective publication profiles.

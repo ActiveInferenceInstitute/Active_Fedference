@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.11" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>27_supplement_aggregation_objective.md.web</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -308,7 +316,7 @@ mjx-container[display="true"] { max-width: 100%; overflow: visible; }
   outline: 3px solid var(--brand-1);
   outline-offset: 3px;
 }
-.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
+.table-scroll > table { margin-block: 0; display: table; min-width: 100%; width: 100%; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -414,6 +422,9 @@ pre {
 }
 
 pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
   overflow-wrap: inherit;
   white-space: inherit;
   word-break: inherit;
@@ -466,8 +477,9 @@ table {
 
 .table-scroll > table {
   margin-block: 0;
+  display: table;
   min-width: 100%;
-  width: max-content;
+  width: 100%;
 }
 
 figure {
@@ -484,6 +496,15 @@ th, td {
 th {
   background-color: #1f6f8b;
   color: white;
+}
+
+/* Preserve a complete inline-code header within the table's scroll region. */
+th code {
+  color: inherit;
+  background-color: transparent;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 img {
@@ -626,13 +647,14 @@ mjx-container[display="true"] {
 }
 
 </style>
+<script data-template-source-font-loader src="assets/source-web-fonts.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="sec:supp-variational">Supplement: variational aggregation
 objective and weight control</h1>
-<p>This supplement gives the full derivation behind <a class="xref" href="index.html#sec:method-variational">Section 5.8.2</a>:
+<p>This supplement gives the full derivation behind <a class="xref" href="index.html#sec:method-variational">Section 8.8.2</a>:
 the server-side aggregator <code>robust_aggregate</code> is a heuristic,
 and a single change of divergence direction turns it into
 block-coordinate descent on a stated free energy with a derived,
@@ -663,18 +685,16 @@ the <span class="math inline">\(a\)</span>-minimizer.</p>
 orientation witness confirms this finite-simplex mismatch. The following
 proposition goes further, while retaining a deliberately narrow
 scope.</p>
-<p><span class="math display">\[
-Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)
-\]</span> {#eq:raw-log-pool-block}</p>
+<p><span class="math display">\[Q(a;s) \;=\;
+\operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)\]</span>
+{#eq:raw-log-pool-block}</p>
 <p>The proposed raw <span class="math inline">\(q\)</span>-block is the
 map in <a class="xref" href="index.html#eq:raw-log-pool-block">Eq. (24)</a>.</p>
-<p><span class="math display">\[
-\begin{aligned}
+<p><span class="math display">\[\begin{aligned}
 F(q,a;s,w)
 &amp;= \sum_n a_n\,\mathrm{KL}(q\,\|\,s_n)\\
 &amp;\quad + R(a,w) + G(q).
-\end{aligned}
-\]</span> {#eq:separable-server-objective}</p>
+\end{aligned}\]</span> {#eq:separable-server-objective}</p>
 <div id="prop:raw-log-pool-no-go" class="theorem-box proposition">
 <p><strong>Proposition 1</strong> (Scoped separable raw-log-pool no-go).
 For <span class="math inline">\(K\geq2\)</span>, no objective in (<a class="xref" href="index.html#eq:separable-server-objective">Eq. (25)</a>)
@@ -695,10 +715,9 @@ raw-weight heuristic.</p>
 class="math inline">\(q\)</span>, a positive scalar <span
 class="math inline">\(\alpha\)</span>, and one local posterior
 constructed in <a class="xref" href="index.html#eq:raw-log-pool-witness-source">Eq. (26)</a>:</p>
-<p><span class="math display">\[
-s_i^{(\alpha)} \;=\;
-\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.
-\]</span> {#eq:raw-log-pool-witness-source}</p>
+<p><span class="math display">\[s_i^{(\alpha)} \;=\;
+\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.\]</span>
+{#eq:raw-log-pool-witness-source}</p>
 <p>Then <span class="math inline">\(Q(\alpha;s^{(\alpha)})=q\)</span>.
 Writing <span class="math inline">\(\Pi\)</span> for projection onto the
 tangent space of the simplex, first-order stationarity of <a class="xref" href="index.html#eq:separable-server-objective">Eq. (25)</a>
@@ -759,7 +778,7 @@ any kind exists. It does not exclude nonseparable <span
 class="math inline">\(q\)</span>–<span class="math inline">\(a\)</span>
 couplings, source-dependent terms, non-differentiable constructions, or
 objectives that encode selected fixed points without reproducing the
-update blocks for all interior inputs. Thus <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>
+update blocks for all interior inputs. Thus <a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>
 retains the heuristic label and claims only the recovery limit, the
 scoped negative result above, and conditional empirical behavior — never
 a bounded-influence property or an objective-backed status.</p>
@@ -784,29 +803,25 @@ class="math inline">\(q\)</span>-dependent part of <span
 class="math inline">\(F_\lambda\)</span> is denoted <span
 class="math inline">\(J(q;a)\)</span> and can be written in either of
 two equivalent forms:</p>
-<p><span class="math display">\[
-\begin{aligned}
+<p><span class="math display">\[\begin{aligned}
 J(q;a)
 &amp;=\sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q),\\
 J(q;a)
 &amp;=\lambda\sum_i q_i\log q_i\\
 &amp;\quad-\sum_i\sum_n q_i a_n\log q_{n,i}.
-\end{aligned}
-\]</span> {#eq:agg-q-objective}</p>
+\end{aligned}\]</span> {#eq:agg-q-objective}</p>
 <p>Adding a Lagrange multiplier to the block in <a class="xref" href="index.html#eq:agg-q-objective">Eq. (27)</a> for <span
 class="math inline">\(\sum_i q_i = 1\)</span> and differentiating gives
 <span class="math inline">\(\lambda\log q_i + \lambda - \sum_n a_n \log
 q_{n,i} + \mu = 0\)</span>, i.e.</p>
-<p><span class="math display">\[
-\begin{aligned}
+<p><span class="math display">\[\begin{aligned}
 q_i
 &amp;\propto \exp\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_{n,i}\Big),\\
 q_i
 &amp;= \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_n\Big)_i.
-\end{aligned}
-\]</span> {#eq:agg-q-min}</p>
+\end{aligned}\]</span> {#eq:agg-q-min}</p>
 <p>the product of the weighted experts — the consensus update of <a class="xref" href="index.html#eq:agg-updates">Eq. (13)</a>.
 At the default <span class="math inline">\(\lambda=1.0\)</span>, the
 <span class="math inline">\(-H(q)\)</span> term sharpens the weighted
@@ -817,9 +832,9 @@ average).</p>
 Fixing <span class="math inline">\(q\)</span>, <span
 class="math inline">\(\partial F/\partial a_n = \mathrm{CE}(q,q_n) +
 \tfrac{1}{c}\log(a_n/w_n) = 0\)</span>, so</p>
-<p><span class="math display">\[
-a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),
-\]</span> {#eq:agg-a-min}</p>
+<p><span class="math display">\[a_n \;=\;
+w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),\]</span>
+{#eq:agg-a-min}</p>
 <p>the weight update of <a class="xref" href="index.html#eq:agg-updates">Eq. (13)</a>. Because <span
 class="math inline">\(\mathrm{CE}(q,q_n) = H(q) +
 \mathrm{KL}(q\,\|\,q_n)\)</span>, the forward direction <span
@@ -855,7 +870,7 @@ class="math inline">\(\mathrm{KL}(q\,\|\,q_n)\to\infty\)</span> gives
 </div>
 <p>The variational aggregator therefore shares the project
 log-linear-pool corner of (<a class="xref" href="index.html#eq:robust-identity">Eq. (10)</a>). Under the
-qualified bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+qualified bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>,
 this is only the categorical message-combination specialization, not the
 complete source protocol.</p>
 <p>The final inequality makes the raw effective-weight update bounded
@@ -892,7 +907,7 @@ class="math inline">\(F\)</span> converged candidate.</p>
 lower-<span class="math inline">\(F\)</span> <em>vetoing</em> basin, so
 the saboteur is suppressed even at the simplex vertex (pinned
 qualitatively by the near-vertex multi-start test) — the 267.1<span
-class="math inline">\(\times\)</span> suppression of <a class="xref" href="index.html#fig:bounded-influence">Figure 17</a> is
+class="math inline">\(\times\)</span> suppression of <a class="xref" href="index.html#fig:bounded-influence">Figure 20</a> is
 measured across the swept contamination grid, whose most extreme point
 sits just below rate <span class="math inline">\(1\)</span>.</p>
 <p>What remains fundamental to <em>every</em> robust fusion rule, and is
@@ -900,7 +915,7 @@ not claimed away: with no honest majority — a colony split with no
 anchoring plurality — there is no truth to recover.</p>
 <p>The observed suppression is conditional on the tested colonies and
 the fixed point selected by a finite multi-start heuristic.</p>
-<p><a class="xref" href="index.html#fig:descent-comparison">Figure 21</a>
+<p><a class="xref" href="index.html#fig:descent-comparison">Figure 24</a>
 makes the capture and the escape concrete on a near-vertex colony: the
 single (log-linear-pool) start settles at <span class="math inline">\(F
 = 1.3092\)</span> (the higher observed basin, where the saboteur keeps
@@ -944,7 +959,7 @@ to <span class="math inline">\(F = 2.3780\)</span> (a monotone drop of
 <span class="math inline">\(0.8678\)</span> over 11 iterations,
 converged: Yes); the largest single-step <em>increase</em> is <span
 class="math inline">\(8.88 \times 10^{-16}\)</span>, machine zero — the
-monotonicity of the theorem, witnessed numerically and drawn in <a class="xref" href="index.html#fig:aggregation-descent">Figure 16</a>.</p>
+monotonicity of the theorem, witnessed numerically and drawn in <a class="xref" href="index.html#fig:aggregation-descent">Figure 19</a>.</p>
 <p>For the effective-weight diagnostic, one agent is drifted from
 healthy toward a confident-wrong delta and its normalized influence is
 read at each drift. Clean, it carries <span
@@ -952,38 +967,34 @@ class="math inline">\(0.143\)</span> of the pool; at the most extreme
 swept drift it carries below <span class="math inline">\(0.001\)</span>
 — a factor of 267.1 (computed from the unrounded influences, not the
 display-rounded values above) below the fixed 0.143 the naive pool would
-still grant it (<a class="xref" href="index.html#fig:bounded-influence">Figure 17</a>).</p>
+still grant it (<a class="xref" href="index.html#fig:bounded-influence">Figure 20</a>).</p>
 <p>This makes the redescending normalized-weight behavior visible on the
 tested path; it is not an estimator-level B-robustness proof.</p>
 <h2 id="sec:supp-tempered">Tempered aggregation family for the
 accuracy-guarantee trade</h2>
-<p>The aggregator of <a class="xref" href="index.html#sec:supp-derivation">Section 12.2</a> fixes the
+<p>The aggregator of <a class="xref" href="index.html#sec:supp-derivation">Section 15.2</a> fixes the
 entropy term at unit weight. Relaxing that single coefficient generates
 a one-parameter <em>tempered</em> family. Introduce an entropy weight
 <span class="math inline">\(\lambda &gt; 0\)</span> — the
 <strong>inverse temperature is</strong> <span
 class="math inline">\(1/\lambda\)</span> — and minimize</p>
-<p><span class="math display">\[
-\begin{aligned}
+<p><span class="math display">\[\begin{aligned}
 F_\lambda(q, a)
 &amp;= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &amp;\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-\]</span> {#eq:tempered-family}</p>
+\end{aligned}\]</span> {#eq:tempered-family}</p>
 <p>Repeating the <span class="math inline">\(q\)</span>-block derivation
 of <a class="xref" href="index.html#eq:agg-q-min">Eq. (28)</a> with the entropy scaled
 by <span class="math inline">\(\lambda\)</span> leaves the <span
 class="math inline">\(a\)</span>-block <strong>untouched</strong> and
 tempers only the consensus update:</p>
-<p><span class="math display">\[
-\begin{aligned}
+<p><span class="math display">\[\begin{aligned}
 q
 &amp;\propto \exp\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &amp;= w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-\]</span> {#eq:tempered-updates}</p>
+\end{aligned}\]</span> {#eq:tempered-updates}</p>
 <p>The <span class="math inline">\(\lambda\downarrow0\)</span> endpoint
 is separately implemented as a deterministic tied-argmax rule; it is not
 obtained by substituting <span class="math inline">\(\lambda=0\)</span>
@@ -993,20 +1004,20 @@ class="math inline">\(\lambda\)</span></strong>: the bound <span
 class="math inline">\(a_n \le w_n\)</span> with collapse <span
 class="math inline">\(a_n \to 0\)</span> as <span
 class="math inline">\(\mathrm{KL}(q\,\|\,q_n) \to \infty\)</span> is
-unchanged, so the <strong>raw effective-weight bound of <a class="xref" href="index.html#sec:supp-theorem">Section 12.3</a> holds for
+unchanged, so the <strong>raw effective-weight bound of <a class="xref" href="index.html#sec:supp-theorem">Section 15.3</a> holds for
 every</strong> <span class="math inline">\(\lambda &gt; 0\)</span>. At
 <span class="math inline">\(\lambda = 1.0\)</span> the temperature is
 unity and <a class="xref" href="index.html#eq:tempered-updates">Eq. (31)</a> is
 <strong>identical</strong> to the current axis-3 aggregator <a class="xref" href="index.html#eq:agg-updates">Eq. (13)</a> —
 the default is bit-identical, not merely close.</p>
-<p>The <span class="math inline">\(c \to 0\)</span> recovery of <a class="xref" href="index.html#sec:supp-theorem">Section 12.3</a> generalizes to
+<p>The <span class="math inline">\(c \to 0\)</span> recovery of <a class="xref" href="index.html#sec:supp-theorem">Section 15.3</a> generalizes to
 the <em>tempered</em> log-linear pool <span class="math inline">\(q
 \propto \exp(\tfrac{1}{\lambda}\sum_n w_n \log q_n)\)</span>; at <span
 class="math inline">\(\lambda = 1.0\)</span> this is exactly <span
 class="math inline">\(\mathrm{softmax}(\sum_n w_n \log q_n)\)</span> —
 the project’s <strong>log-linear pool</strong> <a class="xref" href="index.html#eq:log-linear-pool">Eq. (9)</a>.</p>
 <p>Under the shared-support, posterior-log-potential, and fixed-weight
-assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+assumptions of <a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>,
 that pool is a categorical specialization of Friston Eq. 7’s
 message-combination term, not a reconstruction of the complete source
 protocol. Positive-temperature members away from that default are
@@ -1025,7 +1036,7 @@ of 0.0008. <strong>A lambda* narrows the tested accuracy gap while
 preserving the stated weight bound on this grid.</strong> If no <span
 class="math inline">\(\lambda\)</span> closes that gap while preserving
 the derived weight update, the result is the conservatism trade-off of
-<a class="xref" href="index.html#sec:limitations">Section 8.13</a>, not a defect to
+<a class="xref" href="index.html#sec:limitations">Section 11.13</a>, not a defect to
 hide.</p>
 </main>
 </body>

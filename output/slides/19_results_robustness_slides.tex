@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -300,7 +305,7 @@ remain conditional on this fixed world, attack target, and preset grid.
 \end{frame}
 
 \begin{frame}{Contamination sweep (part 5)}
-The evidence map in fig.~6 locates
+The evidence map in fig.~9 locates
 these comparisons in the conditional heuristic-server lane. It keeps the
 fixed-world matched trials distinct from the seed-level review below and
 prevents either result from inheriting client-loss or variational-server
@@ -503,7 +508,10 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={reference log pool (c=0): all configured contamination rates and source-owned uncertainty on a common probability scale.}]{../figures/robustness_sweep.slide-preset-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={reference
+log pool (c=0): all configured contamination rates and source-owned
+uncertainty on a common probability
+scale.}]{../figures/robustness_sweep.slide-preset-1.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -511,7 +519,10 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server preset c=1.3: all configured contamination rates and source-owned uncertainty on a common probability scale.}]{../figures/robustness_sweep.slide-preset-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server
+preset c=1.3: all configured contamination rates and source-owned
+uncertainty on a common probability
+scale.}]{../figures/robustness_sweep.slide-preset-2.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -519,7 +530,10 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server preset c=1.5: all configured contamination rates and source-owned uncertainty on a common probability scale.}]{../figures/robustness_sweep.slide-preset-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server
+preset c=1.5: all configured contamination rates and source-owned
+uncertainty on a common probability
+scale.}]{../figures/robustness_sweep.slide-preset-3.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -527,7 +541,10 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server preset c=1.7: all configured contamination rates and source-owned uncertainty on a common probability scale.}]{../figures/robustness_sweep.slide-preset-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server
+preset c=1.7: all configured contamination rates and source-owned
+uncertainty on a common probability
+scale.}]{../figures/robustness_sweep.slide-preset-4.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -535,7 +552,10 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server preset c=1.6: all configured contamination rates and source-owned uncertainty on a common probability scale.}]{../figures/robustness_sweep.slide-preset-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={server
+preset c=1.6: all configured contamination rates and source-owned
+uncertainty on a common probability
+scale.}]{../figures/robustness_sweep.slide-preset-5.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -543,7 +563,10 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={960 matched trials per rate. Whiskers: each preset\textquotesingle s own percentile-bootstrap interval.}]{../figures/robustness_sweep.slide-uncertainty.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={960
+matched trials per rate. Whiskers: each preset\textquotesingle s own
+percentile-bootstrap
+interval.}]{../figures/robustness_sweep.slide-uncertainty.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -551,7 +574,9 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Predeclared floor: 0.5. The pale band lies below this reference.}]{../figures/robustness_sweep.slide-threshold.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Predeclared
+floor: 0.5. The pale band lies below this
+reference.}]{../figures/robustness_sweep.slide-threshold.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -559,7 +584,9 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Largest max-rate preset minus reference: +0.116. Max rate: 0.9.}]{../figures/robustness_sweep.slide-statistics.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Largest
+max-rate preset minus reference: +0.116. Max rate:
+0.9.}]{../figures/robustness_sweep.slide-statistics.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -567,14 +594,17 @@ heuristic only.
 \begin{frame}{Contamination sweep (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Consensus accuracy here means q(true state). These configured server presets are not client-loss implementations or a complete source protocol.}]{../figures/robustness_sweep.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Consensus
+accuracy here means q(true state). These configured server presets are
+not client-loss implementations or a complete source
+protocol.}]{../figures/robustness_sweep.slide-scope.png}
 \refstepcounter{figure}\label{fig:robustness-sweep-slide-panel-9}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Selection-free all-method robustness review}
 \protect\phantomsection\label{sec:results-review-grid}
-The comparison in fig.~14 is the principal
+The comparison in fig.~17 is the principal
 comparative robustness surface.
 \end{frame}
 
@@ -637,8 +667,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Conditional preset-minus-reference means
-± half min--max span across declared cells; not a confidence interval.}]{../figures/robustness_review_grid.slide-conditional-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Conditional
+preset-minus-reference means ± half min--max span across declared cells;
+not a confidence
+interval.}]{../figures/robustness_review_grid.slide-conditional-key.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -646,7 +678,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean: both adversary weights; signed mass means and half min--max spans; common color scale.}]{../figures/robustness_review_grid.slide-conditional-clean.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={clean:
+both adversary weights; signed mass means and half min--max spans;
+common color
+scale.}]{../figures/robustness_review_grid.slide-conditional-clean.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -654,7 +689,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong: both adversary weights; signed mass means and half min--max spans; common color scale.}]{../figures/robustness_review_grid.slide-conditional-confident-wrong.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong: both adversary weights; signed mass means and half min--max
+spans; common color
+scale.}]{../figures/robustness_review_grid.slide-conditional-confident-wrong.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -662,7 +700,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label noise: both adversary weights; signed mass means and half min--max spans; common color scale.}]{../figures/robustness_review_grid.slide-conditional-label-noise.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={label
+noise: both adversary weights; signed mass means and half min--max
+spans; common color
+scale.}]{../figures/robustness_review_grid.slide-conditional-label-noise.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -670,7 +711,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation: both adversary weights; signed mass means and half min--max spans; common color scale.}]{../figures/robustness_review_grid.slide-conditional-permutation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={permutation:
+both adversary weights; signed mass means and half min--max spans;
+common color
+scale.}]{../figures/robustness_review_grid.slide-conditional-permutation.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -678,7 +722,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform: both adversary weights; signed mass means and half min--max spans; common color scale.}]{../figures/robustness_review_grid.slide-conditional-uniform.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={uniform:
+both adversary weights; signed mass means and half min--max spans;
+common color
+scale.}]{../figures/robustness_review_grid.slide-conditional-uniform.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -686,7 +733,9 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Common signed color scale for every conditional panel; zero is neutral.}]{../figures/robustness_review_grid.slide-conditional-scale.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Common
+signed color scale for every conditional panel; zero is
+neutral.}]{../figures/robustness_review_grid.slide-conditional-scale.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -694,8 +743,10 @@ the numeric fallback from drifting from the renderer.
 \begin{frame}{Selection-free all-method\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Each preset retains its own 95\% seed-bootstrap band.
-Y limits are shared within each mechanism. All predeclared presets are shown.}]{../figures/robustness_review_grid.slide-directional-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Each
+preset retains its own 95\% seed-bootstrap band. Y limits are shared
+within each mechanism. All predeclared presets are
+shown.}]{../figures/robustness_review_grid.slide-directional-key.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -703,7 +754,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong, preset 1 (RKL): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-rkl.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong, preset 1 (RKL): signed mass contrast and its own 95\%
+seed-bootstrap band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-rkl.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -711,7 +765,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong, preset 2 (AR): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-ar.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong, preset 2 (AR): signed mass contrast and its own 95\%
+seed-bootstrap band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-ar.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -719,7 +776,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong, preset 3 (beta): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-beta.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong, preset 3 (beta): signed mass contrast and its own 95\%
+seed-bootstrap band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-beta.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -727,7 +787,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident wrong, preset 4 (rcce): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-rcce.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={confident
+wrong, preset 4 (rcce): signed mass contrast and its own 95\%
+seed-bootstrap band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-confident-wrong-rcce.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -735,7 +798,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine, preset 1 (RKL): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-rkl.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine,
+preset 1 (RKL): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-rkl.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -743,7 +809,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine, preset 2 (AR): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-ar.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine,
+preset 2 (AR): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-ar.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -751,7 +820,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine, preset 3 (beta): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-beta.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine,
+preset 3 (beta): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-beta.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -759,7 +831,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine, preset 4 (rcce): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-rcce.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={byzantine,
+preset 4 (rcce): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-byzantine-rcce.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -767,7 +842,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift, preset 1 (RKL): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-drift-rkl.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift,
+preset 1 (RKL): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-drift-rkl.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -775,7 +853,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift, preset 2 (AR): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-drift-ar.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift,
+preset 2 (AR): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-drift-ar.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -783,7 +864,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift, preset 3 (beta): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-drift-beta.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift,
+preset 3 (beta): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-drift-beta.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -791,7 +875,10 @@ Y limits are shared within each mechanism. All predeclared presets are shown.}]{
 \begin{frame}{Selection-free all-method\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift, preset 4 (rcce): signed mass contrast and its own 95\% seed-bootstrap band; shared mechanism limits.}]{../figures/robustness_review_grid.slide-directional-drift-rcce.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={drift,
+preset 4 (rcce): signed mass contrast and its own 95\% seed-bootstrap
+band; shared mechanism
+limits.}]{../figures/robustness_review_grid.slide-directional-drift-rcce.png}
 \refstepcounter{figure}\label{fig:robustness-review-grid-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -1064,7 +1151,7 @@ descriptive questions.
 without theorem transfer}
 \protect\phantomsection\label{server-side-heuristic-axis-conditional-contrasts-without-theorem-transfer}
 The comparison above belongs to the heuristic server axis defined in
-sec.~3.3. fig.~15 visualizes
+sec.~6.3. fig.~18 visualizes
 the \texttt{robust\_aggregate} divergence-reweighting that down-weights
 agents at pooling time.
 \end{frame}
@@ -1072,7 +1159,7 @@ agents at pooling time.
 \begin{frame}{Server-side heuristic axis (part 2)}
 Its positive formal property is the naive-recovery limit of Theorem
 5 (eq.~10, the 0
-residual of sec.~7.1),
+residual of sec.~10.1),
 \end{frame}
 
 \begin{frame}{Server-side heuristic axis (part 3)}
@@ -1085,15 +1172,16 @@ The heuristic carries no bounded-influence guarantee. The effect sizes,
 intervals, and planning quantities characterize its conditional
 contrasts; they do not certify the per-agent generalized-Bayes claim,
 which remains separately source-conditional in
-sec.~7.6.
+sec.~10.6.
 \end{frame}
 
 \begin{frame}{Server-side heuristic axis (part 5)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Open fill: honest. Cross-hatch: adversary.
-Dotted line: equal-weight pool.
-All panels share the same weight scale.}]{../figures/robust_influence_weights.slide-encoding.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Open
+fill: honest. Cross-hatch: adversary. Dotted line: equal-weight pool.
+All panels share the same weight
+scale.}]{../figures/robust_influence_weights.slide-encoding.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -1101,7 +1189,10 @@ All panels share the same weight scale.}]{../figures/robust_influence_weights.sl
 \begin{frame}{Server-side heuristic axis (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents 0 through 1: exact normalized heuristic weights; shared scale and equal-weight reference.}]{../figures/robust_influence_weights.slide-agents-1-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents
+0 through 1: exact normalized heuristic weights; shared scale and
+equal-weight
+reference.}]{../figures/robust_influence_weights.slide-agents-1-2.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -1109,7 +1200,10 @@ All panels share the same weight scale.}]{../figures/robust_influence_weights.sl
 \begin{frame}{Server-side heuristic axis (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents 2 through 3: exact normalized heuristic weights; shared scale and equal-weight reference.}]{../figures/robust_influence_weights.slide-agents-3-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents
+2 through 3: exact normalized heuristic weights; shared scale and
+equal-weight
+reference.}]{../figures/robust_influence_weights.slide-agents-3-4.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -1117,7 +1211,10 @@ All panels share the same weight scale.}]{../figures/robust_influence_weights.sl
 \begin{frame}{Server-side heuristic axis (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents 4 through 5: exact normalized heuristic weights; shared scale and equal-weight reference.}]{../figures/robust_influence_weights.slide-agents-5-6.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents
+4 through 5: exact normalized heuristic weights; shared scale and
+equal-weight
+reference.}]{../figures/robust_influence_weights.slide-agents-5-6.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -1125,7 +1222,10 @@ All panels share the same weight scale.}]{../figures/robust_influence_weights.sl
 \begin{frame}{Server-side heuristic axis (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents 6 through 6: exact normalized heuristic weights; shared scale and equal-weight reference.}]{../figures/robust_influence_weights.slide-agents-7-7.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents
+6 through 6: exact normalized heuristic weights; shared scale and
+equal-weight
+reference.}]{../figures/robust_influence_weights.slide-agents-7-7.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -1133,9 +1233,9 @@ All panels share the same weight scale.}]{../figures/robust_influence_weights.sl
 \begin{frame}{Server-side heuristic axis (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents contaminated: 2/7 (29\%)
-Weight sum: 1.000
-Healthy mean weight: 0.199}]{../figures/robust_influence_weights.slide-notes-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agents
+contaminated: 2/7 (29\%) Weight sum: 1.000 Healthy mean weight:
+0.199}]{../figures/robust_influence_weights.slide-notes-1.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -1143,8 +1243,9 @@ Healthy mean weight: 0.199}]{../figures/robust_influence_weights.slide-notes-1.p
 \begin{frame}{Server-side heuristic axis (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Adversary mean weight: 0.002
-Observed role-weight gap: 0.198}]{../figures/robust_influence_weights.slide-notes-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Adversary
+mean weight: 0.002 Observed role-weight gap:
+0.198}]{../figures/robust_influence_weights.slide-notes-2.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -1152,8 +1253,10 @@ Observed role-weight gap: 0.198}]{../figures/robust_influence_weights.slide-note
 \begin{frame}{Server-side heuristic axis (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Server heuristic weights support a recovery-limit diagnostic.
-They do not inherit client-loss robustness guarantees.}]{../figures/robust_influence_weights.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Server
+heuristic weights support a recovery-limit diagnostic. They do not
+inherit client-loss robustness
+guarantees.}]{../figures/robust_influence_weights.slide-scope.png}
 \refstepcounter{figure}\label{fig:robust-weights-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -1162,8 +1265,8 @@ They do not inherit client-loss robustness guarantees.}]{../figures/robust_influ
 weight control}
 \protect\phantomsection\label{sec:results-variational}
 The heuristic has the higher point accuracy in the configured verdict
-cell. The variational aggregator of sec.~5.8.2,
-derived in sec.~12, is its objective-backed
+cell. The variational aggregator of sec.~8.8.2,
+derived in sec.~15, is its objective-backed
 complement.
 \end{frame}
 
@@ -1179,13 +1282,16 @@ First, the descent. On a contaminated colony the free energy falls
 monotonically from 3.2458 to 2.3780 (a drop of 0.8678 over 11
 block-coordinate iterations, converged: Yes), with a largest single-step
 \emph{increase} of 8.88e-16 --- machine zero, the numerical witness of
-the descent theorem (sec.~12.3).
+the descent theorem (sec.~15.3).
 \end{frame}
 
 \begin{frame}{Variational aggregator (part 4)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational objective in nats at every iteration; filled triangle is final iterate, large open triangles mark the largest observed step.}]{../figures/aggregation_descent.slide-trajectory.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational
+objective in nats at every iteration; filled triangle is final iterate,
+large open triangles mark the largest observed
+step.}]{../figures/aggregation_descent.slide-trajectory.png}
 \refstepcounter{figure}\label{fig:aggregation-descent-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -1193,9 +1299,10 @@ the descent theorem (sec.~12.3).
 \begin{frame}{Variational aggregator (part 5)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Triangles and dash-dot: variational objective.
-Filled triangle: final iterate.
-Large open triangles: largest observed step.}]{../figures/aggregation_descent.slide-encoding.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Triangles
+and dash-dot: variational objective. Filled triangle: final iterate.
+Large open triangles: largest observed
+step.}]{../figures/aggregation_descent.slide-encoding.png}
 \refstepcounter{figure}\label{fig:aggregation-descent-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -1203,9 +1310,9 @@ Large open triangles: largest observed step.}]{../figures/aggregation_descent.sl
 \begin{frame}{Variational aggregator (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Iterations: 11
-Total drop ΔF = 0.868 nats
-Max ascent step = 8.9e-16 nats}]{../figures/aggregation_descent.slide-notes-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Iterations:
+11 Total drop ΔF = 0.868 nats Max ascent step = 8.9e-16
+nats}]{../figures/aggregation_descent.slide-notes-1.png}
 \refstepcounter{figure}\label{fig:aggregation-descent-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -1213,7 +1320,8 @@ Max ascent step = 8.9e-16 nats}]{../figures/aggregation_descent.slide-notes-1.pn
 \begin{frame}{Variational aggregator (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Monotone: yes  ✓ converged}]{../figures/aggregation_descent.slide-notes-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Monotone:
+yes ✓ converged}]{../figures/aggregation_descent.slide-notes-2.png}
 \refstepcounter{figure}\label{fig:aggregation-descent-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -1221,8 +1329,10 @@ Max ascent step = 8.9e-16 nats}]{../figures/aggregation_descent.slide-notes-1.pn
 \begin{frame}{Variational aggregator (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One deterministic trajectory; no sampling interval.
-A final iterate is not a global-optimum certificate.}]{../figures/aggregation_descent.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One
+deterministic trajectory; no sampling interval. A final iterate is not a
+global-optimum
+certificate.}]{../figures/aggregation_descent.slide-scope.png}
 \refstepcounter{figure}\label{fig:aggregation-descent-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -1243,7 +1353,10 @@ the empirical redescending weight response, drawn.
 \begin{frame}{Variational aggregator (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every configured drift: triangle/dash-dot variational weights, circle/solid naive weights; shaded gap is deterministic, not an interval.}]{../figures/bounded_influence.slide-weight-path.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every
+configured drift: triangle/dash-dot variational weights, circle/solid
+naive weights; shaded gap is deterministic, not an
+interval.}]{../figures/bounded_influence.slide-weight-path.png}
 \refstepcounter{figure}\label{fig:bounded-influence-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -1251,9 +1364,9 @@ the empirical redescending weight response, drawn.
 \begin{frame}{Variational aggregator (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Triangle/dash-dot: variational.
-Circle/solid: naive fixed weight.
-Shading: deterministic weight gap.}]{../figures/bounded_influence.slide-encoding.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Triangle/dash-dot:
+variational. Circle/solid: naive fixed weight. Shading: deterministic
+weight gap.}]{../figures/bounded_influence.slide-encoding.png}
 \refstepcounter{figure}\label{fig:bounded-influence-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -1261,8 +1374,10 @@ Shading: deterministic weight gap.}]{../figures/bounded_influence.slide-encoding
 \begin{frame}{Variational aggregator (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Outlier drift: 0 is consensus; 1 is confidently wrong.
-This is a configured path, not estimator-level B-robustness.}]{../figures/bounded_influence.slide-drift-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Outlier
+drift: 0 is consensus; 1 is confidently wrong. This is a configured
+path, not estimator-level
+B-robustness.}]{../figures/bounded_influence.slide-drift-key.png}
 \refstepcounter{figure}\label{fig:bounded-influence-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -1270,8 +1385,9 @@ This is a configured path, not estimator-level B-robustness.}]{../figures/bounde
 \begin{frame}{Variational aggregator (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational final weight: 0.000535
-Naive fixed weight: 1/n = 0.143}]{../figures/bounded_influence.slide-endpoints.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Variational
+final weight: 0.000535 Naive fixed weight: 1/n =
+0.143}]{../figures/bounded_influence.slide-endpoints.png}
 \refstepcounter{figure}\label{fig:bounded-influence-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -1279,8 +1395,9 @@ Naive fixed weight: 1/n = 0.143}]{../figures/bounded_influence.slide-endpoints.p
 \begin{frame}{Variational aggregator (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Cross: first configured drift below 0.5 × naive.
-Drift = 0.60}]{../figures/bounded_influence.slide-crossing.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Cross:
+first configured drift below 0.5 × naive. Drift =
+0.60}]{../figures/bounded_influence.slide-crossing.png}
 \refstepcounter{figure}\label{fig:bounded-influence-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -1294,7 +1411,7 @@ the product-of-experts.
 
 \begin{frame}{Variational aggregator (part 17)}
 The variational aggregator therefore does \emph{not} win the
-peak-accuracy verdict of sec.~7.5.2 --- that remains
+peak-accuracy verdict of sec.~10.5.2 --- that remains
 the sharp heuristic's role --- and the two are reported as complements,
 never conflated: rigor-with-conservatism on one side,
 accuracy-without-an-objective on the other.

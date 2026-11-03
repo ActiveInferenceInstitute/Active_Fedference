@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -262,12 +267,12 @@
 \begin{frame}{Experimental design: studies, estimands, determinism, and
 power}
 \protect\phantomsection\label{sec:methods-experimental-design}
-The generative model of sec.~5.10, the
-learning operators of sec.~5.15,
+The generative model of sec.~8.10, the
+learning operators of sec.~8.15,
 \end{frame}
 
 \begin{frame}{Experimental design (part 2)}
-and the corruption process of sec.~5.19 are
+and the corruption process of sec.~8.19 are
 exercised by 9 studies, including the contaminated-sentinel robustness
 sweep (Study 4).
 \end{frame}
@@ -303,7 +308,7 @@ and the across-seed studies enumerate the deterministic seed list
 \begin{frame}{Determinism through fixed\ldots{} (part 3)}
 Re-running with the same seed reproduces every number in the results
 bit-for-bit, so the bootstrap confidence intervals and paired-test
-p-values of sec.~5.27 are themselves
+p-values of sec.~8.27 are themselves
 deterministic functions of the seed.
 \end{frame}
 
@@ -427,13 +432,13 @@ eq.~17.
 Two protocol details: state inference in this study substitutes a flat
 (uniform) prior for \(D\), and each belief's free energy is scored
 against the pooled evidence of all agents' observations (the disclosure
-carried in sec.~7.2). The across-seed
+carried in sec.~10.2). The across-seed
 sample is \(n = 480\) seeds,
 \end{frame}
 
 \begin{frame}{Study suite and\ldots{} (part 9)}
-one colony-mean free energy per seed (fig.~9,
-fig.~10).
+one colony-mean free energy per seed (fig.~12,
+fig.~13).
 \end{frame}
 
 \begin{frame}{Study suite and\ldots{} (part 10)}
@@ -446,14 +451,14 @@ of eq.~19 at each ordered step,
 \begin{frame}{Study suite and\ldots{} (part 11)}
 giving 25 points per trajectory and \(n =
 480\) independent seed trajectories for the pointwise interval in
-fig.~11.
+fig.~14.
 \end{frame}
 
 \begin{frame}{Study suite and\ldots{} (part 12)}
 \textbf{Study 3 --- configured BMR sign control.} A redundant model
 reduction and a supported one are scored by the BMR free energy of
 eq.~20 over \(n = 4\) candidate states
-(fig.~12). This fixed-posterior comparison tests
+(fig.~15). This fixed-posterior comparison tests
 the expected signs for two declared prunings;
 \end{frame}
 
@@ -462,7 +467,7 @@ it is not a structure-discovery experiment.
 
 \textbf{Study 4 --- robustness sweep.} The sweep varies two factors on a
 colony of 7 sentinels of which 2 are saboteurs
-(\texttt{confident\_wrong}, sec.~5.20):
+(\texttt{confident\_wrong}, sec.~8.20):
 \end{frame}
 
 \begin{frame}{Contamination rate}
@@ -500,10 +505,10 @@ is KLD (c=0.00), RKL (c=1.50), AR (c=1.30), beta (c=1.70), rcce
 
 \begin{frame}[fragile]{Server robustness setting (part 5)}
 None of these labels invoke the client-side
-\texttt{generalized\_posterior} update of sec.~5.3
-or the divergence family of sec.~5.6. This
+\texttt{generalized\_posterior} update of sec.~8.3
+or the divergence family of sec.~8.6. This
 sweep exercises only the server-side heuristic axis of
-sec.~3.3 (\texttt{robust\_aggregate}),
+sec.~6.3 (\texttt{robust\_aggregate}),
 \end{frame}
 
 \begin{frame}[fragile]{Server robustness setting (part 6)}
@@ -518,7 +523,7 @@ run reports.
 The headline verdict pairs 960 independent trials at the fixed
 contamination rate 0.800 --- heavy contamination that degrades the naive
 pool while staying below the pure-veto cliff
-(fig.~13, fig.~15). Each
+(fig.~16, fig.~18). Each
 trial contributes one matched (naive, robust) accuracy pair,
 \end{frame}
 
@@ -530,7 +535,7 @@ within-trial accuracy difference at that single rate.
 \begin{frame}{Server robustness setting (part 9)}
 A complementary exploratory point-estimate logistic-regression proxy
 compares joint NLL/L2 and RCCE/L2 configurations under flipped-label
-contamination (fig.~18). Because both loss and
+contamination (fig.~21). Because both loss and
 shrinkage change,
 \end{frame}
 
@@ -542,7 +547,7 @@ FedGVI generalized-posterior objective.
 
 \begin{frame}{Server robustness setting (part 11)}
 \textbf{Study 5 --- disjoint-FOV moving world.} This extension
-(sec.~14.7) places 3 agents on a 2-slot disjoint-FOV
+(sec.~17.7) places 3 agents on a 2-slot disjoint-FOV
 track to test the necessity of communication when agents cannot observe
 the same positions.
 \end{frame}
@@ -555,14 +560,14 @@ accuracy across the moving sentinel's trajectory.
 \begin{frame}{Server robustness setting (part 13)}
 Five structural extension studies (Studies 5--9, Supplementary sections)
 build on the same POMDP substrate and are described there: the moving
-disjoint-FOV sentinel (sec.~14.7), the 2-level
-hierarchical POMDP (sec.~14.9),
+disjoint-FOV sentinel (sec.~17.7), the 2-level
+hierarchical POMDP (sec.~17.9),
 \end{frame}
 
 \begin{frame}{Server robustness setting (part 14)}
-the \(N\)-level extension (sec.~14.11), the 2-D
-sensitivity sweep (sec.~14.13), and parameter
-recovery (sec.~15).
+the \(N\)-level extension (sec.~17.11), the 2-D
+sensitivity sweep (sec.~17.13), and parameter
+recovery (sec.~18).
 \end{frame}
 
 \begin{frame}{Sample size and prospective statistical power}
@@ -641,7 +646,7 @@ the paired Wilcoxon at the run's \(n = 960\), computed at
 
 \begin{frame}{Sample size and\ldots{} (part 12)}
 The power approximation uses the deterministic noncentral-normal
-approximation of sec.~5.27, deflated by the
+approximation of sec.~8.27, deflated by the
 Wilcoxon's Pitman asymptotic relative efficiency, so it is approximately
 calibrated for the signed-rank test actually run (exact under a
 normal-shift alternative;
@@ -661,9 +666,9 @@ should adopt.
 
 \begin{frame}{Sample size and\ldots{} (part 15)}
 These power quantities characterize the \emph{server-side} aggregation
-contrast; per the honesty contract of sec.~3.3
+contrast; per the honesty contract of sec.~6.3
 they do not certify the per-client \(\beta\)/rcce guarantees, which are
-pinned by the locked core (sec.~6) rather than by
+pinned by the locked core (sec.~9) rather than by
 these aggregation-level statistics.
 \end{frame}
 
@@ -675,7 +680,7 @@ are pure NumPy / SciPy --- no GPU and no network.
 
 \begin{frame}[fragile]{Software environment and\ldots{} (part 2)}
 The deterministic-MLP neural complement
-(sec.~7.6) additionally uses PyTorch (CPU);
+(sec.~10.6) additionally uses PyTorch (CPU);
 
 the analysis pipeline executes it and emits its numbers as tokens
 exactly like every other result when the \texttt{torch} optional extra
@@ -690,7 +695,7 @@ instead of silently fabricating neural results.
 \begin{frame}{Software environment and\ldots{} (part 4)}
 Versions and platform --- including the PyTorch version used for the MLP
 complement --- are recorded automatically in
-sec.~10.
+sec.~13.
 \end{frame}
 
 \end{document}

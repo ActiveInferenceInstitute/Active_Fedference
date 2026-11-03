@@ -7,8 +7,9 @@ from typing import Any
 
 import numpy as np
 
+from ..aggregation import AggregationConfig
 from ..bayesian_model_reduction import reduce as bmr_reduce
-from ..belief_sharing import share_round
+from ..belief_sharing import share_round_result
 from ..belief_updating import infer_states, vfe
 from ..dirichlet_learning import learn_likelihood
 from ..pomdp import N_LOCATIONS, build_sentinel_world
@@ -37,7 +38,7 @@ def run_belief_sharing(
     location through an independent noisy sensor and form a one-step variational
     posterior (:func:`fedference.belief_updating.infer_states`) from its *own*
     observation. When ``communicate=True`` the agents run one federated
-    belief-sharing round (:func:`fedference.belief_sharing.share_round`, the
+    belief-sharing round (:func:`fedference.belief_sharing.share_round_result`, the
     project naive pool / categorical Eq. 7 specialization) so each agent's
     posterior moves toward the cross-agent
     consensus. This reduced categorical study does not reconstruct the full
@@ -77,9 +78,13 @@ def run_belief_sharing(
         posteriors[n] = infer_states(A, o, log_prior)
 
     if communicate:
-        diag = share_round(
-            posteriors, method="naive", exclude_self=True, true_state=true_state
+        diag = share_round_result(
+            posteriors,
+            config=AggregationConfig(method="naive", max_iter=32, tol=1e-9),
+            exclude_self=True,
+            true_state=true_state,
         )
+        assert diag.mean_surprise is not None and diag.mean_accuracy is not None
         scored = diag.shared_posteriors
         mean_surprise = diag.mean_surprise
         mean_accuracy = diag.mean_accuracy

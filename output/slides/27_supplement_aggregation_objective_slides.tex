@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -285,7 +290,7 @@ weight control}
 \fi
 
 This supplement gives the full derivation behind
-sec.~5.8.2: the server-side aggregator
+sec.~8.8.2: the server-side aggregator
 \texttt{robust\_aggregate} is a heuristic,
 \end{frame}
 
@@ -331,9 +336,7 @@ proposition goes further, while retaining a deliberately narrow scope.
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 5)}
-\begin{equation}\tag{24}\protect\phantomsection\label{eq:raw-log-pool-block}{
-Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)
-}\end{equation}
+\begin{equation}\tag{24}\protect\phantomsection\label{eq:raw-log-pool-block}{Q(a;s) \;=\; \operatorname{softmax}\!\left(\sum_n a_n\log s_n\right)}\end{equation}
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 6)}
@@ -342,13 +345,11 @@ eq.~24.
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 7)}
-\begin{equation}\tag{25}\protect\phantomsection\label{eq:separable-server-objective}{
-\begin{aligned}
+\begin{equation}\tag{25}\protect\phantomsection\label{eq:separable-server-objective}{\begin{aligned}
 F(q,a;s,w)
 &= \sum_n a_n\,\mathrm{KL}(q\,\|\,s_n)\\
 &\quad + R(a,w) + G(q).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 8)}
@@ -373,10 +374,8 @@ eq.~26:
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 11)}
-\begin{equation}\tag{26}\protect\phantomsection\label{eq:raw-log-pool-witness-source}{
-s_i^{(\alpha)} \;=\;
-\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.
-}\end{equation}
+\begin{equation}\tag{26}\protect\phantomsection\label{eq:raw-log-pool-witness-source}{s_i^{(\alpha)} \;=\;
+\frac{q_i^{1/\alpha}}{\sum_j q_j^{1/\alpha}}.}\end{equation}
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 12)}
@@ -455,7 +454,7 @@ for all interior inputs.
 \end{frame}
 
 \begin{frame}{Why the sharp heuristic is\ldots{} (part 19)}
-Thus sec.~5.8 retains the heuristic label and
+Thus sec.~8.8 retains the heuristic label and
 claims only the recovery limit, the scoped negative result above, and
 conditional empirical behavior --- never a bounded-influence property or
 an objective-backed status.
@@ -479,15 +478,13 @@ written in either of two equivalent forms:
 \end{frame}
 
 \begin{frame}{Aggregation free energy\ldots{} (part 3)}
-\begin{equation}\tag{27}\protect\phantomsection\label{eq:agg-q-objective}{
-\begin{aligned}
+\begin{equation}\tag{27}\protect\phantomsection\label{eq:agg-q-objective}{\begin{aligned}
 J(q;a)
 &=\sum_n a_n\,\mathrm{CE}(q,q_n)-\lambda H(q),\\
 J(q;a)
 &=\lambda\sum_i q_i\log q_i\\
 &\quad-\sum_i\sum_n q_i a_n\log q_{n,i}.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Aggregation free energy\ldots{} (part 4)}
@@ -498,16 +495,14 @@ i.e.
 \end{frame}
 
 \begin{frame}{Aggregation free energy\ldots{} (part 5)}
-\begin{equation}\tag{28}\protect\phantomsection\label{eq:agg-q-min}{
-\begin{aligned}
+\begin{equation}\tag{28}\protect\phantomsection\label{eq:agg-q-min}{\begin{aligned}
 q_i
 &\propto \exp\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_{n,i}\Big),\\
 q_i
 &= \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\sum_n a_n \log q_n\Big)_i.
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Aggregation free energy\ldots{} (part 6)}
@@ -525,9 +520,7 @@ so
 \end{frame}
 
 \begin{frame}{Aggregation free energy\ldots{} (part 8)}
-\begin{equation}\tag{29}\protect\phantomsection\label{eq:agg-a-min}{
-a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),
-}\end{equation}
+\begin{equation}\tag{29}\protect\phantomsection\label{eq:agg-a-min}{a_n \;=\; w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big),}\end{equation}
 \end{frame}
 
 \begin{frame}{Aggregation free energy\ldots{} (part 9)}
@@ -575,7 +568,7 @@ As \(c\to0\), \(a_n\to w_n\) and \(q\) tends to the tempered log-linear pool;
 \begin{frame}{Conservative-server\ldots{} (part 2)}
 The variational aggregator therefore shares the project log-linear-pool
 corner of (10). Under the qualified bridge of
-sec.~5.8, this is only the categorical
+sec.~8.8, this is only the categorical
 message-combination specialization, not the complete source protocol.
 \end{frame}
 
@@ -627,7 +620,7 @@ In the configured colony, the uniform/arithmetic seeds reach a
 lower-\(F\) \emph{vetoing} basin, so the saboteur is suppressed even at
 the simplex vertex (pinned qualitatively by the near-vertex multi-start
 test) --- the 267.1\(\times\) suppression of
-fig.~17 is measured across the swept
+fig.~20 is measured across the swept
 contamination grid,
 \end{frame}
 
@@ -647,7 +640,7 @@ fixed point selected by a finite multi-start heuristic.
 \end{frame}
 
 \begin{frame}{Conservative-server\ldots{} (part 13)}
-fig.~21 makes the capture and the escape
+fig.~24 makes the capture and the escape
 concrete on a near-vertex colony: the single (log-linear-pool) start
 settles at \(F = 1.3092\) (the higher observed basin, where the saboteur
 keeps its weight), while one of the configured alternative starts
@@ -663,7 +656,10 @@ certifies a global optimum.
 \begin{frame}{Conservative-server\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Both complete objective trajectories, observed endpoints, lower final reference and terminal gap.}]{../figures/descent_comparison.slide-trajectories.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Both
+complete objective trajectories, observed endpoints, lower final
+reference and terminal
+gap.}]{../figures/descent_comparison.slide-trajectories.png}
 \refstepcounter{figure}\label{fig:descent-comparison-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -671,7 +667,10 @@ certifies a global optimum.
 \begin{frame}{Conservative-server\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled circles / solid: single start. Open diamonds / dotted: multistart. Both use the same variational method.}]{../figures/descent_comparison.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled
+circles / solid: single start. Open diamonds / dotted: multistart. Both
+use the same variational
+method.}]{../figures/descent_comparison.slide-key.png}
 \refstepcounter{figure}\label{fig:descent-comparison-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -679,9 +678,9 @@ certifies a global optimum.
 \begin{frame}{Conservative-server\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Single-start final F: 1.31 nats
-Multi-start final F: -0.231 nats
-Basin gap ΔF: 1.54 nats}]{../figures/descent_comparison.slide-notes-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Single-start
+final F: 1.31 nats Multi-start final F: -0.231 nats Basin gap ΔF: 1.54
+nats}]{../figures/descent_comparison.slide-notes-1.png}
 \refstepcounter{figure}\label{fig:descent-comparison-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -689,7 +688,8 @@ Basin gap ΔF: 1.54 nats}]{../figures/descent_comparison.slide-notes-1.png}
 \begin{frame}{Conservative-server\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Iterations: single=10, multi=6}]{../figures/descent_comparison.slide-notes-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Iterations:
+single=10, multi=6}]{../figures/descent_comparison.slide-notes-2.png}
 \refstepcounter{figure}\label{fig:descent-comparison-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -697,7 +697,10 @@ Basin gap ΔF: 1.54 nats}]{../figures/descent_comparison.slide-notes-1.png}
 \begin{frame}{Conservative-server\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Two deterministic traces from one configured colony. No uncertainty interval applies. Observed basins do not certify a global optimum.}]{../figures/descent_comparison.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Two
+deterministic traces from one configured colony. No uncertainty interval
+applies. Observed basins do not certify a global
+optimum.}]{../figures/descent_comparison.slide-scope.png}
 \refstepcounter{figure}\label{fig:descent-comparison-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -718,7 +721,7 @@ single-step \emph{increase} is \(8.88 \times 10^{-16}\), machine zero
 \end{frame}
 
 \begin{frame}{Numerical witnesses for\ldots{} (part 3)}
-witnessed numerically and drawn in fig.~16.
+witnessed numerically and drawn in fig.~19.
 \end{frame}
 
 \begin{frame}{Numerical witnesses for\ldots{} (part 4)}
@@ -731,7 +734,7 @@ from the unrounded influences,
 
 \begin{frame}{Numerical witnesses for\ldots{} (part 5)}
 not the display-rounded values above) below the fixed 0.143 the naive
-pool would still grant it (fig.~17).
+pool would still grant it (fig.~20).
 
 This makes the redescending normalized-weight behavior visible on the
 tested path; it is not an estimator-level B-robustness proof.
@@ -740,7 +743,7 @@ tested path; it is not an estimator-level B-robustness proof.
 \begin{frame}{Tempered aggregation family for the accuracy-guarantee
 trade}
 \protect\phantomsection\label{sec:supp-tempered}
-The aggregator of sec.~12.2 fixes the entropy term
+The aggregator of sec.~15.2 fixes the entropy term
 at unit weight. Relaxing that single coefficient generates a
 one-parameter \emph{tempered} family. Introduce an entropy weight
 \(\lambda > 0\) ---
@@ -751,13 +754,11 @@ the \textbf{inverse temperature is} \(1/\lambda\) --- and minimize
 \end{frame}
 
 \begin{frame}{Tempered aggregation\ldots{} (part 3)}
-\begin{equation}\tag{30}\protect\phantomsection\label{eq:tempered-family}{
-\begin{aligned}
+\begin{equation}\tag{30}\protect\phantomsection\label{eq:tempered-family}{\begin{aligned}
 F_\lambda(q, a)
 &= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Tempered aggregation\ldots{} (part 4)}
@@ -767,15 +768,13 @@ and tempers only the consensus update:
 \end{frame}
 
 \begin{frame}{Tempered aggregation\ldots{} (part 5)}
-\begin{equation}\tag{31}\protect\phantomsection\label{eq:tempered-updates}{
-\begin{aligned}
+\begin{equation}\tag{31}\protect\phantomsection\label{eq:tempered-updates}{\begin{aligned}
 q
 &\propto \exp\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &= w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-}\end{equation}
+\end{aligned}}\end{equation}
 \end{frame}
 
 \begin{frame}{Tempered aggregation\ldots{} (part 6)}
@@ -789,7 +788,7 @@ eq.~31.
 The weight update is \textbf{independent of \(\lambda\)}: the bound
 \(a_n \le w_n\) with collapse \(a_n \to 0\) as
 \(\mathrm{KL}(q\,\|\,q_n) \to \infty\) is unchanged, so the \textbf{raw
-effective-weight bound of sec.~12.3 holds for every}
+effective-weight bound of sec.~15.3 holds for every}
 \(\lambda > 0\).
 \end{frame}
 
@@ -801,7 +800,7 @@ bit-identical, not merely close.
 \end{frame}
 
 \begin{frame}{Tempered aggregation\ldots{} (part 9)}
-The \(c \to 0\) recovery of sec.~12.3 generalizes to
+The \(c \to 0\) recovery of sec.~15.3 generalizes to
 the \emph{tempered} log-linear pool
 \(q \propto \exp(\tfrac{1}{\lambda}\sum_n w_n \log q_n)\); at
 \(\lambda = 1.0\) this is exactly
@@ -811,7 +810,7 @@ the \emph{tempered} log-linear pool
 
 \begin{frame}{Tempered aggregation\ldots{} (part 10)}
 Under the shared-support, posterior-log-potential, and fixed-weight
-assumptions of sec.~5.8, that pool is a
+assumptions of sec.~8.8, that pool is a
 categorical specialization of Friston Eq. 7's message-combination term,
 not a reconstruction of the complete source protocol.
 \end{frame}
@@ -835,7 +834,7 @@ The closest observed weight is \(\lambda^{\ast} = 0.3\) with an accuracy
 gap of 0.0008. \textbf{A lambda* narrows the tested accuracy gap while
 preserving the stated weight bound on this grid.} If no \(\lambda\)
 closes that gap while preserving the derived weight update, the result
-is the conservatism trade-off of sec.~8.13,
+is the conservatism trade-off of sec.~11.13,
 \end{frame}
 
 \begin{frame}{Tempered aggregation\ldots{} (part 14)}

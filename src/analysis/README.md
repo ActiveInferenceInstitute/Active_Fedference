@@ -10,6 +10,18 @@ This package owns deterministic workflow orchestration for the project experimen
 | `workflow.py` | Pipeline entrypoint for source-mechanism analogues, figure generation, and report materialisation. |
 | `report_schemas.py` | Typed report/figure-registry schemas and the runtime validator enforced at the write boundary. |
 | `artifacts.py` | Source-declared Stage-02 report, figure, registry, and data-path contract for audits and CI. |
+| `stage_catalog.py` | Lazy selection of the existing report producers without changed mathematics or seeds. |
+| `stage_io.py` | Strict JSON, confined paths and atomic file writes. |
+| `stage_identity.py` | Exact source roster, runtime identity and destination output baselines. |
+| `stage_workspace.py` | Freeze and admit an independent analysis workspace. |
+| `stage_checkpoint.py` | Validate report completions and preserve prior bytes during guarded imports. |
+| `stage_process.py` | Kernel lock custody, cancellation and process identity observation. |
+| `stage_runner.py` | Supervise one bounded subprocess and publish its validated completion. |
+| `stage_worker.py` | Execute one frozen producer with independent worker budgets. |
+| `stage_bundle.py` | Figure assembly from complete report checkpoints and validated bundle import. |
+
+For publication compute, follow [bounded, resumable analysis](../../docs/development/staged-analysis.md).
+Heavy stages run in independent external staging, outside repository write leases.
 
 ## Workflow contract
 

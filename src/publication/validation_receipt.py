@@ -38,6 +38,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
     "src/**/*.py",
     "src/**/*.md",
     "src/**/*.yaml",
+    "src/**/*.json",
     "src/**/*.csv",
     "src/**/py.typed",
     "tests/**/*.py",
@@ -94,7 +95,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
 # them optional preserves the fixture trees used by focused receipt tests,
 # while a real checkout still hashes the license as a release input.
 _OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset(
-    {"manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE", ".github/ci/*.json"}
+    {"manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE", ".github/ci/*.json", "src/**/*.json"}
 )
 MINIMUM_COVERAGE_THRESHOLD = 90.0
 _ENVIRONMENT_FIELDS: tuple[str, ...] = (

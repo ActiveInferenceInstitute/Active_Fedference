@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 import struct
-import warnings
 import zipfile
 from dataclasses import asdict, dataclass
 from io import BytesIO
@@ -309,26 +308,12 @@ def deserialize_belief(data: bytes) -> np.ndarray:
 def serialize_result(
     consensus: np.ndarray,
     normalized_effective_weights: np.ndarray | None = None,
-    **legacy: object,
 ) -> bytes:
     """Serialize consensus and normalized influence losslessly.
 
     The on-wire field remains ``agent_weights`` for protocol compatibility;
     callers use ``normalized_effective_weights`` in new code.
     """
-    if "agent_weights" in legacy:
-        if normalized_effective_weights is not None:
-            raise TypeError(
-                "normalized_effective_weights and deprecated agent_weights cannot both be supplied"
-            )
-        normalized_effective_weights = legacy.pop("agent_weights")  # type: ignore[assignment]
-        warnings.warn(
-            "agent_weights is deprecated; use normalized_effective_weights",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if normalized_effective_weights is None:
         raise TypeError("normalized_effective_weights is required")
     validated_consensus = _serialization_input_vector(

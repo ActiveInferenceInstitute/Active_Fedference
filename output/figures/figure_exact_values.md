@@ -40,48 +40,48 @@ Source report: `complexity_scaling.json`. Min-max spans are timing-repeat ranges
 
 | method | axis | size | median_seconds | min_seconds | max_seconds | expected_exponent | observed_log_log_slope |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| log_linear_pool | agents | 4 | 9.78330062935e-05 | 8.70839940035e-05 | 0.00018154099962 | 1 | 0.932137050379 |
-| log_linear_pool | agents | 8 | 0.000174583001353 | 0.0001667500037 | 0.000273416997516 | 1 | 0.932137050379 |
-| log_linear_pool | agents | 16 | 0.000364541003364 | 0.000333957999828 | 0.000412042005337 | 1 | 0.932137050379 |
-| log_linear_pool | agents | 32 | 0.000651499998639 | 0.0006489160005 | 0.000716916001693 | 1 | 0.932137050379 |
-| log_linear_pool | agents | 64 | 0.00128095899709 | 0.00126579099742 | 0.00151716700202 | 1 | 0.932137050379 |
-| log_linear_pool | states | 256 | 0.0162007079998 | 0.0154899170011 | 0.0166924590012 | 1 | 0.969771729596 |
-| log_linear_pool | states | 512 | 0.0311435409967 | 0.030849499999 | 0.0339737920003 | 1 | 0.969771729596 |
-| log_linear_pool | states | 1024 | 0.0610307919997 | 0.0604525829986 | 0.0641488330002 | 1 | 0.969771729596 |
-| log_linear_pool | states | 2048 | 0.120210249996 | 0.117895625001 | 0.121434875 | 1 | 0.969771729596 |
-| log_linear_pool | states | 4096 | 0.237628833995 | 0.235541083995 | 0.246064166 | 1 | 0.969771729596 |
-| robust_aggregate | agents | 4 | 0.00153895800031 | 0.00148191599874 | 0.00166345799516 | 1 | 0.937325281621 |
-| robust_aggregate | agents | 8 | 0.00273545899836 | 0.00271000000066 | 0.00280033400486 | 1 | 0.937325281621 |
-| robust_aggregate | agents | 16 | 0.0052424999958 | 0.00505350000458 | 0.00555658299709 | 1 | 0.937325281621 |
-| robust_aggregate | agents | 32 | 0.010179375 | 0.00993174999894 | 0.0102973339963 | 1 | 0.937325281621 |
-| robust_aggregate | agents | 64 | 0.0205445410029 | 0.020176041995 | 0.0209201659964 | 1 | 0.937325281621 |
-| robust_aggregate | states | 256 | 0.249302084005 | 0.248222208 | 0.252940999999 | 1 | 0.945948266146 |
-| robust_aggregate | states | 512 | 0.470372459 | 0.468901250002 | 0.474333333004 | 1 | 0.945948266146 |
-| robust_aggregate | states | 1024 | 0.883380125 | 0.848731958999 | 0.948662875002 | 1 | 0.945948266146 |
-| robust_aggregate | states | 2048 | 1.724417375 | 1.70190625 | 1.7673695 | 1 | 0.945948266146 |
-| robust_aggregate | states | 4096 | 3.454774209 | 3.446201708 | 3.600925333 | 1 | 0.945948266146 |
-| variational_aggregate | agents | 4 | 0.00346974999411 | 0.00330804199621 | 0.00377808399935 | 1 | 0.793711403447 |
-| variational_aggregate | agents | 8 | 0.00512474999414 | 0.0050457499965 | 0.00535454100464 | 1 | 0.793711403447 |
-| variational_aggregate | agents | 16 | 0.00951858400367 | 0.00874650000333 | 0.00961316600296 | 1 | 0.793711403447 |
-| variational_aggregate | agents | 32 | 0.0164887080027 | 0.0156588329992 | 0.0214332079995 | 1 | 0.793711403447 |
-| variational_aggregate | agents | 64 | 0.0302827920023 | 0.0297645829996 | 0.0312463340015 | 1 | 0.793711403447 |
-| variational_aggregate | states | 256 | 0.351008959005 | 0.347057749997 | 0.355843083002 | 1 | 0.942763305588 |
-| variational_aggregate | states | 512 | 0.702597875003 | 0.694052084 | 0.737618290994 | 1 | 0.942763305588 |
-| variational_aggregate | states | 1024 | 1.347663417 | 1.318532708 | 1.360926875 | 1 | 0.942763305588 |
-| variational_aggregate | states | 2048 | 2.469876667 | 2.46366975 | 2.55451570899 | 1 | 0.942763305588 |
-| variational_aggregate | states | 4096 | 4.91285733299 | 4.891868417 | 4.92829095801 | 1 | 0.942763305588 |
-| share_round_naive | agents | 4 | 0.000811792000604 | 0.000775874999817 | 0.000890458002687 | 2 | 1.62169231633 |
-| share_round_naive | agents | 8 | 0.0021475829999 | 0.00206374999834 | 0.00222895800107 | 2 | 1.62169231633 |
-| share_round_naive | agents | 16 | 0.00670204099879 | 0.00659441600146 | 0.00692299999355 | 2 | 1.62169231633 |
-| share_round_naive | agents | 32 | 0.0235479170005 | 0.0233132919966 | 0.0236302920021 | 2 | 1.62169231633 |
-| share_round_robust | agents | 4 | 0.0264989999996 | 0.0262158749974 | 0.0268910419982 | 2 | 1.88693314866 |
-| share_round_robust | agents | 8 | 0.105305292003 | 0.0948293749971 | 0.113789042 | 2 | 1.88693314866 |
-| share_round_robust | agents | 16 | 0.358647957997 | 0.357575125003 | 0.360139291995 | 2 | 1.88693314866 |
-| share_round_robust | agents | 32 | 1.377954958 | 1.37451670899 | 1.392355083 | 2 | 1.88693314866 |
-| infer_states | modalities | 1 | 9.19999947655e-05 | 9.05409979168e-05 | 9.84580037766e-05 | 1 | 0.656727179863 |
-| infer_states | modalities | 2 | 0.000128665997181 | 0.000127958002849 | 0.000129374995595 | 1 | 0.656727179863 |
-| infer_states | modalities | 4 | 0.000206208002055 | 0.000205083000765 | 0.000207791999856 | 1 | 0.656727179863 |
-| infer_states | modalities | 8 | 0.000358500001312 | 0.000357542005077 | 0.000460499999463 | 1 | 0.656727179863 |
+| log_linear_pool | agents | 4 | 9.0415996965e-05 | 8.68329952937e-05 | 9.70840046648e-05 | 1 | 0.944034464589 |
+| log_linear_pool | agents | 8 | 0.000165792007465 | 0.000164875003975 | 0.000176416011527 | 1 | 0.944034464589 |
+| log_linear_pool | agents | 16 | 0.000327625020873 | 0.000317415979225 | 0.000343874999089 | 1 | 0.944034464589 |
+| log_linear_pool | agents | 32 | 0.000615958007984 | 0.000613457988948 | 0.000621583982138 | 1 | 0.944034464589 |
+| log_linear_pool | agents | 64 | 0.00123641701066 | 0.00122891701176 | 0.00124062501709 | 1 | 0.944034464589 |
+| log_linear_pool | states | 256 | 0.0150752500049 | 0.0150026250049 | 0.0153498329746 | 1 | 0.976241629073 |
+| log_linear_pool | states | 512 | 0.028458292014 | 0.0283465829853 | 0.0286007910036 | 1 | 0.976241629073 |
+| log_linear_pool | states | 1024 | 0.0556821250066 | 0.0553536250081 | 0.0574816669978 | 1 | 0.976241629073 |
+| log_linear_pool | states | 2048 | 0.120861874981 | 0.110850166995 | 0.131508833991 | 1 | 0.976241629073 |
+| log_linear_pool | states | 4096 | 0.215582916018 | 0.214842124988 | 0.262142583 | 1 | 0.976241629073 |
+| robust_aggregate | agents | 4 | 0.00151937501505 | 0.00148479198106 | 0.00164804098313 | 1 | 0.902659353738 |
+| robust_aggregate | agents | 8 | 0.00275462499121 | 0.00267083401559 | 0.00291762498091 | 1 | 0.902659353738 |
+| robust_aggregate | agents | 16 | 0.00503587501589 | 0.00494216699735 | 0.00529683299828 | 1 | 0.902659353738 |
+| robust_aggregate | agents | 32 | 0.00976724998327 | 0.00931958298315 | 0.00986979101435 | 1 | 0.902659353738 |
+| robust_aggregate | agents | 64 | 0.0184267089935 | 0.0182960829989 | 0.0193104589998 | 1 | 0.902659353738 |
+| robust_aggregate | states | 256 | 0.226365041977 | 0.224519999989 | 0.227226707997 | 1 | 0.95993899272 |
+| robust_aggregate | states | 512 | 0.423040541995 | 0.421679040999 | 0.429158834013 | 1 | 0.95993899272 |
+| robust_aggregate | states | 1024 | 0.821462916007 | 0.819658875 | 0.829439291003 | 1 | 0.95993899272 |
+| robust_aggregate | states | 2048 | 1.63136658299 | 1.613652375 | 1.64386995797 | 1 | 0.95993899272 |
+| robust_aggregate | states | 4096 | 3.21052995799 | 3.19401545799 | 3.23936362501 | 1 | 0.95993899272 |
+| variational_aggregate | agents | 4 | 0.00327279200428 | 0.00320920799277 | 0.00329437499749 | 1 | 0.784824861223 |
+| variational_aggregate | agents | 8 | 0.0049161670031 | 0.0049067499931 | 0.00496774999192 | 1 | 0.784824861223 |
+| variational_aggregate | agents | 16 | 0.00830583300558 | 0.00826891700854 | 0.00847591698403 | 1 | 0.784824861223 |
+| variational_aggregate | agents | 32 | 0.0150513749977 | 0.0149323749938 | 0.015251083998 | 1 | 0.784824861223 |
+| variational_aggregate | agents | 64 | 0.0283937499917 | 0.0283004160156 | 0.0287095830136 | 1 | 0.784824861223 |
+| variational_aggregate | states | 256 | 0.336578957998 | 0.330835208006 | 0.343259791989 | 1 | 0.960502655151 |
+| variational_aggregate | states | 512 | 0.627325916983 | 0.626346500008 | 0.635613457998 | 1 | 0.960502655151 |
+| variational_aggregate | states | 1024 | 1.2133265 | 1.20736537498 | 1.22159908299 | 1 | 0.960502655151 |
+| variational_aggregate | states | 2048 | 2.405095583 | 2.387085208 | 2.43957441702 | 1 | 0.960502655151 |
+| variational_aggregate | states | 4096 | 4.79698054201 | 4.77317679199 | 4.84247625002 | 1 | 0.960502655151 |
+| share_round_naive | agents | 4 | 0.00077537499601 | 0.000772708997829 | 0.00079579197336 | 2 | 1.64107000642 |
+| share_round_naive | agents | 8 | 0.00207158300327 | 0.00206212501507 | 0.00212020799518 | 2 | 1.64107000642 |
+| share_round_naive | agents | 16 | 0.00664908299223 | 0.00657804100774 | 0.00744729099097 | 2 | 1.64107000642 |
+| share_round_naive | agents | 32 | 0.0233021669846 | 0.0231336250145 | 0.0233129170083 | 2 | 1.64107000642 |
+| share_round_robust | agents | 4 | 0.0259942080011 | 0.0257815000077 | 0.0261305839813 | 2 | 1.90979243725 |
+| share_round_robust | agents | 8 | 0.092412375001 | 0.0914535420015 | 0.0930367499823 | 2 | 1.90979243725 |
+| share_round_robust | agents | 16 | 0.349597083987 | 0.349496832991 | 0.351520958007 | 2 | 1.90979243725 |
+| share_round_robust | agents | 32 | 1.37598404099 | 1.37295624998 | 1.382304542 | 2 | 1.90979243725 |
+| infer_states | modalities | 1 | 0.0001220839913 | 0.000116832990898 | 0.000127166014863 | 1 | 0.715854542753 |
+| infer_states | modalities | 2 | 0.000173874985194 | 0.000173374981387 | 0.000177541020093 | 1 | 0.715854542753 |
+| infer_states | modalities | 4 | 0.000292916985927 | 0.000291832984658 | 0.000312874995871 | 1 | 0.715854542753 |
+| infer_states | modalities | 8 | 0.000536375009688 | 0.000529791985173 | 0.000607166992268 | 1 | 0.715854542753 |
 
 ## Conditional World {#fig-values-conditional-world}
 
@@ -141,8 +141,8 @@ Source report: `cross_study_summary.json`. Native units remain separate; interva
 | 3 | Study 3 Emergence (BMR) | ΔF (redundant pruning) | nats | 3.71621102364 | 3.71029104144 | 3.72186452035 |
 | 4 | Study 4 Robustness sweep | Trial-mean accuracy gain (best robust − naive, worst rate) | fraction | 0.117536707282 | 0.10901564649 | 0.126243002247 |
 | 5 | Study 5 Moving world (EFE) | Accuracy gain (EFE − isolated) | fraction | -0.017578125 | -0.023046875 | -0.0125 |
-| 6 | Study 6 2-level hierarchical POMDP | Location accuracy gap (hier − flat) | fraction | -0.0015625 | -0.008203125 | 0.0046875 |
-| 7 | Study 7 3-level hierarchical POMDP | Location accuracy gap (3-level − flat) | fraction | -0.004296875 | -0.012109375 | 0.00390625 |
+| 6 | Study 6 2-level hierarchical POMDP | Location accuracy gap (hier − flat) | fraction | -0.006640625 | -0.0125 | -0.001171875 |
+| 7 | Study 7 3-level hierarchical POMDP | Location accuracy gap (3-level − flat) | fraction | -0.0078125 | -0.014453125 | -0.00078125 |
 | 8 | Study 8 Sensitivity sweep | Mean accuracy gap (comm - iso, 5x5 grid) | fraction | 0.243302199836 | 0.241138212395 | 0.245469635246 |
 | 9 | Study 9 Parameter recovery | R-squared (acuity identifiability) | R-sq | 0.886109418283 | 0.871630042936 | 0.900536738227 |
 
@@ -331,21 +331,21 @@ Source report: `sensitivity.json`. Display-band membership is not a confidence i
 | belief_sharing | 0.95 | 8 | 0.0736923599291 | no |
 | belief_sharing | 0.95 | 10 | 0.061410959365 | no |
 | hierarchical | 0.4 | 2 | 0.1 | no |
-| hierarchical | 0.4 | 4 | 0 | yes |
+| hierarchical | 0.4 | 4 | 0.05 | yes |
 | hierarchical | 0.4 | 6 | -0.45 | no |
-| hierarchical | 0.4 | 8 | -0.15 | no |
+| hierarchical | 0.4 | 8 | -0.1 | no |
 | hierarchical | 0.4 | 10 | -0.3 | no |
-| hierarchical | 0.55 | 2 | -0.05 | yes |
-| hierarchical | 0.55 | 4 | -0.2 | no |
-| hierarchical | 0.55 | 6 | -0.15 | no |
-| hierarchical | 0.55 | 8 | -0.15 | no |
+| hierarchical | 0.55 | 2 | 0.05 | yes |
+| hierarchical | 0.55 | 4 | -0.15 | no |
+| hierarchical | 0.55 | 6 | -0.1 | no |
+| hierarchical | 0.55 | 8 | -0.2 | no |
 | hierarchical | 0.55 | 10 | -0.35 | no |
-| hierarchical | 0.7 | 2 | 0.15 | no |
-| hierarchical | 0.7 | 4 | -0.1 | no |
-| hierarchical | 0.7 | 6 | -0.15 | no |
+| hierarchical | 0.7 | 2 | 0.1 | no |
+| hierarchical | 0.7 | 4 | 0 | yes |
+| hierarchical | 0.7 | 6 | -0.1 | no |
 | hierarchical | 0.7 | 8 | -0.1 | no |
 | hierarchical | 0.7 | 10 | -0.05 | yes |
-| hierarchical | 0.85 | 2 | 0.2 | no |
+| hierarchical | 0.85 | 2 | 0.1 | no |
 | hierarchical | 0.85 | 4 | 0 | yes |
 | hierarchical | 0.85 | 6 | 0 | yes |
 | hierarchical | 0.85 | 8 | 0 | yes |

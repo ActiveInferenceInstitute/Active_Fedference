@@ -10,13 +10,10 @@ from __future__ import annotations
 
 from fedference import (  # noqa: F401
     AggregationResult,
-    SharingDiagnostics,
-    aggregate,
     alpha_renyi_divergence,
     beta_loss,
     cavity,
     divergence,
-    friston_belief_share,
     generalized_posterior,
     kl_divergence,
     log_linear_pool,
@@ -26,7 +23,6 @@ from fedference import (  # noqa: F401
     renyi_divergence,
     reverse_kl,
     robust_aggregate,
-    share_round,
     softmax,
     total_variation,
     update_factor,
@@ -37,6 +33,6 @@ __all__ = [
     "total_variation", "divergence",
     "nll", "rcce", "beta_loss", "loss_vector",
     "generalized_posterior", "cavity", "update_factor", "softmax",
-    "log_linear_pool", "friston_belief_share", "robust_aggregate", "aggregate",
-    "AggregationResult", "share_round", "SharingDiagnostics",
+    "log_linear_pool", "robust_aggregate",
+    "AggregationResult",
 ]

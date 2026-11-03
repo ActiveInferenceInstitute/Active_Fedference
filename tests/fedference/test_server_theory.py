@@ -101,7 +101,7 @@ def test_weight_blocks_require_posteriors_and_reject_unknown_keywords(block) -> 
         block([0.5, 0.5], robustness=1.0)
     with pytest.raises(TypeError, match="unexpected keyword"):
         block([0.5, 0.5], [[0.5, 0.5]], robustness=1.0, extra=True)
-    with pytest.raises(TypeError, match="cannot both"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         block(
             [0.5, 0.5],
             [[0.5, 0.5]],
@@ -110,30 +110,27 @@ def test_weight_blocks_require_posteriors_and_reject_unknown_keywords(block) -> 
         )
 
 
-def test_weight_blocks_keep_the_legacy_beliefs_alias() -> None:
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        objective = objective_weight_block(
-            [0.5, 0.5], beliefs=[[0.5, 0.5]], robustness=1.0
-        )
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        heuristic = heuristic_weight_block(
-            [0.5, 0.5], beliefs=[[0.5, 0.5]], robustness=1.0
-        )
+def test_weight_blocks_canonical_inputs() -> None:
+    objective = objective_weight_block(
+        [0.5, 0.5], local_posteriors=[[0.5, 0.5]], robustness=1.0
+    )
+    heuristic = heuristic_weight_block(
+        [0.5, 0.5], local_posteriors=[[0.5, 0.5]], robustness=1.0
+    )
     np.testing.assert_allclose(objective, [1.0])
     np.testing.assert_allclose(heuristic, [1.0])
 
 
-def test_orientation_witness_checks_legacy_and_missing_inputs() -> None:
+def test_orientation_witness_checks_canonical_and_missing_inputs() -> None:
     with pytest.raises(TypeError, match="required"):
         construct_orientation_witness([0.5, 0.5])
     with pytest.raises(TypeError, match="unexpected keyword"):
         construct_orientation_witness(
             [0.5, 0.5], [[0.5, 0.5]], unknown=True
         )
-    with pytest.warns(DeprecationWarning, match="beliefs"):
-        witness = construct_orientation_witness(
-            [0.5, 0.5], beliefs=[[0.5, 0.5]], robustness=1.0
-        )
+    witness = construct_orientation_witness(
+        [0.5, 0.5], local_posteriors=[[0.5, 0.5]], robustness=1.0
+    )
     assert witness.max_absolute_gap == pytest.approx(0.0)
 
 

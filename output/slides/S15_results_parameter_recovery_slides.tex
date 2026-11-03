@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -299,7 +304,7 @@ Across the sweep the mean absolute recovery error is 0.0232 and the
 coefficient of determination of mean-recovered versus true acuity is
 \(R^2\) = 0.9999. Within this finite grid and observation budget,
 recovered acuity tracks the identity line with the reported error
-(fig.~31).
+(fig.~34).
 \end{frame}
 
 \begin{frame}{Parameter recovery (part 5)}
@@ -311,7 +316,10 @@ acuity-by-colony-size study.
 \begin{frame}{Parameter recovery (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every acuity condition\textquotesingle s recovered mean and empirical trial interval, with identity reference.}]{../figures/parameter_recovery.slide-recovery.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every
+acuity condition\textquotesingle s recovered mean and empirical trial
+interval, with identity
+reference.}]{../figures/parameter_recovery.slide-recovery.png}
 \refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -319,7 +327,10 @@ acuity-by-colony-size study.
 \begin{frame}{Parameter recovery (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every acuity condition\textquotesingle s mean absolute error with the supplied global mean error reference.}]{../figures/parameter_recovery.slide-errors.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every
+acuity condition\textquotesingle s mean absolute error with the supplied
+global mean error
+reference.}]{../figures/parameter_recovery.slide-errors.png}
 \refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -327,7 +338,10 @@ acuity-by-colony-size study.
 \begin{frame}{Parameter recovery (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Recovery whiskers: 95\% empirical percentile intervals over independent simulation trials within each acuity. Observations are nested within trial.}]{../figures/parameter_recovery.slide-uncertainty.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Recovery
+whiskers: 95\% empirical percentile intervals over independent
+simulation trials within each acuity. Observations are nested within
+trial.}]{../figures/parameter_recovery.slide-uncertainty.png}
 \refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -335,9 +349,9 @@ acuity-by-colony-size study.
 \begin{frame}{Parameter recovery (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={independent trials/acuity = 960
-observations/trial = 200
-MAE = 0.0232}]{../figures/parameter_recovery.slide-notes-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={independent
+trials/acuity = 960 observations/trial = 200 MAE =
+0.0232}]{../figures/parameter_recovery.slide-notes-1.png}
 \refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -345,7 +359,8 @@ MAE = 0.0232}]{../figures/parameter_recovery.slide-notes-1.png}
 \begin{frame}{Parameter recovery (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R² = 0.9999}]{../figures/parameter_recovery.slide-notes-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={R² =
+0.9999}]{../figures/parameter_recovery.slide-notes-2.png}
 \refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -353,7 +368,10 @@ MAE = 0.0232}]{../figures/parameter_recovery.slide-notes-1.png}
 \begin{frame}{Parameter recovery (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Simulation-based recovery over the declared acuity grid. Identity reference is not an additional estimate; no uncertainty interval is inferred for MAE bars.}]{../figures/parameter_recovery.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Simulation-based
+recovery over the declared acuity grid. Identity reference is not an
+additional estimate; no uncertainty interval is inferred for MAE
+bars.}]{../figures/parameter_recovery.slide-scope.png}
 \refstepcounter{figure}\label{fig:parameter-recovery-slide-panel-6}
 \end{figure}
 \end{frame}

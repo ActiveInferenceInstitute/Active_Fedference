@@ -676,14 +676,12 @@ aria-label="Robustness, divergences, and loss controls, part 6" role="group" ari
 <h2 class="equation-led"
 aria-label="Robustness, divergences, and loss controls, part 6" id="slide-heading-f6d9f3bd9329">Robustness,
 divergences… (part 6)</h2>
-<p><span class="math display" id="eq:notation-variational-objective">\[
-\begin{aligned}
+<p><span class="math display" id="eq:notation-variational-objective">\[\begin{aligned}
 F_\lambda(q,a)
 &amp;= \sum_n a_n\,\mathrm{CE}(q,q_n)
     -\lambda H(q)\\
 &amp;\qquad +\frac{1}{c}\,\mathrm{KL}_{\rm gen}(a\Vert w).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Robustness, divergences, and loss controls, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-df8e3a732490">
@@ -698,13 +696,11 @@ aria-label="Robustness, divergences, and loss controls, part 8" role="group" ari
 <h2 class="equation-led"
 aria-label="Robustness, divergences, and loss controls, part 8" id="slide-heading-5775ac0d9e8a">Robustness,
 divergences… (part 8)</h2>
-<p><span class="math display" id="eq:notation-variational-updates">\[
-\begin{aligned}
+<p><span class="math display" id="eq:notation-variational-updates">\[\begin{aligned}
 q &amp;\propto \exp\!\left(
 \frac{1}{\lambda}\sum_n a_n\log q_n\right),\\
 a_n &amp;= w_n\exp\!\big[-c\,\mathrm{CE}(q,q_n)\big].
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Robustness, divergences, and loss controls, part 9" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db810a1f3da7">
@@ -740,13 +736,11 @@ aria-label="Cavity and factor algebra, part 2" role="group" aria-roledescription
 <h2 class="equation-led"
 aria-label="Cavity and factor algebra, part 2" id="slide-heading-dce31f41b439">Cavity and factor algebra
 (part 2)</h2>
-<p><span class="math display" id="eq:notation-cavity">\[
-\begin{aligned}
+<p><span class="math display" id="eq:notation-cavity">\[\begin{aligned}
 q_{-n}(s)
 &amp;= \frac{q(s)/t_n(s)}{\sum_{s&#39;}q(s&#39;)/t_n(s&#39;)}\\
 &amp;= \operatorname{softmax}\!\left(\log q(s)-\log t_n(s)\right).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Cavity and factor algebra, part 3" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-1c59f04ef523">
@@ -760,15 +754,13 @@ aria-label="Cavity and factor algebra, part 4" role="group" aria-roledescription
 <h2 class="equation-led"
 aria-label="Cavity and factor algebra, part 4" id="slide-heading-7996d42049a1">Cavity and factor algebra
 (part 4)</h2>
-<p><span class="math display" id="eq:notation-factor-replacement">\[
-\begin{aligned}
+<p><span class="math display" id="eq:notation-factor-replacement">\[\begin{aligned}
 \ell_n(s)
 &amp;= \log t_n^{\mathrm{old}}(s)\\
 &amp;\quad +\log q^{\mathrm{new}}(s)-\log q^{\mathrm{old}}(s),\\
 t_n^{\mathrm{new}}(s)
 &amp;\leftarrow \operatorname{softmax}(\ell_n)(s).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Cavity and factor algebra, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a020f58e127">
@@ -1022,9 +1014,10 @@ project TODO and claim-audit documents.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

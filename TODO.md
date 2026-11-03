@@ -6,8 +6,11 @@
 
 The authoritative public integration repository is
 [`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
-(`public`). The `origin` remote, `docxology/active_fedference`, remains the
-private/interim evidence repository. “Push to main” therefore means: fix an
+(`origin` in the public checkout). The separate
+[`docxology/active_fedference`](https://github.com/docxology/active_fedference)
+repository remains the private/interim evidence mirror; aliases such as
+`public` and `origin` depend on the checkout and must be inspected before use.
+“Push to main” therefore means: fix an
 exact candidate SHA, pass the applicable confidentiality and verification
 gates, push a `codex/*` branch to the required remotes, obtain green review
 checks, and merge into public `main` with a normal merge commit. It never means
@@ -18,6 +21,18 @@ Every open item has one owner page under
 surface of the remaining work, not whether its gate is optional: a Minor item
 can still block a release. The source-indexed dependency map is
 [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-plan.md).
+
+The [2026-10-30 reconciliation](docs/research/repository-reconciliation-2026-10-30.md)
+owns the latest dated sync observations, interrupted-work dispositions, and
+engineering/validation sequence. The
+[2026-10-27 repository review](docs/research/repository-review-2026-10-27.md)
+remains historical evidence. Neither closes a release or scientific gate.
+
+The v1.1.0 GitHub release already exists. Retire its creation as a future
+action; MED-5 remains open for the outstanding certification, asset/DOI
+verification, publication approval, and private-synchronization obligations.
+The release sequence below describes those obligations and must not be used
+to recreate or move an existing tag or repeat a completed publication.
 
 ## Non-negotiable scientific boundary
 
@@ -49,9 +64,10 @@ The active critical path is:
    green post-merge public-main CI;
 4. certify that exact final public-main merge commit through MIN-2's sequential
    two-clone campaign and obtain the selected identified owner-author verdict;
-5. run MED-5B's publication phase: after an exact-SHA `pass`, create the
-   immutable tag and verified GitHub release, update and verify the Zenodo draft,
-   pause for fresh approval, then publish and independently verify Zenodo;
+5. run MED-5B's publication phase: after an exact-SHA
+   `pass`, verify the existing immutable tag and GitHub release, update and
+   verify the Zenodo draft, pause for fresh approval, then publish and
+   independently verify Zenodo;
 6. complete and normally merge MIN-3's public documentation and repository-
    discovery handoff, including removal of its closed forward-backlog entry;
 7. finish MED-5B by synchronizing that final public `main` into private
@@ -77,7 +93,7 @@ the draft and GitHub release have been verified.
 
 | ID | Open item | Prerequisite | Acceptance evidence |
 | --- | --- | --- | --- |
-| MED-4 | [Visual scholarship and accessible-slide integration](docs/todo/visual-scholarship-integration.md) | Green public `main`; exact merged Template renderer commit in a separate clean checkout; source-bound reports; approved sanitized history with additive corrective commits based on refreshed public `main`; no use of the user-owned dirty Template checkout | Reviewed Template merge SHA; exact audited Fedference visual branch; all figure pairs, long descriptions, exact-value fallbacks, HTML/reveal/Beamer/PDF QA, confidentiality audit, green PR and post-merge public-main workflows |
+| MED-4 | [Visual scholarship and accessible-slide integration](docs/todo/visual-scholarship-integration.md) | Green public `main`; exact merged Template renderer commit in a separate clean checkout; source-bound reports; approved sanitized history with additive corrective commits based on refreshed public `main`; no use of the user-owned dirty Template checkout | Reviewed Template merge SHA; exact audited Fedference visual branch; all figure pairs, long descriptions, exact-value fallbacks, HTML/reveal/Beamer/PDF QA, confidentiality audit, green PR and post-merge public-main workflows; the three frontmatter plates rejoin the complex-figure inventory with rendered `output/web/` pages |
 | MED-5 | [v1.1.0 release, GitHub/Zenodo publication, and private synchronization](docs/todo/v1-1-release-publication.md) | MED-4 merged and green; current metadata approvals for MED-5A; MIN-2 exact-final-SHA certification and `pass` only after the release PR merges and before MED-5B | Release-only normal-merge PR; immutable annotated tag; downloaded-and-reverified GitHub assets; verified linked Zenodo version after fresh publish approval; one tree-identical private-main merge; exact SHAs, URLs, and hashes recorded |
 | MED-6 | [Independent and cross-vendor reproduction](docs/todo/independent-reproduction.md) | Fixed final public artifact set and complete execution packet | Both an identified independent-human/Advisor review and a genuinely different-vendor execution record, with commands, environments, findings, and dispositions; ISC-89 closes only when the conjunctive final-bundle criterion is satisfied |
 

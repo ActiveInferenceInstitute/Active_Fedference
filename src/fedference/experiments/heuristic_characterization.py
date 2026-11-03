@@ -37,7 +37,6 @@ the module earns is the breakdown witness: a measured, finite capture threshold.
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Literal
 
 import numpy as np
@@ -149,7 +148,6 @@ def numerical_influence_function(
     *,
     robustness: float,
     eps_grid: tuple[float, ...] = (0.0, 0.1, 0.2, 0.3, 0.4, 0.5),
-    **legacy: Any,
 ) -> dict[str, Any]:
     """Finite-difference empirical influence of one agent under ``robust_aggregate``.
 
@@ -164,20 +162,6 @@ def numerical_influence_function(
     (the naive pool never down-weights), which the
     negative-control test binds to the analytic value.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     if agent is None:

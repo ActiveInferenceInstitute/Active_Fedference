@@ -136,6 +136,7 @@ FINGERPRINT_INPUTS: tuple[str, ...] = (
     "src/**/*.py",
     "src/**/*.md",
     "src/**/*.yaml",
+    "src/**/*.json",
     "src/**/*.csv",
     "src/**/py.typed",
     "tests/**/*.py",

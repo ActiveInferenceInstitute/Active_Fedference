@@ -121,7 +121,7 @@ scale against the unchanged 16-point floor. The registry verifies both files in
 each declared panel pair and every raster digest, while stage provenance binds
 the source, manifest, and panel bytes. A successful subset is not a complete
 figure-label audit: every required figure must have measured presentation
-coverage before release. All 33 required figure families implement this path,
+coverage before release. All required figure families implement this path,
 and the manuscript selectors are checked against the declared manifest inventory.
 Final source-bound production, embedded-label measurements, and complete PDF/HTML
 visual inspection remain release gates.

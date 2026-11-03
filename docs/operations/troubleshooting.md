@@ -1,5 +1,8 @@
 # Troubleshooting
 
+For publication compute, first complete the [bounded external stages](../development/staged-analysis.md) and set `WORKSPACE` to that frozen workspace. The import commands
+below consume validated completions; they do not start missing reports.
+
 Symptom-driven fixes for Active Fedference.
 
 ## `import fedference` fails in application code
@@ -188,7 +191,8 @@ source-equivalence gate.
 **Fix:**
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 # This proves token resolution only; it is not the final manuscript pass.
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 cat output/data/manuscript_variables.json | head
@@ -211,7 +215,8 @@ re-export shim.
 **Fix:**
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 ```
 
@@ -219,8 +224,8 @@ Note: `HIER_*` and `NLEVEL3_*` tokens are strict loads from
 `output/reports/hierarchical_world.json` and `output/reports/nlevel3_world.json`
 respectively (see [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md)).
 A `FileNotFoundError` from `_hierarchical_variables()` or `_nlevel3_variables()`
-means one of those two report files is missing — fix by re-running
-`scripts/02_run_analysis.py`. Final non-draft hydration additionally
+means one of those two report files is missing — complete and import its
+explicit external stage using the staged procedure linked above. Final non-draft hydration additionally
 requires the fresh coverage receipt in the linked two-pass sequence.
 
 ## Config changed but figures/PDF unchanged
@@ -383,7 +388,9 @@ Add tests in `tests/fedference/` for uncovered branches.
 **Fix:**
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py 2>&1 | tee /tmp/analysis.log
+# Select one failed stage; its attempt directory preserves stdout/stderr.
+uv run --locked --no-sync python "$WORKSPACE/source/scripts/analysis_stages.py" run \
+  --workspace "$WORKSPACE" --stage belief_sharing --max-seconds 60
 uv run --locked python -c "import yaml; yaml.safe_load(open('manuscript/config.yaml'))"
 ```
 

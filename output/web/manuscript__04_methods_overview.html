@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.11" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>04_methods_overview.md.web</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -308,7 +316,7 @@ mjx-container[display="true"] { max-width: 100%; overflow: visible; }
   outline: 3px solid var(--brand-1);
   outline-offset: 3px;
 }
-.table-scroll > table { margin-block: 0; min-width: 100%; width: max-content; }
+.table-scroll > table { margin-block: 0; display: table; min-width: 100%; width: 100%; }
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -414,6 +422,9 @@ pre {
 }
 
 pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
   overflow-wrap: inherit;
   white-space: inherit;
   word-break: inherit;
@@ -466,8 +477,9 @@ table {
 
 .table-scroll > table {
   margin-block: 0;
+  display: table;
   min-width: 100%;
-  width: max-content;
+  width: 100%;
 }
 
 figure {
@@ -484,6 +496,15 @@ th, td {
 th {
   background-color: #1f6f8b;
   color: white;
+}
+
+/* Preserve a complete inline-code header within the table's scroll region. */
+th code {
+  color: inherit;
+  background-color: transparent;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 img {
@@ -626,6 +647,7 @@ mjx-container[display="true"] {
 }
 
 </style>
+<script data-template-source-font-loader src="assets/source-web-fonts.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -635,7 +657,7 @@ mjx-container[display="true"] {
 <p>This section develops the federated generalized variational inference
 (FedGVI) core in the discrete-categorical setting and defines its
 primitives. Their recovery limits are stated as numbered theorems in
-<a class="xref" href="index.html#sec:formalism">Section 6</a>. Every belief here is
+<a class="xref" href="index.html#sec:formalism">Section 9</a>. Every belief here is
 a categorical pmf — a non-negative vector summing to one — so the
 generalized-variational-inference machinery reduces to closed forms that
 are exactly testable.</p>
@@ -662,9 +684,9 @@ methodology below is the bridge.</p>
 <p>It federates the FedGVI objective <span class="citation">(Mildner et al. 2025)</span> per agent
 inside an active-inference ensemble, proves the standard-Bayes client
 limits, and tests the project-local zero-robustness log-linear-pool
-identity. Under the qualified categorical bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>,
+identity. Under the qualified categorical bridge of <a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>,
 that pool specializes Eq. 7’s message-combination term rather than the
-complete source protocol. <a class="xref" href="index.html#fig:system-overview">Figure 2</a>
+complete source protocol. <a class="xref" href="index.html#fig:system-overview">Figure 5</a>
 illustrates the three-axis architecture and the recovery hierarchy.</p>
 <h2 id="sec:method-protocol">Federation protocol: local update, server
 fusion, broadcast</h2>
@@ -704,12 +726,12 @@ from the emerging consensus; this heuristic is a complementary device
 whose positive formal property is recovery of the naive consensus in its
 trusting limit, while a scoped proposition rejects one declared
 separable objective class.</p>
-<p><a class="xref" href="index.html#sec:robustness-axes">Section 3.3</a> holds
+<p><a class="xref" href="index.html#sec:robustness-axes">Section 6.3</a> holds
 this boundary; no figure, table, or sentence in this work grants the
 server-side heuristic the per-agent FedGVI guarantee.</p>
 <h2 id="sec:method-notation">Notation for beliefs, losses, and
 divergences</h2>
-<p>The authoritative symbol and API contract is <a class="xref" href="index.html#sec:supp-notation">Section 14</a>. In the main
+<p>The authoritative symbol and API contract is <a class="xref" href="index.html#sec:supp-notation">Section 17</a>. In the main
 text, <span class="math inline">\(q_n(s)\)</span> denotes agent <span
 class="math inline">\(n\)</span>’s local posterior, <span
 class="math inline">\(q(s)\)</span> the global consensus, and <span
@@ -738,15 +760,15 @@ configuration is tabulated in <a class="xref" href="index.html#tbl:study_params"
 independent generative-model-free baseline, we also implement FedGVI in
 a deterministic MLP complement trained with the density-power <span
 class="math inline">\(\beta\)</span>-loss — generalized variational
-inference with a point-mass variational family (<a class="xref" href="index.html#sec:results-baseline">Section 7.6</a>).</p>
+inference with a point-mass variational family (<a class="xref" href="index.html#sec:results-baseline">Section 10.6</a>).</p>
 <p>The remaining methodology subsections develop each primitive in turn:
-the generalized-Bayes update and its recovery to standard Bayes (<a class="xref" href="index.html#sec:method-genbayes">Section 5.3</a>), the
-divergence family and its KL limit (<a class="xref" href="index.html#sec:method-divergences">Section 5.6</a>)
-and the robust loss family and its NLL limit (<a class="xref" href="index.html#sec:method-losses">Section 5.7</a>), the
-aggregation identity (<a class="xref" href="index.html#sec:method-aggregation">Section 5.8</a>),
-the lift to a belief-sharing round (<a class="xref" href="index.html#sec:method-belief-sharing">Section 5.9</a>),
+the generalized-Bayes update and its recovery to standard Bayes (<a class="xref" href="index.html#sec:method-genbayes">Section 8.3</a>), the
+divergence family and its KL limit (<a class="xref" href="index.html#sec:method-divergences">Section 8.6</a>)
+and the robust loss family and its NLL limit (<a class="xref" href="index.html#sec:method-losses">Section 8.7</a>), the
+aggregation identity (<a class="xref" href="index.html#sec:method-aggregation">Section 8.8</a>),
+the lift to a belief-sharing round (<a class="xref" href="index.html#sec:method-belief-sharing">Section 8.9</a>),
 and the paired statistics that earn every “robust beats naive” verdict
-(<a class="xref" href="index.html#sec:methods-statistics">Section 5.27</a>).</p>
+(<a class="xref" href="index.html#sec:methods-statistics">Section 8.27</a>).</p>
 </main>
 </body>
 </html>

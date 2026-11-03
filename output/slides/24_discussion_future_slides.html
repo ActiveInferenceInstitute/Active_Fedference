@@ -322,7 +322,7 @@ main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh;
 <section id="sec:future" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db7da7909a51">
 <h2 class="prose-slide" id="slide-heading-db7da7909a51">Future work: testing the open boundaries</h2>
 <p>The staged research program follows directly from the boundaries in
-<span class="cross-reference">Section 8.13</span>.
+<span class="cross-reference">Section 11.13</span>.
 It separates public-library reproducibility, server theory, portable
 source-protocol work, task generalization,</p>
 </section>
@@ -405,7 +405,7 @@ reconstruction rather than an exact replication.</p>
 </section>
 <section id="sec:future-server" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7ead337987c0">
 <h2 class="prose-slide" id="slide-heading-7ead337987c0">Make the sharp server heuristic variational</h2>
-<p>The asymmetry between the robustness axes (<span class="cross-reference">Section 3.3</span>)
+<p>The asymmetry between the robustness axes (<span class="cross-reference">Section 6.3</span>)
 motivates a consequential theoretical design question that is explicitly
 parked outside the authorized roadmap.</p>
 </section>
@@ -424,8 +424,8 @@ aria-label="Make the sharp server heuristic variational, part 3" role="group" ar
 <h2 class="prose-slide"
 aria-label="Make the sharp server heuristic variational, part 3" id="slide-heading-45d2361c2a94">Make
 the sharp server… (part 3)</h2>
-<p>The new variational aggregator (<span class="cross-reference">Section 5.8.2</span>,
-<span class="cross-reference">Section 12</span>)
+<p>The new variational aggregator (<span class="cross-reference">Section 8.8.2</span>,
+<span class="cross-reference">Section 15</span>)
 supplies a <em>rigorous</em> server-side rule — exact block updates
 descending the stated free energy <span class="cross-reference">Equation (12)</span>
 through non-increasing block updates,</p>
@@ -497,7 +497,7 @@ robust-federated-learning guarantee merely by operating on beliefs.</p>
 <h2 class="prose-slide" id="slide-heading-32b219c40429">Promote the baseline to original FedGVI
 scale</h2>
 <p>The bounded-influence result is anchored locally by the small NumPy
-logistic-regression baseline (<span class="cross-reference">Figure 18</span>).</p>
+logistic-regression baseline (<span class="cross-reference">Figure 21</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Promote the baseline to original FedGVI scale, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7498ca5f768a">
@@ -507,7 +507,7 @@ the baseline to… (part 2)</h2>
 <p>Promoting it to the GPU-scale Bayesian-neural-network experiments of
 the source paper <span class="citation"
 data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span> — the
-experiments deferred here (<span class="cross-reference">Section 8.13</span>)
+experiments deferred here (<span class="cross-reference">Section 11.13</span>)
 —</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -585,7 +585,7 @@ aria-label="Extend hierarchical federation beyond the current stack, part 2" rol
 aria-label="Extend hierarchical federation beyond the current stack, part 2" id="slide-heading-441a1d4080f0">Extend
 hierarchical… (part 2)</h2>
 <p>on the current sentinel task the deeper stacks match rather than beat
-the flat baseline on location (<span class="cross-reference">Section 8.15</span>).
+the flat baseline on location (<span class="cross-reference">Section 11.15</span>).
 The extension therefore has two distinct fronts —</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -601,18 +601,18 @@ aria-label="Extend hierarchical federation beyond the current stack, part 4" rol
 <h2 class="prose-slide"
 aria-label="Extend hierarchical federation beyond the current stack, part 4" id="slide-heading-eeb17a0e2c4b">Extend
 hierarchical… (part 4)</h2>
-<p>The 2-level hierarchical POMDP (<span class="cross-reference">Section 14.9</span>)
+<p>The 2-level hierarchical POMDP (<span class="cross-reference">Section 17.9</span>)
 couples location inference to a single global context. The generic
 N-level architecture uses <code>build_nlevel_world</code> from the
 <code>fedference.pomdp</code> module and has already been exercised with
-a 3-level stack (<span class="cross-reference">Section 14.11</span>,</p>
+a 3-level stack (<span class="cross-reference">Section 17.11</span>,</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Extend hierarchical federation beyond the current stack, part 5" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0f48ca6ce35d">
 <h2 class="prose-slide"
 aria-label="Extend hierarchical federation beyond the current stack, part 5" id="slide-heading-0f48ca6ce35d">Extend
 hierarchical… (part 5)</h2>
-<p><span class="cross-reference">Section 14.12</span>):
+<p><span class="cross-reference">Section 17.12</span>):
 a meta-context variable (L3) gates the context prior (L2) which in turn
 gates the location prior (L1).</p>
 </section>
@@ -633,7 +633,7 @@ aria-label="Extend hierarchical federation beyond the current stack, part 7" rol
 aria-label="Extend hierarchical federation beyond the current stack, part 7" id="slide-heading-2455855de1d4">Extend
 hierarchical… (part 7)</h2>
 <p>The natural next question is whether the limit-as-proof contract of
-<span class="cross-reference">Section 8.13</span>
+<span class="cross-reference">Section 11.13</span>
 survives still deeper hierarchies: does the recovery corner (context
 prior → uniform) remain checkable to machine precision when the L2 → L1
 message is itself a function of an L3 belief coupled to an L4
@@ -655,7 +655,7 @@ aria-label="Extend hierarchical federation beyond the current stack, part 9" id=
 hierarchical… (part 9)</h2>
 <p>The current hierarchical diagnostic asks a narrower question. Under
 one configured surprise threshold, it classifies the non-gating top
-level below the threshold and the informative top level above it (<span class="cross-reference">Section 15.1</span>).
+level below the threshold and the informative top level above it (<span class="cross-reference">Section 18.1</span>).
 This is an implementation control,</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -699,7 +699,7 @@ representation recovery gates pass.</p>
 multi-machine federation</h2>
 <p>The current deployment uses queue-backed single-machine processes and
 loopback sockets. Promotion to cross-host workers would address the
-remaining deployment caveat of <span class="cross-reference">Section 8.13</span>.</p>
+remaining deployment caveat of <span class="cross-reference">Section 11.13</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Move from process transport to true multi-machine federation, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-4eed5854e1cd">
@@ -759,7 +759,7 @@ data-cites="blanchard2017krum pillutla2022robust">(Blanchard et al.
 <p>This work is discrete-categorical, matching the community’s worked
 POMDP <span class="citation" data-cites="dacosta2020active">(Da Costa et
 al. 2020)</span>. A first step is already in place: the closed-form
-Gaussian KL and Rényi divergences of <span class="cross-reference">Section 13</span>
+Gaussian KL and Rényi divergences of <span class="cross-reference">Section 16</span>
 show the divergence family — and its <span
 class="math inline">\(\alpha\to1\)</span> recovery — carries over
 verbatim to Gaussian beliefs,</p>
@@ -836,9 +836,10 @@ hybrid-task claim.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

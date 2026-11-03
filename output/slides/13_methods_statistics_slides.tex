@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -340,7 +345,7 @@ grid.
 The naive comparator is the project's log-linear pool
 eq.~9. Under the shared-support,
 posterior-log-potential, and fixed-weight assumptions of
-sec.~5.8, it specializes the
+sec.~8.8, it specializes the
 message-combination term of Friston et al.'s Eq. 7 (2024),
 \end{frame}
 
@@ -565,18 +570,18 @@ and power enrichment above decorates the \emph{server-side}
 \begin{frame}{Reporting tables and the\ldots{} (part 6)}
 It does not certify the per-client \(\beta\)/rcce generalized-Bayes
 (FedGVI) guarantees, which are pinned by the locked core (Proposition
-4 of sec.~6) rather than
+4 of sec.~9) rather than
 by these aggregation-level statistics ---
 \end{frame}
 
 \begin{frame}{Reporting tables and the\ldots{} (part 7)}
-the three robustness axes of sec.~3.3 kept
+the three robustness axes of sec.~6.3 kept
 distinct.
 \end{frame}
 
 \begin{frame}{Evidence classes and replication hierarchy}
 \protect\phantomsection\label{sec:methods-evidence-map}
-The reporting map in fig.~6 makes the
+The reporting map in fig.~9 makes the
 reporting rule explicit. Read each numbered row across its six fields:
 result and class, estimand and unit, independent unit, nesting,
 \end{frame}
@@ -603,13 +608,15 @@ headline result families and public software boundaries;
 
 \begin{frame}{Evidence classes and\ldots{} (part 5)}
 exact estimates and intervals remain in their typed reports and the
-native-unit cross-study summary (fig.~30).
+native-unit cross-study summary (fig.~33).
 \end{frame}
 
 \begin{frame}{Evidence classes and\ldots{} (part 6)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={FE: Formal / executable. proved or exactly tested in the project model.}]{../figures/evidence_replication_map.slide-class-formal-executable.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={FE:
+Formal / executable. proved or exactly tested in the project
+model.}]{../figures/evidence_replication_map.slide-class-formal-executable.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -617,7 +624,10 @@ native-unit cross-study summary (fig.~30).
 \begin{frame}{Evidence classes and\ldots{} (part 7)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={SC: Source-conditional. inherits only under the cited paper\textquotesingle s assumptions.}]{../figures/evidence_replication_map.slide-class-source-conditional.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={SC:
+Source-conditional. inherits only under the cited paper\textquotesingle
+s
+assumptions.}]{../figures/evidence_replication_map.slide-class-source-conditional.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -625,7 +635,9 @@ native-unit cross-study summary (fig.~30).
 \begin{frame}{Evidence classes and\ldots{} (part 8)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={CE: Conditional empirical. estimated in the declared finite design.}]{../figures/evidence_replication_map.slide-class-conditional-empirical.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={CE:
+Conditional empirical. estimated in the declared finite
+design.}]{../figures/evidence_replication_map.slide-class-conditional-empirical.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -633,7 +645,9 @@ native-unit cross-study summary (fig.~30).
 \begin{frame}{Evidence classes and\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={SI: Scoped implementation. checks one software or protocol boundary.}]{../figures/evidence_replication_map.slide-class-scoped-implementation.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={SI:
+Scoped implementation. checks one software or protocol
+boundary.}]{../figures/evidence_replication_map.slide-class-scoped-implementation.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -641,7 +655,9 @@ native-unit cross-study summary (fig.~30).
 \begin{frame}{Evidence classes and\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={O: Open. not established by the current evidence.}]{../figures/evidence_replication_map.slide-class-open.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={O:
+Open. not established by the current
+evidence.}]{../figures/evidence_replication_map.slide-class-open.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -649,8 +665,10 @@ native-unit cross-study summary (fig.~30).
 \begin{frame}{Evidence classes and\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1. Project identity at c=0 {[}FE{]}
-Estimand / unit: paired outputs {[}categorical posterior{]}}]{../figures/evidence_replication_map.slide-lane-1-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1.
+Project identity at c=0 {[}FE{]} Estimand / unit: paired outputs
+{[}categorical
+posterior{]}}]{../figures/evidence_replication_map.slide-lane-1-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -658,8 +676,10 @@ Estimand / unit: paired outputs {[}categorical posterior{]}}]{../figures/evidenc
 \begin{frame}{Evidence classes and\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1. Project identity at c=0 {[}FE{]}
-Independent unit: exact identity. Nesting: input \texorpdfstring{\ensuremath{\to}}{->} paired functions}]{../figures/evidence_replication_map.slide-lane-1-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1.
+Project identity at c=0 {[}FE{]} Independent unit: exact identity.
+Nesting: input \texorpdfstring{\ensuremath{\to}}{->} paired
+functions}]{../figures/evidence_replication_map.slide-lane-1-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -667,8 +687,10 @@ Independent unit: exact identity. Nesting: input \texorpdfstring{\ensuremath{\to
 \begin{frame}{Evidence classes and\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1. Project identity at c=0 {[}FE{]}
-May support: project limit. Does not support: full source protocol}]{../figures/evidence_replication_map.slide-lane-1-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={1.
+Project identity at c=0 {[}FE{]} May support: project limit. Does not
+support: full source
+protocol}]{../figures/evidence_replication_map.slide-lane-1-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -676,8 +698,10 @@ May support: project limit. Does not support: full source protocol}]{../figures/
 \begin{frame}{Evidence classes and\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2. Client-loss robustness {[}SC{]}
-Estimand / unit: generalized posterior {[}client update{]}}]{../figures/evidence_replication_map.slide-lane-2-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2.
+Client-loss robustness {[}SC{]} Estimand / unit: generalized posterior
+{[}client
+update{]}}]{../figures/evidence_replication_map.slide-lane-2-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -685,8 +709,10 @@ Estimand / unit: generalized posterior {[}client update{]}}]{../figures/evidence
 \begin{frame}{Evidence classes and\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2. Client-loss robustness {[}SC{]}
-Independent unit: theorem; no empirical unit. Nesting: assumptions \texorpdfstring{\ensuremath{\to}}{->} update \texorpdfstring{\ensuremath{\to}}{->} posterior}]{../figures/evidence_replication_map.slide-lane-2-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2.
+Client-loss robustness {[}SC{]} Independent unit: theorem; no empirical
+unit. Nesting: assumptions \texorpdfstring{\ensuremath{\to}}{->} update \texorpdfstring{\ensuremath{\to}}{->}
+posterior}]{../figures/evidence_replication_map.slide-lane-2-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -694,8 +720,10 @@ Independent unit: theorem; no empirical unit. Nesting: assumptions \texorpdfstri
 \begin{frame}{Evidence classes and\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2. Client-loss robustness {[}SC{]}
-May support: source theorem. Does not support: server theorem; performance; calibration}]{../figures/evidence_replication_map.slide-lane-2-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={2.
+Client-loss robustness {[}SC{]} May support: source theorem. Does not
+support: server theorem; performance;
+calibration}]{../figures/evidence_replication_map.slide-lane-2-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -703,8 +731,10 @@ May support: source theorem. Does not support: server theorem; performance; cali
 \begin{frame}{Evidence classes and\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3. Paired free-energy contrast {[}CE{]}
-Estimand / unit: isolated - shared colony F {[}nats{]}}]{../figures/evidence_replication_map.slide-lane-3-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3.
+Paired free-energy contrast {[}CE{]} Estimand / unit: isolated - shared
+colony F
+{[}nats{]}}]{../figures/evidence_replication_map.slide-lane-3-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -712,8 +742,10 @@ Estimand / unit: isolated - shared colony F {[}nats{]}}]{../figures/evidence_rep
 \begin{frame}{Evidence classes and\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3. Paired free-energy contrast {[}CE{]}
-Independent unit: configured seed. Nesting: study \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} condition \texorpdfstring{\ensuremath{\to}}{->} agents}]{../figures/evidence_replication_map.slide-lane-3-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3.
+Paired free-energy contrast {[}CE{]} Independent unit: configured seed.
+Nesting: study \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} condition \texorpdfstring{\ensuremath{\to}}{->}
+agents}]{../figures/evidence_replication_map.slide-lane-3-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -721,8 +753,10 @@ Independent unit: configured seed. Nesting: study \texorpdfstring{\ensuremath{\t
 \begin{frame}{Evidence classes and\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3. Paired free-energy contrast {[}CE{]}
-May support: paired protocol contrast. Does not support: general benefit; exact replication}]{../figures/evidence_replication_map.slide-lane-3-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={3.
+Paired free-energy contrast {[}CE{]} May support: paired protocol
+contrast. Does not support: general benefit; exact
+replication}]{../figures/evidence_replication_map.slide-lane-3-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -730,8 +764,10 @@ May support: paired protocol contrast. Does not support: general benefit; exact 
 \begin{frame}{Evidence classes and\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={4. Dirichlet likelihood learning {[}CE{]}
-Estimand / unit: KL(true A \textbar\textbar{} learned A) {[}nats{]}}]{../figures/evidence_replication_map.slide-lane-4-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={4.
+Dirichlet likelihood learning {[}CE{]} Estimand / unit: KL(true A
+\textbar\textbar{} learned A)
+{[}nats{]}}]{../figures/evidence_replication_map.slide-lane-4-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -739,8 +775,10 @@ Estimand / unit: KL(true A \textbar\textbar{} learned A) {[}nats{]}}]{../figures
 \begin{frame}{Evidence classes and\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={4. Dirichlet likelihood learning {[}CE{]}
-Independent unit: configured seed. Nesting: study \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} steps \texorpdfstring{\ensuremath{\to}}{->} A rows}]{../figures/evidence_replication_map.slide-lane-4-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={4.
+Dirichlet likelihood learning {[}CE{]} Independent unit: configured
+seed. Nesting: study \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} steps \texorpdfstring{\ensuremath{\to}}{->} A
+rows}]{../figures/evidence_replication_map.slide-lane-4-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -748,8 +786,10 @@ Independent unit: configured seed. Nesting: study \texorpdfstring{\ensuremath{\t
 \begin{frame}{Evidence classes and\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={4. Dirichlet likelihood learning {[}CE{]}
-May support: executed conjugate path. Does not support: universal rate; continuous model}]{../figures/evidence_replication_map.slide-lane-4-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={4.
+Dirichlet likelihood learning {[}CE{]} May support: executed conjugate
+path. Does not support: universal rate; continuous
+model}]{../figures/evidence_replication_map.slide-lane-4-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -757,8 +797,9 @@ May support: executed conjugate path. Does not support: universal rate; continuo
 \begin{frame}{Evidence classes and\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={5. Configured BMR sign control {[}FE{]}
-Estimand / unit: pruning delta F {[}nats{]}}]{../figures/evidence_replication_map.slide-lane-5-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={5.
+Configured BMR sign control {[}FE{]} Estimand / unit: pruning delta F
+{[}nats{]}}]{../figures/evidence_replication_map.slide-lane-5-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -766,8 +807,10 @@ Estimand / unit: pruning delta F {[}nats{]}}]{../figures/evidence_replication_ma
 \begin{frame}{Evidence classes and\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={5. Configured BMR sign control {[}FE{]}
-Independent unit: closed-form comparison. Nesting: posterior \texorpdfstring{\ensuremath{\to}}{->} pruning \texorpdfstring{\ensuremath{\to}}{->} signed delta}]{../figures/evidence_replication_map.slide-lane-5-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={5.
+Configured BMR sign control {[}FE{]} Independent unit: closed-form
+comparison. Nesting: posterior \texorpdfstring{\ensuremath{\to}}{->} pruning \texorpdfstring{\ensuremath{\to}}{->} signed
+delta}]{../figures/evidence_replication_map.slide-lane-5-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -775,8 +818,10 @@ Independent unit: closed-form comparison. Nesting: posterior \texorpdfstring{\en
 \begin{frame}{Evidence classes and\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={5. Configured BMR sign control {[}FE{]}
-May support: configured sign control. Does not support: universal emergence}]{../figures/evidence_replication_map.slide-lane-5-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={5.
+Configured BMR sign control {[}FE{]} May support: configured sign
+control. Does not support: universal
+emergence}]{../figures/evidence_replication_map.slide-lane-5-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -784,8 +829,10 @@ May support: configured sign control. Does not support: universal emergence}]{..
 \begin{frame}{Evidence classes and\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={6. Exploratory client baseline {[}CE{]}
-Estimand / unit: joint-config accuracy {[}fraction{]}}]{../figures/evidence_replication_map.slide-lane-6-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={6.
+Exploratory client baseline {[}CE{]} Estimand / unit: joint-config
+accuracy
+{[}fraction{]}}]{../figures/evidence_replication_map.slide-lane-6-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -793,8 +840,10 @@ Estimand / unit: joint-config accuracy {[}fraction{]}}]{../figures/evidence_repl
 \begin{frame}{Evidence classes and\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={6. Exploratory client baseline {[}CE{]}
-Independent unit: synthetic seed. Nesting: sweep \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} client \texorpdfstring{\ensuremath{\to}}{->} row}]{../figures/evidence_replication_map.slide-lane-6-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={6.
+Exploratory client baseline {[}CE{]} Independent unit: synthetic seed.
+Nesting: sweep \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} client \texorpdfstring{\ensuremath{\to}}{->}
+row}]{../figures/evidence_replication_map.slide-lane-6-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -802,8 +851,10 @@ Independent unit: synthetic seed. Nesting: sweep \texorpdfstring{\ensuremath{\to
 \begin{frame}{Evidence classes and\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={6. Exploratory client baseline {[}CE{]}
-May support: composite configuration contrast. Does not support: RCCE-only; calibration; BNN claims}]{../figures/evidence_replication_map.slide-lane-6-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={6.
+Exploratory client baseline {[}CE{]} May support: composite
+configuration contrast. Does not support: RCCE-only; calibration; BNN
+claims}]{../figures/evidence_replication_map.slide-lane-6-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -811,8 +862,10 @@ May support: composite configuration contrast. Does not support: RCCE-only; cali
 \begin{frame}{Evidence classes and\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7. Server reweighting heuristic {[}CE{]}
-Estimand / unit: robust - naive {[}p or fraction{]}}]{../figures/evidence_replication_map.slide-lane-7-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7.
+Server reweighting heuristic {[}CE{]} Estimand / unit: robust - naive
+{[}p or
+fraction{]}}]{../figures/evidence_replication_map.slide-lane-7-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -820,8 +873,10 @@ Estimand / unit: robust - naive {[}p or fraction{]}}]{../figures/evidence_replic
 \begin{frame}{Evidence classes and\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7. Server reweighting heuristic {[}CE{]}
-Independent unit: seed or matched trial. Nesting: study \texorpdfstring{\ensuremath{\to}}{->} seed/world \texorpdfstring{\ensuremath{\to}}{->} trial \texorpdfstring{\ensuremath{\to}}{->} agents}]{../figures/evidence_replication_map.slide-lane-7-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7.
+Server reweighting heuristic {[}CE{]} Independent unit: seed or matched
+trial. Nesting: study \texorpdfstring{\ensuremath{\to}}{->} seed/world \texorpdfstring{\ensuremath{\to}}{->} trial \texorpdfstring{\ensuremath{\to}}{->}
+agents}]{../figures/evidence_replication_map.slide-lane-7-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -829,8 +884,10 @@ Independent unit: seed or matched trial. Nesting: study \texorpdfstring{\ensurem
 \begin{frame}{Evidence classes and\ldots{} (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7. Server reweighting heuristic {[}CE{]}
-May support: finite mechanism behavior. Does not support: influence bound; Byzantine tol.; universal win}]{../figures/evidence_replication_map.slide-lane-7-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7.
+Server reweighting heuristic {[}CE{]} May support: finite mechanism
+behavior. Does not support: influence bound; Byzantine tol.; universal
+win}]{../figures/evidence_replication_map.slide-lane-7-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-26}
 \end{figure}
 \end{frame}
@@ -838,8 +895,10 @@ May support: finite mechanism behavior. Does not support: influence bound; Byzan
 \begin{frame}{Evidence classes and\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={8. Variational server rule {[}FE{]}
-Estimand / unit: descent, weights, transfer {[}mixed{]}}]{../figures/evidence_replication_map.slide-lane-8-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={8.
+Variational server rule {[}FE{]} Estimand / unit: descent, weights,
+transfer
+{[}mixed{]}}]{../figures/evidence_replication_map.slide-lane-8-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-27}
 \end{figure}
 \end{frame}
@@ -847,8 +906,10 @@ Estimand / unit: descent, weights, transfer {[}mixed{]}}]{../figures/evidence_re
 \begin{frame}{Evidence classes and\ldots{} (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={8. Variational server rule {[}FE{]}
-Independent unit: identity or seeded path. Nesting: config \texorpdfstring{\ensuremath{\to}}{->} start \texorpdfstring{\ensuremath{\to}}{->} iterates}]{../figures/evidence_replication_map.slide-lane-8-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={8.
+Variational server rule {[}FE{]} Independent unit: identity or seeded
+path. Nesting: config \texorpdfstring{\ensuremath{\to}}{->} start \texorpdfstring{\ensuremath{\to}}{->}
+iterates}]{../figures/evidence_replication_map.slide-lane-8-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-28}
 \end{figure}
 \end{frame}
@@ -856,8 +917,10 @@ Independent unit: identity or seeded path. Nesting: config \texorpdfstring{\ensu
 \begin{frame}{Evidence classes and\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={8. Variational server rule {[}FE{]}
-May support: objective + tested transfer. Does not support: global or universal claim}]{../figures/evidence_replication_map.slide-lane-8-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={8.
+Variational server rule {[}FE{]} May support: objective + tested
+transfer. Does not support: global or universal
+claim}]{../figures/evidence_replication_map.slide-lane-8-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-29}
 \end{figure}
 \end{frame}
@@ -865,8 +928,10 @@ May support: objective + tested transfer. Does not support: global or universal 
 \begin{frame}{Evidence classes and\ldots{} (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={9. Moving / disjoint-FOV contrasts {[}CE{]}
-Estimand / unit: policy/sharing {[}fraction, nats, steps{]}}]{../figures/evidence_replication_map.slide-lane-9-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={9.
+Moving / disjoint-FOV contrasts {[}CE{]} Estimand / unit: policy/sharing
+{[}fraction, nats,
+steps{]}}]{../figures/evidence_replication_map.slide-lane-9-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-30}
 \end{figure}
 \end{frame}
@@ -874,8 +939,10 @@ Estimand / unit: policy/sharing {[}fraction, nats, steps{]}}]{../figures/evidenc
 \begin{frame}{Evidence classes and\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={9. Moving / disjoint-FOV contrasts {[}CE{]}
-Independent unit: seed or fixed world. Nesting: world \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} condition \texorpdfstring{\ensuremath{\to}}{->} agents/steps}]{../figures/evidence_replication_map.slide-lane-9-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={9.
+Moving / disjoint-FOV contrasts {[}CE{]} Independent unit: seed or fixed
+world. Nesting: world \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} condition \texorpdfstring{\ensuremath{\to}}{->}
+agents/steps}]{../figures/evidence_replication_map.slide-lane-9-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-31}
 \end{figure}
 \end{frame}
@@ -883,8 +950,10 @@ Independent unit: seed or fixed world. Nesting: world \texorpdfstring{\ensuremat
 \begin{frame}{Evidence classes and\ldots{} (part 37)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={9. Moving / disjoint-FOV contrasts {[}CE{]}
-May support: executed-world behavior. Does not support: universal claim; physical multi-host}]{../figures/evidence_replication_map.slide-lane-9-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={9.
+Moving / disjoint-FOV contrasts {[}CE{]} May support: executed-world
+behavior. Does not support: universal claim; physical
+multi-host}]{../figures/evidence_replication_map.slide-lane-9-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-32}
 \end{figure}
 \end{frame}
@@ -892,8 +961,10 @@ May support: executed-world behavior. Does not support: universal claim; physica
 \begin{frame}{Evidence classes and\ldots{} (part 38)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={10. Hierarchy / sensitivity diagnostics {[}CE{]}
-Estimand / unit: posterior/gap/gate {[}probability, fraction, nats{]}}]{../figures/evidence_replication_map.slide-lane-10-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={10.
+Hierarchy / sensitivity diagnostics {[}CE{]} Estimand / unit:
+posterior/gap/gate {[}probability, fraction,
+nats{]}}]{../figures/evidence_replication_map.slide-lane-10-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-33}
 \end{figure}
 \end{frame}
@@ -901,8 +972,10 @@ Estimand / unit: posterior/gap/gate {[}probability, fraction, nats{]}}]{../figur
 \begin{frame}{Evidence classes and\ldots{} (part 39)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={10. Hierarchy / sensitivity diagnostics {[}CE{]}
-Independent unit: seed or fixed diagnostic. Nesting: world \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} level \texorpdfstring{\ensuremath{\to}}{->} agents/states}]{../figures/evidence_replication_map.slide-lane-10-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={10.
+Hierarchy / sensitivity diagnostics {[}CE{]} Independent unit: seed or
+fixed diagnostic. Nesting: world \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} level \texorpdfstring{\ensuremath{\to}}{->}
+agents/states}]{../figures/evidence_replication_map.slide-lane-10-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-34}
 \end{figure}
 \end{frame}
@@ -910,8 +983,10 @@ Independent unit: seed or fixed diagnostic. Nesting: world \texorpdfstring{\ensu
 \begin{frame}{Evidence classes and\ldots{} (part 40)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={10. Hierarchy / sensitivity diagnostics {[}CE{]}
-May support: executed hierarchy design. Does not support: universal benefit, depth, or emergence}]{../figures/evidence_replication_map.slide-lane-10-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={10.
+Hierarchy / sensitivity diagnostics {[}CE{]} May support: executed
+hierarchy design. Does not support: universal benefit, depth, or
+emergence}]{../figures/evidence_replication_map.slide-lane-10-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-35}
 \end{figure}
 \end{frame}
@@ -919,8 +994,10 @@ May support: executed hierarchy design. Does not support: universal benefit, dep
 \begin{frame}{Evidence classes and\ldots{} (part 41)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={11. Acuity recovery diagnostic {[}CE{]}
-Estimand / unit: acuity, error, R² {[}p or unitless{]}}]{../figures/evidence_replication_map.slide-lane-11-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={11.
+Acuity recovery diagnostic {[}CE{]} Estimand / unit: acuity, error, R²
+{[}p or
+unitless{]}}]{../figures/evidence_replication_map.slide-lane-11-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-36}
 \end{figure}
 \end{frame}
@@ -928,8 +1005,10 @@ Estimand / unit: acuity, error, R² {[}p or unitless{]}}]{../figures/evidence_re
 \begin{frame}{Evidence classes and\ldots{} (part 42)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={11. Acuity recovery diagnostic {[}CE{]}
-Independent unit: trial within acuity cell. Nesting: grid point \texorpdfstring{\ensuremath{\to}}{->} trial \texorpdfstring{\ensuremath{\to}}{->} rows \texorpdfstring{\ensuremath{\to}}{->} estimate}]{../figures/evidence_replication_map.slide-lane-11-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={11.
+Acuity recovery diagnostic {[}CE{]} Independent unit: trial within
+acuity cell. Nesting: grid point \texorpdfstring{\ensuremath{\to}}{->} trial \texorpdfstring{\ensuremath{\to}}{->} rows \texorpdfstring{\ensuremath{\to}}{->}
+estimate}]{../figures/evidence_replication_map.slide-lane-11-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-37}
 \end{figure}
 \end{frame}
@@ -937,8 +1016,10 @@ Independent unit: trial within acuity cell. Nesting: grid point \texorpdfstring{
 \begin{frame}{Evidence classes and\ldots{} (part 43)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={11. Acuity recovery diagnostic {[}CE{]}
-May support: finite-grid recovery. Does not support: global structural identifiability}]{../figures/evidence_replication_map.slide-lane-11-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={11.
+Acuity recovery diagnostic {[}CE{]} May support: finite-grid recovery.
+Does not support: global structural
+identifiability}]{../figures/evidence_replication_map.slide-lane-11-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-38}
 \end{figure}
 \end{frame}
@@ -946,8 +1027,10 @@ May support: finite-grid recovery. Does not support: global structural identifia
 \begin{frame}{Evidence classes and\ldots{} (part 44)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={12. Protocol-v1 / replay integrity {[}SI{]}
-Estimand / unit: frame/replay match {[}frame or round{]}}]{../figures/evidence_replication_map.slide-lane-12-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={12.
+Protocol-v1 / replay integrity {[}SI{]} Estimand / unit: frame/replay
+match {[}frame or
+round{]}}]{../figures/evidence_replication_map.slide-lane-12-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-39}
 \end{figure}
 \end{frame}
@@ -955,8 +1038,10 @@ Estimand / unit: frame/replay match {[}frame or round{]}}]{../figures/evidence_r
 \begin{frame}{Evidence classes and\ldots{} (part 45)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={12. Protocol-v1 / replay integrity {[}SI{]}
-Independent unit: local round. Nesting: round \texorpdfstring{\ensuremath{\to}}{->} workers \texorpdfstring{\ensuremath{\to}}{->} frames \texorpdfstring{\ensuremath{\to}}{->} fields}]{../figures/evidence_replication_map.slide-lane-12-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={12.
+Protocol-v1 / replay integrity {[}SI{]} Independent unit: local round.
+Nesting: round \texorpdfstring{\ensuremath{\to}}{->} workers \texorpdfstring{\ensuremath{\to}}{->} frames \texorpdfstring{\ensuremath{\to}}{->}
+fields}]{../figures/evidence_replication_map.slide-lane-12-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-40}
 \end{figure}
 \end{frame}
@@ -964,8 +1049,10 @@ Independent unit: local round. Nesting: round \texorpdfstring{\ensuremath{\to}}{
 \begin{frame}{Evidence classes and\ldots{} (part 46)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={12. Protocol-v1 / replay integrity {[}SI{]}
-May support: protocol-v1 local integrity. Does not support: encryption/mTLS; multi-host; Byzantine tol.}]{../figures/evidence_replication_map.slide-lane-12-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={12.
+Protocol-v1 / replay integrity {[}SI{]} May support: protocol-v1 local
+integrity. Does not support: encryption/mTLS; multi-host; Byzantine
+tol.}]{../figures/evidence_replication_map.slide-lane-12-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-41}
 \end{figure}
 \end{frame}
@@ -973,8 +1060,9 @@ May support: protocol-v1 local integrity. Does not support: encryption/mTLS; mul
 \begin{frame}{Evidence classes and\ldots{} (part 47)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={13. Application receipt {[}SI{]}
-Estimand / unit: hash/source agreement {[}artifact{]}}]{../figures/evidence_replication_map.slide-lane-13-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={13.
+Application receipt {[}SI{]} Estimand / unit: hash/source agreement
+{[}artifact{]}}]{../figures/evidence_replication_map.slide-lane-13-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-42}
 \end{figure}
 \end{frame}
@@ -982,8 +1070,10 @@ Estimand / unit: hash/source agreement {[}artifact{]}}]{../figures/evidence_repl
 \begin{frame}{Evidence classes and\ldots{} (part 48)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={13. Application receipt {[}SI{]}
-Independent unit: application invocation. Nesting: invocation \texorpdfstring{\ensuremath{\to}}{->} artifacts \texorpdfstring{\ensuremath{\to}}{->} levels}]{../figures/evidence_replication_map.slide-lane-13-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={13.
+Application receipt {[}SI{]} Independent unit: application invocation.
+Nesting: invocation \texorpdfstring{\ensuremath{\to}}{->} artifacts \texorpdfstring{\ensuremath{\to}}{->}
+levels}]{../figures/evidence_replication_map.slide-lane-13-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-43}
 \end{figure}
 \end{frame}
@@ -991,8 +1081,10 @@ Independent unit: application invocation. Nesting: invocation \texorpdfstring{\e
 \begin{frame}{Evidence classes and\ldots{} (part 49)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={13. Application receipt {[}SI{]}
-May support: hashes; requested source match. Does not support: validity; decision; acceptance}]{../figures/evidence_replication_map.slide-lane-13-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={13.
+Application receipt {[}SI{]} May support: hashes; requested source
+match. Does not support: validity; decision;
+acceptance}]{../figures/evidence_replication_map.slide-lane-13-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-44}
 \end{figure}
 \end{frame}
@@ -1000,8 +1092,10 @@ May support: hashes; requested source match. Does not support: validity; decisio
 \begin{frame}{Evidence classes and\ldots{} (part 50)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={14. External calibration / confirmation {[}O{]}
-Estimand / unit: paired log score {[}nats/observation{]}}]{../figures/evidence_replication_map.slide-lane-14-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={14.
+External calibration / confirmation {[}O{]} Estimand / unit: paired log
+score
+{[}nats/observation{]}}]{../figures/evidence_replication_map.slide-lane-14-estimand.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-45}
 \end{figure}
 \end{frame}
@@ -1009,8 +1103,10 @@ Estimand / unit: paired log score {[}nats/observation{]}}]{../figures/evidence_r
 \begin{frame}{Evidence classes and\ldots{} (part 51)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={14. External calibration / confirmation {[}O{]}
-Independent unit: dataset highest; seeds nested. Nesting: dataset \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} clients \texorpdfstring{\ensuremath{\to}}{->} rows}]{../figures/evidence_replication_map.slide-lane-14-replication.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={14.
+External calibration / confirmation {[}O{]} Independent unit: dataset
+highest; seeds nested. Nesting: dataset \texorpdfstring{\ensuremath{\to}}{->} seed \texorpdfstring{\ensuremath{\to}}{->} clients \texorpdfstring{\ensuremath{\to}}{->}
+rows}]{../figures/evidence_replication_map.slide-lane-14-replication.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-46}
 \end{figure}
 \end{frame}
@@ -1018,8 +1114,10 @@ Independent unit: dataset highest; seeds nested. Nesting: dataset \texorpdfstrin
 \begin{frame}{Evidence classes and\ldots{} (part 52)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={14. External calibration / confirmation {[}O{]}
-May support: none before design + report. Does not support: retrospective or pooled-dataset claim}]{../figures/evidence_replication_map.slide-lane-14-claims.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={14.
+External calibration / confirmation {[}O{]} May support: none before
+design + report. Does not support: retrospective or pooled-dataset
+claim}]{../figures/evidence_replication_map.slide-lane-14-claims.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-47}
 \end{figure}
 \end{frame}
@@ -1027,7 +1125,10 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 53)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured study or source-bound run → Seed when present; independence is lane-specific: contains; nesting.}]{../figures/evidence_replication_map.slide-nesting-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Configured
+study or source-bound run → Seed when present; independence is
+lane-specific: contains;
+nesting.}]{../figures/evidence_replication_map.slide-nesting-1.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-48}
 \end{figure}
 \end{frame}
@@ -1035,7 +1136,10 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 54)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Seed when present; independence is lane-specific → Matched trial or condition: contains or pairs; nesting.}]{../figures/evidence_replication_map.slide-nesting-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Seed
+when present; independence is lane-specific → Matched trial or
+condition: contains or pairs;
+nesting.}]{../figures/evidence_replication_map.slide-nesting-2.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-49}
 \end{figure}
 \end{frame}
@@ -1043,7 +1147,9 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 55)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Matched trial or condition → Agent / contamination role: contains; nesting.}]{../figures/evidence_replication_map.slide-nesting-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Matched
+trial or condition → Agent / contamination role: contains;
+nesting.}]{../figures/evidence_replication_map.slide-nesting-3.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-50}
 \end{figure}
 \end{frame}
@@ -1051,7 +1157,9 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 56)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent / contamination role → Ordered step / posterior state: repeats over; nesting.}]{../figures/evidence_replication_map.slide-nesting-4.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Agent /
+contamination role → Ordered step / posterior state: repeats over;
+nesting.}]{../figures/evidence_replication_map.slide-nesting-4.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-51}
 \end{figure}
 \end{frame}
@@ -1059,7 +1167,10 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 57)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Nesting grammar: arrows mean contains, pairs, or repeats. Use only the levels declared in each evidence row.}]{../figures/evidence_replication_map.slide-nesting-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Nesting
+grammar: arrows mean contains, pairs, or repeats. Use only the levels
+declared in each evidence
+row.}]{../figures/evidence_replication_map.slide-nesting-scope.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-52}
 \end{figure}
 \end{frame}
@@ -1067,7 +1178,10 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 58)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={NT1: guarantees do not transfer between client, server, protocol, and application lanes}]{../figures/evidence_replication_map.slide-no-transfer-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={NT1:
+guarantees do not transfer between client, server, protocol, and
+application
+lanes}]{../figures/evidence_replication_map.slide-no-transfer-1.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-53}
 \end{figure}
 \end{frame}
@@ -1075,7 +1189,9 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 59)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={NT2: nested agents, trials, and time steps are not promoted to independent datasets}]{../figures/evidence_replication_map.slide-no-transfer-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={NT2:
+nested agents, trials, and time steps are not promoted to independent
+datasets}]{../figures/evidence_replication_map.slide-no-transfer-2.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-54}
 \end{figure}
 \end{frame}
@@ -1083,7 +1199,9 @@ May support: none before design + report. Does not support: retrospective or poo
 \begin{frame}{Evidence classes and\ldots{} (part 60)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={NT3: open external confirmation is not implied by formal or software evidence}]{../figures/evidence_replication_map.slide-no-transfer-3.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={NT3:
+open external confirmation is not implied by formal or software
+evidence}]{../figures/evidence_replication_map.slide-no-transfer-3.png}
 \refstepcounter{figure}\label{fig:evidence-replication-map-slide-panel-55}
 \end{figure}
 \end{frame}
@@ -1181,19 +1299,19 @@ with median time plotted and the observed repeat range shown as a
 min--max bar.
 
 The fixed input seed is \(20260728\) on the \(arm64\) machine using
-Python \(3.13.11\) and NumPy \(2.4.2\).
+Python \(3.14.9\) and NumPy \(2.4.2\).
 \end{frame}
 
 \begin{frame}{Computational complexity\ldots{} (part 15)}
 The measured log--log slopes are descriptive checks of the expected
-orders, not performance guarantees: agent-axis slopes are 0.93
-(log-linear), 0.94 (iterative robust), 0.79 (variational), 1.62 (naive
-self-excluding sharing), and 1.89 (robust self-excluding sharing);
-state-axis slopes are 0.97, 0.95, and 0.94;
+orders, not performance guarantees: agent-axis slopes are 0.94
+(log-linear), 0.90 (iterative robust), 0.78 (variational), 1.64 (naive
+self-excluding sharing), and 1.91 (robust self-excluding sharing);
+state-axis slopes are 0.98, 0.96, and 0.96;
 \end{frame}
 
 \begin{frame}{Computational complexity\ldots{} (part 16)}
-the modality-axis inference slope is 0.66.
+the modality-axis inference slope is 0.72.
 
 The slope fit is a timing diagnostic on this machine, not an inferential
 test and not evidence that the same constants hold under another BLAS,
@@ -1208,7 +1326,7 @@ between a finite-grid slope and its exponent.
 \end{frame}
 
 \begin{frame}{Computational complexity\ldots{} (part 18)}
-The timing plot in fig.~7 visualizes the
+The timing plot in fig.~10 visualizes the
 implementation-derived orders and the corresponding finite-grid timing
 diagnostic.
 \end{frame}
@@ -1216,7 +1334,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log\_linear\_pool by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-1-log-linear-pool.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log\_linear\_pool
+by agents: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-1-log-linear-pool.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -1224,7 +1345,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 20)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log pool by agents. Expected exponent: 1. Observed log-log slope: 0.9321.}]{../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log
+pool by agents. Expected exponent: 1. Observed log-log slope:
+0.944.}]{../figures/complexity_scaling.slide-group-1-log-linear-pool-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -1232,7 +1355,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={robust\_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-1-robust-aggregate.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={robust\_aggregate
+by agents: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-1-robust-aggregate.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -1240,7 +1366,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic robust by agents. Expected exponent: 1. Observed log-log slope: 0.9373.}]{../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic
+robust by agents. Expected exponent: 1. Observed log-log slope:
+0.9027.}]{../figures/complexity_scaling.slide-group-1-robust-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -1248,7 +1376,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational\_aggregate by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-1-variational-aggregate.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational\_aggregate
+by agents: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-1-variational-aggregate.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -1256,7 +1387,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational by agents. Expected exponent: 1. Observed log-log slope: 0.7937.}]{../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational
+by agents. Expected exponent: 1. Observed log-log slope:
+0.7848.}]{../figures/complexity_scaling.slide-group-1-variational-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -1264,7 +1397,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={share\_round\_naive by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-2-share-round-naive.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={share\_round\_naive
+by agents: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-2-share-round-naive.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -1272,7 +1408,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing: reference by agents. Expected exponent: 2. Observed log-log slope: 1.622.}]{../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing:
+reference by agents. Expected exponent: 2. Observed log-log slope:
+1.641.}]{../figures/complexity_scaling.slide-group-2-share-round-naive-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -1280,7 +1418,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={share\_round\_robust by agents: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-2-share-round-robust.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={share\_round\_robust
+by agents: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-2-share-round-robust.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -1288,7 +1429,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing: robust by agents. Expected exponent: 2. Observed log-log slope: 1.887.}]{../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={sharing:
+robust by agents. Expected exponent: 2. Observed log-log slope:
+1.91.}]{../figures/complexity_scaling.slide-group-2-share-round-robust-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -1296,7 +1439,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log\_linear\_pool by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-3-log-linear-pool.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log\_linear\_pool
+by states: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-3-log-linear-pool.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -1304,7 +1450,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log pool by states. Expected exponent: 1. Observed log-log slope: 0.9698.}]{../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={log
+pool by states. Expected exponent: 1. Observed log-log slope:
+0.9762.}]{../figures/complexity_scaling.slide-group-3-log-linear-pool-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -1312,7 +1460,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={robust\_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-3-robust-aggregate.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={robust\_aggregate
+by states: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-3-robust-aggregate.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -1320,7 +1471,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic robust by states. Expected exponent: 1. Observed log-log slope: 0.9459.}]{../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={heuristic
+robust by states. Expected exponent: 1. Observed log-log slope:
+0.9599.}]{../figures/complexity_scaling.slide-group-3-robust-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -1328,7 +1481,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational\_aggregate by states: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-3-variational-aggregate.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational\_aggregate
+by states: all measured medians, observed min-max ranges and normalized
+expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-3-variational-aggregate.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -1336,7 +1492,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational by states. Expected exponent: 1. Observed log-log slope: 0.9428.}]{../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={variational
+by states. Expected exponent: 1. Observed log-log slope:
+0.9605.}]{../figures/complexity_scaling.slide-group-3-variational-aggregate-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -1344,7 +1502,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={infer\_states by modalities: all measured medians, observed min-max ranges and normalized expected-exponent guide on common group scales.}]{../figures/complexity_scaling.slide-group-4-infer-states.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={infer\_states
+by modalities: all measured medians, observed min-max ranges and
+normalized expected-exponent guide on common group
+scales.}]{../figures/complexity_scaling.slide-group-4-infer-states.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -1352,7 +1513,9 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={state inference by modalities. Expected exponent: 1. Observed log-log slope: 0.6567.}]{../figures/complexity_scaling.slide-group-4-infer-states-guide.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={state
+inference by modalities. Expected exponent: 1. Observed log-log slope:
+0.7159.}]{../figures/complexity_scaling.slide-group-4-infer-states-guide.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -1360,7 +1523,10 @@ diagnostic.
 \begin{frame}{Computational complexity\ldots{} (part 37)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Medians over 5 timing repeats; min--max bars are observed ranges, not confidence intervals. Normalized dotted guides are symbolic-order references. Seed 20260728.}]{../figures/complexity_scaling.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Medians
+over 5 timing repeats; min--max bars are observed ranges, not confidence
+intervals. Normalized dotted guides are symbolic-order references. Seed
+20260728.}]{../figures/complexity_scaling.slide-scope.png}
 \refstepcounter{figure}\label{fig:complexity-scaling-slide-panel-19}
 \end{figure}
 \end{frame}

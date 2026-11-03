@@ -13,7 +13,7 @@ from typing import Final
 from analysis.visual_contracts import COMPLEX_FIGURE_GENERATORS
 
 FIGURE_SUPPORT_MODULES: Final[frozenset[str]] = frozenset({
-    "__init__", "_common", "_metadata", "_presentation",
+    "__init__", "_common", "_metadata", "_presentation", "_frontmatter",
     "_presentation_flows", "_presentation_robustness", "_presentation_diagnostics",
     "_presentation_estimates",
     "_presentation_schematics",
@@ -38,6 +38,9 @@ _GENERATORS: Final[tuple[str, ...]] = (
     "emergence_bmr",
     "evidence_replication_map",
     "free_energy_comparison",
+    "frontmatter_execution",
+    "frontmatter_model",
+    "frontmatter_robustness",
     "generative_model_schema",
     "graphical_abstract",
     "heuristic_breakdown",
@@ -64,6 +67,25 @@ _SOURCE_CITATION = "Friston et al. (2024), Federated inference and belief sharin
 # the claim boundary; the neighbouring manuscript caption remains the long
 # description with source-bound numeric tokens.
 _ALT_TEXT: Final[dict[str, str]] = {
+    'frontmatter_execution': (
+        'An admitted GNN model branches into native matrix consumption and a dashed opt'
+        'ional upstream path requiring a qualified runtime and actual run. Both lead to'
+        ' retained receipts. Integrity is distinct from scientific validity; parser suc'
+        'cess is not execution.'
+    ),
+    'frontmatter_model': (
+        'A model graph links initial beliefs, hidden states, transitions and observatio'
+        'ns. A lower solid loop connects observe, infer and act; dashed arrows exchange'
+        ' posterior and cavity beliefs with fusion. The shared-support Eq. 7 bridge doe'
+        's not reconstruct the full source protocol.'
+    ),
+    'frontmatter_robustness': (
+        'A source-conditional client update precedes a choice between H heuristic and V'
+        ' variational server boxes. H owns zero-robustness log-pool recovery; V owns ob'
+        'jective descent and raw-weight bounds. No client theorem transfers to either s'
+        'erver rule.'
+    ),
+
     "aggregation_descent": (
         "Line plot of variational free energy versus block-coordinate iteration. "
         "The trace drops steeply at first, then remains flat through convergence."
@@ -844,6 +866,46 @@ def _build_metadata() -> dict[str, dict[str, str]]:
         unit="pipeline stage or publication state",
         uncertainty="none; deterministic source-owned contract",
         replication_unit="not applicable",
+    )
+    # Conceptual opening pages: no new measurements or replication claims.
+    metadata['frontmatter_execution'].update(
+        status="explanatory conceptual frontmatter",
+        source_relation="original source-inspired conceptual schematic",
+        source_citation=(
+            'Source-owned implementation map: fedference.gnn.loader, native and backend; ex'
+            'amples/06_gnn_sentinel.py'
+        ),
+        source_figure='',
+        source_equation='',
+        estimand="not applicable; no measured estimand",
+        unit="not applicable; conceptual relationships",
+        uncertainty="not applicable; deterministic conceptual schematic",
+        replication_unit="not applicable; no empirical replication",
+    )
+    metadata['frontmatter_model'].update(
+        status="explanatory conceptual frontmatter",
+        source_relation="original source-inspired conceptual schematic",
+        source_citation=(
+            'Friston et al. (2024), Figs. 1/4 and Eq. 7; manuscript/07, /08, /09; fedferenc'
+            'e.pomdp and belief_sharing'
+        ),
+        source_figure='Figs. 1 and 4',
+        source_equation='Eq. 7',
+        estimand="not applicable; no measured estimand",
+        unit="not applicable; conceptual relationships",
+        uncertainty="not applicable; deterministic conceptual schematic",
+        replication_unit="not applicable; no empirical replication",
+    )
+    metadata['frontmatter_robustness'].update(
+        status="explanatory conceptual frontmatter",
+        source_relation="original source-inspired conceptual schematic",
+        source_citation='Mildner et al. (2025); manuscript/06 and /07; fedference.fedgvi and aggregation',
+        source_figure='',
+        source_equation='',
+        estimand="not applicable; no measured estimand",
+        unit="not applicable; conceptual relationships",
+        uncertainty="not applicable; deterministic conceptual schematic",
+        replication_unit="not applicable; no empirical replication",
     )
     return metadata
 

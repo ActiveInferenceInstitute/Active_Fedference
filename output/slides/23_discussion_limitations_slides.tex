@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -269,7 +274,7 @@ log-linear-pool server identity.
 \end{frame}
 
 \begin{frame}{Limitations and claim\ldots{} (part 2)}
-Under the explicit bridge in sec.~5.8, the
+Under the explicit bridge in sec.~8.8, the
 latter specializes Friston et al.'s Eq. 7 message-combination term
 (Friston et al. 2024), not the complete source protocol; behavior away
 from those limits is evaluated only under declared simulation
@@ -284,7 +289,7 @@ remain conditional. Items beyond that boundary are named as future work.
 \begin{frame}{Three robustness axes: theorem, heuristic, and objective}
 \protect\phantomsection\label{sec:limitations-axes}
 The authoritative definitions and claim owners are in
-sec.~3.3; this section records only what still
+sec.~6.3; this section records only what still
 cannot transfer. A source-conditional client theorem does not certify
 either server rule,
 \end{frame}
@@ -298,7 +303,7 @@ Likewise,
 
 \begin{frame}{Three robustness axes (part 3)}
 conditional accuracy contrasts cannot confer a theorem on the heuristic.
-The evidence map in fig.~6 makes that
+The evidence map in fig.~9 makes that
 no-transfer boundary and its nested replication units explicit.
 \end{frame}
 
@@ -313,8 +318,8 @@ project server rule.
 \begin{frame}{Three robustness axes (part 5)}
 Any such result must also survive beyond the present categorical model,
 declared attack grid, and single-host execution setting; future work and
-extended methods remain separate (sec.~8.17,
-sec.~13).
+extended methods remain separate (sec.~11.17,
+sec.~16).
 \end{frame}
 
 \begin{frame}{Scope boundaries that the evidence does not cross}
@@ -337,7 +342,7 @@ then measure changes under robust losses and server reweighting.
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 4)}
 \textbf{Historical sources are conceptual, not formal support.} The
-pre-modern sources added in sec.~8.9 support a
+pre-modern sources added in sec.~11.9 support a
 genealogy of expectation, inverse inference, utility, and collective
 judgment (Huygens 1657; Bayes 1763; Laplace 1774; Bernoulli 1738;
 Condorcet 1785). They do not support claims about KL, NLL,
@@ -347,7 +352,7 @@ Condorcet 1785). They do not support claims about KL, NLL,
 product-of-experts training, FedGVI, or \texttt{robust\_aggregate}.
 
 Those claims rest only on the modern cited formalism and the tests
-reported in sec.~7.1.
+reported in sec.~10.1.
 \end{frame}
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 6)}
@@ -367,7 +372,7 @@ survives local process restarts.
 These controls do not substitute for cross-host deployment,
 identity-bound mTLS, a shared multi-host replay domain, discovery,
 long-running worker orchestration, or fault tolerance; those steps are
-scoped as future work (sec.~8.17).
+scoped as future work (sec.~11.17).
 \end{frame}
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 9)}
@@ -379,7 +384,7 @@ BNN experiment (Mildner et al. 2025).
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 10)}
 Its operating point was selected within the evaluated synthetic sweep to
-expose a mid-contamination margin (fig.~18).
+expose a mid-contamination margin (fig.~21).
 \end{frame}
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 11)}
@@ -411,8 +416,8 @@ comparisons, and source-scale compute are still open.
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 15)}
 \textbf{Hierarchical depth does not by itself improve the base task.}
-The two- and three-level stacks (sec.~14.9,
-sec.~14.11) run alternating L1/L2(/L3) inference
+The two- and three-level stacks (sec.~17.9,
+sec.~17.11) run alternating L1/L2(/L3) inference
 end-to-end and resolve their added context latents above chance. On the
 shared location task they do not beat the flat baseline:
 \end{frame}
@@ -420,14 +425,14 @@ shared location task they do not beat the flat baseline:
 \begin{frame}{Scope boundaries that the\ldots{} (part 16)}
 the paired location-accuracy gap is a small, statistically reliable
 negative gap at the reported seed count
-(fig.~28).
+(fig.~31).
 \end{frame}
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 17)}
 Depth is therefore validated as executable and consensus-preserving, not
 as an accuracy improvement; whether a richer policy-and-horizon task
 family rewards hierarchy is future work
-(sec.~8.20).
+(sec.~11.20).
 \end{frame}
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 18)}
@@ -467,7 +472,7 @@ al. 2017).
 
 \begin{frame}{Scope boundaries that the\ldots{} (part 23)}
 \textbf{New linguistic theory.} The language-acquisition study
-(sec.~7.3) reproduces the Dirichlet count
+(sec.~10.3) reproduces the Dirichlet count
 mechanism (eq.~18) mechanically; it does not
 extend the linguistics.
 \end{frame}
@@ -475,7 +480,7 @@ extend the linguistics.
 \begin{frame}{What the statistics can and cannot claim}
 \protect\phantomsection\label{sec:limitations-stats}
 The verdict is a paired comparison at a single high contamination rate
-(sec.~7.5.2, tbl.~7). The
+(sec.~10.5.2, tbl.~7). The
 design concentrates power where the effect is largest.
 \end{frame}
 

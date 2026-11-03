@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -262,7 +267,7 @@
 \section{Research gap and claim boundary}\label{sec:gap}
 
 \begin{frame}{Research gap and claim boundary}
-The two communities of sec.~2 provide substantial
+The two communities of sec.~5 provide substantial
 pieces of the problem, but the cited threads do not answer the same
 question. The gap is not a claim that either field is incomplete; it is
 the untested intersection between active-inference belief sharing and
@@ -395,8 +400,8 @@ a stated aggregation free energy and raw effective-weight bound
 
 \begin{frame}{The belief-fusion bridge\ldots{} (part 5)}
 The shared anchor recovers the standard-Bayes client limit and project
-log-linear-pool server identity (sec.~6.1).
-Under the qualified bridge of sec.~5.8, the
+log-linear-pool server identity (sec.~9.1).
+Under the qualified bridge of sec.~8.8, the
 latter specializes Friston et al.'s Eq.
 \end{frame}
 
@@ -469,8 +474,8 @@ the objective-backed property does not imply peak-accuracy dominance.
 \end{frame}
 
 \begin{frame}{Server-side\ldots{} (part 3)}
-The robustness results (sec.~7.5) apply this
-map, and sec.~8.15 states the complete boundary.
+The robustness results (sec.~10.5) apply this
+map, and sec.~11.15 states the complete boundary.
 Effect sizes, intervals, and planning quantities characterize the server
 heuristic's conditional behavior;
 \end{frame}

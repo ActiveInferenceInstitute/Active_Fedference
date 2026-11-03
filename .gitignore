@@ -19,6 +19,7 @@ output/**/*.vrb
 # detached from the projects submodule, which had been masking it).
 .claude/
 .playwright-cli/
+.omo/
 
 # Local credential files. Release tooling reports only the selected variable
 # name and supports an absolute caller-managed path outside the checkout.
@@ -43,6 +44,9 @@ __pycache__/
 
 # Egg-info from local installs (any location — guards against renamed-fork drift).
 **/*.egg-info/
+
+# Regeneratable setuptools build tree; `uv build` writes an explicit out-dir.
+build/
 
 # Project-local virtualenvs (root .venv is shared)
 .venv/

@@ -323,15 +323,15 @@ main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh;
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-93c3e71a4c81">
 <h2 class="prose-slide" id="slide-heading-93c3e71a4c81">Experimental design: studies, estimands,
 determinism, and power</h2>
-<p>The generative model of <span class="cross-reference">Section 5.10</span>,
-the learning operators of <span class="cross-reference">Section 5.15</span>,</p>
+<p>The generative model of <span class="cross-reference">Section 8.10</span>,
+the learning operators of <span class="cross-reference">Section 8.15</span>,</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Experimental design: studies, estimands, determinism, and power, part 2" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-6f46947c655c">
 <h2 class="prose-slide"
 aria-label="Experimental design: studies, estimands, determinism, and power, part 2" id="slide-heading-6f46947c655c">Experimental
 design (part 2)</h2>
-<p>and the corruption process of <span class="cross-reference">Section 5.19</span>
+<p>and the corruption process of <span class="cross-reference">Section 8.19</span>
 are exercised by 9 studies, including the contaminated-sentinel
 robustness sweep (Study 4).</p>
 </section>
@@ -378,7 +378,7 @@ aria-label="Determinism through fixed seeds and generated variables, part 3" id=
 through fixed… (part 3)</h2>
 <p>Re-running with the same seed reproduces every number in the results
 bit-for-bit, so the bootstrap confidence intervals and paired-test
-p-values of <span class="cross-reference">Section 5.27</span>
+p-values of <span class="cross-reference">Section 8.27</span>
 are themselves deterministic functions of the seed.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -511,7 +511,7 @@ and… (part 8)</h2>
 <p>Two protocol details: state inference in this study substitutes a
 flat (uniform) prior for <span class="math inline">\(D\)</span>, and
 each belief’s free energy is scored against the pooled evidence of all
-agents’ observations (the disclosure carried in <span class="cross-reference">Section 7.2</span>).
+agents’ observations (the disclosure carried in <span class="cross-reference">Section 10.2</span>).
 The across-seed sample is <span class="math inline">\(n = 480\)</span>
 seeds,</p>
 </section>
@@ -520,8 +520,8 @@ aria-label="Study suite and contamination sweep, part 9" role="group" aria-roled
 <h2 class="prose-slide"
 aria-label="Study suite and contamination sweep, part 9" id="slide-heading-75cdb0590ee7">Study suite
 and… (part 9)</h2>
-<p>one colony-mean free energy per seed (<span class="cross-reference">Figure 9</span>,
-<span class="cross-reference">Figure 10</span>).</p>
+<p>one colony-mean free energy per seed (<span class="cross-reference">Figure 12</span>,
+<span class="cross-reference">Figure 13</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Study suite and contamination sweep, part 10" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d188049c8900">
@@ -540,7 +540,7 @@ aria-label="Study suite and contamination sweep, part 11" id="slide-heading-dd18
 and… (part 11)</h2>
 <p>giving 25 points per trajectory and <span class="math inline">\(n =
 480\)</span> independent seed trajectories for the pointwise interval in
-<span class="cross-reference">Figure 11</span>.</p>
+<span class="cross-reference">Figure 14</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Study suite and contamination sweep, part 12" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-44c446150f23">
@@ -550,7 +550,7 @@ and… (part 12)</h2>
 <p><strong>Study 3 — configured BMR sign control.</strong> A redundant
 model reduction and a supported one are scored by the BMR free energy of
 <span class="cross-reference">Equation (20)</span> over
-<span class="math inline">\(n = 4\)</span> candidate states (<span class="cross-reference">Figure 12</span>).
+<span class="math inline">\(n = 4\)</span> candidate states (<span class="cross-reference">Figure 15</span>).
 This fixed-posterior comparison tests the expected signs for two
 declared prunings;</p>
 </section>
@@ -562,7 +562,7 @@ and… (part 13)</h2>
 <p>it is not a structure-discovery experiment.</p>
 <p><strong>Study 4 — robustness sweep.</strong> The sweep varies two
 factors on a colony of 7 sentinels of which 2 are saboteurs
-(<code>confident_wrong</code>, <span class="cross-reference">Section 5.20</span>):</p>
+(<code>confident_wrong</code>, <span class="cross-reference">Section 8.20</span>):</p>
 </section>
 <section id="contamination-rate" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea10f57bb42f">
 <h2 class="prose-slide" id="slide-heading-ea10f57bb42f">Contamination rate</h2>
@@ -612,9 +612,9 @@ aria-label="Server robustness setting, part 5" role="group" aria-roledescription
 aria-label="Server robustness setting, part 5" id="slide-heading-9be9a34cafb4">Server robustness setting
 (part 5)</h2>
 <p>None of these labels invoke the client-side
-<code>generalized_posterior</code> update of <span class="cross-reference">Section 5.3</span>
-or the divergence family of <span class="cross-reference">Section 5.6</span>.
-This sweep exercises only the server-side heuristic axis of <span class="cross-reference">Section 3.3</span>
+<code>generalized_posterior</code> update of <span class="cross-reference">Section 8.3</span>
+or the divergence family of <span class="cross-reference">Section 8.6</span>.
+This sweep exercises only the server-side heuristic axis of <span class="cross-reference">Section 6.3</span>
 (<code>robust_aggregate</code>),</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -634,8 +634,8 @@ aria-label="Server robustness setting, part 7" id="slide-heading-1aba43be8ca6">S
 (part 7)</h2>
 <p>The headline verdict pairs 960 independent trials at the fixed
 contamination rate 0.800 — heavy contamination that degrades the naive
-pool while staying below the pure-veto cliff (<span class="cross-reference">Figure 13</span>,
-<span class="cross-reference">Figure 15</span>).
+pool while staying below the pure-veto cliff (<span class="cross-reference">Figure 16</span>,
+<span class="cross-reference">Figure 18</span>).
 Each trial contributes one matched (naive, robust) accuracy pair,</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -653,7 +653,7 @@ aria-label="Server robustness setting, part 9" id="slide-heading-7311b45e1ae4">S
 (part 9)</h2>
 <p>A complementary exploratory point-estimate logistic-regression proxy
 compares joint NLL/L2 and RCCE/L2 configurations under flipped-label
-contamination (<span class="cross-reference">Figure 18</span>).
+contamination (<span class="cross-reference">Figure 21</span>).
 Because both loss and shrinkage change,</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -671,7 +671,7 @@ aria-label="Server robustness setting, part 11" role="group" aria-roledescriptio
 aria-label="Server robustness setting, part 11" id="slide-heading-e6e10f2425ed">Server robustness
 setting (part 11)</h2>
 <p><strong>Study 5 — disjoint-FOV moving world.</strong> This extension
-(<span class="cross-reference">Section 14.7</span>)
+(<span class="cross-reference">Section 17.7</span>)
 places 3 agents on a 2-slot disjoint-FOV track to test the necessity of
 communication when agents cannot observe the same positions.</p>
 </section>
@@ -690,17 +690,17 @@ aria-label="Server robustness setting, part 13" id="slide-heading-1f671f3800a2">
 setting (part 13)</h2>
 <p>Five structural extension studies (Studies 5–9, Supplementary
 sections) build on the same POMDP substrate and are described there: the
-moving disjoint-FOV sentinel (<span class="cross-reference">Section 14.7</span>),
-the 2-level hierarchical POMDP (<span class="cross-reference">Section 14.9</span>),</p>
+moving disjoint-FOV sentinel (<span class="cross-reference">Section 17.7</span>),
+the 2-level hierarchical POMDP (<span class="cross-reference">Section 17.9</span>),</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Server robustness setting, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-180f3d73aeb6">
 <h2 class="prose-slide"
 aria-label="Server robustness setting, part 14" id="slide-heading-180f3d73aeb6">Server robustness
 setting (part 14)</h2>
-<p>the <span class="math inline">\(N\)</span>-level extension (<span class="cross-reference">Section 14.11</span>),
-the 2-D sensitivity sweep (<span class="cross-reference">Section 14.13</span>),
-and parameter recovery (<span class="cross-reference">Section 15</span>).</p>
+<p>the <span class="math inline">\(N\)</span>-level extension (<span class="cross-reference">Section 17.11</span>),
+the 2-D sensitivity sweep (<span class="cross-reference">Section 17.13</span>),
+and parameter recovery (<span class="cross-reference">Section 18</span>).</p>
 </section>
 <section id="sec:methods-power" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-af9dd1a34504">
 <h2 class="prose-slide" id="slide-heading-af9dd1a34504">Sample size and prospective statistical
@@ -817,7 +817,7 @@ aria-label="Sample size and prospective statistical power, part 12" role="group"
 aria-label="Sample size and prospective statistical power, part 12" id="slide-heading-0c43084c9c6d">Sample
 size and… (part 12)</h2>
 <p>The power approximation uses the deterministic noncentral-normal
-approximation of <span class="cross-reference">Section 5.27</span>,
+approximation of <span class="cross-reference">Section 8.27</span>,
 deflated by the Wilcoxon’s Pitman asymptotic relative efficiency, so it
 is approximately calibrated for the signed-rank test actually run (exact
 under a normal-shift alternative;</p>
@@ -846,10 +846,10 @@ aria-label="Sample size and prospective statistical power, part 15" role="group"
 aria-label="Sample size and prospective statistical power, part 15" id="slide-heading-6464cf877025">Sample
 size and… (part 15)</h2>
 <p>These power quantities characterize the <em>server-side</em>
-aggregation contrast; per the honesty contract of <span class="cross-reference">Section 3.3</span>
+aggregation contrast; per the honesty contract of <span class="cross-reference">Section 6.3</span>
 they do not certify the per-client <span
 class="math inline">\(\beta\)</span>/rcce guarantees, which are pinned
-by the locked core (<span class="cross-reference">Section 6</span>)
+by the locked core (<span class="cross-reference">Section 9</span>)
 rather than by these aggregation-level statistics.</p>
 </section>
 <section id="sec:methods-software" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d655e8313138">
@@ -863,7 +863,7 @@ aria-label="Software environment and configuration fingerprint, part 2" role="gr
 <h2 class="prose-slide"
 aria-label="Software environment and configuration fingerprint, part 2" id="slide-heading-653fb4960c3a">Software
 environment and… (part 2)</h2>
-<p>The deterministic-MLP neural complement (<span class="cross-reference">Section 7.6</span>)
+<p>The deterministic-MLP neural complement (<span class="cross-reference">Section 10.6</span>)
 additionally uses PyTorch (CPU);</p>
 <p>the analysis pipeline executes it and emits its numbers as tokens
 exactly like every other result when the <code>torch</code> optional
@@ -883,7 +883,7 @@ aria-label="Software environment and configuration fingerprint, part 4" role="gr
 aria-label="Software environment and configuration fingerprint, part 4" id="slide-heading-9f3a8b5b60ca">Software
 environment and… (part 4)</h2>
 <p>Versions and platform — including the PyTorch version used for the
-MLP complement — are recorded automatically in <span class="cross-reference">Section 10</span>.</p>
+MLP complement — are recorded automatically in <span class="cross-reference">Section 13</span>.</p>
 </section>
     </div>
   </div>
@@ -891,9 +891,10 @@ MLP complement — are recorded automatically in <span class="cross-reference">S
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

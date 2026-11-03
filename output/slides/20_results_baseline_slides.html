@@ -322,7 +322,7 @@ main#main-content { inline-size: 100%; block-size: 100vh; min-block-size: 100vh;
 <section id="sec:results-baseline" class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-b4425e5ba870">
 <h2 class="prose-slide" id="slide-heading-b4425e5ba870">Exploratory generalized-Bayes
 logistic-regression baseline</h2>
-<p>The sweep of <span class="cross-reference">Section 7.5</span>
+<p>The sweep of <span class="cross-reference">Section 10.5</span>
 characterizes the heuristic server axis. This exploratory baseline
 instead probes the client-side axis in a synthetic point-estimate
 logistic-regression setting.</p>
@@ -371,7 +371,7 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 5" 
 loss-and-shrinkage configurations, not an isolated RCCE effect. RCCE’s
 <span class="math inline">\(q\to0\)</span> gradient limit recovers the
 NLL gradient, while the separate categorical recovery identities remain
-in <span class="cross-reference">Section 7.1</span>.</p>
+in <span class="cross-reference">Section 10.1</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 6" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7790c67fade5">
@@ -459,7 +459,7 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 14"
 (part 14)</h2>
 <p>The separation in this small logistic-regression setting is modest.
 The recovery identities establish implementation compatibility at the
-named limit (<span class="cross-reference">Section 7.1</span>);
+named limit (<span class="cross-reference">Section 10.1</span>);
 the bounded-influence result comes from the cited FedGVI theorem under
 its assumptions <span class="citation"
 data-cites="mildner2025fedgvi">(Mildner et al. 2025)</span>,</p>
@@ -470,7 +470,7 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 15"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 15" id="slide-heading-ee84f68fd648">Exploratory…
 (part 15)</h2>
 <p>not from this curve’s gap. Source-dataset parity, leakage-free
-calibration, and posterior-uncertainty experiments remain open (<span class="cross-reference">Section 8.19</span>).</p>
+calibration, and posterior-uncertainty experiments remain open (<span class="cross-reference">Section 11.19</span>).</p>
 </section>
 <section class="slide level2 figure-led"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea5757f49cbb">
@@ -704,17 +704,17 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 26"
 <h2 class="prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 26" id="slide-heading-575f459156b3">Exploratory…
 (part 26)</h2>
-<p><span class="cross-reference">Figure 18</span>
+<p><span class="cross-reference">Figure 21</span>
 is exploratory per-client proxy evidence. Its loss-limit check, finite
 synthetic contrast, and the separate source-conditional theorem have
-different roles; none comes from the server comparison of <span class="cross-reference">Section 7.5.2</span>.</p>
+different roles; none comes from the server comparison of <span class="cross-reference">Section 10.5.2</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 27" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-dc75f5d17aaf">
 <h2 class="prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 27" id="slide-heading-dc75f5d17aaf">Exploratory…
 (part 27)</h2>
-<p>The authoritative three-axis boundary is <span class="cross-reference">Section 3.3</span>.</p>
+<p>The authoritative three-axis boundary is <span class="cross-reference">Section 6.3</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 28" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0628d4f5e8e8">
@@ -735,7 +735,7 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 29"
 (part 29)</h2>
 <p>and per-test-point predictions are fused with
 <code>robust_aggregate</code> at <code>robustness = 0.5</code> under
-PyTorch not installed.</p>
+PyTorch 2.12.1.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 30" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-872da37b91cb">
@@ -743,11 +743,10 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 30"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 30" id="slide-heading-872da37b91cb">Exploratory…
 (part 30)</h2>
 <p>The executed consensus is a valid probability simplex, with maximum
-unit-mass deviation N/A, and repeated seeded runs are bit-identical
-(N/A). At contamination N/A, held-out consensus accuracy is N/A (PyTorch
-not run) for the <span class="math inline">\(\beta\to 0\)</span> client
-and N/A (PyTorch not run) for the <span
-class="math inline">\(\beta=0.5\)</span> client.</p>
+unit-mass deviation 2.22e-16, and repeated seeded runs are bit-identical
+(Yes). At contamination 0.40, held-out consensus accuracy is 0.558 for
+the <span class="math inline">\(\beta\to 0\)</span> client and 0.545 for
+the <span class="math inline">\(\beta=0.5\)</span> client.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 31" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-e0eb58ea940a">
@@ -767,7 +766,7 @@ aria-label="Exploratory generalized-Bayes logistic-regression baseline, part 32"
 (part 32)</h2>
 <p>When PyTorch is absent, the pipeline records unavailable-value
 sentinels; builds exercising this optional lane install the
-<code>torch</code> extra (<span class="cross-reference">Section 10</span>).</p>
+<code>torch</code> extra (<span class="cross-reference">Section 13</span>).</p>
 </section>
     </div>
   </div>
@@ -775,9 +774,10 @@ sentinels; builds exercising this optional lane install the
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

@@ -252,16 +252,14 @@ def test_calibration_episode_owns_immutable_belief_bytes() -> None:
         episode.local_posteriors[0, 0] = 0.5
 
 
-def test_calibration_episode_legacy_beliefs_alias_warns() -> None:
-    with pytest.warns(DeprecationWarning, match="beliefs is deprecated"):
-        episode = CalibrationEpisode(
-            episode_id="legacy",
-            world_family="clean",
-            beliefs=np.asarray([[0.8, 0.2], [0.7, 0.3]]),
-            true_state=0,
-        )
-    with pytest.warns(DeprecationWarning, match="CalibrationEpisode.beliefs"):
-        assert np.array_equal(episode.beliefs, episode.local_posteriors)
+def test_calibration_episode_canonical_data_is_preserved() -> None:
+    episode = CalibrationEpisode(
+        episode_id="legacy",
+        world_family="clean",
+        local_posteriors=np.asarray([[0.8, 0.2], [0.7, 0.3]]),
+        true_state=0,
+    )
+    assert np.array_equal(episode.local_posteriors, [[0.8, 0.2], [0.7, 0.3]])
 
 
 def test_calibration_scores_reject_coercion_and_misaligned_episode_counts() -> None:

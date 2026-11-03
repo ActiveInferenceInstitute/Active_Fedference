@@ -12,11 +12,14 @@ No mocks: it uses a real pipeline run + the live generator output.
 from __future__ import annotations
 
 import re
+import shutil
 from pathlib import Path
 
 import pytest
+import yaml
 
 from analysis.workflow import run_analysis_pipeline
+from figures._frontmatter import validate_frontmatter
 from manuscript_variables import generate_variables
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -31,15 +34,15 @@ def _pipe_cols(line: str) -> int:
     return stripped.count("|") - 1
 
 
-@pytest.fixture(scope="module")
-def variables(tmp_path_factory) -> dict[str, str]:
-    root = tmp_path_factory.mktemp("proj")
-    # symlink the real manuscript/config so the generator has a project to read,
-    # then run the pipeline there to produce reports the tokens consume.
+def _make_token_project(root: Path) -> None:
+    """Prepare the table-token fixture's actual manuscript inputs."""
     (root / "manuscript").mkdir()
     (root / "manuscript" / "config.yaml").write_text(
         (_MANUSCRIPT / "config.yaml").read_text(encoding="utf-8"), encoding="utf-8"
     )
+    config = yaml.safe_load((_MANUSCRIPT / "config.yaml").read_text(encoding="utf-8"))
+    for name in config["paper"]["frontmatter"]:
+        shutil.copy2(_MANUSCRIPT / name, root / "manuscript" / name)
     (root / "manuscript" / "16_results_belief_sharing.md").write_text(
         "![Belief-sharing posterior mass in the bounded smoke fixture.]"
         "(../output/figures/belief_heatmap.png)"
@@ -47,6 +50,31 @@ def variables(tmp_path_factory) -> dict[str, str]:
         'data-slide-manifest="../output/figures/belief_heatmap.slides.json"}\n',
         encoding="utf-8",
     )
+    # Refuse an incomplete fixture before any report or figure computation.
+    validate_frontmatter(root)
+
+
+def test_token_fixture_includes_and_validates_declared_frontmatter(tmp_path: Path) -> None:
+    _make_token_project(tmp_path)
+    validate_frontmatter(tmp_path)
+    config = yaml.safe_load((tmp_path / "manuscript/config.yaml").read_text())
+    names = config["paper"]["frontmatter"]
+    for name in names:
+        assert (tmp_path / "manuscript" / name).read_bytes() == (_MANUSCRIPT / name).read_bytes()
+    page = tmp_path / "manuscript" / names[0]
+    retained = page.with_suffix(".retained")
+    page.rename(retained)
+    with pytest.raises(FileNotFoundError, match=re.escape(page.name)):
+        validate_frontmatter(tmp_path)
+    retained.rename(page)
+    validate_frontmatter(tmp_path)
+    assert not (tmp_path / "output").exists()
+
+
+@pytest.fixture(scope="module")
+def variables(tmp_path_factory: pytest.TempPathFactory) -> dict[str, str]:
+    root = tmp_path_factory.mktemp("proj")
+    _make_token_project(root)
     # Keep this real end-to-end fixture bounded. Publication remains the
     # default for the release entry point; the table-arity oracle only needs
     # the same pipeline's schema, not publication-scale sampling.
@@ -54,7 +82,7 @@ def variables(tmp_path_factory) -> dict[str, str]:
     return generate_variables(root)
 
 
-def test_every_table_row_token_matches_its_header(variables) -> None:
+def test_every_table_row_token_matches_its_header(variables: dict[str, str]) -> None:
     offenders: list[str] = []
     sections = sorted(_MANUSCRIPT.glob("[0-9]*.md")) + sorted(_MANUSCRIPT.glob("S[0-9]*.md"))
     for section in sections:

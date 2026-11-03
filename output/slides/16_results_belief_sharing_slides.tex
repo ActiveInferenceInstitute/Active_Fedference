@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -278,7 +283,7 @@
 corner}
 \protect\phantomsection\label{sec:results-belief_sharing}
 With the standard-Bayes client limit and project-pool recovery identity
-pinned exactly (sec.~7.1), the study suite opens
+pinned exactly (sec.~10.1), the study suite opens
 one step away from them. Its estimand is the paired,
 \end{frame}
 
@@ -345,7 +350,10 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every seed connects its isolated and communicating colony mean; dark line with open diamonds marks condition means.}]{../figures/free_energy_comparison.slide-paired-seeds.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Every
+seed connects its isolated and communicating colony mean; dark line with
+open diamonds marks condition
+means.}]{../figures/free_energy_comparison.slide-paired-seeds.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -353,7 +361,10 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={All paired seed differences with jitter and descriptive violin, zero reference, and paired mean with the available report interval.}]{../figures/free_energy_comparison.slide-seed-differences.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={All
+paired seed differences with jitter and descriptive violin, zero
+reference, and paired mean with the available report
+interval.}]{../figures/free_energy_comparison.slide-seed-differences.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -361,7 +372,10 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={ΔF = isolated minus communicating. Positive values indicate lower F with communication in this reduced categorical protocol.}]{../figures/free_energy_comparison.slide-direction.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={ΔF =
+isolated minus communicating. Positive values indicate lower F with
+communication in this reduced categorical
+protocol.}]{../figures/free_energy_comparison.slide-direction.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -369,7 +383,10 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled circles: isolated. Open diamonds: sharing. Fine lines preserve pairing. Dark line / open diamonds: condition means.}]{../figures/free_energy_comparison.slide-pair-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Filled
+circles: isolated. Open diamonds: sharing. Fine lines preserve pairing.
+Dark line / open diamonds: condition
+means.}]{../figures/free_energy_comparison.slide-pair-key.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -377,7 +394,10 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One open diamond per seed; vertical jitter carries no outcome meaning. Violin is descriptive. Dark dotted rule marks zero contrast.}]{../figures/free_energy_comparison.slide-difference-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One
+open diamond per seed; vertical jitter carries no outcome meaning.
+Violin is descriptive. Dark dotted rule marks zero
+contrast.}]{../figures/free_energy_comparison.slide-difference-key.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -385,7 +405,9 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired mean ΔF: +3.311 nats. Independent unit: configured seed; n = 480.}]{../figures/free_energy_comparison.slide-mean.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired
+mean ΔF: +3.311 nats. Independent unit: configured seed; n =
+480.}]{../figures/free_energy_comparison.slide-mean.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -393,7 +415,9 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Report-owned 95\% interval: {[}3.186, 3.433{]} nats.}]{../figures/free_energy_comparison.slide-interval.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Report-owned
+95\% interval: {[}3.186, 3.433{]}
+nats.}]{../figures/free_energy_comparison.slide-interval.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -401,7 +425,10 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Analysis unit: configured seed with within-seed paired conditions. Agents and ordered steps remain nested within seed.}]{../figures/free_energy_comparison.slide-unit.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Analysis
+unit: configured seed with within-seed paired conditions. Agents and
+ordered steps remain nested within
+seed.}]{../figures/free_energy_comparison.slide-unit.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -409,20 +436,26 @@ These are conditional results for the reduced protocol.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Reduced-protocol comparison. It does not establish a general communication benefit or reconstruct the complete source protocol.}]{../figures/free_energy_comparison.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Reduced-protocol
+comparison. It does not establish a general communication benefit or
+reconstruct the complete source
+protocol.}]{../figures/free_energy_comparison.slide-scope.png}
 \refstepcounter{figure}\label{fig:free-energy-slide-panel-9}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Belief sharing lowers free\ldots{} (part 20)}
-fig.~9 reports the headline gap;
-fig.~10 shows the per-agent mechanism behind it.
+fig.~12 reports the headline gap;
+fig.~13 shows the per-agent mechanism behind it.
 \end{frame}
 
 \begin{frame}{Belief sharing lowers free\ldots{} (part 21)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior probability mass on a common 0--1 scale. Rows retain agent order, followed by consensus. Location indices retain their original order.}]{../figures/belief_heatmap.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Posterior
+probability mass on a common 0--1 scale. Rows retain agent order,
+followed by consensus. Location indices retain their original
+order.}]{../figures/belief_heatmap.slide-key.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -430,7 +463,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 22)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 0, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-0-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+0, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-0-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -438,7 +473,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 23)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 0, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-0-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+0, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-0-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -446,7 +483,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 24)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 0, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-0-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+0, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-0-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -454,7 +493,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 25)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 1, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-1-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+1, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-1-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -462,7 +503,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 26)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 1, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-1-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+1, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-1-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -470,7 +513,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 27)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 1, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-1-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+1, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-1-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -478,7 +523,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 28)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 2, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-2-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+2, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-2-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -486,7 +533,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 29)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 2, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-2-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+2, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-2-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-9}
 \end{figure}
 \end{frame}
@@ -494,7 +543,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 30)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 2, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-2-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+2, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-2-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-10}
 \end{figure}
 \end{frame}
@@ -502,7 +553,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 31)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 3, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-3-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+3, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-3-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-11}
 \end{figure}
 \end{frame}
@@ -510,7 +563,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 32)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 3, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-3-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+3, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-3-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-12}
 \end{figure}
 \end{frame}
@@ -518,7 +573,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 33)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 3, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-3-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+3, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-3-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-13}
 \end{figure}
 \end{frame}
@@ -526,7 +583,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 34)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 4, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-4-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+4, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-4-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-14}
 \end{figure}
 \end{frame}
@@ -534,7 +593,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 35)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 4, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-4-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+4, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-4-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-15}
 \end{figure}
 \end{frame}
@@ -542,7 +603,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 36)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 4, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-4-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+4, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-4-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-16}
 \end{figure}
 \end{frame}
@@ -550,7 +613,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 37)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 5, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-5-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+5, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-5-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-17}
 \end{figure}
 \end{frame}
@@ -558,7 +623,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 38)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 5, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-5-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+5, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-5-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-18}
 \end{figure}
 \end{frame}
@@ -566,7 +633,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 39)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 5, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-5-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+5, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-5-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-19}
 \end{figure}
 \end{frame}
@@ -574,7 +643,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 40)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 6, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-6-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+6, locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-6-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-20}
 \end{figure}
 \end{frame}
@@ -582,7 +653,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 41)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 6, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-6-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+6, locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-6-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-21}
 \end{figure}
 \end{frame}
@@ -590,7 +663,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 42)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent 6, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-6-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={agent
+6, locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-6-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-22}
 \end{figure}
 \end{frame}
@@ -598,7 +673,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 43)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus, locations 0 through 2; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-7-cells-0-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus,
+locations 0 through 2; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-7-cells-0-2.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-23}
 \end{figure}
 \end{frame}
@@ -606,7 +683,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 44)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus, locations 3 through 5; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-7-cells-3-5.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus,
+locations 3 through 5; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-7-cells-3-5.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-24}
 \end{figure}
 \end{frame}
@@ -614,7 +693,9 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 45)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus, locations 6 through 8; every probability printed on the common 0--1 scale.}]{../figures/belief_heatmap.slide-row-7-cells-6-8.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={consensus,
+locations 6 through 8; every probability printed on the common 0--1
+scale.}]{../figures/belief_heatmap.slide-row-7-cells-6-8.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-25}
 \end{figure}
 \end{frame}
@@ -622,7 +703,10 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Belief sharing lowers free\ldots{} (part 46)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7 agents and one consensus row. One configured colony snapshot; no uncertainty interval. Categorical log-linear specialization, not the full source protocol.}]{../figures/belief_heatmap.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={7
+agents and one consensus row. One configured colony snapshot; no
+uncertainty interval. Categorical log-linear specialization, not the
+full source protocol.}]{../figures/belief_heatmap.slide-scope.png}
 \refstepcounter{figure}\label{fig:belief-heatmap-slide-panel-26}
 \end{figure}
 \end{frame}
@@ -630,7 +714,7 @@ fig.~10 shows the per-agent mechanism behind it.
 \begin{frame}{Three robustness axes remain distinct in the results}
 \protect\phantomsection\label{sec:robustness-axes-results}
 The authoritative three-axis guarantee map is
-sec.~3.3. The contaminated studies keep its
+sec.~6.3. The contaminated studies keep its
 source-conditional client update, heuristic server reweighting,
 \end{frame}
 

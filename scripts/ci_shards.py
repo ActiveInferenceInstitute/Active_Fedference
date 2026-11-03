@@ -21,6 +21,9 @@ from typing import Any
 
 import pytest
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.validation_profiles import node_profile
+
 
 def digest(value: Any) -> str:
     """Hash a canonical JSON value for cross-job binding."""
@@ -73,6 +76,15 @@ def validate_plan(plan: dict[str, Any]) -> None:
             module = node.split("::", 1)[0]
             if owners.setdefault(module, index) != index:
                 raise ValueError("A module spans multiple shards")
+    if plan.get("schema") == 2 and "profiles" not in plan:
+        raise ValueError("Missing required validation profiles")
+    if "profiles" in plan:
+        profiles = plan["profiles"]
+        if len(profiles) != len(groups) or set(profiles) != {"native", "gnn"}:
+            raise ValueError("Missing or foreign required validation profile")
+        for profile, group in zip(profiles, groups):
+            if any(node_profile(node) != profile for node in group):
+                raise ValueError("Shard profile differs from assigned test profile")
     if plan["collection_digest"] != digest(nodes):
         raise ValueError("Collection digest differs")
 
@@ -92,9 +104,13 @@ class Inventory:
         self.nodes = sorted(item.nodeid for item in items)
         if self.plan is None:
             return
-        if self.nodes != self.plan["nodes"]:
-            missing = sorted(set(self.plan["nodes"]) - set(self.nodes))
-            extra = sorted(set(self.nodes) - set(self.plan["nodes"]))
+        expected_nodes = self.plan["nodes"]
+        if "profiles" in self.plan:
+            profile = self.plan["profiles"][self.index]
+            expected_nodes = [node for node in expected_nodes if node_profile(node) == profile]
+        if self.nodes != expected_nodes:
+            missing = sorted(set(expected_nodes) - set(self.nodes))
+            extra = sorted(set(self.nodes) - set(expected_nodes))
             raise pytest.UsageError(
                 f"Current collection differs from plan: missing={missing!r}; extra={extra!r}"
             )
@@ -126,6 +142,32 @@ def verify_results(plan: dict[str, Any], results: list[dict[str, Any]]) -> None:
             raise ValueError("Missing, duplicated or skipped test execution")
 
 
+def record_shard_result(
+    plan: dict[str, Any], index: int, directory: Path, inventory: Inventory, status: int,
+) -> None:
+    """Bind actual pytest lifecycle events to the produced coverage bytes."""
+    coverage_file = directory / f".coverage.shard-{index}"
+    result = {"index": index, "plan_digest": digest(plan), "exit_code": int(status),
+              "finished": inventory.finished, "skipped": inventory.skipped,
+              "coverage_sha256": hashlib.sha256(coverage_file.read_bytes()).hexdigest()
+              if coverage_file.is_file() else None}
+    (directory / "receipt.json").write_text(json.dumps(result, indent=2) + "\n")
+
+
+def verify_shard_artifacts(plan: dict[str, Any], directory: Path) -> None:
+    """Verify retained coverage and complete execution through the CLI's boundary."""
+    results = []
+    for path in directory.glob("shard-*/receipt.json"):
+        result = json.loads(path.read_text())
+        files = list(path.parent.glob(".coverage*"))
+        expected = path.parent / f".coverage.shard-{result['index']}"
+        if (files != [expected]
+                or hashlib.sha256(expected.read_bytes()).hexdigest() != result["coverage_sha256"]):
+            raise ValueError("Missing, foreign or corrupted shard coverage data")
+        results.append(result)
+    verify_results(plan, results)
+
+
 def main() -> int:
     """Execute one explicit planning, shard execution or verification operation."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -147,39 +189,40 @@ def main() -> int:
                "Path(sys.argv[2]) if sys.argv[2] else None))",
                str(default_root), str(args.project_root) if args.project_root else ""]
     os.chdir(subprocess.check_output(command, text=True).strip())
+    pytest_root = ["-c", str(Path.cwd() / "pyproject.toml"), f"--rootdir={Path.cwd()}"]
+    # Supplied plans must fail on their own contract before requiring Git metadata.
+    # Valid plans still require the exact checkout HEAD and source digest below.
+    if args.mode != "plan":
+        plan = json.loads(args.plan.read_text())
+        validate_plan(plan)
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     if args.mode == "plan":
         inventory = Inventory()
-        status = pytest.main(["tests/", "--collect-only", "-q"], plugins=[inventory])
+        status = pytest.main([*pytest_root, "tests/", "--collect-only",
+                              "--validation-profile=full", "-q"], plugins=[inventory])
         if status:
             return int(status)
         weights = json.loads(args.weights.read_text())["modules"]
-        plan = {"schema": 1, "head": head, "source_digest": checkout_digest(), "nodes": inventory.nodes,
+        native = [node for node in inventory.nodes if node_profile(node) == "native"]
+        gnn = [node for node in inventory.nodes if node_profile(node) == "gnn"]
+        if not gnn:
+            raise ValueError("Required GNN profile has no collected tests")
+        plan = {"schema": 2, "head": head, "source_digest": checkout_digest(), "nodes": inventory.nodes,
                 "collection_digest": digest(inventory.nodes),
-                "groups": partition(inventory.nodes, weights, args.count)}
+                "groups": partition(native, weights, args.count) + [gnn],
+                "profiles": ["native"] * args.count + ["gnn"]}
         validate_plan(plan)
         args.plan.parent.mkdir(parents=True, exist_ok=True)
         with args.plan.open("x") as stream:
             json.dump(plan, stream, indent=2)
         return 0
-    plan = json.loads(args.plan.read_text())
-    validate_plan(plan)
     if head != plan["head"]:
         raise ValueError("Checkout HEAD differs from plan HEAD")
     if checkout_digest() != plan["source_digest"]:
         raise ValueError("Validation inputs differ from plan inputs")
     if args.mode == "verify":
-        results = []
-        for path in args.results.glob("shard-*/receipt.json"):
-            result = json.loads(path.read_text())
-            files = list(path.parent.glob(".coverage*"))
-            expected = path.parent / f".coverage.shard-{result['index']}"
-            if (files != [expected]
-                    or hashlib.sha256(expected.read_bytes()).hexdigest() != result["coverage_sha256"]):
-                raise ValueError("Missing, foreign or corrupted shard coverage data")
-            results.append(result)
-        verify_results(plan, results)
-        print(f"Verified {len(plan['nodes'])} test IDs exactly once in {len(results)} shards")
+        verify_shard_artifacts(plan, args.results)
+        print(f"Verified {len(plan['nodes'])} test IDs exactly once in {len(plan['groups'])} shards")
         return 0
     if not 0 <= args.index < len(plan["groups"]):
         raise ValueError("Shard index outside plan")
@@ -189,15 +232,12 @@ def main() -> int:
     inventory = Inventory(plan, args.index)
     # Partial shards cannot individually cover all src/. The final aggregate
     # gate combines every shard and enforces the unchanged >=90% threshold.
-    status = pytest.main(["tests/", "--cov=src", "--cov-fail-under=0", "-q",
+    profile = plan.get("profiles", ["full"] * len(plan["groups"]))[args.index]
+    status = pytest.main([*pytest_root, "tests/", f"--validation-profile={profile}",
+                          "--cov=src", "--cov-fail-under=0", "-q",
                           "--durations=0", f"--junitxml={directory / 'junit.xml'}"],
                          plugins=[inventory])
-    coverage_file = directory / f".coverage.shard-{args.index}"
-    result = {"index": args.index, "plan_digest": digest(plan), "exit_code": int(status),
-              "finished": inventory.finished, "skipped": inventory.skipped,
-              "coverage_sha256": hashlib.sha256(coverage_file.read_bytes()).hexdigest()
-              if coverage_file.is_file() else None}
-    (directory / "receipt.json").write_text(json.dumps(result, indent=2) + "\n")
+    record_shard_result(plan, args.index, directory, inventory, int(status))
     return int(status)
 
 

@@ -12,6 +12,45 @@ Forbidden anywhere under `tests/`:
 Tests use real NumPy computations with fixed seeds, real temp files (`tmp_path`),
 and subprocess smoke for auxiliary scripts.
 
+## Temporary and subprocess isolation
+
+Use caller-owned temporary storage outside this checkout when setting `TMPDIR`
+or `--basetemp`. The session fixture rejects checkout-local storage because CLI
+output-isolation tests must exercise genuinely external caller directories.
+The shared harness adds only this project's root and `src/` to `sys.path`.
+
+During test execution the harness bounds Git discovery at pytest's temporary
+base, preserving any caller ceilings. Non-Git fixtures therefore cannot inherit
+an ancestor repository; real fixture repositories below that base retain their
+own `.git` directories. Production provenance checks are unchanged.
+
+Child pytest processes inherit this project's explicit configuration and a root
+resolved against their own working directory. This prevents unrelated ancestor
+pytest configuration from changing tiny-suite node IDs or collection behavior.
+A child with a different configuration must pass its own `-c` and `--rootdir`
+arguments. Parent selection flags are not propagated to child suites.
+`scripts/ci_shards.py` explicitly selects the resolved project's configuration
+and root for both collection and execution, including invocation from elsewhere.
+
+The harness also sets child `UV_PYTHON` to the running `sys.executable`, so real
+`uv build --no-build-isolation` fixtures use the populated project environment
+with its locked build dependencies. Session environment changes are restored
+on teardown. The outer runner must still select the intended locked environment
+and provision its dependencies; the harness does not install anything.
+
+No `GIT_CEILING_DIRECTORIES`, `PYTEST_ADDOPTS`, or child `UV_PYTHON` workaround
+exports are required. For example, with an existing external `TMPDIR`:
+
+```bash
+uv run --locked --extra dev pytest tests/test_execution_isolation.py -q
+```
+
+The isolation probes execute real child pytest, Git, shard planning, and malformed
+plan refusals. Full collection remains authoritative: shard groups must preserve
+the complete collected multiset, with each test executed exactly once. Timing
+weights affect placement only; changing profiles or weights requires comparable
+measurements and must retain the numerical tests and the full coverage floor.
+
 ## Coverage gate
 
 Configured in [`pyproject.toml`](../../pyproject.toml). Authoritative command:

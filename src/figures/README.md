@@ -77,3 +77,7 @@ useful without color or visual inspection; see the
 
 - [`../README.md`](../README.md) — project source overview
 - [`../AGENTS.md`](../AGENTS.md) — source-layer editing rules
+
+## Opening conceptual pages
+
+`frontmatter_model.py`, `frontmatter_robustness.py` and `frontmatter_execution.py` generate the model/cycle, separate robustness owners and GNN execution/evidence maps. `_frontmatter.py` shares the existing style, deterministic pair saver and measured presentation boundary. Each figure also emits a complete ordered reading-panel manifest. No new measured result is introduced.

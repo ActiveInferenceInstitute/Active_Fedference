@@ -49,8 +49,9 @@ def _likelihoods(A: ArrayF | Sequence[ArrayF]) -> list[ArrayF]:
     """Normalize the ``A`` argument to a list of 2-D ``(n_o, n_s)`` arrays.
 
     Accepts either a single likelihood tensor or a sequence of per-modality
-    tensors. Every tensor must be 2-D and share the same number of hidden
-    states (``n_s``, the column count).
+    tensors. Every tensor must be non-empty, finite, non-negative, 2-D and
+    share the same number of hidden states (``n_s``, the column count).
+    Valid zeros retain the log-message floor; invalid values are never clipped.
     """
     if isinstance(A, np.ndarray):
         mats: list[ArrayF] = [A]
@@ -64,6 +65,12 @@ def _likelihoods(A: ArrayF | Sequence[ArrayF]) -> list[ArrayF]:
         arr = np.asarray(a, dtype=np.float64)
         if arr.ndim != 2:
             raise ValueError("each likelihood A must be a 2-D (n_o, n_s) array")
+        if arr.size == 0:
+            raise ValueError("each likelihood A must be non-empty")
+        if not np.all(np.isfinite(arr)):
+            raise ValueError("each likelihood A must contain only finite entries")
+        if np.any(arr < 0.0):
+            raise ValueError("each likelihood A must be non-negative")
         if n_s is None:
             n_s = arr.shape[1]
         elif arr.shape[1] != n_s:

@@ -99,13 +99,13 @@
     {
       "alt": "Final signed hierarchical-minus-flat location accuracy for both hierarchy depths; zero reference retained.",
       "minimum_label_px": 91.66666666666667,
-      "sha256": "181ebd6d1c4aece490e393d9a5b658bc93a7cfc82c8a3967ffe8051d1a91b78e",
+      "sha256": "f6439f57bb7655f646e6f07fd7b73694c44e2102d3ca6fc98ddab0cbf011c973",
       "src": "../figures/hierarchical_pomdp.slide-gaps.png"
     },
     {
-      "alt": "Hierarchical minus flat: 2L -0.01354; 3L -0.01875. n = 960 nested trials. No per-trial trajectory or interval is inferred from these scalar gaps.",
+      "alt": "Hierarchical minus flat: 2L -0.01042; 3L -0.01354. n = 960 nested trials. No per-trial trajectory or interval is inferred from these scalar gaps.",
       "minimum_label_px": 67.22222222222223,
-      "sha256": "d2b3cca360b4468519c3ba2177f61ef95c518dde4f2049ed923e0eb9693dc45f",
+      "sha256": "8f7e1e4ebc3c282b78176715bb329711df3e79eba2a8a1ca1246b681899a106f",
       "src": "../figures/hierarchical_pomdp.slide-gap-values.png"
     },
     {

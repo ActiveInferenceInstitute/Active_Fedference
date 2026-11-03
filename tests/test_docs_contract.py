@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import urllib.parse
 from pathlib import Path
 
@@ -238,14 +239,14 @@ def _active_todo_doc_files() -> tuple[str, ...]:
     )
 
 
-def _repository_guide_files() -> tuple[str, ...]:
+def _repository_guide_files(root: Path = ROOT) -> tuple[str, ...]:
     """Discover every source-owned AGENTS/README contract, not a hand-picked subset."""
     guides: list[str] = []
-    for path in ROOT.rglob("*.md"):
-        relative = path.relative_to(ROOT)
+    for path in root.rglob("*.md"):
+        relative = path.relative_to(root)
         if path.name not in {"AGENTS.md", "README.md"}:
             continue
-        if relative.parts[0] in {".pytest_cache", ".tmp", ".venv", "build", "node_modules", "output"}:
+        if relative.parts[0] in {".omo", ".pytest_cache", ".tmp", ".venv", "build", "node_modules", "output"}:
             continue
         guides.append(relative.as_posix())
     return tuple(sorted(guides))
@@ -337,16 +338,16 @@ def test_script_quick_reference_covers_every_entrypoint() -> None:
     assert missing == []
 
 
-def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> None:
+def _local_markdown_link_offenders(root: Path, paths: tuple[str, ...]) -> list[str]:
     """Prevent docs from linking back to absent template-repo guides."""
     allowed_placeholder_targets = {
         "../output/figures/name.png",
         "../output/figures/NAME.png",
     }
     offenders: list[str] = []
-    for path in _contract_files():
-        source = ROOT / path
-        for line_number, line in enumerate(_read(path).splitlines(), start=1):
+    for path in paths:
+        source = root / path
+        for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), start=1):
             for match in _MARKDOWN_LINK_PATTERN.finditer(line):
                 target = match.group(1).strip()
                 if (
@@ -362,13 +363,17 @@ def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> Non
                     continue
                 resolved = (source.parent / target_path).resolve()
                 try:
-                    resolved.relative_to(ROOT)
+                    resolved.relative_to(root)
                 except ValueError:
                     offenders.append(f"{path}:{line_number}: {target} escapes repository")
                     continue
                 if not resolved.exists():
                     offenders.append(f"{path}:{line_number}: {target} missing")
-    assert offenders == []
+    return offenders
+
+
+def test_documented_local_markdown_links_resolve_inside_standalone_repo() -> None:
+    assert _local_markdown_link_offenders(ROOT, _contract_files()) == []
 
 
 def test_documentation_hub_and_section_indexes_reach_every_page() -> None:
@@ -563,44 +568,86 @@ def test_source_to_render_mermaid_uses_the_exact_source_owned_branching_dag() ->
     assert "| `source` | `reports`, `figures`, `provisional`, `coverage`, `final_hydration` |" in provenance
 
 
-def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> None:
+def _retired_platform_offenders(root: Path) -> list[str]:
+    """Scan tracked and nonignored working files, never retained local evidence.
+
+    The index keeps tracked files in scope even if an ignore rule matches them;
+    untracked current source is also checked before it can be committed.
+    """
+    inventory = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        check=True,
+        capture_output=True,
+        timeout=30,
+    )
     markers = ("hum" + "os", "hum" + " " + "os", "human operating" + " system")
-    ignored_directories = {
-        ".git",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".playwright-cli",
-        ".ruff_cache",
-        ".tmp",
-        ".venv",
-        "build",
-        "node_modules",
-    }
     text_suffixes = {
-        ".cff",
-        ".html",
-        ".json",
-        ".md",
-        ".py",
-        ".tex",
-        ".toml",
-        ".txt",
-        ".yaml",
-        ".yml",
+        ".cff", ".html", ".json", ".md", ".py", ".tex", ".toml", ".txt", ".yaml", ".yml",
     }
     offenders: list[str] = []
-    for directory, directory_names, file_names in os.walk(ROOT):
-        directory_names[:] = [
-            name for name in directory_names if name not in ignored_directories
-        ]
-        for file_name in file_names:
-            path = Path(directory) / file_name
-            if path.suffix.lower() not in text_suffixes:
-                continue
-            text = path.read_text(encoding="utf-8", errors="ignore").lower()
-            if any(marker in text for marker in markers):
-                offenders.append(path.relative_to(ROOT).as_posix())
-    assert offenders == []
+    for relative in sorted({os.fsdecode(name) for name in inventory.stdout.split(b"\0") if name}):
+        path = root / relative
+        if path.suffix.lower() not in text_suffixes:
+            continue
+        if path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+            raise ValueError(f"Textual repository surface is a symlink or escapes its root: {relative}")
+        text = path.read_text(encoding="utf-8").lower()
+        if any(marker in text for marker in markers):
+            offenders.append(relative)
+    return offenders
+
+
+def test_retired_platform_name_is_absent_from_textual_repository_surfaces() -> None:
+    assert _retired_platform_offenders(ROOT) == []
+
+
+def test_retired_platform_inventory_preserves_current_sources_and_ignored_evidence(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", str(tmp_path)], check=True, capture_output=True, timeout=30)
+    (tmp_path / ".gitignore").write_text(".omo/\nignored-current.md\n", encoding="utf-8")
+    historical = tmp_path / ".omo" / "evidence"
+    historical.mkdir(parents=True)
+    marker = "hum" + "os"
+    retained = historical / "prior-report.md"
+    retained.write_text(marker, encoding="utf-8")
+    dangling = historical / "artifact.json"
+    dangling.symlink_to(historical / "missing.json")
+    assert _retired_platform_offenders(tmp_path) == []
+    current = tmp_path / "new-source.md"
+    current.write_text(marker.upper(), encoding="utf-8")
+    tracked = tmp_path / "ignored-current.md"
+    tracked.write_text(marker, encoding="utf-8")
+    subprocess.run(
+        ["git", "-C", str(tmp_path), "add", "-f", tracked.name],
+        check=True, capture_output=True, timeout=30,
+    )
+    assert _retired_platform_offenders(tmp_path) == [tracked.name, current.name]
+    current.write_text("Current project guidance.\n", encoding="utf-8")
+    tracked.write_text("Tracked project guidance.\n", encoding="utf-8")
+    assert _retired_platform_offenders(tmp_path) == []
+    assert retained.read_text(encoding="utf-8") == marker
+    assert dangling.is_symlink() and not dangling.exists()
+
+
+@pytest.mark.parametrize("defect", ["dangling", "external", "unreadable"])
+def test_retired_platform_inventory_rejects_unsafe_current_surface(tmp_path: Path, defect: str) -> None:
+    root = tmp_path / "repository"
+    subprocess.run(["git", "init", str(root)], check=True, capture_output=True, timeout=30)
+    surface = root / "current.md"
+    if defect == "dangling":
+        surface.symlink_to(root / "missing.md")
+    elif defect == "external":
+        outside = tmp_path / "outside.md"
+        outside.write_text("Outside the source boundary.\n", encoding="utf-8")
+        surface.symlink_to(outside)
+    else:
+        surface.write_text("Current project guidance.\n", encoding="utf-8")
+        subprocess.run(
+            ["git", "-C", str(root), "add", surface.name],
+            check=True, capture_output=True, timeout=30,
+        )
+        surface.unlink()
+    with pytest.raises((ValueError, FileNotFoundError), match="current.md"):
+        _retired_platform_offenders(root)
 
 
 def test_publication_lifecycle_and_historical_release_identity_are_separated() -> None:
@@ -898,7 +945,11 @@ def test_multi_machine_claims_stay_qualified() -> None:
 def test_security_and_accessibility_boundaries_are_explicit_and_gated() -> None:
     threat_model = _read("docs/security/active_fedference-threat-model.md")
     accessibility = _read("docs/manuscript/accessibility.md")
-    web_validator = _read("src/publication/web_package.py")
+    web_validator = "\n".join(_read(path) for path in (
+        "src/publication/web_package.py",
+        "src/publication/web/accessibility.py",
+        "src/publication/web/accessibility_parser.py",
+    ))
 
     for heading in (
         "## Scope and assumptions",
@@ -1105,7 +1156,8 @@ def test_canonical_public_git_contract_is_consistent_across_active_release_pages
     assert public_url in index
     assert public_url in release
     assert public_url in handoff
-    assert "`origin` remote, `docxology/active_fedference`" in roadmap
+    # Repository destinations are stable; aliases depend on the local checkout.
+    assert "https://github.com/docxology/active_fedference" in roadmap
     assert "private/interim evidence remote" in release
     assert "private/interim evidence remote" in handoff
     assert "reviewed `codex/*` branches and normal merge commits" in index
@@ -1683,3 +1735,19 @@ def test_anchor_source_audit_table_is_not_interrupted_by_prose() -> None:
     assert all(line.startswith("|") for line in table_lines if line.strip())
     assert "Mildner, Giampouras & Damoulas" in section[table_start:table_end]
     assert "Efron & Tibshirani" in section[table_start:table_end]
+
+
+def test_generated_runtime_guides_do_not_hide_real_source_link_failures(tmp_path: Path) -> None:
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "README.md").write_text("[Docs](docs/README.md)\n")
+    source = tmp_path / "docs/README.md"
+    source.write_text("# Current documentation\n")
+    runtime = tmp_path / ".omo/evidence/wheel/README.md"
+    runtime.parent.mkdir(parents=True)
+    runtime.write_text("[Missing](missing-runtime.md)\n")
+    paths = _repository_guide_files(tmp_path)
+    assert _local_markdown_link_offenders(tmp_path, paths) == []
+    assert _local_markdown_link_offenders(tmp_path, (runtime.relative_to(tmp_path).as_posix(),))
+    source.write_text("[Broken](missing-source.md)\n")
+    failures = _local_markdown_link_offenders(tmp_path, _repository_guide_files(tmp_path))
+    assert any("docs/README.md" in failure and "missing-source.md missing" in failure for failure in failures)

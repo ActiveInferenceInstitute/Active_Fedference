@@ -36,7 +36,7 @@ tests/
 | `test_core_edges.py` | Numerical edge cases |
 | `test_divergences.py` | Divergence dispatch |
 | `test_belief_updating.py` | VFE / infer_states |
-| `test_aggregation_config.py` / `test_core_identities.py` / `test_review_hardening.py` | `share_round`, aggregation configuration, recovery, and hardening |
+| `test_aggregation_config.py` / `test_core_identities.py` / `test_review_hardening.py` | `share_round_result`, aggregation configuration, recovery, and hardening |
 | `test_dirichlet_learning.py` | Language acquisition |
 | `test_expected_free_energy.py` | EFE identity |
 | `test_bayesian_model_reduction.py` | BMR |
@@ -81,7 +81,7 @@ controls, receipt verification, and caller-owned output isolation.
 ## Authoritative command
 
 ```bash
-uv run --locked --extra dev pytest tests/ \
+uv run --locked --extra dev pytest tests/ --validation-profile=full \
   --cov=src \
   --cov-fail-under=90
 ```

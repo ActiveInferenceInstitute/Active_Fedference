@@ -1,0 +1,59 @@
+{
+  "panels": [
+    {
+      "alt": "A GNN model document is admitted\nthrough a pinned parser, or the\npackaged sentinel uses its\nsource-bound cache. Validate",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "020ac50fdce9398e9e5c7ce75f87ef8103e551953ceea101723a144459c108fd",
+      "src": "../figures/frontmatter_execution.slide-reading-1-1.png"
+    },
+    {
+      "alt": "dimensions, axis order, support, and\nmodel matrices before consumption.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "3f366d0048781b101a1d787926c7c1bdd8f809c5409cf00817da0cd094481084",
+      "src": "../figures/frontmatter_execution.slide-reading-1-2.png"
+    },
+    {
+      "alt": "Native execution consumes\nGNN-derived A, B, C, D values\nthrough native_world and\nnative_posterior. The sentinel",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "bffef166857319986d8305750aec862cc03bd06745c8f99243055f10ea53fa44",
+      "src": "../figures/frontmatter_execution.slide-reading-2-1.png"
+    },
+    {
+      "alt": "exchange example compares extracted\nmatrices against the native model.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e6e927a9212a35109a9773472fd52c01ada3d2da9368d8d271c6302bc774a1fb",
+      "src": "../figures/frontmatter_execution.slide-reading-2-2.png"
+    },
+    {
+      "alt": "Optional upstream execution requires\nan explicit source root, qualified\nruntime and backend contract,\nfollowed by real execution and",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "1ce1eeccb0535255b88433b87fdb4345a5798193a37ffa77122e3a1bc8f44110",
+      "src": "../figures/frontmatter_execution.slide-reading-3-1.png"
+    },
+    {
+      "alt": "parity checks. Dashed arrows mark\nprerequisites, not a backend support\nor qualification claim.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "c8a737c84beacc8af74e28401091f8b4ab87fe4cfd45e5a3d0e7ede944534080",
+      "src": "../figures/frontmatter_execution.slide-reading-3-2.png"
+    },
+    {
+      "alt": "Receipts bind declared sources,\ninputs and outputs. Integrity\nevidence does not establish\nscientific validity. Parser success",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "e1b843ad0eae5aed13976572e420969b0e2436aeea19e50eeb1b258b77618920",
+      "src": "../figures/frontmatter_execution.slide-reading-4-1.png"
+    },
+    {
+      "alt": "is not execution; matrix parity is\nnot protocol replication; scientific\nconclusions still require\nappropriate models, controls and",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "2a944b6ffa89edfa9a62750831085bdf87c8e639a96ab7b28c2aa1dcad97a6e9",
+      "src": "../figures/frontmatter_execution.slide-reading-4-2.png"
+    },
+    {
+      "alt": "scoped evidence.",
+      "minimum_label_px": 67.22222222222223,
+      "sha256": "dea60bdcb90e7279bdac18f710e15b42a7f066dc21054ea24954f25c3becf842",
+      "src": "../figures/frontmatter_execution.slide-reading-4-3.png"
+    }
+  ],
+  "schema_version": "1.0"
+}

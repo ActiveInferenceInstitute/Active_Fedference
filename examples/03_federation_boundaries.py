@@ -9,7 +9,7 @@ from typing import Sequence
 
 import numpy as np
 
-from fedference import AggregationConfig, aggregate_result, share_round
+from fedference import AggregationConfig, aggregate_result, share_round_result
 from fedference.federation import (
     PROTOCOL_VERSION,
     load_socket_replay,
@@ -77,14 +77,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         tol=1e-9,
     )
 
-    direct = share_round(
+    direct = share_round_result(
         local_posteriors,
         config=config,
         exclude_self=True,
         true_state=0,
     )
+    assert direct.mean_accuracy is not None and direct.mean_surprise is not None
     reference_consensus = aggregate_result(local_posteriors, config=config).consensus
-    process_consensus = run_multiprocess_round(local_posteriors, config=config)
+    process_consensus = run_multiprocess_round(list(local_posteriors), config=config)
     replay_path = output_dir / "replay.json"
     socket = run_socket_round(
         local_posteriors,

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import queue
-import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from multiprocessing import get_context
@@ -82,7 +81,6 @@ def run_multiprocess_round_result(
     config: AggregationConfig | None = None,
     timeout: float = 5.0,
     startup_timeout: float | None = None,
-    **legacy: object,
 ) -> MultiprocessRoundResult:
     """Run one spawned-process round and return complete server diagnostics.
 
@@ -101,19 +99,6 @@ def run_multiprocess_round_result(
     snippet, or equivalent non-importable interactive entry point can recursively
     start children or fail during worker bootstrap.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")  # type: ignore[assignment]
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None:
         raise TypeError("local_posteriors is required")
     raw_local_posteriors = tuple(local_posteriors)
@@ -263,7 +248,6 @@ def run_multiprocess_round(
     config: AggregationConfig | None = None,
     timeout: float = 5.0,
     startup_timeout: float | None = None,
-    **legacy: object,
 ) -> np.ndarray:
     """Run one process round and return the legacy consensus array."""
     return run_multiprocess_round_result(
@@ -272,7 +256,6 @@ def run_multiprocess_round(
         config=config,
         timeout=timeout,
         startup_timeout=startup_timeout,
-        **legacy,
     ).consensus
 
 

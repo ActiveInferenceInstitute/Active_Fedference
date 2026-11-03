@@ -390,7 +390,7 @@ def run_moving_world(
     and ``n_steps_to_consensus`` (a coarse consensus-entropy proxy), plus the run
     parameters.
     """
-    from ..pomdp import _moving_likelihood, build_moving_world, efe_policy_select
+    from ..pomdp import build_moving_world, efe_policy_select
 
     rng = np.random.default_rng(seed)
     n_states = 2
@@ -408,6 +408,7 @@ def run_moving_world(
             seed=int(rng.integers(0, 100000)),
         )
         B = np.asarray(world["B"], dtype=np.float64)
+        observation_map = np.asarray(world["observation_map"], dtype=np.float64)
 
         local_posteriors_by_condition = {
             c: [np.full(n_states, 1.0 / n_states) for _ in range(n_agents)] for c in conditions
@@ -433,12 +434,9 @@ def run_moving_world(
 
                 # --- observe and update beliefs (likelihood at new position) ---
                 for i in range(n_agents):
-                    A_i = _moving_likelihood(
-                        positions[i],
-                        fov_width=int(world["fov_width"]),
-                        n_positions=n_positions,
-                        n_states=n_states,
-                    )
+                    # Use the GNN model already admitted for this trial, as
+                    # action selection does; do not reload it per observation.
+                    A_i = observation_map[:, :, positions[i]].copy()
                     p_obs = np.clip(A_i[:, true_state], 0.0, None)
                     p_obs = p_obs / p_obs.sum()
                     o = int(rng.choice(A_i.shape[0], p=p_obs))

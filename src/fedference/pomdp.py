@@ -37,7 +37,6 @@ column of each ``B[..., u]`` is a proper categorical pmf summing to 1.
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass
 from dataclasses import field as _field
 from typing import Any, cast
@@ -74,99 +73,35 @@ def normalise_columns(matrix: ArrayF) -> ArrayF:
         A new ``float64`` array of the same shape with unit-sum columns.
 
     Raises:
-        ValueError: if ``matrix`` is not 2-D, is empty, has negative entries,
-            or contains an all-zero column.
+        ValueError: if ``matrix`` is not 2-D, is empty, has non-finite entries
+            or column sums, has negative entries below the ``-1e-9`` roundoff
+            tolerance, or contains a column with insufficient positive mass.
     """
     arr = np.asarray(matrix, dtype=np.float64)
     if arr.ndim != 2 or arr.size == 0:
         raise ValueError("matrix must be a non-empty 2-D array")
+    if not np.all(np.isfinite(arr)):
+        raise ValueError("matrix must contain only finite entries")
     if np.any(arr < -1e-9):
         raise ValueError("matrix has negative entries")
     arr = np.clip(arr, 0.0, None)
-    col_sums = arr.sum(axis=0)
+    try:
+        with np.errstate(over="raise"):
+            col_sums = arr.sum(axis=0)
+    except FloatingPointError as error:
+        raise ValueError("every column must have finite mass") from error
+    if not np.all(np.isfinite(col_sums)):
+        raise ValueError("every column must have finite mass")
     if np.any(col_sums <= _EPS):
         raise ValueError("every column must carry positive mass")
     return arr / col_sums
 
 
-def _location_likelihood(acuity: float) -> ArrayF:
-    """Build the noisy location sensor ``P(o | s)`` of shape ``(9, 9)``.
-
-    With probability ``acuity`` the sentinel reports the true cell; the residual
-    ``1 - acuity`` is spread uniformly over the other eight cells.
-    """
-    if not 0.0 < acuity <= 1.0:
-        raise ValueError("acuity must lie in (0, 1]")
-    off = (1.0 - acuity) / (N_LOCATIONS - 1)
-    a = np.full((N_LOCATIONS, N_LOCATIONS), off, dtype=np.float64)
-    np.fill_diagonal(a, acuity)
-    return normalise_columns(a)
-
-
-def _column(row: int, side: int = GRID_SIDE) -> int:
-    """Grid column index of flat location ``row`` (row-major 3x3)."""
-    return row % side
-
-
-def _row(loc: int, side: int = GRID_SIDE) -> int:
-    """Grid row index of flat location ``loc`` (row-major 3x3)."""
-    return loc // side
-
-
-def _shift_column(loc: int, delta: int, side: int = GRID_SIDE) -> int:
-    """Move ``loc`` by ``delta`` columns, reflecting at the grid walls."""
-    r, c = _row(loc, side), _column(loc, side)
-    c_new = c + delta
-    if c_new < 0:
-        c_new = 0
-    elif c_new > side - 1:
-        c_new = side - 1
-    return r * side + c_new
-
-
-def _transition_tensor() -> ArrayF:
-    """Build ``P(s' | s, u)`` of shape ``(9, 9, 3)`` for still/left/right."""
-    n = N_LOCATIONS
-    b = np.zeros((n, n, len(CONTROL_LABELS)), dtype=np.float64)
-    for s in range(n):
-        # still: deterministic self-loop
-        b[s, s, 0] = 1.0
-        # left: decrement column (reflect)
-        b[_shift_column(s, -1), s, 1] = 1.0
-        # right: increment column (reflect)
-        b[_shift_column(s, +1), s, 2] = 1.0
-    # Each B[:, :, u] now has unit-sum columns by construction; normalize to be
-    # robust to any future stochastic edits and to satisfy ISC-15 explicitly.
-    for u in range(b.shape[2]):
-        b[:, :, u] = normalise_columns(b[:, :, u])
-    return b
-
-
-def _log_preference(goal_bonus: float) -> ArrayF:
-    """Log-preference ``C`` over outcomes, shape ``(9, 1)``.
-
-    Center cell (the den, flat index 4 on a 3x3 grid) carries a positive
-    log-preference bump; all other outcomes are neutral (zero log-preference).
-    """
-    c = np.zeros((N_LOCATIONS, 1), dtype=np.float64)
-    center = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
-    c[center, 0] = float(goal_bonus)
-    return c
-
-
-def _initial_prior() -> ArrayF:
-    """Initial prior ``D`` over location, shape ``(9, 1)`` — start at center."""
-    d = np.zeros((N_LOCATIONS, 1), dtype=np.float64)
-    center = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
-    d[center, 0] = 1.0
-    return normalise_columns(d)
-
-
 def build_sentinel_world(
     rng: np.random.Generator | None = None,
     *,
-    acuity: float = 0.9,
-    goal_bonus: float = 2.0,
+    acuity: float | None = None,
+    goal_bonus: float | None = None,
 ) -> dict[str, Any]:
     """Construct the categorical sentinel POMDP specialization (Friston et al.
     2024, Figs. 1/4).
@@ -194,28 +129,21 @@ def build_sentinel_world(
     Raises:
         ValueError: if ``acuity`` is outside ``(0, 1]``.
     """
-    if rng is None:
-        a = _location_likelihood(acuity)
-    else:
-        # Deterministic jitter: tighten acuity by a small non-negative amount so
-        # the column stays a valid pmf for any acuity in (0, 1].
-        jitter = float(rng.uniform(0.0, min(0.05, 1.0 - acuity + _EPS)))
-        a = _location_likelihood(min(1.0, acuity + jitter))
+    from .gnn.loader import load_sentinel
+    from .gnn.native import SentinelParameters, native_world, parameterize_sentinel
 
-    b = _transition_tensor()
-    c = _log_preference(goal_bonus)
-    d = _initial_prior()
-
-    return {
-        "A": [a],
-        "B": [b],
-        "C": [c],
-        "D": [d],
-        "n_states": N_LOCATIONS,
-        "n_obs": N_LOCATIONS,
-        "n_controls": len(CONTROL_LABELS),
-        "control_labels": CONTROL_LABELS,
-    }
+    model = load_sentinel()
+    effective_acuity = acuity
+    if rng is not None:
+        base = model.categorical.A.values[0] if acuity is None else acuity
+        if not np.isfinite(base) or not 0.0 < base <= 1.0:
+            raise ValueError("acuity must lie in (0, 1]")
+        jitter = float(rng.uniform(0.0, min(0.05, 1.0 - base + _EPS)))
+        effective_acuity = min(1.0, base + jitter)
+    world = native_world(parameterize_sentinel(
+        model, SentinelParameters(effective_acuity, goal_bonus),
+    ))
+    return dict(world)
 
 
 # --- V4: moving sentinel world ------------------------------------------------
@@ -255,21 +183,22 @@ def _moving_likelihood(
     results section), and the colony does not claim a strictly-necessary-comms
     result the binary world cannot deliver.
     """
-    lo, hi = _moving_fov(position, fov_width, n_positions)
-    half = n_positions // 2
-    # The half (0 = left, 1 = right) that the FOV's leftmost cell lies in.
-    fov_half = 0 if lo < half else 1
-    a = np.full((2, n_states), 0.5, dtype=np.float64)
-    # Informative whenever the FOV actually overlaps the grid.
-    overlaps = hi > lo and 0 <= lo < n_positions
-    if overlaps and n_states == 2:
-        s = fov_half  # the state this viewpoint can detect
-        other = 1 - s
-        a[0, s] = 0.85   # P(detect | threat in this agent's half)
-        a[1, s] = 0.15
-        a[0, other] = 0.10  # P(detect | threat in the other half)
-        a[1, other] = 0.90
-    return normalise_columns(a)
+    from .gnn.structured import (
+        MOVING_ASSET,
+        MovingParameters,
+        cached_structured,
+        moving_world,
+        parameterize_moving,
+    )
+
+    if n_states != 2:
+        return np.full((2, n_states), 0.5, dtype=np.float64)
+    program = parameterize_moving(
+        cached_structured(MOVING_ASSET),
+        MovingParameters(n_positions=n_positions, n_agents=1, fov_width=max(1, int(fov_width))),
+    )
+    world = moving_world(program)
+    return world["observation_map"][:, :, max(0, min(position, n_positions - 1))].copy()
 
 
 def _moving_transition(n_positions: int) -> ArrayF:
@@ -280,23 +209,26 @@ def _moving_transition(n_positions: int) -> ArrayF:
     reflecting at the last cell). Columns are unit-sum by construction; we
     normalise to satisfy the column-pmf invariant explicitly.
     """
-    n = int(n_positions)
-    b = np.zeros((n, n, len(MOVING_ACTIONS)), dtype=np.float64)
-    for p in range(n):
-        b[p, p, 0] = 1.0                       # stay
-        b[max(0, p - 1), p, 1] = 1.0           # left (reflect at 0)
-        b[min(n - 1, p + 1), p, 2] = 1.0       # right (reflect at wall)
-    for u in range(b.shape[2]):
-        b[:, :, u] = normalise_columns(b[:, :, u])
-    return b
+    from .gnn.structured import (
+        MOVING_ASSET,
+        MovingParameters,
+        cached_structured,
+        moving_world,
+        parameterize_moving,
+    )
+
+    program = parameterize_moving(
+        cached_structured(MOVING_ASSET), MovingParameters(n_positions=int(n_positions), n_agents=1),
+    )
+    return moving_world(program)["B"]
 
 
 def build_moving_world(
     *,
-    n_positions: int = 4,
-    n_agents: int = 2,
+    n_positions: int | None = None,
+    n_agents: int | None = None,
     n_states: int = 2,
-    fov_width: int = 2,
+    fov_width: int | None = None,
     seed: int = 0,
 ) -> dict[str, Any]:
     """Construct a moving sentinel POMDP with disjoint fields-of-view (V4).
@@ -325,37 +257,21 @@ def build_moving_world(
         ``D`` (uniform ``(n_states,)`` prior), ``agent_positions``, ``n_actions``,
         ``actions``, ``n_states``, ``n_positions`` and ``n_agents``.
     """
-    if n_agents < 1:
-        raise ValueError("need at least one agent")
-    if n_positions < n_agents:
-        raise ValueError("need at least one position per agent")
+    from .gnn.structured import (
+        MOVING_ASSET,
+        MovingParameters,
+        cached_structured,
+        moving_world,
+        parameterize_moving,
+    )
+
     if n_states != 2:
         raise ValueError("moving world is binary (n_states must be 2)")
+    program = parameterize_moving(
+        cached_structured(MOVING_ASSET), MovingParameters(n_positions, n_agents, fov_width, seed),
+    )
+    return dict(moving_world(program, seed=seed))
 
-    spacing = n_positions // n_agents
-    agent_positions = [int(i * spacing) for i in range(n_agents)]
-    a_list = [
-        _moving_likelihood(
-            p, fov_width=fov_width, n_positions=n_positions, n_states=n_states
-        )
-        for p in agent_positions
-    ]
-    b = _moving_transition(n_positions)
-    d = np.full(n_states, 1.0 / n_states, dtype=np.float64)
-
-    return {
-        "A": a_list,
-        "B": b,
-        "D": d,
-        "agent_positions": agent_positions,
-        "n_actions": len(MOVING_ACTIONS),
-        "actions": MOVING_ACTIONS,
-        "n_states": int(n_states),
-        "n_positions": int(n_positions),
-        "n_agents": int(n_agents),
-        "fov_width": int(fov_width),
-        "seed": int(seed),
-    }
 
 
 # --- V2: hierarchical POMDP -------------------------------------------------
@@ -380,15 +296,28 @@ CONTEXT_PERSISTENCE: float = 0.9
 CONTEXT_SWITCH_PROB: float = 0.1
 
 
+def _is_probability_vector(prior: ArrayF, n_states: int, *, atol: float = 1e-9) -> bool:
+    """Check a supplied categorical pmf without clipping or renormalizing it."""
+    if (
+        prior.shape != (n_states,)
+        or not np.all(np.isfinite(prior))
+        or np.any(prior < 0.0)
+    ):
+        return False
+    try:
+        with np.errstate(over="raise"):
+            total = prior.sum()
+    except FloatingPointError:
+        return False
+    return bool(np.isfinite(total) and np.isclose(total, 1.0, atol=atol))
+
+
 def build_hierarchical_world(
     *,
-    acuity: float = 0.9,
-    goal_bonus: float = 2.0,
-    context_prior: tuple[float, ...] = (0.5, 0.5),
-    context_transition: tuple[tuple[float, float], ...] = (
-        (CONTEXT_PERSISTENCE, CONTEXT_SWITCH_PROB),
-        (CONTEXT_SWITCH_PROB, CONTEXT_PERSISTENCE),
-    ),
+    acuity: float | None = None,
+    goal_bonus: float | None = None,
+    context_prior: tuple[float, ...] | None = None,
+    context_transition: tuple[tuple[float, float], ...] | None = None,
     l1_priors: tuple[tuple[float, ...], ...] | None = None,
 ) -> dict[str, Any]:
     """Construct a 2-level hierarchical POMDP (V2).
@@ -421,9 +350,33 @@ def build_hierarchical_world(
           (L1 prior conditioned on context 0 and context 1 respectively);
         - ``n_contexts``, ``context_labels``.
     """
+    from .gnn.structured import (
+        HIERARCHY_ASSET,
+        HierarchyParameters,
+        cached_structured,
+        hierarchy_world,
+        parameterize_hierarchy,
+    )
+
+    source = parameterize_hierarchy(
+        cached_structured(HIERARCHY_ASSET),
+        HierarchyParameters(depth=2, acuity=acuity, goal_bonus=goal_bonus),
+    )
+    defaults = hierarchy_world(source)
+    # Native caller overrides retain their existing PMF tolerance; they do not
+    # become an admitted GNN model or acquire a GNN model digest.
+    if context_prior is None:
+        context_prior = tuple(defaults["level_priors"][0])
+    if context_transition is None:
+        from .gnn.types import HierarchicalModel
+
+        assert isinstance(source.model, HierarchicalModel)
+        transition = source.model.layers[0].categorical.B
+        matrix = np.array(transition.values).reshape(transition.shape)[:, :, 0].T
+        context_transition = tuple(tuple(row) for row in matrix)
     # ---- L2 prior and transition ----
     ctx_prior = np.asarray(context_prior, dtype=np.float64)
-    if ctx_prior.shape != (N_CONTEXTS,) or not np.isclose(ctx_prior.sum(), 1.0):
+    if not _is_probability_vector(ctx_prior, N_CONTEXTS, atol=1e-8):
         raise ValueError(f"context_prior must be a pmf of length {N_CONTEXTS}")
     ctx_trans = np.asarray(context_transition, dtype=np.float64)
     if ctx_trans.shape != (N_CONTEXTS, N_CONTEXTS):
@@ -431,33 +384,28 @@ def build_hierarchical_world(
             f"context_transition must be shape ({N_CONTEXTS}, {N_CONTEXTS})"
         )
     for row_i, row in enumerate(ctx_trans):
-        if not np.isclose(row.sum(), 1.0, atol=1e-9):
+        if not _is_probability_vector(row, N_CONTEXTS):
             raise ValueError(
-                f"context_transition row {row_i} must sum to 1 (got {row.sum()})"
+                f"context_transition row {row_i} must be a finite non-negative pmf that sums to 1"
             )
 
     # ---- Context-conditioned L1 priors ----
-    center = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)  # flat index 4
     if l1_priors is None:
-        # quiet: uniform over all locations
-        p_quiet = np.full(N_LOCATIONS, 1.0 / N_LOCATIONS, dtype=np.float64)
-        # alert: peaked at center (the den)
-        alert_off = (1.0 - ALERT_CENTER_MASS) / (N_LOCATIONS - 1)
-        p_alert = np.full(N_LOCATIONS, alert_off, dtype=np.float64)
-        p_alert[center] = ALERT_CENTER_MASS
-        l1_priors_arr: list[np.ndarray] = [p_quiet, p_alert]
+        l1_priors_arr: list[np.ndarray] = [
+            prior.copy() for prior in defaults["conditioned_priors"][0]
+        ]
     else:
         l1_priors_arr = [np.asarray(p, dtype=np.float64) for p in l1_priors]
         if len(l1_priors_arr) != N_CONTEXTS:
             raise ValueError(f"l1_priors must supply {N_CONTEXTS} priors (one per context)")
         for ci, p in enumerate(l1_priors_arr):
-            if p.shape != (N_LOCATIONS,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, N_LOCATIONS):
                 raise ValueError(
                     f"l1_priors[{ci}] must be a pmf of length {N_LOCATIONS}"
                 )
 
     # ---- L1 sentinel world (shared likelihood and transition) ----
-    l1 = build_sentinel_world(acuity=acuity, goal_bonus=goal_bonus)
+    l1 = defaults["L1"]
 
     return {
         "L1": l1,
@@ -465,7 +413,7 @@ def build_hierarchical_world(
         "L2_transition": ctx_trans,
         "L1_priors_given_context": l1_priors_arr,
         "n_contexts": int(N_CONTEXTS),
-        "context_labels": HIER_CONTEXT_LABELS,
+        "context_labels": defaults["layers"][0].labels,
     }
 
 
@@ -632,7 +580,7 @@ def build_nlevel_world(
             prior = np.full(spec.n_states, 1.0 / spec.n_states, dtype=np.float64)
         else:
             prior = np.asarray(spec.default_prior, dtype=np.float64)
-        if prior.shape != (spec.n_states,) or not np.isclose(prior.sum(), 1.0, atol=1e-9):
+        if not _is_probability_vector(prior, spec.n_states):
             raise ValueError(f"layer {depth} default_prior is not a valid pmf")
         level_priors.append(prior)
 
@@ -655,7 +603,7 @@ def build_nlevel_world(
                 f"layer {depth} conditioned_priors must supply {parent.n_states} priors"
             )
         for si, p in enumerate(cp):
-            if p.shape != (child.n_states,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, child.n_states):
                 raise ValueError(
                     f"layer {depth} conditioned_prior[{si}] is not a valid pmf of "
                     f"length {child.n_states}"
@@ -781,9 +729,9 @@ L2_HIGH_THREAT_QUIET_PRIOR: float = 0.2
 
 def build_3level_world(
     *,
-    acuity: float = 0.9,
-    goal_bonus: float = 2.0,
-    l3_prior: tuple[float, ...] = (0.5, 0.5),
+    acuity: float | None = None,
+    goal_bonus: float | None = None,
+    l3_prior: tuple[float, ...] | None = None,
     l2_priors_given_l3: tuple[tuple[float, ...], ...] | None = None,
     l1_priors_given_l2: tuple[tuple[float, ...], ...] | None = None,
 ) -> dict[str, Any]:
@@ -809,45 +757,52 @@ def build_3level_world(
         ``"L2_priors_given_l3"``, ``"L1_priors_given_l2"``, and
         ``"n_meta_contexts"``.
     """
+    from .gnn.structured import (
+        HIERARCHY_ASSET,
+        HierarchyParameters,
+        cached_structured,
+        hierarchy_world,
+        parameterize_hierarchy,
+    )
+
+    source = parameterize_hierarchy(
+        cached_structured(HIERARCHY_ASSET),
+        HierarchyParameters(depth=3, acuity=acuity, goal_bonus=goal_bonus),
+    )
+    defaults = hierarchy_world(source)
+    if l3_prior is None:
+        l3_prior = tuple(defaults["level_priors"][0])
     # ---- L3 prior ----
     l3_arr = np.asarray(l3_prior, dtype=np.float64)
-    if l3_arr.shape != (N_META_CONTEXTS,) or not np.isclose(l3_arr.sum(), 1.0, atol=1e-9):
+    if not _is_probability_vector(l3_arr, N_META_CONTEXTS):
         raise ValueError(f"l3_prior must be a pmf of length {N_META_CONTEXTS}")
 
     # ---- L2 priors conditioned on L3 ----
     if l2_priors_given_l3 is None:
-        # low_threat: uniform L2 (equal chance quiet/alert)
-        l2_low = np.full(N_CONTEXTS, 1.0 / N_CONTEXTS, dtype=np.float64)
-        # high_threat: peaked at alert
-        l2_high = np.array(
-            [L2_HIGH_THREAT_QUIET_PRIOR, L2_HIGH_THREAT_ALERT_PRIOR],
-            dtype=np.float64,
-        )
-        l2_given_l3: list[np.ndarray] = [l2_low, l2_high]
+        l2_given_l3: list[np.ndarray] = [
+            prior.copy() for prior in defaults["conditioned_priors"][0]
+        ]
     else:
         l2_given_l3 = [np.asarray(p, dtype=np.float64) for p in l2_priors_given_l3]
         if len(l2_given_l3) != N_META_CONTEXTS:
             raise ValueError(f"l2_priors_given_l3 must supply {N_META_CONTEXTS} priors")
         for ci, p in enumerate(l2_given_l3):
-            if p.shape != (N_CONTEXTS,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, N_CONTEXTS):
                 raise ValueError(
                     f"l2_priors_given_l3[{ci}] must be a pmf of length {N_CONTEXTS}"
                 )
 
     # ---- L1 priors conditioned on L2 ----
-    center = (GRID_SIDE // 2) * GRID_SIDE + (GRID_SIDE // 2)
     if l1_priors_given_l2 is None:
-        p_quiet = np.full(N_LOCATIONS, 1.0 / N_LOCATIONS, dtype=np.float64)
-        alert_off = (1.0 - ALERT_CENTER_MASS) / (N_LOCATIONS - 1)
-        p_alert = np.full(N_LOCATIONS, alert_off, dtype=np.float64)
-        p_alert[center] = ALERT_CENTER_MASS
-        l1_given_l2: list[np.ndarray] = [p_quiet, p_alert]
+        l1_given_l2: list[np.ndarray] = [
+            prior.copy() for prior in defaults["conditioned_priors"][1]
+        ]
     else:
         l1_given_l2 = [np.asarray(p, dtype=np.float64) for p in l1_priors_given_l2]
         if len(l1_given_l2) != N_CONTEXTS:
             raise ValueError(f"l1_priors_given_l2 must supply {N_CONTEXTS} priors")
         for ci, p in enumerate(l1_given_l2):
-            if p.shape != (N_LOCATIONS,) or not np.isclose(p.sum(), 1.0, atol=1e-9):
+            if not _is_probability_vector(p, N_LOCATIONS):
                 raise ValueError(
                     f"l1_priors_given_l2[{ci}] must be a pmf of length {N_LOCATIONS}"
                 )
@@ -855,37 +810,42 @@ def build_3level_world(
     # ---- Assemble LayerSpec objects ----
     l3_spec = LayerSpec(
         n_states=N_META_CONTEXTS,
-        labels=L3_META_LABELS,
+        labels=defaults["layers"][0].labels,
         default_prior=l3_arr,
         conditioned_priors=l2_given_l3,
     )
-    l2_default = np.full(N_CONTEXTS, 1.0 / N_CONTEXTS, dtype=np.float64)
+    l2_default = defaults["level_priors"][1].copy()
     l2_spec = LayerSpec(
         n_states=N_CONTEXTS,
-        labels=HIER_CONTEXT_LABELS,
+        labels=defaults["layers"][1].labels,
         default_prior=l2_default,
         conditioned_priors=l1_given_l2,
     )
     l1_spec = LayerSpec(
         n_states=N_LOCATIONS,
-        labels=tuple(str(i) for i in range(N_LOCATIONS)),
-        default_prior=np.full(N_LOCATIONS, 1.0 / N_LOCATIONS, dtype=np.float64),
+        labels=defaults["layers"][-1].labels,
+        default_prior=defaults["level_priors"][-1].copy(),
         conditioned_priors=None,
     )
 
-    world = build_nlevel_world([l3_spec, l2_spec, l1_spec], acuity=acuity, goal_bonus=goal_bonus)
+    world: dict[str, Any] = {
+        "L1": defaults["L1"],
+        "layers": [l3_spec, l2_spec, l1_spec],
+        "n_levels": 3,
+        "level_priors": [l3_arr, l2_default, defaults["level_priors"][-1].copy()],
+        "conditioned_priors": [l2_given_l3, l1_given_l2],
+    }
     world["L3_prior"] = l3_arr
     world["L2_priors_given_l3"] = l2_given_l3
     world["L1_priors_given_l2"] = l1_given_l2
     world["n_meta_contexts"] = int(N_META_CONTEXTS)
-    world["meta_context_labels"] = L3_META_LABELS
+    world["meta_context_labels"] = defaults["layers"][0].labels
     return world
 
 
 def efe_policy_select(
     local_posteriors=None,
     world_dict=None,
-    **legacy: object,
 ) -> list[int]:
     """Select one information-seeking action per agent by expected free energy.
 
@@ -912,19 +872,6 @@ def efe_policy_select(
     Returns:
         A list of ``n_agents`` integer action indices in ``[0, n_actions)``.
     """
-    if "beliefs" in legacy:
-        if local_posteriors is not None:
-            raise TypeError(
-                "local_posteriors and deprecated beliefs cannot both be supplied"
-            )
-        local_posteriors = legacy.pop("beliefs")
-        warnings.warn(
-            "beliefs is deprecated; use local_posteriors",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        raise TypeError(f"unexpected keyword argument(s): {', '.join(sorted(legacy))}")
     if local_posteriors is None or world_dict is None:
         raise TypeError("local_posteriors and world_dict are required")
     b = np.asarray(world_dict["B"], dtype=np.float64)
@@ -942,9 +889,12 @@ def efe_policy_select(
         efe = np.empty(n_actions, dtype=np.float64)
         for a in range(n_actions):
             new_pos = int(np.argmax(b[:, p_i, a]))
-            a_new = _moving_likelihood(
-                new_pos, fov_width=fov_width, n_positions=n_positions, n_states=n_states
-            )
+            if "observation_map" in world_dict:
+                a_new = np.asarray(world_dict["observation_map"], dtype=np.float64)[:, :, new_pos]
+            else:
+                a_new = _moving_likelihood(
+                    new_pos, fov_width=fov_width, n_positions=n_positions, n_states=n_states
+                )
             h_expected = 0.0
             for o in range(a_new.shape[0]):
                 p_o = float(a_new[o, :] @ q_arr)

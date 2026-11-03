@@ -22,8 +22,6 @@ cavity rather than the full posterior.
 
 from __future__ import annotations
 
-import warnings
-
 import numpy as np
 from scipy.optimize import brentq
 
@@ -148,7 +146,6 @@ def generalized_posterior(
     tau: float = 1.0,
     divergence: str = "KLD",
     alpha: float = 1.0,
-    **legacy: object,
 ) -> ArrayF:
     """Closed-form generalized posterior over hidden states.
 
@@ -157,8 +154,7 @@ def generalized_posterior(
                     :func:`fedference.losses.loss_vector`; the canonical API
                     term is ``loss_by_state``).
     ``tau`` : the learning-rate scalar :math:`\tau` tempering the data term.
-    The old ``learning_rate`` keyword is retained as a warned compatibility
-    adapter; it is not the federation influence weight ``w_n``.
+    This scalar is distinct from the federation influence weight ``w_n``.
 
     For ``divergence='KLD'`` the minimizer is the tempered softmax
     ``softmax(log_prior - tau * loss_by_state)``. For ``divergence='AR'`` (FedGVI's
@@ -167,30 +163,6 @@ def generalized_posterior(
     used power-softmax shortcut. At ``alpha = 1`` it is identical to the KL
     form, preserving the limit.
     """
-    if "loss_vec" in legacy:
-        if loss_by_state is not None:
-            raise TypeError("loss_by_state and deprecated loss_vec cannot both be supplied")
-        loss_by_state = legacy.pop("loss_vec")  # type: ignore[assignment]
-        warnings.warn(
-            "loss_vec is deprecated; use loss_by_state",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    used_legacy_learning_rate = "learning_rate" in legacy
-    if used_legacy_learning_rate:
-        if tau != 1.0:
-            raise TypeError(
-                "tau and deprecated learning_rate cannot both be supplied"
-            )
-        tau = legacy.pop("learning_rate")  # type: ignore[assignment]
-        warnings.warn(
-            "learning_rate is deprecated; use tau",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if loss_by_state is None:
         raise TypeError("loss_by_state is required")
     lp = np.asarray(log_prior)
@@ -206,8 +178,7 @@ def generalized_posterior(
     if not np.all(np.isfinite(lp)) or not np.all(np.isfinite(lv)):
         raise ValueError("log_prior and loss_by_state must be finite")
     if not np.isfinite(tau) or tau < 0.0:
-        parameter_name = "learning_rate" if used_legacy_learning_rate else "tau"
-        raise ValueError(f"{parameter_name} must be finite and non-negative")
+        raise ValueError("tau must be finite and non-negative")
     key = divergence.upper()
     if key == "AR":
         if not np.isfinite(alpha) or alpha <= 0.0:
@@ -223,36 +194,13 @@ def generalized_posterior(
 def cavity(
     global_posterior: ArrayF | None = None,
     site_factor: ArrayF | None = None,
-    **legacy: object,
 ) -> ArrayF:
     """Return the cavity ``q_{-n}`` with a site factor ``t_n`` removed.
 
     In natural-parameter (log) space this is subtraction:
     ``log q_{-n} = log q - log t_n``. The cavity is a normalized posterior
     proportional to the global posterior divided by the local site factor.
-    ``posterior``/``factor`` remain deprecated compatibility keywords.
     """
-    if "posterior" in legacy:
-        if global_posterior is not None:
-            raise TypeError("global_posterior and deprecated posterior cannot both be supplied")
-        global_posterior = legacy.pop("posterior")  # type: ignore[assignment]
-        warnings.warn(
-            "posterior is deprecated; use global_posterior",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if "factor" in legacy:
-        if site_factor is not None:
-            raise TypeError("site_factor and deprecated factor cannot both be supplied")
-        site_factor = legacy.pop("factor")  # type: ignore[assignment]
-        warnings.warn(
-            "factor is deprecated; use site_factor",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if global_posterior is None or site_factor is None:
         raise TypeError("global_posterior and site_factor are required")
     log_cav = _log_pmf(global_posterior) - _log_pmf(site_factor)
@@ -263,41 +211,12 @@ def update_factor(
     old_site_factor: ArrayF | None = None,
     old_global_posterior: ArrayF | None = None,
     new_global_posterior: ArrayF | None = None,
-    **legacy: object,
 ) -> ArrayF:
     """Return the refreshed local factor ``t_i`` after a client update.
 
     ``log t_n^new = log t_n^old + log q^new - log q^old`` (the PVI factor
     update), renormalized to a pmf for transport.
     """
-    for old_name, canonical, target in (
-        ("old_factor", "old_site_factor", "old_site_factor"),
-        ("old_posterior", "old_global_posterior", "old_global_posterior"),
-        ("new_posterior", "new_global_posterior", "new_global_posterior"),
-    ):
-        if old_name not in legacy:
-            continue
-        if target == "old_site_factor" and old_site_factor is not None:
-            raise TypeError(f"{canonical} and deprecated {old_name} cannot both be supplied")
-        if target == "old_global_posterior" and old_global_posterior is not None:
-            raise TypeError(f"{canonical} and deprecated {old_name} cannot both be supplied")
-        if target == "new_global_posterior" and new_global_posterior is not None:
-            raise TypeError(f"{canonical} and deprecated {old_name} cannot both be supplied")
-        value = legacy.pop(old_name)
-        if target == "old_site_factor":
-            old_site_factor = value  # type: ignore[assignment]
-        elif target == "old_global_posterior":
-            old_global_posterior = value  # type: ignore[assignment]
-        else:
-            new_global_posterior = value  # type: ignore[assignment]
-        warnings.warn(
-            f"{old_name} is deprecated; use {canonical}",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    if legacy:
-        names = ", ".join(sorted(legacy))
-        raise TypeError(f"unexpected keyword argument(s): {names}")
     if old_site_factor is None or old_global_posterior is None or new_global_posterior is None:
         raise TypeError("old_site_factor, old_global_posterior, and new_global_posterior are required")
     log_t = _log_pmf(old_site_factor) + _log_pmf(new_global_posterior) - _log_pmf(old_global_posterior)

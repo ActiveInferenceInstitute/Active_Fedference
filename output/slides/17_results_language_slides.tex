@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -332,7 +337,9 @@ convergence-rate result for arbitrary data-generating processes.
 \begin{frame}{Conjugate Dirichlet\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Complete ordered seed-mean KL learning trajectory with the supplied pointwise seed interval.}]{../figures/language_kl_decay.slide-trajectory.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Complete
+ordered seed-mean KL learning trajectory with the supplied pointwise
+seed interval.}]{../figures/language_kl_decay.slide-trajectory.png}
 \refstepcounter{figure}\label{fig:language-kl-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -340,7 +347,10 @@ convergence-rate result for arbitrary data-generating processes.
 \begin{frame}{Conjugate Dirichlet\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={KL(true A \textbar\textbar{} learned A), in nats. Circles / solid: seed mean. The ordered x-axis is the Dirichlet count batch.}]{../figures/language_kl_decay.slide-estimand.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={KL(true
+A \textbar\textbar{} learned A), in nats. Circles / solid: seed mean.
+The ordered x-axis is the Dirichlet count
+batch.}]{../figures/language_kl_decay.slide-estimand.png}
 \refstepcounter{figure}\label{fig:language-kl-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -348,7 +358,10 @@ convergence-rate result for arbitrary data-generating processes.
 \begin{frame}{Conjugate Dirichlet\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Pointwise 95\% percentile-bootstrap interval over independent configured seeds. Ordered steps are not independent replicates.}]{../figures/language_kl_decay.slide-uncertainty.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Pointwise
+95\% percentile-bootstrap interval over independent configured seeds.
+Ordered steps are not independent
+replicates.}]{../figures/language_kl_decay.slide-uncertainty.png}
 \refstepcounter{figure}\label{fig:language-kl-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -356,7 +369,9 @@ convergence-rate result for arbitrary data-generating processes.
 \begin{frame}{Conjugate Dirichlet\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Initial mean: 3.423 nats. Final mean: 0.00269 nats. Steps: 25. Seeds: 480.}]{../figures/language_kl_decay.slide-endpoints.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Initial
+mean: 3.423 nats. Final mean: 0.00269 nats. Steps: 25. Seeds:
+480.}]{../figures/language_kl_decay.slide-endpoints.png}
 \refstepcounter{figure}\label{fig:language-kl-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -364,13 +379,15 @@ convergence-rate result for arbitrary data-generating processes.
 \begin{frame}{Conjugate Dirichlet\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source monotonicity check: True. This is a source-mechanism analogue, not exact protocol replication.}]{../figures/language_kl_decay.slide-pattern.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source
+monotonicity check: True. This is a source-mechanism analogue, not exact
+protocol replication.}]{../figures/language_kl_decay.slide-pattern.png}
 \refstepcounter{figure}\label{fig:language-kl-slide-panel-5}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Conjugate Dirichlet\ldots{} (part 15)}
-fig.~11 plots the full learning curve and its CI
+fig.~14 plots the full learning curve and its CI
 band.
 \end{frame}
 

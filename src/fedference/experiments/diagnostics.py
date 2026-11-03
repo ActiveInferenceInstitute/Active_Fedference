@@ -6,8 +6,8 @@ from typing import Any
 
 import numpy as np
 
-from ..aggregation import variational_aggregate
-from ..belief_sharing import share_round
+from ..aggregation import AggregationConfig, variational_aggregate
+from ..belief_sharing import share_round_result
 from ..bnn_baseline import fed_gvi_logreg
 from ..colonies import healthy_colony
 from ..contamination import contaminate
@@ -79,8 +79,11 @@ def run_influence_weights_report(
     for k in range(n_contaminated):
         colony[k] = contaminate(colony[k], kind="confident_wrong", rate=0.8, rng=rng, wrong_state=wrong_state)
 
-    diag = share_round(
-        colony, method="robust", robustness=robustness, exclude_self=False, true_state=true_state
+    diag = share_round_result(
+        colony,
+        config=AggregationConfig(method="robust", robustness=robustness, max_iter=32, tol=1e-9),
+        exclude_self=False,
+        true_state=true_state,
     )
     normalized_effective_weights = np.asarray(
         diag.normalized_effective_weights,

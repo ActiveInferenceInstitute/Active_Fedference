@@ -47,10 +47,17 @@ Symptom: `mmdc failed ... Could not find Chrome`. See
 
 ## Phase 1 — Analysis (pipeline stage 4)
 
-**Script:** `scripts/02_run_analysis.py`
+**Script:** `scripts/analysis_stages.py` (explicit external stages and guarded import)
+
+Publication compute now follows [bounded staged analysis](../development/staged-analysis.md).
+Freeze the source under a short lease, run the explicitly selected report
+stages and figure assembly externally, then import the validated bundle under
+a short destination lease. The monolithic publication invocation is refused;
+the script remains the internal assembler and temporary smoke entry point.
 
 ```bash
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --project-root "$AF_REPO" --workspace "$WORKSPACE" --stage figures
 ```
 
 **Logic:** `src/analysis/workflow.py::run_analysis_pipeline()`
@@ -115,7 +122,9 @@ export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 
 cd "$AF_REPO"
 uv run --locked python scripts/00_preflight.py --template-root "$TEMPLATE_REPO"
-uv run --locked python scripts/02_run_analysis.py
+# Complete the external staged-analysis procedure above before this import.
+uv run --locked python scripts/analysis_stages.py import \
+  --project-root "$AF_REPO" --workspace "$WORKSPACE" --stage figures
 uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-validation
 
 # First template pass: its hydrated inputs are deliberately provisional.
@@ -372,3 +381,7 @@ Experiment keys mirror keyword arguments of `fedference.experiments` functions.
 - Manuscript editing: [`../../manuscript/AGENTS.md`](../../manuscript/AGENTS.md)
 - Tokens: [`tokens-and-labels.md`](tokens-and-labels.md)
 - Verification commands: [`../reference/verification-commands.md`](../reference/verification-commands.md)
+
+## Additional opening diagrams
+
+`paper.frontmatter` in the source configuration declares model, robustness-owner and GNN execution/evidence pages in that order after the overview cover. Captions are owned by `manuscript/00a_graphical_model.md`, `00b_graphical_robustness.md` and `00c_graphical_execution.md`. The sibling producer must consume this ordered list once, exclude its members from ordinary section discovery, insert one physical page per entry before the abstract, and preserve the same figure alternatives and order in HTML. Until that source extension and source-current rendering are admitted, complete-paper placement remains pending. A separately labeled FRONTMATTER PROOF validates only the candidate composition and physical order.

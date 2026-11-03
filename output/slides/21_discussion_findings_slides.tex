@@ -139,10 +139,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -300,7 +305,7 @@ recover their KL/NLL limits with residuals 0, 0, and 0.
 Theorem 5, Corollary
 6, Lemma 3, and
 Proposition 4 state the formal limits; the
-recovery checks in sec.~7.1 are the executable
+recovery checks in sec.~10.1 are the executable
 falsification harness.
 \end{frame}
 
@@ -318,20 +323,20 @@ Studies 1--3 sit at the standard corner. In the reduced categorical
 analogue, the paired difference
 \(\Delta \bar F=\bar F_{\text{solo}}-\bar F_{\text{share}}\) is 3.3109
 nats, so its positive sign indicates lower mean free energy with
-communication (sec.~7.2,
+communication (sec.~10.2,
 \end{frame}
 
 \begin{frame}{What the study suite jointly\ldots{} (part 3)}
-fig.~9). Seeds are the independent unit; agents
+fig.~12). Seeds are the independent unit; agents
 remain nested within seed.
 \end{frame}
 
 \begin{frame}{What the study suite jointly\ldots{} (part 4)}
 Dirichlet learning reduces KL from 3.4231 to 0.0027 nats
-(sec.~7.3, fig.~11). The
+(sec.~10.3, fig.~14). The
 configured BMR sign control favors redundant-column pruning and rejects
-the supported-column reduction (sec.~7.4,
-fig.~12).
+the supported-column reduction (sec.~10.4,
+fig.~15).
 \end{frame}
 
 \begin{frame}{What the study suite jointly\ldots{} (part 5)}
@@ -355,7 +360,7 @@ severe contamination.
 \begin{frame}{What the study suite jointly\ldots{} (part 8)}
 At the largest swept rate, AR reaches 0.9880 against 0.6928 for the
 standard pool (tbl.~4; the sweep plot in
-fig.~13 shows the separate matched-trial gallery
+fig.~16 shows the separate matched-trial gallery
 colony, whose largest-rate separation is smaller).
 \end{frame}
 
@@ -373,7 +378,7 @@ uniformly beneficial:
 \end{frame}
 
 \begin{frame}{What the study suite jointly\ldots{} (part 11)}
-the cross-study summary (fig.~30) reports
+the cross-study summary (fig.~33) reports
 each study's federation headline signed contrast or estimand in its
 native units. Its intervals come from the separate harmonized seed-level
 rerun, including rows whose primary figure is a deterministic
@@ -392,7 +397,7 @@ mildly costly when the agents already agree.
 Adding hierarchical depth is held to the same standard --- the two-level
 stack does not beat the flat baseline on location accuracy (the paired
 gap is a small, statistically reliable cost)
-(sec.~14.9), earning its place only by
+(sec.~17.9), earning its place only by
 additionally resolving the context latent above chance.
 \end{frame}
 
@@ -456,7 +461,7 @@ must vary.
 qualified}
 \protect\phantomsection\label{sec:discussion-verdict}
 The headline comparison is computed by the statistics module
-(sec.~7.5.2), not typed into the prose. Across 960
+(sec.~10.5.2), not typed into the prose. Across 960
 matched trial replicates nested within the fixed seeded world at
 contamination rate 0.800,
 \end{frame}
@@ -502,7 +507,7 @@ but also make it reproducible and falsifiable.
 \begin{frame}{Three robustness axes remain separate}
 \protect\phantomsection\label{sec:discussion-axes}
 The authoritative theorem--heuristic--objective taxonomy is
-sec.~3.3. The results preserve it: the client
+sec.~6.3. The results preserve it: the client
 theorem remains source-conditional (Mildner et al. 2025),
 \end{frame}
 
@@ -515,11 +520,11 @@ raw-weight bound.
 
 \begin{frame}{Three robustness axes\ldots{} (part 3)}
 No figure or statistic moves a guarantee between these operators;
-sec.~8.13 records the complete boundary.
+sec.~11.13 records the complete boundary.
 \end{frame}
 
 \begin{frame}{Three robustness axes\ldots{} (part 4)}
-The map in fig.~6 is the compact ledger
+The map in fig.~9 is the compact ledger
 for that separation. Its fourteen rows align headline result families
 and public boundaries with their estimands and independent units, while
 its nesting strip prevents seeds, trials, agents,
@@ -528,13 +533,13 @@ its nesting strip prevents seeds, trials, agents,
 \begin{frame}{Three robustness axes\ldots{} (part 5)}
 and ordered states from being treated as interchangeable evidence. Exact
 estimates and intervals remain in their typed reports and the
-native-unit cross-study summary (fig.~30).
+native-unit cross-study summary (fig.~33).
 \end{frame}
 
 \begin{frame}{Accuracy and effective-weight control can be traded
 explicitly}
 \protect\phantomsection\label{sec:discussion-tempered}
-The \(F_\lambda\) family (sec.~12.5) supplies
+The \(F_\lambda\) family (sec.~15.5) supplies
 empirical grid evidence that accuracy and effective-weight control need
 not be a fixed binary choice within the tested objective family.
 \end{frame}

@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import warnings
-
 import numpy as np
 
-from ..aggregation import log_linear_pool
-from ..belief_sharing import share_round
+from ..aggregation import AggregationConfig, log_linear_pool
+from ..belief_sharing import share_round_result
 from ..statistics import d_equivalent_from_rank_biserial
 
 ArrayF = np.ndarray
@@ -36,16 +34,6 @@ def _finite_d_equivalent(r: float) -> float:
     return float(d)
 
 
-def _finite_cohens_d(r: float) -> float:
-    """Deprecated compatibility alias for :func:`_finite_d_equivalent`."""
-    warnings.warn(
-        "_finite_cohens_d is deprecated; use _finite_d_equivalent",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _finite_d_equivalent(r)
-
-
 def _sample_observation(
     likelihood: ArrayF, true_state: int, rng: np.random.Generator
 ) -> int:
@@ -72,10 +60,9 @@ def _consensus_accuracy(
     if robustness == 0.0:
         consensus = log_linear_pool(local_posteriors=local_posteriors)
     else:
-        consensus = share_round(
+        consensus = share_round_result(
             local_posteriors,
-            method="robust",
-            robustness=robustness,
+            config=AggregationConfig(method="robust", robustness=robustness, max_iter=32, tol=1e-9),
             exclude_self=False,
             true_state=true_state,
         ).consensus
@@ -88,7 +75,6 @@ __all__ = [
     "_N_BOOT",
     "_DIVERGENCE_ROBUSTNESS",
     "_finite_d_equivalent",
-    "_finite_cohens_d",
     "_sample_observation",
     "_divergence_to_robustness",
     "_consensus_accuracy",

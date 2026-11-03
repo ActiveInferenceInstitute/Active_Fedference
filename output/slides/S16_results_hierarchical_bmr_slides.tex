@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -330,7 +335,7 @@ informative world, it has 0.328 nats and is kept (Yes).
 \end{frame}
 
 \begin{frame}{Hierarchical\ldots{} (part 10)}
-fig.~32 shows both configured worlds side by
+fig.~35 shows both configured worlds side by
 side. Their shared lower-level parameters isolate the top-level gating
 contrast, but do not establish a generally correct depth-selection
 procedure.
@@ -339,7 +344,10 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired Bayesian-surprise values: lower reference-world bar and upper informative-world bar, with the configured threshold.}]{../figures/hierarchical_bmr.slide-level-1.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired
+Bayesian-surprise values: lower reference-world bar and upper
+informative-world bar, with the configured
+threshold.}]{../figures/hierarchical_bmr.slide-level-1.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -347,7 +355,9 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={non-gating world: L0 low\_threat. Bayesian surprise 0 nats; source flag: prunable.}]{../figures/hierarchical_bmr.slide-level-1-non-gating.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={non-gating
+world: L0 low\_threat. Bayesian surprise 0 nats; source flag:
+prunable.}]{../figures/hierarchical_bmr.slide-level-1-non-gating.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -355,7 +365,9 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 13)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={informative world: L0 low\_threat. Bayesian surprise 0.3277 nats; source flag: kept.}]{../figures/hierarchical_bmr.slide-level-1-informative.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={informative
+world: L0 low\_threat. Bayesian surprise 0.3277 nats; source flag:
+kept.}]{../figures/hierarchical_bmr.slide-level-1-informative.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -363,7 +375,10 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 14)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired Bayesian-surprise values: lower reference-world bar and upper informative-world bar, with the configured threshold.}]{../figures/hierarchical_bmr.slide-level-2.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Paired
+Bayesian-surprise values: lower reference-world bar and upper
+informative-world bar, with the configured
+threshold.}]{../figures/hierarchical_bmr.slide-level-2.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-4}
 \end{figure}
 \end{frame}
@@ -371,7 +386,9 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 15)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={non-gating world: L1 quiet. Bayesian surprise 0.5796 nats; source flag: kept.}]{../figures/hierarchical_bmr.slide-level-2-non-gating.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={non-gating
+world: L1 quiet. Bayesian surprise 0.5796 nats; source flag:
+kept.}]{../figures/hierarchical_bmr.slide-level-2-non-gating.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-5}
 \end{figure}
 \end{frame}
@@ -379,7 +396,9 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 16)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={informative world: L1 quiet. Bayesian surprise 0.138 nats; source flag: kept.}]{../figures/hierarchical_bmr.slide-level-2-informative.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={informative
+world: L1 quiet. Bayesian surprise 0.138 nats; source flag:
+kept.}]{../figures/hierarchical_bmr.slide-level-2-informative.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-6}
 \end{figure}
 \end{frame}
@@ -387,7 +406,10 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 17)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Declared surprise threshold: 0.001 nats. prunable iff bayesian\_surprise \textless{} surprise\_tol; recommend the deepest prunable non-leaf level}]{../figures/hierarchical_bmr.slide-threshold.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Declared
+surprise threshold: 0.001 nats. prunable iff bayesian\_surprise
+\textless{} surprise\_tol; recommend the deepest prunable non-leaf
+level}]{../figures/hierarchical_bmr.slide-threshold.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-7}
 \end{figure}
 \end{frame}
@@ -395,7 +417,10 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 18)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Lower bar: non-gating configured world. Upper hatched bar: informative configured world. All levels share the same surprise scale.}]{../figures/hierarchical_bmr.slide-key.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Lower
+bar: non-gating configured world. Upper hatched bar: informative
+configured world. All levels share the same surprise
+scale.}]{../figures/hierarchical_bmr.slide-key.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-8}
 \end{figure}
 \end{frame}
@@ -403,14 +428,18 @@ procedure.
 \begin{frame}{Hierarchical\ldots{} (part 19)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Bayesian surprise KL(posterior \textbar\textbar{} empirical prior). This configured information-gating diagnostic has no stochastic interval and is distinct from exact BMR evidence gain.}]{../figures/hierarchical_bmr.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Bayesian
+surprise KL(posterior \textbar\textbar{} empirical prior). This
+configured information-gating diagnostic has no stochastic interval and
+is distinct from exact BMR evidence
+gain.}]{../figures/hierarchical_bmr.slide-scope.png}
 \refstepcounter{figure}\label{fig:hierarchical-bmr-slide-panel-9}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Hierarchical\ldots{} (part 20)}
 Unlike the Beta-function BMR sign control in
-sec.~7.4 and eq.~20, this
+sec.~10.4 and eq.~20, this
 routine thresholds per-level surprise. It therefore checks the intended
 gating contrast in the declared worlds; it does not let the data
 independently choose model depth.

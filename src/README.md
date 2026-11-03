@@ -1,5 +1,8 @@
 # src/ — Active Fedference project logic
 
+For publication compute, first complete the [bounded external stages](../docs/development/staged-analysis.md) and set `WORKSPACE` to that frozen workspace. The import commands
+below consume validated completions; they do not start missing reports.
+
 Core implementations, deterministic analysis pipeline, figure factories, and
 manuscript-variable generation for the active-inference federation study.
 
@@ -103,7 +106,8 @@ From project root:
 ```bash
 uv run --locked --extra dev pytest tests/
 uv run --locked fedference list --json
-uv run --locked python scripts/02_run_analysis.py
+uv run --locked python scripts/analysis_stages.py import \
+  --workspace "$WORKSPACE" --project-root "$PWD" --stage figures
 uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 

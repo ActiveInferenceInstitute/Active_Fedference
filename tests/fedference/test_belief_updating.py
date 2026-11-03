@@ -91,7 +91,7 @@ def test_matches_generalized_posterior_with_nll():
                   [0.2, 0.5, 0.9]])
     lp = np.log(np.array([0.2, 0.3, 0.5]))
     o = 0
-    gp = generalized_posterior(lp, loss_vector(A, o, loss="nll"), learning_rate=1.0)
+    gp = generalized_posterior(lp, loss_vector(A, o, loss="nll"), tau=1.0)
     assert infer_states(A, o, lp) == pytest.approx(gp, abs=1e-12)
 
 
@@ -146,6 +146,58 @@ def test_empty_modality_list_raises():
 def test_non_2d_likelihood_raises():
     with pytest.raises(ValueError, match="2-D"):
         infer_states(np.array([0.5, 0.5]), 0, np.log(np.array([0.5, 0.5])))
+
+
+@pytest.mark.parametrize("value", [-.1, -1e-12, np.nan, np.inf, -np.inf])
+@pytest.mark.parametrize("row", [0, 1])
+@pytest.mark.parametrize("multiple_modalities", [False, True])
+def test_inference_rejects_invalid_likelihood_entries(
+    value: float, row: int, multiple_modalities: bool,
+) -> None:
+    matrix = np.array([[.8, .2], [.2, .8]])
+    matrix[row, 0] = value
+    likelihoods = [np.eye(2), matrix] if multiple_modalities else matrix
+    observations = [0, 0] if multiple_modalities else 0
+    with pytest.raises(ValueError, match="likelihood.*finite|likelihood.*negative"):
+        infer_states(likelihoods, observations, np.log([.5, .5]))
+
+
+@pytest.mark.parametrize("value", [-.1, -1e-12, np.nan, np.inf, -np.inf])
+@pytest.mark.parametrize("row", [0, 1])
+@pytest.mark.parametrize("multiple_modalities", [False, True])
+def test_vfe_rejects_invalid_likelihood_entries(
+    value: float, row: int, multiple_modalities: bool,
+) -> None:
+    matrix = np.array([[.8, .2], [.2, .8]])
+    matrix[row, 0] = value
+    likelihoods = [np.eye(2), matrix] if multiple_modalities else matrix
+    observations = [0, 0] if multiple_modalities else 0
+    with pytest.raises(ValueError, match="likelihood.*finite|likelihood.*negative"):
+        vfe(np.array([.5, .5]), likelihoods, observations, np.log([.5, .5]))
+
+
+@pytest.mark.parametrize("shape", [(0, 2), (2, 0), (0, 0)])
+def test_inference_rejects_empty_likelihood_dimensions(shape: tuple[int, int]) -> None:
+    matrix = np.empty(shape)
+    with pytest.raises(ValueError, match="likelihood.*non-empty"):
+        infer_states(matrix, 0, np.zeros(shape[1]))
+
+
+@pytest.mark.parametrize("shape", [(0, 2), (2, 0), (0, 0)])
+def test_vfe_rejects_empty_likelihood_dimensions(shape: tuple[int, int]) -> None:
+    matrix = np.empty(shape)
+    with pytest.raises(ValueError, match="likelihood.*non-empty"):
+        vfe(np.array([.5, .5]), matrix, 0, np.zeros(shape[1]))
+
+
+def test_inference_preserves_zero_likelihood_floor() -> None:
+    posterior = infer_states(np.eye(2), 0, np.log([.5, .5]))
+    np.testing.assert_allclose(posterior, [0.999999999999, 9.99999999999e-13], rtol=1e-14)
+
+
+def test_vfe_preserves_zero_likelihood_floor() -> None:
+    energy = vfe(np.array([.5, .5]), np.eye(2), 0, np.log([.5, .5]))
+    assert energy == pytest.approx(13.815510557964274)
 
 
 def test_mismatched_n_s_across_modalities_raises():

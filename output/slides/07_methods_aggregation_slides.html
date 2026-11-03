@@ -347,7 +347,7 @@ and message… (part 3)</h2>
 <p>optionally with a scalar base weight <span
 class="math inline">\(w_n\)</span>.</p>
 <p>Two fusion rules act directly on these broadcasts, and a third — the
-objective-backed <code>variational_aggregate</code> of <a class="cross-reference" href="#sec:method-variational">Section 5.8.2</a>
+objective-backed <code>variational_aggregate</code> of <a class="cross-reference" href="#sec:method-variational">Section 8.8.2</a>
 — refines the second into descent on a stated objective.</p>
 </section>
 <section class="slide level2 prose-slide"
@@ -378,12 +378,10 @@ aria-label="Aggregation and message passing: standard pool, heuristic, and varia
 <h2 class="equation-led"
 aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 6" id="slide-heading-f80be0122f44">Aggregation
 and message… (part 6)</h2>
-<p><span class="math display" id="eq:log-linear-pool">\[
-\begin{aligned}
+<p><span class="math display" id="eq:log-linear-pool">\[\begin{aligned}
 &amp;\operatorname{log\_linear\_pool}(\{q_n\})\\
 &amp;\qquad = \mathrm{softmax}\!\Big(\textstyle\sum_n w_n \log q_n\Big).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-7dc4eb501c95">
@@ -473,8 +471,8 @@ aria-label="Aggregation and message passing: standard pool, heuristic, and varia
 and message… (part 15)</h2>
 <p>This independently motivated rule does not transfer FedGVI’s client
 theorem to the server side: it is the <strong>heuristic robustness
-axis</strong> of <span class="cross-reference">Section 3.3</span>,
-distinct from the per-agent rigorous axis of <span class="cross-reference">Section 5.7</span>.</p>
+axis</strong> of <span class="cross-reference">Section 6.3</span>,
+distinct from the per-agent rigorous axis of <span class="cross-reference">Section 8.7</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 16" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-ea6f6ae2dad0">
@@ -503,11 +501,9 @@ aria-label="Aggregation and message passing: standard pool, heuristic, and varia
 <h2 class="equation-led"
 aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 18" id="slide-heading-4fd6445f29d4">Aggregation
 and message… (part 18)</h2>
-<p><span class="math display" id="eq:robust-identity">\[
-\operatorname{robust\_aggregate}(0)
+<p><span class="math display" id="eq:robust-identity">\[\operatorname{robust\_aggregate}(0)
 \;\equiv\;
-\operatorname{log\_linear\_pool}.
-\]</span></p>
+\operatorname{log\_linear\_pool}.\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Aggregation and message passing: standard pool, heuristic, and variational server, part 19" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5a32df273588">
@@ -524,7 +520,7 @@ data-cites="friston2024federated">(Friston et al. 2024)</span>.</p>
 class="slide level2 prose-slide" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-77677dd1de30">
 <h2 class="prose-slide" id="slide-heading-77677dd1de30">Protocol map: local updates, broadcast, and
 server fusion</h2>
-<p>The visual map in <span class="cross-reference">Figure 3</span>
+<p>The visual map in <span class="cross-reference">Figure 6</span>
 makes the protocol boundary explicit: each client updates and broadcasts
 a categorical posterior; the server chooses the standard pool,
 heuristic, or variational route.</p>
@@ -970,9 +966,8 @@ aria-label="Protocol map: local updates, broadcast, and server fusion, part 25" 
 <h2 class="equation-led"
 aria-label="Protocol map: local updates, broadcast, and server fusion, part 25" id="slide-heading-96d7ebd48aa4">Protocol
 map (part 25)</h2>
-<p><span class="math display" id="eq:standard-bayes">\[
-q^\ast(s) \;\propto\; \pi_0(s)\,\textstyle\prod_i p(o_i\mid s),
-\]</span></p>
+<p><span class="math display" id="eq:standard-bayes">\[q^\ast(s) \;\propto\;
+\pi_0(s)\,\textstyle\prod_i p(o_i\mid s),\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Protocol map: local updates, broadcast, and server fusion, part 26" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-0503a4b2ac4c">
@@ -999,7 +994,7 @@ aria-label="Protocol map: local updates, broadcast, and server fusion, part 28" 
 aria-label="Protocol map: local updates, broadcast, and server fusion, part 28" id="slide-heading-afc042ac497e">Protocol
 map (part 28)</h2>
 <p>exact to machine precision (about one ULP); both are reported in
-<span class="cross-reference">Section 7.1</span>,
+<span class="cross-reference">Section 10.1</span>,
 so <a class="cross-reference" href="#eq:robust-identity">Equation (10)</a>
 and <a class="cross-reference" href="#eq:standard-bayes">Equation (11)</a>
 are verified identities rather than approximations.</p>
@@ -1011,7 +1006,7 @@ aria-label="Protocol map: local updates, broadcast, and server fusion, part 29" 
 map (part 29)</h2>
 <p>The honesty contract binds at exactly this point. The recovery
 theorem and its corollary cover only the recovery identity and the
-per-agent rigorous axis of <span class="cross-reference">Section 5.7</span>;
+per-agent rigorous axis of <span class="cross-reference">Section 8.7</span>;
 no statement <em>about <code>robust_aggregate</code></em> transfers a
 bounded-influence guarantee to that divergence-reweighting,</p>
 </section>
@@ -1031,14 +1026,14 @@ map (part 31)</h2>
 <p>A scoped no-go rejects a declared separable objective class without
 supplying a broader objective certificate. The per-agent influence
 weights that the heuristic produces under contamination are
-<em>illustrated</em>, not guaranteed, in <span class="cross-reference">Figure 15</span>.</p>
+<em>illustrated</em>, not guaranteed, in <span class="cross-reference">Figure 18</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Protocol map: local updates, broadcast, and server fusion, part 32" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-f99bdbb196f3">
 <h2 class="prose-slide"
 aria-label="Protocol map: local updates, broadcast, and server fusion, part 32" id="slide-heading-f99bdbb196f3">Protocol
 map (part 32)</h2>
-<p>The separate <span class="cross-reference">Figure 18</span>
+<p>The separate <span class="cross-reference">Figure 21</span>
 is an exploratory generalized-Bayes point-estimate logistic-regression
 baseline comparing joint NLL/L2 and RCCE/L2 configurations. Because both
 loss and shrinkage differ, it does not isolate an RCCE-only effect or
@@ -1049,7 +1044,7 @@ aria-label="Protocol map: local updates, broadcast, and server fusion, part 33" 
 <h2 class="prose-slide"
 aria-label="Protocol map: local updates, broadcast, and server fusion, part 33" id="slide-heading-d6cd86652ef5">Protocol
 map (part 33)</h2>
-<p>which remains source-conditional in <span class="cross-reference">Section 5.7</span>.</p>
+<p>which remains source-conditional in <span class="cross-reference">Section 8.7</span>.</p>
 <p>The next subsection closes this exact gap on the server side with a
 <em>different</em>, objective-backed aggregator.</p>
 </section>
@@ -1076,13 +1071,11 @@ aria-label="Variational aggregation with objective-backed weight control, part 3
 <h2 class="equation-led"
 aria-label="Variational aggregation with objective-backed weight control, part 3" id="slide-heading-943483eb5352">Variational
 aggregation with… (part 3)</h2>
-<p><span class="math display" id="eq:agg-free-energy">\[
-\begin{aligned}
+<p><span class="math display" id="eq:agg-free-energy">\[\begin{aligned}
 F_\lambda(q, a)
 &amp;= \sum_n a_n\,\mathrm{CE}(q, q_n) - \lambda H(q)\\
 &amp;\quad + \tfrac{1}{c}\,\mathrm{KL_{gen}}(a \,\|\, w).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 4" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-96959c1e64ca">
@@ -1114,15 +1107,13 @@ aria-label="Variational aggregation with objective-backed weight control, part 6
 <h2 class="equation-led"
 aria-label="Variational aggregation with objective-backed weight control, part 6" id="slide-heading-a616a18b9d54">Variational
 aggregation with… (part 6)</h2>
-<p><span class="math display" id="eq:agg-updates">\[
-\begin{aligned}
+<p><span class="math display" id="eq:agg-updates">\[\begin{aligned}
 q
 &amp;\leftarrow \mathrm{softmax}\!\Big(
   \tfrac{1}{\lambda}\textstyle\sum_n a_n \log q_n\Big),\\
 a_n
 &amp;\leftarrow w_n\,\exp\!\big(-c\,\mathrm{CE}(q, q_n)\big).
-\end{aligned}
-\]</span></p>
+\end{aligned}\]</span></p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 7" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-a70baac2cd71">
@@ -1184,7 +1175,7 @@ aggregation with… (part 12)</h2>
 <p>otherwise the lowest unfinished trace is returned with
 <code>converged=False</code>) so a near-one-hot adversary is not left at
 the product-of-experts seed in the tested contamination regimes — the
-detail that supports the effective-weight diagnostic (<span class="cross-reference">Section 12</span>).</p>
+detail that supports the effective-weight diagnostic (<span class="cross-reference">Section 15</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 13" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-d7116c9589ef">
@@ -1193,16 +1184,16 @@ aria-label="Variational aggregation with objective-backed weight control, part 1
 aggregation with… (part 13)</h2>
 <p>The full derivation, the formal statement (block descent, <span
 class="math inline">\(c\to0\)</span> recovery, and the raw
-effective-weight bound), and the numerical witnesses are in <span class="cross-reference">Section 12</span>;</p>
+effective-weight bound), and the numerical witnesses are in <span class="cross-reference">Section 15</span>;</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 14" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-759ac51970a1">
 <h2 class="prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 14" id="slide-heading-759ac51970a1">Variational
 aggregation with… (part 14)</h2>
-<p>the empirical descent and influence collapse are shown in <span class="cross-reference">Figure 16</span>
-and <span class="cross-reference">Figure 17</span>
-and reported in <span class="cross-reference">Section 7.5.3</span>.</p>
+<p>the empirical descent and influence collapse are shown in <span class="cross-reference">Figure 19</span>
+and <span class="cross-reference">Figure 20</span>
+and reported in <span class="cross-reference">Section 10.5.3</span>.</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 15" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-5bf74684e6c0">
@@ -1257,9 +1248,9 @@ aria-label="Variational aggregation with objective-backed weight control, part 2
 aria-label="Variational aggregation with objective-backed weight control, part 20" id="slide-heading-01c0a817a798">Variational
 aggregation… (part 20)</h2>
 <p>the sharp <code>robust_aggregate</code> heuristic for accuracy under
-contamination (<span class="cross-reference">Section 7.5.2</span>)
+contamination (<span class="cross-reference">Section 10.5.2</span>)
 and the conservative <code>variational_aggregate</code> for a
-server-side objective with stated weight control (<span class="cross-reference">Section 7.5.3</span>).</p>
+server-side objective with stated weight control (<span class="cross-reference">Section 10.5.3</span>).</p>
 </section>
 <section class="slide level2 prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 21" role="group" aria-roledescription="slide" aria-labelledby="slide-heading-db202172bff8">
@@ -1280,7 +1271,7 @@ aria-label="Variational aggregation with objective-backed weight control, part 2
 <h2 class="prose-slide"
 aria-label="Variational aggregation with objective-backed weight control, part 22" id="slide-heading-4529dec21e34">Variational
 aggregation… (part 22)</h2>
-<p>The tempered family (<span class="cross-reference">Section 12.5</span>;
+<p>The tempered family (<span class="cross-reference">Section 15.5</span>;
 objective <span class="cross-reference">Equation (30)</span>)
 recovers the full-entropy variational aggregator at <span
 class="math inline">\(\lambda = 1.0\)</span> and has a separately
@@ -1304,9 +1295,10 @@ so the raw-weight bound holds over the objective-defined family.</p>
   <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@5.2.1/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@5.2.1/dist/plugin/math.js"></script>
 
   <script>
 

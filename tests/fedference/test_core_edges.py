@@ -15,12 +15,13 @@ import pytest
 from fedference import divergences as dv
 from fedference import losses as ls
 from fedference.aggregation import (
-    aggregate,
+    AggregationConfig,
+    aggregate_result,
     log_linear_pool,
     robust_aggregate,
     variational_aggregate,
 )
-from fedference.belief_sharing import share_round
+from fedference.belief_sharing import share_round_result
 from fedference.generalized_bayes import generalized_posterior, update_factor
 
 # ---- divergences: validation + alternate branches ------------------------
@@ -67,10 +68,8 @@ def test_rcce_rejects_out_of_range_and_small_q_loss_is_nll():
 
 def test_rcce_deprecated_q_alias_is_explicit_and_unambiguous():
     p = np.array([0.2, 0.8])
-    with pytest.deprecated_call(match="use rcce\\(q_loss=...\\)"):
-        legacy = ls.rcce(p, 0, q=0.5)
-    assert legacy == pytest.approx(ls.rcce(p, 0, q_loss=0.5))
-    with pytest.raises(TypeError, match="q_loss or deprecated q"):
+    assert ls.rcce(p, 0, q_loss=0.5) == pytest.approx(2 * (1 - np.sqrt(0.2)))
+    with pytest.raises(TypeError, match="unexpected keyword"):
         ls.rcce(p, 0, q_loss=0.5, q=0.5)
     with pytest.raises(TypeError, match="requires q_loss"):
         ls.rcce(p, 0)
@@ -120,8 +119,8 @@ def test_generalized_posterior_ar_is_not_the_standard_renyi_shortcut():
 
 def test_generalized_posterior_rejects_nonfinite_controls():
     args = (np.log(np.array([0.5, 0.5])), np.array([0.1, 0.2]))
-    with pytest.raises(ValueError, match="learning_rate"):
-        generalized_posterior(*args, learning_rate=np.nan)
+    with pytest.raises(ValueError, match="tau"):
+        generalized_posterior(*args, tau=np.nan)
     with pytest.raises(ValueError, match="alpha"):
         generalized_posterior(*args, divergence="AR", alpha=0.0)
 
@@ -156,16 +155,16 @@ def test_log_linear_pool_honours_weights():
     a = np.array([0.9, 0.1])
     b = np.array([0.1, 0.9])
     # zero weight on b -> consensus follows a
-    pooled = log_linear_pool([a, b], weights=[1.0, 0.0])
+    pooled = log_linear_pool([a, b], base_weights=[1.0, 0.0])
     assert pooled[0] > pooled[1]
 
 
 def test_aggregation_rejects_all_zero_weights():
     beliefs = [np.array([0.8, 0.2]), np.array([0.3, 0.7])]
     with pytest.raises(ValueError, match="at least one positive"):
-        log_linear_pool(beliefs, weights=[0.0, 0.0])
+        log_linear_pool(beliefs, base_weights=[0.0, 0.0])
     with pytest.raises(ValueError, match="at least one positive"):
-        robust_aggregate(beliefs, weights=[0.0, 0.0], robustness=1.0)
+        robust_aggregate(beliefs, base_weights=[0.0, 0.0], robustness=1.0)
 
 
 def test_aggregation_rejects_nonfinite_controls_and_terminal_weights_match_consensus():
@@ -183,21 +182,26 @@ def test_aggregation_rejects_nonfinite_controls_and_terminal_weights_match_conse
     result = robust_aggregate(beliefs, robustness=3.0, max_iter=1)
     expected = np.array([np.exp(-3.0 * dv.kl_divergence(belief, result.consensus)) for belief in beliefs])
     expected /= expected.sum()
-    assert np.allclose(result.agent_weights, expected)
+    assert np.allclose(result.normalized_effective_weights, expected)
 
 
 def test_aggregate_validation_and_dispatch():
     beliefs = [np.array([0.8, 0.2]), np.array([0.7, 0.3])]
-    assert np.allclose(aggregate(beliefs, method="naive"), log_linear_pool(beliefs))
-    assert aggregate(beliefs, method="robust").shape == (2,)
+    assert np.allclose(
+        aggregate_result(beliefs, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9)).consensus,
+        log_linear_pool(beliefs),
+    )
+    assert aggregate_result(
+        beliefs, config=AggregationConfig(method="robust", max_iter=32, tol=1e-9)
+    ).consensus.shape == (2,)
     with pytest.raises(ValueError):
-        aggregate(beliefs, method="bogus")
+        aggregate_result(beliefs, config=AggregationConfig(method="bogus", max_iter=32, tol=1e-9)).consensus
     with pytest.raises(ValueError):
         robust_aggregate(beliefs, robustness=-1.0)
     with pytest.raises(ValueError):
-        log_linear_pool(beliefs, weights=[1.0])  # wrong length
+        log_linear_pool(beliefs, base_weights=[1.0])  # wrong length
     with pytest.raises(ValueError):
-        log_linear_pool(beliefs, weights=[1.0, -2.0])  # negative
+        log_linear_pool(beliefs, base_weights=[1.0, -2.0])  # negative
 
 
 def test_robust_aggregate_reports_iterations_when_engaged():
@@ -205,33 +209,49 @@ def test_robust_aggregate_reports_iterations_when_engaged():
     res = robust_aggregate(beliefs, robustness=3.0, max_iter=50)
     assert res.iterations >= 1
     assert len(res.history) >= 2
-    assert np.isclose(res.agent_weights.sum(), 1.0)
+    assert np.isclose(res.normalized_effective_weights.sum(), 1.0)
 
 
 # ---- belief sharing: degenerate branches ---------------------------------
 
 
 def test_share_round_single_agent_and_no_truth():
-    diag = share_round(np.array([[0.6, 0.4]]), method="naive")
-    assert np.isnan(diag.mean_accuracy)  # true_state=None branch
-    assert diag.shared_beliefs.shape == (1, 2)
+    diag = share_round_result(
+        np.array([[0.6, 0.4]]), config=AggregationConfig(method="naive", max_iter=32, tol=1e-9)
+    )
+    assert diag.mean_accuracy is None  # unavailable truth metric
+    assert diag.mean_surprise is None
+    np.testing.assert_array_equal(diag.normalized_effective_weights, [1.0])
+    assert diag.shared_posteriors.shape == (1, 2)
 
 
 def test_share_round_rejects_unknown_method():
     with pytest.raises(ValueError):
-        share_round(np.array([[0.6, 0.4], [0.5, 0.5]]), method="bogus", true_state=0)
+        share_round_result(
+            np.array([[0.6, 0.4], [0.5, 0.5]]),
+            config=AggregationConfig(method="bogus", max_iter=32, tol=1e-9),
+            true_state=0,
+        )
 
 
 def test_share_round_rejects_invalid_states_and_belief_mass():
     beliefs = np.array([[0.6, 0.4], [0.5, 0.5]])
     with pytest.raises(ValueError, match="true_state"):
-        share_round(beliefs, true_state=2)
+        share_round_result(
+            beliefs, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9), true_state=2
+        )
     with pytest.raises(ValueError, match="true_state"):
-        share_round(beliefs, true_state=-1)
+        share_round_result(
+            beliefs, config=AggregationConfig(method="naive", max_iter=32, tol=1e-9), true_state=-1
+        )
     with pytest.raises(ValueError, match="finite"):
-        share_round([[0.6, np.nan], [0.5, 0.5]])
+        share_round_result(
+            [[0.6, np.nan], [0.5, 0.5]], config=AggregationConfig(method="naive", max_iter=32, tol=1e-9)
+        )
     with pytest.raises(ValueError, match="non-negative"):
-        share_round([[0.6, -0.1], [0.5, 0.5]])
+        share_round_result(
+            [[0.6, -0.1], [0.5, 0.5]], config=AggregationConfig(method="naive", max_iter=32, tol=1e-9)
+        )
 
 
 # ---- additional numerical edge cases (Tier-1 hardening) ------------------
@@ -286,13 +306,15 @@ def test_single_agent_robust_aggregate_is_that_agent():
     belief = np.array([0.6, 0.3, 0.1])
     res = robust_aggregate([belief], robustness=3.0)
     assert np.allclose(res.consensus, belief, atol=1e-9)
-    assert res.agent_weights.shape == (1,)
-    assert res.agent_weights[0] == pytest.approx(1.0, abs=1e-12)
+    assert res.normalized_effective_weights.shape == (1,)
+    assert res.normalized_effective_weights[0] == pytest.approx(1.0, abs=1e-12)
 
 
 def test_aggregate_dispatch_rejects_unknown_method():
     with pytest.raises(ValueError, match="unknown method"):
-        aggregate([np.array([0.5, 0.5])], method="bogus")
+        aggregate_result(
+            [np.array([0.5, 0.5])], config=AggregationConfig(method="bogus", max_iter=32, tol=1e-9)
+        ).consensus
 
 
 # ---- edge cases added to close audit gaps --------------------------------
@@ -386,30 +408,41 @@ def test_share_round_robust_with_exclude_self_isolates_contaminated_agent():
             [0.02, 0.03, 0.95],  # contaminated
         ]
     )
-    robust_excl = share_round(beliefs, method="robust", robustness=5.0, exclude_self=True, true_state=0)
-    robust_incl = share_round(beliefs, method="robust", robustness=5.0, exclude_self=False, true_state=0)
+    robust_excl = share_round_result(
+        beliefs,
+        config=AggregationConfig(method="robust", robustness=5.0, max_iter=32, tol=1e-9),
+        exclude_self=True,
+        true_state=0,
+    )
+    robust_incl = share_round_result(
+        beliefs,
+        config=AggregationConfig(method="robust", robustness=5.0, max_iter=32, tol=1e-9),
+        exclude_self=False,
+        true_state=0,
+    )
 
     # --- structural contract: output is a valid belief matrix ---
     np.testing.assert_allclose(
-        robust_excl.shared_beliefs.sum(axis=1),
+        robust_excl.shared_posteriors.sum(axis=1),
         1.0,
         atol=1e-12,
         err_msg="rows of shared_beliefs must sum to 1.0",
     )
-    assert robust_excl.shared_beliefs.shape == (3, 3)
-    assert np.all(robust_excl.shared_beliefs >= 0.0)
+    assert robust_excl.shared_posteriors.shape == (3, 3)
+    assert np.all(robust_excl.shared_posteriors >= 0.0)
 
     # --- the combined path changes the result from exclude_self=False ---
     # With self-exclusion, agent 2 (contaminated) excludes itself from its own
     # consensus, so its view must differ from the include-self version.
-    assert not np.allclose(robust_excl.shared_beliefs[2], robust_incl.shared_beliefs[2], atol=1e-6), (
+    assert not np.allclose(robust_excl.shared_posteriors[2], robust_incl.shared_posteriors[2], atol=1e-6), (
         "Contaminated agent 2 self-excluded result must differ from non-excluded"
     )
 
     # --- contaminated agent 2 gets near-zero weight in both cases ---
     # (it is down-weighted by robust regardless of self-exclusion)
-    assert robust_excl.agent_weights[2] < 0.01, (
-        f"Contaminated agent 2 weight should be near-zero, got {robust_excl.agent_weights[2]:.4f}"
+    assert robust_excl.normalized_effective_weights[2] < 0.01, (
+        "Contaminated agent 2 weight should be near-zero, got "
+        f"{robust_excl.normalized_effective_weights[2]:.4f}"
     )
 
     # --- mean_accuracy is a valid probability ---
@@ -420,14 +453,13 @@ def test_share_round_variational_dispatches_objective_backed_rule():
     beliefs = np.array([[0.82, 0.12, 0.06], [0.78, 0.16, 0.06], [0.05, 0.05, 0.90]])
     from fedference.aggregation import variational_aggregate
 
-    shared = share_round(
+    shared = share_round_result(
         beliefs,
-        method="variational",
-        robustness=1.5,
+        config=AggregationConfig(method="variational", robustness=1.5, max_iter=64, tol=1e-9),
         exclude_self=False,
         true_state=0,
     )
     reference = variational_aggregate(beliefs, robustness=1.5)
     assert np.allclose(shared.consensus, reference.consensus)
-    assert np.allclose(shared.agent_weights, reference.agent_weights)
+    assert np.allclose(shared.normalized_effective_weights, reference.normalized_effective_weights)
     assert np.isclose(shared.mean_accuracy, shared.consensus[0])

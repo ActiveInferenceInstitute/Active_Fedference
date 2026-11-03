@@ -221,6 +221,14 @@ $$\bar{q}_l = \sum_k q_{l+1}[k] \cdot D_{l|k}$$
 where $D_{l|k}$ is the conditioned prior over level-$l$ states given level-$(l+1)$
 state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 
+**GNN hierarchy array boundary.** `hierarchy_world` materializes each
+parent-conditioned probability vector as an independent, contiguous float64
+array, matching the native factories. Values and axis order are preserved
+without normalization. This keeps source-driven and native inference on the
+same array-storage contract; transposed views can select a different numerical
+reduction path on some NumPy/BLAS builds. Exact parity assertions remain in
+place; this is not a cross-platform bitwise-reproducibility claim.
+
 ### Ensemble, statistics, experiments
 
 | Module | Role |
@@ -262,7 +270,7 @@ state $k$. `nlevel_infer` applies this rule bottom-up for any depth.
 | `src/experiment_config.py` | Loads `manuscript/config.yaml` → `ExperimentConfig` |
 | `src/invariants.py` | Project-local invariant checks (invoked by `scripts/01_run_invariants.py`) |
 | `src/documentation.py` | API doc helpers for `scripts/generate_api_docs.py` |
-| `src/fedference_cli/__init__.py` | Stable installed `fedference` facade; preserves `main` and `_report_fallbacks` |
+| `src/fedference_cli/__init__.py` | Stable installed `fedference` facade; exports the identical `_parser.main`; fallback diagnostics remain internal to `_support` |
 | `src/fedference_cli/_parser.py` | `fedference` argument grammar and process-facing error mapping |
 | `src/fedference_cli/_commands.py` | Labeled aggregate, registry list/run/benchmark, auto-detected receipt verify, and structured replay dispatch |
 | `src/fedference_cli/_support.py` | Destination preflight, atomic JSON writes, runtime/source provenance, and distinct application/research receipt construction |

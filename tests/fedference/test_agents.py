@@ -211,7 +211,7 @@ def test_assimilate_fuses_shared_location_as_log_product():
     own_loc = agent.qs_location.copy()
     consensus = log_linear_pool(ens.broadcast())
     c_loc = consensus[:N_LOCATIONS]
-    ens.assimilate(consensus, learning_rate=1.0)
+    ens.assimilate(consensus, tau=1.0)
     expected = softmax(np.log(np.clip(own_loc, 1e-12, None))
                        + np.log(np.clip(c_loc, 1e-12, None)))
     assert agent.qs_location == pytest.approx(expected, abs=1e-12)
@@ -222,7 +222,7 @@ def test_assimilate_zero_learning_rate_is_identity_on_shared():
     ens.perceive([Observation(2, 0, 2, 1) for _ in ens.agents])
     loc_before = [a.qs_location.copy() for a in ens.agents]
     consensus = log_linear_pool(ens.broadcast())
-    ens.assimilate(consensus, learning_rate=0.0)
+    ens.assimilate(consensus, tau=0.0)
     for a, before in zip(ens.agents, loc_before):
         # learning_rate 0 -> softmax(log own + 0) == own (renormalized).
         assert a.qs_location == pytest.approx(before, abs=1e-12)
@@ -249,11 +249,11 @@ def test_assimilate_rejects_implicit_consensus_flattening(reshape):
         ens.assimilate(reshape(consensus))
 
 
-def test_assimilate_rejects_negative_learning_rate():
+def test_assimilate_rejects_negative_tau():
     ens = SentinelEnsemble.from_world(1, seed=1)
     consensus = log_linear_pool(ens.broadcast())
     with pytest.raises(ValueError, match="non-negative"):
-        ens.assimilate(consensus, learning_rate=-0.5)
+        ens.assimilate(consensus, tau=-0.5)
 
 
 # ---- full round: perceive -> broadcast -> assimilate ---------------------

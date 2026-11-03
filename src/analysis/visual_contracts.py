@@ -20,6 +20,9 @@ from typing import Final, TypedDict, cast
 # registry and reader surface.  This analysis-owned inventory is deliberately
 # independent of plotting metadata so schema and publication validation never
 # need to import the figure package they are responsible for validating.
+# The three frontmatter plates rejoin this inventory once the pinned producer
+# renders their reader surfaces; their parked descriptions and the re-admission
+# steps are in docs/todo/visual-scholarship-integration.md.
 COMPLEX_FIGURE_GENERATORS: Final[frozenset[str]] = frozenset(
     {
         "application_integrity_flow",

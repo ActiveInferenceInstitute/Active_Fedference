@@ -154,10 +154,15 @@
 % unicode-math falls back to lmroman text font which lacks several glyphs
 % and emits "Missing character" warnings on every \mid in math mode.
 
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,breaknonspaceingroup=true,breaksymbolleft={},breaksymbolright={},breakanywheresymbolpre={},breakanywheresymbolpost={}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
 % Slide layout defaults for warning-clean scientific decks.
 \usepackage{etoolbox}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{}
-\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{\newcommand{\seqsplit}[1]{#1}}
+\IfFileExists{seqsplit.sty}{\usepackage{seqsplit}}{}
+\providecommand{\seqsplit}[1]{#1}
 \protected\def\breakseq#1{\seqsplit{#1}}
 \protected\def\breaktt#1{\begingroup\ttfamily\seqsplit{#1}\endgroup}
 \setlength{\emergencystretch}{6em}
@@ -333,7 +338,10 @@ prune, or retain the correct structure.
 \begin{frame}{Configured BMR sign\ldots{} (part 9)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Both signed model-reduction gains on one nats scale; hatches distinguish targets and a dotted rule marks zero.}]{../figures/emergence_bmr.slide-controls.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Both
+signed model-reduction gains on one nats scale; hatches distinguish
+targets and a dotted rule marks
+zero.}]{../figures/emergence_bmr.slide-controls.png}
 \refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-1}
 \end{figure}
 \end{frame}
@@ -341,7 +349,10 @@ prune, or retain the correct structure.
 \begin{frame}{Configured BMR sign\ldots{} (part 10)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Redundant target ΔF: 3.677 nats. Supported target ΔF: -27.67 nats. Positive gain favors the reduction; negative gain rejects it.}]{../figures/emergence_bmr.slide-values.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Redundant
+target ΔF: 3.677 nats. Supported target ΔF: -27.67 nats. Positive gain
+favors the reduction; negative gain rejects
+it.}]{../figures/emergence_bmr.slide-values.png}
 \refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-2}
 \end{figure}
 \end{frame}
@@ -349,7 +360,9 @@ prune, or retain the correct structure.
 \begin{frame}{Configured BMR sign\ldots{} (part 11)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source configured sign-control verdict: True. This is not an optimizer convergence diagnostic.}]{../figures/emergence_bmr.slide-verdict.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={Source
+configured sign-control verdict: True. This is not an optimizer
+convergence diagnostic.}]{../figures/emergence_bmr.slide-verdict.png}
 \refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-3}
 \end{figure}
 \end{frame}
@@ -357,13 +370,17 @@ prune, or retain the correct structure.
 \begin{frame}{Configured BMR sign\ldots{} (part 12)}
 \begin{figure}
 \centering
-\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One fixed-posterior categorical diagnostic. No independent stochastic replication or uncertainty interval applies. Source-mechanism analogue, not full protocol reconstruction.}]{../figures/emergence_bmr.slide-scope.png}
+\includegraphics[keepaspectratio,width=0.98\linewidth,height=0.8\textheight,alt={One
+fixed-posterior categorical diagnostic. No independent stochastic
+replication or uncertainty interval applies. Source-mechanism analogue,
+not full protocol
+reconstruction.}]{../figures/emergence_bmr.slide-scope.png}
 \refstepcounter{figure}\label{fig:emergence-bmr-slide-panel-4}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Configured BMR sign\ldots{} (part 13)}
-fig.~12 contrasts the two configured prunings and
+fig.~15 contrasts the two configured prunings and
 reports the sign control.
 \end{frame}
 
@@ -371,7 +388,7 @@ reports the sign control.
 Studies 1--3 all ran in a \emph{trusting} world, where every broadcast
 belief is honest. The contamination sweep that follows removes that
 assumption, and it is the point at which the three robustness axes of
-sec.~7.2.1 begin to diverge.
+sec.~10.2.1 begin to diverge.
 \end{frame}
 
 \end{document}
