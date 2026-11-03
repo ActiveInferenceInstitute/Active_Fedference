@@ -1,7 +1,7 @@
 # AGENTS.md — `src/fedference/experiments/`
 
 - Return payloads; never write files, create output directories or mutate shared
-  state. Persistence belongs to `analysis/workflow.py`.
+  state. Persistence belongs to `src/analysis/workflow.py`.
 - Use the configured seed budget from `ExperimentConfig`. Do not add a
   module-level seed or a global `np.random` call.
 - Do not validate report shapes here. The write boundary validates against

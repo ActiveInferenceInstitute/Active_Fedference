@@ -4,7 +4,7 @@ Typed report shapes and per-family validators owned by the canonical
 `analysis.report_schemas` boundary. One module per report family; `__init__.py`
 marks the package and carries no exports.
 
-`analysis/report_schemas.py` imports these modules, assembles the runtime schema
+`src/analysis/report_schemas.py` imports these modules, assembles the runtime schema
 table and exposes `validate_report` plus the figure-dependency contracts.
 Validation runs once, at `workflow._write_json(payload, path, schema=...)`,
 before anything touches disk.
