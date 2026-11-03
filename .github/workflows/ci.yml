@@ -101,7 +101,7 @@ jobs:
           retention-days: 30
 
   gnn-shard:
-    name: gnn conformance (pinned v5.0.3)
+    name: gnn conformance (pinned)
     needs: test-plan
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -135,6 +135,21 @@ jobs:
           ref: ${{ steps.gnn-source.outputs.revision }}
           path: .tmp/gnn-upstream
           persist-credentials: false
+      - name: Report the resolved GNN version
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+          source = Path(".tmp/gnn-upstream/src/gnn/__init__.py").read_text(encoding="utf-8")
+          match = re.search(r'^__version__\s*=\s*"([^"]+)"', source, re.MULTILINE)
+          if match is None:
+              raise ValueError("pinned upstream source exposes no __version__")
+          version = match.group(1)
+          print(f"gnn-version={version}")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as summary:
+              summary.write(f"- gnn-version={version}\n")
+          PY
       - name: Bootstrap and qualify the exact CPU runtime
         run: |
           uv run --locked python scripts/bootstrap_gnn.py --upstream-root .tmp/gnn-upstream --destination "$RUNNER_TEMP/fedference-gnn" --profile cpython312-cpu
