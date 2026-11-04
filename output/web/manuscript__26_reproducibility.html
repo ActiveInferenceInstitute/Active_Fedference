@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="generator" content="pandoc 3.13" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>26_reproducibility.md.web</title>
   <style>
@@ -814,6 +814,10 @@ configuration from which this manuscript was rendered.</p>
 manuscript. The build epoch is derived from
 <code>SOURCE_DATE_EPOCH</code>; an unreleased build records an explicit
 omitted sentinel rather than wall-clock time.</caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Field</th>
@@ -823,7 +827,7 @@ omitted sentinel rather than wall-clock time.</caption>
 <tbody>
 <tr>
 <td>Python</td>
-<td>3.14.9</td>
+<td>3.12.15</td>
 </tr>
 <tr>
 <td>NumPy</td>
@@ -847,7 +851,7 @@ omitted sentinel rather than wall-clock time.</caption>
 </tr>
 <tr>
 <td>Reproducible build epoch (UTC)</td>
-<td>2026-11-02T00:16:14Z</td>
+<td>omitted (unreleased reproducible build)</td>
 </tr>
 </tbody>
 </table></div>
@@ -882,7 +886,7 @@ extraction alone are insufficient.</p>
 <h2 id="sec:repro-tests">Test and coverage evidence for the claim
 surface</h2>
 <p><strong>Acceptance criteria.</strong> 287 total, 283 passing.</p>
-<p><strong>Project test suite.</strong> 3992 collected cases; the bound
+<p><strong>Project test suite.</strong> 3998 collected cases; the bound
 successful receipt records zero failed cases. The project no-mocks
 policy remains a separately executable source contract.</p>
 <p><strong>Combined line and branch coverage on

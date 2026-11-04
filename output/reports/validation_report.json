@@ -1,36 +1,168 @@
 {
+  "timestamp": "2026-11-04T18:28:55Z",
   "checks": {
-    "Artifact manifest": true,
-    "Enabled render outputs": true,
-    "Evidence registry": true,
-    "Figure registry": true,
-    "Markdown validation": true,
-    "Output structure": true,
     "PDF validation": true,
+    "Transmission bookends": true,
+    "Enabled render outputs": true,
+    "Markdown validation": true,
+    "Output structure": false,
+    "Figure registry": true,
+    "Evidence registry": true,
     "Project design overlays": true,
-    "Transmission bookends": true
+    "Artifact manifest": true,
+    "Rendered provenance inputs": false
   },
   "figure_issues": [],
   "output_statistics": {
-    "data": {
-      "files": 5,
-      "size_mb": 0.9123144149780273
-    },
     "detailed_validation": {
-      "directories": {
-        "data": {
-          "exists": true,
-          "file_count": 5,
-          "largest_file": "pipeline_provenance.json",
-          "largest_file_path": "data/pipeline_provenance.json",
-          "size_mb": "0.91"
+      "structure": {
+        "valid": false,
+        "issues": [
+          "Missing required combined PDF"
+        ],
+        "missing_files": [
+          "Active_Fedference-guides-20261103_combined.pdf"
+        ],
+        "suspicious_sizes": [],
+        "warnings": [],
+        "directory_structure": {
+          "combined_pdf": {
+            "exists": false,
+            "size_mb": 0.0,
+            "readable": false,
+            "required": true
+          },
+          "pdf": {
+            "exists": true,
+            "files": 1,
+            "size_mb": 9.66,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "web": {
+            "exists": true,
+            "files": 1337,
+            "size_mb": 50.46,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "slides": {
+            "exists": true,
+            "files": 94,
+            "size_mb": 34.01,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "docx": {
+            "exists": false,
+            "files": 0,
+            "size_mb": 0.0,
+            "optional": true,
+            "required": false
+          },
+          "epub": {
+            "exists": false,
+            "files": 0,
+            "size_mb": 0.0,
+            "optional": true,
+            "required": false
+          },
+          "figures": {
+            "exists": true,
+            "files": 1285,
+            "size_mb": 46.05,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "data": {
+            "exists": true,
+            "files": 5,
+            "size_mb": 0.92,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "reports": {
+            "exists": true,
+            "files": 29,
+            "size_mb": 3.06,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "simulations": {
+            "exists": false,
+            "files": 0,
+            "size_mb": 0.0,
+            "optional": true,
+            "required": false
+          },
+          "llm": {
+            "exists": false,
+            "files": 0,
+            "size_mb": 0.0,
+            "optional": true,
+            "required": false
+          },
+          "logs": {
+            "exists": false,
+            "files": 0,
+            "size_mb": 0.0,
+            "optional": true,
+            "required": false
+          },
+          "docs": {
+            "exists": true,
+            "files": 2,
+            "size_mb": 0.07,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "manuscript": {
+            "exists": true,
+            "files": 50,
+            "size_mb": 0.38,
+            "readable": true,
+            "optional": false,
+            "required": true
+          },
+          "release": {
+            "exists": true,
+            "files": 3,
+            "size_mb": 0.95,
+            "readable": true,
+            "optional": false,
+            "required": true
+          }
         },
-        "docs": {
+        "inventory_mode": "stable-local-output-v1"
+      },
+      "directories": {
+        "pdf": {
           "exists": true,
-          "file_count": 2,
-          "largest_file": "api_glossary.md",
-          "largest_file_path": "docs/api_glossary.md",
-          "size_mb": "0.07"
+          "file_count": 1,
+          "size_mb": "9.66",
+          "largest_file": "active_fedference_combined.pdf",
+          "largest_file_path": "pdf/active_fedference_combined.pdf"
+        },
+        "web": {
+          "exists": true,
+          "file_count": 1337,
+          "size_mb": "50.46",
+          "largest_file": "source-web-fonts.js",
+          "largest_file_path": "web/assets/source-web-fonts.js"
+        },
+        "slides": {
+          "exists": true,
+          "file_count": 94,
+          "size_mb": "34.01",
+          "largest_file": "13_methods_statistics_slides.pdf",
+          "largest_file_path": "slides/13_methods_statistics_slides.pdf"
         },
         "docx": {
           "exists": false,
@@ -45,9 +177,28 @@
         "figures": {
           "exists": true,
           "file_count": 1285,
+          "size_mb": "46.05",
           "largest_file": "evidence_replication_map.png",
-          "largest_file_path": "figures/evidence_replication_map.png",
-          "size_mb": "46.05"
+          "largest_file_path": "figures/evidence_replication_map.png"
+        },
+        "data": {
+          "exists": true,
+          "file_count": 5,
+          "size_mb": "0.92",
+          "largest_file": "pipeline_provenance.json",
+          "largest_file_path": "data/pipeline_provenance.json"
+        },
+        "reports": {
+          "exists": true,
+          "file_count": 29,
+          "size_mb": "3.06",
+          "largest_file": "robustness_review_grid.json",
+          "largest_file_path": "reports/robustness_review_grid.json"
+        },
+        "simulations": {
+          "exists": false,
+          "file_count": 0,
+          "size_mb": "0.00"
         },
         "llm": {
           "exists": false,
@@ -59,210 +210,66 @@
           "file_count": 0,
           "size_mb": "0.00"
         },
+        "docs": {
+          "exists": true,
+          "file_count": 2,
+          "size_mb": "0.07",
+          "largest_file": "api_glossary.md",
+          "largest_file_path": "docs/api_glossary.md"
+        },
         "manuscript": {
           "exists": true,
           "file_count": 50,
+          "size_mb": "0.38",
           "largest_file": "19_results_robustness.md",
-          "largest_file_path": "manuscript/19_results_robustness.md",
-          "size_mb": "0.38"
-        },
-        "pdf": {
-          "exists": true,
-          "file_count": 1,
-          "largest_file": "active_fedference_combined.pdf",
-          "largest_file_path": "pdf/active_fedference_combined.pdf",
-          "size_mb": "12.42"
+          "largest_file_path": "manuscript/19_results_robustness.md"
         },
         "release": {
           "exists": true,
           "file_count": 3,
+          "size_mb": "0.95",
           "largest_file": "manifest.json",
-          "largest_file_path": "release/manifest.json",
-          "size_mb": "0.95"
-        },
-        "reports": {
-          "exists": true,
-          "file_count": 29,
-          "largest_file": "robustness_review_grid.json",
-          "largest_file_path": "reports/robustness_review_grid.json",
-          "size_mb": "3.06"
-        },
-        "simulations": {
-          "exists": false,
-          "file_count": 0,
-          "size_mb": "0.00"
-        },
-        "slides": {
-          "exists": true,
-          "file_count": 94,
-          "largest_file": "13_methods_statistics_slides.pdf",
-          "largest_file_path": "slides/13_methods_statistics_slides.pdf",
-          "size_mb": "36.00"
-        },
-        "web": {
-          "exists": true,
-          "file_count": 1337,
-          "largest_file": "source-web-fonts.js",
-          "largest_file_path": "web/assets/source-web-fonts.js",
-          "size_mb": "50.46"
+          "largest_file_path": "release/manifest.json"
         }
       },
       "file_counts": {
-        "data": 5,
-        "docs": 2,
-        "figures": 1285,
-        "manuscript": 50,
         "pdf": 1,
-        "release": 3,
-        "reports": 29,
+        "web": 1337,
         "slides": 94,
-        "web": 1337
+        "figures": 1285,
+        "data": 5,
+        "reports": 29,
+        "docs": 2,
+        "manuscript": 50,
+        "release": 3
       },
-      "inventory_mode": "stable-local-output-v1",
+      "total_size_mb": 145.57380771636963,
       "issues_by_severity": {
-        "critical": [],
-        "info": [],
-        "warning": []
+        "critical": [
+          "Missing required combined PDF",
+          "Missing expected file: Active_Fedference-guides-20261103_combined.pdf (project-specific combined PDF for Active_Fedference-guides-20261103)"
+        ],
+        "warning": [],
+        "info": []
       },
-      "recommendations": [],
-      "structure": {
-        "directory_structure": {
-          "combined_pdf": {
-            "exists": true,
-            "readable": true,
-            "size_mb": 12.42
-          },
-          "data": {
-            "exists": true,
-            "files": 5,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 0.91
-          },
-          "docs": {
-            "exists": true,
-            "files": 2,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 0.07
-          },
-          "docx": {
-            "exists": false,
-            "files": 0,
-            "optional": true,
-            "required": false,
-            "size_mb": 0.0
-          },
-          "epub": {
-            "exists": false,
-            "files": 0,
-            "optional": true,
-            "required": false,
-            "size_mb": 0.0
-          },
-          "figures": {
-            "exists": true,
-            "files": 1285,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 46.05
-          },
-          "llm": {
-            "exists": false,
-            "files": 0,
-            "optional": true,
-            "required": false,
-            "size_mb": 0.0
-          },
-          "logs": {
-            "exists": false,
-            "files": 0,
-            "optional": true,
-            "required": false,
-            "size_mb": 0.0
-          },
-          "manuscript": {
-            "exists": true,
-            "files": 50,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 0.38
-          },
-          "pdf": {
-            "exists": true,
-            "files": 1,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 12.42
-          },
-          "release": {
-            "exists": true,
-            "files": 3,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 0.95
-          },
-          "reports": {
-            "exists": true,
-            "files": 29,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 3.06
-          },
-          "simulations": {
-            "exists": false,
-            "files": 0,
-            "optional": true,
-            "required": false,
-            "size_mb": 0.0
-          },
-          "slides": {
-            "exists": true,
-            "files": 94,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 36.0
-          },
-          "web": {
-            "exists": true,
-            "files": 1337,
-            "optional": false,
-            "readable": true,
-            "required": true,
-            "size_mb": 50.46
-          }
-        },
-        "inventory_mode": "stable-local-output-v1",
-        "issues": [],
-        "missing_files": [],
-        "suspicious_sizes": [],
-        "valid": true,
-        "warnings": []
-      },
-      "total_size_mb": 150.3161973953247
-    },
-    "figures": {
-      "files": 1285,
-      "size_mb": 46.053016662597656
+      "recommendations": [
+        {
+          "priority": "high",
+          "action": "Review critical issues in output generation",
+          "details": "Check PDF rendering and copy stages for errors"
+        }
+      ],
+      "inventory_mode": "stable-local-output-v1"
     },
     "inventory_mode": "stable-local-output-v1",
-    "pdf": {
-      "files": 1,
-      "size_mb": 12.42329216003418
-    },
     "stable_inventory": {
+      "mode": "stable-local-output-v1",
+      "total_files": 2806,
+      "total_size_bytes": 152645201,
       "categories": {
         "data": {
           "files": 5,
-          "size_bytes": 956631
+          "size_bytes": 964699
         },
         "docs": {
           "files": 2,
@@ -274,11 +281,11 @@
         },
         "manuscript": {
           "files": 50,
-          "size_bytes": 399107
+          "size_bytes": 399127
         },
         "pdf": {
           "files": 1,
-          "size_bytes": 13026766
+          "size_bytes": 10131690
         },
         "release": {
           "files": 3,
@@ -286,350 +293,48 @@
         },
         "reports": {
           "files": 29,
-          "size_bytes": 3211394
+          "size_bytes": 3211386
         },
         "slides": {
           "files": 94,
-          "size_bytes": 37748720
+          "size_bytes": 35659997
         },
         "web": {
           "files": 1337,
-          "size_bytes": 52911914
+          "size_bytes": 52914877
         }
-      },
-      "mode": "stable-local-output-v1",
-      "total_files": 2806,
-      "total_size_bytes": 157617957
+      }
+    },
+    "pdf": {
+      "files": 1,
+      "size_mb": 9.662332534790039
+    },
+    "figures": {
+      "files": 1285,
+      "size_mb": 46.053016662597656
+    },
+    "data": {
+      "files": 5,
+      "size_mb": 0.920008659362793
+    },
+    "rendered_provenance_issue": {
+      "code": "SOURCE_SYMLINK_ESCAPE",
+      "message": "source symlink escapes repository: <volume>/Local/worktrees/Active_Fedference-guides-20261103/.venv312/bin/python"
     }
   },
-  "recommendations": [],
   "summary": {
-    "all_passed": true,
-    "failed": 0,
+    "total_checks": 10,
+    "passed": 8,
+    "failed": 2,
     "figure_issues_count": 0,
-    "passed": 9,
-    "total_checks": 9
+    "all_passed": false
   },
-  "timestamp": "2026-11-02T00:16:14Z",
-  "validated_inputs": {
-    "artifact_manifest": {
-      "path": "output/reports/artifact_manifest.json",
-      "sha256": "098fa6ba3b9e5e16c9fd4d3c6c4ae71ebc4b88e698c144007b2090436b096329",
-      "size_bytes": 976961
-    },
-    "combined_manuscript": {
-      "path": "output/web/_combined_manuscript.md",
-      "sha256": "61f9ad61fdcab0f5448cd33335fb37a73c467f29a07df73450286d4e4761e85f",
-      "size_bytes": 365058
-    },
-    "composition_manifest": {
-      "path": "output/reports/manuscript_composition.json",
-      "sha256": "8990c87141bc7cd915da3aab4b2990523519796c46283ee189d034d1cf8514c5",
-      "size_bytes": 10204
-    },
-    "consumed_manuscript": [
-      {
-        "rendered_path": "output/manuscript/00a_graphical_model.md",
-        "rendered_sha256": "6efe59065b349d313e3468cc229e14e899c86408f5f7d488deacbe99b27743df",
-        "source_path": "manuscript/00a_graphical_model.md",
-        "source_sha256": "6efe59065b349d313e3468cc229e14e899c86408f5f7d488deacbe99b27743df"
-      },
-      {
-        "rendered_path": "output/manuscript/00b_graphical_robustness.md",
-        "rendered_sha256": "ececa95cb0778ffca00ad3740cc10e2d4927953e6e7d54e156fc35fa886d3d2e",
-        "source_path": "manuscript/00b_graphical_robustness.md",
-        "source_sha256": "ececa95cb0778ffca00ad3740cc10e2d4927953e6e7d54e156fc35fa886d3d2e"
-      },
-      {
-        "rendered_path": "output/manuscript/00c_graphical_execution.md",
-        "rendered_sha256": "138d998a4e8a6ec534947256bcf7271da0a365aff3c0e89758266683179e848d",
-        "source_path": "manuscript/00c_graphical_execution.md",
-        "source_sha256": "138d998a4e8a6ec534947256bcf7271da0a365aff3c0e89758266683179e848d"
-      },
-      {
-        "rendered_path": "output/manuscript/00_abstract.md",
-        "rendered_sha256": "fa5eaa165ad700a0a7d76eec8c690537a00f8fe2f7ab617bbad019b5fb9ab881",
-        "source_path": "manuscript/00_abstract.md",
-        "source_sha256": "fe7eec4b90c3675c1d928cfd2617a20f148cc167c8a5e618d52edea6c925d795"
-      },
-      {
-        "rendered_path": "output/manuscript/01_introduction.md",
-        "rendered_sha256": "0fc43a6a323c9e17a190109cd29ec03f5713330690fe4c7ec766bc0293823ede",
-        "source_path": "manuscript/01_introduction.md",
-        "source_sha256": "0820c613812c1ab6f5851fe2403e8c86443c812e13e64b26cf252953d2f7d0db"
-      },
-      {
-        "rendered_path": "output/manuscript/02_gap.md",
-        "rendered_sha256": "28e5c5d6646a29d92e04de7881da639eb427fabc44edf90fba4e5b2c1d40bf0f",
-        "source_path": "manuscript/02_gap.md",
-        "source_sha256": "28e5c5d6646a29d92e04de7881da639eb427fabc44edf90fba4e5b2c1d40bf0f"
-      },
-      {
-        "rendered_path": "output/manuscript/03_contributions.md",
-        "rendered_sha256": "571eb83478a871944e9f3f61ceec578153ff8b966c88f97dfc28f4ceb3b37d5b",
-        "source_path": "manuscript/03_contributions.md",
-        "source_sha256": "cfff828d1dae9cb51b968be9f75646f662df303ad12f6a75f213fe4520997d84"
-      },
-      {
-        "rendered_path": "output/manuscript/04_methods_overview.md",
-        "rendered_sha256": "dded2de5a95078d0853858fccbc73f942cd9f7459cb919568f43c2e782417942",
-        "source_path": "manuscript/04_methods_overview.md",
-        "source_sha256": "872e3a04eb2785c848eba9be6ee3eec56033d867a1afaa93b9a30157c00860df"
-      },
-      {
-        "rendered_path": "output/manuscript/05_methods_generalized_bayes.md",
-        "rendered_sha256": "e700f5200ff1cceb8b0e9d26693c05f53ad59bc3772858ed5f41c4f4425b48c2",
-        "source_path": "manuscript/05_methods_generalized_bayes.md",
-        "source_sha256": "74debdb6e3367f100c29b8624ce9ccda21eb166de8f28ad0d283f7b7a0772e41"
-      },
-      {
-        "rendered_path": "output/manuscript/06_methods_divergences_and_losses.md",
-        "rendered_sha256": "7c5d8ee89ed7da885e3ce376e4d3f4136ee63d3992815365a8783aa27966ea51",
-        "source_path": "manuscript/06_methods_divergences_and_losses.md",
-        "source_sha256": "8993b461a1335671e4e7a7029f161775f51966a8835697d40957482b7c9ed084"
-      },
-      {
-        "rendered_path": "output/manuscript/07_methods_aggregation.md",
-        "rendered_sha256": "e80defbd24457c5d119616aee9839f25e573593422924543861c17844b69340b",
-        "source_path": "manuscript/07_methods_aggregation.md",
-        "source_sha256": "d40835d00bf8a5eeb4dc9299634215de9238d3b22d97143d61efe7f9518c9f89"
-      },
-      {
-        "rendered_path": "output/manuscript/08_methods_belief_sharing.md",
-        "rendered_sha256": "50c34a0599e02b73424590d060d2da4d7625a447f1d9a5e393d38bbf0f328088",
-        "source_path": "manuscript/08_methods_belief_sharing.md",
-        "source_sha256": "1afe08016213b2d5c6d172a3e41b0792e5176b37d287579e72bffb2a4a536f8c"
-      },
-      {
-        "rendered_path": "output/manuscript/09_methods_generative_model.md",
-        "rendered_sha256": "d41c4f59f1ef07446cc396f36d89c4ee8ccb168b2d8f5eba51131eace1a8552e",
-        "source_path": "manuscript/09_methods_generative_model.md",
-        "source_sha256": "f5ef09594007b455ebc11a65b0d4362d2927ef01db38a4a874501ad90550df74"
-      },
-      {
-        "rendered_path": "output/manuscript/10_methods_learning.md",
-        "rendered_sha256": "6c6b48b54d02474005b858698e277f074b3f9bcb40cd0dbd81f4cef982d2da69",
-        "source_path": "manuscript/10_methods_learning.md",
-        "source_sha256": "e9ccaf9e5d7bef462d63a5acad226749246e56618d891004f83e5b48e7de34d6"
-      },
-      {
-        "rendered_path": "output/manuscript/11_methods_contamination.md",
-        "rendered_sha256": "5c2d21c8c275ed2684c0039b4c586a2239acce26d6ba1c7330ce274d10b244f8",
-        "source_path": "manuscript/11_methods_contamination.md",
-        "source_sha256": "a98bb64e2919beb9105b4cdd1d8fbdc659388419c0c47ccf9e4c430d518b8719"
-      },
-      {
-        "rendered_path": "output/manuscript/12_methods_experimental_design.md",
-        "rendered_sha256": "a008f800875bc11562356eb3c015e3052e8fecf0e1f50b37dfb0a401ca2659ee",
-        "source_path": "manuscript/12_methods_experimental_design.md",
-        "source_sha256": "73d730d136c4318cf873a1d486ec30c09fd0c51487aaeb9ef030e4fb30efa399"
-      },
-      {
-        "rendered_path": "output/manuscript/13_methods_statistics.md",
-        "rendered_sha256": "421c520f09b906d94075d456a3b29511172f5e2cd1b3a0bc0a55ca563b395e82",
-        "source_path": "manuscript/13_methods_statistics.md",
-        "source_sha256": "a218481d2d97e22705155dff202e96b7388c16478a3fe7e2b16a2322dc28a51e"
-      },
-      {
-        "rendered_path": "output/manuscript/14_formalism.md",
-        "rendered_sha256": "1aa8117d1df4cd34f7a2f83812c19b9eeabe955406fb906f92245245afaf87a8",
-        "source_path": "manuscript/14_formalism.md",
-        "source_sha256": "a5a0c717d64b1ca6b013ffc2f10db4f1833889f5ec51ad655e32525e75de8f36"
-      },
-      {
-        "rendered_path": "output/manuscript/15_results_recovery.md",
-        "rendered_sha256": "57f22b1d7fec7aa35b414b338d65810ebd905ac4104486c0bb08085ce0f1e92a",
-        "source_path": "manuscript/15_results_recovery.md",
-        "source_sha256": "f2a5f9c2d0e5731f2a2c5474f29237d3eb11758d2d2fa52a165bd604fb7d2d91"
-      },
-      {
-        "rendered_path": "output/manuscript/16_results_belief_sharing.md",
-        "rendered_sha256": "e18db3539a0c7c9fe76756cb17458e9e45aad4ee911cdebcc2ff34d87861f8b7",
-        "source_path": "manuscript/16_results_belief_sharing.md",
-        "source_sha256": "c3ae4f254460fa92f08dbc9f6529146ca77feb2a4b799bcffb32c847558e3281"
-      },
-      {
-        "rendered_path": "output/manuscript/17_results_language.md",
-        "rendered_sha256": "1c035ca03d52e951b605828d69a13a8a076161a9af39c3f09ea5124cdf51448e",
-        "source_path": "manuscript/17_results_language.md",
-        "source_sha256": "7a34f3beee029335b8420e72fd330263b84ed75d7bccd658e7c03d72a719976b"
-      },
-      {
-        "rendered_path": "output/manuscript/18_results_emergence.md",
-        "rendered_sha256": "7b0af7e4f17dc1afc4284ed0e2820a756966042466d4fd5508cc46a1af1b41d6",
-        "source_path": "manuscript/18_results_emergence.md",
-        "source_sha256": "3fd32b4d477ca54cb353459610503f190ae25f0cbcb645448c77285b82ec721c"
-      },
-      {
-        "rendered_path": "output/manuscript/19_results_robustness.md",
-        "rendered_sha256": "ee85a10e61268e1ff16f0a8d598c77b93ccac68f9f647b7a34033c8e6c1104df",
-        "source_path": "manuscript/19_results_robustness.md",
-        "source_sha256": "3908d7f2aaf7d9741ebe1fa3d2aaeb2c19f22af2e495f1e7e8817efefc18564f"
-      },
-      {
-        "rendered_path": "output/manuscript/20_results_baseline.md",
-        "rendered_sha256": "482c7fe1f750b4f53b5fc91ddbfc373b47f4aad65e3f3101a7d8b28a49615df0",
-        "source_path": "manuscript/20_results_baseline.md",
-        "source_sha256": "9732315a5b0784924c0f33079fad96c73bbeb614969ff4571f4239810fe1edb4"
-      },
-      {
-        "rendered_path": "output/manuscript/21_discussion_findings.md",
-        "rendered_sha256": "65a78e6bf07f43e6d57adbfa64150ff208ba999b36d4356c5529a93b7f3fe14b",
-        "source_path": "manuscript/21_discussion_findings.md",
-        "source_sha256": "48c72dd3f656e60e1becc19b9e1150ad5fa3a250758cd5f78089c3867b878eb3"
-      },
-      {
-        "rendered_path": "output/manuscript/22_discussion_related_work.md",
-        "rendered_sha256": "9bd90deed029d0fc5eb9188cb1958d5f96228f0aab5e73dd7d950f7a5a1ccaa7",
-        "source_path": "manuscript/22_discussion_related_work.md",
-        "source_sha256": "9bd90deed029d0fc5eb9188cb1958d5f96228f0aab5e73dd7d950f7a5a1ccaa7"
-      },
-      {
-        "rendered_path": "output/manuscript/23_discussion_limitations.md",
-        "rendered_sha256": "891510c37b9bf052482c0bac15bcf917ff615846ff1f1bacf173e2c58f9ea5ee",
-        "source_path": "manuscript/23_discussion_limitations.md",
-        "source_sha256": "891510c37b9bf052482c0bac15bcf917ff615846ff1f1bacf173e2c58f9ea5ee"
-      },
-      {
-        "rendered_path": "output/manuscript/24_discussion_future.md",
-        "rendered_sha256": "d7f6771ee3786c91839a8fdf53da1e74a6ec70f504dce4255de5eb9cf46fb2db",
-        "source_path": "manuscript/24_discussion_future.md",
-        "source_sha256": "758882e56cce2a130dac17d57abafcea34b183a87a62af2d2a80ff8d48a2614f"
-      },
-      {
-        "rendered_path": "output/manuscript/25_conclusion.md",
-        "rendered_sha256": "300b2d75c7cd40e47b831b9f2ff3a16666c8a068638cb7877267f94d5985aeca",
-        "source_path": "manuscript/25_conclusion.md",
-        "source_sha256": "070ef45f832b403da3e63738a95734ba145ffe5033262e1e0d9165f549cd4d07"
-      },
-      {
-        "rendered_path": "output/manuscript/26_reproducibility.md",
-        "rendered_sha256": "80978eaf00a09bc792952e9d60b843ec6014abb159575607e0e4fb72f9324166",
-        "source_path": "manuscript/26_reproducibility.md",
-        "source_sha256": "c6b6fa750d85a0a9d2b5b2a8cce572e1e5f866e6ad00ffce44423544aadbdd46"
-      },
-      {
-        "rendered_path": "output/manuscript/26_reproducibility_provenance.md",
-        "rendered_sha256": "0175966e5f208df42919824dd1b3717164a741b6f47d4805fc41d6b710c29393",
-        "source_path": "manuscript/26_reproducibility_provenance.md",
-        "source_sha256": "ae798b276ab560a7dc7eb108aeb9618a0bc4b3d3ed3e4c17d9cd901909b21341"
-      },
-      {
-        "rendered_path": "output/manuscript/27_supplement_aggregation_objective.md",
-        "rendered_sha256": "c467f7576b13be606d9342ee1a3c79e5ad0bf5ac4219145b41630365ee8d078a",
-        "source_path": "manuscript/27_supplement_aggregation_objective.md",
-        "source_sha256": "3409a6014546dac93464625555a92f634701c63db84f7bbfbd4ce5a8109430de"
-      },
-      {
-        "rendered_path": "output/manuscript/28_supplement_extended_methods.md",
-        "rendered_sha256": "36fea56002278ad45fc5279fd64ef25632279a2e2cae82deb1d70fef88849f83",
-        "source_path": "manuscript/28_supplement_extended_methods.md",
-        "source_sha256": "cf2a7396a5d2273d56aac62966a2776eb2662d1575735f3b6155263ad1ed002b"
-      },
-      {
-        "rendered_path": "output/manuscript/29_supplement_federation_protocol.md",
-        "rendered_sha256": "b5f9b0a1290f29243b83d3018784a0fe709f7989ff61f11e81069ef25f28ff29",
-        "source_path": "manuscript/29_supplement_federation_protocol.md",
-        "source_sha256": "55e5c7414d91e5d8ea77cb11734c89c6735a51b2a88d21b39312342335023552"
-      },
-      {
-        "rendered_path": "output/manuscript/30_supplement_notation.md",
-        "rendered_sha256": "a572d585c9906d250becb2fd280b8ea50efea7e63948ab8dec556974488e40c0",
-        "source_path": "manuscript/30_supplement_notation.md",
-        "source_sha256": "730dacd24e5debd74652355d5cc905befa81a9f081c9a9769ee6b91027567cda"
-      },
-      {
-        "rendered_path": "output/manuscript/S05_results_moving_world.md",
-        "rendered_sha256": "44465d556b57ca4158a698bc746382e34031c6977d2d02645eb5c1ad6112aae6",
-        "source_path": "manuscript/S05_results_moving_world.md",
-        "source_sha256": "dca1baac3530df574c516792c2c2c9c875280853fca14c854d31e60afc48964e"
-      },
-      {
-        "rendered_path": "output/manuscript/S06_supp_moving_world.md",
-        "rendered_sha256": "02ffcb446d8efe6f61657c0a30cbbc03b8738e2e08dfdee8a7567e68e649dfb5",
-        "source_path": "manuscript/S06_supp_moving_world.md",
-        "source_sha256": "2f89f49d37d5d4ad0acfdd373a12e5ebda1e09ae6b6b6f670ba53409c0fa85a4"
-      },
-      {
-        "rendered_path": "output/manuscript/S09_results_hierarchical_pomdp.md",
-        "rendered_sha256": "e590fa2519b0f223827c65703bfd34117840d895da7f5f67f5eb772cb3e3dc3e",
-        "source_path": "manuscript/S09_results_hierarchical_pomdp.md",
-        "source_sha256": "dbeff2233e4d8e271cb6aa5cb67c5f3c2544cac31d53e076e82a004e0f4fe159"
-      },
-      {
-        "rendered_path": "output/manuscript/S10_supp_hierarchical_pomdp.md",
-        "rendered_sha256": "db606d8515ee86d8b9874f91d6de0638b4bda175cf19508176fb187b64ab5f02",
-        "source_path": "manuscript/S10_supp_hierarchical_pomdp.md",
-        "source_sha256": "e1cd49ff1aa803ebadf3f1e97be7591257684a781712b256c33a302dbcc2539d"
-      },
-      {
-        "rendered_path": "output/manuscript/S11_results_3level_pomdp.md",
-        "rendered_sha256": "05cad047b40f1e500448acf40418e6d42e9152cfdd5d3cda08b9fad0dba1b2c8",
-        "source_path": "manuscript/S11_results_3level_pomdp.md",
-        "source_sha256": "2a2f4a78bb1e066d72e352b9b5b8753b3cf44ec17547417b9a694e6208735ced"
-      },
-      {
-        "rendered_path": "output/manuscript/S12_supp_3level_pomdp.md",
-        "rendered_sha256": "20141fac68bc0e86e04e6b273f8557ae069384844123e294b7b79f7308c03a80",
-        "source_path": "manuscript/S12_supp_3level_pomdp.md",
-        "source_sha256": "bb3412be41354d3d8bec8478330eca3585fd156510a21d62d89d77af87e0456c"
-      },
-      {
-        "rendered_path": "output/manuscript/S13_results_sensitivity.md",
-        "rendered_sha256": "2b618ff6cfd87ee461402570acef02f0d7b200b4eb4eb96dbfb7f52e40beef24",
-        "source_path": "manuscript/S13_results_sensitivity.md",
-        "source_sha256": "f104fa389042e0d78e173351dd5c4e059b7baaa73902dccb75b8284ee4893736"
-      },
-      {
-        "rendered_path": "output/manuscript/S14_supp_sensitivity.md",
-        "rendered_sha256": "369a55979aa17f498ec2bdf0c88d4c236d1a9e314c7659fd966b4d9baaf2150d",
-        "source_path": "manuscript/S14_supp_sensitivity.md",
-        "source_sha256": "6a89873441bd97eac86360c2bd7167af70fedfab4c6ee8c6cf7093558e8c1922"
-      },
-      {
-        "rendered_path": "output/manuscript/S15_results_parameter_recovery.md",
-        "rendered_sha256": "157a7f555d6bea5d3a77e4be64143ce921ecc2a85b7885cfc5acc2c6ed9ec504",
-        "source_path": "manuscript/S15_results_parameter_recovery.md",
-        "source_sha256": "1a246f4915a50e7d1cacff5b3971acaaf69ea34d9c9310edd625049ef584d69d"
-      },
-      {
-        "rendered_path": "output/manuscript/S16_results_hierarchical_bmr.md",
-        "rendered_sha256": "9bca5e3b19b2394045283dbce06406ee7836c506c361ed2f496952006588d16e",
-        "source_path": "manuscript/S16_results_hierarchical_bmr.md",
-        "source_sha256": "71cd3466d3ab7462bb1142ef3debd82c64cf89652edd2279bc6648f4f0f29c0a"
-      },
-      {
-        "rendered_path": "output/manuscript/S17_results_heuristic_characterization.md",
-        "rendered_sha256": "6c315c36ad1a61dd5a06d9603b835ae2caef97a25469e868080ee023e10505c0",
-        "source_path": "manuscript/S17_results_heuristic_characterization.md",
-        "source_sha256": "6d23b16b02d65b3fadcba7b4b414eaf887b8aac753d36fd04a97e707b641d9af"
-      },
-      {
-        "rendered_path": "output/manuscript/99_references.md",
-        "rendered_sha256": "20d90f9895cf488a2e122246643f5b31547fe030b226db9f454394707066a1c9",
-        "source_path": "manuscript/99_references.md",
-        "source_sha256": "20d90f9895cf488a2e122246643f5b31547fe030b226db9f454394707066a1c9"
-      }
-    ],
-    "fingerprints": {
-      "config": {
-        "file_count": 18,
-        "sha256": "d7d649ffcd7cea4c82c1ea5bc3c29b995d9aeaba787e70da52cac0f675b3d0c1"
-      },
-      "output": {
-        "file_count": 2806,
-        "sha256": "91b08ee8be281071bd47bc5d3c42ceeb8d935e709dc08afc148c5575792cfea0"
-      },
-      "source": {
-        "file_count": 383,
-        "sha256": "5361170dd72d637c3b4a309e6cdc1c23b7581e426c847f833bc3c3a17194f1fe"
-      },
-      "stage": {
-        "file_count": 1597,
-        "sha256": "91a0029f0ec0fb7c85164b9d67f09212608fc10fb09496ee1e65132638edd246"
-      }
-    },
-    "project": "working/active_fedference",
-    "schema_version": "template-validated-rendered-inputs-v1"
-  }
+  "recommendations": [
+    {
+      "priority": "high",
+      "issue": "Missing output directories",
+      "action": "Ensure all analysis scripts completed successfully",
+      "file": "<volume>/Local/worktrees/Active_Fedference-guides-20261103/output"
+    }
+  ]
 }
