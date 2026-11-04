@@ -4,7 +4,7 @@
     "output_digest": "ee3a02d8875a174f44d3c94e930015b15dfce3b756cbe757d1af278225716aa4"
   },
   "command": [
-    "<project>/.venv/bin/python",
+    "<project>/.venv312/bin/python",
     "-m",
     "pytest",
     "tests/",
@@ -15,7 +15,7 @@
     "--cov-report=json:<coverage-workdir>/coverage.json"
   ],
   "coverage": {
-    "percent": 92.4674489631892,
+    "percent": 92.47387879762096,
     "threshold": 90.0
   },
   "environment": {
@@ -23,7 +23,7 @@
     "platform": "Darwin arm64",
     "pytest_version": "9.1.1",
     "python_implementation": "CPython",
-    "python_version": "3.14.9",
+    "python_version": "3.12.15",
     "scipy_version": "1.18.0"
   },
   "input_digest": "34bd706a438791be01c0ab9d96036c4fe98cf32bd4f0c08295e2194f8af806fa",
