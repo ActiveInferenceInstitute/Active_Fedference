@@ -56,6 +56,14 @@ def failures(results: dict[str, str], *, superseded: bool) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Decide whether the gate may pass from the ``needs`` JSON.
+
+    Reads every prerequisite entry GitHub supplies. A live run is green only
+    when all results are ``success``; ``--superseded`` tolerates
+    ``cancelled``/``skipped`` but still rejects ``failure``. Exit 0 means the
+    gate passes; a non-zero exit means at least one prerequisite did not
+    succeed and the job must stay red.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--results", required=True, help="JSON needs context")
     parser.add_argument(

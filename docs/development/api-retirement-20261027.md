@@ -1713,6 +1713,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "scripts/analysis_stages.py::<module>",
         "scripts/bootstrap_gnn.py::<module>",
         "scripts/build_release.py::<module>",
+        "scripts/ci_gate.py::<module>",
         "scripts/ci_shards.py::<module>",
         "scripts/ci_shards.py::main",
         "scripts/emit_metadata.py::<module>",
