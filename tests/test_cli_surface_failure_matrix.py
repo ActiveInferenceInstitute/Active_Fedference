@@ -180,11 +180,12 @@ def test_support_helpers_fail_before_writes_and_bind_real_git_state(
     nonempty.mkdir()
     (nonempty / "owned.txt").write_text("preserve\n", encoding="utf-8")
     with pytest.raises(ValueError, match="must be empty"):
-        _prepare_output_dir(str(nonempty), checkout)
+        with _prepare_output_dir(str(nonempty), checkout):
+            pytest.fail("nonempty namespace admitted")
     assert (nonempty / "owned.txt").read_text(encoding="utf-8") == "preserve\n"
 
-    fresh = _prepare_output_dir(str(tmp_path / "fresh"), checkout)
-    assert fresh.is_dir()
+    with _prepare_output_dir(str(tmp_path / "fresh"), checkout) as fresh:
+        assert fresh.path.is_dir()
 
     with pytest.raises(ValueError, match="committed reviewer output tree"):
         _validate_output_dir(str(checkout / "output" / "nested"), tmp_path)
@@ -275,21 +276,23 @@ def test_application_writer_rejects_wrong_boundary_types(tmp_path: Path) -> None
     request = LabeledAggregationRequest.from_dict(_request_payload())
     result = aggregate_labeled(request)
     source = SourceProvenance(source_kind="unavailable", warnings=("fixture",))
-    arguments: dict[str, Any] = {
-        "output_dir": tmp_path,
-        "request": request,
-        "result": result,
-        "source_provenance": source,
-        "started_at": "2026-08-25T00:00:00+00:00",
-    }
-    for field, invalid, expected in (
-        ("request", {}, "request must be"),
-        ("result", {}, "result must be"),
-        ("source_provenance", {}, "source_provenance must be"),
-    ):
-        with pytest.raises(ValueError, match=expected):
-            _write_application_run(**{**arguments, field: invalid})
-    assert not list(tmp_path.iterdir())
+    with _prepare_output_dir(str(tmp_path), tmp_path) as namespace:
+        arguments: dict[str, Any] = {
+            "output_dir": namespace,
+            "request": request,
+            "result": result,
+            "source_provenance": source,
+            "started_at": "2026-08-25T00:00:00+00:00",
+        }
+        invalid: dict[str, Any]
+        for field, invalid, expected in (
+            ("request", {}, "request must be"),
+            ("result", {}, "result must be"),
+            ("source_provenance", {}, "source_provenance must be"),
+        ):
+            with pytest.raises(ValueError, match=expected):
+                _write_application_run(**{**arguments, field: invalid})
+        assert not list(tmp_path.iterdir())
 
 
 def test_cli_maps_preexecution_contract_failures_to_usage_exit(
@@ -520,16 +523,18 @@ def test_verify_distinguishes_unrequested_source_and_invalid_checkout(
     result = aggregate_labeled(request)
     run_dir = tmp_path / "application"
     run_dir.mkdir()
-    _, _, receipt = _write_application_run(
-        output_dir=run_dir,
-        request=request,
-        result=result,
-        source_provenance=SourceProvenance(
-            source_kind="installed_archive",
-            installed_archive_sha256=SHA,
-        ),
-        started_at="2026-08-25T00:00:00+00:00",
-    )
+    with _prepare_output_dir(str(run_dir), tmp_path) as namespace:
+        _, _, receipt = _write_application_run(
+            output_dir=namespace,
+            request=request,
+            result=result,
+            source_provenance=SourceProvenance(
+                source_kind="installed_archive",
+                installed_archive_sha256=SHA,
+            ),
+            started_at="2026-08-25T00:00:00+00:00",
+        )
+
     assert main(["verify", str(receipt)]) == 0
     assert "source equivalence not requested" in capsys.readouterr().out
 
@@ -678,17 +683,19 @@ def test_research_receipt_writer_records_missing_lock_and_dataset_digest(
         "dataset_archive_sha256": SHA,
         "device": {"fallback": "requested accelerator unavailable"},
     }
-    report_path, receipt_path = _write_evidence_run(
-        output_dir=output,
-        project_root=tmp_path,
-        experiment_id="server-theory",
-        profile="smoke",
-        seeds=(0,),
-        config={"seed": 0},
-        report=report,
-        started_at="2026-08-25T00:00:00+00:00",
-        git_revision=("unavailable", "unavailable"),
-    )
+    with _prepare_output_dir(str(output), tmp_path) as namespace:
+        report_path, receipt_path = _write_evidence_run(
+            output_dir=namespace,
+            project_root=tmp_path,
+            experiment_id="server-theory",
+            profile="smoke",
+            seeds=(0,),
+            config={"seed": 0},
+            report=report,
+            started_at="2026-08-25T00:00:00+00:00",
+            git_revision=("unavailable", "unavailable"),
+        )
+
     assert report_path.is_file()
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     assert receipt["dataset_sha256"] == {"fixture-dataset": SHA}

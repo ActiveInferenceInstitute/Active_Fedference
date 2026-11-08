@@ -109,9 +109,10 @@ leave the boundary with argument handling, sequencing, and status mapping.
 1. Put the implementation in the appropriate `src/fedference/` module.
 2. Keep the function deterministic under an explicit seed and return a typed or
    schema-valid result.
-3. Preserve legacy public names when changing an established API; add a rich
-   result/configuration path instead of changing an array-returning function's
-   meaning.
+3. Follow the resolved [API retirement inventory](api-retirement-20261027.md).
+   Migrate active callers and guidance to the canonical configuration/result
+   boundary before removing an authorized alias. Preserve scientific controls,
+   numerical meaning, and the declared semantics of serialized fields.
 4. Add edge cases, recovery limits, malformed-input tests, and a negative
    control. Add the corresponding ISC row without renumbering existing rows.
 

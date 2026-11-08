@@ -24,11 +24,9 @@ import hashlib
 import hmac
 import ipaddress
 import json
-import os
 import socket
 import sqlite3
 import struct
-import tempfile
 import threading
 from collections.abc import Mapping
 from contextlib import closing
@@ -47,6 +45,7 @@ from ..aggregation import (
     AggregationResult,
     aggregate_result,
 )
+from ..evidence_contracts._atomic import publish_json
 from .transport import (
     PROTOCOL_VERSION,
     _serialization_input_vector,
@@ -1047,32 +1046,7 @@ def validate_socket_replay(
 
 def save_socket_replay(path: str | PathLike[str], replay: list[dict[str, Any]]) -> Path:
     """Persist a digest-only socket replay log as deterministic JSON."""
-    replay_path = Path(path)
-    replay_path.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            "w",
-            dir=replay_path.parent,
-            prefix=f".{replay_path.name}.",
-            suffix=".tmp",
-            encoding="utf-8",
-            delete=False,
-        ) as handle:
-            json.dump(
-                replay,
-                handle,
-                indent=2,
-                sort_keys=True,
-                allow_nan=False,
-            )
-            handle.write("\n")
-            temporary = Path(handle.name)
-        os.replace(temporary, replay_path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-    return replay_path
+    return publish_json(Path(path), replay)
 
 
 def load_socket_replay(path: str | PathLike[str]) -> list[dict[str, Any]]:

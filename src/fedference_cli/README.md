@@ -15,7 +15,7 @@ detailed command, receipt, and extension contract.
 
 | Module | Responsibility | Must not become responsible for |
 | --- | --- | --- |
-| `__init__.py` | Stable compatibility facade exporting `main` and the historical `_report_fallbacks` helper | Argument parsing, experiment dispatch, filesystem writes, or domain imports beyond the facade imports |
+| `__init__.py` | Stable facade exporting the identical `_parser.main` entry point | Argument parsing, experiment dispatch, filesystem writes, or domain imports beyond the facade imports |
 | `_parser.py` | `argparse` grammar, command selection, process-facing error mapping, and the timestamp supplied to a run | Experiment algorithms, receipt construction, or direct file writes |
 | `_commands.py` | Dispatch for labeled `aggregate`, registry `run`/`benchmark`, receipt `verify`, and socket `replay` | Parser definition, duplicated aggregation math, or publication-snapshot writes |
 | `_support.py` | Atomic JSON writes, project-root and output isolation, seed/control validation, registry summaries, and receipt construction | Selecting a study, choosing scientific parameters, or parsing command-line arguments |
@@ -45,12 +45,9 @@ from fedference_cli import main
 status = main(["list", "--json"])
 ```
 
-The legacy import below remains available for compatibility with existing
-tests and review tooling:
-
-```python
-from fedference_cli import _report_fallbacks
-```
+The retired `fedference_cli._report_fallbacks` import is rejected. Internal CLI
+diagnostics and their tests use `fedference_cli._support._report_fallbacks`;
+public callers use the typed evidence and registry APIs.
 
 New integrations should prefer the typed APIs in `fedference` and its evidence
 and registry modules. The CLI is an adapter for explicit process boundaries,

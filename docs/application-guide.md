@@ -384,20 +384,22 @@ change consensus concentration.
 
 `AggregationResult.as_dict()` emits finite JSON-compatible consensus, raw and
 normalized weights, iteration count, convergence, fallback events, iterate and
-free-energy histories, and solver status. Legacy top-level functions and
-`aggregate(...)` keep their existing return types.
+free-energy histories, and solver status. Use `AggregationConfig` with
+`aggregate_result` to select the aggregation method. The scientific
+`log_linear_pool` control returns an array; `robust_aggregate` and
+`variational_aggregate` return `AggregationResult`.
 
 ## Choose the narrowest interface
 
-| Need | Canonical boundary | Compatibility surface / limit |
+| Need | Canonical boundary | Scope / limit |
 | --- | --- | --- |
 | Own-data JSON with labels and evidence | `fedference aggregate` | Writes application request, result, and receipt |
 | Own-data Python with labels | `aggregate_labeled` | Pure typed operation; caller retains evidence |
 | Smallest numeric operation | `aggregate_result` | Labels and evidence remain caller-owned |
-| Recipient-specific in-process sharing | `share_round_result` | `share_round` retains legacy `SharingDiagnostics` |
-| Spawned local workers | `run_multiprocess_round_result` | Consensus-returning process helpers remain |
-| Loopback transport and replay | `run_socket_round_result` | Protocol v1 and legacy socket dictionary remain unchanged |
-| Inspect a socket transcript | `inspect_socket_replay` | `validate_socket_replay` remains integrity-only Boolean |
+| Recipient-specific in-process sharing | `share_round_result` | Global and recipient-specific aggregation diagnostics |
+| Spawned local workers | `run_multiprocess_round_result` | Spawned-process lifecycle and complete server diagnostics |
+| Loopback transport and replay | `run_socket_round_result` | Loopback-only transport using protocol version 1 |
+| Inspect a socket transcript | `inspect_socket_replay` | Structured integrity and solver findings |
 | Registered research workflow | `fedference run` / `benchmark` | Research receipts are not application receipts |
 | Optional synthetic BNN lane | install the `bnn` extra | Torch stays outside the default import graph |
 

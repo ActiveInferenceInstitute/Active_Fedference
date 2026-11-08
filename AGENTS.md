@@ -53,17 +53,18 @@ Full module map, experiments, and artifacts:
 - Pure domain operations are importable from `fedference`; use
   `AgentPosterior` + `LabeledAggregationRequest` + `aggregate_labeled` for
   caller-labeled application data, or `AggregationConfig` + `aggregate_result`
-  for the smallest numeric integration. Retain `aggregate`,
-  `log_linear_pool`, and `robust_aggregate` for compatibility.
+  for the smallest numeric integration. The scientific controls are
+  `log_linear_pool`, `robust_aggregate`, and `variational_aggregate`;
+  migrate callers through the [retirement inventory](docs/development/api-retirement-20261027.md).
 - Direct belief sharing, one-machine process federation, and loopback sockets
-  consume the same validated configuration and expose additive rich-result
-  adapters; legacy return types and protocol-v1 envelopes remain. Transport
-  adapters must not duplicate aggregation math.
+  consume the same validated configuration through `share_round_result`,
+  `run_multiprocess_round_result`, and `run_socket_round_result`. Transport
+  adapters must not duplicate aggregation math or reinterpret versioned wire fields.
 - Evidence, checkpoint, external-data, replay, DOI, and report-writing code is
   explicit boundary code. Reports cross the typed `_write_json` boundary only;
   optional Torch/BNN modules stay outside the default import graph.
 - The installed `fedference_cli` is a composable adapter, not a second domain
-  implementation: `__init__.py` is the compatibility facade, `_parser.py`
+  implementation: `__init__.py` exposes the `main` entry point, `_parser.py`
   owns process grammar, `_commands.py` owns registry dispatch, and `_support.py`
   owns output isolation and receipt construction. `fedference aggregate` is the
   receipt-writing labeled own-data path; its receipt proves declared

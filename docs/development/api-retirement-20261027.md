@@ -11,10 +11,12 @@ migration is implemented and reviewed. Release authorization is separate.
 The explicit breaking-change authorization resolves all 23 owner decisions.
 Schema 2 retains all 94 initial rows and all 61 previously retired statuses.
 The owner_decisions metadata records each OD disposition, canonical route,
-assigned task and rationale. Only OD01–03 are implemented by Task 52.
-Later Task 53/54/55/56/58 surfaces remain present until their separately assigned
-migration and verification gates. The original owner-decision classification
-is retained as source evidence; it no longer denotes an unanswered question.
+assigned task and rationale. OD01–03 are implemented by Task 52. The independent
+OD21 leaf removes only the CLI fallback-helper facade reexport; the identical
+internal helper and public main entry point remain. Full Task 54 still depends
+on Task 53 and remains pending. Other Task 53/54/55/56/58 surfaces retain their
+separately assigned migration and verification gates. The original owner-decision
+classification is retained as source evidence; it no longer denotes an unanswered question.
 
 Task 52 removes aggregate, share_round, SharingDiagnostics, friston_belief_share
 and run_tabular_benchmark. Canonical config/result paths retain all six scientific
@@ -320,6 +322,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_tempered_aggregation_objective.py::test_c_to_zero_recovery_tempered",
         "tests/figures/test_frontmatter.py::<module>",
         "tests/figures/test_frontmatter.py::test_frontmatter_claims_match_owners_and_actual_recovery",
+        "tests/integration/test_write_custody.py::_verify",
         "tests/test_domain_retirement.py::<module>",
         "tests/test_domain_retirement.py::test_canonical_calls_and_scientific_comparators",
         "tests/test_domain_retirement.py::test_retired_assimilation_keyword_leaves_state_unchanged",
@@ -1279,6 +1282,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_transport_envelope.py::<module>",
         "tests/fedference/test_transport_envelope.py::test_config_and_legacy_robustness_conflicts_fail",
         "tests/fedference/test_transport_envelope.py::test_socket_round_carries_config_hash_and_variational_result",
+        "tests/integration/test_write_custody.py::<module>",
+        "tests/integration/test_write_custody.py::inputs",
         "tests/test_boundary_retirement.py::<module>",
         "tests/test_boundary_retirement.py::test_canonical_transport_figures_and_historical_corpus",
         "tests/test_cli_surface_failure_matrix.py::<module>",
@@ -1348,6 +1353,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "tests/fedference/test_socket_transport.py::test_replay_rejects_top_level_aggregate_config_tamper",
         "tests/fedference/test_socket_transport.py::test_replay_rejects_unknown_fields_and_out_of_order_events",
         "tests/fedference/test_socket_transport.py::test_socket_round_rejects_non_configuration_objects",
+        "tests/integration/test_write_custody.py::<module>",
+        "tests/integration/test_write_custody.py::_verify",
         "tests/test_boundary_retirement.py::<module>",
         "tests/test_boundary_retirement.py::test_canonical_transport_figures_and_historical_corpus"
       ],
@@ -1669,7 +1676,6 @@ an injected unclassified warning and a removed protocol reader fail the gate.
     },
     {
       "callsites": [
-        "src/fedference_cli/__init__.py::<module>",
         "src/fedference_cli/_support.py::_write_evidence_run",
         "tests/test_cli_surface_failure_matrix.py::<module>",
         "tests/test_cli_surface_failure_matrix.py::test_support_validation_matrix_and_receipt_extraction",
@@ -1684,7 +1690,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "rationale": "Private facade reexport is unnecessary; canonical internal implementation remains.",
       "replacement": "fedference_cli._support._report_fallbacks internally; typed evidence for public callers",
       "scope": "Task 54",
-      "status": "present",
+      "status": "retired",
       "symbol": "src/fedference_cli/__init__.py::_report_fallbacks"
     },
     {
@@ -1725,6 +1731,8 @@ an injected unclassified warning and a removed protocol reader fail the gate.
         "src/figures/graphical_abstract.py::<module>",
         "tests/analysis/test_workflow.py::<module>",
         "tests/analysis/test_workflow.py::test_main_prints_paths_and_returns_mapping",
+        "tests/integration/test_write_custody.py::<module>",
+        "tests/integration/test_write_custody.py::_produce",
         "tests/test_cli_surface_failure_matrix.py::<module>",
         "tests/test_cli_surface_failure_matrix.py::_expect_usage_error",
         "tests/test_cli_surface_failure_matrix.py::test_cli_clean_checkout_application_receipt_and_tamper_paths",
@@ -2030,7 +2038,7 @@ an injected unclassified warning and a removed protocol reader fail the gate.
       "canonical": "fedference_cli._support._report_fallbacks internally; typed evidence for public callers",
       "task": 54,
       "rationale": "Private facade reexport is unnecessary; canonical internal implementation remains.",
-      "implementation_status": "pending"
+      "implementation_status": "implemented"
     },
     {
       "id": "OD22",

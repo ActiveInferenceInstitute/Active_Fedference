@@ -6,9 +6,9 @@ point.
 
 ## Required boundaries
 
-- Keep `__init__.py` a compatibility facade. Export `main` and the historical
-  `_report_fallbacks` name; do not put parser, runner, receipt, or numerical
-  logic there.
+- Keep `__init__.py` a compatibility facade. Export the identical `_parser.main` entry point.
+  Keep `_report_fallbacks` internal to `_support`; place parser, runner, receipt,
+  and numerical logic in their owning modules.
 - Keep parser grammar and process error mapping in `_parser.py`.
 - Keep registry-to-runner dispatch in `_commands.py`.
 - Keep atomic writes, project-root/output isolation, validation, registry
