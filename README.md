@@ -444,7 +444,7 @@ keyword arguments of the `fedference.experiments` study functions exactly.
 
 ## Installed CLI and evidence contracts
 
-The package installs `fedference` with six commands:
+The package installs `fedference` with seven commands:
 
 ```bash
 # Give every write-producing example a fresh caller-owned root.
@@ -463,6 +463,9 @@ uv run --locked fedference verify \
 # Inspect source-bound experiments, profiles, datasets, and source revisions.
 # Add --json for the complete machine-readable registry.
 uv run --locked fedference list
+
+# Admit a canonical JSON IR or upstream GNN Markdown model without simulation.
+uv run --locked fedference model validate --model model.json --json
 
 # Correctness-only registered run; output must be explicit and outside output/
 uv run --locked fedference run server-theory \
