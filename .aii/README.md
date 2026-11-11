@@ -44,7 +44,7 @@ Institute repositories without touching this project's own content. The schema i
 
 | Task | Command | Working directory | Description |
 | --- | --- | --- | --- |
-| `test` | `python -m pytest` | `.` | Run the test suite. |
+| `test` | `uv run --locked --extra dev pytest tests/ --validation-profile=native -m "not slow" -q` | `.` | Run the fast native-profile test suite without the external GNN runtime. |
 
 ## Links
 

@@ -106,9 +106,10 @@ The released PDF embeds the published DOI and public repository URL as release
 metadata; both cross-references were rechecked after publication. The v1.0.3,
 v1.0.2, v1.0.1, and v0.1.0 records remain available as public prior versions.
 This checkout is
-the standalone development/review source; its configured `origin` is the
-interim [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
-remote.
+the standalone development/review source; its configured `origin` is the canonical
+[`ActiveInferenceInstitute/Active_Fedference`](https://github.com/ActiveInferenceInstitute/Active_Fedference)
+repository. [`docxology/active_fedference`](https://github.com/docxology/active_fedference)
+remains a separate interim evidence mirror and is not configured as a remote here.
 
 The headline result is a **project-local** identity. On the same categorical
 inputs, the zero-robustness server path is bit-identical to the project's

@@ -23,8 +23,10 @@ Installation and checksum verification are documented in the
 [application guide](docs/application-guide.md#install-the-v110-release).
 The immutable v1.0.4 record remains at
 [Zenodo](https://doi.org/10.5281/zenodo.21972644), alongside v1.0.3, v1.0.2,
-v1.0.1, and v0.1.0. The configured `docxology` remote is the interim evidence
-remote; public integration uses reviewed pull requests to the canonical repository.
+v1.0.1, and v0.1.0. The canonical repository is configured as `origin`; the
+[`docxology/active_fedference`](https://github.com/docxology/active_fedference)
+mirror is a separate interim evidence remote. Public integration uses reviewed
+pull requests to the canonical repository.
 
 ## The standalone core
 

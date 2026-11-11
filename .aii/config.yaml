@@ -1,7 +1,7 @@
 # AII sidecar — InstituteOS metadata. Schema: aii_platform.aii_sidecar
 meta:
   sidecar_version: 1.2.1
-  updated: '2026-11-10'
+  updated: '2026-11-11'
 repo:
   name: Active_Fedference
   slug: active-fedference
@@ -54,7 +54,7 @@ artifacts:
 provenance:
   license: MIT
   citation:
-    doi: 10.5281/zenodo.22149133`](https://doi.org/10.5281/zenodo.22149133
+    doi: 10.5281/zenodo.22149133
     text: Active Inference Institute — Active_Fedference.
 instituteos:
   tags:
@@ -73,8 +73,8 @@ capabilities:
 - citation
 tasks:
   test:
-    cmd: python -m pytest
-    description: Run the test suite.
+    cmd: uv run --locked --extra dev pytest tests/ --validation-profile=native -m "not slow" -q
+    description: Run the fast native-profile test suite without the external GNN runtime.
 docs:
 - README.md
 - AGENTS.md
