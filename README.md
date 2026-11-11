@@ -640,3 +640,11 @@ Start with the [`application guide`](docs/application-guide.md), continue with
 [`examples/README.md`](examples/README.md) for every supported boundary, then
 [`docs/development/quickstart.md`](docs/development/quickstart.md) for the full
 source-to-publication validation sequence.
+
+## InstituteOS sidecar
+
+This repository carries a committed [`.aii/`](.aii/README.md) sidecar with curated
+InstituteOS metadata (`aii-sidecar/v1`): category, maturity, ecosystem relations,
+key artifacts, provenance, and portable tasks. It is read by
+[InstituteOS](https://github.com/ActiveInferenceInstitute/InstituteOS) tooling and
+does not affect the project's build or runtime.
