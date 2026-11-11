@@ -9,6 +9,20 @@ the federated **belief-sharing** scenario of Friston et al.
 (2024), *Federated inference and belief sharing* (Neurosci. Biobehav. Rev.
 156:105500).
 
+## Contents
+
+- [Start here](#start-here) — apply the software and run a labeled example
+- [Release records](#release-records) — current source identity, DOIs, and prior releases
+- [The problem this solves](#the-problem-this-solves) — the scoped categorical bridge
+- [Architecture](#architecture) — layers, module map, and composable integration surfaces
+- [How to run](#how-to-run) — install, test, and build packaged artifacts
+- [Installed CLI and evidence contracts](#installed-cli-and-evidence-contracts)
+- [Manuscript](#manuscript) — token-hydrated results and [reproducing outputs](#reproducing-outputs)
+- [Evidence status and active research](#evidence-status-and-active-research)
+- [Conventions](#conventions)
+- [Documentation](#documentation) — the modular docs hub and entry points
+- [InstituteOS sidecar](#instituteos-sidecar)
+
 ## Start here
 
 The complete path for applying the software to your own categorical beliefs is
