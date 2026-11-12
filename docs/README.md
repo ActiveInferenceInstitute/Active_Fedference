@@ -48,6 +48,9 @@ GitHub publication does not establish Zenodo publication or current-source certi
 | [`security/`](security/README.md) | Runtime/development trust boundaries, abuse paths, mitigations, and no-claim constraints |
 | [`todo/`](todo/README.md) | Scoped forward roadmap pages linked from `TODO.md` |
 
+For one entry per maintained documentation page, use the
+[flat documentation index](documentation-index.md).
+
 ## Read order (new contributors)
 
 1. [`../README.md`](../README.md) — project pitch and run commands

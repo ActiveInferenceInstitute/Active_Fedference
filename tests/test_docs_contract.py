@@ -267,6 +267,14 @@ def _source_owned_markdown_files() -> tuple[str, ...]:
     )
 
 
+def test_flat_documentation_index_lists_every_page_once() -> None:
+    index_path = "docs/documentation-index.md"
+    entries = re.findall(r"^- \[[^\]]+\]\(([^)]+)\)$", _read(index_path), re.MULTILINE)
+    expected = [str(Path(path).relative_to("docs")) for path in _source_owned_markdown_files()]
+    assert entries == sorted(expected)
+    assert "documentation-index.md" in _read("docs/README.md")
+
+
 def _contract_files() -> tuple[str, ...]:
     return tuple(
         dict.fromkeys(
