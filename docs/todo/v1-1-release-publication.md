@@ -6,62 +6,67 @@
 
 - Priority class: Medium
 - State: Open
-- Queue position: after the visual-scholarship merge and before MAJ-8
-- Owner surface: release identity, public PR, annotated tag, GitHub release,
-  linked Zenodo version, and the single private-main synchronization
+- Queue position: first on the post-publication path, before MIN-3 closure and
+  MAJ-8
+- Owner surface: published release identity, retrospective exact-SHA
+  certification, the historical publication-approval record, and the single
+  private-main synchronization
 
 ## Rationale
 
 The development line must not acquire a final version, DOI, or release date
-until its source and visual base is integrated and green. GitHub publication,
-Zenodo draft mutation, irreversible Zenodo publication, and private-main
-synchronization are separate state transitions with different evidence and
-authority requirements.
+until its source and visual base is integrated and green. In v1.1.0 that order
+was not followed: the release-only merge, annotated tag, GitHub release, and
+Zenodo publication completed on 2026-09-19/20 before the exact-SHA campaign.
+Those remain separate state transitions with different evidence and authority
+requirements, and the published bytes cannot be retrofitted.
 
 ## Scope
 
 ### MED-5A — linked draft and release-identity integration
 
-From the exact green visual merge on public `main`, create the release-only
-branch `codex/v1.1.0-release`. Create or recover the linked Zenodo next-version
-draft from published record `21972644`, inspect it before mutation, and bind
-the returned reserved DOI to the release identity. Change `1.1.0.dev0` to
-`1.1.0`, set the actual UTC release date, regenerate lifecycle metadata and
-artifacts, add the new version/DOI-named PDF without replacing historical
-PDFs, and update the immutable-PDF ledger.
+MED-5A completed: the release-only branch `codex/v1.1.0-release` merged as
+`c759541` ("Merge release v1.1.0", 2026-09-19), changed the identity to `1.1.0`,
+bound the DOI `10.5281/zenodo.22149133`, regenerated lifecycle metadata and
+artifacts, added the version/DOI-named PDF without replacing historical PDFs,
+and updated the immutable-PDF ledger. The tracked current-release documentation
+already carries the canonical repository identity, deterministic tag/release
+URLs, DOI, GitHub-asset installation commands, checksums workflow, application
+entry points, and accessibility boundaries.
 
-MED-5A also owns every tracked current-release documentation edit: canonical
-repository identity, deterministic `v1.1.0` tag/release URLs, reserved DOI,
-GitHub-asset installation commands, checksums workflow, application entry
-points, and accessibility boundaries. These values must be correct in the
-tagged source, wheel, sdist, PDF, and HTML; MIN-3 later verifies the live records
-but does not retrofit an already published release payload.
-
-Push the exact release branch to both Fedference remotes, open a public
-release-only PR, require all hosted jobs on the exact head and merge ref, merge
-normally, and require green post-merge CI. This integration step precedes the
-authoritative MIN-2 campaign because the exact public-main merge commit—not the
-release PR head—must be certified.
+The remaining MED-5A obligation is evidence, not a new identity: confirm that
+the tagged source, wheel, sdist, PDF, and HTML agree on those values, and that
+the release-only PR was a normal merge with all checks then available on the
+exact head and merge ref. Hosted Actions is billing-locked org-wide, so a
+historical hosted-check claim must be read from the recorded run rather than
+re-run. MIN-3 later verifies the live records but does not retrofit an already
+published release payload. Do not re-create the identity or the release PR.
 
 ### MIN-2 bridge — certify the exact final main commit
 
-Run MIN-2's two sequential clean-clone ladders against that exact public-main
-merge commit and obtain the selected Daniel Ari Friedman structured verdict.
-The owner-author verdict is the chosen eligible technical checkpoint; it is not
-independent or cross-vendor reproduction, does not close ISC-89, and is distinct
-from authorization to tag or publish.
+Run MIN-2's two sequential clean-clone ladders against `c759541` and obtain the
+selected Daniel Ari Friedman structured verdict. The owner-author verdict is the
+chosen eligible technical checkpoint; it is not independent or cross-vendor
+reproduction, does not close ISC-89, and is distinct from authorization to tag
+or publish. Because the tag and publication already exist, the verdict now
+certifies the published commit retrospectively and cannot authorize a new tag.
 
 ### MED-5B — immutable publication and final private synchronization
 
-Only after an exact-SHA owner-author `pass`, create and verify the annotated tag
-and GitHub release assets under the already granted release authority. Update
-and verify the unpublished linked Zenodo draft, then pause for fresh explicit
-approval before the irreversible publication call. After independent
-post-publication verification, complete MIN-3 through a reviewed normal-merge
-public PR, including removal of its closed forward-backlog entry. Only then
-merge the resulting final public `main` into private `origin/main` once with a
-normal merge commit whose tree is exactly the public tree. No public repository
-commit may intervene between that synchronization and the MAJ-8 branch point.
+The tag, GitHub release, and Zenodo version are already published: annotated tag
+object `c1f1a33`, peeled commit `c759541`, release assets re-downloaded and
+re-hashed in the release-state record, and Zenodo record 22149133 with the
+matching PDF. MED-5B now owns verification and the single private
+synchronization, not another publication. Record the historical publication
+approval if an external record exists; otherwise retain an explicit gap. Never
+re-publish, re-upload, or replace the published bytes to reconstruct history.
+
+After independent post-publication verification, complete MIN-3 through a
+reviewed normal-merge public PR, including removal of its closed forward-backlog
+entry. Only then merge the resulting final public `main` into private
+`origin/main` once with a normal merge commit whose tree is exactly the public
+tree. No public repository commit may intervene between that synchronization
+and the MAJ-8 branch point.
 
 No PyPI publication is included.
 
@@ -76,11 +81,11 @@ No PyPI publication is included.
 - Stage only the canonical PDF, reproducible wheel, reproducible source
   distribution, `manifest.json`, and a sorted `SHA256SUMS.txt`. Verify every
   downloaded asset again.
-- Replace only the inherited same-named generic PDF in the unsubmitted Zenodo
-  draft. Never mutate v1.0.4, move a tag, replace published Zenodo bytes, or
-  edit published metadata as a shortcut.
-- If the release date or final public-main SHA changes, use another reviewed
-  PR and repeat all dependent generation and certification.
+- Treat the published Zenodo version and GitHub assets as immutable. Never
+  mutate v1.0.4 or v1.1.0, move a tag, replace published Zenodo bytes, or edit
+  published metadata as a shortcut.
+- Any later source or identity change requires a new version through a fresh
+  reviewed release-only PR; it never re-cuts or re-publishes v1.1.0.
 
 ## Acceptance Criteria
 
@@ -96,17 +101,20 @@ No PyPI publication is included.
   to final repository/release links, installation and checksum instructions,
   application entry points, and accessibility boundaries.
 - One identified owner-author structured `pass` is bound to the exact certified
-  public-main SHA. It permits tagging but is not independent replication and
-  does not close ISC-89.
+  public-main SHA. It certifies the published commit but is not independent
+  replication and does not close ISC-89.
 - GitHub tag object, peeled commit, release target, filenames, sizes, API
-  digests, local hashes, installability, package contents, and public CI agree.
+  digests, local hashes, installability, package contents, and the recorded
+  exact-commit CI run agree. Hosted Actions is billing-locked, so no new hosted
+  run is required or claimed.
 - The tagged and packaged documentation already contains the final repository,
-  version, deterministic tag/release URLs, reserved DOI, installation route,
-  application path, and accessibility boundaries before publication.
+  version, deterministic tag/release URLs, DOI, installation route, application
+  path, and accessibility boundaries.
 - The Zenodo record has the approved metadata and relation, exactly one PDF,
-  and PDF bytes identical to the canonical GitHub PDF; publication occurs only
-  after a fresh explicit approval.
-- MIN-3 closes through a green normal-merge public PR after publication and
+  and PDF bytes identical to the canonical GitHub PDF; the historical
+  publication approval is attested from an external record or retained as an
+  explicit gap.
+- MIN-3 closes through a reviewed normal-merge public PR after publication and
   before the single private synchronization; its closed row/page do not linger
   in the forward-only backlog.
 - The private synchronization is non-forced, preserves both histories, and
@@ -123,8 +131,8 @@ No PyPI publication is included.
 - MIN-2's two-clone exact-commit ladder, installed wheel/sdist smoke, and
   reproducible-build comparison.
 - GitHub API plus downloaded-byte verification for every release asset.
-- Zenodo draft metadata/file verification before publication and independent
-  DOI, relation, file, checksum, tag, and CI checks after publication.
+- Published Zenodo record verification against the downloaded GitHub PDF, plus
+  independent DOI, relation, file, checksum, tag, and recorded-CI checks.
 - Public/private tree comparison and immutable tag-object comparison after the
   private synchronization.
 
@@ -132,8 +140,8 @@ No PyPI publication is included.
 
 - Falsifier: identity drift, a stale or red PR head, clone divergence, an
   ineligible or non-`pass` verdict, tag mismatch, asset/checksum mismatch,
-  unexpected Zenodo state or file, absent publication approval, or unequal
-  public/private trees blocks the affected state transition.
+  unexpected Zenodo state or file, unattested historical publication approval,
+  or unequal public/private trees blocks the affected state transition.
 - Prohibited claims: a version, green workflow, GitHub release, DOI, receipt,
   or tagged PDF does not establish universal robustness, calibration,
   scientific validity, deployment readiness, WCAG, PDF/UA, or any MAJ-6 result.
@@ -142,10 +150,12 @@ No PyPI publication is included.
 
 ## Dependencies
 
-MED-5A depends on MED-4's merged, green public-main result, current release
-metadata approvals, and a safely editable linked Zenodo draft. MIN-2 then
-depends on the exact release-identity merge commit. MED-5B depends on MIN-2's
-full exact-final-SHA evidence and owner-author `pass`, plus a later fresh
-approval for the irreversible Zenodo publication call. MIN-3 follows verified
-publication, precedes the single private synchronization, and must close before
-MAJ-8 begins.
+MED-5A and the irreversible publication are historical: the release-only merge
+`c759541`, tag `v1.1.0`, GitHub release, and Zenodo record 22149133 exist and
+must not be recreated. The remaining MED-5 work depends on MIN-2's retrospective
+exact-commit evidence and owner-author `pass`, an external record of the
+historical publication approval (or an explicit gap), and a final public `main`
+that includes MIN-3. MIN-3 follows verified publication, precedes the single
+private synchronization, and must close before MAJ-8 begins. MED-4 no longer
+gates this release; its visual work is post-v1.1.0 documentation work that must
+merge before the private synchronization or be scheduled under a new version.

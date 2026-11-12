@@ -6,8 +6,8 @@
 
 - Priority class: Medium
 - State: Open
-- Queue position: immediate integration tranche before the v1.1 release-only
-  identity change
+- Queue position: post-v1.1.0 documentation tranche; merge before the single
+  private synchronization or schedule it under a new version
 - Owner surface: figure contracts, captions and long descriptions, exact-value
   fallbacks, manuscript prose, HTML, slides, Template renderer lock, and public
   PR integration
@@ -146,7 +146,9 @@ Receipts bind declared sources, inputs and outputs. Integrity evidence does not 
 - Perform a new candidate-history confidentiality audit after the source and
   generated commits are fixed. Push the exact SHA to both Fedference remotes,
   open a public PR, and merge only through a normal merge commit after the
-  exact head and merge ref are green.
+  exact head and merge ref pass the applicable gate. Hosted GitHub Actions is
+  billing-locked org-wide as of 2026-11-12, so "green" here means the same gate
+  reproduced locally; a hosted run URL counts only if the run actually executed.
 
 ## Acceptance Criteria
 
@@ -206,7 +208,8 @@ Receipts bind declared sources, inputs and outputs. Integrity evidence does not 
 
 ## Dependencies
 
-Depends on green public Active Fedference `main`, the current typed report and
-figure contracts, a separate clean Template worktree, and MIN-2's
-candidate-specific history and verification gates. MED-5 starts only after the
-visual merge and its post-merge workflow are green.
+Depends on public Active Fedference `main` passing its applicable gate, the
+current typed report and figure contracts, a separate clean Template worktree,
+and MIN-2's candidate-specific history and verification gates. The visual merge
+must precede the single private synchronization; it no longer gates the
+already-published v1.1.0 release.

@@ -24,8 +24,8 @@ merge commits. The private/interim evidence remote remains a separate surface.
 
 | ID | Scoped page | Acceptance focus |
 | --- | --- | --- |
-| MED-4 | [Visual scholarship and accessible-slide integration](visual-scholarship-integration.md) | Exact clean Template renderer, source-bound visual/accessibility surfaces, public PR, and post-merge CI |
-| MED-5 | [v1.1.0 release, publication, and private synchronization](v1-1-release-publication.md) | MED-5A release identity/PR, MIN-2 exact-final certification, MED-5B tag/assets/Zenodo, then MIN-3 closure before private sync |
+| MED-4 | [Visual scholarship and accessible-slide integration](visual-scholarship-integration.md) | Exact clean Template renderer, source-bound visual/accessibility surfaces, public PR, and the locally reproduced post-merge gate |
+| MED-5 | [v1.1.0 release, publication, and private synchronization](v1-1-release-publication.md) | Published v1.1.0 identity, retrospective MIN-2 certification, historical-approval record, then MIN-3 closure before private sync |
 | MED-6 | [Independent and cross-vendor reproduction](independent-reproduction.md) | Conjunctive final-bundle independent-human/Advisor and different-vendor execution evidence for ISC-89 |
 
 ## Major

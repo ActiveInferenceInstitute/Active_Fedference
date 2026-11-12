@@ -43,6 +43,10 @@ release payload.
 
 - Derive version and DOI text from the release identity rather than copying
   development placeholders or obsolete URLs.
+- Package metadata still advertises `Programming Language :: Python :: 3.10` in
+  `pyproject.toml` while `requires-python = ">=3.11"` (raised in `ee67183`);
+  remove the contradictory classifier in the same reviewed change or record
+  why it stays.
 - Test commands from an installed GitHub wheel and source distribution outside
   the checkout. Do not imply PyPI availability.
 - Use contextual link names, text equivalents for diagrams, and exact expected
@@ -93,10 +97,11 @@ release payload.
 
 ## Dependencies
 
-Depends on MED-5 reaching verified GitHub and Zenodo publication. It must not
-guess the final DOI, release date, asset hashes, or URLs before those records
-exist. Close this item through a reviewed normal-merge public PR, including
-removal of its row and scoped page from the forward-only queue, before the
-single private-main synchronization. This handoff is a required post-publication
+Depends on the verified v1.1.0 release identity (tag `v1.1.0`, GitHub release,
+Zenodo record 22149133) and a stable final public `main`. It must not guess the
+DOI, release date, asset hashes, or URLs; the release-state record binds them.
+Close this item through a reviewed normal-merge public PR, including removal of
+its row and scoped page from the forward-only queue, before the single
+private-main synchronization. This handoff is a required post-publication
 gate before the MAJ-8 branch begins, so scientific work cannot leave current-
 release discovery surfaces in a stale development state.
