@@ -14,6 +14,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from read_gnn_pin import read_gnn_pin
+
 from fedference.gnn.backend import BackendConfig, run_pymdp, verify_backend_output
 from fedference.gnn.backend_registry import load_backend_registry
 from fedference.gnn.loader import PARSER_MANIFEST, load_sentinel, verify_sentinel_cache
@@ -35,6 +37,9 @@ def main() -> int:
     root = resolve_script_project_root(Path(__file__).resolve().parents[1], args.project_root)
     lock_path = args.lock or root / "src/fedference/config/gnn-backend-lock.json"
     registry = load_backend_registry(lock_path)
+    revision = read_gnn_pin(root)
+    if registry.as_dict()["revision"] != revision:
+        raise ValueError("GNN pin revision differs from the qualified backend lock")
     profile = registry.profiles[args.profile]
     if profile.qualification != "fresh-provisioning-and-execution":
         raise ValueError("Runtime profile is not qualified for fresh provisioning")
@@ -103,6 +108,7 @@ def main() -> int:
     (destination / "bootstrap.json").write_text(json.dumps({
         "profile": args.profile, "registry_sha256": hashlib.sha256(lock_path.read_bytes()).hexdigest(),
         "lock_sha256": hashlib.sha256(runtime_registry.read_bytes()).hexdigest(),
+        "source_commit": revision,
         "source_files": files, "replay_max_error": result.replay_max_error,
         "receipt": str(result.receipt), "environment": environment,
     }, indent=2) + "\n")

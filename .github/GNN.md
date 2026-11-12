@@ -30,3 +30,10 @@ scientific, structured, model-CLI and pymdp modules cover the `.fed.md`
 extension specifications and the pinned backend runtime. The job does not
 scan the rest of the repository for `*.gnn.md`; `sentinel.gnn.md` is the
 only such file in the checkout.
+
+CI checkout and local bootstrap share the interim local reader
+`scripts/read_gnn_pin.py`. Bootstrap also rejects drift between that revision
+and the qualified backend lock before provisioning, and records `source_commit`
+in `bootstrap.json`. The estate pin above predates `gnn.importers`; this local
+reader is not the shared-reader cutover and does not vendor that implementation.
+Shared-reader adoption remains staged until a reader-bearing pin is qualified.

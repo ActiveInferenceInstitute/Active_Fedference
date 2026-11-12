@@ -122,19 +122,7 @@ jobs:
       - run: uv sync --locked --extra dev
       - name: Read the qualified upstream source revision
         id: gnn-source
-        run: |
-          python - <<'PY'
-          import json
-          import os
-          import re
-          from pathlib import Path
-          pin = json.loads(Path(".github/gnn-pin.json").read_text())
-          revision = pin.get("commit")
-          if pin.get("schema") != "gnn-importer-pin/v1" or not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
-              raise ValueError("GNN pin must declare gnn-importer-pin/v1 and an exact commit SHA")
-          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
-              output.write(f"revision={revision}\n")
-          PY
+        run: python scripts/read_gnn_pin.py --github-output "$GITHUB_OUTPUT"
       - name: Fetch the qualified upstream source revision
         uses: actions/checkout@v4
         with:
