@@ -84,6 +84,30 @@ artifacts; `bootstrap` and `gnn` require the pinned GNN runtime and network;
 `full` and `all` are the complete matrix. The hosted workflow runs the same
 arms, but a local arm is not a hosted release verdict.
 
+Measured on this workstation (macOS arm64, Python 3.12.16) on 2026-11-12, one
+run per arm:
+
+| Arm | Before (inline step) | After (`scripts/gate.py`) | Result |
+| --- | --- | --- | --- |
+| `lint` | 0.087 s | 0.17 s | pass |
+| `types` | 0.809 s | 1.05 s | pass |
+| `metadata` | 1.051 s | 2.00 s | pass |
+| `docs` (Mermaid + docs contract) | 9.49 s | 13.41 s | pass |
+| `plan` | not separately timed | 14.93 s | pass (4,000 tests collected) |
+| `fast` | 600 s bounded (stopped) | not re-run | not completed |
+| `tests/test_scripts_smoke.py` | not separately timed | 145.06 s | 37 passed |
+
+The explicit `uv sync --locked --extra dev` step before the inline commands
+measured 0.037 s here. The gate arm adds a `uv run` sync and a subprocess
+wrapper, so the small-arm numbers are not a speedup; the change is
+composability, not a claimed wall-time win. The `fast`, `full`, `shard`,
+`verify`, `gnn`, `bootstrap`, and `all` arms were not completed in this bounded
+pass. The `fast` arm stopped at 600 s with two failures in
+`tests/analysis/test_stage_process.py`; `scripts/validate_all.py manuscript`
+stopped at 300 s at `tests/test_token_tables.py`. These are local observations,
+not hosted-runner guarantees, and the full matrix, the pinned GNN runtime, and
+the release lanes remain outside a bounded local arm pass.
+
 ## Run root-aware scripts from another checkout
 
 Scripts default to the checkout containing the entry point. For a sibling
