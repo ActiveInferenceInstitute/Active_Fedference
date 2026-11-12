@@ -55,6 +55,35 @@ Profile scope:
 - `full`: quick + manuscript + package + rendered-surface + freshness + source
   + full coverage gate.
 
+## CI gate arms
+
+The hosted workflow's command sequences are the named arms of
+[`../../scripts/gate.py`](../../scripts/gate.py); the same arms run locally from
+the project root:
+
+```bash
+uv run --locked python scripts/gate.py lint
+uv run --locked python scripts/gate.py types
+uv run --locked python scripts/gate.py metadata
+uv run --locked python scripts/gate.py docs
+uv run --locked python scripts/gate.py fast
+uv run --locked python scripts/gate.py plan
+uv run --locked python scripts/gate.py shard --index 0
+uv run --locked python scripts/gate.py verify
+uv run --locked python scripts/gate.py bootstrap
+uv run --locked python scripts/gate.py gnn
+uv run --locked python scripts/gate.py full
+uv run --locked python scripts/gate.py all
+```
+
+`--dry-run` prints the exact commands without running them; `--keep-going`
+continues after a failing arm command; `--project-root PATH` selects a
+standalone checkout. `lint`, `types`, `metadata`, `docs`, `fast`, and `plan` are
+bounded local probes. `shard` and `verify` require a prior `plan` and the shard
+artifacts; `bootstrap` and `gnn` require the pinned GNN runtime and network;
+`full` and `all` are the complete matrix. The hosted workflow runs the same
+arms, but a local arm is not a hosted release verdict.
+
 ## Run root-aware scripts from another checkout
 
 Scripts default to the checkout containing the entry point. For a sibling

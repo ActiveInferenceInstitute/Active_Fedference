@@ -7,10 +7,11 @@
 
 The job rejects a pin whose schema is not `gnn-importer-pin/v1` or whose
 `commit` is not an exact 40-character SHA, checks out that commit into
-`.tmp/gnn-upstream`, and qualifies a fresh runtime with
-`scripts/bootstrap_gnn.py --profile cpython312-cpu`. It then runs
-`scripts/ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4`, the
-`gnn` validation profile: the six modules named by `GNN_MODULES` in
+`.tmp/gnn-upstream`, and runs the `scripts/gate.py bootstrap` arm, which
+qualifies a fresh runtime with `scripts/bootstrap_gnn.py --profile
+cpython312-cpu`. The `scripts/gate.py gnn` arm then runs the same shard
+execution (`scripts/ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4`)
+under the `gnn` validation profile: the six modules named by `GNN_MODULES` in
 `scripts/validation_profiles.py`,
 `tests/test_gnn_interop.py`,
 `tests/fedference/test_gnn_sentinel.py`,
