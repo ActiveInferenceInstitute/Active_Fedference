@@ -6,6 +6,7 @@ import gzip
 import importlib.util
 import io
 import os
+import re
 import shutil
 import subprocess
 import tarfile
@@ -264,7 +265,9 @@ def test_wheel_normalization_removes_order_and_timestamp_drift(tmp_path: Path) -
 def test_build_configuration_pins_and_ships_the_reproducible_backend() -> None:
     pyproject = (_ROOT / "pyproject.toml").read_text(encoding="utf-8")
     manifest = (_ROOT / "MANIFEST.in").read_text(encoding="utf-8")
-    assert 'requires = ["setuptools==81.0.0"]' in pyproject
+    # The build requirement must stay an exact pin; the version itself is owned
+    # by the dependency update that lands it, so only the pin shape is asserted.
+    assert re.search(r'requires = \["setuptools==\d+\.\d+\.\d+"\]', pyproject)
     assert 'build-backend = "_fedference_build_backend"' in pyproject
     assert 'backend-path = ["."]' in pyproject
     assert "include _fedference_build_backend.py" in manifest
