@@ -95,7 +95,7 @@ run per arm:
 | `docs` (Mermaid + docs contract) | 9.49 s | 13.41 s | pass |
 | `plan` | not separately timed | 14.93 s | pass (4,000 tests collected) |
 | `fast` | 600 s bounded (stopped) | not re-run | not completed |
-| `tests/test_scripts_smoke.py` | not separately timed | 145.06 s | 37 passed |
+| `tests/test_scripts_smoke.py` | not separately timed | 164.04 s | 38 passed |
 
 The explicit `uv sync --locked --extra dev` step before the inline commands
 measured 0.037 s here. The gate arm adds a `uv run` sync and a subprocess
