@@ -139,8 +139,8 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.bnn_fedgvi` | `DiagonalGaussian` | class | Normalized diagonal Gaussian posterior parameters. |
 | `fedference.bnn_fedgvi` | `FedGVIServerState` | class | Prior, client sites, and round counter for resumable FedGVI updates. |
 | `fedference.bnn_fedgvi` | `GaussianSiteFactor` | class | Possibly unnormalized client factor in Gaussian natural coordinates. |
-| `fedference.bnn_fedgvi` | `load_server_checkpoint` | function | Load and validate a round-level server checkpoint. |
-| `fedference.bnn_fedgvi` | `save_server_checkpoint` | function | Atomically write one round-level server checkpoint. |
+| `fedference.bnn_fedgvi` | `load_server_checkpoint` | function | Read once, optionally bind to a caller-trusted digest, then validate. |
+| `fedference.bnn_fedgvi` | `save_server_checkpoint` | function | Exclusively publish one round-level server checkpoint. |
 | `fedference.bnn_variational_torch` | `VariationalMLP` | class | Mean-field variational MLP: diagonal-Gaussian ``q(w)`` over every weight. |
 | `fedference.bnn_variational_torch` | `gaussian_kl_reference` | function | One-weight KL via the tested categorical-sibling :func:`gaussian_kl` — the independent reference the module's summed KL is checked against. |
 | `fedference.calibration` | `CalibrationEpisode` | class | One independent world used only for hyperparameter calibration. |
@@ -177,8 +177,8 @@ Generated from top-level public functions and classes under `src/` using AST par
 | `fedference.evidence_contracts.custody` | `load_receipt` | function | Auto-detect and load a research or application receipt. |
 | `fedference.evidence_contracts.custody` | `load_run_receipt` | function | Load and validate a JSON run receipt. |
 | `fedference.evidence_contracts.custody` | `make_artifact_record` | function | Create a receipt record for an existing file below ``root``. |
-| `fedference.evidence_contracts.custody` | `write_application_receipt` | function | Atomically persist one canonical application receipt. |
-| `fedference.evidence_contracts.custody` | `write_run_receipt` | function | Atomically persist a canonical run receipt. |
+| `fedference.evidence_contracts.custody` | `write_application_receipt` | function | Exclusively publish one canonical application receipt. |
+| `fedference.evidence_contracts.custody` | `write_run_receipt` | function | Exclusively publish a canonical run receipt. |
 | `fedference.evidence_contracts.hashing` | `canonical_sha256` | function | Hash a JSON-compatible value using canonical key and separator order. |
 | `fedference.evidence_contracts.hashing` | `sha256_file` | function | Return the SHA-256 digest of ``path`` without loading it all into memory. |
 | `fedference.evidence_contracts.run_schema` | `RunReceipt` | class | Content-bound receipt for one executed experiment profile. |

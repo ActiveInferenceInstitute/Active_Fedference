@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import json
-import os
-import tempfile
 from pathlib import Path
 
+from ._atomic import publish_json
 from .application_schema import ApplicationReceipt
 from .hashing import sha256_file
 from .run_schema import RunReceipt
@@ -39,33 +37,8 @@ def make_artifact_record(
 
 
 def write_run_receipt(path: str | Path, receipt: RunReceipt) -> Path:
-    """Atomically persist a canonical run receipt."""
-    receipt_path = Path(path)
-    receipt_path.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            "w",
-            dir=receipt_path.parent,
-            prefix=f".{receipt_path.name}.",
-            suffix=".tmp",
-            encoding="utf-8",
-            delete=False,
-        ) as handle:
-            json.dump(
-                receipt.as_dict(),
-                handle,
-                indent=2,
-                sort_keys=True,
-                allow_nan=False,
-            )
-            handle.write("\n")
-            temporary = Path(handle.name)
-        os.replace(temporary, receipt_path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-    return receipt_path
+    """Exclusively publish a canonical run receipt."""
+    return publish_json(path, receipt.as_dict())
 
 
 
@@ -73,35 +46,10 @@ def write_application_receipt(
     path: str | Path,
     receipt: ApplicationReceipt,
 ) -> Path:
-    """Atomically persist one canonical application receipt."""
+    """Exclusively publish one canonical application receipt."""
     if not isinstance(receipt, ApplicationReceipt):
         raise ValueError("receipt must be an ApplicationReceipt")
-    receipt_path = Path(path)
-    receipt_path.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            "w",
-            dir=receipt_path.parent,
-            prefix=f".{receipt_path.name}.",
-            suffix=".tmp",
-            encoding="utf-8",
-            delete=False,
-        ) as handle:
-            json.dump(
-                receipt.as_dict(),
-                handle,
-                indent=2,
-                sort_keys=True,
-                allow_nan=False,
-            )
-            handle.write("\n")
-            temporary = Path(handle.name)
-        os.replace(temporary, receipt_path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-    return receipt_path
+    return publish_json(path, receipt.as_dict())
 
 
 

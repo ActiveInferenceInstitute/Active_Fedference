@@ -14,9 +14,8 @@ source loss, divergence, optimization schedule, and data partition.
 
 from __future__ import annotations
 
-import json
-import os
-import tempfile
+import hashlib
+import hmac
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Mapping
@@ -24,6 +23,8 @@ from typing import Any, Literal, Mapping
 import numpy as np
 
 from .evidence import canonical_sha256
+from .evidence_contracts._atomic import publish_json
+from .evidence_contracts.strict_json import _loads_json_strict
 
 ArrayF = np.ndarray
 UpdateSchedule = Literal["sequential", "parallel"]
@@ -326,43 +327,35 @@ def save_server_checkpoint(
     path: str | Path,
     state: FedGVIServerState,
 ) -> Path:
-    """Atomically write one round-level server checkpoint."""
+    """Exclusively publish one round-level server checkpoint."""
     if not isinstance(state, FedGVIServerState):
         raise ValueError("state must be a FedGVIServerState")
-    checkpoint = Path(path)
-    checkpoint.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            "w",
-            dir=checkpoint.parent,
-            prefix=f".{checkpoint.name}.",
-            suffix=".tmp",
-            encoding="utf-8",
-            delete=False,
-        ) as handle:
-            json.dump(
-                state.as_dict(),
-                handle,
-                indent=2,
-                sort_keys=True,
-                allow_nan=False,
-            )
-            handle.write("\n")
-            temporary = Path(handle.name)
-        os.replace(temporary, checkpoint)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-    return checkpoint
+    return publish_json(path, state.as_dict())
 
 
-def load_server_checkpoint(path: str | Path) -> FedGVIServerState:
-    """Load and validate a round-level server checkpoint."""
+def load_server_checkpoint(
+    path: str | Path, *, expected_sha256: str | None = None,
+) -> FedGVIServerState:
+    """Read once, optionally bind to a caller-trusted digest, then validate.
+
+    Without an independently trusted expectation this is schema-only loading,
+    not authentication. The canonical state fingerprint remains unchanged.
+    """
+    if expected_sha256 is not None and (
+        not isinstance(expected_sha256, str)
+        or len(expected_sha256) != 64
+        or any(character not in "0123456789abcdefABCDEF" for character in expected_sha256)
+    ):
+        raise ValueError("expected_sha256 must be a 64-character SHA-256 hex digest")
     try:
-        raw = json.loads(Path(path).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise ValueError(f"invalid FedGVI checkpoint: {path}") from exc
+        data = Path(path).read_bytes()
+        if expected_sha256 is not None and not hmac.compare_digest(
+            hashlib.sha256(data).hexdigest(), expected_sha256.lower(),
+        ):
+            raise ValueError("checkpoint SHA-256 does not match trusted expected_sha256")
+        raw = _loads_json_strict(data.decode("utf-8"))
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"invalid FedGVI checkpoint: {path}: {exc}") from exc
     if not isinstance(raw, dict):
         raise ValueError("FedGVI checkpoint must be a JSON object")
     return FedGVIServerState.from_dict(raw)

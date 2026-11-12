@@ -265,7 +265,12 @@ def run_fedgvi_bnn_pilot(
                     local_steps=local_steps,
                     hidden_dim=8,
                 )
-                checkpoint = save_server_checkpoint(Path(scratch) / "round-1.json", first)
+                # The custody writer retains a physical parent directory, so a
+                # scratch root reached through a symlinked alias (macOS TMPDIR)
+                # is resolved before it selects authority.
+                checkpoint = save_server_checkpoint(
+                    Path(scratch).resolve() / "round-1.json", first,
+                )
                 resumed = load_server_checkpoint(checkpoint)
                 resumed_final, _ = _run_bnn_state(
                     clients=clients,
