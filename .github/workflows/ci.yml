@@ -85,7 +85,7 @@ jobs:
           export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
           npm install --prefix .tmp/playwright-node --no-package-lock --no-save @playwright/test@1.62.1
           .tmp/playwright-node/node_modules/.bin/playwright install --with-deps chromium
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: test-plan
           path: .tmp/ci-plan
@@ -147,7 +147,7 @@ jobs:
           persist-credentials: false
       - name: Bootstrap and qualify the exact CPU runtime
         run: uv run --locked python scripts/gate.py bootstrap --upstream-root .tmp/gnn-upstream --destination "$RUNNER_TEMP/fedference-gnn"
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: test-plan
           path: .tmp/ci-plan
@@ -220,13 +220,13 @@ jobs:
           .tmp/playwright-node/node_modules/.bin/playwright install --with-deps chromium
 
       - name: Download complete test plan
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: test-plan
           path: .tmp/ci-plan
 
       - name: Download all shard evidence
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: shard-*
           path: .tmp/ci-shards
