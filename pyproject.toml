@@ -3,7 +3,7 @@
 # Inherits workspace settings from root pyproject.toml
 
 [build-system]
-requires = ["setuptools==81.0.0"]
+requires = ["setuptools==84.2.1"]
 build-backend = "_fedference_build_backend"
 backend-path = ["."]
 
