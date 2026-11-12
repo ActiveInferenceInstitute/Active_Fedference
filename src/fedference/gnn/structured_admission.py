@@ -35,11 +35,11 @@ class StructuredProgram:
 
 
 
-MOVING_ASSET: Final = MODEL_DIR / "moving-observer.gnn.md"
+MOVING_ASSET: Final = MODEL_DIR / "moving-observer.fed.md"
 
 
 
-HIERARCHY_ASSET: Final = MODEL_DIR / "hierarchy.gnn.md"
+HIERARCHY_ASSET: Final = MODEL_DIR / "hierarchy.fed.md"
 
 
 

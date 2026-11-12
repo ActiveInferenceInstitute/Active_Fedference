@@ -38,6 +38,9 @@ B=[[[1.0, 1.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.
 C=[0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0]
 D=[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
 
+## Time
+Static
+
 ## ModelParameters
 num_states: 9
 num_observations: 9
@@ -45,3 +48,6 @@ num_actions: 3
 
 ## FedferenceSchema
 {"actions": ["still", "left", "right"], "axes": {"A": ["observation", "state"], "B": ["next_state", "previous_state", "action"], "C": ["observation"], "D": ["state"]}, "observations": ["seen_0", "seen_1", "seen_2", "seen_3", "seen_4", "seen_5", "seen_6", "seen_7", "seen_8"], "schema": "fedference.gnn/1", "states": ["cell_0", "cell_1", "cell_2", "cell_3", "cell_4", "cell_5", "cell_6", "cell_7", "cell_8"]}
+
+## Footer
+GNN specification; the FedferenceSchema extension declares the authoritative variable and axis set.

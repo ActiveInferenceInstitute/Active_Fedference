@@ -19,7 +19,9 @@ _SECTIONS: Final = {
     "StateSpaceBlock",
     "Connections",
     "InitialParameterization",
+    "Time",
     "ModelParameters",
+    "Footer",
     "FedferenceSchema",
 }
 

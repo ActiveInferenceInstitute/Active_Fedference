@@ -128,10 +128,10 @@ jobs:
           import os
           import re
           from pathlib import Path
-          lock = json.loads(Path("src/fedference/config/gnn-backend-lock.json").read_text())
-          revision = lock["revision"]
-          if not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
-              raise ValueError("GNN source revision must be an exact commit SHA")
+          pin = json.loads(Path(".github/gnn-pin.json").read_text())
+          revision = pin.get("commit")
+          if pin.get("schema") != "gnn-importer-pin/v1" or not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
+              raise ValueError("GNN pin must declare gnn-importer-pin/v1 and an exact commit SHA")
           with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
               output.write(f"revision={revision}\n")
           PY

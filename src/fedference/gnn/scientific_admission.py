@@ -36,11 +36,11 @@ class ScientificProgram:
 
 
 
-HYBRID_ASSET: Final = MODEL_DIR / "hybrid-tracking.gnn.md"
+HYBRID_ASSET: Final = MODEL_DIR / "hybrid-tracking.fed.md"
 
 
 
-SITES_ASSET: Final = MODEL_DIR / "fedgvi-sites.gnn.md"
+SITES_ASSET: Final = MODEL_DIR / "fedgvi-sites.fed.md"
 
 
 

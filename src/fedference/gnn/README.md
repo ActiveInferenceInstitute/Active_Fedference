@@ -27,9 +27,12 @@ certifies scientific validity.
 
 ## Models
 
-`../models/` contains the `.gnn.md` specifications plus their `.ir.json` and
-`.parser.json` companions for the sentinel, moving-observer, hierarchy, hybrid
-tracking and FedGVI-sites models. Read them; do not add prose files there.
+`../models/` contains the standard `.gnn.md` sentinel specification (with its
+`.ir.json` and `.parser.json` companions) and the `.fed.md` Fedference extension
+specifications for the moving-observer, hierarchy, hybrid tracking and
+FedGVI-sites models. The `.fed.md` documents are project extension payloads, not
+standard GNN specifications; only `sentinel.gnn.md` is validated by the upstream
+GNN importer. Read them; do not add prose files there.
 
 ## Check it
 
