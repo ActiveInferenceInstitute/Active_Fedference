@@ -80,7 +80,7 @@ python3 -m venv .venv
 ```
 
 To install from the verified source distribution instead, use a separate
-virtual environment and install `./active_fedference-1.1.0.tar.gz`. Python 3.10
+virtual environment and install `./active_fedference-1.1.0.tar.gz`. Python 3.11
 or newer is required. The default installation uses NumPy/SciPy and does not
 import Torch. Use the labeled request below with `fedference aggregate`, then
 `fedference verify` to validate its receipt outside the source checkout.
@@ -93,7 +93,7 @@ unverified. These boundaries are detailed in
 
 ## Fastest own-data path
 
-The default runtime supports Python 3.10 or newer and does not import Torch.
+The default runtime supports Python 3.11 or newer and does not import Torch.
 From the source checkout:
 
 ```bash

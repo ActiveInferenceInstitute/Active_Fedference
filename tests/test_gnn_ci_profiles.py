@@ -110,8 +110,12 @@ def test_bootstrap_refuses_before_runtime_install(tmp_path: Path, fault: str) ->
         altered = upstream / first
         altered.parent.mkdir(parents=True)
         altered.write_text("altered pinned source")
+    revision = json.loads(
+        (ROOT / "src/fedference/config/gnn-backend-lock.json").read_text()
+    )["revision"]
     command = [sys.executable, str(ROOT / "scripts/bootstrap_gnn.py"),
-               "--upstream-root", str(upstream), "--destination", str(destination)]
+               "--upstream-root", str(upstream), "--destination", str(destination),
+               "--expected-revision", revision]
     # When bootstrap is invoked on the actual subprocess boundary.
     result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True,
                             timeout=60, check=False)
@@ -129,25 +133,26 @@ def test_bootstrap_refuses_before_runtime_install(tmp_path: Path, fault: str) ->
         assert "Pinned upstream source differs" in result.stderr
 
 
-@pytest.mark.parametrize("revision", ["main", "0" * 40])
-def test_bootstrap_uses_the_same_pin_reader_before_provisioning(tmp_path: Path, revision: str) -> None:
-    (tmp_path / ".github").mkdir()
-    (tmp_path / ".github/gnn-pin.json").write_text(json.dumps({
-        "schema": "gnn-importer-pin/v1", "commit": revision,
-    }))
+@pytest.mark.parametrize("declared", ["main", "0" * 40])
+def test_bootstrap_refuses_a_revision_the_lock_does_not_name(
+    tmp_path: Path, declared: str
+) -> None:
+    """The materialized revision must be the lock's; bootstrap never reads the pin."""
     destination = tmp_path / "runtime"
+    upstream = tmp_path / "upstream"
+    upstream.mkdir()
     result = subprocess.run(
         [sys.executable, str(ROOT / "scripts/bootstrap_gnn.py"),
-         "--project-root", str(tmp_path),
          "--lock", str(ROOT / "src/fedference/config/gnn-backend-lock.json"),
-         "--upstream-root", str(tmp_path), "--destination", str(destination)],
+         "--upstream-root", str(upstream), "--destination", str(destination),
+         "--expected-revision", declared],
         cwd=ROOT, capture_output=True, text=True, timeout=60, check=False,
     )
     assert result.returncode != 0
     assert not destination.exists()
     expected = (
-        "GNN pin must declare gnn-importer-pin/v1 and an exact commit SHA"
-        if revision == "main" else "GNN pin revision differs from the qualified backend lock"
+        "The materialized revision must be an exact 40-character commit id"
+        if declared == "main" else "GNN pin revision differs from the qualified backend lock"
     )
     assert expected in result.stderr
 

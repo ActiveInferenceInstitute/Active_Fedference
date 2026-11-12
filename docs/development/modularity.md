@@ -82,6 +82,12 @@ The same operation should not have a separate implementation for a notebook,
 script, CLI command, and figure generator. Expose one typed operation and let
 each caller adapt inputs and outputs at its own boundary.
 
+The CI workflow is one caller of this rule. Its command sequences live in
+`scripts/gate.py` as named arms; each workflow step invokes one arm, and a local
+operator runs the same arm. A new command belongs in an arm whose sequence is
+visible under `--dry-run` and covered by a smoke test, never as a second copy in
+the workflow.
+
 ### A good orchestrator
 
 - resolves an explicit project root using the shared helper;

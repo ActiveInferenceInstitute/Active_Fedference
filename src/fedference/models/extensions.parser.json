@@ -1,15 +1,15 @@
 {
-  "revision": "8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1",
+  "revision": "75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf",
   "capability": "markdown-only-pure-python/1",
   "dependency_versions": {
     "defusedxml": "0.7.1",
     "PyYAML": "6.0.3"
   },
   "files": {
-    "src/gnn/__init__.py": "4303d2cec14db42ad1a3f9ca557aaf48f42efc6b1566bcf099d2bf878c2b26ff",
+    "src/gnn/__init__.py": "908848847f2fb938f65b3ea0b17252ab6d2129ad2f0b427bca8761a81083d10d",
     "src/gnn/parsers/converters.py": "e1ef9366ee5f3014fed75867f1b02c4f141b8496819b3bb47d6eaa5915fed9c0",
-    "src/gnn/parsers/common.py": "c27da82a05058ec2f96b4c675374a848e64535122bf3a63155a47b8b23e3076e",
-    "src/gnn/types/definitions.py": "2e1d0aa9a18edd13cb815bb131326111d28ca447cc16b6dfe478c75c0b6a5519",
+    "src/gnn/parsers/common.py": "ade640beffbf18e6f99dc7b9e3ac5993e5a183652da096ceeb0014b77f3f5527",
+    "src/gnn/types/definitions.py": "d3f8368788033a99468d64ecb9040a2d1b1d93ab548a0b5898daa1af25c78405",
     "src/gnn/types/__init__.py": "8d538992e1fa1015387e7bcdec184265b825bc378f75f86ff967ecc578a52f6b",
     "src/gnn/parsers/basic.py": "78942a0f5d22f4ff16a6787e4d87bb579b136232a62728b15212a7155831d15d",
     "src/gnn/parsers/frontmatter.py": "ff570ac6a83405c408f52272e666ba2fada8f763d762c66ad3bc74b876cee942",
@@ -31,9 +31,9 @@
     "src/gnn/parsers/json_parser.py": "6db10ede764af6ec41249dd4348a70e5042835273a6ee04a5402dbb211eb09ab",
     "src/gnn/parsers/json_serializer.py": "4c5b95d5d287cdd8edf4630a879540558b51cb83327e015cbbe59e047f689520",
     "src/gnn/parsers/lean_parser.py": "c14395bb7ae7100a98e6dbace5f77b4e845145faa7a58beaca1f249e961bdb43",
-    "src/gnn/parsers/lean_serializer.py": "b0ffc74403bbdaa300eab12050e352eff88d632368eff8aacab614789c1a9f5b",
+    "src/gnn/parsers/lean_serializer.py": "f395625636e4bfa462196ce349858579ccc14ebd244ea375e11c981c9c662d88",
     "src/gnn/parsers/markdown_parser_parameter.py": "2e94e88c79b8998387f2a1c53fe88dcc45adc498c47c30f7ec3bd577a8072061",
-    "src/gnn/parsers/markdown_parser.py": "24a30ea7e67d597e891fe16e521e13be5f2013af90eeb282cfe257940b281e82",
+    "src/gnn/parsers/markdown_parser.py": "150f2994dc7e95bea30e7b226d86220eb319fcff64489503df20a307cf7b097c",
     "src/gnn/parsers/markdown_serializer.py": "601db6cd6d27db2177006f9de0bff757fa80e0e87ce51cee4dfde710a4ee3784",
     "src/gnn/parsers/maxima_parser.py": "020caf88ed81db5d6353598c0bb24c3064632419b39916e09eb949191f1b1f82",
     "src/gnn/parsers/maxima_serializer.py": "bb9b806e99e0b8228d0d5832a5d90a9aa13dfa56776c881ed1b02c895fda9e49",
@@ -55,7 +55,7 @@
     "src/gnn/parsers/yaml_serializer.py": "5addbf37cc8e11e74b876bc421480833e69d7316539359984ee66189d0437343",
     "src/gnn/parsers/znotation_serializer.py": "fa3375bad47c5e087dde0cc03bf1281099f2936a7b6a80c1fa6cd9121ddef84c",
     "src/gnn/parsers/system.py": "137abdf98ce81ee9482c5562c0191e39e6da1bfef0ee843b7c132991ad484bde",
-    "src/gnn/parsers/__init__.py": "257f10d65b54ed2cc421fe25257d6ae506dc3dbde8685b7a5672aba06f0c4991",
+    "src/gnn/parsers/__init__.py": "a08df88ecf239a094254f7dc4ef0ea57aff697075f777a3993702ca8d45803ea",
     "src/gnn/utils/__init__.py": "c948c6cc2e6ed378c4ef959b00e37b42aa358fd9f549ef3b3e7381e899eba02e",
     "src/gnn/utils/runtime_safety/__init__.py": "50545392d380534a3fdd0060314a426f31c737f9ec0dc9f4397ed947a18ee4b7",
     "src/gnn/utils/runtime_safety/safe_eval.py": "54dcec0a6cad18bf20d72f7d2f43ea5859a64f4f802f2789766b31001895c67c"
