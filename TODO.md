@@ -12,8 +12,10 @@ repository remains the private/interim evidence mirror; aliases such as
 `public` and `origin` depend on the checkout and must be inspected before use.
 “Push to main” therefore means: fix an
 exact candidate SHA, pass the applicable confidentiality and verification
-gates, push a `codex/*` branch to the required remotes, obtain green review
-checks, and merge into public `main` with a normal merge commit. It never means
+gates, push a `codex/*` branch to the required remotes, obtain the applicable
+review checks, and merge into public `main` with a normal merge commit. Hosted
+Actions is billing-locked org-wide, so those checks mean the same gates
+reproduced locally unless a run actually executed. It never means
 a direct, forced, squashed, rebased, stale-head, or check-bypassing main push.
 
 Every open item has one owner page under
@@ -28,11 +30,21 @@ engineering/validation sequence. The
 [2026-10-27 repository review](docs/research/repository-review-2026-10-27.md)
 remains historical evidence. Neither closes a release or scientific gate.
 
-The v1.1.0 GitHub release already exists. Retire its creation as a future
-action; MED-5 remains open for the outstanding certification, asset/DOI
-verification, publication approval, and private-synchronization obligations.
-The release sequence below describes those obligations and must not be used
-to recreate or move an existing tag or repeat a completed publication.
+The v1.1.0 GitHub release (published 2026-09-20) and its linked Zenodo version
+(record 22149133, DOI `10.5281/zenodo.22149133`, publication date 2026-09-19)
+already exist; [`docs/research/release-state-20261027.md`](docs/research/release-state-20261027.md)
+records the tag, asset, and PDF digests. Retire release creation and Zenodo
+publication as future actions. MED-5 remains open only for the retrospective
+exact-SHA certification of the published commit, an attested record of the
+historical publication approval, MIN-3 closure, and the one-time private
+synchronization. The sequence below describes those obligations and must not be
+used to recreate or move the existing tag, re-upload assets, or republish
+Zenodo bytes.
+
+Adopted, not open: the GNN–FEP cutover pins `v5.1.0` at
+`75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf` in `.github/gnn-pin.json`, executes
+the estate's shared reader instead of the deleted interim pin reader, and merged
+as `c9d1c90` (#23); [`.github/GNN.md`](.github/GNN.md) carries the evidence.
 
 ## Non-negotiable scientific boundary
 
@@ -51,50 +63,52 @@ to recreate or move an existing tag or repeat a completed publication.
 
 ## Execution order
 
-The active critical path is:
+The active post-publication path is:
 
-1. complete the separate accessible Template renderer review in a clean
-   checkout, use its exact merged commit, and finish the source-only visual-
-   scholarship candidate;
-2. run the candidate-specific portion of MIN-2, push the exact visual branch to
-   both remotes, merge it normally into public `main`, and require green
-   post-merge CI;
-3. run MED-5A: create and inspect the linked Zenodo draft, bind the reserved DOI
-   to the release identity, merge the release-only PR normally, and require
-   green post-merge public-main CI;
-4. certify that exact final public-main merge commit through MIN-2's sequential
+1. certify the already-published v1.1.0 release commit
+   `c75954181184545acc31cda17c1013d4dfb34d31` through MIN-2's sequential
    two-clone campaign and obtain the selected identified owner-author verdict;
-5. run MED-5B's publication phase: after an exact-SHA
-   `pass`, verify the existing immutable tag and GitHub release, update and
-   verify the Zenodo draft, pause for fresh approval, then publish and
-   independently verify Zenodo;
-6. complete and normally merge MIN-3's public documentation and repository-
+   the release merge, tag, GitHub release, and Zenodo version predate this
+   campaign (Zenodo publication date 2026-09-19; GitHub release 2026-09-20), so
+   the campaign is retrospective and authorizes no new tag or publication;
+2. record the historical Zenodo publication approval from an external record,
+   or retain an explicit evidence gap for it; the published version cannot be
+   approved retroactively;
+3. complete the separate accessible Template renderer review in a clean
+   checkout, use its exact merged commit, and finish the source-only visual-
+   scholarship candidate as post-v1.1.0 documentation work;
+4. run the candidate-specific portion of MIN-2, push the exact visual branch to
+   both remotes, and merge it normally into public `main`; hosted Actions is
+   billing-locked org-wide, so the applicable gate must be reproduced locally;
+5. complete and normally merge MIN-3's public documentation and repository-
    discovery handoff, including removal of its closed forward-backlog entry;
-7. finish MED-5B by synchronizing that final public `main` into private
+6. finish MED-5 by synchronizing that final public `main` into private
    `origin/main` exactly once with an equal tree;
-8. execute MAJ-8 preregistration and calibration freeze before MAJ-6 may inspect
+7. execute MAJ-8 preregistration and calibration freeze before MAJ-6 may inspect
    sealed confirmatory rows; and
-9. select any later scientific version only after the confirmatory result is
-   known and reviewed.
+8. select any later scientific or product version only after the confirmatory
+   result is known and reviewed, and cut it through a fresh release-only PR
+   rather than retrofitting v1.1.0.
 
 ISC-89 and ISC-242 remain open. The exact-SHA owner-author verdict required for
-v1.1 tagging does not close the broader independent/cross-vendor reproduction
-lane, and Zenodo publication still requires a fresh explicit approval after
-the draft and GitHub release have been verified.
+v1.1 release acceptance does not close the broader independent/cross-vendor
+reproduction lane. No fresh explicit approval remains for v1.1.0: the Zenodo
+version is already public, so the historical approval must be attested from an
+external record or retained as an explicit gap.
 
 ## Minor — bounded maintenance and evidence checks
 
 | ID | Open item | Prerequisite | Acceptance evidence |
 | --- | --- | --- | --- |
 | MIN-2 | [Clone-correct integration and release verification](docs/todo/release-and-verification-ladder.md) | Exact candidate or final-public-main SHA; clean pinned renderer; safe external namespace and headroom where the clone phase applies | Candidate history audit; green source/render/package gates; two isolated final-SHA clone receipts; eligible structured verdict; ISC-242 remains open until its complete evidence set exists |
-| MIN-3 | [Release documentation and repository-discovery handoff](docs/todo/release-documentation-handoff.md) | Verified public tag, GitHub release, and published Zenodo version | Link and installed-artifact probes show the public repository, version, DOI, checksums, install path, application guide, and accessibility boundaries consistently; no stale development identity remains on current-release surfaces |
+| MIN-3 | [Release documentation and repository-discovery handoff](docs/todo/release-documentation-handoff.md) | Verified v1.1.0 tag, GitHub release, and published Zenodo record 22149133; stable final public `main` | Link and installed-artifact probes show the public repository, version, DOI, checksums, install path, application guide, and accessibility boundaries consistently; no stale development identity remains on current-release surfaces |
 
 ## Medium — cross-surface integration and publication
 
 | ID | Open item | Prerequisite | Acceptance evidence |
 | --- | --- | --- | --- |
-| MED-4 | [Visual scholarship and accessible-slide integration](docs/todo/visual-scholarship-integration.md) | Green public `main`; exact merged Template renderer commit in a separate clean checkout; source-bound reports; approved sanitized history with additive corrective commits based on refreshed public `main`; no use of the user-owned dirty Template checkout | Reviewed Template merge SHA; exact audited Fedference visual branch; all figure pairs, long descriptions, exact-value fallbacks, HTML/reveal/Beamer/PDF QA, confidentiality audit, green PR and post-merge public-main workflows; the three frontmatter plates rejoin the complex-figure inventory with rendered `output/web/` pages |
-| MED-5 | [v1.1.0 release, GitHub/Zenodo publication, and private synchronization](docs/todo/v1-1-release-publication.md) | MED-4 merged and green; current metadata approvals for MED-5A; MIN-2 exact-final-SHA certification and `pass` only after the release PR merges and before MED-5B | Release-only normal-merge PR; immutable annotated tag; downloaded-and-reverified GitHub assets; verified linked Zenodo version after fresh publish approval; one tree-identical private-main merge; exact SHAs, URLs, and hashes recorded |
+| MED-4 | [Visual scholarship and accessible-slide integration](docs/todo/visual-scholarship-integration.md) | Public `main` passing its applicable gate; exact merged Template renderer commit in a separate clean checkout; source-bound reports; approved sanitized history with additive corrective commits based on refreshed public `main`; no use of the user-owned dirty Template checkout | Reviewed Template merge SHA; exact audited Fedference visual branch; all figure pairs, long descriptions, exact-value fallbacks, HTML/reveal/Beamer/PDF QA, confidentiality audit, public PR and the locally reproduced post-merge gate; the three frontmatter plates rejoin the complex-figure inventory with rendered `output/web/` pages |
+| MED-5 | [v1.1.0 release, GitHub/Zenodo publication, and private synchronization](docs/todo/v1-1-release-publication.md) | Published v1.1.0 identity (`c759541`, tag `v1.1.0`, GitHub release 2026-09-20, Zenodo 22149133); MIN-2 retrospective certification of that exact commit and eligible `pass`; historical publication approval attested or recorded as a gap | MIN-2 two-clone receipts and eligible verdict for `c759541`; attested historical publication approval or explicit gap record; downloaded-and-reverified GitHub assets and published Zenodo record; one tree-identical private-main merge; exact SHAs, URLs, and hashes recorded |
 | MED-6 | [Independent and cross-vendor reproduction](docs/todo/independent-reproduction.md) | Fixed final public artifact set and complete execution packet | Both an identified independent-human/Advisor review and a genuinely different-vendor execution record, with commands, environments, findings, and dispositions; ISC-89 closes only when the conjunctive final-bundle criterion is satisfied |
 
 ## Major — scientific upgrades and external execution

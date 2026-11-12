@@ -1188,14 +1188,12 @@ def test_release_dag_places_identity_merge_before_final_certification() -> None:
     )
 
     ordered_markers = (
+        "certify the already-published v1.1.0 release commit",
+        "record the historical Zenodo publication approval",
         "complete the separate accessible Template renderer review",
-        "candidate-specific portion of MIN-2",
-        "merge it normally into public `main`",
-        "run MED-5A",
-        "certify that exact final public-main merge commit",
-        "run MED-5B's publication phase",
+        "run the candidate-specific portion of MIN-2",
         "complete and normally merge MIN-3",
-        "finish MED-5B by synchronizing",
+        "finish MED-5 by synchronizing",
         "execute MAJ-8",
         "before MAJ-6 may inspect",
     )
@@ -1232,7 +1230,8 @@ def test_release_dag_places_identity_merge_before_final_certification() -> None:
         (
             index,
             (
-                "MED-5B tag/assets/Zenodo",
+                "Published v1.1.0 identity",
+                "retrospective MIN-2 certification",
                 "MIN-3 closure",
                 "before private sync",
             ),
@@ -1249,7 +1248,7 @@ def test_release_dag_places_identity_merge_before_final_certification() -> None:
         (
             ladder,
             (
-                "MED-5B owns tag, GitHub, and Zenodo publication",
+                "certifies that published commit rather than authorizing publication",
                 "MIN-3 then verifies and closes",
                 "private synchronization",
                 "MAJ-8 begins",

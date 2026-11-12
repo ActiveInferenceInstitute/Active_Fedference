@@ -7,7 +7,8 @@
 - Priority class: Minor
 - State: Open
 - Queue position: candidate-specific checks before each public push and the
-  authoritative two-clone campaign before v1.1 tagging
+  retrospective authoritative two-clone campaign for the published v1.1.0
+  release commit
 - Owner surface: tracking set, renderer identity, public-history review,
   reproducible distributions, isolated-clone receipts, release-verdict
   eligibility, and ISC-242
@@ -20,23 +21,24 @@ candidate. Analysis, hydration, figures, rendering, package builds, and release
 manifests are valid only when their declared inputs and outputs bind to the
 exact reviewed tree in producer order.
 
-The active v1.1 path has two different verification scales. A public feature or
-release branch first needs a complete candidate-history audit plus the
-applicable local and hosted gates. The final public-main merge commit that
-would be tagged then needs two isolated, sequential, write-once clone runs.
-Neither scale replaces the required release verdict or publication authority,
-and neither creates new scientific evidence.
+The active post-v1.1.0 path has two different verification scales. A public
+feature or release branch first needs a complete candidate-history audit plus
+the applicable local gates and any hosted run that actually executes. The
+published public-main merge commit
+`c759541` that was tagged still needs two isolated, sequential, write-once clone
+runs. Neither scale replaces the required release verdict or publication
+authority, and neither creates new scientific evidence.
 
 The Minor classification describes this lane as verification rather than a new
 scientific or product capability. It does not describe runtime or importance:
 the final clone campaign is deliberately broad, coordination-heavy, and
-release-blocking.
+release-acceptance-blocking.
 
 ## Scope
 
 ### Candidate gate before each public branch push
 
-For the v1.1 public application/visual lineage, the authorized history policy
+For the post-v1.1.0 public application/visual lineage, the authorized history policy
 preserves the reviewed sanitized history based on refreshed public `main` and
 permits additive corrective commits for source, tests, and documentation.
 Keep them separate from `build: refresh visual publication artifacts`, which
@@ -61,15 +63,16 @@ approval.
 4. Run targeted tests during editing, then the full applicable source,
    publication, render, browser, slide, package, and reproducibility gates.
 5. Push the fixed candidate SHA non-forcibly to the required `codex/*` branches.
-   Merge only through a public PR after the exact head and merge ref are green,
-   using a normal merge commit; require a green post-merge public-main workflow.
+   Merge only through a public PR after the exact head and merge ref pass the
+   locally reproduced gate, using a normal merge commit; record the post-merge
+   gate result rather than claiming a hosted run that did not execute.
 
 ### Exact-final-SHA release campaign
 
-After MED-5A's release-only PR merges and public `main` is green, recapture the
-exact merge commit rather than certifying the PR head. The release-only PR must
-therefore precede this final certification; MIN-2 is not a prerequisite for
-creating or merging that PR. Immediately before
+The release-only PR already merged as `c759541`, so recapture that exact merge
+commit rather than certifying the PR head or current `main`. The release-only PR
+preceded this certification; MIN-2 is not a prerequisite for creating or
+merging that PR, and the verdict is now retrospective. Immediately before
 each clone, verify at least 40 GiB of safe headroom and confirm that no active
 producer or protected data/caches would be disturbed. Use a new write-once
 namespace beneath
@@ -116,9 +119,10 @@ independent external replication or cross-vendor review.
 
 The structured result is `pass`, `concerns`, or `fail`. `pass` supplies the
 technical release verdict but does not itself supply publication authority;
-it permits tagging only under the separately authorized MED-5B sequence;
-every concern requires disposition or a reviewed repair and complete
-recertification; `fail` blocks release. This release verdict does not close ISC-89 or the broader independent-reproduction lane.
+in the v1.1.0 sequence it would have permitted tagging only under the separately
+authorized MED-5B step, which has already occurred, so it now certifies the
+published commit; every concern requires disposition or a reviewed repair and
+complete recertification; `fail` blocks the release acceptance. This release verdict does not close ISC-89 or the broader independent-reproduction lane.
 
 ## Implementation Notes
 
@@ -133,9 +137,10 @@ recertification; `fail` blocks release. This release verdict does not close ISC-
   bundle.
 - Free-space status is volatile and confers no authority to delete active data,
   caches, worktrees, or outputs.
-- Development identity remains a PEP 440 development version with an empty DOI,
-  `(forthcoming)`, and no release date or project DOI URL. Final identity is set
-  only in the reviewed release-only PR.
+- Post-release development identity must remain a PEP 440 development version
+  with an empty DOI, `(forthcoming)`, and no release date or project DOI URL.
+  The published v1.1.0 identity is already set in the tagged source and must not
+  be re-derived.
 
 ## Acceptance Criteria
 
@@ -161,10 +166,9 @@ recertification; `fail` blocks release. This release verdict does not close ISC-
   evidence bundle. The selected path is the owner-author review, which is
   labeled honestly, remains distinct from publication authority, and does not
   close ISC-89.
-- Required acceptance evidence: candidate-history record, hosted check URLs,
-  post-merge workflow URL, two clone receipt sets, cross-clone comparison,
-  release-verdict record, and an ISC-242 update only after every required
-  component exists.
+- Required acceptance evidence: candidate-history record, check URLs where a
+  run executed, two clone receipt sets, cross-clone comparison, release-verdict
+  record, and an ISC-242 update only after every required component exists.
 
 ## Verification Probes
 
@@ -196,9 +200,10 @@ recertification; `fail` blocks release. This release verdict does not close ISC-
 
 The candidate gate depends on a fixed branch/tree, current remote heads, the
 approved sanitized-history policy, and an exact clean renderer. The final
-campaign begins only after MED-5A merges the release-only identity/artifact PR
-and public `main` is green; it then depends on safe external headroom and current
-toolchain access. After this exact-final-SHA ladder and the selected owner-author
-`pass`, MED-5B owns tag, GitHub, and Zenodo publication; MIN-3 then verifies and
-closes the live documentation handoff before MED-5B performs the one-time
-tree-identical private synchronization. MAJ-8 begins only after that sequence.
+campaign targets the published release merge `c759541`, whose identity/artifact
+PR already merged; it depends on safe external headroom and current toolchain
+access. The tag, GitHub release, and Zenodo version are already published, so
+the selected owner-author `pass` certifies that published commit rather than
+authorizing publication; MIN-3 then verifies and closes the live documentation
+handoff before the one-time tree-identical private synchronization. MAJ-8
+begins only after that sequence.
