@@ -105,7 +105,13 @@ def _bootstrap(upstream: Path, destination: Path) -> Command:
     )
 
 
-def _commands(arm: str, args: argparse.Namespace) -> list[Invocation]:
+def _environment_path(args: argparse.Namespace, project_root: Path) -> Path:
+    """Resolve the bootstrap environment against the selected checkout."""
+    path = Path(args.environment)
+    return path if path.is_absolute() else project_root / path
+
+
+def _commands(arm: str, args: argparse.Namespace, project_root: Path) -> list[Invocation]:
     """Return the exact command sequence for one arm."""
     base: Env = {}
     if arm == "lint":
@@ -132,13 +138,17 @@ def _commands(arm: str, args: argparse.Namespace) -> list[Invocation]:
             (_bootstrap(Path(args.upstream_root), Path(args.destination)), base),
         ]
     if arm == "gnn":
-        environment = _load_environment(Path(args.environment), required=not args.dry_run)
+        environment = _load_environment(
+            _environment_path(args, project_root), required=not args.dry_run
+        )
         return [
             ((*_VERSION_CHECK, args.upstream_root), base),
             (_shard(4), environment),
         ]
     if arm == "full":
-        environment = _load_environment(Path(args.environment), required=not args.dry_run)
+        environment = _load_environment(
+            _environment_path(args, project_root), required=not args.dry_run
+        )
         return (
             [(_PLAN, base)]
             + [(_shard(index), base) for index in range(4)]
@@ -149,12 +159,26 @@ def _commands(arm: str, args: argparse.Namespace) -> list[Invocation]:
         return [
             invocation
             for name in ("lint", "types", "metadata", "docs", "fast", "full")
-            for invocation in _commands(name, args)
+            for invocation in _commands(name, args, project_root)
         ]
     raise SystemExit(f"gate: unknown arm {arm!r}")
 
 
+def _expand(command: Command, project_root: Path) -> Command:
+    """Expand the shard receipt glob; coverage rejects a literal wildcard."""
+    expanded: list[str] = []
+    for part in command:
+        if part == ".tmp/ci-shards/shard-*":
+            expanded.extend(
+                sorted(str(path) for path in (project_root / ".tmp/ci-shards").glob("shard-*"))
+            )
+        else:
+            expanded.append(part)
+    return tuple(expanded)
+
+
 def _run(command: Command, project_root: Path, extra_env: Env) -> int:
+    command = _expand(command, project_root)
     print(f"$ {shlex.join(command)}", flush=True)
     env = dict(os.environ)
     env["ACTIVE_FEDFERENCE_PROJECT_ROOT"] = str(project_root)
@@ -190,20 +214,21 @@ def main(argv: list[str] | None = None) -> int:
     from project_paths import resolve_script_project_root
 
     project_root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
-    commands = _commands(args.arm, args)
-    if args.arm in {"fast", "all"}:
-        (project_root / ".tmp/ci-timings").mkdir(parents=True, exist_ok=True)
-    if args.arm in {"full", "all"}:
-        # The shard planner and shard runner refuse to overwrite prior receipts;
-        # a local full run owns only its own .tmp/ci-* directories.
-        for owned in (Path(".tmp/ci-plan"), Path(".tmp/ci-shards")):
-            target = project_root / owned
-            if target.exists():
-                subprocess.run(["rm", "-rf", str(target)], check=True)
+    commands = _commands(args.arm, args, project_root)
+    if not args.dry_run:
+        if args.arm in {"fast", "all"}:
+            (project_root / ".tmp/ci-timings").mkdir(parents=True, exist_ok=True)
+        if args.arm in {"full", "all"}:
+            # The shard planner and shard runner refuse to overwrite prior
+            # receipts; a local full run owns only its own .tmp/ci-* directories.
+            for owned in (Path(".tmp/ci-plan"), Path(".tmp/ci-shards")):
+                target = project_root / owned
+                if target.exists():
+                    subprocess.run(["rm", "-rf", str(target)], check=True)
     failures: list[int] = []
     for command, extra_env in commands:
         if args.dry_run:
-            print(f"$ {shlex.join(command)}")
+            print(f"$ {shlex.join(_expand(command, project_root))}")
             continue
         exit_code = _run(command, project_root, extra_env)
         if exit_code == 0:

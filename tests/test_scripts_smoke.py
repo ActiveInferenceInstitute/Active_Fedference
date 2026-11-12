@@ -373,6 +373,34 @@ def test_gate_dry_run_prints_arm_commands() -> None:
     assert "ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4" in full.stdout
 
 
+def test_gate_dry_run_preserves_existing_receipts(tmp_path: Path) -> None:
+    plan = tmp_path / ".tmp/ci-plan"
+    plan.mkdir(parents=True)
+    (plan / "plan.json").write_text("{}\n")
+    shard = tmp_path / ".tmp/ci-shards/shard-0"
+    shard.mkdir(parents=True)
+    (shard / "receipt.json").write_text("{}\n")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(_SCRIPTS / "gate.py"),
+            "full",
+            "--dry-run",
+            "--project-root",
+            str(tmp_path),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "coverage combine --keep" in result.stdout
+    assert str(shard) in result.stdout
+    assert (plan / "plan.json").is_file()
+    assert (shard / "receipt.json").is_file()
+
+
 def test_validate_all_full_declares_source_and_release_gates() -> None:
     result = subprocess.run(
         [sys.executable, str(_SCRIPTS / "validate_all.py"), "full", "--dry-run"],
