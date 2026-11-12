@@ -10,6 +10,7 @@ Technical index for `docs/`. Navigation hub:
 | **Hub** | |
 | `README.md` | Navigation, read order, task routing |
 | `application-guide.md` | Install, input contract, method/interface selection, diagnostics, local federation, and CLI receipts |
+| `documentation-index.md` | Flat inventory of every maintained Markdown page under `docs/` |
 | `AGENTS.md` | This index; REQUIRED vs AESTHETIC |
 | **core/** | |
 | `core/README.md` | Core-document index and routing to science, architecture, and artifact contracts |

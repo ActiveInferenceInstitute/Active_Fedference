@@ -273,6 +273,10 @@ def test_hosted_gnn_checkout_uses_admitted_lock_revision(tmp_path: Path, valid: 
     fixture.parent.mkdir(parents=True)
     revision = pin["commit"] if valid else "main"
     fixture.write_text(json.dumps({"schema": "gnn-importer-pin/v1", "commit": revision}))
+    (tmp_path / "scripts").mkdir()
+    shutil.copy2(source / "scripts/read_gnn_pin.py", tmp_path / "scripts/read_gnn_pin.py")
+    (tmp_path / "src").mkdir()
+    shutil.copy2(source / "src/project_paths.py", tmp_path / "src/project_paths.py")
     output = tmp_path / "github-output"
     environment = dict(os.environ, GITHUB_OUTPUT=str(output))
     environment["PATH"] = str(Path(sys.executable).parent) + os.pathsep + environment["PATH"]

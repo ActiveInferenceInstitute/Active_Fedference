@@ -129,6 +129,29 @@ def test_bootstrap_refuses_before_runtime_install(tmp_path: Path, fault: str) ->
         assert "Pinned upstream source differs" in result.stderr
 
 
+@pytest.mark.parametrize("revision", ["main", "0" * 40])
+def test_bootstrap_uses_the_same_pin_reader_before_provisioning(tmp_path: Path, revision: str) -> None:
+    (tmp_path / ".github").mkdir()
+    (tmp_path / ".github/gnn-pin.json").write_text(json.dumps({
+        "schema": "gnn-importer-pin/v1", "commit": revision,
+    }))
+    destination = tmp_path / "runtime"
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/bootstrap_gnn.py"),
+         "--project-root", str(tmp_path),
+         "--lock", str(ROOT / "src/fedference/config/gnn-backend-lock.json"),
+         "--upstream-root", str(tmp_path), "--destination", str(destination)],
+        cwd=ROOT, capture_output=True, text=True, timeout=60, check=False,
+    )
+    assert result.returncode != 0
+    assert not destination.exists()
+    expected = (
+        "GNN pin must declare gnn-importer-pin/v1 and an exact commit SHA"
+        if revision == "main" else "GNN pin revision differs from the qualified backend lock"
+    )
+    assert expected in result.stderr
+
+
 
 @pytest.mark.parametrize("fault", ["missing", "duplicate"])
 def test_shard_cli_rejects_missing_or_duplicate_profiles(tmp_path: Path, fault: str) -> None:
