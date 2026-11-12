@@ -268,11 +268,11 @@ def test_hosted_gnn_checkout_uses_admitted_lock_revision(tmp_path: Path, valid: 
     checkout = next(step for step in steps if step.get("with", {}).get("repository")
                     == "ActiveInferenceInstitute/Generalized_Notation_Notation")
     assert checkout["with"]["ref"] == "${{ steps.gnn-source.outputs.revision }}"
-    locked = json.loads((source / "src/fedference/config/gnn-backend-lock.json").read_text())
-    fixture = tmp_path / "src/fedference/config/gnn-backend-lock.json"
+    pin = json.loads((source / ".github/gnn-pin.json").read_text())
+    fixture = tmp_path / ".github/gnn-pin.json"
     fixture.parent.mkdir(parents=True)
-    revision = locked["revision"] if valid else "main"
-    fixture.write_text(json.dumps({"revision": revision}))
+    revision = pin["commit"] if valid else "main"
+    fixture.write_text(json.dumps({"schema": "gnn-importer-pin/v1", "commit": revision}))
     output = tmp_path / "github-output"
     environment = dict(os.environ, GITHUB_OUTPUT=str(output))
     environment["PATH"] = str(Path(sys.executable).parent) + os.pathsep + environment["PATH"]
@@ -283,5 +283,5 @@ def test_hosted_gnn_checkout_uses_admitted_lock_revision(tmp_path: Path, valid: 
         assert output.read_text() == f"revision={revision}\n"
     else:
         assert result.returncode != 0
-        assert "GNN source revision must be an exact commit SHA" in result.stderr
+        assert "GNN pin must declare gnn-importer-pin/v1 and an exact commit SHA" in result.stderr
         assert not output.exists()
