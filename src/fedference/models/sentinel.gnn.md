@@ -39,7 +39,14 @@ C=[0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0]
 D=[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
 
 ## Time
-Static
+
+Time=t
+Dynamic
+Discrete
+ModelTimeHorizon=1
+# B is a non-identity, action-conditioned transition (still/left/right), so the
+# model is dynamic; one variational update runs per call and the caller's
+# discrete predict/observe loop advances the state through B.
 
 ## ModelParameters
 num_states: 9
