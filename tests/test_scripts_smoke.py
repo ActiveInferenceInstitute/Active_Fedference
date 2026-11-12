@@ -157,6 +157,7 @@ _THIN_ORCHESTRATOR_SCRIPTS = [
     "prepare_web_package.py",
     "record_pipeline_stage.py",
     "validate_all.py",
+    "gate.py",
     "validate_test_coverage.py",
     "validate_clean_checkout.py",
     "validate_pipeline_freshness.py",
@@ -183,6 +184,7 @@ _PROJECT_ROOT_AWARE_SCRIPTS = [
     "record_pipeline_stage.py",
     "summarize_tokens.py",
     "validate_all.py",
+    "gate.py",
     "validate_clean_checkout.py",
     "validate_mermaid.py",
     "validate_outputs.py",
@@ -347,6 +349,28 @@ def test_validate_all_dry_run_prints_profile_commands() -> None:
     assert result.returncode == 0, result.stderr
     assert "scripts/prepare_web_package.py" in result.stdout
     assert "scripts/validate_web_package.py" in result.stdout
+
+
+def test_gate_dry_run_prints_arm_commands() -> None:
+    result = subprocess.run(
+        [sys.executable, str(_SCRIPTS / "gate.py"), "lint", "--dry-run"],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "ruff check src/ tests/ scripts/" in result.stdout
+    full = subprocess.run(
+        [sys.executable, str(_SCRIPTS / "gate.py"), "full", "--dry-run"],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert full.returncode == 0, full.stderr
+    assert "ci_shards.py plan" in full.stdout
+    assert "ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4" in full.stdout
 
 
 def test_validate_all_full_declares_source_and_release_gates() -> None:
