@@ -138,6 +138,15 @@ def _make_renderer(root: Path) -> Path:
         f"    git_commit: {commit}\n"
         "    git_tree_state: clean\n",
     )
+    _write(root, ".gitignore", "template-renderer/\noutput/\n")
+    for arguments in (
+        ("init", "-q"),
+        ("config", "user.name", "Source Test"),
+        ("config", "user.email", "source@example.invalid"),
+        ("add", "."),
+        ("commit", "-q", "-m", "test: manuscript source"),
+    ):
+        subprocess.run(("git", "-C", str(root), *arguments), check=True)
     return renderer
 
 
@@ -342,6 +351,17 @@ def test_render_receipt_is_structured_path_free_and_lock_bound(tmp_path: Path) -
         ).stdout.strip(),
         "git_tree_state": "clean",
     }
+    source_commit = subprocess.run(
+        ("git", "-C", str(tmp_path), "rev-parse", "HEAD^{commit}"),
+        check=True, capture_output=True, text=True,
+    ).stdout.strip()
+    assert record["source_commit"] == source_commit
+    assert record["source_commit"] != record["renderer"]["git_commit"]
+    assert record["source_tree_state"] == "clean"
+    assert record["output_sizes"] == {
+        path: (tmp_path / path).stat().st_size for path in record["output_hashes"]
+    }
+    assert record["output_sizes"]["output/pdf/paper.pdf"] == len(b"content\n")
     receipt_bytes = (tmp_path / "output/data/pipeline_provenance.json").read_text(
         encoding="utf-8"
     )
@@ -355,6 +375,45 @@ def test_render_receipt_is_structured_path_free_and_lock_bound(tmp_path: Path) -
     assert "render: render receipt renderer does not match the committed renderer lock" in (
         validate_pipeline_freshness(tmp_path, stages=("render",))
     )
+
+
+@pytest.mark.parametrize("field", ["source_commit", "source_tree_state", "output_sizes"])
+def test_render_source_and_byte_counts_are_required(tmp_path: Path, field: str) -> None:
+    _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+    record_pipeline_stage(tmp_path, "render", template_root=renderer)
+    receipt_path = tmp_path / "output/data/pipeline_provenance.json"
+    receipt = json.loads(receipt_path.read_text())
+    del receipt["stages"]["render"][field]
+    receipt_path.write_text(json.dumps(receipt))
+    expected = (
+        "render: artifact byte counts mismatch" if field == "output_sizes"
+        else "render: missing or invalid manuscript source identity"
+    )
+    assert expected in validate_pipeline_freshness(tmp_path, stages=("render",))
+
+
+def test_render_source_records_dirty_checkout_without_claiming_commit_exactness(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
+    _write(tmp_path, "manuscript/01_intro.md", "edited source\n")
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+    record = record_pipeline_stage(tmp_path, "render", template_root=renderer)
+    assert record["source_tree_state"] == "dirty"
+    assert validate_pipeline_freshness(tmp_path, stages=("render",)) == []
+
+
+def test_render_source_refuses_unversioned_tree(tmp_path: Path) -> None:
+    _make_stage_tree(tmp_path)
+    renderer = _make_renderer(tmp_path)
+    (tmp_path / ".git").rename(tmp_path / "source-git-disabled")
+    record_pipeline_stage(tmp_path, "analysis")
+    record_pipeline_stage(tmp_path, "hydration")
+    with pytest.raises(ValueError, match="render source requires a Git checkout"):
+        record_pipeline_stage(tmp_path, "render", template_root=renderer)
 
 
 def test_legacy_renderer_label_fails_closed(tmp_path: Path) -> None:

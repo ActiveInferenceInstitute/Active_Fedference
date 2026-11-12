@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -336,6 +338,27 @@ def _compare_hash_maps(
     return [f"{label}: changed paths: {shown}{suffix}"]
 
 
+def _render_source_identity(root: Path) -> dict[str, str]:
+    """Capture the manuscript checkout, never the external renderer's Git HEAD."""
+    try:
+        def git(*arguments: str) -> str:
+            return subprocess.run(
+                ("git", "-c", "core.fsmonitor=false", "-c", "core.untrackedcache=false",
+                 "-C", str(root), *arguments),
+                check=True, capture_output=True, text=True,
+            ).stdout.strip()
+
+        if Path(git("rev-parse", "--show-toplevel")).resolve() != root:
+            raise ValueError("render source must be the exact Git checkout root")
+        commit = git("rev-parse", "--verify", "HEAD^{commit}")
+        if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+            raise ValueError("render source HEAD must be a full commit")
+        status = git("status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=none")
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ValueError("render source requires a Git checkout with a committed HEAD") from exc
+    return {"source_commit": commit, "source_tree_state": "dirty" if status else "clean"}
+
+
 def _validate_stage_record(
     root: Path,
     stage: PipelineStageSpec,
@@ -376,6 +399,12 @@ def _validate_stage_record(
             f"render: {finding}"
             for finding in renderer_receipt_findings(root, record.get("renderer"))
         )
+        if (
+            not isinstance(record.get("source_commit"), str)
+            or re.fullmatch(r"[0-9a-f]{40}", record["source_commit"]) is None
+            or record.get("source_tree_state") not in ("clean", "dirty")
+        ):
+            findings.append("render: missing or invalid manuscript source identity")
     elif "renderer" in record:
         findings.append(f"{stage.name}: renderer identity is valid only for the render stage")
     recorded_at_present = "recorded_at" in record
@@ -411,6 +440,10 @@ def _validate_stage_record(
     findings.extend(
         _compare_hash_maps(record.get("output_hashes"), current_outputs, label=f"{stage.name} outputs")
     )
+    if stage.name == "render":
+        current_sizes = {path: (root / path).stat().st_size for path in current_outputs}
+        if record.get("output_sizes") != current_sizes:
+            findings.append("render: artifact byte counts mismatch")
     if record.get("input_digest") != _map_digest(current_inputs):
         findings.append(f"{stage.name}: input digest mismatch")
     if record.get("output_digest") != _map_digest(current_outputs):
@@ -493,6 +526,10 @@ def _record_pipeline_stage(
     }
     if renderer_identity is not None:
         record["renderer"] = renderer_identity.as_dict()
+        record.update(_render_source_identity(root))
+        record["output_sizes"] = {
+            path: (root / path).stat().st_size for path in output_hashes
+        }
     if analysis_execution is not None:
         record["analysis_execution"] = dict(analysis_execution)
     receipt["schema_version"] = PIPELINE_RECEIPT_SCHEMA_VERSION

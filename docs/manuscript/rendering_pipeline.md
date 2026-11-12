@@ -19,6 +19,35 @@ Fedference source commit, not evidence of release approval or wall-clock
 completion. The sibling renderer is locked separately by canonical repository,
 exact commit, and required clean state in `manuscript/config.yaml`.
 
+New render receipts in `output/data/pipeline_provenance.json` retain both
+`stages.render.source_commit` (the Active Fedference checkout HEAD at recording)
+and `stages.render.renderer.git_commit` (the separately locked Template commit).
+`source_tree_state` records whether the source checkout was dirty: a HEAD alone
+does not identify uncommitted manuscript edits. Input hashes remain the authority
+for the actual rendered source bytes. `output_hashes` and `output_sizes` use the
+same repository-relative artifact paths and record SHA-256 and byte count,
+respectively, including each PDF, slide and web artifact.
+
+The member owns this receipt; Template owns rendering. Inspect both identities
+alongside every artifact path and byte count after recording:
+
+```bash
+uv run --locked python - <<'PY'
+import json
+from pathlib import Path
+render = json.loads(Path("output/data/pipeline_provenance.json").read_text())["stages"]["render"]
+print("source:", render["source_commit"], render["source_tree_state"])
+print("renderer:", render["renderer"]["repository"], render["renderer"]["git_commit"])
+for path, byte_count in sorted(render["output_sizes"].items()):
+    print(path, byte_count, "bytes", render["output_hashes"][path])
+PY
+```
+
+The older tracked render snapshot predates source attribution and byte counts;
+it cannot be retroactively certified by guessing a source commit. Regenerate
+the source-current producer chain before recording a new receipt. Validation
+rejects render receipts missing these fields; non-render stage receipts are unchanged.
+
 ## Pipeline at a glance
 
 The concise order is: source-owned inputs → typed analysis reports and figures
