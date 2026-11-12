@@ -160,28 +160,28 @@ def _run_command(args: argparse.Namespace) -> int:
         report = run_friston_protocol_audit()
     else:
         raise ValueError(f"{args.experiment_id!r} is registry-declared but has no executable CLI runner")
-    output_dir = _prepare_output_dir(args.output_dir, project_root)
-    report["experiment_spec"] = _experiment_summary(spec.experiment_id)
-    report_path, receipt_path = _write_evidence_run(
-        output_dir=output_dir,
-        project_root=project_root,
-        experiment_id=spec.experiment_id,
-        profile=args.profile,
-        seeds=seeds,
-        config=config,
-        report=report,
-        started_at=args.started_at,
-        git_revision=git_revision,
-        backend=str(report.get("backend", "numpy")),
-        device=(
-            str(report["device"].get("resolved"))
-            if isinstance(report.get("device"), dict) and report["device"].get("resolved")
-            else None
-        ),
-        checkpoints=tuple(str(value) for value in report.get("checkpoint_fingerprints", [])),
-    )
-    print(json.dumps({"report": str(report_path), "receipt": str(receipt_path)}))
-    return 0
+    with _prepare_output_dir(args.output_dir, project_root) as output_dir:
+        report["experiment_spec"] = _experiment_summary(spec.experiment_id)
+        report_path, receipt_path = _write_evidence_run(
+            output_dir=output_dir,
+            project_root=project_root,
+            experiment_id=spec.experiment_id,
+            profile=args.profile,
+            seeds=seeds,
+            config=config,
+            report=report,
+            started_at=args.started_at,
+            git_revision=git_revision,
+            backend=str(report.get("backend", "numpy")),
+            device=(
+                str(report["device"].get("resolved"))
+                if isinstance(report.get("device"), dict) and report["device"].get("resolved")
+                else None
+            ),
+            checkpoints=tuple(str(value) for value in report.get("checkpoint_fingerprints", [])),
+        )
+        print(json.dumps({"report": str(report_path), "receipt": str(receipt_path)}))
+        return 0
 
 
 def _benchmark_command(args: argparse.Namespace) -> int:
@@ -218,21 +218,21 @@ def _benchmark_command(args: argparse.Namespace) -> int:
         robustness=args.robustness,
         entropy_weight=args.entropy_weight,
     )
-    output_dir = _prepare_output_dir(args.output_dir, project_root)
-    report["experiment_spec"] = _experiment_summary(spec.experiment_id)
-    report_path, receipt_path = _write_evidence_run(
-        output_dir=output_dir,
-        project_root=project_root,
-        experiment_id=spec.experiment_id,
-        profile=args.profile,
-        seeds=seeds,
-        config=config,
-        report=report,
-        started_at=args.started_at,
-        git_revision=git_revision,
-    )
-    print(json.dumps({"report": str(report_path), "receipt": str(receipt_path)}))
-    return 0
+    with _prepare_output_dir(args.output_dir, project_root) as output_dir:
+        report["experiment_spec"] = _experiment_summary(spec.experiment_id)
+        report_path, receipt_path = _write_evidence_run(
+            output_dir=output_dir,
+            project_root=project_root,
+            experiment_id=spec.experiment_id,
+            profile=args.profile,
+            seeds=seeds,
+            config=config,
+            report=report,
+            started_at=args.started_at,
+            git_revision=git_revision,
+        )
+        print(json.dumps({"report": str(report_path), "receipt": str(receipt_path)}))
+        return 0
 
 
 def _aggregate_command(args: argparse.Namespace) -> int:
@@ -276,26 +276,26 @@ def _aggregate_command(args: argparse.Namespace) -> int:
             "selected checkout version does not match the result software version: "
             f"{checkout_version!r} != {result.software_version!r}"
         )
-    output_dir = _prepare_output_dir(args.output_dir, safety_root)
-    request_path, result_path, receipt_path = _write_application_run(
-        output_dir=output_dir,
-        request=request,
-        result=result,
-        source_provenance=source_provenance,
-        started_at=args.started_at,
-    )
-    print(
-        json.dumps(
-            {
-                "receipt": str(receipt_path.resolve()),
-                "request": str(request_path.resolve()),
-                "result": str(result_path.resolve()),
-                "solver_status": result.aggregation.solver_status,
-            },
-            sort_keys=True,
+    with _prepare_output_dir(args.output_dir, safety_root) as output_dir:
+        request_path, result_path, receipt_path = _write_application_run(
+            output_dir=output_dir,
+            request=request,
+            result=result,
+            source_provenance=source_provenance,
+            started_at=args.started_at,
         )
-    )
-    return 0 if result.aggregation.solver_status == "nominal" else 1
+        print(
+            json.dumps(
+                {
+                    "receipt": str(receipt_path.resolve()),
+                    "request": str(request_path.resolve()),
+                    "result": str(result_path.resolve()),
+                    "solver_status": result.aggregation.solver_status,
+                },
+                sort_keys=True,
+            )
+        )
+        return 0 if result.aggregation.solver_status == "nominal" else 1
 
 
 def _verify_command(args: argparse.Namespace) -> int:

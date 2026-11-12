@@ -9,11 +9,13 @@ does not choose an experiment or parse command-line arguments.
 from __future__ import annotations
 
 import argparse
-import json
+import hashlib
 import os
 import platform
 import subprocess
-import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
@@ -24,14 +26,19 @@ from fedference.aggregation import AggregationConfig
 from fedference.application import LabeledAggregationRequest, LabeledAggregationResult
 from fedference.evidence import (
     ApplicationReceipt,
+    ArtifactRecord,
     GitTreeState,
     RunReceipt,
     canonical_sha256,
-    make_artifact_record,
     sha256_file,
     validate_evidence_report,
-    write_application_receipt,
-    write_run_receipt,
+)
+from fedference.evidence_contracts._atomic import (
+    DirectoryAuthority,
+    PathCustodyError,
+    open_directory,
+    publish_json,
+    serialize_json,
 )
 from fedference.provenance import (
     SourceProvenance,
@@ -43,34 +50,7 @@ from fedference.research_registry import get_experiment_spec
 
 def _write_json(path: Path, payload: object) -> Path:
     """Atomically write finite, sorted JSON to *path*."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            "w",
-            dir=path.parent,
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-            encoding="utf-8",
-            delete=False,
-        ) as handle:
-            # Capture the path before serialization begins so the ``finally``
-            # block can remove a partial file when ``json.dump`` rejects a
-            # non-finite or otherwise unserializable payload.
-            temporary = Path(handle.name)
-            json.dump(
-                payload,
-                handle,
-                indent=2,
-                sort_keys=True,
-                allow_nan=False,
-            )
-            handle.write("\n")
-        os.replace(temporary, path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
-    return path
+    return publish_json(path, payload)
 
 
 def _resolve_project_root(path: str | Path) -> Path:
@@ -99,7 +79,10 @@ def _resolve_project_root(path: str | Path) -> Path:
 
 def _validate_output_dir(path: str, project_root: Path) -> Path:
     """Reject committed-output writes and non-empty run destinations."""
-    output_dir = Path(path).resolve()
+    output_dir = Path(path).absolute()
+    for component in (output_dir, *output_dir.parents):
+        if component.is_symlink():
+            raise PathCustodyError(output_dir, "symlink directory selection is not admitted")
     reviewer_outputs: set[Path] = set()
     if active_fedference_checkout_version(project_root) is not None:
         reviewer_outputs.add((project_root / "output").resolve())
@@ -118,7 +101,7 @@ def _validate_output_dir(path: str, project_root: Path) -> Path:
             reviewer_outputs.add(candidate_root / "output")
     for reviewer_output in reviewer_outputs:
         try:
-            output_dir.relative_to(reviewer_output)
+            output_dir.resolve().relative_to(reviewer_output)
         except ValueError:
             continue
         raise ValueError(
@@ -131,11 +114,70 @@ def _validate_output_dir(path: str, project_root: Path) -> Path:
     return output_dir
 
 
-def _prepare_output_dir(path: str, project_root: Path) -> Path:
-    """Validate and create a caller-owned empty evidence directory."""
+@dataclass
+class _OutputNamespace:
+    """Explicit continuing authority for one CLI output transaction.
+
+    Only the context owns the directory lock. Receipt publication is the commit
+    point; earlier complete artifacts can remain after failure for diagnosis.
+    No caller-owned file or another claimant's output is removed on failure.
+    """
+
+    directory: DirectoryAuthority
+    active: bool = True
+
+    def _require_active(self) -> None:
+        if not self.active:
+            raise PathCustodyError(self.directory.path, "output namespace is closed")
+
+    @property
+    def path(self) -> Path:
+        self._require_active()
+        return self.directory.path
+
+    def write_json(self, name: str, payload: object) -> Path:
+        self._require_active()
+        return self.directory.publish(name, serialize_json(payload))
+
+    def record(self, name: str, filename: str) -> ArtifactRecord:
+        self._require_active()
+        data = self.directory.read_bytes(filename)
+        return ArtifactRecord(
+            name=name, path=filename, sha256=hashlib.sha256(data).hexdigest(), bytes=len(data),
+        )
+
+    def commit(self, receipt: RunReceipt | ApplicationReceipt) -> Path:
+        for expected in receipt.outputs:
+            actual = self.record(expected.name, expected.path)
+            if actual != expected:
+                raise PathCustodyError(self.path / expected.path, "artifact changed before receipt commit")
+        return self.write_json("receipt.json", receipt.as_dict())
+
+
+@contextmanager
+def _prepare_output_dir(path: str, project_root: Path) -> Iterator[_OutputNamespace]:
+    """Exclusively claim a new or caller-precreated EMPTY directory until exit.
+
+    Directory flock is deliberately nonblocking: a competing invocation refuses
+    without writing. Unsupported platform/filesystem locking fails explicitly.
+    The lock is descriptor-owned and released even by process death.
+    """
+    try:
+        import fcntl
+    except ImportError as exc:
+        raise PathCustodyError(Path(path), "directory locking is unsupported") from exc
     output_dir = _validate_output_dir(path, project_root)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    return output_dir
+    with open_directory(output_dir) as directory:
+        fcntl.flock(directory.descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        if os.listdir(directory.descriptor):
+            raise ValueError(f"output directory must be empty: {output_dir}")
+        directory.verify()
+        namespace = _OutputNamespace(directory)
+        try:
+            yield namespace
+        finally:
+            namespace.active = False
+
 
 
 def _require_locked_profile(profile: str, *, confirmatory_ready: bool) -> None:
@@ -305,7 +347,7 @@ def _experiment_summary(experiment_id: str) -> dict[str, Any]:
 
 def _write_evidence_run(
     *,
-    output_dir: Path,
+    output_dir: _OutputNamespace,
     project_root: Path,
     experiment_id: str,
     profile: str,
@@ -320,8 +362,8 @@ def _write_evidence_run(
 ) -> tuple[Path, Path]:
     """Validate, write, and receipt-bind one CLI evidence run."""
     validate_evidence_report(report)
-    config_path = _write_json(output_dir / "config.json", config)
-    report_path = _write_json(output_dir / "report.json", report)
+    config_path = output_dir.write_json("config.json", config)
+    report_path = output_dir.write_json("report.json", report)
     spec = get_experiment_spec(experiment_id)
     lock_digest, environment_fallbacks = _environment_lock_digest(project_root)
     fallbacks = tuple(dict.fromkeys((*environment_fallbacks, *_report_fallbacks(report))))
@@ -344,20 +386,20 @@ def _write_evidence_run(
         fallbacks=fallbacks,
         checkpoints=checkpoints,
         outputs=(
-            make_artifact_record("config", config_path, root=output_dir),
-            make_artifact_record("report", report_path, root=output_dir),
+            output_dir.record("config", config_path.name),
+            output_dir.record("report", report_path.name),
         ),
         status="completed",
         started_at_utc=started_at,
         completed_at_utc=completed_at,
     )
-    receipt_path = write_run_receipt(output_dir / "receipt.json", receipt)
+    receipt_path = output_dir.commit(receipt)
     return report_path, receipt_path
 
 
 def _write_application_run(
     *,
-    output_dir: Path,
+    output_dir: _OutputNamespace,
     request: LabeledAggregationRequest,
     result: LabeledAggregationResult,
     source_provenance: SourceProvenance,
@@ -370,8 +412,8 @@ def _write_application_run(
         raise ValueError("result must be a LabeledAggregationResult")
     if not isinstance(source_provenance, SourceProvenance):
         raise ValueError("source_provenance must be a SourceProvenance")
-    request_path = _write_json(output_dir / "request.json", request.as_dict())
-    result_path = _write_json(output_dir / "result.json", result.as_dict())
+    request_path = output_dir.write_json("request.json", request.as_dict())
+    result_path = output_dir.write_json("result.json", result.as_dict())
     receipt = ApplicationReceipt(
         runtime_provenance=runtime_provenance(),
         source_provenance=source_provenance,
@@ -380,13 +422,13 @@ def _write_application_run(
         solver_status=result.aggregation.solver_status,
         fallback_events=result.aggregation.fallback_events,
         outputs=(
-            make_artifact_record("request", request_path, root=output_dir),
-            make_artifact_record("result", result_path, root=output_dir),
+            output_dir.record("request", request_path.name),
+            output_dir.record("result", result_path.name),
         ),
         started_at_utc=started_at,
         completed_at_utc=datetime.now(timezone.utc).isoformat(),
     )
-    receipt_path = write_application_receipt(output_dir / "receipt.json", receipt)
+    receipt_path = output_dir.commit(receipt)
     return request_path, result_path, receipt_path
 
 
