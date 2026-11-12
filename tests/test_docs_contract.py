@@ -1035,7 +1035,7 @@ def test_ci_workflow_runs_publication_package_and_release_round_trip() -> None:
         "tar -tzf \"$sdist\"",
         "uv run --locked python scripts/build_release.py",
         "uv run --locked python scripts/build_release.py --verify",
-        "actions/upload-artifact@v4",
+        "actions/upload-artifact@v7",
     )
     for command in required_commands:
         assert command in workflow
