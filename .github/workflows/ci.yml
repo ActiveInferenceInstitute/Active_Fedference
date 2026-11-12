@@ -53,7 +53,7 @@ jobs:
           python-version: "3.12.15"
       - name: Collect every test and balance whole modules
         run: uv run --locked python scripts/gate.py plan
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: test-plan
           path: .tmp/ci-plan/plan.json
@@ -95,7 +95,7 @@ jobs:
         run: uv run --locked python scripts/gate.py shard --index "$SHARD_INDEX"
       - name: Retain shard results even on failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: shard-${{ matrix.index }}
           path: .tmp/ci-shards/shard-${{ matrix.index }}/
@@ -155,7 +155,7 @@ jobs:
         run: uv run --locked python scripts/gate.py gnn --upstream-root .tmp/gnn-upstream --environment "$RUNNER_TEMP/fedference-gnn/environment.json"
       - name: Retain GNN shard results even on failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: shard-4
           path: .tmp/ci-shards/shard-4/
@@ -164,7 +164,7 @@ jobs:
           retention-days: 30
       - name: Retain pinned bootstrap qualification
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gnn-bootstrap
           path: |
@@ -236,7 +236,7 @@ jobs:
 
       - name: Retain combined coverage diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: combined-coverage-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -319,7 +319,7 @@ jobs:
         run: uv run --locked python scripts/build_release.py --verify
 
       - name: Upload release provenance
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: active-fedference-release-provenance
           path: |
@@ -360,7 +360,7 @@ jobs:
 
       - name: Retain compatibility timing diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: compatibility-timings-${{ matrix.python-version }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: .tmp/ci-timings/
