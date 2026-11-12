@@ -26,19 +26,17 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12.15"
-      - name: Sync locked dev dependencies
-        run: uv sync --locked --extra dev
-      - name: Ruff lint
-        run: uv run --locked ruff check src/ tests/ scripts/ examples/ _fedference_build_backend.py
+      - name: Lint
+        run: uv run --locked python scripts/gate.py lint
 
-      - name: GitHub-compatible Mermaid contract
-        run: uv run --locked python scripts/validate_mermaid.py
-
-      - name: Mypy
-        run: uv run --locked mypy src/
+      - name: Types
+        run: uv run --locked python scripts/gate.py types
 
       - name: Metadata surfaces are emitter-consistent
-        run: uv run --locked python scripts/emit_metadata.py --check
+        run: uv run --locked python scripts/gate.py metadata
+
+      - name: Docs contract and Mermaid
+        run: uv run --locked python scripts/gate.py docs
 
 
   test-plan:
@@ -53,9 +51,8 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12.15"
-      - run: uv sync --locked --extra dev
       - name: Collect every test and balance whole modules
-        run: uv run --locked python scripts/ci_shards.py plan --plan .tmp/ci-plan/plan.json --count 4
+        run: uv run --locked python scripts/gate.py plan
       - uses: actions/upload-artifact@v4
         with:
           name: test-plan
@@ -79,7 +76,6 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12.15"
-      - run: uv sync --locked --extra dev
       - name: Install PDF tools
         run: |
           sudo apt-get update
@@ -96,7 +92,7 @@ jobs:
       - name: Execute assigned tests with coverage and timings
         env:
           SHARD_INDEX: ${{ matrix.index }}
-        run: uv run --locked python scripts/ci_shards.py run --plan .tmp/ci-plan/plan.json --index "$SHARD_INDEX"
+        run: uv run --locked python scripts/gate.py shard --index "$SHARD_INDEX"
       - name: Retain shard results even on failure
         if: always()
         uses: actions/upload-artifact@v4
@@ -119,10 +115,29 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12.15"
-      - run: uv sync --locked --extra dev
-      - name: Read the qualified upstream source revision
+      - name: Resolve the pinned upstream source revision
         id: gnn-source
-        run: python scripts/read_gnn_pin.py --github-output "$GITHUB_OUTPUT"
+        # Transport only: this step asks the pin which commit to fetch, because
+        # `actions/checkout` needs a ref before the pinned source exists. Whether
+        # the pin's schema, tag, repository, pointer and specifications conform is
+        # the shared reader's judgement in `scripts/gate.py gnn`. The fetched tree
+        # must be an immutable commit, so a branch or tag is refused here rather
+        # than silently qualifying a moving target.
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+          revision = json.loads(Path(".github/gnn-pin.json").read_text(encoding="utf-8")).get("commit")
+          if not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
+              raise SystemExit(
+                  "the pin names no immutable 40-character commit; "
+                  "pin conformance is `python -m gnn.importers check`"
+              )
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+              output.write(f"revision={revision}\n")
+          PY
       - name: Fetch the qualified upstream source revision
         uses: actions/checkout@v4
         with:
@@ -130,31 +145,14 @@ jobs:
           ref: ${{ steps.gnn-source.outputs.revision }}
           path: .tmp/gnn-upstream
           persist-credentials: false
-      - name: Report the resolved GNN version
-        run: |
-          python - <<'PY'
-          import os
-          import re
-          from pathlib import Path
-          source = Path(".tmp/gnn-upstream/src/gnn/__init__.py").read_text(encoding="utf-8")
-          match = re.search(r'^__version__\s*=\s*"([^"]+)"', source, re.MULTILINE)
-          if match is None:
-              raise ValueError("pinned upstream source exposes no __version__")
-          version = match.group(1)
-          print(f"gnn-version={version}")
-          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as summary:
-              summary.write(f"- gnn-version={version}\n")
-          PY
       - name: Bootstrap and qualify the exact CPU runtime
-        run: |
-          uv run --locked python scripts/bootstrap_gnn.py --upstream-root .tmp/gnn-upstream --destination "$RUNNER_TEMP/fedference-gnn" --profile cpython312-cpu
-          python -c 'import json,os; from pathlib import Path; data=json.loads((Path(os.environ["RUNNER_TEMP"])/"fedference-gnn/environment.json").read_text()); print("\n".join(key+"="+value for key,value in data.items()))' >> "$GITHUB_ENV"
+        run: uv run --locked python scripts/gate.py bootstrap --upstream-root .tmp/gnn-upstream --destination "$RUNNER_TEMP/fedference-gnn"
       - uses: actions/download-artifact@v4
         with:
           name: test-plan
           path: .tmp/ci-plan
       - name: Execute every required GNN test with coverage
-        run: uv run --locked python scripts/ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4
+        run: uv run --locked python scripts/gate.py gnn --upstream-root .tmp/gnn-upstream --environment "$RUNNER_TEMP/fedference-gnn/environment.json"
       - name: Retain GNN shard results even on failure
         if: always()
         uses: actions/upload-artifact@v4
@@ -208,9 +206,6 @@ jobs:
         with:
           python-version: "3.12.15"
 
-      - name: Sync dependencies (locked dev extra)
-        run: uv sync --locked --extra dev
-
       - name: Install PDF surface validation tools
         # The rendered-surface gate validates extracted text and PDF structure;
         # keep those external probes explicit on the clean Ubuntu runner.
@@ -237,11 +232,7 @@ jobs:
           path: .tmp/ci-shards
 
       - name: Verify complete test execution and combined coverage
-        run: |
-          uv run --locked python scripts/ci_shards.py verify --plan .tmp/ci-plan/plan.json
-          uv run --locked coverage combine --keep .tmp/ci-shards/shard-*
-          uv run --locked coverage report --fail-under=90
-          uv run --locked coverage json -o .tmp/combined-coverage.json
+        run: uv run --locked python scripts/gate.py verify
 
       - name: Retain combined coverage diagnostics
         if: always()
@@ -359,21 +350,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Sync locked dev dependencies
-        run: uv sync --locked --extra dev
-
       - name: Install PDF fixture validation tools
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y poppler-utils qpdf
 
       - name: Non-slow source smoke suite
-        run: |
-          mkdir -p .tmp/ci-timings
-          uv run --locked --extra dev python -c '
-          import pytest
-          raise SystemExit(pytest.main(["tests/", "--validation-profile=native", "-m", "not slow and not publication", "-q", "--durations=0", "--junitxml=.tmp/ci-timings/compatibility.xml"]))
-          '
+        run: uv run --locked python scripts/gate.py fast
 
       - name: Retain compatibility timing diagnostics
         if: always()

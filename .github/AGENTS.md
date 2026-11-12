@@ -2,9 +2,10 @@
 
 Read [`README.md`](README.md) first. This folder owns the GitHub Actions
 workflow, the Dependabot configuration, and the shard-balance weights. The
-authoritative CI behavior is [`workflows/ci.yml`](workflows/ci.yml);
-`scripts/ci_gate.py` and `scripts/ci_shards.py` implement the gate and sharding
-logic it invokes.
+authoritative CI behavior is [`workflows/ci.yml`](workflows/ci.yml).
+`scripts/gate.py` owns the workflow's command arms, `scripts/ci_gate.py`
+implements the prerequisite guard, and `scripts/ci_shards.py` implements test
+planning, execution, and complete-run verification.
 
 ## Rules
 
@@ -24,13 +25,22 @@ logic it invokes.
   cooldown. Merge an update only after the full gate passes, and re-verify the
   byte-identical distribution build when the update touches a reproducibility
   input.
+- A workflow step's command sequence belongs in `scripts/gate.py`. Add or change
+  an arm, document it in [`../scripts/README.md`](../scripts/README.md) and
+  [`../scripts/AGENTS.md`](../scripts/AGENTS.md), and keep the `--dry-run`
+  coverage in `tests/test_scripts_smoke.py`; never inline a second copy in the
+  workflow.
 
 ## Validate
 
 ```bash
 actionlint .github/workflows/ci.yml
+uv run --locked python scripts/gate.py lint --dry-run
 uv run --locked python scripts/ci_gate.py --results '{}'
 ```
 
-`actionlint` requires the external binary. The `ci_gate.py` call with empty
-results is a syntax/import smoke; the workflow passes the real `needs` JSON.
+`actionlint` requires the external binary. `scripts/gate.py lint --dry-run`
+prints the lint arm's command without running it, so a malformed arm fails as a
+syntax/import error before the workflow uses it. The `ci_gate.py` call with
+empty results is a syntax/import smoke; the workflow passes the real `needs`
+JSON.

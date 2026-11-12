@@ -31,7 +31,7 @@ the shared-state input contract, method selection, result diagnostics,
 recipient-specific sharing, local process/socket boundaries, CLI receipts, and
 troubleshooting.
 
-The default runtime requires Python 3.10 or newer and
+The default runtime requires Python 3.11 or newer and
 [`uv`](https://docs.astral.sh/uv/getting-started/installation/); it does not
 require Torch or a GPU. These commands use a POSIX shell. To validate the
 included labeled request, aggregate it, and verify its application receipt from

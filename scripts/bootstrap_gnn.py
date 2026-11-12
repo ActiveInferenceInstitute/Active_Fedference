@@ -2,7 +2,16 @@
 """Bootstrap a fresh, pinned GNN runtime and qualify real execution and parsing.
 
 Run with the locked project environment:
-uv run --locked python scripts/bootstrap_gnn.py --upstream-root PATH --destination PATH
+uv run --locked python scripts/bootstrap_gnn.py --upstream-root PATH \\
+    --destination PATH
+
+The materialized revision is read from the supplied source tree's own git HEAD, so
+the qualified lock must name the commit the caller actually fetched. Bootstrap
+refuses a lock that names a different revision, and a stale backend lock therefore
+cannot qualify a fresh pin. ``--expected-revision`` states that commit explicitly
+for a source tree that is not a git checkout. The pin file itself is read and
+judged by the shared reader (``python -m gnn.importers check``), never by this
+script.
 """
 
 from __future__ import annotations
@@ -10,11 +19,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
-
-from read_gnn_pin import read_gnn_pin
 
 from fedference.gnn.backend import BackendConfig, run_pymdp, verify_backend_output
 from fedference.gnn.backend_registry import load_backend_registry
@@ -24,12 +32,33 @@ from fedference.gnn.source import EXTENSION_MANIFEST
 from project_paths import resolve_script_project_root
 
 
+def materialized_revision(upstream: Path, declared: str | None) -> str:
+    """Return the commit the caller fetched; the pin file is never read here."""
+    if declared is not None:
+        return declared
+    completed = subprocess.run(
+        ["git", "-C", str(upstream), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode:
+        raise ValueError(
+            "GNN bootstrap needs --expected-revision for a source tree that is not a git checkout"
+        )
+    return completed.stdout.strip()
+
+
 def main() -> int:
     """Provision only a new owned directory; preserve failures for inspection."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path)
     parser.add_argument("--upstream-root", required=True, type=Path)
     parser.add_argument("--destination", required=True, type=Path)
+    parser.add_argument(
+        "--expected-revision",
+        help="Commit the upstream source was materialized at; otherwise read from its git HEAD",
+    )
     parser.add_argument("--lock", type=Path)
     parser.add_argument("--profile", choices=("cpython312-cpu",), default="cpython312-cpu")
     parser.add_argument("--python", help="Exact interpreter path; otherwise use the profile version")
@@ -37,13 +66,15 @@ def main() -> int:
     root = resolve_script_project_root(Path(__file__).resolve().parents[1], args.project_root)
     lock_path = args.lock or root / "src/fedference/config/gnn-backend-lock.json"
     registry = load_backend_registry(lock_path)
-    revision = read_gnn_pin(root)
+    upstream = args.upstream_root.resolve(strict=True)
+    revision = materialized_revision(upstream, args.expected_revision)
+    if re.fullmatch(r"[0-9a-f]{40}", revision) is None:
+        raise ValueError("The materialized revision must be an exact 40-character commit id")
     if registry.as_dict()["revision"] != revision:
         raise ValueError("GNN pin revision differs from the qualified backend lock")
     profile = registry.profiles[args.profile]
     if profile.qualification != "fresh-provisioning-and-execution":
         raise ValueError("Runtime profile is not qualified for fresh provisioning")
-    upstream = args.upstream_root.resolve(strict=True)
     destination = args.destination.absolute()
     if destination.exists() or destination.is_symlink():
         raise FileExistsError("GNN bootstrap requires a new destination")

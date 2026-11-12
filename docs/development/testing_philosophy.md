@@ -250,8 +250,10 @@ results are cached between jobs or commits.
 
 Every shard rechecks the complete collection and declared validation inputs,
 then records completed node IDs, skips, exit status, and its coverage-file hash.
-The final `gate` requires successful fast checks, all shards, and both Python
-compatibility jobs. It rejects incomplete or duplicated execution and combines
+The final `gate` requires successful fast checks, all shards, and the Python 3.13
+compatibility job. The workflow invokes the named arms of `scripts/gate.py`;
+`scripts/ci_shards.py` remains the shard implementation those arms call. It
+rejects incomplete or duplicated execution and combines
 the authenticated coverage files before enforcing the unchanged 90% threshold
 over `src/`. Individual partial shards do not enforce a whole-program percentage.
 This does not waive the final coverage requirement.

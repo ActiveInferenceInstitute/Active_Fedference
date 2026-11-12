@@ -157,6 +157,7 @@ _THIN_ORCHESTRATOR_SCRIPTS = [
     "prepare_web_package.py",
     "record_pipeline_stage.py",
     "validate_all.py",
+    "gate.py",
     "validate_test_coverage.py",
     "validate_clean_checkout.py",
     "validate_pipeline_freshness.py",
@@ -183,6 +184,7 @@ _PROJECT_ROOT_AWARE_SCRIPTS = [
     "record_pipeline_stage.py",
     "summarize_tokens.py",
     "validate_all.py",
+    "gate.py",
     "validate_clean_checkout.py",
     "validate_mermaid.py",
     "validate_outputs.py",
@@ -347,6 +349,56 @@ def test_validate_all_dry_run_prints_profile_commands() -> None:
     assert result.returncode == 0, result.stderr
     assert "scripts/prepare_web_package.py" in result.stdout
     assert "scripts/validate_web_package.py" in result.stdout
+
+
+def test_gate_dry_run_prints_arm_commands() -> None:
+    result = subprocess.run(
+        [sys.executable, str(_SCRIPTS / "gate.py"), "lint", "--dry-run"],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "ruff check src/ tests/ scripts/" in result.stdout
+    full = subprocess.run(
+        [sys.executable, str(_SCRIPTS / "gate.py"), "full", "--dry-run"],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert full.returncode == 0, full.stderr
+    assert "ci_shards.py plan" in full.stdout
+    assert "ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4" in full.stdout
+
+
+def test_gate_dry_run_preserves_existing_receipts(tmp_path: Path) -> None:
+    plan = tmp_path / ".tmp/ci-plan"
+    plan.mkdir(parents=True)
+    (plan / "plan.json").write_text("{}\n")
+    shard = tmp_path / ".tmp/ci-shards/shard-0"
+    shard.mkdir(parents=True)
+    (shard / "receipt.json").write_text("{}\n")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(_SCRIPTS / "gate.py"),
+            "full",
+            "--dry-run",
+            "--project-root",
+            str(tmp_path),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "coverage combine --keep" in result.stdout
+    assert str(shard) in result.stdout
+    assert (plan / "plan.json").is_file()
+    assert (shard / "receipt.json").is_file()
 
 
 def test_validate_all_full_declares_source_and_release_gates() -> None:

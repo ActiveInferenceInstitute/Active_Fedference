@@ -31,9 +31,9 @@ in `src/`.
 | Script | Output | Status |
 | --- | --- | --- |
 | `ci_gate.py --results JSON [--superseded]` | Gate verdict over the `needs` context; exit 1 names every blocking job | CI guard; a superseded run tolerates cancelled or skipped prerequisites, a failed one stays red |
+| `gate.py ARM [--dry-run] [--project-root PATH]` | The exact command sequence for one CI arm (`lint`, `types`, `metadata`, `docs`, `fast`, `plan`, `shard`, `verify`, `bootstrap`, `gnn`, `full`, `all`) | One documented local/CI entry point; the workflow calls the same arms, so commands cannot drift |
 | `ci_shards.py {plan,run,verify} --plan PATH [--project-root PATH]` | Complete collection plan, per-shard execution receipts, coverage and JUnit diagnostics under `.tmp/` | CI scheduling and complete-execution verification; final combined coverage remains required |
 | `bootstrap_gnn.py --upstream-root PATH --destination NEW_PATH --profile cpython312-cpu [--python PATH]` | Fresh pinned runtime, real Agent/parser qualification and `environment.json` | Required GNN CI provisioning; the 3.14 profile qualifies existing-runtime execution |
-| `read_gnn_pin.py [--project-root PATH] [--github-output PATH]` | Exact admitted revision for CI checkout and bootstrap; optional Actions output | Interim local reader while the estate pin predates `gnn.importers` |
 | `validation_profiles.py` (internal pytest policy helper) | Native/GNN/full collection and required-runtime refusal | Imported by pytest configuration and the shard planner |
 | `analysis_stages.py {prepare,run,cancel,status,import} --workspace PATH` | Frozen external stages, validated completions and guarded imports | Required publication compute boundary |
 | `02_run_analysis.py [--profile smoke] [--checkpoints PATH] [--project-root PATH]` | `output/reports/*.json`, `output/figures/*.png` | REQUIRED (stage 4) |

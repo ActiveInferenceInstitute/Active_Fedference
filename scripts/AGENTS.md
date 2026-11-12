@@ -14,6 +14,7 @@ Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/devel
 | Script | Pipeline | Role |
 | --- | --- | --- |
 | `ci_gate.py` | CI validation | Fails the `gate` job when a prerequisite is not successful; `--superseded` models the cancelled-run job skip, and a failed prerequisite stays red |
+| `gate.py` | CI validation | One documented entry point for the CI arms (`lint`, `types`, `metadata`, `docs`, `fast`, `plan`, `shard`, `verify`, `bootstrap`, `gnn`, `full`, `all`); the workflow calls the same arms |
 | `ci_shards.py` | CI validation | Collects and partitions whole test modules, binds execution to validation inputs, and rejects incomplete shard evidence before combined coverage |
 | `02_run_analysis.py` | Stage 4 (REQUIRED) | Calls `analysis.workflow.run_analysis_pipeline()` |
 | `analysis_stages.py` | Bounded analysis | Freezes inputs, runs one external stage, requests cancellation, validates reuse/status and imports under short leases |
