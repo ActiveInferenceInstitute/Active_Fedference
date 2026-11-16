@@ -79,6 +79,21 @@ def verify_backend_output(
     if not _same_json(result.get("num_timesteps"), config.steps):
         raise GNNAdmissionError("GNN_BACKEND_OUTPUT", "num_timesteps")
     metadata = _mapping(result.get("runtime_metadata"), "runtime_metadata")
+    if "agent_receipt_schema" in lock:
+        agent = _mapping(metadata.get("native_agent"), "runtime_metadata.native_agent")
+        devices = agent.get("devices")
+        if (
+            not _same_json(agent.get("schema_version"), lock["agent_receipt_schema"])
+            or not _same_json(agent.get("platforms"), [runtime["device"]])
+            or not isinstance(devices, list)
+            or not devices
+            or any(not isinstance(device, str) or not device for device in devices)
+            or any(
+                not _same_json(agent.get(key), runtime.get(key))
+                for key in ("agent", "dtype", "devices", "batch_size", "policy_horizon")
+            )
+        ):
+            raise GNNAdmissionError("GNN_BACKEND_OUTPUT", "native agent receipt")
     params = _mapping(result.get("model_parameters"), "model_parameters")
     if (
         not _same_json(metadata.get("random_seed"), config.seed)

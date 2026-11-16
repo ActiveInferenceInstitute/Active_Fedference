@@ -17,6 +17,8 @@ from .types import JSONValue
 
 RTOL: Final = 1e-5
 ATOL: Final = 1e-6
+BACKEND_REVISION: Final = "1f373d729a751bb43261b4bc4fb8e44754512478"
+NATIVE_AGENT_SCHEMA: Final = "pymdp_native_agent_v1"
 Qualification: TypeAlias = Literal[
     "fresh-provisioning-and-execution", "existing-runtime-execution"
 ]
@@ -55,9 +57,10 @@ def read_backend_document(path: Path) -> dict[str, JSONValue]:
 def load_backend_registry(path: Path) -> BackendRegistry:
     """Parse registry semantics once and retain their admitted field types."""
     registry = read_backend_document(path)
+    legacy = registry.get("schema") == "fedference.gnn-backend/2"
     common: dict[str, JSONValue] = {
-        "schema": "fedference.gnn-backend/2",
-        "revision": UPSTREAM_REVISION,
+        "schema": "fedference.gnn-backend/2" if legacy else "fedference.gnn-backend/3",
+        "revision": UPSTREAM_REVISION if legacy else BACKEND_REVISION,
         "agent": "pymdp.agent.Agent",
         "dtype": "float32",
         "device": "cpu",
@@ -66,6 +69,8 @@ def load_backend_registry(path: Path) -> BackendRegistry:
         "rtol": RTOL,
         "atol": ATOL,
     }
+    if not legacy:
+        common["agent_receipt_schema"] = NATIVE_AGENT_SCHEMA
     if set(registry) != set(common) | {"source_files", "profiles"} or json.dumps(
         {key: registry.get(key) for key in common}, sort_keys=True
     ) != json.dumps(common, sort_keys=True):

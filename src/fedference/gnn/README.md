@@ -22,6 +22,14 @@ immutable caller-owned snapshot. It verifies every parser-closure digest in
 paths, and never falls back to a packaged cache on extraction failure. The
 upstream revision is recorded in `_documents.py`.
 
+The optional PyMDP backend has its own source pin in
+[`gnn-backend-lock.json`](../config/gnn-backend-lock.json). New backend runs
+use its version 3 contract, taking the agent identity, dtype, devices, batch
+size and policy horizon from the upstream simulation receipt. The runtime
+record and replay must agree with that receipt and the locked profile.
+Verification of earlier results still accepts the exact version 2 contract
+and its original source and runtime lock.
+
 Validation establishes admitted content and structural agreement. It never
 certifies scientific validity.
 
