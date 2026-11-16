@@ -362,7 +362,8 @@ def test_gate_dry_run_prints_arm_commands() -> None:
     assert result.returncode == 0, result.stderr
     assert "ruff check src/ tests/ scripts/" in result.stdout
     full = subprocess.run(
-        [sys.executable, str(_SCRIPTS / "gate.py"), "full", "--dry-run"],
+        [sys.executable, str(_SCRIPTS / "gate.py"), "full", "--dry-run",
+         "--importer-root", "source/importer-release"],
         capture_output=True,
         text=True,
         cwd=str(_PROJECT_ROOT),
@@ -370,7 +371,18 @@ def test_gate_dry_run_prints_arm_commands() -> None:
     )
     assert full.returncode == 0, full.stderr
     assert "ci_shards.py plan" in full.stdout
+    assert "--expected-commit IMPORTER_CHECKOUT_HEAD" in full.stdout
+    assert "source/importer-release" in full.stdout
     assert "ci_shards.py run --plan .tmp/ci-plan/plan.json --index 4" in full.stdout
+    bootstrap = subprocess.run(
+        [sys.executable, str(_SCRIPTS / "gate.py"), "bootstrap", "--dry-run"],
+        capture_output=True,
+        text=True,
+        cwd=str(_PROJECT_ROOT),
+        timeout=60,
+    )
+    assert bootstrap.returncode == 0, bootstrap.stderr
+    assert "--upstream-root .tmp/gnn-backend-upstream" in bootstrap.stdout
 
 
 def test_gate_dry_run_preserves_existing_receipts(tmp_path: Path) -> None:

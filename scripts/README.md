@@ -122,6 +122,10 @@ gate: Ruff, mypy, the invariant report, the domain-layer grep, and exact-set
 release build/verify. `full` runs quick, manuscript, package, rendered-surface,
 freshness, source, and coverage gates.
 
+The `gate.py bootstrap` arm uses `--upstream-root` for the locked backend source.
+The `gate.py gnn` arm uses `--importer-root` for the separate release checkout
+and `--environment` for the qualified backend. See [GNN conformance](../.github/GNN.md).
+
 Use `--dry-run` to print a profile without executing it and `--keep-going` to
 run all commands in a profile before returning failure.
 
