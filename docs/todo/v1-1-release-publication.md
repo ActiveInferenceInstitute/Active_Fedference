@@ -63,10 +63,10 @@ re-publish, re-upload, or replace the published bytes to reconstruct history.
 
 After independent post-publication verification, complete MIN-3 through a
 reviewed normal-merge public PR, including removal of its closed forward-backlog
-entry. Only then merge the resulting final public `main` into private
-`origin/main` once with a normal merge commit whose tree is exactly the public
-tree. No public repository commit may intervene between that synchronization
-and the MAJ-8 branch point.
+entry. Only then merge the resulting final public `main` once into the private
+repository's `main`, using its explicitly verified checkout-local remote, with a
+normal merge commit whose tree is exactly the public tree. No public repository
+commit may intervene between that synchronization and the MAJ-8 branch point.
 
 No PyPI publication is included.
 
@@ -76,8 +76,11 @@ No PyPI publication is included.
   abstract, MIT license, attribution, repository, and UTC date policy. Stop on
   any drift that requires a new owner decision.
 - The public repository is
-  `https://github.com/ActiveInferenceInstitute/Active_Fedference`; `origin` is
-  the private/interim evidence remote, not the public release destination.
+  `https://github.com/ActiveInferenceInstitute/Active_Fedference`;
+  `https://github.com/docxology/active_fedference` is the separate interim
+  evidence mirror. Remote aliases are checkout-local. Verify configured URLs
+  before an authorized synchronization; never infer a public or private
+  destination from the name `origin`.
 - Stage only the canonical PDF, reproducible wheel, reproducible source
   distribution, `manifest.json`, and a sorted `SHA256SUMS.txt`. Verify every
   downloaded asset again.

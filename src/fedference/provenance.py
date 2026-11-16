@@ -326,51 +326,44 @@ class SourceProvenance:
         )
 
 
-def _git_source(project_root: Path) -> SourceProvenance | None:
-    root_result = subprocess.run(
-        [
+def _observe_git(
+    project_root: Path,
+    *arguments: str,
+    text: bool = True,
+) -> subprocess.CompletedProcess[Any]:
+    """Observe Git without refreshing its index or invoking fsmonitor hooks.
+
+    The command-line switch overrides an inherited ``GIT_OPTIONAL_LOCKS=1``.
+    Keep return codes, decoding mode and OS errors visible: each caller owns
+    its source-availability, cleanliness and exception policy.
+    """
+    return subprocess.run(
+        (
             "git",
+            "--no-optional-locks",
             "-c",
             "core.fsmonitor=false",
             "-c",
             "core.untrackedcache=false",
             "-C",
             str(project_root),
-            "rev-parse",
-            "--show-toplevel",
-        ],
+            *arguments,
+        ),
         capture_output=True,
-        text=True,
+        text=text,
         check=False,
     )
+
+
+def _git_source(project_root: Path) -> SourceProvenance | None:
+    root_result = _observe_git(project_root, "rev-parse", "--show-toplevel")
     if root_result.returncode != 0 or not root_result.stdout.strip():
         return None
     root = Path(root_result.stdout.strip()).resolve()
     if active_fedference_checkout_version(root) is None:
         return None
-    commit_result = subprocess.run(
-        ["git", "-C", str(root), "rev-parse", "HEAD"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    status_result = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.fsmonitor=false",
-            "-c",
-            "core.untrackedcache=false",
-            "-C",
-            str(root),
-            "status",
-            "--porcelain=v1",
-            "--untracked-files=normal",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    commit_result = _observe_git(root, "rev-parse", "HEAD")
+    status_result = _observe_git(root, "status", "--porcelain=v1", "--untracked-files=normal")
     if (
         commit_result.returncode != 0
         or re.fullmatch(r"[0-9a-fA-F]{40}", commit_result.stdout.strip()) is None
