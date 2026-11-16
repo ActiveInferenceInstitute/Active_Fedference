@@ -80,17 +80,16 @@ uv run --locked python scripts/gate.py all
 continues after a failing arm command; `--project-root PATH` selects a
 standalone checkout. `lint`, `types`, `metadata`, `docs`, `fast`, and `plan` are
 bounded local probes. `shard` and `verify` require a prior `plan` and the shard
-artifacts; `bootstrap` and `gnn` require the pinned GNN runtime and network;
-`full` and `all` are the complete matrix. The hosted workflow runs the same
-arms, but a local arm is not a hosted release verdict.
+artifacts. `full` and `all` run the complete matrix.
 
-`bootstrap` reads the materialized revision from the GNN source checkout's own
-git `HEAD` and refuses a backend lock that names a different revision, so a
-stale lock cannot qualify a new pin; pass `--expected-revision SHA` when that
-source tree is not a git checkout. The `gnn` arm then runs the estate's shared
-reader (`python -m gnn.importers check --repo . --require-pointer --workflow
-.github/workflows/ci.yml --job gnn-shard`) from that verified runtime before the
-GNN profile shard.
+`bootstrap` uses the locked backend source in `.tmp/gnn-backend-upstream` or
+the path passed with `--upstream-root`. It matches that checkout's Git HEAD
+against the backend lock and verifies all declared source hashes. Pass
+`--expected-revision SHA` for a materialized backend source without Git history.
+The `gnn` arm uses the release checkout in `.tmp/gnn-upstream` or the path
+passed with `--importer-root` for the shared importer checks. It then runs the
+GNN profile shard using the qualified backend from the bootstrap environment.
+See [GNN conformance](../../.github/GNN.md).
 
 Measured on this workstation (macOS arm64, Python 3.12.16) on 2026-11-12, one
 run per arm:

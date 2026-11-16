@@ -56,9 +56,17 @@ def executed(config: BackendConfig, model: CategoricalModel, tmp_path_factory: p
 def test_real_agent_inference_policy_and_action(config, model, executed):
     output, result = executed
     runtime = json.loads((output / "runtime.json").read_text())
+    native_agent = json.loads((output / "simulation_results.json").read_text())[
+        "runtime_metadata"
+    ]["native_agent"]
     assert runtime["agent"] == "pymdp.agent.Agent"
     assert runtime["dtype"] == "float32" and runtime["device"] == "cpu"
     assert runtime["batch_size"] == runtime["policy_horizon"] == 1
+    assert all(
+        native_agent[key] == runtime[key]
+        for key in ("agent", "dtype", "devices", "batch_size", "policy_horizon")
+    )
+    assert native_agent["platforms"] == [runtime["device"]]
     assert len(result.beliefs) == len(result.policies) == len(result.actions) == 4
     assert result.replay_max_error < 1e-6
     assert result == verify_backend_output(model, config, output)

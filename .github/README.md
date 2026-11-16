@@ -33,16 +33,13 @@ dispatch.
 3. **Native-profile shards** (`0`–`3`) — `scripts/gate.py shard --index N` runs
    the balanced native test shards with coverage and timing evidence retained
    even on failure.
-4. **GNN conformance (pinned)** — the `gnn-shard` job resolves the pinned
-   commit from `.github/gnn-pin.json` into `.tmp/gnn-upstream`, then the
-   `scripts/gate.py bootstrap` arm qualifies the `cpython312-cpu` runtime from
-   that source and the runtime registry
-   `src/fedference/config/gnn-backend-lock.json`. `scripts/gate.py gnn` runs the
-   estate's shared reader (`python -m gnn.importers check --repo .
-   --require-pointer --workflow .github/workflows/ci.yml --job gnn-shard`) from
-   the pinned runtime, then the required GNN tests. The pin's shape, tag,
-   repository, pointer and specification conformance are the reader's
-   judgement; see [`GNN.md`](GNN.md).
+4. **GNN conformance (pinned)** — `gnn-shard` checks out the importer release
+   from `.github/gnn-pin.json` and the backend revision from
+   `src/fedference/config/gnn-backend-lock.json`. `scripts/gate.py bootstrap`
+   qualifies the `cpython312-cpu` runtime from the backend checkout.
+   `scripts/gate.py gnn` runs the shared pin and specification checks from
+   the importer release and the required GNN tests against the qualified
+   backend. See [`GNN.md`](GNN.md).
 5. **Python 3.13 compatibility smoke** — `scripts/gate.py fast` runs the
    non-slow, non-publication suite on Python 3.13.
 6. **Gate** — `scripts/gate.py verify` requires every prerequisite through

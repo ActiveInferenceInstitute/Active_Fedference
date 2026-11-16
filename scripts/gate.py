@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -105,6 +106,22 @@ def _environment_path(args: argparse.Namespace, project_root: Path) -> Path:
     return path if path.is_absolute() else project_root / path
 
 
+def _importer_revision(root: Path) -> str:
+    completed = subprocess.run(
+        ("git", "-C", str(root), "rev-parse", "--show-toplevel", "--verify", "HEAD"),
+        capture_output=True, text=True, check=False,
+    )
+    lines = completed.stdout.splitlines()
+    if (
+        completed.returncode
+        or len(lines) != 2
+        or Path(lines[0]).resolve() != root.resolve()
+        or re.fullmatch(r"[0-9a-f]{40}", lines[1]) is None
+    ):
+        raise SystemExit(f"gate: expected an importer release checkout at {root}")
+    return lines[1]
+
+
 def _commands(arm: str, args: argparse.Namespace, project_root: Path) -> list[Invocation]:
     """Return the exact command sequence for one arm."""
     base: Env = {}
@@ -128,29 +145,31 @@ def _commands(arm: str, args: argparse.Namespace, project_root: Path) -> list[In
         return [(command, base) for command in _VERIFY]
     if arm == "bootstrap":
         return [(
-            _bootstrap(Path(args.upstream_root), Path(args.destination), args.expected_revision),
+            _bootstrap(Path(args.upstream_root or ".tmp/gnn-backend-upstream"),
+                       Path(args.destination), args.expected_revision),
             base,
         )]
     if arm == "gnn":
         environment = _load_environment(
             _environment_path(args, project_root), required=not args.dry_run
         )
+        importer_root = project_root / (args.importer_root or args.upstream_root or ".tmp/gnn-upstream")
+        importer_revision = "IMPORTER_CHECKOUT_HEAD" if args.dry_run else _importer_revision(importer_root)
         return [
             (
                 (
                     environment.get("GNN_PYTHON", sys.executable),
                     "-m", "gnn.importers", "check", "--repo", ".",
+                    "--expected-commit", importer_revision,
                     "--require-pointer", "--workflow", ".github/workflows/ci.yml",
                     "--job", "gnn-shard",
                 ),
                 {
                     **environment,
-                    "PYTHONPATH": str(
-                        project_root / environment.get("GNN_ROOT", args.upstream_root) / "src"
-                    ),
+                    "PYTHONPATH": str(importer_root / "src"),
                 },
             ),
-            ((*_VERSION_CHECK, args.upstream_root), base),
+            ((*_VERSION_CHECK, str(importer_root)), base),
             (_shard(4), environment),
         ]
     if arm == "full":
@@ -201,7 +220,14 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--keep-going", action="store_true")
     parser.add_argument("--index", type=int, default=None)
-    parser.add_argument("--upstream-root", default=".tmp/gnn-upstream")
+    parser.add_argument(
+        "--upstream-root",
+        help="Checkout of the locked GNN backend for bootstrap (default .tmp/gnn-backend-upstream)",
+    )
+    parser.add_argument(
+        "--importer-root",
+        help="Checkout at the GNN importer pin for gnn (default .tmp/gnn-upstream)",
+    )
     parser.add_argument(
         "--expected-revision",
         default=None,

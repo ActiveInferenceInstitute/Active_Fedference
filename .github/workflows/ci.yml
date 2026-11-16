@@ -115,44 +115,52 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.12.15"
-      - name: Resolve the pinned upstream source revision
+      - name: Resolve the pinned importer and backend revisions
         id: gnn-source
-        # Transport only: this step asks the pin which commit to fetch, because
-        # `actions/checkout` needs a ref before the pinned source exists. Whether
-        # the pin's schema, tag, repository, pointer and specifications conform is
-        # the shared reader's judgement in `scripts/gate.py gnn`. The fetched tree
-        # must be an immutable commit, so a branch or tag is refused here rather
-        # than silently qualifying a moving target.
+        # Transport only. The shared reader validates the importer pin, and
+        # bootstrap qualifies the separate backend source against the lock.
         run: |
           python - <<'PY'
           import json
           import os
           import re
           from pathlib import Path
-          revision = json.loads(Path(".github/gnn-pin.json").read_text(encoding="utf-8")).get("commit")
-          if not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
-              raise SystemExit(
-                  "the pin names no immutable 40-character commit; "
-                  "pin conformance is `python -m gnn.importers check`"
-              )
+          sources = (
+              ("importer", ".github/gnn-pin.json", "commit"),
+              ("backend", "src/fedference/config/gnn-backend-lock.json", "revision"),
+          )
+          revisions = {}
+          for source, path, field in sources:
+              revision = json.loads(Path(path).read_text(encoding="utf-8")).get(field)
+              if not isinstance(revision, str) or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
+                  raise SystemExit(f"the {source} pin names no immutable 40-character commit")
+              revisions[source] = revision
           with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
-              output.write(f"revision={revision}\n")
+              for source, revision in revisions.items():
+                  output.write(f"{source}={revision}\n")
           PY
-      - name: Fetch the qualified upstream source revision
+      - name: Fetch the pinned importer release
         uses: actions/checkout@v7
         with:
           repository: ActiveInferenceInstitute/Generalized_Notation_Notation
-          ref: ${{ steps.gnn-source.outputs.revision }}
+          ref: ${{ steps.gnn-source.outputs.importer }}
           path: .tmp/gnn-upstream
           persist-credentials: false
+      - name: Fetch the locked backend source
+        uses: actions/checkout@v7
+        with:
+          repository: ActiveInferenceInstitute/Generalized_Notation_Notation
+          ref: ${{ steps.gnn-source.outputs.backend }}
+          path: .tmp/gnn-backend-upstream
+          persist-credentials: false
       - name: Bootstrap and qualify the exact CPU runtime
-        run: uv run --locked python scripts/gate.py bootstrap --upstream-root .tmp/gnn-upstream --destination "$RUNNER_TEMP/fedference-gnn"
+        run: uv run --locked python scripts/gate.py bootstrap --upstream-root .tmp/gnn-backend-upstream --destination "$RUNNER_TEMP/fedference-gnn"
       - uses: actions/download-artifact@v8
         with:
           name: test-plan
           path: .tmp/ci-plan
       - name: Execute every required GNN test with coverage
-        run: uv run --locked python scripts/gate.py gnn --upstream-root .tmp/gnn-upstream --environment "$RUNNER_TEMP/fedference-gnn/environment.json"
+        run: uv run --locked python scripts/gate.py gnn --importer-root .tmp/gnn-upstream --environment "$RUNNER_TEMP/fedference-gnn/environment.json"
       - name: Retain GNN shard results even on failure
         if: always()
         uses: actions/upload-artifact@v7

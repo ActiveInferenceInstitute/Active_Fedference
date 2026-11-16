@@ -256,32 +256,57 @@ def test_cli_admits_plan_before_git_discovery(tmp_path: Path, mode: str, fault: 
 
 
 
-@pytest.mark.parametrize("valid", [False, True])
-def test_hosted_gnn_checkout_uses_admitted_lock_revision(tmp_path: Path, valid: bool) -> None:
-    """Execute the actual hosted admission script; a moving ref cannot pass."""
+@pytest.mark.parametrize("moving_source", [None, "importer", "backend"])
+def test_hosted_gnn_checkouts_use_their_own_revisions(
+    tmp_path: Path, moving_source: str | None,
+) -> None:
+    """Execute the hosted admission step for the two independent sources."""
     import yaml
 
     source = Path(__file__).resolve().parents[1]
     workflow = yaml.safe_load((source / ".github/workflows/ci.yml").read_text())
     steps = workflow["jobs"]["gnn-shard"]["steps"]
     admission = next(step for step in steps if step.get("id") == "gnn-source")
-    checkout = next(step for step in steps if step.get("with", {}).get("repository")
-                    == "ActiveInferenceInstitute/Generalized_Notation_Notation")
-    assert checkout["with"]["ref"] == "${{ steps.gnn-source.outputs.revision }}"
-    pin = json.loads((source / ".github/gnn-pin.json").read_text())
-    fixture = tmp_path / ".github/gnn-pin.json"
-    fixture.parent.mkdir(parents=True)
-    revision = pin["commit"] if valid else "main"
-    fixture.write_text(json.dumps({"schema": "gnn-importer-pin/v1", "commit": revision}))
+    checkouts = {
+        step["with"]["path"]: step["with"]
+        for step in steps
+        if step.get("with", {}).get("repository")
+        == "ActiveInferenceInstitute/Generalized_Notation_Notation"
+    }
+    pin_files = {
+        "importer": (".github/gnn-pin.json", "commit", ".tmp/gnn-upstream"),
+        "backend": ("src/fedference/config/gnn-backend-lock.json", "revision",
+                    ".tmp/gnn-backend-upstream"),
+    }
+    assert set(checkouts) == {entry[2] for entry in pin_files.values()}
+    revisions = {}
+    for kind, (path, field, checkout_path) in pin_files.items():
+        assert checkouts[checkout_path]["ref"] == "${{ steps.gnn-source.outputs." + kind + " }}"
+        assert checkouts[checkout_path]["persist-credentials"] is False
+        fixture = tmp_path / path
+        fixture.parent.mkdir(parents=True)
+        data = json.loads((source / path).read_text())
+        if moving_source == kind:
+            data[field] = "main"
+        revisions[kind] = data[field]
+        fixture.write_text(json.dumps(data))
+    assert "--upstream-root .tmp/gnn-backend-upstream " in next(
+        step["run"] for step in steps if "scripts/gate.py bootstrap" in step.get("run", "")
+    )
+    assert "--importer-root .tmp/gnn-upstream " in next(
+        step["run"] for step in steps if "scripts/gate.py gnn " in step.get("run", "")
+    )
     output = tmp_path / "github-output"
     environment = dict(os.environ, GITHUB_OUTPUT=str(output))
     environment["PATH"] = str(Path(sys.executable).parent) + os.pathsep + environment["PATH"]
     result = subprocess.run(["bash", "-eu", "-c", admission["run"]], cwd=tmp_path,
                             env=environment, capture_output=True, text=True, timeout=30, check=False)
-    if valid:
+    if moving_source is None:
         assert result.returncode == 0, result.stdout + result.stderr
-        assert output.read_text() == f"revision={revision}\n"
+        assert output.read_text() == "".join(
+            f"{kind}={revision}\n" for kind, revision in revisions.items()
+        )
     else:
         assert result.returncode != 0
-        assert "the pin names no immutable 40-character commit" in result.stderr
+        assert f"the {moving_source} pin names no immutable 40-character commit" in result.stderr
         assert not output.exists()

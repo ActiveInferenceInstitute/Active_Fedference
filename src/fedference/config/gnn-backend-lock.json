@@ -1,5 +1,6 @@
 {
   "agent": "pymdp.agent.Agent",
+  "agent_receipt_schema": "pymdp_native_agent_v1",
   "atol": 1e-06,
   "batch_size": 1,
   "device": "cpu",
@@ -291,9 +292,9 @@
       "qualification": "existing-runtime-execution"
     }
   },
-  "revision": "75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf",
+  "revision": "1f373d729a751bb43261b4bc4fb8e44754512478",
   "rtol": 1e-05,
-  "schema": "fedference.gnn-backend/2",
+  "schema": "fedference.gnn-backend/3",
   "source_files": {
     "src/gnn/__init__.py": "908848847f2fb938f65b3ea0b17252ab6d2129ad2f0b427bca8761a81083d10d",
     "src/gnn/execute/__init__.py": "5119b703424a680faca1be0914f0821a3828ec213c9498612fe69ac653e15d8e",
@@ -320,7 +321,7 @@
     "src/gnn/execute/pymdp/package_detector.py": "c929f2779813fdf465b3ec44f4fef2e3718b3199f0b397ece3ffe3d5a3590544",
     "src/gnn/execute/pymdp/pymdp_simulation.py": "1107d9192cea5101a4bd22d5c3c8529abbd1205544687c3ab33391be45b9d001",
     "src/gnn/execute/pymdp/pymdp_utils.py": "85a29bfb54881e3045454096ddd8d83788048d7cd60f860198252e9b37918864",
-    "src/gnn/execute/pymdp/simulation.py": "5a9ce849731778ce87c4a411d4985a8231fed3e399253523b0e10c496307ab3b",
+    "src/gnn/execute/pymdp/simulation.py": "af409cd082d5223e2a032b4bd380c85d0244c17bbd82041400b637e04e47750a",
     "src/gnn/execute/pymdp/validator.py": "ba69a5fd2c04db65be88bc887a71d9ab95eeed092f65d709a0145e035086455b",
     "src/gnn/execute/result_cache.py": "fee460b6eb4f7688d061f49b2f14bcdf1635572bc91ac35859bad67c0413a572",
     "src/gnn/execute/security_gate.py": "35557ee078442d8909085475a27887255fb3fcdba11c1dfc698080de839434c8",

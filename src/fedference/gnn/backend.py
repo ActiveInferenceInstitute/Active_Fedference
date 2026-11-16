@@ -38,23 +38,21 @@ if len(matches) != 1:
 profile_name = matches[0]
 lock = dict(registry, **registry["profiles"][profile_name])
 sys.path.insert(0, str(root / "src"))
-from gnn.execute.pymdp.simulation import run_pymdp_simulation, _build_pymdp_agent
-from pymdp.agent import Agent
+from gnn.execute.pymdp.simulation import run_pymdp_simulation
 import jax
-import numpy as np
 if jax.default_backend() != lock["device"]:
     raise RuntimeError("GNN_BACKEND_ENVIRONMENT: device differs from lock")
 spec = request["spec"]
 success, result = run_pymdp_simulation(spec, output)
-m = spec["initialparameterization"]
-agent = _build_pymdp_agent(A_np=np.array(m["A"]), B_np=np.array(m["B"]),
-    C_np=np.array(m["C"]), D_np=np.array(m["D"]), E_np=None)
-runtime = dict(success=success, profile=profile_name, agent=Agent.__module__+"."+Agent.__qualname__,
-    python=sys.version.split()[0], distributions=versions, dtype=str(agent.A[0].dtype),
-    device=jax.default_backend(), devices=[str(d) for d in jax.devices()],
-    batch_size=agent.A[0].shape[0], policy_horizon=int(agent.policy_len),
+runtime = dict(success=success, profile=profile_name,
+    python=sys.version.split()[0], distributions=versions, device=jax.default_backend(),
     executable=sys.executable, prefix=sys.prefix, base_prefix=sys.base_prefix,
     request_sha256=hashlib.sha256(request_bytes).hexdigest())
+if success:
+    agent = result.get("runtime_metadata", {}).get("native_agent")
+    if not isinstance(agent, dict) or agent.get("schema_version") != lock["agent_receipt_schema"]:
+        raise RuntimeError("GNN_BACKEND_RECEIPT: incompatible native agent record")
+    runtime.update({key: agent[key] for key in ("agent", "dtype", "devices", "batch_size", "policy_horizon")})
 (output / "runtime.json").write_text(json.dumps(runtime, allow_nan=False))
 if not success:
     raise RuntimeError("GNN_BACKEND_REFUSED: " + repr(result))
@@ -79,6 +77,8 @@ def run_pymdp(model: Model, config: BackendConfig, output: Path) -> BackendResul
     if output.exists() or output.is_symlink():
         raise GNNAdmissionError("GNN_BACKEND_DESTINATION", str(output))
     lock = load_backend_registry(config.lock_path).as_dict()
+    if "agent_receipt_schema" not in lock:
+        raise GNNAdmissionError("GNN_BACKEND_LOCK", "new runs require a native agent receipt")
     files = _mapping(lock.get("source_files"), "source_files")
     if not files:
         raise GNNAdmissionError("GNN_BACKEND_LOCK", "empty source closure")
