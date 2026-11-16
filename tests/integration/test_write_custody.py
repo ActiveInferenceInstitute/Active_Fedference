@@ -181,32 +181,30 @@ def _pause_trace(kind: str, phase: str) -> None:
     if phase == "serialize":
         from json import encoder
 
-        count = 0
+        # Both Python and C encoders pass through this real dispatch boundary.
+        # Counting private Python iterator events misses CPython 3.13's C path.
+        # The unchanged oracle still rejects allocating any namespace before
+        # serialization, and both signal cases retain the real large payload.
+        code = encoder.JSONEncoder.iterencode.__code__
 
         def serialization_trace(frame: FrameType, event: str, argument: Any) -> Any:
-            nonlocal count
-            if (
-                event == "line"
-                and frame.f_code.co_filename == encoder.__file__
-                and frame.f_code.co_name == "_iterencode_dict"
-            ):
-                count += 1
-                if count == 5000:
-                    sys.settrace(None)
-                    print(
-                        "PAUSED "
-                        + json.dumps(
-                            {
-                                "pid": os.getpid(),
-                                "path": frame.f_code.co_filename,
-                                "line": frame.f_lineno,
-                                "serialization_events": count,
-                            }
-                        ),
-                        flush=True,
-                    )
-                    assert sys.stdin.readline().strip() == "GO"
-                    return None
+            if event == "call" and frame.f_code is code:
+                sys.settrace(None)
+                print(
+                    "PAUSED "
+                    + json.dumps(
+                        {
+                            "pid": os.getpid(),
+                            "path": code.co_filename,
+                            "line": frame.f_lineno,
+                            "phase": "serialize",
+                            "encoder_dispatch": True,
+                        }
+                    ),
+                    flush=True,
+                )
+                assert sys.stdin.readline().strip() == "GO"
+                return None
             return serialization_trace
 
         sys.settrace(serialization_trace)
