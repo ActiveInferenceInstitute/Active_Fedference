@@ -350,7 +350,7 @@ def sensitivity_presentation(
     from matplotlib.colors import to_hex
     from matplotlib.patches import Rectangle
 
-    from ._common import contrasting_text_color, signed_difference_colormap
+    from ._common import contrasting_text_color, scalar_mapped_color, signed_difference_colormap
 
     limit = max(float(np.abs(sharing).max()), float(np.abs(hierarchy).max()), 1e-6)
     panels: list[PresentationPanel] = []
@@ -385,7 +385,7 @@ def sensitivity_presentation(
                                 linewidth=0,
                             )
                         )
-                    background = to_hex(image.cmap(image.norm(value)))
+                    background = to_hex(scalar_mapped_color(image, float(value)))
                     axis.text(
                         index,
                         0,

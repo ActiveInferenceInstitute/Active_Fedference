@@ -128,9 +128,12 @@ def _edge_panel(
             x + 0.21, 0.61, wrap_node(text), ha="center", va="center", fontsize=22, color=COLOR_DEEP
         )
         extent = artist.get_window_extent(renderer)
+        # The text is centred in its 0.72-high box (0.25 to 0.97). Bound the
+        # height by that box: Matplotlib 3.11 measures multi-line text about
+        # 10% taller than 3.10, so a four-line node now reaches 0.7004.
         if (
             extent.width > 0.40 * fig.get_figwidth() * fig.dpi
-            or extent.height > 0.70 * fig.get_figheight() * fig.dpi
+            or extent.height > 0.72 * fig.get_figheight() * fig.dpi
         ):
             plt.close(fig)
             raise ValueError(f"presentation node needs a semantic split: {text!r}")
