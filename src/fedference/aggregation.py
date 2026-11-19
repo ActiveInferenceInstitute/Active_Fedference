@@ -556,6 +556,35 @@ def _entropy_regularized_pool(logits: ArrayF, entropy_weight: float) -> ArrayF:
     return result / result.sum()
 
 
+def _aggregation_free_energy(
+    q: ArrayF,
+    a: ArrayF,
+    log_mat: ArrayF,
+    w: ArrayF,
+    *,
+    robustness: float,
+    entropy_weight: float,
+) -> float:
+    """Evaluate admitted arrays without re-flooring normalized beliefs.
+
+    Callers supply a closed-simplex consensus, nonnegative weights with
+    ``support(a) <= support(w)``, positive robustness and nonnegative entropy
+    weight. Public admission and solver updates establish these invariants.
+    The same log-beliefs must drive the updates, trace and multistart ranking.
+    """
+    ce = _cross_entropies(q, log_mat)
+    positive_q = q > 0.0
+    entropy = float(-np.sum(q[positive_q] * np.log(q[positive_q])))
+    active = w > 0.0
+    a_active = a[active]
+    w_active = w[active]
+    positive_a = a_active > 0.0
+    kl_terms = w_active - a_active
+    kl_terms[positive_a] += a_active[positive_a] * np.log(a_active[positive_a] / w_active[positive_a])
+    kl_gen = float(np.sum(kl_terms))
+    return float(np.sum(a * ce) - entropy_weight * entropy + kl_gen / robustness)
+
+
 def aggregation_free_energy(
     consensus_posterior: ArrayF | None = None,
     raw_effective_weights: ArrayF | None = None,
@@ -615,26 +644,21 @@ def aggregation_free_energy(
         raise ValueError("raw_effective_weights must contain only finite values")
     if np.any(a < 0):
         raise ValueError("raw_effective_weights must be non-negative")
-    if np.any((w == 0.0) & (a > _EPS)):
+    if np.any((w == 0.0) & (a > 0.0)):
         raise ValueError("raw_effective_weights must be zero where base_weights are zero")
     q = _closed_simplex(
         consensus_posterior,
         n_states=mat.shape[1],
         name="consensus",
     )
-    log_mat = np.log(mat)
-
-    ce = _cross_entropies(q, log_mat)
-    positive_q = q > 0.0
-    entropy = float(-np.sum(q[positive_q] * np.log(q[positive_q])))
-    active = w > 0.0
-    a_active = a[active]
-    w_active = w[active]
-    positive_a = a_active > 0.0
-    kl_terms = w_active - a_active
-    kl_terms[positive_a] += a_active[positive_a] * np.log(a_active[positive_a] / w_active[positive_a])
-    kl_gen = float(np.sum(kl_terms))
-    return float(np.sum(a * ce) - entropy_weight * entropy + kl_gen / robustness)
+    return _aggregation_free_energy(
+        q,
+        a,
+        np.log(mat),
+        w,
+        robustness=robustness,
+        entropy_weight=entropy_weight,
+    )
 
 
 def variational_aggregate(
@@ -785,11 +809,11 @@ def variational_aggregate(
             # q-update (exact minimizer of F over q, fixed a): weighted product of experts.
             new_q = _entropy_regularized_pool(eff @ log_mat, entropy_weight)
             fe_history.append(
-                aggregation_free_energy(
+                _aggregation_free_energy(
                     new_q,
                     eff,
-                    mat,
-                    base_weights=base,
+                    log_mat,
+                    base,
                     robustness=robustness,
                     entropy_weight=entropy_weight,
                 )
@@ -810,11 +834,11 @@ def variational_aggregate(
             start_used_fallback = True
             operation_used_fallback = True
         if fe_history:
-            fe_history[-1] = aggregation_free_energy(
+            fe_history[-1] = _aggregation_free_energy(
                 q,
                 final_eff,
-                mat,
-                base_weights=base,
+                log_mat,
+                base,
                 robustness=robustness,
                 entropy_weight=entropy_weight,
             )

@@ -100,13 +100,19 @@ version is chosen only after the observed result and integrity review.
 
 ### Release evidence contract
 
-The next active release gate is v1.1.0 after the visual-scholarship integration
-described by MED-4. Publication does not close a scientific phase or substitute
-for clean-clone, broader cross-vendor or independent-reproduction, licence,
-attribution, or author-authority evidence.
+v1.1.0 is already published. Remaining release-evidence work comprises MIN-2's
+retrospective certification of `c75954181184545acc31cda17c1013d4dfb34d31`,
+MED-5's immutable-publication verification and historical approval record (or
+explicit gap), and MIN-3's final handoff before the single private
+synchronization. MED-4 is post-v1.1.0 work: integrate it before that
+synchronization or schedule it under a new version; it cannot gate or
+re-authorize the existing publication. Publication does not close a scientific
+phase or substitute for clean-clone, broader cross-vendor or
+independent-reproduction, licence, attribution, or author-authority evidence.
 
-- **v1.1.0:** two isolated exact-commit clone passes, wheel and source-
-  distribution installation, installed CLI/application smoke, and one
+- **Retrospective v1.1.0 certification:** two isolated clone passes at the
+  published commit, wheel and source-distribution installation, installed
+  CLI/application smoke, and one
   structured technical release verdict from an identified human or genuinely
   different-vendor reviewer. This technical eligibility rule is separate from
   publication authority, confidentiality/attribution/license review, author

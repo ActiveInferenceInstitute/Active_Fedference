@@ -43,6 +43,31 @@ def _entropy(p):
     return -np.sum(p * np.log(np.clip(p, 1e-12, None)))
 
 
+def _once_admitted_objective(
+    q: np.ndarray,
+    a: np.ndarray,
+    raw_beliefs: np.ndarray,
+    base: np.ndarray,
+    *,
+    robustness: float,
+    entropy_weight: float = 1.0,
+) -> float:
+    """Independently expand the objective, flooring raw masses only once."""
+    admitted = np.maximum(raw_beliefs, 1e-12)
+    admitted = admitted / admitted.sum(axis=1, keepdims=True)
+    data_term = sum(
+        float(a[n] * q[i] * -np.log(admitted[n, i]))
+        for n in range(len(base))
+        for i in range(len(q))
+    )
+    entropy_term = sum(float(p * np.log(p)) for p in q if p > 0.0)
+    penalty = sum(
+        float(w - weight + (weight * np.log(weight / w) if weight > 0.0 else 0.0))
+        for weight, w in zip(a, base, strict=True)
+    )
+    return data_term + entropy_weight * entropy_term + penalty / robustness
+
+
 # ---- 1. recovery: the limit is the proof --------------------------------
 
 def test_variational_recovers_log_linear_pool_at_zero_robustness():
@@ -91,13 +116,14 @@ def test_free_energy_supports_zero_base_weight_by_zeroing_effective_weight():
     assert result.normalized_effective_weights[1] == 0.0
 
 
-def test_variational_weight_collapse_is_receipted_and_not_convergence():
-    beliefs = np.array(
-        [
-            [1.0 - 1e-9, 1e-9],
-            [1e-9, 1.0 - 1e-9],
-        ]
-    )
+@pytest.mark.parametrize(
+    "beliefs",
+    (
+        np.array([[1.0 - 1e-9, 1e-9], [1e-9, 1.0 - 1e-9]]),
+        np.array([[1e12, 1e-12], [1e-12, 1e12]]),
+    ),
+)
+def test_variational_weight_collapse_is_receipted_and_not_convergence(beliefs):
     result = variational_aggregate(
         beliefs,
         robustness=1e9,
@@ -106,14 +132,22 @@ def test_variational_weight_collapse_is_receipted_and_not_convergence():
     assert result.fallback_events
     assert result.converged is False
     assert np.isclose(result.consensus.sum(), 1.0)
+    np.testing.assert_array_equal(result.raw_effective_weights, np.ones(2))
+    assert result.free_energy_history[-1] == pytest.approx(
+        _once_admitted_objective(
+            result.consensus, result.raw_effective_weights, beliefs, np.ones(2), robustness=1e9
+        ),
+        abs=1e-12,
+    )
 
 
-def test_free_energy_rejects_effective_mass_outside_base_weight_support():
+@pytest.mark.parametrize("unsupported_mass", (0.5, 1e-13, np.nextafter(0.0, 1.0)))
+def test_free_energy_rejects_effective_mass_outside_base_weight_support(unsupported_mass):
     beliefs = np.array([[0.7, 0.3], [0.2, 0.8]])
     with pytest.raises(ValueError, match="zero where base_weights are zero"):
         aggregation_free_energy(
             np.array([0.6, 0.4]),
-            np.array([0.5, 0.5]),
+            np.array([0.5, unsupported_mass]),
             beliefs,
             base_weights=[1.0, 0.0],
             robustness=1.0,
@@ -165,6 +199,117 @@ def test_free_energy_matches_independent_recomputation():
     kl_gen = np.sum(a_star * np.log(a_star / base) - a_star + base)
     f_manual = np.sum(a_star * ce) - entropy + kl_gen / c
     assert f_public == pytest.approx(float(f_manual), abs=1e-12)
+
+
+@pytest.mark.parametrize("entropy_weight", (0.0, 0.75, 1.0))
+def test_raw_mass_objective_and_trace_share_once_admitted_beliefs(entropy_weight: float) -> None:
+    beliefs = np.array([[1e12, 1e-12], [1e-12, 1e8], [6.0, 4.0], [0.0, 5e6]])
+    base = np.array([0.7, 1.4, 0.9, 0.0])
+    c = 0.05
+    q = np.array([2.0, 1.0])
+    a = np.array([0.2, 0.3, 0.4, 0.0])
+    assert aggregation_free_energy(
+        q, a, beliefs, base_weights=base, robustness=c, entropy_weight=entropy_weight
+    ) == pytest.approx(
+        _once_admitted_objective(
+            q / q.sum(), a, beliefs, base, robustness=c, entropy_weight=entropy_weight
+        ),
+        abs=1e-12,
+    )
+
+    result = variational_aggregate(
+        beliefs, base_weights=base, robustness=c, entropy_weight=entropy_weight,
+        max_iter=4, tol=0.0, multistart=False,
+    )
+    assert result.iterations == 4
+    assert result.converged is False
+    assert not result.fallback_events
+    admitted = np.maximum(beliefs, 1e-12)
+    log_mat = np.log(admitted / admitted.sum(axis=1, keepdims=True))
+    for step, observed in enumerate(result.free_energy_history, start=1):
+        weights = base * np.exp(c * (log_mat @ result.history[step - 1]))
+        if step == result.iterations:
+            weights = base * np.exp(c * (log_mat @ result.consensus))
+            np.testing.assert_allclose(result.raw_effective_weights, weights, rtol=1e-13, atol=0.0)
+        expected = _once_admitted_objective(
+            result.history[step], weights, beliefs, base,
+            robustness=c, entropy_weight=entropy_weight,
+        )
+        assert observed == pytest.approx(expected, rel=1e-13, abs=1e-12)
+    assert np.all(np.diff(result.free_energy_history) <= 1e-10)
+    assert result.free_energy_history[-1] == pytest.approx(
+        aggregation_free_energy(
+            result.consensus, result.raw_effective_weights, beliefs,
+            base_weights=base, robustness=c, entropy_weight=entropy_weight,
+        ),
+        rel=1e-13, abs=1e-12,
+    )
+
+
+@pytest.mark.parametrize("max_iter", (1, 4))
+@pytest.mark.parametrize("entropy_weight", (0.0, 0.75, 1.0))
+def test_scaled_mass_multistart_selects_the_independent_objective_minimum(
+    max_iter: int, entropy_weight: float,
+) -> None:
+    beliefs = np.array([[1e12, 1e-12], [1e-12, 1e8], [6.0, 4.0]])
+    base = np.array([0.8, 1.3, 0.5])
+    c = 0.15
+    admitted = np.maximum(beliefs, 1e-12)
+    admitted = admitted / admitted.sum(axis=1, keepdims=True)
+    log_mat = np.log(admitted)
+
+    def q_block(weights: np.ndarray) -> np.ndarray:
+        logits = weights @ log_mat
+        if entropy_weight > 0.0:
+            return softmax(logits / entropy_weight)
+        winners = (logits == logits.max()).astype(float)
+        return winners / winners.sum()
+
+    candidates = []
+    for seed in (q_block(base), np.array([0.5, 0.5]), admitted.mean(axis=0)):
+        q = np.maximum(seed, 1e-12)
+        q = q / q.sum()
+        for _ in range(max_iter):
+            weights = base * np.exp(c * (log_mat @ q))
+            q = q_block(weights)
+        weights = base * np.exp(c * (log_mat @ q))
+        objective = _once_admitted_objective(
+            q, weights, beliefs, base, robustness=c, entropy_weight=entropy_weight
+        )
+        candidates.append((objective, q, weights))
+    expected, expected_q, expected_weights = min(candidates, key=lambda candidate: candidate[0])
+    result = variational_aggregate(
+        beliefs, base_weights=base, robustness=c, entropy_weight=entropy_weight,
+        max_iter=max_iter, tol=0.0, multistart=True,
+    )
+    assert result.converged is False
+    assert not result.fallback_events
+    np.testing.assert_allclose(result.consensus, expected_q, rtol=1e-13, atol=1e-14)
+    np.testing.assert_allclose(result.raw_effective_weights, expected_weights, rtol=1e-13, atol=0.0)
+    assert result.free_energy_history[-1] == pytest.approx(expected, rel=1e-13, abs=1e-12)
+
+
+@pytest.mark.parametrize("supported_mass", (0.0, np.nextafter(0.0, 1.0)))
+def test_free_energy_preserves_zero_support_and_supported_subnormal_mass(supported_mass: float) -> None:
+    beliefs = np.array([[0.7, 0.3], [0.2, 0.8]])
+    base = np.array([1.0, 0.0])
+    q = np.array([0.6, 0.4])
+    a = np.array([supported_mass, 0.0])
+    value = aggregation_free_energy(q, a, beliefs, base_weights=base, robustness=1.0)
+    assert np.isfinite(value)
+    assert value == pytest.approx(_once_admitted_objective(q, a, beliefs, base, robustness=1.0))
+
+
+def test_scaled_raw_mass_zero_robustness_recovers_the_exact_pool() -> None:
+    beliefs = np.array([[1e12, 1e-12], [1e-12, 1e8], [6.0, 4.0]])
+    base = np.array([0.8, 1.3, 0.0])
+    result = variational_aggregate(beliefs, base_weights=base, robustness=0.0)
+    np.testing.assert_array_equal(result.consensus, log_linear_pool(beliefs, base_weights=base))
+    np.testing.assert_array_equal(result.raw_effective_weights, base)
+    assert result.converged is True
+    assert result.iterations == 0
+    assert result.free_energy_history == []
+    assert not result.fallback_events
 
 
 # ---- 4. redescending effective weight -----------------------------------

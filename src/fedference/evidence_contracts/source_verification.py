@@ -2,52 +2,20 @@
 
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
 
-from ..provenance import (
-    collect_source_provenance,
-)
+from ..provenance import _observe_git, collect_source_provenance
 from .application_schema import ApplicationReceipt
 from .schema import GitTreeState
 
 
 def _git_revision(project_root: Path) -> tuple[str, GitTreeState]:
     """Return the live full commit and tree state without invoking shell hooks."""
-    commit = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.fsmonitor=false",
-            "-c",
-            "core.untrackedcache=false",
-            "-C",
-            str(project_root),
-            "rev-parse",
-            "HEAD",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    commit = _observe_git(project_root, "rev-parse", "HEAD")
     if commit.returncode != 0 or not commit.stdout.strip():
         return "unavailable", "unavailable"
-    status = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.fsmonitor=false",
-            "-c",
-            "core.untrackedcache=false",
-            "-C",
-            str(project_root),
-            "status",
-            "--porcelain=v1",
-            "--untracked-files=normal",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
+    status = _observe_git(
+        project_root, "status", "--porcelain=v1", "--untracked-files=normal"
     )
     state: GitTreeState = (
         "unavailable"

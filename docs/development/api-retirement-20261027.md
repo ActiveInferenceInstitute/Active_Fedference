@@ -1,7 +1,7 @@
 # API retirement inventory — 2026-10-27
 
-This is the machine-consumed migration contract for Plan Task 3. It freezes
-current runtime surfaces and source caller locations; it does not remove an API,
+This is the reviewed migration contract for Plan Task 3. It records current
+runtime surfaces and dated caller-navigation evidence; it does not remove an API,
 a serialized format, or a scientific control. The [stability policy](../reference/api-stability.md)
 and [modularity contract](modularity.md) remain applicable until the corresponding
 migration is implemented and reviewed. Release authorization is separate.
@@ -71,26 +71,22 @@ The explicitly classified supported surfaces below supplement warning discovery.
 The gate also requires the scientific controls and historical readers to exist,
 with evidence 1.1 and protocol-v1 constants preserved.
 
-`callsites` are current `path::qualified-caller` syntactic references in `src`, `tests`,
-`examples`, and `scripts`, excluding this inventory test. Keyword references
-match callable leaf name plus literal keyword, with constructor keywords matched
-to the class name. Qualified properties match attribute accesses only; declared
-class/static methods match explicit `Class.member` accesses. Other functions and
-imports match their leaf name. Thus these are conservative caller candidates, not
-Python type resolution: same-named attributes can overmatch, while indirect class
-receivers such as `cls`, renamed imports, dynamic `getattr`, string-built keywords,
-nested dictionary expansion, notebooks, and
-external downstream callers are outside coverage. Empty arrays mean no matching
-static reference, not proof of no downstream consumers. Add newly discovered
-patterns to the gate and inventory rather than assuming this bounded scan is a
-complete dynamic call graph. It does not validate documentation wording, count
-mentions, or certify scientific validity. All historical prose, sealed outputs,
-and immutable evidence are preserved; active guidance migration belongs to Task 34.
+`callsites` preserve the recorded discovery-time `path::qualified-caller`
+candidates for migration review. They are navigation evidence, not a production
+or security-admission allowlist. Test names, import layout, and newly added
+regression callers are not consumer-visible contracts, so the gate does not
+require these lists to equal a fresh AST traversal. No caller list proves the
+absence of dynamic or downstream consumers.
 
-When source moves, review and refresh exact caller locations. Do not blindly
-regenerate dispositions. A retired alias must disappear from discovery; retained
-readers cannot be relabeled retired. Real disposable source copies prove that
-an injected unclassified warning and a removed protocol reader fail the gate.
+Review actual consumers when planning a migration; do not blindly regenerate
+dispositions or rewrite historical evidence. A retired alias must disappear from
+discovery, and retained readers cannot be relabeled retired. Real disposable
+source copies still prove that an injected unclassified warning and a removed
+protocol reader fail the gate. Numeric behavior, negative controls, historical
+decoding, scientific validity, and release authorization retain their independent
+gates. The three tests that only checked this file's incidental caller-indexing
+implementation were removed rather than repinning caller names; no runtime
+behavioral oracle or coverage floor was reduced.
 
 ## Machine-readable inventory
 
