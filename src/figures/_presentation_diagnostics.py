@@ -559,7 +559,7 @@ def belief_heatmap_presentation(path: Path, matrix: np.ndarray, labels: Sequence
     """Show every posterior cell in bounded row segments with one fixed scale."""
     from matplotlib.colors import to_hex
 
-    from ._common import contrasting_text_color
+    from ._common import contrasting_text_color, scalar_mapped_color
 
     panels = [
         _text_panel(
@@ -586,7 +586,7 @@ def belief_heatmap_presentation(path: Path, matrix: np.ndarray, labels: Sequence
                     ha="center",
                     va="center",
                     fontsize=30,
-                    color=contrasting_text_color(to_hex(image.cmap(image.norm(value)))),
+                    color=contrasting_text_color(to_hex(scalar_mapped_color(image, float(value)))),
                 )
             identifier = f"row-{row}-cells-{start}-{stop - 1}"
             expected.append(identifier)
