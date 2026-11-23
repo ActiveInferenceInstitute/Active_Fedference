@@ -178,14 +178,43 @@ def _pause_trace(kind: str, phase: str) -> None:
         "replay": save_socket_replay,
         "json": _write_json,
     }
+    if phase == "serialize":
+        from json import encoder
+
+        count = 0
+
+        def serialization_trace(frame: FrameType, event: str, argument: Any) -> Any:
+            nonlocal count
+            if (
+                event == "line"
+                and frame.f_code.co_filename == encoder.__file__
+                and frame.f_code.co_name == "_iterencode_dict"
+            ):
+                count += 1
+                if count == 5000:
+                    sys.settrace(None)
+                    print(
+                        "PAUSED "
+                        + json.dumps(
+                            {
+                                "pid": os.getpid(),
+                                "path": frame.f_code.co_filename,
+                                "line": frame.f_lineno,
+                                "serialization_events": count,
+                            }
+                        ),
+                        flush=True,
+                    )
+                    assert sys.stdin.readline().strip() == "GO"
+                    return None
+            return serialization_trace
+
+        sys.settrace(serialization_trace)
+        return
     from fedference_cli._support import _write_application_run
 
     function: Callable[..., Any]
-    if phase == "serialize":
-        # Pause the real encoder before it starts producing chunks. Its dict
-        # implementation may run in C or emit different trace counts.
-        function, needle = json.JSONEncoder.encode, "self.iterencode("
-    elif kind == "cli":
+    if kind == "cli":
         function = _write_application_run
         needle = {"publish": "request_path = ", "record": "outputs=(", "commit": "receipt_path = "}.get(
             phase, "request_path = "
