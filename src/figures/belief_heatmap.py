@@ -23,6 +23,7 @@ from ._common import (
     figures_dir,
     plt,
     save_figure,
+    scalar_mapped_color,
 )
 from ._presentation_diagnostics import belief_heatmap_presentation
 
@@ -84,7 +85,7 @@ def generate_belief_heatmap(
     for row in range(n_rows):
         peak = int(np.argmax(matrix[row]))
         val = matrix[row, peak]
-        cell_background = to_hex(im.cmap(im.norm(val)), keep_alpha=False)
+        cell_background = to_hex(scalar_mapped_color(im, float(val)), keep_alpha=False)
         ax.text(
             peak,
             row,

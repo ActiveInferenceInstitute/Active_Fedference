@@ -12,7 +12,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
-from typing import TypeAlias
+from typing import TYPE_CHECKING, Any, Protocol, TypeAlias
 
 import matplotlib
 import numpy as np
@@ -21,6 +21,9 @@ matplotlib.use("Agg")  # headless backend before any pyplot import
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap, to_rgb, to_rgba  # noqa: E402
 from matplotlib.text import Text  # noqa: E402
+
+if TYPE_CHECKING:
+    from matplotlib.colors import Colormap, Norm
 
 #: Project root (two levels above ``src/figures/_common.py``).
 PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent.parent
@@ -360,6 +363,35 @@ def require_contrast(
     return ratio
 
 
+class ScalarColorMapping(Protocol):
+    """An artist that colours scalars through one norm and one colormap."""
+
+    @property
+    def norm(self) -> Norm:
+        """The normalisation that maps data values into the unit interval."""
+        ...
+
+    @property
+    def cmap(self) -> Colormap:
+        """The colormap that paints normalised values."""
+        ...
+
+
+def scalar_mapped_color(mapping: ScalarColorMapping, value: float) -> tuple[float, float, float, float]:
+    """Return the RGBA colour *mapping* paints for one scalar *value*.
+
+    Matplotlib's typed ``Norm`` accepts arrays, and its colormap returns a
+    tuple only for a scalar. Normalise a zero-dimensional array (the same
+    scalar path ``Normalize`` takes for a float) and colour that one number.
+    A masked result (for example NaN under ``LogNorm``) keeps the colormap's
+    "bad" colour, exactly as passing the masked scalar would.
+    """
+    normalized: np.ma.MaskedArray[Any, Any] = np.ma.asarray(mapping.norm(np.asarray(value, dtype=float)))
+    scalar = float("nan") if np.ma.is_masked(normalized) else float(normalized)
+    red, green, blue, alpha = mapping.cmap(scalar)
+    return float(red), float(green), float(blue), float(alpha)
+
+
 def contrasting_text_color(background: str, *, large_text: bool = False) -> str:
     """Choose accessible dark or light text for *background*.
 
@@ -457,7 +489,7 @@ def _effective_text_background(
                 if np.ma.is_masked(sample):
                     continue
                 if values.ndim == 2:
-                    image_rgba = image.cmap(image.norm(float(sample)))
+                    image_rgba = scalar_mapped_color(image, float(sample))
                 else:
                     components = [float(value) for value in np.ravel(sample)]
                     if len(components) == 3:
@@ -772,6 +804,7 @@ __all__ = [
     "apply_style",
     "contrast_ratio",
     "contrasting_text_color",
+    "scalar_mapped_color",
     "figures_dir",
     "plt",
     "relative_luminance",

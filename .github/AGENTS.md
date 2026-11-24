@@ -1,6 +1,6 @@
 # CI guidance — `.github/`
 
-Read [`README.md`](README.md) first. This folder owns the GitHub Actions
+Read [`AUTOMATION.md`](AUTOMATION.md) first. This folder owns the GitHub Actions
 workflow, the Dependabot configuration, and the shard-balance weights. The
 authoritative CI behavior is [`workflows/ci.yml`](workflows/ci.yml).
 `scripts/gate.py` owns the workflow's command arms, `scripts/ci_gate.py`
