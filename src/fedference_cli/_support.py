@@ -12,7 +12,6 @@ import argparse
 import hashlib
 import os
 import platform
-import subprocess
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -42,6 +41,7 @@ from fedference.evidence_contracts._atomic import (
 )
 from fedference.provenance import (
     SourceProvenance,
+    _observe_git,
     active_fedference_checkout_version,
     runtime_provenance,
 )
@@ -56,22 +56,7 @@ def _write_json(path: Path, payload: object) -> Path:
 def _resolve_project_root(path: str | Path) -> Path:
     """Resolve a nested checkout path to its Git root when available."""
     candidate = Path(path).resolve()
-    result = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.fsmonitor=false",
-            "-c",
-            "core.untrackedcache=false",
-            "-C",
-            str(candidate),
-            "rev-parse",
-            "--show-toplevel",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    result = _observe_git(candidate, "rev-parse", "--show-toplevel")
     if result.returncode == 0 and result.stdout.strip():
         return Path(result.stdout.strip()).resolve()
     return candidate
@@ -89,12 +74,7 @@ def _validate_output_dir(path: str, project_root: Path) -> Path:
     existing = output_dir
     while not existing.exists() and existing != existing.parent:
         existing = existing.parent
-    target_root = subprocess.run(
-        ["git", "-C", str(existing), "rev-parse", "--show-toplevel"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    target_root = _observe_git(existing, "rev-parse", "--show-toplevel")
     if target_root.returncode == 0 and target_root.stdout.strip():
         candidate_root = Path(target_root.stdout.strip()).resolve()
         if active_fedference_checkout_version(candidate_root) is not None:
@@ -191,40 +171,11 @@ def _require_locked_profile(profile: str, *, confirmatory_ready: bool) -> None:
 
 def _git_revision(project_root: Path) -> tuple[str, GitTreeState]:
     """Return the live commit and hermetic Git-tree state for a run receipt."""
-    commit_result = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.fsmonitor=false",
-            "-c",
-            "core.untrackedcache=false",
-            "-C",
-            str(project_root),
-            "rev-parse",
-            "HEAD",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    commit_result = _observe_git(project_root, "rev-parse", "HEAD")
     if commit_result.returncode != 0 or not commit_result.stdout.strip():
         return "unavailable", "unavailable"
-    status_result = subprocess.run(
-        [
-            "git",
-            "-c",
-            "core.fsmonitor=false",
-            "-c",
-            "core.untrackedcache=false",
-            "-C",
-            str(project_root),
-            "status",
-            "--porcelain=v1",
-            "--untracked-files=normal",
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
+    status_result = _observe_git(
+        project_root, "status", "--porcelain=v1", "--untracked-files=normal"
     )
     tree_state: GitTreeState = (
         "unavailable" if status_result.returncode != 0 else ("dirty" if status_result.stdout else "clean")

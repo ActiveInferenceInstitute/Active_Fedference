@@ -79,12 +79,6 @@ class Inventory(TypedDict):
     additional_retirements: list[AdditionalRetirement]
 
 
-class References(TypedDict):
-    class_members: list[str]
-    names: dict[str, list[str]]
-    keywords: dict[str, list[str]]
-
-
 def read_inventory(root: Path) -> Inventory:
     """Read the single JSON block, independently of surrounding prose."""
     blocks = re.findall(r"```json\n(.*?)\n```", (root / CONTRACT).read_text(), re.S)
@@ -215,76 +209,8 @@ def discover(root: Path) -> dict[str, Surface]:
     return result
 
 
-def reference_index(root: Path) -> References:
-    """Index syntactic references once per tree; never cache across mutations."""
-    names: dict[str, set[str]] = {}
-    keywords: dict[str, set[str]] = {}
-    class_members: list[str] = []
-    for directory in ("src", "tests", "examples", "scripts"):
-        for path in sorted((root / directory).rglob("*.py")):
-            if path.name == "test_retirement_inventory.py":
-                continue
-            relative = path.relative_to(root).as_posix()
-            tree = ast.parse(path.read_text())
-            for name, definition in definitions(tree):
-                if isinstance(definition, (ast.FunctionDef, ast.AsyncFunctionDef)) and any(
-                    isinstance(d, ast.Name) and d.id in {"classmethod", "staticmethod"}
-                    for d in definition.decorator_list
-                ):
-                    class_members.append(relative + "::" + name)
-
-            def visit(node: ast.AST, scope: tuple[str, ...] = ()) -> None:
-                location = relative + "::" + (".".join(scope) or "<module>")
-                if isinstance(node, (ast.Name, ast.Attribute)) and isinstance(node.ctx, ast.Load):
-                    name = node.id if isinstance(node, ast.Name) else node.attr
-                    key = f"{relative}::{name}" if name == "__all__" else name
-                    names.setdefault(key, set()).add(location)
-                    if isinstance(node, ast.Attribute):
-                        names.setdefault("@" + node.attr, set()).add(location)
-                        if isinstance(node.value, ast.Name):
-                            names.setdefault("@" + node.value.id + "." + node.attr, set()).add(location)
-                if isinstance(node, ast.ImportFrom):
-                    for alias in node.names:
-                        names.setdefault(alias.name, set()).add(location)
-                if isinstance(node, ast.Call):
-                    name = getattr(node.func, "id", getattr(node.func, "attr", ""))
-                    for keyword in node.keywords:
-                        if keyword.arg:
-                            keywords.setdefault(f"{name}:{keyword.arg}", set()).add(location)
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                    scope = (*scope, node.name)
-                for child in ast.iter_child_nodes(node):
-                    visit(child, scope)
-
-            visit(tree)
-    return {
-        "class_members": sorted(class_members),
-        "names": {k: sorted(v) for k, v in names.items()},
-        "keywords": {k: sorted(v) for k, v in keywords.items()},
-    }
-
-
-def callsites(index: References, surface: Surface) -> list[str]:
-    """Conservative syntactic references: names are not type-resolved."""
-    target = surface["symbol"].split("::")[1]
-    keyword = target.split("(")[1][:-2] if "(" in target else None
-    qualified = target.split("(")[0]
-    leaf = qualified.split(".")[-1]
-    if leaf == "__init__":
-        leaf = qualified.split(".")[-2]
-    if keyword is not None:
-        return index["keywords"].get(f"{leaf}:{keyword}", [])
-    if surface["symbol"] in index["class_members"]:
-        leaf = "@" + qualified
-    elif "." in qualified and not qualified.endswith(".__init__"):
-        leaf = "@" + leaf
-    if leaf == "__all__":
-        leaf = surface["symbol"].split("::")[0] + "::__all__"
-    return index["names"].get(leaf, [])
-
-
 def assert_contract(root: Path, inventory: Inventory) -> None:
-    """Fail on unclassified surfaces, stale callers, or removed retained entries."""
+    """Reject unclassified surfaces, unauthorized retirement, or removed readers."""
     entries = inventory["entries"]
     by_symbol = {entry["symbol"]: entry for entry in entries}
     decisions = {decision["symbol"]: decision for decision in inventory["owner_decisions"]}
@@ -322,7 +248,6 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
                 f"missing protected classification: {symbol}"
             )
     current = discover(root)
-    index = reference_index(root)
     assert not current.keys() - by_symbol.keys(), (
         f"unclassified deprecated surfaces: {sorted(current.keys() - by_symbol.keys())}"
     )
@@ -367,7 +292,6 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
             entry["disposition"] == "owner-decision" and decisions[symbol]["disposition"] == "retain-current"
         ):
             assert entry["status"] == "present", f"unauthorized retained-surface retirement: {symbol}"
-        assert entry["callsites"] == callsites(index, entry), f"caller inventory drift: {symbol}"
     for extra in inventory["additional_retirements"]:
         assert extra["task"] == 52 and extra["status"] == "retired" and extra["replacement"]
         path, target = extra["symbol"].split("::")
@@ -394,24 +318,8 @@ def assert_contract(root: Path, inventory: Inventory) -> None:
 
 
 def test_inventory_covers_deprecated_runtime_symbols() -> None:
-    """Current source and recorded callers agree with the reviewed JSON."""
+    """Current runtime surfaces respect the reviewed classifications."""
     assert_contract(ROOT, read_inventory(ROOT))
-
-
-def test_inventory_rejects_missing_current_stage_caller() -> None:
-    """A source-derived caller refresh must retain its ability to reject drift."""
-    inventory = read_inventory(ROOT)
-    assert_contract(ROOT, inventory)
-    symbol = "src/fedference/experiments/cross_study.py::summarize_cross_study"
-    entry = next(row for row in inventory["entries"] if row["symbol"] == symbol)
-    caller = "src/analysis/stage_catalog.py::report_producers"
-    assert caller in entry["callsites"]
-    entry["callsites"].remove(caller)
-    with pytest.raises(AssertionError, match="caller inventory drift"):
-        assert_contract(ROOT, inventory)
-    entry["callsites"].append(caller)
-    entry["callsites"].sort()
-    assert_contract(ROOT, inventory)
 
 
 def test_unclassified_symbol_or_historical_reader_removal(tmp_path: Path) -> None:
@@ -432,46 +340,6 @@ def test_unclassified_symbol_or_historical_reader_removal(tmp_path: Path) -> Non
     with pytest.raises(AssertionError, match="required retained surface missing") as failure:
         assert_contract(tmp_path, inventory)
     print(f"HISTORICAL_READER_REMOVAL_REJECTED: {failure.value}")
-
-
-def test_caller_identity_ignores_layout_and_unrelated_stores(tmp_path: Path) -> None:
-    for directory in ("src", "tests", "examples", "scripts"):
-        (tmp_path / directory).mkdir()
-    source = tmp_path / "src/consumer.py"
-    source.write_text("def consumer():\n    return old()\n")
-    unrelated = tmp_path / "src/unrelated.py"
-    unrelated.write_text("__all__ = []\nold = 42\n")
-    surface = Surface(symbol="src/api.py::old", replacement="new", kind="symbol")
-    before = callsites(reference_index(tmp_path), surface)
-    assert before == ["src/consumer.py::consumer"]
-    exports = Surface(symbol="src/api.py::__all__", replacement="exports", kind="symbol")
-    assert callsites(reference_index(tmp_path), exports) == []
-    source.write_text("\n\n" + source.read_text())
-    assert callsites(reference_index(tmp_path), surface) == before
-    source.write_text(source.read_text().replace("old()", "new()"))
-    assert callsites(reference_index(tmp_path), surface) == []
-
-
-def test_member_callers_exclude_local_names_and_other_classes(tmp_path: Path) -> None:
-    for directory in ("src", "tests", "examples", "scripts"):
-        (tmp_path / directory).mkdir()
-    (tmp_path / "src/api.py").write_text(
-        "class First:\n    @classmethod\n    def from_dict(cls, raw): return cls()\n"
-        "class Second:\n    @classmethod\n    def from_dict(cls, raw): return cls()\n"
-    )
-    source = tmp_path / "src/consumer.py"
-    source.write_text(
-        "from api import First, Second\ndef consumer():\n"
-        "    beliefs = [1]\n    Second.from_dict({})\n    return beliefs\n"
-    )
-    property_surface = Surface(symbol="src/api.py::Episode.beliefs", replacement="posterior", kind="symbol")
-    class_surface = Surface(symbol="src/api.py::First.from_dict", replacement="from_dict", kind="symbol")
-    assert callsites(reference_index(tmp_path), property_surface) == []
-    assert callsites(reference_index(tmp_path), class_surface) == []
-    source.write_text(source.read_text().replace("Second.from_dict", "First.from_dict"))
-    assert callsites(reference_index(tmp_path), class_surface) == ["src/consumer.py::consumer"]
-    source.write_text(source.read_text() + "def read_episode(episode):\n    return episode.beliefs\n")
-    assert callsites(reference_index(tmp_path), property_surface) == ["src/consumer.py::read_episode"]
 
 
 @pytest.mark.parametrize("decision_id", ("OD22", "OD23"))

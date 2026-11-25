@@ -19,6 +19,8 @@ from typing import Final, Mapping
 
 import yaml
 
+from fedference.provenance import _observe_git
+
 TEMPLATE_RENDERER_LOCK_SCHEMA: Final[str] = "template-renderer-lock-v1"
 TEMPLATE_RENDERER_REPOSITORY: Final[str] = "docxology/template"
 _LOCK_FIELDS: Final[frozenset[str]] = frozenset(
@@ -95,12 +97,8 @@ def load_template_renderer_lock(project_root: Path) -> TemplateRendererIdentity:
 
 def _run_git(root: Path, *arguments: str) -> bytes:
     try:
-        completed = subprocess.run(
-            ("git", "-C", str(root), *arguments),
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        completed = _observe_git(root, *arguments, text=False)
+        completed.check_returncode()
     except (OSError, subprocess.CalledProcessError) as exc:
         raise ValueError("Template renderer checkout failed Git validation") from exc
     return completed.stdout

@@ -11,10 +11,12 @@ import shutil
 import subprocess
 import tarfile
 import zipfile
+from email.parser import BytesParser
 from pathlib import Path
 
 import pytest
 import yaml
+from packaging.specifiers import SpecifierSet
 
 try:
     import tomllib
@@ -342,7 +344,7 @@ def test_real_source_archive_retains_all_declared_source_inputs(tmp_path: Path) 
     environment.update({"SOURCE_DATE_EPOCH": "1785205200", "UV_NO_PROGRESS": "1"})
     distribution = tmp_path / "dist"
     completed = subprocess.run(
-        ["uv", "build", "--sdist", "--force-pep517", "--no-build-isolation",
+        ["uv", "build", "--force-pep517", "--no-build-isolation",
          "--out-dir", str(distribution), str(project)],
         capture_output=True, text=True, check=False, env=environment,
     )
@@ -355,6 +357,24 @@ def test_real_source_archive_retains_all_declared_source_inputs(tmp_path: Path) 
         }
     assert not (expected.keys() - actual.keys()), sorted(expected.keys() - actual.keys())
     assert all(actual[name] == content for name, content in expected.items())
+    with zipfile.ZipFile(next(distribution.glob("*.whl"))) as archive:
+        metadata_path = next(name for name in archive.namelist() if name.endswith(".dist-info/METADATA"))
+        wheel_metadata = archive.read(metadata_path)
+    package_metadata = tomllib.loads((project / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    for payload in (actual["PKG-INFO"], wheel_metadata):
+        emitted = BytesParser().parsebytes(payload)
+        assert emitted["Requires-Python"] == package_metadata["requires-python"]
+        classifiers = emitted.get_all("Classifier", [])
+        assert set(classifiers) == set(package_metadata["classifiers"])
+        supported = SpecifierSet(emitted["Requires-Python"])
+        advertised = [
+            match.group(1)
+            for classifier in classifiers
+            if (match := re.fullmatch(r"Programming Language :: Python :: (\d+\.\d+)", classifier))
+        ]
+        assert advertised, "distribution must name its supported Python minor versions"
+        incompatible = [version for version in advertised if not supported.contains(version)]
+        assert not incompatible, f"advertised Python versions excluded by Requires-Python: {incompatible}"
 
 
 def test_ci_installed_artifact_gate_executes_the_labeled_application_outside_checkout() -> None:
