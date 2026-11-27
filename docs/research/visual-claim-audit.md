@@ -7,7 +7,7 @@ review-grid producer. A visual is current only when its named report and the
 analysis, hydration, render, and surface-validation records bind the same
 source inputs; this ledger does not substitute an older snapshot for that
 evidence. The canonical embed path is the PNG named in
-`manuscript/SYNTAX.md`; generators using `save_figure_pair` also retain a PDF
+`docs/manuscript/SYNTAX.md`; generators using `save_figure_pair` also retain a PDF
 companion for archival use. The registry/embed/generator consistency gate
 checks the filename relationship directly.
 

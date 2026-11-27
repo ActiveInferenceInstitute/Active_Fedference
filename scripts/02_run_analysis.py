@@ -37,7 +37,7 @@ def main() -> int:
         "--profile",
         choices=("publication", "smoke"),
         default=None,
-        help="Override the config budget profile; default reads manuscript/config.yaml.",
+        help="Override the config budget profile; default reads docs/manuscript/config.yaml.",
     )
     parser.add_argument(
         "--project-root",

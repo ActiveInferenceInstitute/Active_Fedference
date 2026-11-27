@@ -123,7 +123,7 @@ def _check_figure_registry(payload: Mapping[str, object]) -> None:
         ):
             raise ReportSchemaError(f"{entry_name} presentation manifest does not match its generator")
         source_manuscript = str(entry["source_manuscript"])
-        if not source_manuscript.startswith("manuscript/") or not source_manuscript.endswith(".md"):
+        if not source_manuscript.startswith("docs/manuscript/") or not source_manuscript.endswith(".md"):
             raise ReportSchemaError(f"{entry_name} has an unsafe source_manuscript path")
         if len(str(entry["alt_text"])) > 500:
             raise ReportSchemaError(f"{entry_name} alt_text exceeds 500 characters")

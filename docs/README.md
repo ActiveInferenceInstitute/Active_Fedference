@@ -4,7 +4,7 @@ Operational rulebook for the Active Fedference project.
 Enforcement varies by file — see [`AGENTS.md`](AGENTS.md)'s REQUIRED vs
 AESTHETIC table for what is gate-checked versus convention.
 
-**Apply the software:** [`application-guide.md`](application-guide.md) ·
+**Apply the software:** [`application-guide.md`](development/application-guide.md) ·
 [`../examples/README.md`](../examples/README.md)
 
 **Contract & identity:** [`../ISA.md`](../ISA.md) · [`../README.md`](../README.md) · [`../STANDALONE.md`](../STANDALONE.md)
@@ -24,14 +24,14 @@ GitHub publication does not establish Zenodo publication or current-source certi
 
 | I want to… | Start here |
 | --- | --- |
-| Aggregate my own labeled categorical posteriors | [`application-guide.md`](application-guide.md); [`../examples/README.md`](../examples/README.md), example 05 |
+| Aggregate my own labeled categorical posteriors | [`application-guide.md`](development/application-guide.md); [`../examples/README.md`](../examples/README.md), example 05 |
 | Compare the three server rules | [`../examples/README.md`](../examples/README.md), example 02 |
 | Exercise direct, process, socket, and replay boundaries | [`../examples/README.md`](../examples/README.md), example 03 |
 | Produce and verify an application receipt | [`../examples/README.md`](../examples/README.md), example 05; [`../src/fedference_cli/README.md`](../src/fedference_cli/README.md) |
 | Produce and verify a registered research receipt | [`../examples/README.md`](../examples/README.md), example 04; [`../src/fedference_cli/README.md`](../src/fedference_cli/README.md) |
 | Understand the mathematical scope | [`core/conceptual-foundations.md`](core/conceptual-foundations.md) |
 | Contribute software or documentation | [`development/quickstart.md`](development/quickstart.md); [`development/modularity.md`](development/modularity.md) |
-| Reproduce the manuscript surfaces | [`manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) |
+| Reproduce the manuscript surfaces | [`docs/manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) |
 | Run or resume bounded analysis | [`development/staged-analysis.md`](development/staged-analysis.md) |
 | Audit a release boundary | [`reference/verification-commands.md`](reference/verification-commands.md); [`reference/zenodo-release.md`](reference/zenodo-release.md) |
 
@@ -54,7 +54,7 @@ For one entry per maintained documentation page, use the
 ## Read order (new contributors)
 
 1. [`../README.md`](../README.md) — project pitch and run commands
-2. [`application-guide.md`](application-guide.md) — adapt the software to caller-owned posteriors
+2. [`application-guide.md`](development/application-guide.md) — adapt the software to caller-owned posteriors
 3. [`../examples/README.md`](../examples/README.md) — deterministic public-API example ladder
 4. [`development/quickstart.md`](development/quickstart.md) — contributor and reviewer-snapshot reproduction
 5. [`core/conceptual-foundations.md`](core/conceptual-foundations.md) — why this project exists
@@ -66,10 +66,10 @@ For one entry per maintained documentation page, use the
 2. [`core/architecture.md`](core/architecture.md) — layer boundaries
 3. [`development/testing_philosophy.md`](development/testing_philosophy.md) — zero mocks + coverage
 4. [`development/modularity.md`](development/modularity.md) — before adding software, scripts, reports, figures, or documentation
-5. [`manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) — before editing outputs
-6. [`manuscript/accessibility.md`](manuscript/accessibility.md) — before accessibility or publication-surface claims
+5. [`docs/manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) — before editing outputs
+6. [`docs/manuscript/accessibility.md`](manuscript/accessibility.md) — before accessibility or publication-surface claims
 7. [`development/style_guide.md`](development/style_guide.md) — before editing source
-8. [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md) — before editing manuscript prose
+8. [`docs/manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md) — before editing manuscript prose
 9. [`reference/zenodo-release.md`](reference/zenodo-release.md) — before reserving, updating, uploading, or publishing a DOI deposition
 
 ## Reader paths
@@ -88,7 +88,7 @@ For one entry per maintained documentation page, use the
   inspect the registry/receipt boundary in
   [`core/experiments-and-artifacts.md`](core/experiments-and-artifacts.md).
 - **Implementation-first readers:** run the numbered programs in
-  [`application-guide.md`](application-guide.md) and
+  [`application-guide.md`](development/application-guide.md) and
   [`../examples/README.md`](../examples/README.md), then use
   [`reference/verification-commands.md`](reference/verification-commands.md)
   for the example, distribution, and release-boundary probes.
@@ -100,7 +100,7 @@ For one entry per maintained documentation page, use the
 | `src/fedference/*` | [`core/architecture.md`](core/architecture.md), [`development/style_guide.md`](development/style_guide.md) |
 | `src/fedference_cli/*`, `src/analysis/*`, or `src/publication/*` | [`development/modularity.md`](development/modularity.md), [`core/architecture.md`](core/architecture.md) |
 | `tests/*` | [`development/testing_philosophy.md`](development/testing_philosophy.md) |
-| `manuscript/*.md` | [`manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md), [`../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md) |
+| `docs/manuscript/*.md` | [`docs/manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md), [`../manuscript/SYNTAX.md`](manuscript/SYNTAX.md) |
 | `scripts/*` | [`core/architecture.md`](core/architecture.md), [`../scripts/AGENTS.md`](../scripts/AGENTS.md) |
 | `examples/*` | [`../examples/README.md`](../examples/README.md), [`development/modularity.md`](development/modularity.md) |
 | Federation transport / deployment | [`security/active_fedference-threat-model.md`](security/active_fedference-threat-model.md), [`todo/true-multi-machine-federation.md`](todo/true-multi-machine-federation.md) |

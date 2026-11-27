@@ -20,7 +20,7 @@ UTC publication date 2026-09-19. The
 and [Zenodo record](https://zenodo.org/records/22149133) are the publication
 verification surfaces; reserved identity alone does not prove publication.
 Installation and checksum verification are documented in the
-[application guide](docs/application-guide.md#install-the-v110-release).
+[application guide](docs/development/application-guide.md#install-the-v110-release).
 The immutable v1.0.4 record remains at
 [Zenodo](https://doi.org/10.5281/zenodo.21972644), alongside v1.0.3, v1.0.2,
 v1.0.1, and v0.1.0. The canonical repository is configured as `origin`; the
@@ -102,9 +102,9 @@ matching tests; rendering and publication packaging are a separate surface.
 
 ## Required edits if you fork
 
-- `manuscript/config.yaml` — title, authors, keywords, and the `experiment:`
+- `docs/manuscript/config.yaml` — title, authors, keywords, and the `experiment:`
   block (keys mirror the `fedference.experiments` study-function keyword arguments).
-- `manuscript/references.bib` — keep Friston et al. (2024) and Mildner et al.
+- `docs/manuscript/references.bib` — keep Friston et al. (2024) and Mildner et al.
   (2025) as the anchor citations.
 - Regenerate analysis outputs and manuscript variables before editing any prose
   result claim — every number in the manuscript is a `{{TOKEN}}`, never a
@@ -118,7 +118,7 @@ matching tests; rendering and publication packaging are a separate surface.
   assumptions. Carry the three-axis distinction: source-conditional
   client-side result, server-side heuristic, and conservative objective-backed
   variational server rule (see [`AGENTS.md`](AGENTS.md) and
-  [`manuscript/02_gap.md`](manuscript/02_gap.md)).
+  [`docs/manuscript/02_gap.md`](docs/manuscript/02_gap.md)).
 - Do not report a "robust beats naive" result that did not survive the paired
   Wilcoxon test + Benjamini–Hochberg FDR deflation.
 - Do not claim a reproduction of a Friston figure that the corresponding

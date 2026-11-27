@@ -8,7 +8,7 @@ split by responsibility. The package does not own research mathematics, report
 schemas, or publication rendering.
 
 Application users should begin with the project-wide
-[`application guide`](../../docs/application-guide.md); this page is the
+[`application guide`](../../docs/development/application-guide.md); this page is the
 detailed command, receipt, and extension contract.
 
 ## Module map
@@ -228,7 +228,7 @@ must not make optional dependencies part of the default import graph, silently
 replace a failed algorithmic path, or claim CUDA, multi-host federation, or
 confirmatory evidence from a CPU smoke run.
 
-See the project-wide [application guide](../../docs/application-guide.md),
+See the project-wide [application guide](../../docs/development/application-guide.md),
 [modularity guide](../../docs/development/modularity.md),
 the [API stability policy](../../docs/reference/api-stability.md), and the
 [CLI contract tests](../../tests/test_fedference_cli.py).

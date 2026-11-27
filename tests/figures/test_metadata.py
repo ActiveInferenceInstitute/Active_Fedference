@@ -148,7 +148,7 @@ def test_parameter_recovery_report_metadata_and_caption_agree_on_trial_unit() ->
     )
     metadata = FIGURE_METADATA["parameter_recovery"]
     caption_source = (
-        Path(__file__).resolve().parents[2] / "manuscript" / "S15_results_parameter_recovery.md"
+        Path(__file__).resolve().parents[2] / "docs" / "manuscript" / "S15_results_parameter_recovery.md"
     ).read_text(encoding="utf-8")
 
     assert report["replication_unit"] == "synthetic trial"
@@ -173,7 +173,7 @@ def test_heuristic_report_metadata_and_caption_agree_on_declared_grid_unit() -> 
     metadata = FIGURE_METADATA["heuristic_breakdown"]
     caption_source = (
         Path(__file__).resolve().parents[2]
-        / "manuscript"
+        / "docs" / "manuscript"
         / "S17_results_heuristic_characterization.md"
     ).read_text(encoding="utf-8")
 
@@ -188,7 +188,7 @@ def test_sensitivity_report_metadata_and_caption_agree_on_nested_trial_unit() ->
     report = _sensitivity_report(seed=23, n_trials=2)
     metadata = FIGURE_METADATA["sensitivity_heatmap"]
     caption_source = (
-        Path(__file__).resolve().parents[2] / "manuscript" / "S13_results_sensitivity.md"
+        Path(__file__).resolve().parents[2] / "docs" / "manuscript" / "S13_results_sensitivity.md"
     ).read_text(encoding="utf-8")
     normalized_caption = " ".join(caption_source.split())
 
@@ -251,7 +251,7 @@ def test_belief_quality_metadata_and_caption_limit_visible_estimands() -> None:
     metadata = FIGURE_METADATA["belief_quality"]
     caption_source = (
         Path(__file__).resolve().parents[2]
-        / "manuscript"
+        / "docs" / "manuscript"
         / "28_supplement_extended_methods.md"
     ).read_text(encoding="utf-8")
 
@@ -268,7 +268,7 @@ def test_belief_quality_metadata_and_caption_limit_visible_estimands() -> None:
 def test_bnn_proxy_metadata_denies_generalized_bayes_or_alpha_renyi_promotion() -> None:
     metadata = FIGURE_METADATA["bnn_robustness"]
     relation = metadata["source_relation"]
-    manuscript_root = Path(__file__).resolve().parents[2] / "manuscript"
+    manuscript_root = Path(__file__).resolve().parents[2] / "docs" / "manuscript"
     design = (manuscript_root / "12_methods_experimental_design.md").read_text(
         encoding="utf-8"
     )
@@ -292,7 +292,7 @@ def test_free_energy_report_metadata_and_caption_agree_on_difference_sign() -> N
     report = _belief_sharing_report(ExperimentConfig(n_agents=3, n_seeds=3))
     metadata = FIGURE_METADATA["free_energy_comparison"]
     caption_source = (
-        Path(__file__).resolve().parents[2] / "manuscript" / "16_results_belief_sharing.md"
+        Path(__file__).resolve().parents[2] / "docs" / "manuscript" / "16_results_belief_sharing.md"
     ).read_text(encoding="utf-8")
 
     expected = np.asarray(report["incommunicado_free_energy"]) - np.asarray(
@@ -309,7 +309,7 @@ def test_conditional_world_report_metadata_and_caption_agree_on_nested_unit() ->
     report = run_conditional_world_generalization(seed=3, n_seeds=2, n_trials=1)
     metadata = FIGURE_METADATA["conditional_world"]
     caption_source = (
-        Path(__file__).resolve().parents[2] / "manuscript" / "28_supplement_extended_methods.md"
+        Path(__file__).resolve().parents[2] / "docs" / "manuscript" / "28_supplement_extended_methods.md"
     ).read_text(encoding="utf-8")
 
     assert report["independent_unit"] == "seeded world/scenario row"

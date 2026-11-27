@@ -54,7 +54,7 @@ def _author_year_label(author_field: str, year: str) -> str:
 
 
 def _citation_labels(project_root: Path) -> dict[str, str]:
-    references = project_root / "manuscript" / "references.bib"
+    references = project_root / "docs" / "manuscript" / "references.bib"
     if not references.exists():
         references = project_root / "output" / "manuscript" / "references.bib"
     if not references.exists():

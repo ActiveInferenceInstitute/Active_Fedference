@@ -1,6 +1,6 @@
 """Frozen experiment configuration for the Active Fedference project.
 
-Single loader for ``manuscript/config.yaml`` -> ``experiment:`` block. The
+Single loader for ``docs/manuscript/config.yaml`` -> ``experiment:`` block. The
 parameters here drive the categorical source-mechanism analogues of Friston et al. (2024),
 *Federated inference and belief sharing* (Neurosci. Biobehav. Rev. 156:105500),
 run by :mod:`fedference.experiments`: the colony size and noisy-sensor grid of
@@ -37,7 +37,7 @@ _DEFAULT_CONTAMINATION_RATES: tuple[float, ...] = (0.0, 0.225, 0.45, 0.675, 0.9)
 _DEFAULT_REVIEW_GRID_RATES: tuple[float, ...] = (0.0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
 # Keep the dataclass fallback and the shipped publication configuration on the
 # same source-bound contract.  A temporary or minimal project may omit
-# ``manuscript/config.yaml``; falling back to an older diagnostic budget in
+# ``docs/manuscript/config.yaml``; falling back to an older diagnostic budget in
 # that case would silently produce a different evidence design.
 _DEFAULT_N_SEEDS = 480
 _DEFAULT_REPLICATE_SEEDS = 128
@@ -277,17 +277,17 @@ class ExperimentConfig:
 def _strict_int(value: Any, *, field: str) -> int:
     """Read an integer YAML scalar without truncating or string-coercing it."""
     if isinstance(value, bool) or not isinstance(value, int):
-        raise ValueError(f"manuscript/config.yaml {field} must be an integer")
+        raise ValueError(f"docs/manuscript/config.yaml {field} must be an integer")
     return value
 
 
 def _strict_float(value: Any, *, field: str) -> float:
     """Read a finite numeric YAML scalar without accepting text or booleans."""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ValueError(f"manuscript/config.yaml {field} must be a number")
+        raise ValueError(f"docs/manuscript/config.yaml {field} must be a number")
     number = float(value)
     if not math.isfinite(number):
-        raise ValueError(f"manuscript/config.yaml {field} must be finite")
+        raise ValueError(f"docs/manuscript/config.yaml {field} must be finite")
     return number
 
 
@@ -298,7 +298,7 @@ def _coerce_float_tuple(values: Any, default: tuple[float, ...], *, field: str) 
         return tuple(_strict_float(value, field=f"{field}[]") for value in values)
     if isinstance(values, (int, float)) and not isinstance(values, bool):
         return (_strict_float(values, field=field),)
-    raise ValueError(f"manuscript/config.yaml {field} must be a number or list of numbers")
+    raise ValueError(f"docs/manuscript/config.yaml {field} must be a number or list of numbers")
 
 
 def _coerce_str_tuple(values: Any, default: tuple[str, ...], *, field: str) -> tuple[str, ...]:
@@ -306,11 +306,11 @@ def _coerce_str_tuple(values: Any, default: tuple[str, ...], *, field: str) -> t
         return default
     if isinstance(values, (list, tuple)):
         if any(not isinstance(value, str) for value in values):
-            raise ValueError(f"manuscript/config.yaml {field} must contain only strings")
+            raise ValueError(f"docs/manuscript/config.yaml {field} must contain only strings")
         return tuple(values)
     if isinstance(values, str):
         return (values,)
-    raise ValueError(f"manuscript/config.yaml {field} must be a string or list of strings")
+    raise ValueError(f"docs/manuscript/config.yaml {field} must be a string or list of strings")
 
 
 def load_manuscript_config(project_root: Path | None = None) -> dict[str, Any]:
@@ -324,14 +324,14 @@ def load_manuscript_config(project_root: Path | None = None) -> dict[str, Any]:
     profile.
 
     Args:
-        project_root: Directory containing ``manuscript/config.yaml``; defaults
+        project_root: Directory containing ``docs/manuscript/config.yaml``; defaults
             to the project root (two levels above this file).
 
     Returns:
         A mutable plain-dict copy suitable for read-only workflow access.
     """
     root = project_root or Path(__file__).resolve().parent.parent
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     if not config_path.exists():
         return {}
 
@@ -340,14 +340,14 @@ def load_manuscript_config(project_root: Path | None = None) -> dict[str, Any]:
     if data is None:
         data = {}
     if not isinstance(data, Mapping):
-        raise ValueError("manuscript/config.yaml top level must be a mapping")
+        raise ValueError("docs/manuscript/config.yaml top level must be a mapping")
 
     result = dict(data)
     raw_experiment = result.get("experiment", {})
     if raw_experiment is None:
         raw_experiment = {}
     if not isinstance(raw_experiment, Mapping):
-        raise ValueError("manuscript/config.yaml experiment block must be a mapping")
+        raise ValueError("docs/manuscript/config.yaml experiment block must be a mapping")
     experiment = dict(raw_experiment)
     for name in (
         "belief_sharing",
@@ -360,7 +360,7 @@ def load_manuscript_config(project_root: Path | None = None) -> dict[str, Any]:
         if value is None:
             value = {}
         if not isinstance(value, Mapping):
-            raise ValueError(f"manuscript/config.yaml experiment.{name} block must be a mapping")
+            raise ValueError(f"docs/manuscript/config.yaml experiment.{name} block must be a mapping")
         experiment[name] = dict(value)
     result["experiment"] = experiment
     return result
@@ -374,14 +374,14 @@ def load_experiment_config(project_root: Path | None = None) -> ExperimentConfig
     diagnostic budget.
 
     Args:
-        project_root: Directory containing ``manuscript/config.yaml``; defaults
+        project_root: Directory containing ``docs/manuscript/config.yaml``; defaults
             to the project root (two levels above this file).
 
     Returns:
         A frozen :class:`ExperimentConfig`.
     """
     root = project_root or Path(__file__).resolve().parent.parent
-    if not (root / "manuscript" / "config.yaml").exists():
+    if not (root / "docs" / "manuscript" / "config.yaml").exists():
         return ExperimentConfig()
 
     data = load_manuscript_config(root)
@@ -404,7 +404,7 @@ def load_experiment_config(project_root: Path | None = None) -> ExperimentConfig
         ("complexity", raw_complexity),
     ):
         if not isinstance(value, Mapping):
-            raise ValueError(f"manuscript/config.yaml {name} block must be a mapping")
+            raise ValueError(f"docs/manuscript/config.yaml {name} block must be a mapping")
     sharing = raw_sharing
     sweep = raw_sweep
     stats = raw_stats
@@ -489,7 +489,7 @@ def _power_alternative(stats: Mapping[str, Any], experiment: Mapping[str, Any]) 
     """Read the declared power direction without stringifying malformed YAML."""
     value = stats.get("power_alternative", experiment.get("power_alternative", "greater"))
     if not isinstance(value, str):
-        raise ValueError("manuscript/config.yaml experiment.statistics.power_alternative must be a string")
+        raise ValueError("docs/manuscript/config.yaml experiment.statistics.power_alternative must be a string")
     return value
 
 

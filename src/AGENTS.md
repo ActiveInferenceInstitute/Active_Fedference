@@ -13,7 +13,7 @@ src/
 ├── figures/             # manuscript figure generators + _common.py
 ├── manuscript_vars/     # Manuscript token generator package (loaders/tokens/render/generate)
 ├── publication/         # Publication packaging, identifiers, Zenodo, freshness, and surface validation
-├── experiment_config.py # Loads manuscript/config.yaml
+├── experiment_config.py # Loads docs/manuscript/config.yaml
 ├── manuscript_variables.py  # Re-export shim over manuscript_vars/
 ├── invariants.py
 ├── documentation.py     # API doc helpers
@@ -57,7 +57,7 @@ extension recipe is in
 | `analysis/artifacts.py` | Canonical expected Stage-02 artifact paths; fail-closed audit contract |
 | `figures/*.py` | One generator per PNG; shared palette in `_common.py` |
 | `manuscript_variables.py` | `generate_variables()` → `{{TOKEN}}` map |
-| `experiment_config.py` | `ExperimentConfig` from `manuscript/config.yaml` |
+| `experiment_config.py` | `ExperimentConfig` from `docs/manuscript/config.yaml` |
 | `publication/pipeline_freshness.py` | Content-hashed analysis → hydration → render receipts |
 | `publication/clean_checkout.py` | Clean Git/tracking/import release-evidence probe |
 | `publication/identifiers.py` | Shared DOI normalization and resolver URL contract |

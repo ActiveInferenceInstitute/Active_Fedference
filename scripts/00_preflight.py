@@ -42,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
 
     require_locked_template_renderer(project_root, template_root)
     run_manuscript_preflight = _load_preflight(template_root)
-    manuscript_dir = project_root / "manuscript"
+    manuscript_dir = project_root / "docs" / "manuscript"
     ok, message = run_manuscript_preflight(manuscript_dir)
     if ok:
         return 0

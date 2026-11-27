@@ -52,7 +52,7 @@ def _write_packaging_identity(
 
 
 def _make_project(tmp_path: Path) -> Path:
-    (tmp_path / "manuscript").mkdir()
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
     config = {
         "paper": {
             "title": "T",
@@ -83,7 +83,7 @@ def _make_project(tmp_path: Path) -> Path:
         "keywords": ["alpha", "beta"],
         "metadata": {"license": "MIT"},
     }
-    (tmp_path / "manuscript" / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
     _write_packaging_identity(
         tmp_path,
         version="9.9.9",
@@ -124,7 +124,7 @@ def test_build_emits_all_three_surfaces_from_config(tmp_path: Path) -> None:
 
 def test_unreleased_metadata_omits_release_date_claims(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config["publication"]["doi"] = ""
@@ -150,7 +150,7 @@ def test_unreleased_metadata_omits_release_date_claims(tmp_path: Path) -> None:
 
 def test_complete_development_lifecycle_uses_real_emitted_surfaces(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config["publication"].update(
@@ -196,7 +196,7 @@ def test_final_lifecycle_requires_exact_manuscript_release_date(
     paper_date: str | None,
 ) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     if paper_date is None:
         config["paper"].pop("date")
@@ -217,7 +217,7 @@ def test_development_and_final_project_doi_url_rules_are_fail_closed(
     tmp_path: Path,
 ) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config["publication"].update(
@@ -276,7 +276,7 @@ def test_lifecycle_rejects_lock_project_url_surface_and_pdf_drift(
 
 def test_unreleased_metadata_rejects_placeholder_in_doi_field(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config["publication"]["doi"] = "(forthcoming)"
@@ -295,7 +295,7 @@ def test_unreleased_metadata_requires_exact_plain_doi_status(
     doi_status: str | None,
 ) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config["publication"]["doi"] = ""
@@ -310,7 +310,7 @@ def test_unreleased_metadata_requires_exact_plain_doi_status(
 
 def test_unreleased_metadata_requires_literal_null_release_date(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config["publication"]["doi"] = ""
@@ -325,7 +325,7 @@ def test_unreleased_metadata_requires_literal_null_release_date(tmp_path: Path) 
 
 def test_development_metadata_rejects_release_identity(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.9.dev0"
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -340,7 +340,7 @@ def test_development_metadata_rejects_release_identity(tmp_path: Path) -> None:
 
 def test_final_metadata_rejects_missing_release_identity(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["publication"]["doi"] = ""
     config["publication"]["doi_status"] = "(forthcoming)"
@@ -360,7 +360,7 @@ def test_final_metadata_requires_doi_status_key_to_be_absent(
     doi_status: str | None,
 ) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["publication"]["doi_status"] = doi_status
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -371,7 +371,7 @@ def test_final_metadata_requires_doi_status_key_to_be_absent(
 
 def test_metadata_rejects_package_and_manuscript_version_drift(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "9.9.8"
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -385,7 +385,7 @@ def test_metadata_rejects_package_and_manuscript_version_drift(tmp_path: Path) -
 
 def test_assigned_doi_is_emitted_on_all_surfaces(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["publication"]["doi"] = "https://doi.org/10.5281/zenodo.12345"
     config["publication"]["abstract"] = "Lead. {{PUBLICATION_IDENTITY_SENTENCE}}"
@@ -420,7 +420,7 @@ def test_invalid_release_date_fails_loudly(
     invalid_date: str,
 ) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["publication"]["date_released"] = invalid_date
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -456,7 +456,7 @@ def test_check_detects_a_tampered_surface(tmp_path: Path) -> None:
 def test_zenodo_uses_full_paper_identity_and_abstract(tmp_path: Path) -> None:
     """Zenodo must not regress to the abbreviated package metadata fields."""
     root = _make_project(tmp_path)
-    config = yaml.safe_load((root / "manuscript" / "config.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((root / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8"))
     output = build_metadata(root)
     zenodo = json.loads(output[".zenodo.json"])
     abstract = " ".join(str(config["publication"]["abstract"]).split())
@@ -466,8 +466,8 @@ def test_zenodo_uses_full_paper_identity_and_abstract(tmp_path: Path) -> None:
 
 
 def test_missing_publication_block_fails_loudly(tmp_path: Path) -> None:
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript" / "config.yaml").write_text(
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump({"paper": {"title": "T"}}), encoding="utf-8"
     )
     (tmp_path / "pyproject.toml").write_text('version = "1.0.0"\n', encoding="utf-8")
@@ -480,7 +480,7 @@ def test_missing_publication_block_fails_loudly(tmp_path: Path) -> None:
 
 def test_missing_paper_title_fails_loudly(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["title"] = ""
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -493,7 +493,7 @@ def test_missing_paper_title_fails_loudly(tmp_path: Path) -> None:
 
 def test_malformed_experiment_block_uses_the_shared_config_boundary(tmp_path: Path) -> None:
     root = _make_project(tmp_path)
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["experiment"] = []
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -513,14 +513,14 @@ def test_real_repository_surfaces_are_emitter_consistent() -> None:
 def test_zenodo_description_is_the_hydrated_manuscript_abstract() -> None:
     """The deposited description must be the paper abstract, not a package blurb."""
     config = yaml.safe_load(
-        (_PROJECT_ROOT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+        (_PROJECT_ROOT / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     )
     assigned_doi = normalize_doi(
         config["publication"].get("doi"),
         allow_placeholder=True,
     )
     doi_token = assigned_doi or "N/A"
-    source = (_PROJECT_ROOT / "manuscript" / "00_abstract.md").read_text(encoding="utf-8")
+    source = (_PROJECT_ROOT / "docs" / "manuscript" / "00_abstract.md").read_text(encoding="utf-8")
     abstract = source.split("# Abstract", 1)[1].split("**Keywords:**", 1)[0]
     abstract = re.sub(r"\s*\{#[^}]+\}", "", abstract, count=1)
     abstract = abstract.replace(
@@ -558,15 +558,15 @@ def test_real_abstract_hypothetical_final_identity_never_retains_development_pro
     """Exercise the shipped abstract/config through the future final lifecycle."""
     doi = "10.5281/zenodo.99999999"
     config = yaml.safe_load(
-        (_PROJECT_ROOT / "manuscript" / "config.yaml").read_text(encoding="utf-8")
+        (_PROJECT_ROOT / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8")
     )
     config["paper"]["version"] = "1.1.0"
     config["paper"]["date"] = "2026-09-01"
     config["publication"]["doi"] = doi
     config["publication"].pop("doi_status", None)
     config["publication"]["date_released"] = "2026-09-01"
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript" / "config.yaml").write_text(
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump(config, sort_keys=False),
         encoding="utf-8",
     )
@@ -577,7 +577,7 @@ def test_real_abstract_hypothetical_final_identity_never_retains_development_pro
     )
 
     final_metadata = json.loads(build_metadata(tmp_path)[".zenodo.json"])
-    source = (_PROJECT_ROOT / "manuscript" / "00_abstract.md").read_text(encoding="utf-8")
+    source = (_PROJECT_ROOT / "docs" / "manuscript" / "00_abstract.md").read_text(encoding="utf-8")
     source_abstract = source.split("# Abstract", 1)[1].split("**Keywords:**", 1)[0]
     source_abstract = re.sub(r"\s*\{#[^}]+\}", "", source_abstract, count=1)
     source_abstract = source_abstract.replace(

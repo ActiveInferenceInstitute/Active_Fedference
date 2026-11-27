@@ -117,7 +117,7 @@ The `freshness` profile verifies the standalone successful test/coverage receipt
 plus the content-hashed analysis → hydration → render dependency chain and the
 producer-owned publication execution profile. A publication analysis sidecar
 also binds a pre-run input snapshot and only the canonical
-`manuscript/config.yaml` configuration may mint it. The `source` profile is the bounded source/release
+`docs/manuscript/config.yaml` configuration may mint it. The `source` profile is the bounded source/release
 gate: Ruff, mypy, the invariant report, the domain-layer grep, and exact-set
 release build/verify. `full` runs quick, manuscript, package, rendered-surface,
 freshness, source, and coverage gates.

@@ -15,9 +15,9 @@
       "successCriteria": [
         {
           "id": "C001",
-          "scenario": "CLI/data surface: source review and scholarship integration are complete when git diff shows manuscript/bibliography/TODO/publication-facing changes, every added citation appears in live prose, and the ULW research synthesis lists accepted/rejected leads with primary-source URLs",
+          "scenario": "CLI/data surface: source review and scholarship integration are complete when git diff shows docs/manuscript/bibliography/TODO/publication-facing changes, every added citation appears in live prose, and the ULW research synthesis lists accepted/rejected leads with primary-source URLs",
           "userModel": "happy",
-          "expectedEvidence": ".omo/ulw-research/<session>/SYNTHESIS.md plus git diff -- manuscript README.md TODO.md docs/todo manuscript/references.bib showing claim-relevant changes only",
+          "expectedEvidence": ".omo/ulw-research/<session>/SYNTHESIS.md plus git diff -- manuscript README.md TODO.md docs/todo docs/manuscript/references.bib showing claim-relevant changes only",
           "essential": true,
           "capturedEvidence": "Scholarship and manuscript claim integration complete: SYNTHESIS.md records accepted/rejected leads with primary-source URLs; references.bib adds only pillutla2022robust and updates FedGVI metadata; manuscript, README, TODO, and docs diff bound claims and remove completed polish backlog.",
           "status": "pass",

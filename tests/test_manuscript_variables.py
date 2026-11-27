@@ -43,7 +43,7 @@ _RESERVED_EXAMPLE_NAMES = {"TOKEN", "VARIABLE", "VARIABLE_NAME", "MY_TOKEN"}
 _FEDFERENCE_SECTIONS = tuple(
     sorted(
         p.name
-        for p in (_PROJECT_ROOT / "manuscript").glob("*.md")
+        for p in (_PROJECT_ROOT / "docs" / "manuscript").glob("*.md")
         if p.name not in ("AGENTS.md", "README.md", "SYNTAX.md", "preamble.md")
         and not p.name.startswith("99_")  # references: no tokens
     )
@@ -51,7 +51,7 @@ _FEDFERENCE_SECTIONS = tuple(
 
 
 def _make_project(root: Path) -> None:
-    manuscript = root / "manuscript"
+    manuscript = root / "docs" / "manuscript"
     manuscript.mkdir(parents=True, exist_ok=True)
     config = {
         "paper": {"version": "0.2"},
@@ -121,7 +121,7 @@ def analyzed_project(tmp_path: Path, analyzed_project_template: Path) -> Path:
 
 def _manuscript_tokens(section_files: tuple[str, ...]) -> set[str]:
     tokens: set[str] = set()
-    manuscript = _PROJECT_ROOT / "manuscript"
+    manuscript = _PROJECT_ROOT / "docs" / "manuscript"
     for name in section_files:
         path = manuscript / name
         if path.exists():
@@ -448,7 +448,7 @@ def test_paired_by_rate_table_has_rows(analyzed_project: Path) -> None:
     # KLD is the naive baseline and must not appear as its own contrast row.
     assert not any(line.startswith("| KLD |") for line in rows)
 
-    caption = (_PROJECT_ROOT / "manuscript" / "19_results_robustness.md").read_text(
+    caption = (_PROJECT_ROOT / "docs" / "manuscript" / "19_results_robustness.md").read_text(
         encoding="utf-8"
     )
     assert "{{SWEEP_PAIRED_BY_RATE_EFFECT_TABLE_ROWS}}" in caption
@@ -513,7 +513,7 @@ def test_gallery_projection_tables_reconstruct_legacy_rows_exactly() -> None:
         assert full_cells == [*operating_cells, *contrast_cells[1:]]
 
     caption = (
-        _PROJECT_ROOT / "manuscript" / "28_supplement_extended_methods.md"
+        _PROJECT_ROOT / "docs" / "manuscript" / "28_supplement_extended_methods.md"
     ).read_text(encoding="utf-8")
     assert "{{GALLERY_OPERATING_POINT_TABLE_ROWS}}" in caption
     assert "{{GALLERY_CONTRAST_DISPLAY_TABLE_ROWS}}" in caption
@@ -796,7 +796,7 @@ def test_config_metadata_tokens(tmp_path: Path) -> None:
 
 def test_assigned_doi_metadata_tokens_are_canonical(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    config_path = tmp_path / "manuscript" / "config.yaml"
+    config_path = tmp_path / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["publication"] = {"doi": "https://doi.org/10.5281/zenodo.12345"}
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -808,7 +808,7 @@ def test_assigned_doi_metadata_tokens_are_canonical(tmp_path: Path) -> None:
 
 def test_unreleased_identity_token_uses_neutral_prose_without_na(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    config_path = tmp_path / "manuscript" / "config.yaml"
+    config_path = tmp_path / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["publication"] = {"doi": "", "doi_status": "(forthcoming)"}
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -833,7 +833,7 @@ def test_save_variables_round_trip(tmp_path: Path) -> None:
 
 def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    manuscript = tmp_path / "manuscript"
+    manuscript = tmp_path / "docs" / "manuscript"
     (manuscript / "01_intro.md").write_text("Value: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "README.md").write_text("Example: {{VALUE}}\n", encoding="utf-8")
     (manuscript / "refs.bib").write_text("@misc{x, title={X}}\n", encoding="utf-8")
@@ -865,13 +865,13 @@ def test_render_manuscript_tree_is_standalone(tmp_path: Path) -> None:
 def test_full_manuscript_tree_is_exactly_hydrated_without_tokens(tmp_path: Path) -> None:
     """The shipped manuscript tree, not only a toy fixture, must fully inject."""
     variables = generate_variables(_PROJECT_ROOT, allow_draft=True)
-    shutil.copytree(_PROJECT_ROOT / "manuscript", tmp_path / "manuscript")
+    shutil.copytree(_PROJECT_ROOT / "docs" / "manuscript", tmp_path / "docs" / "manuscript")
 
     output = render_manuscript_tree(tmp_path, variables)
 
     source_names = {
         path.name
-        for path in (tmp_path / "manuscript").glob("*.md")
+        for path in (tmp_path / "docs" / "manuscript").glob("*.md")
         if path.name not in {"AGENTS.md", "README.md", "SYNTAX.md"}
     }
     assert {path.name for path in output.glob("*.md")} == source_names
@@ -885,8 +885,8 @@ def test_full_manuscript_tree_is_exactly_hydrated_without_tokens(tmp_path: Path)
 
 
 def test_render_config_tokens_preserve_nested_yaml_values(tmp_path: Path) -> None:
-    manuscript = tmp_path / "manuscript"
-    manuscript.mkdir()
+    manuscript = tmp_path / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     config = {
         "paper": {"title": "{{TITLE}}"},
         "metadata": {
@@ -916,8 +916,8 @@ def test_render_config_tokens_preserve_nested_yaml_values(tmp_path: Path) -> Non
 
 
 def test_unresolved_config_token_preserves_previous_manuscript_tree(tmp_path: Path) -> None:
-    manuscript = tmp_path / "manuscript"
-    manuscript.mkdir()
+    manuscript = tmp_path / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     (manuscript / "config.yaml").write_text("paper:\n  title: '{{UNKNOWN}}'\n")
     (manuscript / "01_intro.md").write_text("New manuscript\n")
     previous = tmp_path / "output" / "manuscript"
@@ -935,7 +935,7 @@ def test_unresolved_config_token_preserves_previous_manuscript_tree(tmp_path: Pa
 
 def test_render_manuscript_tree_refuses_symlinked_output_dir(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    manuscript = tmp_path / "manuscript"
+    manuscript = tmp_path / "docs" / "manuscript"
     (manuscript / "01_intro.md").write_text("Value: {{VALUE}}\n", encoding="utf-8")
     external = tmp_path / "external"
     external.mkdir()
@@ -955,7 +955,7 @@ def test_uses_real_project_root_by_default() -> None:
 
 
 def test_missing_config_uses_metadata_defaults(tmp_path: Path) -> None:
-    # No manuscript/config.yaml at all → config-derived tokens fall back to
+    # No docs/manuscript/config.yaml at all → config-derived tokens fall back to
     # documented defaults but generation still succeeds.
     variables = generate_variables(tmp_path, allow_draft=True)
     assert variables["CONFIG_VERSION"] == "1.0"
@@ -1048,7 +1048,7 @@ def test_math_sibling_tokens_resolve_alongside_their_prose_twins(
 def test_math_sibling_tokens_are_authored_inside_math_spans() -> None:
     """Prevent valid LaTeX token values from being escaped as literal prose."""
     for filename in _FEDFERENCE_SECTIONS:
-        source = (_PROJECT_ROOT / "manuscript" / filename).read_text(encoding="utf-8")
+        source = (_PROJECT_ROOT / "docs" / "manuscript" / filename).read_text(encoding="utf-8")
         for match in re.finditer(r"\{\{[A-Z0-9_]+_MATH\}\}", source):
             prefix = re.sub(r"\\\$", "", source[: match.start()])
             assert prefix.count("$") % 2 == 1, (

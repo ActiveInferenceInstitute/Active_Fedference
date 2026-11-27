@@ -95,7 +95,7 @@ higher-level unit and seeds/episodes as nested.
 - Update the manuscript discussion section describing where the hierarchical
   mechanism generalizes and where it does not, referencing new figures by their
   registered labels only.
-- Update `manuscript/SYNTAX.md` only if a new figure label is registered
+- Update `docs/manuscript/SYNTAX.md` only if a new figure label is registered
   elsewhere first; this page adds no labels.
 
 ## Claim-Boundary Constraints

@@ -9,7 +9,7 @@ Active Fedference uses two registries. **Do not duplicate full tables in
 | --- | --- |
 | [`src/manuscript_variables.py`](../../src/manuscript_variables.py) | Public entry point (re-export shim): `generate_variables()` builds the mapping |
 | [`src/manuscript_vars/`](../../src/manuscript_vars/generate.py) | Implementation package: `generate.py`, `tokens.py`, `loaders.py`, `render.py` |
-| [`../../manuscript/AGENTS.md`](../../manuscript/AGENTS.md) | Authoring workflow and token groups |
+| [`../../manuscript/AGENTS.md`](AGENTS.md) | Authoring workflow and token groups |
 | `output/data/manuscript_variables.json` | Generated mapping (disposable) |
 
 ### Token groups (summary)
@@ -17,7 +17,7 @@ Active Fedference uses two registries. **Do not duplicate full tables in
 | Group | Examples | Origin |
 | --- | --- | --- |
 | Provenance | `ISC_TOTAL`, `ISC_PASSED`, `TEST_COUNT`, `COVERAGE_PERCENT`, environment versions, `CONFIG_HASH` | ISC values are parsed from `ISA.md`; final test/coverage and environment values come from the fresh successful validation receipt |
-| Config | `EXPERIMENT_SEED`, `N_AGENTS`, `N_SEEDS` | `manuscript/config.yaml` |
+| Config | `EXPERIMENT_SEED`, `N_AGENTS`, `N_SEEDS` | `docs/manuscript/config.yaml` |
 | Belief sharing | `BELIEF_SHARING_MEAN_F_COMMUNICATE`, `BELIEF_SHARING_FREE_ENERGY_GAP` | `output/reports/belief_sharing.json` |
 | Language | `LANGUAGE_FINAL_KL`, `LANGUAGE_MONOTONE` | `output/reports/language_acquisition.json` |
 | Emergence | `EMERGENCE_DELTA_F_REDUNDANT`, `EMERGENCE_DELTA_F_SUPPORTED` | `output/reports/emergence.json` |
@@ -123,7 +123,7 @@ non-draft pre-test escape hatch and must not be used for the final manuscript.
 ### Unresolved token check
 
 Hydration applies to Markdown sections and configuration string values. The
-source `manuscript/config.yaml` remains unchanged; its generated copy resolves
+source `docs/manuscript/config.yaml` remains unchanged; its generated copy resolves
 tokens before the pinned Template renderer consumes it. YAML serialization
 preserves quotes, colons, newlines, and non-string values without treating token
 replacements as YAML syntax. Unresolved configuration tokens reject the
@@ -143,7 +143,7 @@ fi
 
 | Source | Role |
 | --- | --- |
-| [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md) | Canonical `{#eq:}`, `{#fig:}`, `{#tbl:}`, `{#sec:}`, `{#prop:}`, `{#thm:}`, `{#lem:}`, `{#cor:}`, `{#def:}` registry |
+| [`../../manuscript/SYNTAX.md`](SYNTAX.md) | Canonical `{#eq:}`, `{#fig:}`, `{#tbl:}`, `{#sec:}`, `{#prop:}`, `{#thm:}`, `{#lem:}`, `{#cor:}`, `{#def:}` registry |
 | Manuscript `.md` files | Use `[@fig:label]` in prose; `{#fig:label}` on figure lines |
 
 The cross-reference renderer supplies the figure, table, equation, or section
@@ -165,9 +165,9 @@ Adding a figure:
 Shared Pandoc/LaTeX rules for this standalone repository live in the local
 manuscript guide and registry:
 
-- [`../../manuscript/AGENTS.md`](../../manuscript/AGENTS.md) — editing workflow,
+- [`../../manuscript/AGENTS.md`](AGENTS.md) — editing workflow,
   token protocol, figure protocol, and theorem conventions.
-- [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md) — canonical label
+- [`../../manuscript/SYNTAX.md`](SYNTAX.md) — canonical label
   strings and project-specific syntax constraints.
 
 `SYNTAX.md` takes precedence for label strings.

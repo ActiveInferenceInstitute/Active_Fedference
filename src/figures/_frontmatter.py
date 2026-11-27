@@ -1,7 +1,7 @@
 """Shared drawing and ordered frontmatter contract; no inference mathematics.
 
 Scientific anchors are Friston et al. (2024), Figs. 1/4 and Eq. 7, and
-Mildner et al. (2025), with the distinct claim owners in manuscript/07.
+Mildner et al. (2025), with the distinct claim owners in docs/manuscript/07.
 """
 
 from __future__ import annotations
@@ -134,7 +134,7 @@ def validate_frontmatter(project_root: Path, *, required: bool = True) -> None:
     """
     from ._metadata import FIGURE_METADATA
 
-    path = project_root / "manuscript/config.yaml"
+    path = project_root / "docs/manuscript/config.yaml"
     if not required and not path.exists():
         return
     config = yaml.safe_load(path.read_text())
@@ -144,7 +144,7 @@ def validate_frontmatter(project_root: Path, *, required: bool = True) -> None:
     if config["paper"].get("frontmatter") != expected:
         raise ValueError("frontmatter must follow model, robustness, execution order")
     for stem, filename in FRONTMATTER:
-        text = (project_root / "manuscript" / filename).read_text()
+        text = (project_root / "docs" / "manuscript" / filename).read_text()
         label_id = stem.replace("_", "-")
         if f"../output/figures/{stem}.png){{#fig:{label_id} " not in text:
             raise ValueError(f"missing frontmatter embed: {stem}")

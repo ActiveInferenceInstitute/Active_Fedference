@@ -113,7 +113,7 @@ def _init_clean_repo(root: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("tracked\n", encoding="utf-8")
     _write_historical_pdf_fixtures(root)
-    (root / "manuscript" / "config.yaml").write_text(
+    (root / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "paper": {"title": "Fixture paper", "version": "0.0.0.dev0"},
@@ -182,7 +182,7 @@ def _commit_publication_identity(
     doi_status: str | None = None,
 ) -> None:
     """Install and commit the minimum lifecycle sources for the checkout probe."""
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config_path.parent.mkdir(parents=True, exist_ok=True)
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = version
@@ -225,7 +225,7 @@ def _commit_publication_identity(
             "-C",
             str(root),
             "add",
-            "manuscript/config.yaml",
+            "docs/manuscript/config.yaml",
             "pyproject.toml",
             "uv.lock",
             *GENERATED_METADATA_PATHS,
@@ -425,7 +425,7 @@ def test_development_checkout_rejects_tampered_historical_pdf_ledger(
 
 def test_checkout_requires_the_authoritative_identity_sources(tmp_path: Path) -> None:
     _init_clean_repo(tmp_path)
-    config_path = tmp_path / "manuscript" / "config.yaml"
+    config_path = tmp_path / "docs" / "manuscript" / "config.yaml"
     config_path.unlink()
     subprocess.run(
         [*_HERMETIC_GIT, "-C", str(tmp_path), "add", "-u"],
@@ -454,7 +454,7 @@ def test_checkout_requires_the_authoritative_identity_sources(tmp_path: Path) ->
     report = inspect_clean_checkout(tmp_path, check_imports=False)
 
     assert not report.ok
-    assert any("manuscript/config.yaml" in item for item in report.findings)
+    assert any("docs/manuscript/config.yaml" in item for item in report.findings)
 
 
 def test_released_checkout_requires_its_version_doi_pdf(tmp_path: Path) -> None:
@@ -574,12 +574,12 @@ def test_checkout_rejects_package_manuscript_version_drift(tmp_path: Path) -> No
         date_released=None,
         doi_status="(forthcoming)",
     )
-    config_path = tmp_path / "manuscript" / "config.yaml"
+    config_path = tmp_path / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["paper"]["version"] = "1.1.1.dev0"
     config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
     subprocess.run(
-        [*_HERMETIC_GIT, "-C", str(tmp_path), "add", "manuscript/config.yaml"],
+        [*_HERMETIC_GIT, "-C", str(tmp_path), "add", "docs/manuscript/config.yaml"],
         check=True,
         capture_output=True,
         text=True,

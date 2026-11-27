@@ -260,8 +260,8 @@ def _manuscript_embed_widths(root: Path) -> dict[str, float]:
     """Return one exact canonical embed fraction for every manuscript figure."""
 
     widths: dict[str, float] = {}
-    sections = sorted((root / "manuscript").glob("[0-9]*.md")) + sorted(
-        (root / "manuscript").glob("S[0-9]*.md")
+    sections = sorted((root / "docs" / "manuscript").glob("[0-9]*.md")) + sorted(
+        (root / "docs" / "manuscript").glob("S[0-9]*.md")
     )
     for section in sections:
         source = section.read_text(encoding="utf-8")

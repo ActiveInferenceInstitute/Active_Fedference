@@ -66,7 +66,7 @@ the bars are not confidence intervals and the fitted slopes are not inferential
 statistics.
 
 The publication grid and machine receipt are generated from
-`manuscript/config.yaml` and written to the report. Smoke runs use a clipped
+`docs/manuscript/config.yaml` and written to the report. Smoke runs use a clipped
 grid and clipped fixed dimensions so tests exercise the real paths without
 rewriting a publication-scale snapshot. Publication outputs must be regenerated
 through `scripts/02_run_analysis.py` before hydration, rendering, or release
@@ -87,9 +87,9 @@ are material.
 
 The corresponding manuscript and visual claim are governed by:
 
-- [`manuscript/13_methods_statistics.md`](../../manuscript/13_methods_statistics.md),
+- [`docs/manuscript/13_methods_statistics.md`](../manuscript/13_methods_statistics.md),
   section `sec:methods-complexity`;
-- [`manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md), figure registry entry
+- [`docs/manuscript/SYNTAX.md`](../manuscript/SYNTAX.md), figure registry entry
   `fig:complexity-scaling`;
 - [`docs/research/manuscript-claim-audit.md`](manuscript-claim-audit.md); and
 - [`docs/research/visual-claim-audit.md`](visual-claim-audit.md).

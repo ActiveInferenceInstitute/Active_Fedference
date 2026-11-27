@@ -48,7 +48,7 @@ def test_conditional_world_uses_truthful_range_label_and_shared_zero_rule() -> N
 
 def test_conditional_world_caption_declares_non_colour_and_range_semantics() -> None:
     caption = (
-        Path(__file__).resolve().parents[2] / "manuscript/28_supplement_extended_methods.md"
+        Path(__file__).resolve().parents[2] / "docs/manuscript/28_supplement_extended_methods.md"
     ).read_text(encoding="utf-8")
 
     assert "every heatmap cell prints its signed seed-level mean" in caption

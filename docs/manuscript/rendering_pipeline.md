@@ -17,7 +17,7 @@ export SOURCE_DATE_EPOCH="$(git -C "$AF_REPO" log -1 --format=%ct)"
 This epoch is reproducibility metadata derived from the reviewed Active
 Fedference source commit, not evidence of release approval or wall-clock
 completion. The sibling renderer is locked separately by canonical repository,
-exact commit, and required clean state in `manuscript/config.yaml`.
+exact commit, and required clean state in `docs/manuscript/config.yaml`.
 
 New render receipts in `output/data/pipeline_provenance.json` retain both
 `stages.render.source_commit` (the Active Fedference checkout HEAD at recording)
@@ -106,7 +106,7 @@ uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-
 
 **Logic:** `generate_variables()` (entry point `src/manuscript_variables.py`,
 implementation in the `src/manuscript_vars/` package) reads
-`output/reports/*.json` and `manuscript/config.yaml`, then
+`output/reports/*.json` and `docs/manuscript/config.yaml`, then
 `src/manuscript_vars/render.py::render_manuscript_tree()` substitutes
 `{{TOKEN}}` markers and writes resolved copies to `output/manuscript/`
 (project-local logic; no `infrastructure.rendering` import is used in this
@@ -278,7 +278,7 @@ uv run --locked python scripts/pipeline/stage_03_render.py \
 
 - `output/manuscript/*.md` (substituted)
 - `output/manuscript/config.yaml` (project-resolved configuration)
-- source-owned `manuscript/preamble.md` and `manuscript/references.bib`
+- source-owned `docs/manuscript/preamble.md` and `docs/manuscript/references.bib`
 - `output/figures/*.png`
 
 **Outputs:** `output/pdf/active_fedference_combined.pdf` (copied to root
@@ -381,7 +381,7 @@ The combined command is useful for exploratory template work, but it does not
 express the provisional-render → full-suite-receipt → final-render order.
 Do not use it as a replacement for the source-current sequence above.
 
-## `manuscript/config.yaml` controls
+## `docs/manuscript/config.yaml` controls
 
 | Block | Effect |
 | --- | --- |
@@ -407,10 +407,10 @@ Experiment keys mirror keyword arguments of `fedference.experiments` functions.
 
 ## See also
 
-- Manuscript editing: [`../../manuscript/AGENTS.md`](../../manuscript/AGENTS.md)
+- Manuscript editing: [`../../manuscript/AGENTS.md`](AGENTS.md)
 - Tokens: [`tokens-and-labels.md`](tokens-and-labels.md)
 - Verification commands: [`../reference/verification-commands.md`](../reference/verification-commands.md)
 
 ## Additional opening diagrams
 
-`paper.frontmatter` in the source configuration declares model, robustness-owner and GNN execution/evidence pages in that order after the overview cover. Captions are owned by `manuscript/00a_graphical_model.md`, `00b_graphical_robustness.md` and `00c_graphical_execution.md`. The sibling producer must consume this ordered list once, exclude its members from ordinary section discovery, insert one physical page per entry before the abstract, and preserve the same figure alternatives and order in HTML. Until that source extension and source-current rendering are admitted, complete-paper placement remains pending. A separately labeled FRONTMATTER PROOF validates only the candidate composition and physical order.
+`paper.frontmatter` in the source configuration declares model, robustness-owner and GNN execution/evidence pages in that order after the overview cover. Captions are owned by `docs/manuscript/00a_graphical_model.md`, `00b_graphical_robustness.md` and `00c_graphical_execution.md`. The sibling producer must consume this ordered list once, exclude its members from ordinary section discovery, insert one physical page per entry before the abstract, and preserve the same figure alternatives and order in HTML. Until that source extension and source-current rendering are admitted, complete-paper placement remains pending. A separately labeled FRONTMATTER PROOF validates only the candidate composition and physical order.

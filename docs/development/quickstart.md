@@ -7,7 +7,7 @@ Runnable-in-order recipe from a fresh checkout to a green baseline, generated
 reports and figures, hydrated manuscript tokens, and (optionally) a rendered
 PDF. This is the maintainer/reproduction path, not a prerequisite for using the
 aggregation library. Application users should start with
-[`../application-guide.md`](../application-guide.md). Steps 4-6 depend on their
+[`../application-guide.md`](application-guide.md). Steps 4-6 depend on their
 predecessors; do not reorder them.
 
 ## Prerequisites
@@ -153,7 +153,7 @@ by step 4), not in this doc.
 L2 context → L1 location) using the generic `build_nlevel_world` + `nlevel_infer`
 API; `LayerSpec` declaratively specifies each level.
 
-Parameters come from [`manuscript/config.yaml`](../../manuscript/config.yaml).
+Parameters come from [`docs/manuscript/config.yaml`](../manuscript/config.yaml).
 
 ## 4. Full analysis pipeline (reports + figures)
 
@@ -224,7 +224,7 @@ the source-current two-pass sequence.
 
 ## Next steps
 
-- Application guide: [`../application-guide.md`](../application-guide.md)
+- Application guide: [`../application-guide.md`](application-guide.md)
 - Architecture: [`../core/architecture.md`](../core/architecture.md)
 - Agent rules: [`agent_instructions.md`](agent_instructions.md)
 - Full doc hub: [`../README.md`](../README.md)

@@ -87,13 +87,13 @@ def _make_source_tree(tmp_path: Path) -> None:
     (tmp_path / "data" / "AGENTS.md").write_text("# Data guidance\n")
     (tmp_path / "data" / "claim_ledger.yaml").write_text("claims: []\n")
     (tmp_path / "data" / "synthetic_tabular.csv").write_text("feature,label\n0,0\n")
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript" / "config.yaml").write_text("seed: 7\n")
-    (tmp_path / "manuscript" / "config.yaml.example").write_text("seed: 0\n")
-    (tmp_path / "manuscript" / "01_introduction.md").write_text("Claim A.\n")
-    (tmp_path / "manuscript" / "AGENTS.md").write_text("# Manuscript guidance\n")
-    (tmp_path / "manuscript" / "references.bib").write_text("@article{a,\n  year = {2026}\n}\n")
-    (tmp_path / "manuscript" / "cover_image.png").write_text("fixture image bytes\n")
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text("seed: 7\n")
+    (tmp_path / "docs" / "manuscript" / "config.yaml.example").write_text("seed: 0\n")
+    (tmp_path / "docs" / "manuscript" / "01_introduction.md").write_text("Claim A.\n")
+    (tmp_path / "docs" / "manuscript" / "AGENTS.md").write_text("# Manuscript guidance\n")
+    (tmp_path / "docs" / "manuscript" / "references.bib").write_text("@article{a,\n  year = {2026}\n}\n")
+    (tmp_path / "docs" / "manuscript" / "cover_image.png").write_text("fixture image bytes\n")
     (tmp_path / "experiment_plan.yaml").write_text("plan: baseline\n")
     (tmp_path / "domain_profile.yaml").write_text("profile: fixture\n")
     (tmp_path / "docs" / "research").mkdir(parents=True)
@@ -556,10 +556,10 @@ def test_manifest_carries_fingerprint_stable_across_rebuild(tmp_path: Path) -> N
     assert first["fingerprint_files"]["scripts/producer.py"]
     assert first["fingerprint_files"]["examples/minimal.py"]
     assert first["fingerprint_files"]["examples/README.md"]
-    assert first["fingerprint_files"]["manuscript/config.yaml.example"]
+    assert first["fingerprint_files"]["docs/manuscript/config.yaml.example"]
     assert not any(entry["path"].startswith("examples/") for entry in first["artifacts"])
     assert not any(
-        entry["path"] == "manuscript/config.yaml.example" for entry in first["artifacts"]
+        entry["path"] == "docs/manuscript/config.yaml.example" for entry in first["artifacts"]
     )
     assert verify_release(tmp_path) == []
 
@@ -623,7 +623,7 @@ def test_verify_rejects_browser_specification_change_or_removal(
             "examples/data/labeled_aggregation_request.json",
             '{"schema_version":"1.0","state_labels":["changed"],"agents":[]}\n',
         ),
-        ("manuscript/config.yaml.example", "seed: 1\n"),
+        ("docs/manuscript/config.yaml.example", "seed: 1\n"),
     ),
 )
 def test_verify_rejects_stale_bundle_after_example_contract_change(
@@ -655,7 +655,7 @@ def test_verify_rejects_stale_bundle_after_example_contract_change(
         ("data/claim_ledger.yaml", "claims: [changed]\n"),
         ("data/synthetic_tabular.csv", "feature,label\n1,1\n"),
         ("docs/reference/historical-release-pdfs.json", '{"releases":["changed"]}\n'),
-        ("manuscript/cover_image.png", "changed image bytes\n"),
+        ("docs/manuscript/cover_image.png", "changed image bytes\n"),
         ("domain_profile.yaml", "profile: changed\n"),
     ),
 )
@@ -686,7 +686,7 @@ def test_verify_rejects_stale_bundle_after_packaged_or_scientific_data_change(
         "docs/research/AGENTS.md",
         "src/AGENTS.md",
         "data/AGENTS.md",
-        "manuscript/AGENTS.md",
+        "docs/manuscript/AGENTS.md",
     ),
 )
 def test_verify_rejects_stale_bundle_after_shipped_document_change(
@@ -725,7 +725,7 @@ def test_verify_rejects_stale_bundle_after_config_change(tmp_path: Path) -> None
     _make_artifacts(tmp_path)
     _make_source_tree(tmp_path)
     build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
-    (tmp_path / "manuscript" / "config.yaml").write_text("seed: 8\n")
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text("seed: 8\n")
     bad = verify_release(tmp_path)
     assert len(bad) == 1
     assert "provenance fingerprint mismatch" in bad[0]
@@ -737,7 +737,7 @@ def test_verify_rejects_stale_bundle_after_manuscript_change(tmp_path: Path) -> 
     _make_source_tree(tmp_path)
     build_release(tmp_path, timestamp="2026-07-06T00:00:00Z")
     assert verify_release(tmp_path) == []
-    (tmp_path / "manuscript" / "01_introduction.md").write_text("Claim B.\n")
+    (tmp_path / "docs" / "manuscript" / "01_introduction.md").write_text("Claim B.\n")
     bad = verify_release(tmp_path)
     assert len(bad) == 1
     assert "provenance fingerprint mismatch" in bad[0]

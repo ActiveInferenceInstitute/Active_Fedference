@@ -7,7 +7,7 @@ projects can run the same real code paths cheaply. Three separate incidents
 have now seen smoke-scale reports leak into the committed publication
 ``output/reports/`` tree. This gate is the tripwire that would have caught all
 three: it asserts the committed reports carry the *publication-scale* n-fields
-declared by ``manuscript/config.yaml`` -> ``experiment:`` (via
+declared by ``docs/manuscript/config.yaml`` -> ``experiment:`` (via
 ``load_experiment_config``), not the smoke clamps.
 
 Expected values are derived from the config, never hardcoded, with one
@@ -56,7 +56,7 @@ pytestmark = pytest.mark.publication
 
 
 def _declared_profile() -> str:
-    config_path = _ROOT / "manuscript" / "config.yaml"
+    config_path = _ROOT / "docs" / "manuscript" / "config.yaml"
     data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     experiment = data.get("experiment", {}) or {}
     return str(experiment.get("analysis_profile", "publication"))

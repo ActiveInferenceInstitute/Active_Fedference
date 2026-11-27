@@ -37,8 +37,8 @@ def _load_script(name: str) -> ModuleType:
 
 
 def _metadata_project(root: Path) -> Path:
-    (root / "manuscript").mkdir()
-    (root / "manuscript" / "config.yaml").write_text(
+    (root / "docs" / "manuscript").mkdir(parents=True)
+    (root / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "paper": {

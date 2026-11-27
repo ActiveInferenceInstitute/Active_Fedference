@@ -7,7 +7,7 @@
   when an input is missing.
 - Keep token names and groups stable; a rename ripples into every manuscript
   section and the syntax registry. Update
-  [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md) when a label
+  [`../../manuscript/SYNTAX.md`](../../docs/manuscript/SYNTAX.md) when a label
   changes.
 - Keep output deterministic: sorted groups, stable formatting, no timestamps or
   machine paths.

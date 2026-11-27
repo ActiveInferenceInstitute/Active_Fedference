@@ -2,7 +2,7 @@
 
 How to modify code and tests in Active Fedference. These are contributor and
 reviewer-snapshot workflows; software users should begin with the
-[`application guide`](../application-guide.md).
+[`application guide`](application-guide.md).
 
 | Document | Purpose |
 | --- | --- |
@@ -18,3 +18,5 @@ These pages are themselves contract surfaces: `tests/test_docs_contract.py`
 discovers every Markdown page under `docs/`, verifies that relative links
 resolve, that documented `scripts/*.py` commands name real files, and that
 stale claim language does not reappear.
+
+- [Application guide](application-guide.md) — adapt the aggregation and publication checks to your own data.

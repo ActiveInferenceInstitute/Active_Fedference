@@ -9,7 +9,7 @@ Technical index for `docs/`. Navigation hub:
 | --- | --- |
 | **Hub** | |
 | `README.md` | Navigation, read order, task routing |
-| `application-guide.md` | Install, input contract, method/interface selection, diagnostics, local federation, and CLI receipts |
+| `development/application-guide.md` | Install, input contract, method/interface selection, diagnostics, local federation, and CLI receipts |
 | `documentation-index.md` | Flat inventory of every maintained Markdown page under `docs/` |
 | `AGENTS.md` | This index; REQUIRED vs AESTHETIC |
 | **core/** | |
@@ -26,11 +26,12 @@ Technical index for `docs/`. Navigation hub:
 | `development/modularity.md` | Cross-layer extension and orchestration contract |
 | `development/staged-analysis.md` | External frozen stages, idempotent checkpoints, budgets, cancellation and short imports |
 | [`development/api-retirement-20261027.md`](development/api-retirement-20261027.md) | Reviewed migration inventory preserving scientific controls and historical readers/evidence |
-| **manuscript/** | |
-| `manuscript/README.md` | Manuscript-pipeline index and authoritative registry signposts |
-| `manuscript/accessibility.md` | Canonical HTML accessibility contract, PDF/UA no-claim boundary, and manual release review |
-| `manuscript/rendering_pipeline.md` | Analysis → variables → PDF |
-| `manuscript/tokens-and-labels.md` | Token groups; links to SYNTAX.md |
+| **docs/manuscript/** | |
+| `manuscript/README.md` | Canonical paper sources and rendering commands |
+| `manuscript/guides/README.md` | Companion publication and accessibility documentation |
+| `docs/manuscript/accessibility.md` | Canonical HTML accessibility contract, PDF/UA no-claim boundary, and manual release review |
+| `docs/manuscript/rendering_pipeline.md` | Analysis → variables → PDF |
+| `docs/manuscript/tokens-and-labels.md` | Token groups; links to SYNTAX.md |
 | **operations/** | |
 | `operations/README.md` | Operations-document index and output/review routing |
 | `operations/output-layout.md` | Producer-owned tracked reviewer snapshot; disposable review scratch under `.tmp/` |
@@ -87,13 +88,13 @@ Technical index for `docs/`. Navigation hub:
 | `scripts/01_run_invariants.py` | AESTHETIC | Local invariant runner |
 | `scripts/00_preflight.py` | AESTHETIC | Pre-render warnings |
 | `scripts/generate_api_docs.py` | AESTHETIC | `output/docs/api_reference.md` |
-| `manuscript/config.yaml` | REQUIRED | Render + experiment config |
-| `manuscript/*.md` | REQUIRED | PDF source (after substitution) |
-| `manuscript/references.bib` | REQUIRED | Citations |
-| `manuscript/preamble.md` | REQUIRED | LaTeX preamble |
-| `manuscript/SYNTAX.md` | AESTHETIC (partly gated) | Authoritative label registry (humans/agents); `tests/test_docs_contract.py::test_manuscript_syntax_registry_references_live_files` gates referenced-file existence and one stale-string check |
+| `docs/manuscript/config.yaml` | REQUIRED | Render + experiment config |
+| `docs/manuscript/*.md` | REQUIRED | PDF source (after substitution) |
+| `docs/manuscript/references.bib` | REQUIRED | Citations |
+| `docs/manuscript/preamble.md` | REQUIRED | LaTeX preamble |
+| `docs/manuscript/SYNTAX.md` | AESTHETIC (partly gated) | Authoritative label registry (humans/agents); `tests/test_docs_contract.py::test_manuscript_syntax_registry_references_live_files` gates referenced-file existence and one stale-string check |
 | `docs/todo/**` | REQUIRED | `tests/test_docs_contract.py` link and scope checks |
-| `docs/**` | AESTHETIC (partly gated) | Docs contract catches critical drift, requires hub/section-index reachability, and validates local links; `application-guide.md` is the canonical caller path |
+| `docs/**` | AESTHETIC (partly gated) | Docs contract catches critical drift, requires hub/section-index reachability, and validates local links; `development/application-guide.md` is the canonical caller path |
 | `../ISA.md` | REQUIRED (contract) | Acceptance criteria |
 | `../README.md`, `../AGENTS.md` | AESTHETIC (load-bearing) | Onboarding |
 
@@ -109,7 +110,7 @@ See [`reference/verification-commands.md`](reference/verification-commands.md).
 ## Cross-references
 
 - [`../AGENTS.md`](../AGENTS.md) — project technical reference (slim)
-- [`../manuscript/AGENTS.md`](../manuscript/AGENTS.md) — manuscript editing
+- [`../manuscript/AGENTS.md`](manuscript/AGENTS.md) — manuscript editing
 - [`../src/AGENTS.md`](../src/AGENTS.md) — source tree contract
 - [`../tests/AGENTS.md`](../tests/AGENTS.md) — test tree contract
 - [`../scripts/AGENTS.md`](../scripts/AGENTS.md) — script contract

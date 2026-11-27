@@ -70,7 +70,7 @@ def render_manuscript_tree(project_root: Path, variables: dict[str, str]) -> Pat
     writing through an unintended checkout boundary.
     """
     root = Path(project_root)
-    manuscript_dir = root / "manuscript"
+    manuscript_dir = root / "docs" / "manuscript"
     output_root = root / "output"
     out_dir = output_root / "manuscript"
     if output_root.is_symlink() or out_dir.is_symlink():

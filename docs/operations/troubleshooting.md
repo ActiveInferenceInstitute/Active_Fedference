@@ -19,7 +19,7 @@ uv run --locked python -c "from fedference import aggregate_result; print(aggreg
 ```
 
 For a non-editable consumer environment, follow the isolated wheel recipe in
-the [`application guide`](../application-guide.md#install-a-wheel-or-source-distribution). Do not
+the [`application guide`](../development/application-guide.md#install-a-wheel-or-source-distribution). Do not
 silently repair this by setting a global `PYTHONPATH`.
 
 If `uv` says an active `VIRTUAL_ENV` does not match the project `.venv`, it is
@@ -45,7 +45,7 @@ A shared row length does not prove shared semantics. If two agents assign the
 same columns to different label orders, the library cannot detect the mismatch
 and the numeric result is meaningless. Keep the ordered labels beside the
 matrix as shown in the
-[`canonical application recipe`](../application-guide.md#labeled-python-api).
+[`canonical application recipe`](../development/application-guide.md#labeled-python-api).
 
 ## CLI or example says the output directory must be empty
 
@@ -84,7 +84,7 @@ guess precedence.
 **Fix:** Construct one explicit configuration and pass only `config=...` through
 direct aggregation, sharing, process, and socket calls. Preserve its complete
 dictionary or fingerprint for replay. See
-[`Choose an aggregation rule`](../application-guide.md#choose-an-aggregation-rule).
+[`Choose an aggregation rule`](../development/application-guide.md#choose-an-aggregation-rule).
 
 ## Spawned federation recurses, hangs, or fails during bootstrap
 
@@ -280,7 +280,7 @@ uv run --locked python scripts/validate_clean_checkout.py
 
 **Fix:**
 
-1. Check label in [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md).
+1. Check label in [`../../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md).
 2. Ensure `![Caption](../output/figures/name.png){#fig:label}` matches `[@fig:label]`.
 3. Re-run analysis + variables + render.
 
@@ -346,7 +346,7 @@ uv run --locked python scripts/00_preflight.py \
 
 Preflight is intentionally fail-closed. The supplied Template checkout must be
 the canonical repository at the exact commit pinned in
-`manuscript/config.yaml`, with no staged, unstaged, untracked, or submodule
+`docs/manuscript/config.yaml`, with no staged, unstaged, untracked, or submodule
 changes. Use a separate clean worktree; do not reset a shared dirty checkout.
 
 ## LaTeX / citation errors
@@ -369,7 +369,7 @@ and source-bound receipts use a deterministic epoch. The public artifact tree
 also excludes transient LaTeX/Beamer sidecars (`aux`, `bbl`, `blg`, `lof`,
 `lot`, `nav`, `out`, `snm`, `toc`, and `vrb`).
 
-Validate `manuscript/references.bib` and pandoc cite keys in manuscript sections.
+Validate `docs/manuscript/references.bib` and pandoc cite keys in manuscript sections.
 
 ## Coverage below 90%
 
@@ -391,7 +391,7 @@ Add tests in `tests/fedference/` for uncovered branches.
 # Select one failed stage; its attempt directory preserves stdout/stderr.
 uv run --locked --no-sync python "$WORKSPACE/source/scripts/analysis_stages.py" run \
   --workspace "$WORKSPACE" --stage belief_sharing --max-seconds 60
-uv run --locked python -c "import yaml; yaml.safe_load(open('manuscript/config.yaml'))"
+uv run --locked python -c "import yaml; yaml.safe_load(open('docs/manuscript/config.yaml'))"
 ```
 
 ## Tests pass locally but the template pipeline fails
@@ -403,5 +403,5 @@ uv run --locked python -c "import yaml; yaml.safe_load(open('manuscript/config.y
 ## See also
 
 - [`faq.md`](faq.md)
-- [`../application-guide.md`](../application-guide.md)
+- [`../application-guide.md`](../development/application-guide.md)
 - [`../development/quickstart.md`](../development/quickstart.md)

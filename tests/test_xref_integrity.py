@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-_MANUSCRIPT = Path(__file__).resolve().parent.parent / "manuscript"
+_MANUSCRIPT = Path(__file__).resolve().parent.parent / "docs" / "manuscript"
 _PREFIXES = "eq|fig|tbl|sec|prop|thm|lem|cor|def"
 _DEF_RE = re.compile(rf"\{{#((?:{_PREFIXES}):[A-Za-z0-9_\-]+)")
 # raw LaTeX \label{...} used for theorem/proposition/equation environments

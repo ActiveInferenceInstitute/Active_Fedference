@@ -206,7 +206,7 @@ def _declared_manuscript_figures(project_root: Path) -> list[dict[str, str]]:
     from figures._frontmatter import validate_frontmatter
 
     validate_frontmatter(project_root, required=False)
-    source_manuscript = project_root / "manuscript"
+    source_manuscript = project_root / "docs" / "manuscript"
     if not source_manuscript.exists():
         return []
     # Figure ownership and captions are an analysis input contract. Read only
@@ -379,7 +379,7 @@ def _bnn_torch_options(project_root: Path | None) -> BnnTorchOptions:
     """
     if project_root is None:
         return {}
-    path = project_root / "manuscript" / "config.yaml"
+    path = project_root / "docs" / "manuscript" / "config.yaml"
     if not path.exists():
         return {}
     data = load_manuscript_config(project_root)
@@ -446,7 +446,7 @@ def resolve_analysis_profile(project_root: Path | None, *, override: str | None 
     elif project_root is None:
         profile = "publication"
     else:
-        path = project_root / "manuscript" / "config.yaml"
+        path = project_root / "docs" / "manuscript" / "config.yaml"
         if not path.exists():
             profile = "publication"
         else:
@@ -467,7 +467,7 @@ def effective_analysis_config(
     canonical_config = load_experiment_config(root)
     if config is not None and effective_profile == "publication" and config != canonical_config:
         raise ValueError(
-            "publication analysis requires the canonical manuscript/config.yaml ExperimentConfig; "
+            "publication analysis requires the canonical docs/manuscript/config.yaml ExperimentConfig; "
             "an explicit non-equivalent config cannot mint publication evidence"
         )
     cfg = config or canonical_config
@@ -506,7 +506,7 @@ def run_analysis_pipeline(
     """Run every fedference experiment, write reports + figures, return paths.
 
     Args:
-        config: Experiment configuration; loaded from ``manuscript/config.yaml``
+        config: Experiment configuration; loaded from ``docs/manuscript/config.yaml``
             when omitted.
         project_root: Output root override (defaults to the project root).
         profile: Optional explicit budget profile. ``publication`` is the

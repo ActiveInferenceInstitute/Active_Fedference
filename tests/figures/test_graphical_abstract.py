@@ -17,7 +17,7 @@ def test_graphical_abstract_writes_figure_and_cover(tmp_path: Path) -> None:
     path = generate_graphical_abstract(project_root=tmp_path)
     assert path.read_bytes()[:8] == _PNG_MAGIC
     assert path.with_suffix(".pdf").read_bytes()[:4] == _PDF_MAGIC
-    cover = tmp_path / "manuscript" / "cover_image.png"
+    cover = tmp_path / "docs" / "manuscript" / "cover_image.png"
     assert cover.read_bytes()[:8] == _PNG_MAGIC
     assert Image.open(path).mode == "RGB"
     assert Image.open(cover).mode == "RGB"

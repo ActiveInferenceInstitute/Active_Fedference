@@ -38,7 +38,7 @@ status; this note is a durable local scratchpad.
   `uv run ruff check src/ tests/` passed; `git diff --check` passed;
   `uv run python scripts/emit_metadata.py --check` reported consistent metadata.
 - Stale and token scans:
-  output manuscript/web/figure registries contain no unresolved manuscript token
+  output docs/manuscript/web/figure registries contain no unresolved manuscript token
   markers; PDF text scan found no repeated-baseline or absolute-novelty stale
   wording from the pre-review draft.
 - Browser smoke:

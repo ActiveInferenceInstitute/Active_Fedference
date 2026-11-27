@@ -61,10 +61,10 @@ def _make_stage_tree(root: Path) -> None:
         "scripts/z_generate_manuscript_variables.py",
         "src/manuscript_vars/render.py",
         "src/experiment_config.py",
-        "manuscript/config.yaml",
-        "manuscript/01_intro.md",
-        "manuscript/references.bib",
-        "manuscript/preamble.tex",
+        "docs/manuscript/config.yaml",
+        "docs/manuscript/01_intro.md",
+        "docs/manuscript/references.bib",
+        "docs/manuscript/preamble.tex",
         "experiment_plan.yaml",
         "pyproject.toml",
         "uv.lock",
@@ -130,7 +130,7 @@ def _make_renderer(root: Path) -> Path:
     ).stdout.strip()
     _write(
         root,
-        "manuscript/config.yaml",
+        "docs/manuscript/config.yaml",
         "rendering:\n"
         "  template_renderer:\n"
         "    schema_version: template-renderer-lock-v1\n"
@@ -239,7 +239,7 @@ def test_publication_analysis_receipt_rejects_input_drift_during_producer(tmp_pa
     """A receipt must attest the inputs present when analysis actually began."""
     _make_stage_tree(tmp_path)
     _write_analysis_execution(tmp_path, configured="publication", effective="publication")
-    (tmp_path / "manuscript" / "config.yaml").write_text("changed after analysis began\n", encoding="utf-8")
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text("changed after analysis began\n", encoding="utf-8")
 
     with pytest.raises(ValueError, match="inputs changed while the producer ran"):
         record_publication_analysis_stage(tmp_path)
@@ -398,7 +398,7 @@ def test_render_source_and_byte_counts_are_required(tmp_path: Path, field: str) 
 def test_render_source_records_dirty_checkout_without_claiming_commit_exactness(tmp_path: Path) -> None:
     _make_stage_tree(tmp_path)
     renderer = _make_renderer(tmp_path)
-    _write(tmp_path, "manuscript/01_intro.md", "edited source\n")
+    _write(tmp_path, "docs/manuscript/01_intro.md", "edited source\n")
     record_pipeline_stage(tmp_path, "analysis")
     record_pipeline_stage(tmp_path, "hydration")
     record = record_pipeline_stage(tmp_path, "render", template_root=renderer)

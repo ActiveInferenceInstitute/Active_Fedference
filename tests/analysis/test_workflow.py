@@ -36,7 +36,7 @@ def test_default_project_root_is_repo_root() -> None:
 
 def test_project_root_env_override_is_validated(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # A valid ACTIVE_FEDFERENCE_PROJECT_ROOT (existing dir with
-    # manuscript/config.yaml) redirects the resolved root; invalid values fail
+    # docs/manuscript/config.yaml) redirects the resolved root; invalid values fail
     # loudly — never a silent fallback to the real tree (masking discipline).
     _make_project(tmp_path)
     monkeypatch.setenv("ACTIVE_FEDFERENCE_PROJECT_ROOT", str(tmp_path))
@@ -62,7 +62,7 @@ def test_bnn_torch_profile_is_explicitly_loaded_and_validated(tmp_path: Path) ->
     assert options["n_steps"] == 3
     assert options["contamination_levels"] == (0.0, 0.5)
 
-    (tmp_path / "manuscript" / "config.yaml").write_text(
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump({"experiment": {"bnn_torch": {"n_steps": 0}}}),
         encoding="utf-8",
     )
@@ -75,7 +75,7 @@ def test_bnn_torch_profile_is_explicitly_loaded_and_validated(tmp_path: Path) ->
         {"contamination_levels": 0.5},
     )
     for block in invalid_blocks:
-        (tmp_path / "manuscript" / "config.yaml").write_text(
+        (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(
             yaml.safe_dump({"experiment": {"bnn_torch": block}}),
             encoding="utf-8",
         )
@@ -87,7 +87,7 @@ def test_analysis_profile_is_explicit_and_validated(tmp_path: Path) -> None:
     _make_project(tmp_path)
     assert resolve_analysis_profile(tmp_path) == "smoke"
     assert resolve_analysis_profile(tmp_path, override="publication") == "publication"
-    (tmp_path / "manuscript" / "config.yaml").write_text(
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump({"experiment": {"analysis_profile": "unknown"}}),
         encoding="utf-8",
     )
@@ -99,7 +99,7 @@ def test_analysis_profile_is_explicit_and_validated(tmp_path: Path) -> None:
 
 
 def _make_project(root: Path) -> None:
-    manuscript = root / "manuscript"
+    manuscript = root / "docs" / "manuscript"
     manuscript.mkdir(parents=True, exist_ok=True)
     config = {
         "paper": {"version": "0.1"},
@@ -299,7 +299,7 @@ def test_figures_are_png(pipeline_paths: dict[str, Path]) -> None:
 
 def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    (tmp_path / "manuscript" / "16_results_belief_sharing.md").write_text(
+    (tmp_path / "docs" / "manuscript" / "16_results_belief_sharing.md").write_text(
         "See [@fig:belief-heatmap].\n\n"
         "![Belief heatmap caption for {{BELIEF_SHARING_N_AGENTS}} agents.]"
         "(../output/figures/belief_heatmap.png)"
@@ -323,7 +323,7 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
         "output/figures/belief_heatmap.slides.json"
     )
     assert figures["fig:belief-heatmap"]["generated_by"] == "belief_heatmap"
-    assert figures["fig:belief-heatmap"]["source_manuscript"] == "manuscript/16_results_belief_sharing.md"
+    assert figures["fig:belief-heatmap"]["source_manuscript"] == "docs/manuscript/16_results_belief_sharing.md"
     assert figures["fig:belief-heatmap"]["caption"] == (
         "Belief heatmap caption for {{BELIEF_SHARING_N_AGENTS}} agents."
     )
@@ -332,7 +332,7 @@ def test_pipeline_writes_source_bound_validator_compatible_figure_registry(tmp_p
 
 def test_figure_registry_rejects_duplicate_labels_and_files(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    manuscript = tmp_path / "manuscript"
+    manuscript = tmp_path / "docs" / "manuscript"
     duplicate = (
         "![First caption.](../output/figures/belief_heatmap.png)"
         "{#fig:duplicate width=80% data-slide-manifest=\"../output/figures/belief_heatmap.slides.json\"}\n\n"
@@ -412,7 +412,7 @@ def test_bnn_report_robust_holds_under_contamination(tmp_path: Path) -> None:
     # this assertion sensitive to both contracts rather than treating the
     # smoke budget as evidence that a publication run was executed.
     profile = (
-        yaml.safe_load((tmp_path / "manuscript" / "config.yaml").read_text(encoding="utf-8"))
+        yaml.safe_load((tmp_path / "docs" / "manuscript" / "config.yaml").read_text(encoding="utf-8"))
         .get("experiment", {})
         .get("analysis_profile", "publication")
     )
@@ -442,7 +442,7 @@ def test_publication_profile_rejects_a_noncanonical_explicit_config(tmp_path: Pa
     _make_project(tmp_path)
     cfg = ExperimentConfig(n_agents=4, n_seeds=3, divergences=("KLD", "RKL"))
 
-    with pytest.raises(ValueError, match="canonical manuscript/config.yaml"):
+    with pytest.raises(ValueError, match="canonical docs/manuscript/config.yaml"):
         run_analysis_pipeline(config=cfg, project_root=tmp_path, profile="publication")
 
 

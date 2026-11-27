@@ -20,7 +20,7 @@ def resolve_env_project_root(default: Path) -> Path:
     When the environment variable is unset, *default* is returned unchanged —
     default behavior is byte-for-byte identical to the pre-override wiring.
     When it is set, the value must name an existing directory that contains
-    ``manuscript/config.yaml``; anything else raises :class:`RuntimeError`
+    ``docs/manuscript/config.yaml``; anything else raises :class:`RuntimeError`
     loudly. There is deliberately no silent fallback to *default* on an invalid
     value (masking discipline): a typo'd override must fail the run, not quietly
     redirect writes back into the real project tree.
@@ -33,9 +33,9 @@ def resolve_env_project_root(default: Path) -> Path:
         raise RuntimeError(
             f"{ENV_PROJECT_ROOT_VAR}={raw!r} is not an existing directory"
         )
-    if not (root / "manuscript" / "config.yaml").is_file():
+    if not (root / "docs" / "manuscript" / "config.yaml").is_file():
         raise RuntimeError(
-            f"{ENV_PROJECT_ROOT_VAR}={raw!r} does not contain manuscript/config.yaml "
+            f"{ENV_PROJECT_ROOT_VAR}={raw!r} does not contain docs/manuscript/config.yaml "
             "— refusing to treat it as a project root"
         )
     return root.resolve()

@@ -23,7 +23,7 @@ flowchart TD
     D --> R["Typed reports and evidence receipts"]
     R --> F["Figure generators and manuscript tokens"]
     F --> P["PDF, HTML, slides, and release manifest"]
-    C["manuscript/config.yaml and registry"] --> D
+    C["docs/manuscript/config.yaml and registry"] --> D
     C --> R
     C --> F
     X["Optional Torch or external-data adapters"] -. "explicit boundary" .-> D

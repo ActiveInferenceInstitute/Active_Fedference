@@ -39,7 +39,7 @@ Retained without new bibliography:
   BibTeX metadata to recognize the PMLR FedGVI publication while retaining the
   arXiv identifier.
 - Friston's DOI was already correct in `references.bib`; metadata had drifted to
-  `2024.105500`, so `manuscript/config.yaml` and regenerated `.zenodo.json` were
+  `2024.105500`, so `docs/manuscript/config.yaml` and regenerated `.zenodo.json` were
   corrected to `2023.105500`.
 
 Rejected as padding for this pass:

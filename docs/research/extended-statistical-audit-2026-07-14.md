@@ -22,7 +22,7 @@ template-rendering pipeline completed. Its machine-readable evidence was:
   and
 - the source tests and generated figure registry that existed at that time.
 
-For the checked-out source, [`manuscript/config.yaml`](../../manuscript/config.yaml),
+For the checked-out source, [`docs/manuscript/config.yaml`](../manuscript/config.yaml),
 [`src/experiment_config.py`](../../src/experiment_config.py), the report
 schemas, and the executable tests are the source contract. A source-current
 claim requires a fresh analysis receipt, test-and-coverage receipt, final

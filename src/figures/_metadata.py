@@ -886,7 +886,7 @@ def _build_metadata() -> dict[str, dict[str, str]]:
         status="explanatory conceptual frontmatter",
         source_relation="original source-inspired conceptual schematic",
         source_citation=(
-            'Friston et al. (2024), Figs. 1/4 and Eq. 7; manuscript/07, /08, /09; fedferenc'
+            'Friston et al. (2024), Figs. 1/4 and Eq. 7; docs/manuscript/07, /08, /09; fedferenc'
             'e.pomdp and belief_sharing'
         ),
         source_figure='Figs. 1 and 4',
@@ -899,7 +899,7 @@ def _build_metadata() -> dict[str, dict[str, str]]:
     metadata['frontmatter_robustness'].update(
         status="explanatory conceptual frontmatter",
         source_relation="original source-inspired conceptual schematic",
-        source_citation='Mildner et al. (2025); manuscript/06 and /07; fedference.fedgvi and aggregation',
+        source_citation='Mildner et al. (2025); docs/manuscript/06 and /07; fedference.fedgvi and aggregation',
         source_figure='',
         source_equation='',
         estimand="not applicable; no measured estimand",

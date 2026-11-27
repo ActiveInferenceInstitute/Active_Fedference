@@ -49,7 +49,7 @@ def test_onset_figure_rejects_empty(tmp_path: Path) -> None:
 
 
 def test_onset_caption_matches_shared_semantic_styles() -> None:
-    manuscript = (_ROOT / "manuscript/28_supplement_extended_methods.md").read_text(
+    manuscript = (_ROOT / "docs/manuscript/28_supplement_extended_methods.md").read_text(
         encoding="utf-8"
     )
 

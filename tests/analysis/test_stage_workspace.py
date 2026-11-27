@@ -60,7 +60,7 @@ def test_bad_completed_checkpoint_is_refused_without_recompute(
     assert list((workspace / "attempts").iterdir()) == before
 
 
-@pytest.mark.parametrize("operand", ["src/fedference/aggregation.py", "manuscript/config.yaml", "uv.lock"])
+@pytest.mark.parametrize("operand", ["src/fedference/aggregation.py", "docs/manuscript/config.yaml", "uv.lock"])
 def test_changed_inputs_refuse_compute_and_import(prepared: tuple[Path, Path], operand: str) -> None:
     project, workspace = prepared
     run(workspace)

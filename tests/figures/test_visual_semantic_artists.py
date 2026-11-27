@@ -172,7 +172,7 @@ def test_robustness_sweep_report_metadata_caption_and_schema_agree_on_trial_unit
         n_trials=4,
     )
     metadata = FIGURE_METADATA["robustness_sweep"]
-    caption_source = (_PROJECT_ROOT / "manuscript" / "19_results_robustness.md").read_text(
+    caption_source = (_PROJECT_ROOT / "docs" / "manuscript" / "19_results_robustness.md").read_text(
         encoding="utf-8"
     )
     normalized_caption = " ".join(caption_source.split()).lower()

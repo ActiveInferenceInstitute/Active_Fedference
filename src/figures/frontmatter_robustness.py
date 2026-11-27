@@ -1,7 +1,7 @@
 """Distinct robustness owners; Mildner et al. (2025) is client conditional.
 
-Locators: manuscript/06_methods_divergences_and_losses.md and
-manuscript/07_methods_aggregation.md; fedference.aggregation and fedference.fedgvi.
+Locators: docs/manuscript/06_methods_divergences_and_losses.md and
+docs/manuscript/07_methods_aggregation.md; fedference.aggregation and fedference.fedgvi.
 """
 
 from __future__ import annotations

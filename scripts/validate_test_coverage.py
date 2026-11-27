@@ -69,8 +69,8 @@ def _project_root_from_args(args: argparse.Namespace) -> Path:
     from project_paths import resolve_script_project_root
 
     root = resolve_script_project_root(_PROJECT_ROOT, args.project_root)
-    if not (root / "manuscript" / "config.yaml").is_file():
-        raise RuntimeError(f"invalid project root (missing manuscript/config.yaml): {root}")
+    if not (root / "docs" / "manuscript" / "config.yaml").is_file():
+        raise RuntimeError(f"invalid project root (missing docs/manuscript/config.yaml): {root}")
     return root
 
 

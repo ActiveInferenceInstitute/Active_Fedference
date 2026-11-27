@@ -83,7 +83,7 @@ def test_presentation_manifest_inventory_matches_every_authored_selector() -> No
 
     root = Path(__file__).resolve().parents[2]
     selected = []
-    for source in sorted((root / "manuscript").glob("*.md")):
+    for source in sorted((root / "docs" / "manuscript").glob("*.md")):
         selected.extend(
             re.findall(r'data-slide-manifest="../output/figures/([a-z_]+)\.slides\.json"', source.read_text())
         )

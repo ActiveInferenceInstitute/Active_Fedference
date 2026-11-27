@@ -25,7 +25,7 @@ Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/devel
 | `emit_metadata.py` | Release (REQUIRED) | Checks (`--check`) or regenerates (`--write`) the generated metadata surfaces via `publication.metadata` |
 | `zenodo_release.py` | Release boundary | Reserves, updates, corrects published metadata, uploads, verifies, or explicitly publishes the configured Zenodo deposition; publication requires confirmation |
 | `validate_mermaid.py` | Documentation/publication | Checks every README/docs Mermaid fence and optionally renders every block to SVG |
-| `validate_rendered_surfaces.py` | Release (REQUIRED) | Checks every manuscript/slide PDF structurally and textually, enforces slide triplets, rejects material LaTeX warnings, and validates web links/assets/accessibility invariants |
+| `validate_rendered_surfaces.py` | Release (REQUIRED) | Checks every docs/manuscript/slide PDF structurally and textually, enforces slide triplets, rejects material LaTeX warnings, and validates web links/assets/accessibility invariants |
 | `prepare_web_package.py` | Publication (REQUIRED) | Mirrors declared assets and builds numbered cross-format web references |
 | `validate_web_package.py` | Publication (REQUIRED) | Checks mirrored assets, targets, rendered markup, and deterministic HTML accessibility invariants |
 | `validate_all.py` | Validation (REQUIRED) | Runs named quick/manuscript/package/torch/source/freshness/full profiles |
@@ -133,7 +133,7 @@ provides that time; content hashes, rather than time, establish freshness.
 
 The structured renderer identity is accepted only from an explicit clean
 checkout whose canonical repository and exact commit match
-`manuscript/config.yaml`. Its runtime path and raw remote URL are not persisted.
+`docs/manuscript/config.yaml`. Its runtime path and raw remote URL are not persisted.
 A clean-checkout probe is a separate release evidence gate.
 
 ## Smoke tests

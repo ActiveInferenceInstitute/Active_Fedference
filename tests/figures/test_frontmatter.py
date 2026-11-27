@@ -26,11 +26,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def _fixture(destination: Path) -> Path:
-    manuscript = destination / "manuscript"
+    manuscript = destination / "docs" / "manuscript"
     manuscript.mkdir(parents=True)
-    shutil.copyfile(ROOT / "manuscript/config.yaml", manuscript / "config.yaml")
+    shutil.copyfile(ROOT / "docs/manuscript/config.yaml", manuscript / "config.yaml")
     for _, name in FRONTMATTER:
-        shutil.copyfile(ROOT / "manuscript" / name, manuscript / name)
+        shutil.copyfile(ROOT / "docs" / "manuscript" / name, manuscript / name)
     return destination
 
 
@@ -71,7 +71,7 @@ def test_frontmatter_pair_geometry_and_repeatability(tmp_path: Path, stem: str, 
     # matching 00a-00c HTML page; see docs/todo/visual-scholarship-integration.md.
     assert stem not in COMPLEX_FIGURE_GENERATORS
     assert "long_description" not in FIGURE_METADATA[stem]
-    assert (ROOT / "manuscript" / filename).is_file()
+    assert (ROOT / "docs" / "manuscript" / filename).is_file()
 
 
 def test_frontmatter_placement_and_registry_inputs() -> None:
@@ -143,8 +143,8 @@ def test_frontmatter_canonical_registry_boundary(tmp_path: Path) -> None:
 @pytest.mark.parametrize("defect", ["missing", "ordering", "embed", "caption"])
 def test_frontmatter_rejects_real_source_defects(tmp_path: Path, defect: str) -> None:
     root = _fixture(tmp_path)
-    source = root / "manuscript" / FRONTMATTER[0][1]
-    config = root / "manuscript/config.yaml"
+    source = root / "docs" / "manuscript" / FRONTMATTER[0][1]
+    config = root / "docs/manuscript/config.yaml"
     original_source, original_config = source.read_bytes(), config.read_bytes()
     try:
         if defect == "missing":
@@ -168,8 +168,8 @@ def test_frontmatter_rejects_real_source_defects(tmp_path: Path, defect: str) ->
 
 def test_frontmatter_optional_fixture_and_required_configuration(tmp_path: Path) -> None:
     validate_frontmatter(tmp_path, required=False)
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript/config.yaml").write_text("paper: {}\n")
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs/manuscript/config.yaml").write_text("paper: {}\n")
     validate_frontmatter(tmp_path, required=False)
     with pytest.raises(ValueError, match="order"):
         validate_frontmatter(tmp_path)
@@ -205,7 +205,7 @@ def test_frontmatter_claims_match_owners_and_actual_recovery() -> None:
         assert "Parser success ≠ execution" in execution_text
         assert "Integrity ≠ scientific validity" in execution_text
         assert "No backend certified here" in execution_text
-        methods = (ROOT / "manuscript/07_methods_aggregation.md").read_text()
+        methods = (ROOT / "docs/manuscript/07_methods_aggregation.md").read_text()
         assert "does not\ntransfer FedGVI's client theorem" in methods
         assert "not a reconstruction" in methods
         assert "raw effective-weight bound" in methods

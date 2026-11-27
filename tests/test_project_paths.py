@@ -10,8 +10,8 @@ from project_paths import ENV_PROJECT_ROOT_VAR, resolve_script_project_root
 
 
 def _make_project_root(path: Path) -> Path:
-    (path / "manuscript").mkdir(parents=True)
-    (path / "manuscript" / "config.yaml").write_text("paper: {}\n", encoding="utf-8")
+    (path / "docs" / "manuscript").mkdir(parents=True)
+    (path / "docs" / "manuscript" / "config.yaml").write_text("paper: {}\n", encoding="utf-8")
     return path
 
 

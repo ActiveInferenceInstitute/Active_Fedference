@@ -186,7 +186,7 @@ and [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
 ## See also
 
 - [`README.md`](README.md) — pitch and quick run
-- [`docs/application-guide.md`](docs/application-guide.md) — install-to-result application path
+- [`docs/development/application-guide.md`](docs/development/application-guide.md) — install-to-result application path
 - [`STANDALONE.md`](STANDALONE.md) — confidentiality and standalone core
-- [`manuscript/AGENTS.md`](manuscript/AGENTS.md) — manuscript editing
-- Scope and related work: [`manuscript/22_discussion_related_work.md`](manuscript/22_discussion_related_work.md)
+- [`docs/manuscript/AGENTS.md`](docs/manuscript/AGENTS.md) — manuscript editing
+- Scope and related work: [`docs/manuscript/22_discussion_related_work.md`](docs/manuscript/22_discussion_related_work.md)

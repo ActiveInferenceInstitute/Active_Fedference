@@ -18,7 +18,7 @@ documented in the [Zenodo REST API documentation](https://developers.zenodo.org/
 
 ## Source of truth
 
-`manuscript/config.yaml` owns the current development/release identity,
+`docs/manuscript/config.yaml` owns the current development/release identity,
 manuscript title, subtitle, and reader-facing paper abstract. A development
 version such as `1.1.0.dev0` uses an empty `publication.doi`, the exact plain-text
 status `publication.doi_status: "(forthcoming)"`, and a null release date. This
@@ -28,7 +28,7 @@ DOI and approved date, sets `paper.date` to that same exact UTC `YYYY-MM-DD`,
 and removes the development-only status. This equality is validated before
 rendering so a final PDF cannot fall back to a machine-local current date. That abstract
 must remain synchronized with
-`manuscript/00_abstract.md`; a short package description is not an acceptable
+`docs/manuscript/00_abstract.md`; a short package description is not an acceptable
 Zenodo abstract. The abstract terminates with
 `{{PUBLICATION_IDENTITY_SENTENCE}}`, which hydrates to neutral no-DOI prose in
 development and to the assigned version DOI in the final state. In a final
@@ -157,7 +157,7 @@ the reported shape: exactly the inherited v1.0.4 PDF for `legacy_inherited` or
 `current_inherited_files`, or empty for `current_separate_record`. Any partial or unrelated file set blocks
 the operation. `created_utc` may be null only for `legacy_inherited`; it is
 mandatory for both current shapes. Then record the returned draft id and reserved DOI before
-changing `manuscript/config.yaml` from the empty-DOI/forthcoming-status
+changing `docs/manuscript/config.yaml` from the empty-DOI/forthcoming-status
 development state to the assigned DOI/date final release identity and removing
 `doi_status`. Then emit metadata, regenerate the complete source-bound
 analysis/hydration/render chain, and run the release checks.
