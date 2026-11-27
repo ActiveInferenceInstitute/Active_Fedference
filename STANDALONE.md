@@ -130,4 +130,4 @@ matching tests; rendering and publication packaging are a separate surface.
   conformance. The current combined manuscript PDF has a source-controlled
   tagging gate; the canonical accessibility-enhanced surface and promotion
   requirements are in
-  [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
+  [`docs/manuscript/guides/accessibility.md`](docs/manuscript/guides/accessibility.md).

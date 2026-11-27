@@ -16,7 +16,7 @@ Importable figure-generation package for Active Fedference.
   label, or panel structure as well as color. The manuscript caption supplies
   the current HTML alternative/long description and must remain intelligible
   without the image; follow the
-  [publication accessibility contract](../../docs/manuscript/accessibility.md).
+  [publication accessibility contract](../../docs/manuscript/guides/accessibility.md).
 - Inspect every changed figure at native PNG scale and in its final PDF/HTML
   placement. Check title/axis/legend collisions, clipped annotations, grayscale
   distinction, near-zero/signed scales, and whether intervals visibly match the
@@ -63,4 +63,4 @@ redescending-weight diagnostics, never as estimator-level B-robustness.
 
 - [`README.md`](README.md) - quick reference
 - [`../AGENTS.md`](../AGENTS.md) - source-layer contract
-- [`../../docs/manuscript/accessibility.md`](../../docs/manuscript/accessibility.md) - color-independent and reader-surface contract
+- [`../../docs/manuscript/accessibility.md`](../../docs/manuscript/guides/accessibility.md) - color-independent and reader-surface contract

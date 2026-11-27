@@ -37,9 +37,9 @@ DOC_CONTRACT_FILES = (
     "docs/development/modularity.md",
     "docs/development/style_guide.md",
     "docs/development/testing_philosophy.md",
-    "docs/manuscript/accessibility.md",
-    "docs/manuscript/rendering_pipeline.md",
-    "docs/manuscript/tokens-and-labels.md",
+    "docs/manuscript/guides/accessibility.md",
+    "docs/manuscript/guides/rendering_pipeline.md",
+    "docs/manuscript/guides/tokens-and-labels.md",
     "docs/operations/faq.md",
     "docs/operations/output-layout.md",
     "docs/operations/troubleshooting.md",
@@ -129,7 +129,7 @@ def test_release_todo_pages_name_their_exact_public_branches() -> None:
 
 def test_web_publication_docs_state_the_fail_closed_resource_boundary() -> None:
     verification = _read("docs/reference/verification-commands.md")
-    rendering = _read("docs/manuscript/rendering_pipeline.md")
+    rendering = _read("docs/manuscript/guides/rendering_pipeline.md")
     combined = f"{verification}\n{rendering}"
     normalized_verification = re.sub(r"\s+", " ", verification)
 
@@ -817,7 +817,7 @@ def test_friston_eq7_bridge_language_is_scoped() -> None:
 
 def test_canonical_two_pass_render_sequence_records_prepared_web_tree() -> None:
     """Keep the pre-test and final render passes ordered around their receipt."""
-    text = _read("docs/manuscript/rendering_pipeline.md")
+    text = _read("docs/manuscript/guides/rendering_pipeline.md")
     heading = "## Source-current two-pass sequence"
     start = text.index(heading)
     end = text.index("## Phase 3", start)
@@ -856,7 +856,7 @@ def test_canonical_two_pass_render_sequence_records_prepared_web_tree() -> None:
 def test_renderer_receipt_examples_use_source_locked_template_checkout() -> None:
     """Keep the public render recipe free of path-bearing ad hoc identities."""
     authoritative = (
-        "docs/manuscript/rendering_pipeline.md",
+        "docs/manuscript/guides/rendering_pipeline.md",
         "docs/reference/verification-commands.md",
         "docs/manuscript/README.md",
         "scripts/AGENTS.md",
@@ -912,7 +912,7 @@ def test_source_current_render_examples_skip_implicit_hydration() -> None:
         r"(?:[ \t]*\\\n\s*)?"
         r"--project working/active_fedference(?P<arguments>[^\n]*)"
     )
-    canonical = _read("docs/manuscript/rendering_pipeline.md")
+    canonical = _read("docs/manuscript/guides/rendering_pipeline.md")
 
     assert 'git -C "$AF_REPO" log -1 --format=%ct' in canonical
     assert 'git -C "$TEMPLATE_REPO" log -1 --format=%ct' not in canonical
@@ -952,7 +952,7 @@ def test_multi_machine_claims_stay_qualified() -> None:
 
 def test_security_and_accessibility_boundaries_are_explicit_and_gated() -> None:
     threat_model = _read("docs/security/active_fedference-threat-model.md")
-    accessibility = _read("docs/manuscript/accessibility.md")
+    accessibility = _read("docs/manuscript/guides/accessibility.md")
     web_validator = "\n".join(_read(path) for path in (
         "src/publication/web_package.py",
         "src/publication/web/accessibility.py",

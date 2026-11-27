@@ -429,7 +429,7 @@ uv run --locked python scripts/z_generate_manuscript_variables.py
 ```
 
 If the full suite requires provisional template surfaces, use the explicit
-provisional step in [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md)
+provisional step in [`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md)
 before recording the test receipt. Then render the final hydrated source from
 the sibling template repository:
 
@@ -455,10 +455,10 @@ labelled full-size links, and unique identifiers. Passing it defines the
 HTML surface as accessibility-enhanced, not WCAG-conformant. The combined
 manuscript PDF has a separate source-controlled tagged-structure gate; PDF/UA
 remains a separate conformance and manual-review lane. See
-[`../manuscript/accessibility.md`](../manuscript/accessibility.md).
+[`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md).
 
 ## See also
 
 - Output directory layout: [`../operations/output-layout.md`](../operations/output-layout.md)
-- Token protocol: [`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md)
+- Token protocol: [`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md)
 - Figure/section registry: [`../../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md)

@@ -70,7 +70,7 @@ uv run --locked python scripts/z_generate_manuscript_variables.py
 
 ## Rendering context
 
-Full pipeline: [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/rendering_pipeline.md).
+Full pipeline: [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/guides/rendering_pipeline.md).
 
 Before a documentation or release review, validate the shared GitHub/local
 Mermaid source and run the actual renderer probe:
@@ -116,7 +116,7 @@ graph dependency (otherwise the provisional render needed by the full suite
 would form a cycle). Analysis and final hydration write their stage receipts
 automatically after successful completion; a smoke profile cannot mint the
 analysis receipt. Follow the source-current two-pass
-sequence in [the rendering guide](../docs/manuscript/rendering_pipeline.md):
+sequence in [the rendering guide](../docs/manuscript/guides/rendering_pipeline.md):
 after the final sibling-template stages 03–05, prepare and validate the web
 package, then record the external render boundary explicitly. Web preparation
 rewrites `output/web/`, so recording it earlier would attest the wrong surface.

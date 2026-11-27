@@ -57,7 +57,7 @@ freshness receipts → upstream release manifest → downstream Template control
 manifests over the fixed release bytes → separately authorized publication.
 The complete accessible producer graph, text equivalent, reverse-invalidation
 rules, and non-circular manifest boundary are maintained in
-[`experiments-and-artifacts.md`](../core/experiments-and-artifacts.md#source-to-render-production-and-invalidation-graph).
+[`experiments-and-artifacts.md`](../../core/experiments-and-artifacts.md#source-to-render-production-and-invalidation-graph).
 Any changed source, configuration, lock, registry, report, receipt, figure, or
 renderer byte makes the dependent downstream artifacts stale; rerun from the
 earliest changed producer rather than refreshing only the final surface.
@@ -72,13 +72,13 @@ npx --yes puppeteer browsers install chrome-headless-shell
 ```
 
 Symptom: `mmdc failed ... Could not find Chrome`. See
-[`../operations/troubleshooting.md`](../operations/troubleshooting.md).
+[`../operations/troubleshooting.md`](../../operations/troubleshooting.md).
 
 ## Phase 1 — Analysis (pipeline stage 4)
 
 **Script:** `scripts/analysis_stages.py` (explicit external stages and guarded import)
 
-Publication compute now follows [bounded staged analysis](../development/staged-analysis.md).
+Publication compute now follows [bounded staged analysis](../../development/staged-analysis.md).
 Freeze the source under a short lease, run the explicitly selected report
 stages and figure assembly externally, then import the validated bundle under
 a short destination lease. The monolithic publication invocation is refused;
@@ -93,7 +93,7 @@ uv run --locked python scripts/analysis_stages.py import \
 
 **Outputs:** JSON reports in `output/reports/` and PNG/PDF figures in
 `output/figures/`. Inventory:
-[`../core/experiments-and-artifacts.md`](../core/experiments-and-artifacts.md).
+[`../core/experiments-and-artifacts.md`](../../core/experiments-and-artifacts.md).
 
 ## Phase 2 — Manuscript variables
 
@@ -407,9 +407,9 @@ Experiment keys mirror keyword arguments of `fedference.experiments` functions.
 
 ## See also
 
-- Manuscript editing: [`../../manuscript/AGENTS.md`](AGENTS.md)
+- Manuscript editing: [`../../manuscript/AGENTS.md`](../AGENTS.md)
 - Tokens: [`tokens-and-labels.md`](tokens-and-labels.md)
-- Verification commands: [`../reference/verification-commands.md`](../reference/verification-commands.md)
+- Verification commands: [`../reference/verification-commands.md`](../../reference/verification-commands.md)
 
 ## Additional opening diagrams
 

@@ -194,7 +194,7 @@ inside math spans carry a `*_MATH` sibling that renders scientific notation as
 $M \times 10^{E}$; prose contexts use the plain token.
 
 For a source-current reviewer surface, use the
-[two-pass rendering sequence](../manuscript/rendering_pipeline.md): it renders
+[two-pass rendering sequence](../manuscript/guides/rendering_pipeline.md): it renders
 these provisional inputs, runs the full-suite receipt, then performs final
 receipt-backed hydration and a second render.
 

@@ -12,4 +12,4 @@ install-to-result path; return here when a runtime or evidence operation fails.
 | [faq.md](faq.md) | Recurring questions; links to [`../../STANDALONE.md`](../../STANDALONE.md) for fork/confidentiality |
 
 Reader-surface accessibility and the tagged-PDF no-claim boundary live in
-[`../manuscript/accessibility.md`](../manuscript/accessibility.md).
+[`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md).

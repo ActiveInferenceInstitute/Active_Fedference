@@ -199,7 +199,7 @@ cat output/data/manuscript_variables.json | head
 ```
 
 For a source-current rendered surface, continue with the
-[two-pass rendering sequence](../manuscript/rendering_pipeline.md): it runs
+[two-pass rendering sequence](../manuscript/guides/rendering_pipeline.md): it runs
 the provisional template pass, obtains the full-suite receipt, hydrates final
 tokens, and performs a separate final template pass with explicit hydration
 skipped.
@@ -222,7 +222,7 @@ uv run --locked python scripts/z_generate_manuscript_variables.py --provisional-
 
 Note: `HIER_*` and `NLEVEL3_*` tokens are strict loads from
 `output/reports/hierarchical_world.json` and `output/reports/nlevel3_world.json`
-respectively (see [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md)).
+respectively (see [`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md)).
 A `FileNotFoundError` from `_hierarchical_variables()` or `_nlevel3_variables()`
 means one of those two report files is missing — complete and import its
 explicit external stage using the staged procedure linked above. Final non-draft hydration additionally
@@ -234,7 +234,7 @@ requires the fresh coverage receipt in the linked two-pass sequence.
 
 **Fix:**
 
-Follow the [source-current two-pass rendering sequence](../manuscript/rendering_pipeline.md)
+Follow the [source-current two-pass rendering sequence](../manuscript/guides/rendering_pipeline.md)
 from analysis onward. It deliberately regenerates provisional inputs, runs the
 full-suite receipt, then regenerates and renders receipt-backed final inputs;
 do not try to reuse a prior final hydration after config changes.
@@ -246,7 +246,7 @@ after hydration, or a rendered input/output no longer matches the recorded
 boundary. Receipt validation is intentionally fail-closed; file modification
 times are not treated as sufficient provenance.
 
-**Fix:** Re-run the [source-current two-pass rendering sequence](../manuscript/rendering_pipeline.md)
+**Fix:** Re-run the [source-current two-pass rendering sequence](../manuscript/guides/rendering_pipeline.md)
 in its exact order: analysis → provisional hydration → first template
 stages 03–05 with `--skip-manuscript-hydration` → coverage receipt → final
 hydration → second template stages 03–05 with the same skip flag → web
@@ -332,7 +332,7 @@ renders remain fail-open and expose unresolved section references as visible
 render. If it fails, keep the derivative unpublished and address the precise
 missing-aux or unresolved-label diagnostic; do not rerun merely to consume an
 aux file from a previous invocation. See
-[`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md).
+[`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md).
 
 ## PDF rendering fails: `mmdc` / Could not find Chrome
 

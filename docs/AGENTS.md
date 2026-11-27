@@ -29,9 +29,9 @@ Technical index for `docs/`. Navigation hub:
 | **docs/manuscript/** | |
 | `manuscript/README.md` | Canonical paper sources and rendering commands |
 | `manuscript/guides/README.md` | Companion publication and accessibility documentation |
-| `docs/manuscript/accessibility.md` | Canonical HTML accessibility contract, PDF/UA no-claim boundary, and manual release review |
-| `docs/manuscript/rendering_pipeline.md` | Analysis → variables → PDF |
-| `docs/manuscript/tokens-and-labels.md` | Token groups; links to SYNTAX.md |
+| `docs/manuscript/guides/accessibility.md` | Canonical HTML accessibility contract, PDF/UA no-claim boundary, and manual release review |
+| `docs/manuscript/guides/rendering_pipeline.md` | Analysis → variables → PDF |
+| `docs/manuscript/guides/tokens-and-labels.md` | Token groups; links to SYNTAX.md |
 | **operations/** | |
 | `operations/README.md` | Operations-document index and output/review routing |
 | `operations/output-layout.md` | Producer-owned tracked reviewer snapshot; disposable review scratch under `.tmp/` |

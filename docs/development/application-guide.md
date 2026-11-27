@@ -89,7 +89,7 @@ The HTML reader is the accessibility-enhanced surface. The canonical combined
 PDF has verified tagged structure; PDF/UA conformance is not established.
 Beamer slide PDFs are untagged. Native assistive-technology review remains
 unverified. These boundaries are detailed in
-[the accessibility guide](../manuscript/accessibility.md).
+[the accessibility guide](../manuscript/guides/accessibility.md).
 
 ## Fastest own-data path
 

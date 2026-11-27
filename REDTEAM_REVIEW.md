@@ -337,7 +337,7 @@ uv run --locked python scripts/validate_all.py package
 ```
 
 Then render through the template checkout documented in
-`docs/manuscript/rendering_pipeline.md`.
+`docs/manuscript/guides/rendering_pipeline.md`.
 
 ## Iteration 34 — comprehensive machine-local closure (2026-07-27)
 

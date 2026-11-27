@@ -595,7 +595,7 @@ source-bound language check passes. Some Poppler builds omit the language line
 from `pdfinfo` even when `/Lang` is present. Slide PDFs remain a separate
 Beamer surface. Tagged structure does not establish PDF/UA conformance; the
 exact automated and manual boundary is in
-[`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
+[`docs/manuscript/guides/accessibility.md`](docs/manuscript/guides/accessibility.md).
 
 ## Evidence status and active research
 
@@ -652,7 +652,7 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 | [`docs/reference/api-stability.md`](docs/reference/api-stability.md) | Public API/schema compatibility and deprecation policy |
 | [`docs/research/README.md`](docs/research/README.md) | Research audits, evidence ladders, and claim boundaries |
 | [`docs/security/active_fedference-threat-model.md`](docs/security/active_fedference-threat-model.md) | Federation trust boundaries, abuse paths, and security no-claim rules |
-| [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md) | HTML accessibility contract and tagged-PDF boundary |
+| [`docs/manuscript/guides/accessibility.md`](docs/manuscript/guides/accessibility.md) | HTML accessibility contract and tagged-PDF boundary |
 
 Start with the [`application guide`](docs/development/application-guide.md), continue with
 [`examples/README.md`](examples/README.md) for every supported boundary, then

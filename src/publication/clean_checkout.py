@@ -202,7 +202,7 @@ REQUIRED_TRACKED_PATHS: tuple[str, ...] = (
     "tests/test_report_scale_guard.py",
     "docs/research/manuscript-claim-audit.md",
     "docs/research/visual-claim-audit.md",
-    "docs/manuscript/accessibility.md",
+    "docs/manuscript/guides/accessibility.md",
     "docs/reference/api-stability.md",
     HISTORICAL_RELEASE_PDF_LEDGER_PATH,
     "docs/reference/zenodo-release.md",

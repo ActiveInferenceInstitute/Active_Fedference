@@ -88,7 +88,7 @@ Full module map, experiments, and artifacts:
 - `from __future__ import annotations`; full type hints; Friston/FedGVI citations in docstrings
 - `np.random.default_rng(seed)` everywhere; never global `np.random`
 - No mocks; $\ge 90\%$ coverage on `src/`
-- Manuscript numbers are `{{TOKEN}}` only — see [`docs/manuscript/tokens-and-labels.md`](docs/manuscript/tokens-and-labels.md)
+- Manuscript numbers are `{{TOKEN}}` only — see [`docs/manuscript/guides/tokens-and-labels.md`](docs/manuscript/guides/tokens-and-labels.md)
 - Generated `output/` is a committed reviewer snapshot regenerated from source;
   `.tmp/` is local review scratch space and must never be released.
 - README/docs diagrams use fenced GitHub-compatible Mermaid with exactly one
@@ -181,7 +181,7 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 Federation trust boundaries and publication-surface accessibility are
 maintained separately in
 [`docs/security/active_fedference-threat-model.md`](docs/security/active_fedference-threat-model.md)
-and [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
+and [`docs/manuscript/guides/accessibility.md`](docs/manuscript/guides/accessibility.md).
 
 ## See also
 

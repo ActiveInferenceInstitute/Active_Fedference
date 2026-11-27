@@ -25,7 +25,7 @@ rendering.
 `manuscript_vars.render.render_manuscript_tree()` substitutes the tokens into
 the Markdown sections. The label registry is
 [`../../manuscript/SYNTAX.md`](../../docs/manuscript/SYNTAX.md); the rules are in
-[`../../docs/manuscript/tokens-and-labels.md`](../../docs/manuscript/tokens-and-labels.md).
+[`../../docs/manuscript/tokens-and-labels.md`](../../docs/manuscript/guides/tokens-and-labels.md).
 
 ## Check it
 

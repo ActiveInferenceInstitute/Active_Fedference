@@ -31,7 +31,7 @@ GitHub publication does not establish Zenodo publication or current-source certi
 | Produce and verify a registered research receipt | [`../examples/README.md`](../examples/README.md), example 04; [`../src/fedference_cli/README.md`](../src/fedference_cli/README.md) |
 | Understand the mathematical scope | [`core/conceptual-foundations.md`](core/conceptual-foundations.md) |
 | Contribute software or documentation | [`development/quickstart.md`](development/quickstart.md); [`development/modularity.md`](development/modularity.md) |
-| Reproduce the manuscript surfaces | [`docs/manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) |
+| Reproduce the manuscript surfaces | [`docs/manuscript/guides/rendering_pipeline.md`](manuscript/guides/rendering_pipeline.md) |
 | Run or resume bounded analysis | [`development/staged-analysis.md`](development/staged-analysis.md) |
 | Audit a release boundary | [`reference/verification-commands.md`](reference/verification-commands.md); [`reference/zenodo-release.md`](reference/zenodo-release.md) |
 
@@ -66,10 +66,10 @@ For one entry per maintained documentation page, use the
 2. [`core/architecture.md`](core/architecture.md) — layer boundaries
 3. [`development/testing_philosophy.md`](development/testing_philosophy.md) — zero mocks + coverage
 4. [`development/modularity.md`](development/modularity.md) — before adding software, scripts, reports, figures, or documentation
-5. [`docs/manuscript/rendering_pipeline.md`](manuscript/rendering_pipeline.md) — before editing outputs
-6. [`docs/manuscript/accessibility.md`](manuscript/accessibility.md) — before accessibility or publication-surface claims
+5. [`docs/manuscript/guides/rendering_pipeline.md`](manuscript/guides/rendering_pipeline.md) — before editing outputs
+6. [`docs/manuscript/guides/accessibility.md`](manuscript/guides/accessibility.md) — before accessibility or publication-surface claims
 7. [`development/style_guide.md`](development/style_guide.md) — before editing source
-8. [`docs/manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md) — before editing manuscript prose
+8. [`docs/manuscript/guides/tokens-and-labels.md`](manuscript/guides/tokens-and-labels.md) — before editing manuscript prose
 9. [`reference/zenodo-release.md`](reference/zenodo-release.md) — before reserving, updating, uploading, or publishing a DOI deposition
 
 ## Reader paths
@@ -100,7 +100,7 @@ For one entry per maintained documentation page, use the
 | `src/fedference/*` | [`core/architecture.md`](core/architecture.md), [`development/style_guide.md`](development/style_guide.md) |
 | `src/fedference_cli/*`, `src/analysis/*`, or `src/publication/*` | [`development/modularity.md`](development/modularity.md), [`core/architecture.md`](core/architecture.md) |
 | `tests/*` | [`development/testing_philosophy.md`](development/testing_philosophy.md) |
-| `docs/manuscript/*.md` | [`docs/manuscript/tokens-and-labels.md`](manuscript/tokens-and-labels.md), [`../manuscript/SYNTAX.md`](manuscript/SYNTAX.md) |
+| `docs/manuscript/*.md` | [`docs/manuscript/guides/tokens-and-labels.md`](manuscript/guides/tokens-and-labels.md), [`../manuscript/SYNTAX.md`](manuscript/SYNTAX.md) |
 | `scripts/*` | [`core/architecture.md`](core/architecture.md), [`../scripts/AGENTS.md`](../scripts/AGENTS.md) |
 | `examples/*` | [`../examples/README.md`](../examples/README.md), [`development/modularity.md`](development/modularity.md) |
 | Federation transport / deployment | [`security/active_fedference-threat-model.md`](security/active_fedference-threat-model.md), [`todo/true-multi-machine-federation.md`](todo/true-multi-machine-federation.md) |

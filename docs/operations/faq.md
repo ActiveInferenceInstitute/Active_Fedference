@@ -80,7 +80,7 @@ explicit I/O, and optional Torch modules remain behind extras.
 `output/reports/*.json`. Those report payloads are schema-validated at the
 write boundary (`src/analysis/report_schemas.py`), so a token can only cite a
 field the producing study actually declared. Never type numbers in prose.
-[`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md).
+[`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md).
 
 ## What are the three robustness axes?
 
@@ -151,7 +151,7 @@ readiness.
 ## How do I reproduce the source-current reviewer snapshot?
 
 Use the exact producer order in the
-[`two-pass rendering sequence`](../manuscript/rendering_pipeline.md). It binds
+[`two-pass rendering sequence`](../manuscript/guides/rendering_pipeline.md). It binds
 analysis, the full-suite validation receipt, final hydration, rendering, web
 preparation, and freshness checks. The
 [`contributor quickstart`](../development/quickstart.md) provides context and

@@ -6,6 +6,7 @@ Keep this alphabetical inventory in sync when adding, moving, or removing a page
 Dated audits retain their stated observation dates; listing them does not certify current sources.
 
 
+
 - [AGENTS.md](AGENTS.md)
 - [README.md](README.md)
 - [core/README.md](core/README.md)
@@ -72,11 +73,11 @@ Dated audits retain their stated observation dates; listing them does not certif
 - [manuscript/S16_results_hierarchical_bmr.md](manuscript/S16_results_hierarchical_bmr.md)
 - [manuscript/S17_results_heuristic_characterization.md](manuscript/S17_results_heuristic_characterization.md)
 - [manuscript/SYNTAX.md](manuscript/SYNTAX.md)
-- [manuscript/accessibility.md](manuscript/accessibility.md)
 - [manuscript/guides/README.md](manuscript/guides/README.md)
+- [manuscript/guides/accessibility.md](manuscript/guides/accessibility.md)
+- [manuscript/guides/rendering_pipeline.md](manuscript/guides/rendering_pipeline.md)
+- [manuscript/guides/tokens-and-labels.md](manuscript/guides/tokens-and-labels.md)
 - [manuscript/preamble.md](manuscript/preamble.md)
-- [manuscript/rendering_pipeline.md](manuscript/rendering_pipeline.md)
-- [manuscript/tokens-and-labels.md](manuscript/tokens-and-labels.md)
 - [operations/README.md](operations/README.md)
 - [operations/faq.md](operations/faq.md)
 - [operations/output-layout.md](operations/output-layout.md)

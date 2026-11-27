@@ -167,7 +167,7 @@ probe separately for diagrams embedded in README/docs.
     recording the final render receipt, because preparation writes
     `output/web/`. Use the exact source epoch, source-locked Template checkout, and
     release-bundle tail in
-    [`../docs/manuscript/rendering_pipeline.md`](rendering_pipeline.md).
+    [`../docs/manuscript/rendering_pipeline.md`](guides/rendering_pipeline.md).
 
 ## Future-phase evidence protocol
 
@@ -200,7 +200,7 @@ profile.
 
 - [`README.md`](README.md) · [`SYNTAX.md`](SYNTAX.md) — label registry
 - [`../docs/manuscript/README.md`](guides/README.md) — rendering & tokens hub
-- [`../docs/manuscript/accessibility.md`](accessibility.md) — HTML/PDF accessibility and no-claim contract
+- [`../docs/manuscript/accessibility.md`](guides/accessibility.md) — HTML/PDF accessibility and no-claim contract
 - [`../ISA.md`](../../ISA.md) — acceptance criteria (ISC)
 - [`../src/manuscript_variables.py`](../../src/manuscript_variables.py) — token logic
 - [`../scripts/z_generate_manuscript_variables.py`](../../scripts/z_generate_manuscript_variables.py) — thin orchestrator

@@ -137,7 +137,7 @@ $TEMPLATE_REPO/output/working/active_fedference/
    `scripts/prepare_web_package.py` before browser inspection or render-receipt
    recording so local figures and normalized crossrefs are present.
    `scripts/validate_web_package.py` then enforces the semantic HTML subset defined in
-   [`../manuscript/accessibility.md`](../manuscript/accessibility.md).
+   [`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md).
 5. After final web/render freshness, build the upstream release payload
    (`uv run --locked python scripts/build_release.py`) so the manifest and
    fingerprint track the new state. Then refresh the Template artifact
@@ -178,5 +178,5 @@ the provisional and receipt-backed hydration boundary explicit.
 ## See also
 
 - [`troubleshooting.md`](troubleshooting.md)
-- [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md)
-- [`../manuscript/accessibility.md`](../manuscript/accessibility.md)
+- [`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md)
+- [`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md)

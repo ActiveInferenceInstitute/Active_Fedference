@@ -9,11 +9,11 @@ Read this file before modifying any file in this repository.
 | **This file** | All modifications |
 | [`../core/architecture.md`](../core/architecture.md) | File-boundary changes |
 | [`testing_philosophy.md`](testing_philosophy.md) | Test changes |
-| [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md) | Manuscript or output changes |
-| [`../manuscript/accessibility.md`](../manuscript/accessibility.md) | HTML/PDF/slide accessibility changes or claims |
+| [`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md) | Manuscript or output changes |
+| [`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md) | HTML/PDF/slide accessibility changes or claims |
 | [`../security/active_fedference-threat-model.md`](../security/active_fedference-threat-model.md) | Federation transport, authentication, replay, persistence, or deployment changes |
 | [`style_guide.md`](style_guide.md) | Source code changes |
-| [`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md) | Manuscript `.md` edits |
+| [`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md) | Manuscript `.md` edits |
 
 Acceptance criteria: [`../../ISA.md`](../../ISA.md).
 

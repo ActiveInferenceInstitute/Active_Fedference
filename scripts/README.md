@@ -177,7 +177,7 @@ After release approval, provide a canonical UTC time with
 ## Stage receipt and sequence
 
 Run stages in dependency order. The canonical explanation is in the
-[rendering guide](../docs/manuscript/rendering_pipeline.md); the two renderer
+[rendering guide](../docs/manuscript/guides/rendering_pipeline.md); the two renderer
 invocations below are intentional: the first consumes provisional hydration
 before the full-suite receipt, and the second consumes receipt-backed final
 hydration.
@@ -264,4 +264,4 @@ Schema 4 records `recorded_at: null` by default, making a no-op stage receipt
 byte-idempotent. A canonical `--timestamp` or `SOURCE_DATE_EPOCH` is optional
 external metadata, not permission to skip content freshness.
 
-Details: [`AGENTS.md`](AGENTS.md) · [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/rendering_pipeline.md)
+Details: [`AGENTS.md`](AGENTS.md) · [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/guides/rendering_pipeline.md)

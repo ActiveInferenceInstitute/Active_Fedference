@@ -68,7 +68,7 @@ Avoid bare `assert` in public APIs (use asserts only in tests or internal invari
 
 ## Manuscript-specific
 
-- Numbers in prose → `{{TOKEN}}` only ([`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md))
+- Numbers in prose → `{{TOKEN}}` only ([`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md))
 - Figure references → `[@fig:label]` matching `{#fig:label}` in [`../../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md)
 - **Three robustness axes** labeled honestly in results/discussion sections
   (axis 1 = per-client result inherited only under the source theorem's matching

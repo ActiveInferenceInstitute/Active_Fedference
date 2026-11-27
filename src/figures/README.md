@@ -23,7 +23,7 @@ the figure registry, captions, and manuscript embed must agree on the exact
 filename. Figures use color-independent cues for meaningful group distinctions,
 and captions/HTML alternatives must remain
 useful without color or visual inspection; see the
-[publication accessibility contract](../../docs/manuscript/accessibility.md).
+[publication accessibility contract](../../docs/manuscript/guides/accessibility.md).
 
 ## Files
 

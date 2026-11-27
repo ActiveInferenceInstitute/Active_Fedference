@@ -631,7 +631,7 @@ unresolved typed references, broken internal fragments, or leaked Markdown
 figure syntax. It also fails on missing document language/title, skip/main
 navigation, image alternatives, figure captions, full-size-link labels, or
 duplicate identifiers. This is the automated subset of
-[`../manuscript/accessibility.md`](../manuscript/accessibility.md), not a WCAG
+[`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md), not a WCAG
 conformance declaration.
 
 The publication validator intentionally accepts a smaller HTML language than a

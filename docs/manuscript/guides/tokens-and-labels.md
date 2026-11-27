@@ -7,9 +7,9 @@ Active Fedference uses two registries. **Do not duplicate full tables in
 
 | Source | Role |
 | --- | --- |
-| [`src/manuscript_variables.py`](../../src/manuscript_variables.py) | Public entry point (re-export shim): `generate_variables()` builds the mapping |
-| [`src/manuscript_vars/`](../../src/manuscript_vars/generate.py) | Implementation package: `generate.py`, `tokens.py`, `loaders.py`, `render.py` |
-| [`../../manuscript/AGENTS.md`](AGENTS.md) | Authoring workflow and token groups |
+| [`src/manuscript_variables.py`](../../../src/manuscript_variables.py) | Public entry point (re-export shim): `generate_variables()` builds the mapping |
+| [`src/manuscript_vars/`](../../../src/manuscript_vars/generate.py) | Implementation package: `generate.py`, `tokens.py`, `loaders.py`, `render.py` |
+| [`../../manuscript/AGENTS.md`](../AGENTS.md) | Authoring workflow and token groups |
 | `output/data/manuscript_variables.json` | Generated mapping (disposable) |
 
 ### Token groups (summary)
@@ -85,7 +85,7 @@ same value as LaTeX scientific notation (`M \times 10^{E}`, mantissa to two
 decimals, exponent normalized to a plain int) for use inside `$...$` spans,
 where the bare `e`-form would typeset as a malformed product.
 `_format_residual_math()` in
-[`src/manuscript_vars/loaders.py`](../../src/manuscript_vars/loaders.py)
+[`src/manuscript_vars/loaders.py`](../../../src/manuscript_vars/loaders.py)
 implements the conversion; non-positive inputs render as `0`.
 
 Sibling-emitting groups: every `RECOVERY_*` residual (each key gets a
@@ -143,7 +143,7 @@ fi
 
 | Source | Role |
 | --- | --- |
-| [`../../manuscript/SYNTAX.md`](SYNTAX.md) | Canonical `{#eq:}`, `{#fig:}`, `{#tbl:}`, `{#sec:}`, `{#prop:}`, `{#thm:}`, `{#lem:}`, `{#cor:}`, `{#def:}` registry |
+| [`../../manuscript/SYNTAX.md`](../SYNTAX.md) | Canonical `{#eq:}`, `{#fig:}`, `{#tbl:}`, `{#sec:}`, `{#prop:}`, `{#thm:}`, `{#lem:}`, `{#cor:}`, `{#def:}` registry |
 | Manuscript `.md` files | Use `[@fig:label]` in prose; `{#fig:label}` on figure lines |
 
 The cross-reference renderer supplies the figure, table, equation, or section
@@ -165,9 +165,9 @@ Adding a figure:
 Shared Pandoc/LaTeX rules for this standalone repository live in the local
 manuscript guide and registry:
 
-- [`../../manuscript/AGENTS.md`](AGENTS.md) — editing workflow,
+- [`../../manuscript/AGENTS.md`](../AGENTS.md) — editing workflow,
   token protocol, figure protocol, and theorem conventions.
-- [`../../manuscript/SYNTAX.md`](SYNTAX.md) — canonical label
+- [`../../manuscript/SYNTAX.md`](../SYNTAX.md) — canonical label
   strings and project-specific syntax constraints.
 
 `SYNTAX.md` takes precedence for label strings.
@@ -175,4 +175,4 @@ manuscript guide and registry:
 ## See also
 
 - [`rendering_pipeline.md`](rendering_pipeline.md)
-- [`../core/experiments-and-artifacts.md`](../core/experiments-and-artifacts.md)
+- [`../core/experiments-and-artifacts.md`](../../core/experiments-and-artifacts.md)

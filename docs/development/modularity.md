@@ -9,7 +9,7 @@ silently discovering a different checkout or stale input.
 This page is the implementation map for contributors. The scientific claim
 boundaries remain in the [claim audit](../research/manuscript-claim-audit.md),
 and the release sequence remains in the
-[rendering pipeline](../manuscript/rendering_pipeline.md) and
+[rendering pipeline](../manuscript/guides/rendering_pipeline.md) and
 [Zenodo release guide](../reference/zenodo-release.md).
 
 ## Layer map

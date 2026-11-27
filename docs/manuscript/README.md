@@ -76,7 +76,7 @@ The first template pass consumes only provisional hydration. The second consumes
 the full-suite receipt-backed hydration. Both explicitly skip automatic
 hydration, and web preparation precedes the final receipt because it writes
 `output/web/`. The canonical explanation, including release-bundle steps,
-is in [`../docs/manuscript/rendering_pipeline.md`](rendering_pipeline.md).
+is in [`../docs/manuscript/rendering_pipeline.md`](guides/rendering_pipeline.md).
 
 The HTML manuscript is the canonical accessibility-enhanced surface. The
 source-current combined manuscript PDF is generated with tagged structure and
@@ -85,7 +85,7 @@ must pass the repository's `Tagged: yes`, qpdf `/Lang`, language, and
 only accepted language evidence.
 the separate slide PDFs do not inherit that status. Tagged structure is not a
 PDF/UA-conformance claim; see
-[`../docs/manuscript/accessibility.md`](accessibility.md).
+[`../docs/manuscript/accessibility.md`](guides/accessibility.md).
 
 Cover image is configured in `config.yaml` via `paper.cover.image` and currently
 points to `cover_image.png` in this directory.
@@ -189,4 +189,4 @@ See the [manuscript guide](guides/README.md) for explanations of the source, pub
 - [`S17_results_heuristic_characterization.md`](S17_results_heuristic_characterization.md)
 - [`SYNTAX.md`](SYNTAX.md)
 - [`preamble.md`](preamble.md)
-- [`tokens-and-labels.md`](tokens-and-labels.md)
+- [`tokens-and-labels.md`](guides/tokens-and-labels.md)
