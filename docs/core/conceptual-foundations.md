@@ -11,7 +11,7 @@ inference traditions that was not explicit among the sources reviewed here.
 | Mildner et al. (2025), FedGVI (PMLR 267; arXiv:2502.00846) | Generalised variational inference with robust losses and divergence-regularised aggregation |
 
 BibTeX keys: `friston2024federated`, `mildner2025fedgvi` in
-[`manuscript/references.bib`](../../manuscript/references.bib).
+[`docs/manuscript/references.bib`](../manuscript/references.bib).
 
 ## Project-local identity and categorical bridge
 
@@ -210,8 +210,8 @@ controlled benchmark and confirmatory inference remain open); and a hash-,
 license-, schema-, split-, and receipt-bound three-dataset UCI execution path
 (MAJ-6; leakage-free calibration, the confirmatory campaign, and manuscript
 evidence pack remain open). Out-of-scope discussion and related
-work: [`../../manuscript/23_discussion_limitations.md`](../../manuscript/23_discussion_limitations.md)
-and [`../../manuscript/22_discussion_related_work.md`](../../manuscript/22_discussion_related_work.md).
+work: [`../../manuscript/23_discussion_limitations.md`](../manuscript/23_discussion_limitations.md)
+and [`../../manuscript/22_discussion_related_work.md`](../manuscript/22_discussion_related_work.md).
 
 **V3 boundary.** The original ISA listed "real multi-machine federation" as
 out-of-scope. The current `FederationServer` + `FederationWorker` protocol over

@@ -787,26 +787,26 @@ def test_tagging_parsers_and_source_configuration_cover_nested_shapes(
     absent = tmp_path / "absent"
     assert not _tagged_pdf_requested(absent)
 
-    unreadable = tmp_path / "unreadable" / "manuscript" / "config.yaml"
+    unreadable = tmp_path / "unreadable" / "docs" / "manuscript" / "config.yaml"
     unreadable.mkdir(parents=True)
     assert not _tagged_pdf_requested(unreadable.parents[1])
 
-    sequence = tmp_path / "sequence" / "manuscript"
+    sequence = tmp_path / "sequence" / "docs" / "manuscript"
     sequence.mkdir(parents=True)
     (sequence / "config.yaml").write_text("- item\n", encoding="utf-8")
     assert not _tagged_pdf_requested(sequence.parent)
 
-    malformed = tmp_path / "malformed" / "manuscript"
+    malformed = tmp_path / "malformed" / "docs" / "manuscript"
     malformed.mkdir(parents=True)
     (malformed / "config.yaml").write_text("metadata: [\n", encoding="utf-8")
     assert not _tagged_pdf_requested(malformed.parent)
 
-    scalar_metadata = tmp_path / "scalar" / "manuscript"
+    scalar_metadata = tmp_path / "scalar" / "docs" / "manuscript"
     scalar_metadata.mkdir(parents=True)
     (scalar_metadata / "config.yaml").write_text("metadata: disabled\n", encoding="utf-8")
     assert not _tagged_pdf_requested(scalar_metadata.parent)
 
-    enabled = tmp_path / "enabled" / "manuscript"
+    enabled = tmp_path / "enabled" / "docs" / "manuscript"
     enabled.mkdir(parents=True)
     (enabled / "config.yaml").write_text(
         "metadata:\n  tagged_pdf: true\n",
@@ -881,7 +881,7 @@ def test_full_surface_validator_accumulates_pdf_log_inventory_and_web_findings(
         "LaTeX Warning: Citation `missing' undefined\n",
         encoding="utf-8",
     )
-    config = tmp_path / "manuscript"
+    config = tmp_path / "docs" / "manuscript"
     config.mkdir()
     (config / "config.yaml").write_text(
         "metadata:\n  tagged_pdf: true\n",

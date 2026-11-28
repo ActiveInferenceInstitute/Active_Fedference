@@ -49,7 +49,7 @@ def _write_lock(
     extra: str = "",
     repository: str = TEMPLATE_RENDERER_REPOSITORY,
 ) -> None:
-    config = project / "manuscript" / "config.yaml"
+    config = project / "docs" / "manuscript" / "config.yaml"
     config.parent.mkdir(parents=True, exist_ok=True)
     config.write_text(
         "rendering:\n"
@@ -101,8 +101,8 @@ def test_renderer_lock_rejects_noncanonical_values(
 
 
 def test_missing_renderer_lock_fails_closed(tmp_path: Path) -> None:
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript" / "config.yaml").write_text("rendering: {}\n", encoding="utf-8")
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text("rendering: {}\n", encoding="utf-8")
     with pytest.raises(ValueError, match="missing rendering.template_renderer"):
         load_template_renderer_lock(tmp_path)
 

@@ -23,7 +23,7 @@ order, and returns a categorical consensus plus solver diagnostics. It does not
 train a raw-data model or turn logits, class labels, samples, or arbitrary
 scores into calibrated posteriors.
 
-Follow the [`application guide`](../application-guide.md) for the exact input
+Follow the [`application guide`](../development/application-guide.md) for the exact input
 contract, a labeled-state recipe, base-weight semantics, and a result-acceptance
 check.
 
@@ -33,11 +33,11 @@ Start with `fedference aggregate` when you need labeled JSON and an application
 receipt, or `aggregate_labeled` for pure Python. Use `aggregate_result` only when
 your program already owns labels/evidence; use rich sharing, process, or socket
 results only for those specific boundaries. The
-[`interface table`](../application-guide.md#choose-the-narrowest-interface)
+[`interface table`](../development/application-guide.md#choose-the-narrowest-interface)
 shows the imports and evidence returned by each choice.
 
 `naive`, `robust`, and `variational` are distinct modeling choices, not a
-quality ranking. The [`method table`](../application-guide.md#choose-an-aggregation-rule)
+quality ranking. The [`method table`](../development/application-guide.md#choose-an-aggregation-rule)
 states their supported properties and no-claim boundaries. Construct one
 explicit `AggregationConfig` across all compared boundaries; compatibility
 defaults are not interchangeable configuration records.
@@ -80,7 +80,7 @@ explicit I/O, and optional Torch modules remain behind extras.
 `output/reports/*.json`. Those report payloads are schema-validated at the
 write boundary (`src/analysis/report_schemas.py`), so a token can only cite a
 field the producing study actually declared. Never type numbers in prose.
-[`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md).
+[`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md).
 
 ## What are the three robustness axes?
 
@@ -134,7 +134,7 @@ effect, MCSE target, budget, comparison family, and configuration.
 ## How do I use the aggregation API?
 
 Start with the copy-pasteable labeled-state recipe in
-[`../application-guide.md`](../application-guide.md#labeled-python-api),
+[`../application-guide.md`](../development/application-guide.md#labeled-python-api),
 then run the numbered [`examples`](../../examples/README.md).
 
 ## How do I run all analysis studies?
@@ -151,7 +151,7 @@ readiness.
 ## How do I reproduce the source-current reviewer snapshot?
 
 Use the exact producer order in the
-[`two-pass rendering sequence`](../manuscript/rendering_pipeline.md). It binds
+[`two-pass rendering sequence`](../manuscript/guides/rendering_pipeline.md). It binds
 analysis, the full-suite validation receipt, final hydration, rendering, web
 preparation, and freshness checks. The
 [`contributor quickstart`](../development/quickstart.md) provides context and
@@ -208,6 +208,6 @@ pipeline boundaries.
 
 ## See also
 
-- [`../application-guide.md`](../application-guide.md)
+- [`../application-guide.md`](../development/application-guide.md)
 - [`troubleshooting.md`](troubleshooting.md)
 - [`../../TODO.md`](../../TODO.md) — forward backlog only

@@ -9,11 +9,11 @@ Read this file before modifying any file in this repository.
 | **This file** | All modifications |
 | [`../core/architecture.md`](../core/architecture.md) | File-boundary changes |
 | [`testing_philosophy.md`](testing_philosophy.md) | Test changes |
-| [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md) | Manuscript or output changes |
-| [`../manuscript/accessibility.md`](../manuscript/accessibility.md) | HTML/PDF/slide accessibility changes or claims |
+| [`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md) | Manuscript or output changes |
+| [`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md) | HTML/PDF/slide accessibility changes or claims |
 | [`../security/active_fedference-threat-model.md`](../security/active_fedference-threat-model.md) | Federation transport, authentication, replay, persistence, or deployment changes |
 | [`style_guide.md`](style_guide.md) | Source code changes |
-| [`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md) | Manuscript `.md` edits |
+| [`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md) | Manuscript `.md` edits |
 
 Acceptance criteria: [`../../ISA.md`](../../ISA.md).
 
@@ -98,7 +98,7 @@ This project is its own standalone repository. The canonical public repository
 is `https://github.com/ActiveInferenceInstitute/Active_Fedference`; this public
 checkout configures it as `origin`. The separate interim evidence mirror is
 `https://github.com/docxology/active_fedference`. Inspect checkout-local aliases
-before synchronizing. Source release identity comes from `manuscript/config.yaml`
+before synchronizing. Source release identity comes from `docs/manuscript/config.yaml`
 and `pyproject.toml`, with emitted metadata checked by `scripts/emit_metadata.py`;
 verify hosted release and DOI state separately. Prior version DOIs identify
 only their immutable releases/PDFs. Never copy or commit

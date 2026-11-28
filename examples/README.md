@@ -11,7 +11,7 @@ uv sync --locked
 The default environment is sufficient for all six examples and the installed
 CLI. It does not install the optional Torch path. For adapting the example
 beliefs, choosing a method, and interpreting solver diagnostics, start with the
-[`application guide`](../docs/application-guide.md).
+[`application guide`](../docs/development/application-guide.md).
 
 Every program writes one deterministic JSON document to standard output. The
 three programs that create files require an explicit, new or empty
@@ -252,6 +252,6 @@ uv run --locked --extra dev pytest tests/test_examples.py -m integration -q
 
 Use a fresh scratch root on each run. Refusing a non-empty destination is an
 evidence-preservation feature; the examples never delete or overwrite a prior
-run. Next, see the [`application guide`](../docs/application-guide.md) for
+run. Next, see the [`application guide`](../docs/development/application-guide.md) for
 caller-owned data and [`../src/fedference_cli/README.md`](../src/fedference_cli/README.md)
 for the complete receipt and replay command contract.

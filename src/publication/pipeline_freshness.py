@@ -63,22 +63,22 @@ _ANALYSIS_OUTPUTS = tuple(f"output/reports/{name}" for name in _ANALYSIS_REPORT_
 _ANALYSIS_INPUTS = (
     "src/**/*.py",
     "scripts/02_run_analysis.py",
-    "manuscript/config.yaml",
+    "docs/manuscript/config.yaml",
     # The analysis-owned figure registry parses source captions and labels.
     # Bind every manuscript source it consumes, but never a prior hydrated tree:
     # generated output would make analysis freshness depend on a downstream
     # stage and could reintroduce stale-caption promotion.
-    "manuscript/**/*.md",
+    "docs/manuscript/**/*.md",
     "experiment_plan.yaml",
     "pyproject.toml",
     "uv.lock",
 )
 _HYDRATION_INPUTS = (
     "ISA.md",
-    "manuscript/**/*.md",
-    "manuscript/**/*.bib",
-    "manuscript/**/*.yaml",
-    "manuscript/**/*.tex",
+    "docs/manuscript/**/*.md",
+    "docs/manuscript/**/*.bib",
+    "docs/manuscript/**/*.yaml",
+    "docs/manuscript/**/*.tex",
     "src/manuscript_vars/**/*.py",
     "src/experiment_config.py",
     "scripts/z_generate_manuscript_variables.py",

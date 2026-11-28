@@ -68,14 +68,14 @@ def _make_validation_tree(root: Path, *, analysis_profile: str = "smoke") -> Non
         ("docs/reference/historical-release-pdfs.json", '{"releases":[]}\n'),
         (".github/workflows/ci.yml", "name: fixture\n"),
         (
-            "manuscript/config.yaml",
+            "docs/manuscript/config.yaml",
             f"paper: {{}}\nexperiment:\n  analysis_profile: {analysis_profile}\n",
         ),
-        ("manuscript/config.yaml.example", "experiment:\n  analysis_profile: smoke\n"),
-        ("manuscript/01_intro.md", "# Intro\n"),
-        ("manuscript/references.bib", "@misc{fixture, title={Fixture}}\n"),
-        ("manuscript/preamble.tex", "% fixture\n"),
-        ("manuscript/cover_image.png", "fixture image bytes\n"),
+        ("docs/manuscript/config.yaml.example", "experiment:\n  analysis_profile: smoke\n"),
+        ("docs/manuscript/01_intro.md", "# Intro\n"),
+        ("docs/manuscript/references.bib", "@misc{fixture, title={Fixture}}\n"),
+        ("docs/manuscript/preamble.tex", "% fixture\n"),
+        ("docs/manuscript/cover_image.png", "fixture image bytes\n"),
         ("ISA.md", "- [x] ISC-1: fixture\n"),
         ("AGENTS.md", "# Guidance\n"),
         ("README.md", "# Fixture\n"),
@@ -186,8 +186,8 @@ def test_successful_receipt_binds_test_inputs_analysis_and_tokens(tmp_path: Path
     assert "data/claim_ledger.yaml" in input_hashes
     assert "data/synthetic_tabular.csv" in input_hashes
     assert "docs/reference/historical-release-pdfs.json" in input_hashes
-    assert "manuscript/cover_image.png" in input_hashes
-    assert "manuscript/config.yaml.example" in input_hashes
+    assert "docs/manuscript/cover_image.png" in input_hashes
+    assert "docs/manuscript/config.yaml.example" in input_hashes
     run_snapshots = receipt["run_snapshots"]
     assert isinstance(run_snapshots, dict)
     assert run_snapshots["pre"] == run_snapshots["post"]
@@ -256,7 +256,7 @@ def test_provisional_hydration_cli_never_records_a_publication_receipt() -> None
 @pytest.mark.parametrize(
     ("relative", "replacement"),
     (
-        ("manuscript/01_intro.md", "# Corrected caption\n"),
+        ("docs/manuscript/01_intro.md", "# Corrected caption\n"),
         ("ISA.md", "- [ ] ISC-1: changed after validation\n"),
     ),
 )
@@ -292,7 +292,7 @@ def test_receipt_fails_when_a_validated_document_changes_after_tests(tmp_path: P
             "examples/data/labeled_aggregation_request.json",
             '{"schema_version":"1.0","state_labels":["changed"],"agents":[]}\n',
         ),
-        ("manuscript/config.yaml.example", "experiment:\n  analysis_profile: publication\n"),
+        ("docs/manuscript/config.yaml.example", "experiment:\n  analysis_profile: publication\n"),
     ),
 )
 def test_receipt_fails_when_an_example_contract_changes_after_tests(
@@ -319,7 +319,7 @@ def test_receipt_fails_when_an_example_contract_changes_after_tests(
         ("data/claim_ledger.yaml", "claims: [changed]\n"),
         ("data/synthetic_tabular.csv", "feature,label\n1,1\n"),
         ("docs/reference/historical-release-pdfs.json", '{"releases":["changed"]}\n'),
-        ("manuscript/cover_image.png", "changed image bytes\n"),
+        ("docs/manuscript/cover_image.png", "changed image bytes\n"),
         ("domain_profile.yaml", "profile: changed\n"),
     ),
 )
@@ -365,9 +365,9 @@ def test_optional_template_source_can_be_added_only_after_revalidation(
     tmp_path: Path,
 ) -> None:
     _make_validation_tree(tmp_path)
-    (tmp_path / "manuscript" / "preamble.tex").unlink()
+    (tmp_path / "docs" / "manuscript" / "preamble.tex").unlink()
     _write_successful_receipt(tmp_path)
-    (tmp_path / "manuscript" / "preamble.tex").write_text(
+    (tmp_path / "docs" / "manuscript" / "preamble.tex").write_text(
         "% newly added template source\n",
         encoding="utf-8",
     )

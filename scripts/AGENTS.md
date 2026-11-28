@@ -25,7 +25,7 @@ Cross-layer extension rules: [`../docs/development/modularity.md`](../docs/devel
 | `emit_metadata.py` | Release (REQUIRED) | Checks (`--check`) or regenerates (`--write`) the generated metadata surfaces via `publication.metadata` |
 | `zenodo_release.py` | Release boundary | Reserves, updates, corrects published metadata, uploads, verifies, or explicitly publishes the configured Zenodo deposition; publication requires confirmation |
 | `validate_mermaid.py` | Documentation/publication | Checks every README/docs Mermaid fence and optionally renders every block to SVG |
-| `validate_rendered_surfaces.py` | Release (REQUIRED) | Checks every manuscript/slide PDF structurally and textually, enforces slide triplets, rejects material LaTeX warnings, and validates web links/assets/accessibility invariants |
+| `validate_rendered_surfaces.py` | Release (REQUIRED) | Checks every docs/manuscript/slide PDF structurally and textually, enforces slide triplets, rejects material LaTeX warnings, and validates web links/assets/accessibility invariants |
 | `prepare_web_package.py` | Publication (REQUIRED) | Mirrors declared assets and builds numbered cross-format web references |
 | `validate_web_package.py` | Publication (REQUIRED) | Checks mirrored assets, targets, rendered markup, and deterministic HTML accessibility invariants |
 | `validate_all.py` | Validation (REQUIRED) | Runs named quick/manuscript/package/torch/source/freshness/full profiles |
@@ -70,7 +70,7 @@ uv run --locked python scripts/z_generate_manuscript_variables.py
 
 ## Rendering context
 
-Full pipeline: [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/rendering_pipeline.md).
+Full pipeline: [`../docs/manuscript/rendering_pipeline.md`](../docs/manuscript/guides/rendering_pipeline.md).
 
 Before a documentation or release review, validate the shared GitHub/local
 Mermaid source and run the actual renderer probe:
@@ -116,7 +116,7 @@ graph dependency (otherwise the provisional render needed by the full suite
 would form a cycle). Analysis and final hydration write their stage receipts
 automatically after successful completion; a smoke profile cannot mint the
 analysis receipt. Follow the source-current two-pass
-sequence in [the rendering guide](../docs/manuscript/rendering_pipeline.md):
+sequence in [the rendering guide](../docs/manuscript/guides/rendering_pipeline.md):
 after the final sibling-template stages 03–05, prepare and validate the web
 package, then record the external render boundary explicitly. Web preparation
 rewrites `output/web/`, so recording it earlier would attest the wrong surface.
@@ -133,7 +133,7 @@ provides that time; content hashes, rather than time, establish freshness.
 
 The structured renderer identity is accepted only from an explicit clean
 checkout whose canonical repository and exact commit match
-`manuscript/config.yaml`. Its runtime path and raw remote URL are not persisted.
+`docs/manuscript/config.yaml`. Its runtime path and raw remote URL are not persisted.
 A clean-checkout probe is a separate release evidence gate.
 
 ## Smoke tests

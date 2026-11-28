@@ -75,21 +75,21 @@ def _identity_from_mapping(payload: object, *, label: str) -> TemplateRendererId
 
 def load_template_renderer_lock(project_root: Path) -> TemplateRendererIdentity:
     """Load and strictly validate ``rendering.template_renderer``."""
-    config_path = Path(project_root).resolve() / "manuscript" / "config.yaml"
+    config_path = Path(project_root).resolve() / "docs" / "manuscript" / "config.yaml"
     try:
         payload = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         raise ValueError("could not read manuscript renderer lock") from exc
     if not isinstance(payload, Mapping):
-        raise ValueError("manuscript/config.yaml top level must be a mapping")
+        raise ValueError("docs/manuscript/config.yaml top level must be a mapping")
     rendering = payload.get("rendering")
     if not isinstance(rendering, Mapping):
-        raise ValueError("manuscript/config.yaml rendering block must be a mapping")
+        raise ValueError("docs/manuscript/config.yaml rendering block must be a mapping")
     if "template_renderer" not in rendering:
-        raise ValueError("manuscript/config.yaml is missing rendering.template_renderer")
+        raise ValueError("docs/manuscript/config.yaml is missing rendering.template_renderer")
     return _identity_from_mapping(
         rendering["template_renderer"],
-        label="manuscript/config.yaml rendering.template_renderer",
+        label="docs/manuscript/config.yaml rendering.template_renderer",
     )
 
 

@@ -62,7 +62,7 @@ output/
 ├── reports/     # JSON experiment reports (schema-validated at the write boundary)
 ├── figures/     # PNG figures + sibling PDFs from the generators, plus figure_registry.json
 ├── data/        # manuscript_variables.json
-├── manuscript/  # Token-resolved markdown copies
+├── docs/manuscript/  # Token-resolved markdown copies
 ├── release/     # Release bundle + provenance manifest (build_release.py)
 └── pdf/         # Rendered PDF via the sibling template render script
 ```

@@ -12,4 +12,4 @@ Acceptance criteria live in [`../../ISA.md`](../../ISA.md). Operational commands
 Transport changes additionally follow the
 [repository threat model](../security/active_fedference-threat-model.md);
 publication-surface changes follow the
-[accessibility contract](../manuscript/accessibility.md).
+[accessibility contract](../manuscript/guides/accessibility.md).

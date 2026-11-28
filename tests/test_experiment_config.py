@@ -15,7 +15,7 @@ from experiment_config import ExperimentConfig, load_experiment_config
 
 
 def _write_config(root: Path, experiment: dict) -> Path:
-    manuscript = root / "manuscript"
+    manuscript = root / "docs" / "manuscript"
     manuscript.mkdir(parents=True, exist_ok=True)
     path = manuscript / "config.yaml"
     path.write_text(yaml.safe_dump({"experiment": experiment}), encoding="utf-8")
@@ -139,8 +139,8 @@ def test_power_fields_default_when_statistics_block_absent(tmp_path: Path) -> No
 
 
 def test_empty_experiment_block_uses_defaults(tmp_path: Path) -> None:
-    (tmp_path / "manuscript").mkdir()
-    (tmp_path / "manuscript" / "config.yaml").write_text(
+    (tmp_path / "docs" / "manuscript").mkdir(parents=True)
+    (tmp_path / "docs" / "manuscript" / "config.yaml").write_text(
         yaml.safe_dump({"paper": {"version": "9"}}), encoding="utf-8"
     )
     cfg = load_experiment_config(tmp_path)
@@ -160,8 +160,8 @@ def test_malformed_yaml_blocks_fail_closed(
     experiment: object,
     message: str,
 ) -> None:
-    manuscript = tmp_path / "manuscript"
-    manuscript.mkdir()
+    manuscript = tmp_path / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     (manuscript / "config.yaml").write_text(
         yaml.safe_dump({"experiment": experiment}),
         encoding="utf-8",
@@ -257,7 +257,7 @@ def test_invalid_parameters_raise(kwargs: dict) -> None:
 
 
 def test_default_root_resolves_real_project_config() -> None:
-    # Smoke: loading with no override reads the shipped manuscript/config.yaml
+    # Smoke: loading with no override reads the shipped docs/manuscript/config.yaml
     # (or defaults) without raising.
     cfg = load_experiment_config()
     assert cfg.n_agents >= 2

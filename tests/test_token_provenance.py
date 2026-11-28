@@ -24,7 +24,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-_MANUSCRIPT = Path(__file__).resolve().parent.parent / "manuscript"
+_MANUSCRIPT = Path(__file__).resolve().parent.parent / "docs" / "manuscript"
 
 _FENCED = re.compile(r"```.*?```", re.DOTALL)
 _INLINE_CODE = re.compile(r"`[^`]*`")

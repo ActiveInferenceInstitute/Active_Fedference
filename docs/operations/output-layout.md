@@ -83,7 +83,7 @@ into the reviewer snapshot.
 | `figures/figure_registry.json` | `analysis.workflow._write_figure_registry` | Caption/alternative/long-description metadata and exact-value fallback bindings |
 | `data/manuscript_variables.json` | `z_generate_manuscript_variables.py` | Debugging token map |
 | `data/pipeline_provenance.json` | `02_run_analysis.py`, `z_generate_manuscript_variables.py`, `record_pipeline_stage.py` | Schema-4 content-hashed, byte-idempotent freshness validation with a source-locked, path-free Template identity |
-| `manuscript/*.md` | Token substitution | PDF render (stage 5) |
+| `docs/manuscript/*.md` | Token substitution | PDF render (stage 5) |
 | `pdf/*` | `scripts/pipeline/stage_03_render.py` | Validation, copy stage |
 | `slides/*` | Template render stage (per-section Beamer decks) | Release bundle |
 | `release/manifest.json`, `release/sha256sums.txt`, `release/README.md` | `scripts/build_release.py` | `scripts/build_release.py --verify`, CI round-trip |
@@ -127,7 +127,7 @@ $TEMPLATE_REPO/output/working/active_fedference/
    reports are outside that acyclic payload scope and are checked by the
    pinned Template, Git-tree, confidentiality, and clean-clone gates. This is a
    local reviewer-bundle gate, not external publication authorization.
-2. After changing `manuscript/config.yaml` experiment block, re-run analysis
+2. After changing `docs/manuscript/config.yaml` experiment block, re-run analysis
    **before** variable hydration and PDF render.
 3. Adding a new artifact requires updating `manuscript_variables.py` (if cited
    in prose), the write-boundary schema in `src/analysis/report_schemas.py`
@@ -137,7 +137,7 @@ $TEMPLATE_REPO/output/working/active_fedference/
    `scripts/prepare_web_package.py` before browser inspection or render-receipt
    recording so local figures and normalized crossrefs are present.
    `scripts/validate_web_package.py` then enforces the semantic HTML subset defined in
-   [`../manuscript/accessibility.md`](../manuscript/accessibility.md).
+   [`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md).
 5. After final web/render freshness, build the upstream release payload
    (`uv run --locked python scripts/build_release.py`) so the manifest and
    fingerprint track the new state. Then refresh the Template artifact
@@ -178,5 +178,5 @@ the provisional and receipt-backed hydration boundary explicit.
 ## See also
 
 - [`troubleshooting.md`](troubleshooting.md)
-- [`../manuscript/rendering_pipeline.md`](../manuscript/rendering_pipeline.md)
-- [`../manuscript/accessibility.md`](../manuscript/accessibility.md)
+- [`../manuscript/rendering_pipeline.md`](../manuscript/guides/rendering_pipeline.md)
+- [`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md)

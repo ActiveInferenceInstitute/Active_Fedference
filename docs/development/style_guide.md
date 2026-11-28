@@ -44,7 +44,7 @@ specialization, never as a reconstruction of the full source protocol.
 Use project-qualified paths in cross-repo docs:
 
 - `src/fedference/aggregation.py`
-- `manuscript/19_results_robustness.md`
+- `docs/manuscript/19_results_robustness.md`
 
 Inside the project tree, relative paths from the file you edit are fine.
 
@@ -68,8 +68,8 @@ Avoid bare `assert` in public APIs (use asserts only in tests or internal invari
 
 ## Manuscript-specific
 
-- Numbers in prose → `{{TOKEN}}` only ([`../manuscript/tokens-and-labels.md`](../manuscript/tokens-and-labels.md))
-- Figure references → `[@fig:label]` matching `{#fig:label}` in [`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md)
+- Numbers in prose → `{{TOKEN}}` only ([`../manuscript/tokens-and-labels.md`](../manuscript/guides/tokens-and-labels.md))
+- Figure references → `[@fig:label]` matching `{#fig:label}` in [`../../manuscript/SYNTAX.md`](../manuscript/SYNTAX.md)
 - **Three robustness axes** labeled honestly in results/discussion sections
   (axis 1 = per-client result inherited only under the source theorem's matching
   assumptions; axis 2 = sharp server heuristic, recovery-limit guarantee only;

@@ -14,7 +14,7 @@ def test_graphical_abstract_generator_writes_png_and_pdf(tmp_path: Path) -> None
     figures_root = tmp_path / "output" / "figures"
     png = figures_root / "graphical_abstract.png"
     pdf = figures_root / "graphical_abstract.pdf"
-    cover = tmp_path / "manuscript" / "cover_image.png"
+    cover = tmp_path / "docs" / "manuscript" / "cover_image.png"
     assert png.exists()
     assert pdf.exists()
     assert cover.exists()

@@ -88,7 +88,7 @@ Full module map, experiments, and artifacts:
 - `from __future__ import annotations`; full type hints; Friston/FedGVI citations in docstrings
 - `np.random.default_rng(seed)` everywhere; never global `np.random`
 - No mocks; $\ge 90\%$ coverage on `src/`
-- Manuscript numbers are `{{TOKEN}}` only — see [`docs/manuscript/tokens-and-labels.md`](docs/manuscript/tokens-and-labels.md)
+- Manuscript numbers are `{{TOKEN}}` only — see [`docs/manuscript/guides/tokens-and-labels.md`](docs/manuscript/guides/tokens-and-labels.md)
 - Generated `output/` is a committed reviewer snapshot regenerated from source;
   `.tmp/` is local review scratch space and must never be released.
 - README/docs diagrams use fenced GitHub-compatible Mermaid with exactly one
@@ -181,12 +181,12 @@ and [`docs/todo/scholarship-and-phase-plan.md`](docs/todo/scholarship-and-phase-
 Federation trust boundaries and publication-surface accessibility are
 maintained separately in
 [`docs/security/active_fedference-threat-model.md`](docs/security/active_fedference-threat-model.md)
-and [`docs/manuscript/accessibility.md`](docs/manuscript/accessibility.md).
+and [`docs/manuscript/guides/accessibility.md`](docs/manuscript/guides/accessibility.md).
 
 ## See also
 
 - [`README.md`](README.md) — pitch and quick run
-- [`docs/application-guide.md`](docs/application-guide.md) — install-to-result application path
+- [`docs/development/application-guide.md`](docs/development/application-guide.md) — install-to-result application path
 - [`STANDALONE.md`](STANDALONE.md) — confidentiality and standalone core
-- [`manuscript/AGENTS.md`](manuscript/AGENTS.md) — manuscript editing
-- Scope and related work: [`manuscript/22_discussion_related_work.md`](manuscript/22_discussion_related_work.md)
+- [`docs/manuscript/AGENTS.md`](docs/manuscript/AGENTS.md) — manuscript editing
+- Scope and related work: [`docs/manuscript/22_discussion_related_work.md`](docs/manuscript/22_discussion_related_work.md)

@@ -264,7 +264,7 @@ jobs:
           cmp .tmp/dist/*.tar.gz .tmp/dist-rebuilt/*.tar.gz
           sdist="$(find .tmp/dist -maxdepth 1 -name '*.tar.gz' -print -quit)"
           test -n "$sdist"
-          for member in LICENSE docs/README.md docs/application-guide.md docs/development/modularity.md examples/README.md examples/01_minimal_aggregation.py examples/02_compare_aggregation_methods.py examples/03_federation_boundaries.py examples/04_cli_receipt_workflow.py examples/05_labeled_application.py examples/data/labeled_aggregation_request.json manuscript/config.yaml manuscript/config.yaml.example scripts/02_run_analysis.py src/fedference/py.typed src/fedference_cli/README.md tests/README.md; do
+          for member in LICENSE docs/README.md docs/development/application-guide.md docs/development/modularity.md examples/README.md examples/01_minimal_aggregation.py examples/02_compare_aggregation_methods.py examples/03_federation_boundaries.py examples/04_cli_receipt_workflow.py examples/05_labeled_application.py examples/data/labeled_aggregation_request.json docs/manuscript/config.yaml docs/manuscript/config.yaml.example scripts/02_run_analysis.py src/fedference/py.typed src/fedference_cli/README.md tests/README.md; do
             tar -tzf "$sdist" | grep -Eq "/$member$"
           done
           checkout_root="$(pwd -P)"

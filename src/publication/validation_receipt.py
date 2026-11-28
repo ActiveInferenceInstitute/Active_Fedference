@@ -59,12 +59,12 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
     # Final hydration consumes every manuscript source format below.  Binding
     # them here prevents a post-test caption, formalism, bibliography, or
     # template-config edit from being released under an older test receipt.
-    "manuscript/**/*.md",
-    "manuscript/**/*.bib",
-    "manuscript/**/*.yaml",
-    "manuscript/**/*.yaml.example",
-    "manuscript/**/*.tex",
-    "manuscript/**/*.png",
+    "docs/manuscript/**/*.md",
+    "docs/manuscript/**/*.bib",
+    "docs/manuscript/**/*.yaml",
+    "docs/manuscript/**/*.yaml.example",
+    "docs/manuscript/**/*.tex",
+    "docs/manuscript/**/*.png",
     # Source-owned documentation and release/packaging metadata are validated
     # by the full suite too.  Bind them here so the receipt honestly describes
     # the tree whose documentation checks passed, without pulling generated
@@ -95,7 +95,7 @@ VALIDATION_INPUT_PATTERNS: tuple[str, ...] = (
 # them optional preserves the fixture trees used by focused receipt tests,
 # while a real checkout still hashes the license as a release input.
 _OPTIONAL_VALIDATION_INPUT_PATTERNS = frozenset(
-    {"manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE", ".github/ci/*.json", "src/**/*.json"}
+    {"docs/manuscript/**/*.tex", "tests/**/*.cjs", "LICENSE", ".github/ci/*.json", "src/**/*.json"}
 )
 MINIMUM_COVERAGE_THRESHOLD = 90.0
 _ENVIRONMENT_FIELDS: tuple[str, ...] = (

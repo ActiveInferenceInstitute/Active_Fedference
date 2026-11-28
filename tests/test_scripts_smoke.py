@@ -44,7 +44,7 @@ def scaffold_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Session-scoped temporary project scaffold the scripts write into.
 
     Reuses the minimal-real-project builder from the workflow tests (smoke
-    profile, ``manuscript/config.yaml`` present) so every script resolves its
+    profile, ``docs/manuscript/config.yaml`` present) so every script resolves its
     project root here instead of the real tree. Session scope lets the ordered
     scripts share state: ``02_run_analysis`` writes the reports that
     ``z_generate_manuscript_variables`` consumes.
@@ -97,7 +97,7 @@ def scaffold_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
         stdout=subprocess.PIPE,
         text=True,
     ).stdout.strip()
-    config_path = root / "manuscript" / "config.yaml"
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     config["rendering"] = {
         "template_renderer": {

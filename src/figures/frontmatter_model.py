@@ -1,6 +1,6 @@
 """Model and belief flow: categorical Friston et al. (2024) specialization.
 
-Locators: manuscript/09_methods_generative_model.md; manuscript/08_methods_belief_sharing.md;
+Locators: docs/manuscript/09_methods_generative_model.md; docs/manuscript/08_methods_belief_sharing.md;
 fedference.pomdp; fedference.belief_sharing. No full source-protocol reconstruction.
 """
 

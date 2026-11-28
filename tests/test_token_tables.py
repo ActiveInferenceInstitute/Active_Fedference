@@ -23,7 +23,7 @@ from figures._frontmatter import validate_frontmatter
 from manuscript_variables import generate_variables
 
 _ROOT = Path(__file__).resolve().parent.parent
-_MANUSCRIPT = _ROOT / "manuscript"
+_MANUSCRIPT = _ROOT / "docs" / "manuscript"
 _TOKEN_ROWS = re.compile(r"\{\{([A-Z0-9_]+_TABLE_ROWS)\}\}")
 
 
@@ -36,14 +36,14 @@ def _pipe_cols(line: str) -> int:
 
 def _make_token_project(root: Path) -> None:
     """Prepare the table-token fixture's actual manuscript inputs."""
-    (root / "manuscript").mkdir()
-    (root / "manuscript" / "config.yaml").write_text(
+    (root / "docs" / "manuscript").mkdir(parents=True)
+    (root / "docs" / "manuscript" / "config.yaml").write_text(
         (_MANUSCRIPT / "config.yaml").read_text(encoding="utf-8"), encoding="utf-8"
     )
     config = yaml.safe_load((_MANUSCRIPT / "config.yaml").read_text(encoding="utf-8"))
     for name in config["paper"]["frontmatter"]:
-        shutil.copy2(_MANUSCRIPT / name, root / "manuscript" / name)
-    (root / "manuscript" / "16_results_belief_sharing.md").write_text(
+        shutil.copy2(_MANUSCRIPT / name, root / "docs" / "manuscript" / name)
+    (root / "docs" / "manuscript" / "16_results_belief_sharing.md").write_text(
         "![Belief-sharing posterior mass in the bounded smoke fixture.]"
         "(../output/figures/belief_heatmap.png)"
         "{#fig:belief-heatmap width=80% "
@@ -57,11 +57,11 @@ def _make_token_project(root: Path) -> None:
 def test_token_fixture_includes_and_validates_declared_frontmatter(tmp_path: Path) -> None:
     _make_token_project(tmp_path)
     validate_frontmatter(tmp_path)
-    config = yaml.safe_load((tmp_path / "manuscript/config.yaml").read_text())
+    config = yaml.safe_load((tmp_path / "docs/manuscript/config.yaml").read_text())
     names = config["paper"]["frontmatter"]
     for name in names:
-        assert (tmp_path / "manuscript" / name).read_bytes() == (_MANUSCRIPT / name).read_bytes()
-    page = tmp_path / "manuscript" / names[0]
+        assert (tmp_path / "docs" / "manuscript" / name).read_bytes() == (_MANUSCRIPT / name).read_bytes()
+    page = tmp_path / "docs" / "manuscript" / names[0]
     retained = page.with_suffix(".retained")
     page.rename(retained)
     with pytest.raises(FileNotFoundError, match=re.escape(page.name)):

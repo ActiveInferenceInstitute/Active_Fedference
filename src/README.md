@@ -57,7 +57,7 @@ the configured seed budget; it intentionally has no singular `seed` attribute.
   them and provide stable subprocess/CI boundaries rather than reimplementing
   domain logic.
 - Keep outputs deterministic under the explicit seed budget in
-  `manuscript/config.yaml`.
+  `docs/manuscript/config.yaml`.
 - Keep API exports synchronized with `__init__.py` and `__all__`.
 - Keep mathematical primitives side-effect free. Restrict filesystem/network
   effects to the named evidence, data, checkpoint, and transport adapters, all

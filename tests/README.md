@@ -25,7 +25,7 @@ and never belong in a release snapshot.
 | `figures/` | `src/figures/*` generators |
 | `analysis/` | `src/analysis/workflow.py`, `artifacts.py`, and `report_schemas.py`; tests cover orchestration, the canonical artifact set, write-boundary validation, and stage contracts |
 | `test_manuscript_variables.py` | Token hydration |
-| `test_experiment_config.py` | `manuscript/config.yaml` |
+| `test_experiment_config.py` | `docs/manuscript/config.yaml` |
 | `test_scripts_smoke.py` | Auxiliary script subprocess smoke, root-aware CLI help, and no-numeric-import thin-boundary checks |
 | `test_invariants.py` | Numerical invariants (PMF, recovery, EFE, KL) |
 | `test_build_backend.py` | PEP 517 backend pinning, archive normalization, metadata, and source-manifest contract |

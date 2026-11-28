@@ -296,8 +296,8 @@ def test_seeded_family_consumes_configured_inputs(n_agents: int, n_seeds: int) -
 )
 def test_torch_producer_rejects_invalid_source_options(tmp_path: Path, knob: str) -> None:
     # Given: a real source profile with one invalid optional Torch knob.
-    manuscript = tmp_path / "manuscript"
-    manuscript.mkdir()
+    manuscript = tmp_path / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     (manuscript / "config.yaml").write_text("experiment:\n  bnn_torch:\n    " + knob + "\n")
     # When/Then: malformed controls fail before experiment use.
     with pytest.raises(ValueError, match="bnn_torch"):
@@ -320,7 +320,7 @@ def test_torch_options_and_profiles_retain_explicit_defaults(tmp_path: Path) -> 
         "beta": 0.2,
         "contamination_levels": [0.0, 0.5],
     }
-    (tmp_path / "manuscript/config.yaml").write_text(
+    (tmp_path / "docs/manuscript/config.yaml").write_text(
         json.dumps({"experiment": {"analysis_profile": "smoke", "bnn_torch": options}})
     )
     # When: consume the explicit source options.
@@ -360,7 +360,7 @@ def test_torch_producer_uses_validated_options_after_source_changes(
     options = workflow._bnn_torch_options(tmp_path)
     assert options["n_steps"] == 3
     expected = run_bnn_torch_experiment(seed=config.seeds[0], **options)
-    source = tmp_path / "manuscript/config.yaml"
+    source = tmp_path / "docs/manuscript/config.yaml"
     match source_state:
         case "invalid":
             source.write_text("experiment:\n  bnn_torch:\n    n_steps: 0\n")

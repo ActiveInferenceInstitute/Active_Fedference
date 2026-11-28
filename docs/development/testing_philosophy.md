@@ -223,7 +223,7 @@ covers both `system_overview.py` and `graphical_abstract.py` jointly.
 ## Determinism
 
 Every stochastic step uses `np.random.default_rng(seed)` with seeds from
-`manuscript/config.yaml`. Never rely on global `np.random`.
+`docs/manuscript/config.yaml`. Never rely on global `np.random`.
 
 ## Adding tests for new code
 

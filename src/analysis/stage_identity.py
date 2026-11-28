@@ -57,7 +57,7 @@ def source_names(project: Path, snapshot: dict[str, Any]) -> set[str]:
 
 def validate_source_tree(project: Path) -> None:
     """Reject source links before fingerprinting can read through them."""
-    for name in ("src", "manuscript", "scripts"):
+    for name in ("src", "docs/manuscript", "scripts"):
         folder = confined(project, name)
         for path in folder.rglob("*"):
             if path.is_symlink():

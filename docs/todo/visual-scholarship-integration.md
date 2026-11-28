@@ -25,7 +25,7 @@ is not sufficient.
 ## Scope
 
 Use the exact reviewed and merged Template renderer commit recorded in
-`manuscript/config.yaml`, from a separate clean checkout. Preserve the user-owned dirty Template
+`docs/manuscript/config.yaml`, from a separate clean checkout. Preserve the user-owned dirty Template
 checkout unchanged. The accessible profile must fail clearly on unsafe density
 while leaving the archive profile unchanged for other consumers.
 
@@ -72,9 +72,9 @@ complex therefore demands a reader surface that does not exist yet.
 The three descriptions are preserved verbatim below and return to source in one
 reviewed change:
 
-1. Render `manuscript/00a_graphical_model.md`,
-   `manuscript/00b_graphical_robustness.md`, and
-   `manuscript/00c_graphical_execution.md` under `output/web/` with the pinned
+1. Render `docs/manuscript/00a_graphical_model.md`,
+   `docs/manuscript/00b_graphical_robustness.md`, and
+   `docs/manuscript/00c_graphical_execution.md` under `output/web/` with the pinned
    Template producer, so each page carries its plate's captioned disclosure.
 2. Add `frontmatter_model`, `frontmatter_robustness`, and `frontmatter_execution`
    back to `COMPLEX_FIGURE_GENERATORS` in `src/analysis/visual_contracts.py`.

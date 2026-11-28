@@ -13,4 +13,4 @@
 - Keep the spec deterministic: no animations, no wall-clock waits, explicit
   viewports and reflow checks.
 - Parent rules: [../AGENTS.md](../AGENTS.md). Render contract:
-  [`../../docs/manuscript/rendering_pipeline.md`](../../docs/manuscript/rendering_pipeline.md).
+  [`../../docs/manuscript/rendering_pipeline.md`](../../docs/manuscript/guides/rendering_pipeline.md).

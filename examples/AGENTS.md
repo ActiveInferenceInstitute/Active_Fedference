@@ -2,7 +2,7 @@
 
 Read [README.md](README.md) first; it is the numbered ladder and the expected
 outputs. The application path is
-[`../docs/application-guide.md`](../docs/application-guide.md).
+[`../docs/application-guide.md`](../docs/development/application-guide.md).
 
 - Keep every program runnable with the default locked environment:
   `uv sync --locked` then `uv run --locked python examples/<name>.py`. Do not

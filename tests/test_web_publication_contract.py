@@ -56,7 +56,7 @@ def _complex_registry_entry(
         "label": label,
         "filename": f"{generator}.png",
         "path": f"output/figures/{generator}.png",
-        "source_manuscript": "manuscript/26_reproducibility.md",
+        "source_manuscript": "docs/manuscript/26_reproducibility.md",
         "caption": f"Source-bound {generator.replace('_', ' ')} test caption.",
         "generated_by": generator,
         "status": "test fixture",
@@ -457,10 +457,10 @@ def test_reader_surface_manuscript_links_use_canonical_public_repository_urls() 
     root = Path(__file__).resolve().parents[1]
     repository_base = "https://github.com/ActiveInferenceInstitute/Active_Fedference/blob/main"
 
-    experimental_design = (root / "manuscript" / "12_methods_experimental_design.md").read_text(
+    experimental_design = (root / "docs" / "manuscript" / "12_methods_experimental_design.md").read_text(
         encoding="utf-8"
     )
-    references = (root / "manuscript" / "99_references.md").read_text(encoding="utf-8")
+    references = (root / "docs" / "manuscript" / "99_references.md").read_text(encoding="utf-8")
 
     assert f"]({repository_base}/manuscript/config.yaml)" in experimental_design
     assert f"]({repository_base}/manuscript/references.bib)" in references

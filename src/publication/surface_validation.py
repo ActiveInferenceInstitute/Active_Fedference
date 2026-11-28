@@ -141,7 +141,7 @@ def _pdf_structure_findings(path: Path) -> list[str]:
 
 def _tagged_pdf_requested(project_root: Path) -> bool:
     """Return whether the source configuration requires a tagged manuscript PDF."""
-    config_path = project_root / "manuscript" / "config.yaml"
+    config_path = project_root / "docs" / "manuscript" / "config.yaml"
     if not config_path.exists():
         return False
     try:

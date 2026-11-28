@@ -54,7 +54,7 @@ open-science gate.
 ## Current source contract — iteration 46
 
 The publication fallback in `src/experiment_config.py` now matches the shipped
-`manuscript/config.yaml` budgets and rejects malformed mapping blocks instead of
+`docs/manuscript/config.yaml` budgets and rejects malformed mapping blocks instead of
 silently treating lists or scalars as empty configuration. The review-grid
 producer also consumes the configured FDR level, power level, and planning
 alternative; the nested report records those executed values and its schema

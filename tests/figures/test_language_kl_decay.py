@@ -45,7 +45,7 @@ def _affirmative_claim_terms(text: str) -> list[str]:
 
 
 def _language_caption() -> str:
-    manuscript = (_ROOT / "manuscript" / "17_results_language.md").read_text(encoding="utf-8")
+    manuscript = (_ROOT / "docs" / "manuscript" / "17_results_language.md").read_text(encoding="utf-8")
     match = re.search(
         r"!\[(?P<caption>.*?)\]\([^)]*language_kl_decay\.png\)"
         r"\{#fig:language-kl\b",

@@ -206,7 +206,7 @@ def _valid_figure_entry(label: str = "fig:belief-heatmap") -> dict[str, str]:
         "label": label,
         "filename": "belief_heatmap.png",
         "path": "output/figures/belief_heatmap.png",
-        "source_manuscript": "manuscript/16_results_belief_sharing.md",
+        "source_manuscript": "docs/manuscript/16_results_belief_sharing.md",
         "caption": "Belief heatmap caption.",
         "generated_by": "belief_heatmap",
         "status": "generated",

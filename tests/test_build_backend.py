@@ -70,7 +70,7 @@ def _make_lifecycle_build_project(
 ) -> Path:
     """Create a real, isolated PEP 517 project for one lifecycle state."""
     root.mkdir()
-    (root / "manuscript").mkdir()
+    (root / "docs" / "manuscript").mkdir(parents=True)
     package = root / "src" / "lifecycle_fixture"
     package.mkdir(parents=True)
     package.joinpath("__init__.py").write_text("VALUE = 1\n", encoding="utf-8")
@@ -122,7 +122,7 @@ def _make_lifecycle_build_project(
     }
     if doi is None:
         publication["doi_status"] = "(forthcoming)"
-    root.joinpath("manuscript", "config.yaml").write_text(
+    root.joinpath("docs", "manuscript", "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "paper": {
@@ -283,7 +283,7 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
     assert 'license-files = ["LICENSE"]' in pyproject
     assert '{name = "Daniel Ari Friedman", email = "daniel@activeinference.institute"}' in pyproject
     assert 'Repository = "https://github.com/ActiveInferenceInstitute/Active_Fedference"' in pyproject
-    config = yaml.safe_load((_ROOT / "manuscript/config.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((_ROOT / "docs/manuscript/config.yaml").read_text(encoding="utf-8"))
     package_metadata = tomllib.loads(pyproject)["project"]
     lifecycle = validate_publication_lifecycle(
         _ROOT,
@@ -305,7 +305,7 @@ def test_package_metadata_and_source_manifest_are_release_complete() -> None:
         assert "doi_status" not in config["publication"]
         assert package_metadata["urls"]["DOI"] == f"https://doi.org/{lifecycle.doi}"
         assert lifecycle.canonical_pdf is not None
-    assert (_ROOT / "manuscript" / "config.yaml.example").is_file()
+    assert (_ROOT / "docs" / "manuscript" / "config.yaml.example").is_file()
     assert "recursive-include docs *.md" in manifest
     assert "recursive-include examples *.json *.md *.py" in manifest
     assert "recursive-include src *.md" in manifest
@@ -321,7 +321,7 @@ def test_real_source_archive_retains_all_declared_source_inputs(tmp_path: Path) 
     """Build the real package from an isolated source tree and inspect its bytes."""
     project = tmp_path / "source"
     project.mkdir()
-    for name in ("src", "docs", "examples", "manuscript", "scripts", "tests", "data", ".github"):
+    for name in ("src", "docs", "examples", "scripts", "tests", "data", ".github"):
         shutil.copytree(
             _ROOT / name,
             project / name,
@@ -360,7 +360,7 @@ def test_real_source_archive_retains_all_declared_source_inputs(tmp_path: Path) 
 def test_ci_installed_artifact_gate_executes_the_labeled_application_outside_checkout() -> None:
     workflow = (_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     for required_member in (
-        "docs/application-guide.md",
+        "docs/development/application-guide.md",
         "examples/05_labeled_application.py",
         "examples/data/labeled_aggregation_request.json",
         "src/fedference/py.typed",

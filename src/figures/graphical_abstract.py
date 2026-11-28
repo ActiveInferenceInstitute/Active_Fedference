@@ -6,7 +6,7 @@ Two-panel publication-quality figure:
   RIGHT — Schematic outcome cards comparing token-backed naive and robust
            consensus states, with the variational objective kept separate.
 
-Saved to output/figures/graphical_abstract.{png,pdf} and manuscript/cover_image.png.
+Saved to output/figures/graphical_abstract.{png,pdf} and docs/manuscript/cover_image.png.
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ from figures.system_overview import SYSTEM_OVERVIEW_METADATA, build_data
 # Output paths
 # ---------------------------------------------------------------------------
 _OUT = PROJECT_ROOT / "output" / "figures"
-_COVER = PROJECT_ROOT / "manuscript" / "cover_image.png"
+_COVER = PROJECT_ROOT / "docs" / "manuscript" / "cover_image.png"
 MANUSCRIPT_WIDTH_FRACTION = 1.0
 
 
@@ -866,7 +866,7 @@ def generate_graphical_abstract(*, project_root: Path | None = None) -> Path:
     """
     root = project_root or PROJECT_ROOT
     out_dir = root / "output" / "figures"
-    cover_path = root / "manuscript" / "cover_image.png"
+    cover_path = root / "docs" / "manuscript" / "cover_image.png"
     fig = _build_graphical_abstract_figure()
 
     out_dir.mkdir(parents=True, exist_ok=True)

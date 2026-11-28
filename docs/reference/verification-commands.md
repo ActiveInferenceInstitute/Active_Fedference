@@ -244,7 +244,7 @@ uv build --out-dir "$DIST_SMOKE/rebuilt"
 cmp "$DIST_SMOKE"/dist/*.whl "$DIST_SMOKE"/rebuilt/*.whl
 cmp "$DIST_SMOKE"/dist/*.tar.gz "$DIST_SMOKE"/rebuilt/*.tar.gz
 sdist="$(find "$DIST_SMOKE/dist" -maxdepth 1 -name '*.tar.gz' -print -quit)"
-for member in LICENSE docs/README.md docs/application-guide.md docs/development/modularity.md examples/README.md examples/01_minimal_aggregation.py examples/02_compare_aggregation_methods.py examples/03_federation_boundaries.py examples/04_cli_receipt_workflow.py examples/05_labeled_application.py examples/data/labeled_aggregation_request.json manuscript/config.yaml manuscript/config.yaml.example scripts/02_run_analysis.py src/fedference/py.typed src/fedference_cli/README.md tests/README.md; do
+for member in LICENSE docs/README.md docs/development/application-guide.md docs/development/modularity.md examples/README.md examples/01_minimal_aggregation.py examples/02_compare_aggregation_methods.py examples/03_federation_boundaries.py examples/04_cli_receipt_workflow.py examples/05_labeled_application.py examples/data/labeled_aggregation_request.json docs/manuscript/config.yaml docs/manuscript/config.yaml.example scripts/02_run_analysis.py src/fedference/py.typed src/fedference_cli/README.md tests/README.md; do
   tar -tzf "$sdist" | grep -Eq "/$member$"
 done
 cp examples/data/labeled_aggregation_request.json "$INSTALLED_SMOKE/request.json"
@@ -274,9 +274,9 @@ byte-identical wheel and sdist pairs; a differing digest is a release blocker,
 even when both artifacts install successfully.
 
 The source distribution is the archival source package: it includes `LICENSE`,
-the modular `docs/`, `examples/`, `manuscript/`, `scripts/`, and `tests/` trees,
+the modular `docs/`, `examples/`, `docs/manuscript/`, `scripts/`, and `tests/` trees,
 including the application guide, every numbered example, example data, and the
-copyable `manuscript/config.yaml.example`, plus source-bound metadata and
+copyable `docs/manuscript/config.yaml.example`, plus source-bound metadata and
 acceptance files. The archive also retains `uv.lock`, the experiment and domain
 configuration, the historical-PDF checksum ledger, contributor guidance, CI
 workflow, and the browser test specification. The browser specification is
@@ -588,7 +588,7 @@ unchanged stage is byte-identical. Use a canonical `--timestamp` or
 
 The renderer identity is accepted only from the explicit clean Template
 checkout named by `--template-root`. Its canonical repository and exact commit
-must match the source-owned lock in `manuscript/config.yaml`; the receipt stores
+must match the source-owned lock in `docs/manuscript/config.yaml`; the receipt stores
 that structured identity without retaining a machine-local path or raw remote
 URL. A fresh-clone evidence probe is separate from the local dirty development
 workflow:
@@ -631,7 +631,7 @@ unresolved typed references, broken internal fragments, or leaked Markdown
 figure syntax. It also fails on missing document language/title, skip/main
 navigation, image alternatives, figure captions, full-size-link labels, or
 duplicate identifiers. This is the automated subset of
-[`../manuscript/accessibility.md`](../manuscript/accessibility.md), not a WCAG
+[`../manuscript/accessibility.md`](../manuscript/guides/accessibility.md), not a WCAG
 conformance declaration.
 
 The publication validator intentionally accepts a smaller HTML language than a

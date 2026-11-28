@@ -16,7 +16,7 @@ hardcoded in a section.
 ## Pipeline
 
 `generate_variables()` reads the analysis JSON reports and
-`manuscript/config.yaml`, then writes `output/data/manuscript_variables.json`.
+`docs/manuscript/config.yaml`, then writes `output/data/manuscript_variables.json`.
 Final non-draft hydration derives `ISC_TOTAL`/`ISC_PASSED` from `ISA.md` and
 loads `TEST_COUNT`, `COVERAGE_PERCENT` and core environment tokens from the
 fresh test-coverage receipt. Hydration never re-collects the test suite while
@@ -24,8 +24,8 @@ rendering.
 
 `manuscript_vars.render.render_manuscript_tree()` substitutes the tokens into
 the Markdown sections. The label registry is
-[`../../manuscript/SYNTAX.md`](../../manuscript/SYNTAX.md); the rules are in
-[`../../docs/manuscript/tokens-and-labels.md`](../../docs/manuscript/tokens-and-labels.md).
+[`../../manuscript/SYNTAX.md`](../../docs/manuscript/SYNTAX.md); the rules are in
+[`../../docs/manuscript/tokens-and-labels.md`](../../docs/manuscript/guides/tokens-and-labels.md).
 
 ## Check it
 

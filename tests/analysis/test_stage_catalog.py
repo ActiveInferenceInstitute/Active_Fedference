@@ -28,8 +28,8 @@ from fedference.complexity import ComplexityBenchmarkConfig
 def test_report_production_does_not_load_plotting_stack(tmp_path: Path, stage: str) -> None:
     """A report worker must reserve its memory for its numerical backend."""
     root = Path(__file__).resolve().parents[2]
-    manuscript = tmp_path / "manuscript"
-    manuscript.mkdir()
+    manuscript = tmp_path / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     (manuscript / "config.yaml").write_text(
         '{"experiment":{"bnn_torch":{"n_clients":2,"n_per":8,'
         '"hidden_dim":4,"n_steps":3,"contamination_levels":[0.0,0.5]}}}',
@@ -99,7 +99,7 @@ def test_catalog_construction_does_not_read_project_configuration(tmp_path: Path
     assert catalog["hierarchical_world"] is not catalog["nlevel3_world"]
     assert catalog["cross_study_summary"] is not catalog["disjoint_fov_world"]
     # Even malformed actual configuration is untouched during catalog construction.
-    manuscript = root / "manuscript"
+    manuscript = root / "docs" / "manuscript"
     manuscript.mkdir(parents=True)
     path = manuscript / "config.yaml"
     path.write_text("experiment: [invalid mapping]\n", encoding="utf-8")
@@ -234,8 +234,8 @@ def test_real_catalog_calls_preserve_independent_inputs(stage: str, tmp_path: Pa
         bnn_n_seeds=2, bnn_n_per=2, contamination_rates=(0.0,), complexity=complexity,
     )
     # The optional Torch producer consumes a real, explicitly bounded source config.
-    manuscript = tmp_path / "manuscript"
-    manuscript.mkdir()
+    manuscript = tmp_path / "docs" / "manuscript"
+    manuscript.mkdir(parents=True)
     (manuscript / "config.yaml").write_text(
         "experiment:\n  bnn_torch:\n    n_clients: 2\n    n_per: 2\n    hidden_dim: 2\n"
         "    n_steps: 1\n    contamination_levels: [0.0]\n", encoding="utf-8",

@@ -29,7 +29,7 @@ DOC_CONTRACT_FILES = (
     "examples/README.md",
     "docs/AGENTS.md",
     "docs/README.md",
-    "docs/application-guide.md",
+    "docs/development/application-guide.md",
     "docs/core/architecture.md",
     "docs/core/experiments-and-artifacts.md",
     "docs/development/agent_instructions.md",
@@ -37,9 +37,9 @@ DOC_CONTRACT_FILES = (
     "docs/development/modularity.md",
     "docs/development/style_guide.md",
     "docs/development/testing_philosophy.md",
-    "docs/manuscript/accessibility.md",
-    "docs/manuscript/rendering_pipeline.md",
-    "docs/manuscript/tokens-and-labels.md",
+    "docs/manuscript/guides/accessibility.md",
+    "docs/manuscript/guides/rendering_pipeline.md",
+    "docs/manuscript/guides/tokens-and-labels.md",
     "docs/operations/faq.md",
     "docs/operations/output-layout.md",
     "docs/operations/troubleshooting.md",
@@ -58,9 +58,9 @@ DOC_CONTRACT_FILES = (
     "docs/security/active_fedference-threat-model.md",
     "data/AGENTS.md",
     "data/README.md",
-    "manuscript/AGENTS.md",
-    "manuscript/README.md",
-    "manuscript/SYNTAX.md",
+    "docs/manuscript/AGENTS.md",
+    "docs/manuscript/README.md",
+    "docs/manuscript/SYNTAX.md",
     "scripts/AGENTS.md",
     "scripts/CONVENTIONS.md",
     "scripts/README.md",
@@ -84,7 +84,7 @@ def _read(relative_path: str) -> str:
 
 
 def test_application_guide_has_no_duplicate_table_separator_rows() -> None:
-    guide = _read("docs/application-guide.md")
+    guide = _read("docs/development/application-guide.md")
     assert "| --- | --- | --- |\n| --- | --- | --- |" not in guide
 
 
@@ -129,7 +129,7 @@ def test_release_todo_pages_name_their_exact_public_branches() -> None:
 
 def test_web_publication_docs_state_the_fail_closed_resource_boundary() -> None:
     verification = _read("docs/reference/verification-commands.md")
-    rendering = _read("docs/manuscript/rendering_pipeline.md")
+    rendering = _read("docs/manuscript/guides/rendering_pipeline.md")
     combined = f"{verification}\n{rendering}"
     normalized_verification = re.sub(r"\s+", " ", verification)
 
@@ -417,14 +417,14 @@ def test_documentation_hub_and_section_indexes_reach_every_page() -> None:
 
 def test_application_guide_is_the_lightweight_canonical_user_path() -> None:
     """Keep first use distinct from contributor and generated-output surfaces."""
-    guide = _read("docs/application-guide.md")
+    guide = _read("docs/development/application-guide.md")
     root_readme = _read("README.md")
     docs_hub = _read("docs/README.md")
     examples = _read("examples/README.md")
     verification = _read("docs/reference/verification-commands.md")
     examples_before_tests = examples.split("## Regression tests", maxsplit=1)[0]
 
-    assert "docs/application-guide.md" in root_readme
+    assert "docs/development/application-guide.md" in root_readme
     assert "application-guide.md" in docs_hub
     assert "uv sync --locked --extra dev" not in examples_before_tests
     assert "uv sync --locked" in examples_before_tests
@@ -514,7 +514,7 @@ def test_mermaid_accessibility_contract_fails_closed(tmp_path: Path) -> None:
 
 
 def test_required_accessible_workflow_diagrams_remain_source_visible() -> None:
-    application = _read("docs/application-guide.md")
+    application = _read("docs/development/application-guide.md")
     provenance = _read("docs/core/experiments-and-artifacts.md")
     threat_model = _read("docs/security/active_fedference-threat-model.md")
 
@@ -659,7 +659,7 @@ def test_retired_platform_inventory_rejects_unsafe_current_surface(tmp_path: Pat
 
 
 def test_publication_lifecycle_and_historical_release_identity_are_separated() -> None:
-    config = yaml.safe_load(_read("manuscript/config.yaml"))
+    config = yaml.safe_load(_read("docs/manuscript/config.yaml"))
     expected_doi = config["publication"]["doi"]
     expected_doi_status = config["publication"].get("doi_status")
     expected_date = config["publication"]["date_released"]
@@ -668,7 +668,7 @@ def test_publication_lifecycle_and_historical_release_identity_are_separated() -
     metadata = "\n".join(
         _read(path)
         for path in (
-            "manuscript/config.yaml",
+            "docs/manuscript/config.yaml",
             ".zenodo.json",
             "codemeta.json",
             "CITATION.cff",
@@ -740,7 +740,7 @@ def test_docs_do_not_reintroduce_stale_claim_language() -> None:
         "two-robustness": re.compile(r"two-robustness", re.IGNORECASE),
         "two axes": re.compile(r"\btwo[- ]axes\b", re.IGNORECASE),
         "old sidecar path": re.compile(r"projects/active_fedference"),
-        "dead scope file": re.compile(r"manuscript/12_scope\.md"),
+        "dead scope file": re.compile(r"docs/manuscript/12_scope\.md"),
         "completion-log phrasing": re.compile(
             r"Completed iterations|Only MAJOR|Done and tested",
             re.IGNORECASE,
@@ -762,7 +762,7 @@ def test_docs_do_not_reintroduce_stale_claim_language() -> None:
 
 def test_robustness_taxonomy_has_one_authoritative_definition() -> None:
     """Keep the abstract synthetic and limitations focused on non-transfer."""
-    gap = _read("manuscript/02_gap.md")
+    gap = _read("docs/manuscript/02_gap.md")
     for heading in (
         "### Client-side: source-theorem-backed",
         "### Server-side: heuristic",
@@ -770,7 +770,7 @@ def test_robustness_taxonomy_has_one_authoritative_definition() -> None:
     ):
         assert heading in gap
 
-    abstract = _read("manuscript/00_abstract.md")
+    abstract = _read("docs/manuscript/00_abstract.md")
     syntheses = [
         paragraph
         for paragraph in abstract.split("\n\n")
@@ -787,7 +787,7 @@ def test_robustness_taxonomy_has_one_authoritative_definition() -> None:
         assert claim_owner in synthesis
     assert "no robustness guarantee transferred between them" in synthesis
 
-    limitations = _read("manuscript/23_discussion_limitations.md")
+    limitations = _read("docs/manuscript/23_discussion_limitations.md")
     section = limitations.split("## Three robustness axes", 1)[1].split(
         "## Scope boundaries",
         1,
@@ -817,7 +817,7 @@ def test_friston_eq7_bridge_language_is_scoped() -> None:
 
 def test_canonical_two_pass_render_sequence_records_prepared_web_tree() -> None:
     """Keep the pre-test and final render passes ordered around their receipt."""
-    text = _read("docs/manuscript/rendering_pipeline.md")
+    text = _read("docs/manuscript/guides/rendering_pipeline.md")
     heading = "## Source-current two-pass sequence"
     start = text.index(heading)
     end = text.index("## Phase 3", start)
@@ -856,9 +856,9 @@ def test_canonical_two_pass_render_sequence_records_prepared_web_tree() -> None:
 def test_renderer_receipt_examples_use_source_locked_template_checkout() -> None:
     """Keep the public render recipe free of path-bearing ad hoc identities."""
     authoritative = (
-        "docs/manuscript/rendering_pipeline.md",
+        "docs/manuscript/guides/rendering_pipeline.md",
         "docs/reference/verification-commands.md",
-        "manuscript/README.md",
+        "docs/manuscript/README.md",
         "scripts/AGENTS.md",
         "scripts/README.md",
     )
@@ -881,7 +881,7 @@ def test_renderer_receipt_examples_use_source_locked_template_checkout() -> None
 
 def test_copyable_config_documents_accessible_slides_and_renderer_lock() -> None:
     """Keep projection constraints and immutable renderer identity copyable."""
-    example_path = ROOT / "manuscript" / "config.yaml.example"
+    example_path = ROOT / "docs" / "manuscript" / "config.yaml.example"
     raw = example_path.read_text(encoding="utf-8")
     payload = yaml.safe_load(raw)
 
@@ -912,7 +912,7 @@ def test_source_current_render_examples_skip_implicit_hydration() -> None:
         r"(?:[ \t]*\\\n\s*)?"
         r"--project working/active_fedference(?P<arguments>[^\n]*)"
     )
-    canonical = _read("docs/manuscript/rendering_pipeline.md")
+    canonical = _read("docs/manuscript/guides/rendering_pipeline.md")
 
     assert 'git -C "$AF_REPO" log -1 --format=%ct' in canonical
     assert 'git -C "$TEMPLATE_REPO" log -1 --format=%ct' not in canonical
@@ -952,7 +952,7 @@ def test_multi_machine_claims_stay_qualified() -> None:
 
 def test_security_and_accessibility_boundaries_are_explicit_and_gated() -> None:
     threat_model = _read("docs/security/active_fedference-threat-model.md")
-    accessibility = _read("docs/manuscript/accessibility.md")
+    accessibility = _read("docs/manuscript/guides/accessibility.md")
     web_validator = "\n".join(_read(path) for path in (
         "src/publication/web_package.py",
         "src/publication/web/accessibility.py",
@@ -1568,13 +1568,13 @@ def test_source_tree_has_no_unscoped_roadmap_markers() -> None:
 
 
 def test_manuscript_syntax_registry_references_live_files() -> None:
-    text = _read("manuscript/SYNTAX.md")
+    text = _read("docs/manuscript/SYNTAX.md")
     owner_files = sorted(set(re.findall(r"`([^`]+\.md)`", text)))
     missing = [
         owner for owner in owner_files
         if not owner.startswith("../../")
         and not owner.startswith("docs/guides/")
-        and not (ROOT / "manuscript" / owner).exists()
+        and not (ROOT / "docs" / "manuscript" / owner).exists()
     ]
     assert missing == []
     assert "Ten figures" not in text
@@ -1603,7 +1603,7 @@ def test_figure_registry_matches_embeds_and_generator_outputs() -> None:
         re.DOTALL,
     )
     embeds = {}
-    for section in sorted((ROOT / "manuscript").glob("[0-9S]*.md")):
+    for section in sorted((ROOT / "docs" / "manuscript").glob("[0-9S]*.md")):
         if section.name in {"AGENTS.md", "README.md", "SYNTAX.md", "preamble.md"}:
             continue
         for match in embed_re.finditer(section.read_text(encoding="utf-8")):
@@ -1637,7 +1637,7 @@ def test_figure_registry_matches_embeds_and_generator_outputs() -> None:
 
 def test_rendered_theorem_blocks_do_not_use_markdown_code_spans() -> None:
     offenders = []
-    for path in sorted((ROOT / "manuscript").glob("*.md")):
+    for path in sorted((ROOT / "docs" / "manuscript").glob("*.md")):
         if path.name in {"AGENTS.md", "README.md", "SYNTAX.md", "preamble.md"}:
             continue
         text = path.read_text(encoding="utf-8")
@@ -1645,55 +1645,55 @@ def test_rendered_theorem_blocks_do_not_use_markdown_code_spans() -> None:
         for match in re.finditer(pattern, text, re.S):
             if "`" in match.group(2):
                 line_number = text[: match.start()].count("\n") + 1
-                offenders.append(f"manuscript/{path.name}:{line_number}")
+                offenders.append(f"docs/manuscript/{path.name}:{line_number}")
     assert offenders == []
 
 
 def test_display_math_does_not_use_code_spans_or_texttt() -> None:
     offenders = []
-    for path in sorted((ROOT / "manuscript").glob("*.md")):
+    for path in sorted((ROOT / "docs" / "manuscript").glob("*.md")):
         if path.name in {"AGENTS.md", "README.md", "SYNTAX.md", "preamble.md"}:
             continue
         parts = path.read_text(encoding="utf-8").split("$$")
         for index, block in enumerate(parts[1::2], start=1):
             if "`" in block or "\\texttt" in block:
-                offenders.append(f"manuscript/{path.name}:display_math_{index}")
+                offenders.append(f"docs/manuscript/{path.name}:display_math_{index}")
     assert offenders == []
 
 
 def test_theorem_blocks_do_not_contain_pandoc_equation_labels() -> None:
     offenders = []
     pattern = r"\\begin\{(definition|theorem|lemma|proposition|corollary)\}(.*?)\\end\{\1\}"
-    for path in sorted((ROOT / "manuscript").glob("*.md")):
+    for path in sorted((ROOT / "docs" / "manuscript").glob("*.md")):
         if path.name in {"AGENTS.md", "README.md", "SYNTAX.md", "preamble.md"}:
             continue
         text = path.read_text(encoding="utf-8")
         for match in re.finditer(pattern, text, re.S):
             if "$$ {#eq:" in match.group(2):
                 line_number = text[: match.start()].count("\n") + 1
-                offenders.append(f"manuscript/{path.name}:{line_number}")
+                offenders.append(f"docs/manuscript/{path.name}:{line_number}")
     assert offenders == []
 
 
 def test_proposition_sections_define_environment_for_slides() -> None:
     offenders = []
-    for path in sorted((ROOT / "manuscript").glob("*.md")):
+    for path in sorted((ROOT / "docs" / "manuscript").glob("*.md")):
         if path.name in {"AGENTS.md", "README.md", "SYNTAX.md", "preamble.md"}:
             continue
         text = path.read_text(encoding="utf-8")
         if "\\begin{proposition}" in text and "\\ifcsname proposition\\endcsname" not in text:
-            offenders.append(f"manuscript/{path.name}")
+            offenders.append(f"docs/manuscript/{path.name}")
     assert offenders == []
 
 
 def test_manuscript_latex_conditionals_do_not_look_like_citations() -> None:
     offenders = []
-    for path in sorted((ROOT / "manuscript").glob("*.md")):
+    for path in sorted((ROOT / "docs" / "manuscript").glob("*.md")):
         if path.name in {"AGENTS.md", "README.md", "SYNTAX.md", "preamble.md"}:
             continue
         text = path.read_text(encoding="utf-8")
         if "\\@ifundefined" in text:
-            offenders.append(f"manuscript/{path.name}")
+            offenders.append(f"docs/manuscript/{path.name}")
     assert offenders == []
 
 

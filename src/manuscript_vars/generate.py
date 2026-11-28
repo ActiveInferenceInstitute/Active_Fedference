@@ -104,7 +104,7 @@ def generate_variables(
     manuscript still renders.
 
     Args:
-        project_root: Directory containing ``manuscript/`` and ``output/``;
+        project_root: Directory containing ``docs/manuscript/`` and ``output/``;
             defaults to the project root.
         allow_draft: When ``False`` (default), missing core analysis reports
             raise :class:`FileNotFoundError`. When ``True``, missing reports
@@ -232,8 +232,8 @@ def generate_variables(
     v["SENS_COLONY_SIZE_MAX"] = str(max(_sens_colony_sizes))
     v["BOOTSTRAP_N_BOOT"] = str(_N_BOOT)
 
-    # ---- Config / authorship (from manuscript/config.yaml) ----
-    config_path = root / "manuscript" / "config.yaml"
+    # ---- Config / authorship (from docs/manuscript/config.yaml) ----
+    config_path = root / "docs" / "manuscript" / "config.yaml"
     paper_version, first_author, keywords = "1.0", "Unknown", ""
     publication_doi: str | None = None
     config_hash = "N/A"

@@ -23,7 +23,7 @@ from figures import FIGURE_METADATA
 from figures._metadata import FIGURE_SUPPORT_MODULES
 
 _ROOT = Path(__file__).resolve().parent.parent
-_MANUSCRIPT = _ROOT / "manuscript"
+_MANUSCRIPT = _ROOT / "docs" / "manuscript"
 _FIGURES = _ROOT / "src" / "figures"
 
 # A markdown image embed: ![caption](path){#fig:label ...}

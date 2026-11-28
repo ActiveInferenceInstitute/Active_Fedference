@@ -56,7 +56,7 @@ def test_study_four_label_discloses_within_run_display_selection() -> None:
     label = _display_label({"study": 4, "label": "Study 4\nRobustness sweep"})
     assert "within-run display-selected maximum" in " ".join(label.casefold().split())
     caption = (
-        Path(__file__).resolve().parents[2] / "manuscript" / "S13_results_sensitivity.md"
+        Path(__file__).resolve().parents[2] / "docs" / "manuscript" / "S13_results_sensitivity.md"
     ).read_text(encoding="utf-8")
     assert "Study 4 row is the within-run" in caption
     assert "display-selected maximum" in caption
