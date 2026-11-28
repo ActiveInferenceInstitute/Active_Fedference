@@ -38,7 +38,7 @@ if len(matches) != 1:
 profile_name = matches[0]
 lock = dict(registry, **registry["profiles"][profile_name])
 sys.path.insert(0, str(root / "src"))
-from gnn.execute.pymdp.simulation import run_pymdp_simulation
+from gnn.execute.pymdp import run_pymdp_simulation
 import jax
 if jax.default_backend() != lock["device"]:
     raise RuntimeError("GNN_BACKEND_ENVIRONMENT: device differs from lock")
