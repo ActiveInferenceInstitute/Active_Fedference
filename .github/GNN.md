@@ -2,10 +2,9 @@
 
 `gnn conformance (pinned)` is the `gnn-shard` job in
 `.github/workflows/ci.yml`. It reads `.github/gnn-pin.json`, which pins
-`ActiveInferenceInstitute/Generalized_Notation_Notation` at `v5.1.0`
-(`75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf`). The previous pin was `v5.0.3`
-(`8f293d9ba810e6eda5c09842d9c7ed9ffa5f92c1`), whose source tree predates the
-estate's shared importer reader.
+`ActiveInferenceInstitute/Generalized_Notation_Notation` at `v5.2.0`
+(`4a7cccce6d4d7cb483f00323ec5cdd79300f3464`). The shared importer reader first
+shipped in `v5.1.0` (`75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf`).
 
 ## Shared reader
 
@@ -76,7 +75,11 @@ model-CLI and pymdp modules cover the `.fed.md` extension specifications and the
 pinned backend runtime. The job does not scan the rest of the repository for
 `*.gnn.md`; `sentinel.gnn.md` is the only such file in the checkout.
 
-## What the pin advance re-derived
+## Parser cache and backend provenance
+
+The importer pin selects the release used by the shared conformance reader.
+The packaged parser closures and their offline caches use independently
+qualified `v5.1.0` source. Native PyMDP execution follows its own backend lock.
 
 Advancing the release pin from `8f293d9ba810` to `75c834bd8519` updated the
 parser manifests and `UPSTREAM_REVISION` in `src/fedference/gnn/_documents.py`.
