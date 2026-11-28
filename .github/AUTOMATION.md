@@ -12,7 +12,7 @@ by the test planner. The authoritative project documentation remains
 | --- | --- |
 | [`workflows/ci.yml`](workflows/ci.yml) | The `ci` workflow: fast source checks, the sharded native test suite, the pinned GNN conformance lane, Python 3.13 compatibility smoke, and the combined release gate. Every command sequence is a `scripts/gate.py` arm. |
 | [`dependabot.yml`](dependabot.yml) | Weekly Dependabot updates for the `uv` lock and pinned GitHub Actions, with a 7-day cooldown. |
-| [`gnn-pin.json`](gnn-pin.json) | Canonical GNN importer pin (`gnn-importer-pin/v1`): `ActiveInferenceInstitute/Generalized_Notation_Notation` at `v5.1.0`, commit `75c834bd8519dc7b5adc4d24f16bf393cfd1ecdf`. |
+| [`gnn-pin.json`](gnn-pin.json) | Canonical GNN importer pin (`gnn-importer-pin/v1`): `ActiveInferenceInstitute/Generalized_Notation_Notation` at `v5.2.0`, commit `4a7cccce6d4d7cb483f00323ec5cdd79300f3464`. |
 | [`GNN.md`](GNN.md) | The pinned GNN conformance pointer: what the `gnn-shard` job parses, bootstraps, and runs. |
 | [`ci/module-times.json`](ci/module-times.json) | Baseline per-module durations that `scripts/ci_shards.py` uses to balance whole test modules across shards. Scheduling weights only — not a hosted speed guarantee. |
 
